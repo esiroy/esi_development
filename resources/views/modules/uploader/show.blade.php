@@ -20,6 +20,8 @@
                   
                     <simpleuploader-component csrf_token="{{ csrf_token() }}"/>
 
+                   
+
                 </div>
             </div>
         </div>

@@ -23,6 +23,8 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 Vue.component('simpleuploader-component', require('./components/SimpleUploaderComponent.vue').default);
 
+Vue.component('fulluploader-component', require('./components/FullUploaderComponent.vue').default);
+
 Vue.component('file-upload', VueUploadComponent)
 
 /**
@@ -30,6 +32,19 @@ Vue.component('file-upload', VueUploadComponent)
  * the page. Then, you may begin adding components to this application
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
+
+Vue.filter('formatSize', function(size) {
+    if (size > 1024 * 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
+    } else if (size > 1024 * 1024 * 1024) {
+        return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB'
+    } else if (size > 1024 * 1024) {
+        return (size / 1024 / 1024).toFixed(2) + ' MB'
+    } else if (size > 1024) {
+        return (size / 1024).toFixed(2) + ' KB'
+    }
+    return size.toString() + ' B'
+})
 
 const app = new Vue({
     el: '#app',

@@ -1932,15 +1932,227 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SimpleUploaderComponent.vue?vue&type=script&lang=js&":
-/*!**********************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SimpleUploaderComponent.vue?vue&type=script&lang=js& ***!
-  \**********************************************************************************************************************************************************************************/
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=script&lang=js&":
+/*!********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/FullUploaderComponent.vue?vue&type=script&lang=js& ***!
+  \********************************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2122,6 +2334,281 @@ __webpack_require__.r(__webpack_exports__);
       if (URL && URL.createObjectURL) {
         newFile.blob = URL.createObjectURL(newFile.file);
         console.log(newFile.blob);
+      }
+    }
+  }
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SimpleUploaderComponent.vue?vue&type=script&lang=js&":
+/*!**********************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SimpleUploaderComponent.vue?vue&type=script&lang=js& ***!
+  \**********************************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    csrf_token: {
+      type: String
+    }
+  },
+  data: function data() {
+    return {
+      files: []
+    };
+  },
+  methods: {
+    updatetValue: function updatetValue(value) {
+      this.files = value;
+    },
+
+    /**
+     * Has changed
+     * @param  Object|undefined   newFile   Read only
+     * @param  Object|undefined   oldFile   Read only
+     * @return undefined
+     */
+    inputFile: function inputFile(newFile, oldFile) {
+      if (newFile && oldFile && !newFile.active && oldFile.active) {
+        // Get response data
+        console.log("response", newFile.response);
+
+        if (newFile.xhr) {
+          //  Get the response status code
+          console.log("status", newFile.xhr.status);
+        }
+      }
+    },
+
+    /**
+     * Pretreatment
+     * @param  Object|undefined   newFile   Read and write
+     * @param  Object|undefined   oldFile   Read only
+     * @param  Function           prevent   Prevent changing
+     * @return undefined
+     */
+    inputFilter: function inputFilter(newFile, oldFile, prevent) {
+      if (newFile && !oldFile) {
+        // Filter non-image file
+        if (!/\.(jpeg|jpe|jpg|gif|png|webp)$/i.test(newFile.name)) {
+          return prevent();
+        }
+      }
+
+      if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
+        // Create a blob field
+        // 创建 blob 字段
+        newFile.blob = '';
+        var URL = window.URL || window.webkitURL;
+
+        if (URL && URL.createObjectURL) {
+          newFile.blob = URL.createObjectURL(newFile.file);
+        } // Thumbnails
+        // 缩略图
+
+
+        newFile.thumb = '';
+
+        if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
+          newFile.thumb = newFile.blob;
+        }
       }
     }
   }
@@ -6559,6 +7046,25 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css&":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.example-drag label.btn {\n    margin-bottom: 0;\n    margin-right: 1rem;\n}\n.example-drag .drop-active {\n    top: 0;\n    bottom: 0;\n    right: 0;\n    left: 0;\n    position: fixed;\n    z-index: 9999;\n    opacity: 0.6;\n    text-align: center;\n    background: #000;\n}\n.example-drag .drop-active h3 {\n    margin: -0.5em 0 0;\n    position: absolute;\n    top: 50%;\n    left: 0;\n    right: 0;\n    transform: translateY(-50%);\n    font-size: 40px;\n    color: #fff;\n    padding: 0;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SimpleUploaderComponent.vue?vue&type=style&index=0&lang=css&":
 /*!*****************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SimpleUploaderComponent.vue?vue&type=style&index=0&lang=css& ***!
@@ -6571,7 +7077,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.example-drag label.btn {\n    margin-bottom: 0;\n    margin-right: 1rem;\n}\n.example-drag .drop-active {\n    top: 0;\n    bottom: 0;\n    right: 0;\n    left: 0;\n    position: fixed;\n    z-index: 9999;\n    opacity: 0.6;\n    text-align: center;\n    background: #000;\n}\n.example-drag .drop-active h3 {\n    margin: -0.5em 0 0;\n    position: absolute;\n    top: 50%;\n    left: 0;\n    right: 0;\n    transform: translateY(-50%);\n    font-size: 40px;\n    color: #fff;\n    padding: 0;\n}\n", ""]);
+exports.push([module.i, "\n.example-drag label.btn {\n  margin-bottom: 0;\n  margin-right: 1rem;\n}\n.example-drag .drop-active {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  z-index: 9999;\n  opacity: 0.6;\n  text-align: center;\n  background: #000;\n}\n.example-drag .drop-active h3 {\n  margin: -0.5em 0 0;\n  position: absolute;\n  top: 50%;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n  font-size: 40px;\n  color: #fff;\n  padding: 0;\n}\n", ""]);
 
 // exports
 
@@ -37688,6 +38194,36 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./FullUploaderComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../../node_modules/style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SimpleUploaderComponent.vue?vue&type=style&index=0&lang=css&":
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SimpleUploaderComponent.vue?vue&type=style&index=0&lang=css& ***!
@@ -38349,6 +38885,1458 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=template&id=53b2b605&":
+/*!************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/FullUploaderComponent.vue?vue&type=template&id=53b2b605& ***!
+  \************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "example-full" }, [
+    _c(
+      "button",
+      {
+        staticClass: "btn btn-danger float-right btn-is-option",
+        attrs: { type: "button" },
+        on: {
+          click: function($event) {
+            $event.preventDefault()
+            _vm.isOption = !_vm.isOption
+          }
+        }
+      },
+      [
+        _c("i", { staticClass: "fa fa-cog", attrs: { "aria-hidden": "true" } }),
+        _vm._v("\n    Options\n  ")
+      ]
+    ),
+    _vm._v(" "),
+    _c("h1", { staticClass: "example-title", attrs: { id: "example-title" } }, [
+      _vm._v("Full Example")
+    ]),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.$refs.upload && _vm.$refs.upload.dropActive,
+            expression: "$refs.upload && $refs.upload.dropActive"
+          }
+        ],
+        staticClass: "drop-active"
+      },
+      [_c("h3", [_vm._v("Drop files to upload")])]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: !_vm.isOption,
+            expression: "!isOption"
+          }
+        ],
+        staticClass: "upload"
+      },
+      [
+        _c("div", { staticClass: "table-responsive" }, [
+          _c("table", { staticClass: "table table-hover" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              [
+                !_vm.files.length
+                  ? _c("tr", [
+                      _c("td", { attrs: { colspan: "7" } }, [
+                        _c("div", { staticClass: "text-center p-5" }, [
+                          _vm._m(1),
+                          _vm._v(" "),
+                          _c(
+                            "label",
+                            {
+                              staticClass: "btn btn-lg btn-primary",
+                              attrs: { for: _vm.name }
+                            },
+                            [_vm._v("Select Files")]
+                          )
+                        ])
+                      ])
+                    ])
+                  : _vm._e(),
+                _vm._v(" "),
+                _vm._l(_vm.files, function(file, index) {
+                  return _c("tr", { key: file.id }, [
+                    _c("td", [_vm._v(_vm._s(index))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      file.thumb
+                        ? _c("img", {
+                            attrs: {
+                              src: file.thumb,
+                              width: "40",
+                              height: "auto"
+                            }
+                          })
+                        : _c("span", [_vm._v("No Image")])
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("div", { staticClass: "filename" }, [
+                        _vm._v(
+                          "\n                " +
+                            _vm._s(file.name) +
+                            "\n              "
+                        )
+                      ]),
+                      _vm._v(" "),
+                      file.active || file.progress !== "0.00"
+                        ? _c("div", { staticClass: "progress" }, [
+                            _c(
+                              "div",
+                              {
+                                class: {
+                                  "progress-bar": true,
+                                  "progress-bar-striped": true,
+                                  "bg-danger": file.error,
+                                  "progress-bar-animated": file.active
+                                },
+                                style: { width: file.progress + "%" },
+                                attrs: { role: "progressbar" }
+                              },
+                              [_vm._v(_vm._s(file.progress) + "%")]
+                            )
+                          ])
+                        : _vm._e()
+                    ]),
+                    _vm._v(" "),
+                    _c("td", [_vm._v(_vm._s(_vm._f("formatSize")(file.size)))]),
+                    _vm._v(" "),
+                    _c("td", [
+                      _vm._v(_vm._s(_vm._f("formatSize")(file.speed)))
+                    ]),
+                    _vm._v(" "),
+                    file.error
+                      ? _c("td", [_vm._v(_vm._s(file.error))])
+                      : file.success
+                      ? _c("td", [_vm._v("success")])
+                      : file.active
+                      ? _c("td", [_vm._v("active")])
+                      : _c("td"),
+                    _vm._v(" "),
+                    _c("td", [
+                      _c("div", { staticClass: "btn-group" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn btn-secondary btn-sm dropdown-toggle",
+                            attrs: { type: "button" }
+                          },
+                          [
+                            _vm._v(
+                              "\n                  Action\n                "
+                            )
+                          ]
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "dropdown-menu" }, [
+                          _c(
+                            "a",
+                            {
+                              class: {
+                                "dropdown-item": true,
+                                disabled:
+                                  file.active ||
+                                  file.success ||
+                                  file.error === "compressing"
+                              },
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  file.active ||
+                                  file.success ||
+                                  file.error === "compressing"
+                                    ? false
+                                    : _vm.onEditFileShow(file)
+                                }
+                              }
+                            },
+                            [_vm._v("Edit")]
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              class: {
+                                "dropdown-item": true,
+                                disabled: !file.active
+                              },
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  file.active
+                                    ? _vm.$refs.upload.update(file, {
+                                        error: "cancel"
+                                      })
+                                    : false
+                                }
+                              }
+                            },
+                            [_vm._v("Cancel")]
+                          ),
+                          _vm._v(" "),
+                          file.active
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "dropdown-item",
+                                  attrs: { href: "#" },
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.$refs.upload.update(file, {
+                                        active: false
+                                      })
+                                    }
+                                  }
+                                },
+                                [_vm._v("Abort")]
+                              )
+                            : file.error &&
+                              file.error !== "compressing" &&
+                              _vm.$refs.upload.features.html5
+                            ? _c(
+                                "a",
+                                {
+                                  staticClass: "dropdown-item",
+                                  attrs: { href: "#" },
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      return _vm.$refs.upload.update(file, {
+                                        active: true,
+                                        error: "",
+                                        progress: "0.00"
+                                      })
+                                    }
+                                  }
+                                },
+                                [_vm._v("Retry upload")]
+                              )
+                            : _c(
+                                "a",
+                                {
+                                  class: {
+                                    "dropdown-item": true,
+                                    disabled:
+                                      file.success ||
+                                      file.error === "compressing"
+                                  },
+                                  attrs: { href: "#" },
+                                  on: {
+                                    click: function($event) {
+                                      $event.preventDefault()
+                                      file.success ||
+                                      file.error === "compressing"
+                                        ? false
+                                        : _vm.$refs.upload.update(file, {
+                                            active: true
+                                          })
+                                    }
+                                  }
+                                },
+                                [_vm._v("Upload")]
+                              ),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "dropdown-divider" }),
+                          _vm._v(" "),
+                          _c(
+                            "a",
+                            {
+                              staticClass: "dropdown-item",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.$refs.upload.remove(file)
+                                }
+                              }
+                            },
+                            [_vm._v("Remove")]
+                          )
+                        ])
+                      ])
+                    ])
+                  ])
+                })
+              ],
+              2
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "example-foorer" }, [
+          _c("div", { staticClass: "footer-status float-right" }, [
+            _vm._v(
+              "\n        Drop: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.drop : false) +
+                ",\n        Active: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.active : false) +
+                ",\n        Uploaded: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.uploaded : true) +
+                ",\n        Drop active: " +
+                _vm._s(_vm.$refs.upload ? _vm.$refs.upload.dropActive : false) +
+                "\n      "
+            )
+          ]),
+          _vm._v(" "),
+          _c(
+            "div",
+            { staticClass: "btn-group" },
+            [
+              _c(
+                "file-upload",
+                {
+                  ref: "upload",
+                  staticClass: "btn btn-primary dropdown-toggle",
+                  attrs: {
+                    "post-action": _vm.postAction,
+                    "put-action": _vm.putAction,
+                    extensions: _vm.extensions,
+                    accept: _vm.accept,
+                    multiple: _vm.multiple,
+                    directory: _vm.directory,
+                    size: _vm.size || 0,
+                    thread:
+                      _vm.thread < 1 ? 1 : _vm.thread > 5 ? 5 : _vm.thread,
+                    headers: _vm.headers,
+                    data: _vm.data,
+                    drop: _vm.drop,
+                    "drop-directory": _vm.dropDirectory,
+                    "add-index": _vm.addIndex
+                  },
+                  on: {
+                    "input-filter": _vm.inputFilter,
+                    "input-file": _vm.inputFile
+                  },
+                  model: {
+                    value: _vm.files,
+                    callback: function($$v) {
+                      _vm.files = $$v
+                    },
+                    expression: "files"
+                  }
+                },
+                [
+                  _c("i", { staticClass: "fa fa-plus" }),
+                  _vm._v("\n          Select\n        ")
+                ]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "dropdown-menu" }, [
+                _c(
+                  "label",
+                  { staticClass: "dropdown-item", attrs: { for: _vm.name } },
+                  [_vm._v("Add files")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: { click: _vm.onAddFolader }
+                  },
+                  [_vm._v("Add folder")]
+                ),
+                _vm._v(" "),
+                _c(
+                  "a",
+                  {
+                    staticClass: "dropdown-item",
+                    attrs: { href: "#" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        _vm.addData.show = true
+                      }
+                    }
+                  },
+                  [_vm._v("Add data")]
+                )
+              ])
+            ],
+            1
+          ),
+          _vm._v(" "),
+          !_vm.$refs.upload || !_vm.$refs.upload.active
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.$refs.upload.active = true
+                    }
+                  }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fa fa-arrow-up",
+                    attrs: { "aria-hidden": "true" }
+                  }),
+                  _vm._v("\n        Start Upload\n      ")
+                ]
+              )
+            : _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.$refs.upload.active = false
+                    }
+                  }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fa fa-stop",
+                    attrs: { "aria-hidden": "true" }
+                  }),
+                  _vm._v("\n        Stop Upload\n      ")
+                ]
+              )
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.isOption,
+            expression: "isOption"
+          }
+        ],
+        staticClass: "option"
+      },
+      [
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "accept" } }, [_vm._v("Accept:")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.accept,
+                expression: "accept"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", id: "accept" },
+            domProps: { value: _vm.accept },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.accept = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v("Allow upload mime type")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "extensions" } }, [
+            _vm._v("Extensions:")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.extensions,
+                expression: "extensions"
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "text", id: "extensions" },
+            domProps: { value: _vm.extensions },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.extensions = $event.target.value
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v("Allow upload file extension")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", [_vm._v("PUT Upload:")]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-check" }, [
+            _c("label", { staticClass: "form-check-label" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.putAction,
+                    expression: "putAction"
+                  }
+                ],
+                staticClass: "form-check-input",
+                attrs: {
+                  type: "radio",
+                  name: "put-action",
+                  id: "put-action",
+                  value: ""
+                },
+                domProps: { checked: _vm._q(_vm.putAction, "") },
+                on: {
+                  change: function($event) {
+                    _vm.putAction = ""
+                  }
+                }
+              }),
+              _vm._v(" Off\n        ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "form-check" }, [
+            _c("label", { staticClass: "form-check-label" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.putAction,
+                    expression: "putAction"
+                  }
+                ],
+                staticClass: "form-check-input",
+                attrs: {
+                  type: "radio",
+                  name: "put-action",
+                  id: "put-action",
+                  value: "/upload/put"
+                },
+                domProps: { checked: _vm._q(_vm.putAction, "/upload/put") },
+                on: {
+                  change: function($event) {
+                    _vm.putAction = "/upload/put"
+                  }
+                }
+              }),
+              _vm._v(" On\n        ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v("After the shutdown, use the POST method to upload")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "thread" } }, [_vm._v("Thread:")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model.number",
+                value: _vm.thread,
+                expression: "thread",
+                modifiers: { number: true }
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "number", max: "5", min: "1", id: "thread" },
+            domProps: { value: _vm.thread },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.thread = _vm._n($event.target.value)
+              },
+              blur: function($event) {
+                return _vm.$forceUpdate()
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v(
+              "Also upload the number of files at the same time (number of threads)"
+            )
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "size" } }, [_vm._v("Max size:")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model.number",
+                value: _vm.size,
+                expression: "size",
+                modifiers: { number: true }
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "number", min: "0", id: "size" },
+            domProps: { value: _vm.size },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.size = _vm._n($event.target.value)
+              },
+              blur: function($event) {
+                return _vm.$forceUpdate()
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "minSize" } }, [_vm._v("Min size:")]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model.number",
+                value: _vm.minSize,
+                expression: "minSize",
+                modifiers: { number: true }
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "number", min: "0", id: "minSize" },
+            domProps: { value: _vm.minSize },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.minSize = _vm._n($event.target.value)
+              },
+              blur: function($event) {
+                return _vm.$forceUpdate()
+              }
+            }
+          })
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("label", { attrs: { for: "autoCompress" } }, [
+            _vm._v("Automatically compress:")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model.number",
+                value: _vm.autoCompress,
+                expression: "autoCompress",
+                modifiers: { number: true }
+              }
+            ],
+            staticClass: "form-control",
+            attrs: { type: "number", min: "0", id: "autoCompress" },
+            domProps: { value: _vm.autoCompress },
+            on: {
+              input: function($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.autoCompress = _vm._n($event.target.value)
+              },
+              blur: function($event) {
+                return _vm.$forceUpdate()
+              }
+            }
+          }),
+          _vm._v(" "),
+          _vm.autoCompress > 0
+            ? _c("small", { staticClass: "form-text text-muted" }, [
+                _vm._v(
+                  "More than " +
+                    _vm._s(_vm._f("formatSize")(_vm.autoCompress)) +
+                    " files are automatically compressed"
+                )
+              ])
+            : _c("small", { staticClass: "form-text text-muted" }, [
+                _vm._v("Set up automatic compression")
+              ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("div", { staticClass: "form-check" }, [
+            _c("label", { staticClass: "form-check-label" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.addIndex,
+                    expression: "addIndex"
+                  }
+                ],
+                staticClass: "form-check-input",
+                attrs: { type: "checkbox", id: "add-index" },
+                domProps: {
+                  checked: Array.isArray(_vm.addIndex)
+                    ? _vm._i(_vm.addIndex, null) > -1
+                    : _vm.addIndex
+                },
+                on: {
+                  change: function($event) {
+                    var $$a = _vm.addIndex,
+                      $$el = $event.target,
+                      $$c = $$el.checked ? true : false
+                    if (Array.isArray($$a)) {
+                      var $$v = null,
+                        $$i = _vm._i($$a, $$v)
+                      if ($$el.checked) {
+                        $$i < 0 && (_vm.addIndex = $$a.concat([$$v]))
+                      } else {
+                        $$i > -1 &&
+                          (_vm.addIndex = $$a
+                            .slice(0, $$i)
+                            .concat($$a.slice($$i + 1)))
+                      }
+                    } else {
+                      _vm.addIndex = $$c
+                    }
+                  }
+                }
+              }),
+              _vm._v(" Start position to add\n        ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v("Add a file list to start the location to add")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("div", { staticClass: "form-check" }, [
+            _c("label", { staticClass: "form-check-label" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.drop,
+                    expression: "drop"
+                  }
+                ],
+                staticClass: "form-check-input",
+                attrs: { type: "checkbox", id: "drop" },
+                domProps: {
+                  checked: Array.isArray(_vm.drop)
+                    ? _vm._i(_vm.drop, null) > -1
+                    : _vm.drop
+                },
+                on: {
+                  change: function($event) {
+                    var $$a = _vm.drop,
+                      $$el = $event.target,
+                      $$c = $$el.checked ? true : false
+                    if (Array.isArray($$a)) {
+                      var $$v = null,
+                        $$i = _vm._i($$a, $$v)
+                      if ($$el.checked) {
+                        $$i < 0 && (_vm.drop = $$a.concat([$$v]))
+                      } else {
+                        $$i > -1 &&
+                          (_vm.drop = $$a
+                            .slice(0, $$i)
+                            .concat($$a.slice($$i + 1)))
+                      }
+                    } else {
+                      _vm.drop = $$c
+                    }
+                  }
+                }
+              }),
+              _vm._v(" Drop\n        ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v("Drag and drop upload")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("div", { staticClass: "form-check" }, [
+            _c("label", { staticClass: "form-check-label" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.dropDirectory,
+                    expression: "dropDirectory"
+                  }
+                ],
+                staticClass: "form-check-input",
+                attrs: { type: "checkbox", id: "drop-directory" },
+                domProps: {
+                  checked: Array.isArray(_vm.dropDirectory)
+                    ? _vm._i(_vm.dropDirectory, null) > -1
+                    : _vm.dropDirectory
+                },
+                on: {
+                  change: function($event) {
+                    var $$a = _vm.dropDirectory,
+                      $$el = $event.target,
+                      $$c = $$el.checked ? true : false
+                    if (Array.isArray($$a)) {
+                      var $$v = null,
+                        $$i = _vm._i($$a, $$v)
+                      if ($$el.checked) {
+                        $$i < 0 && (_vm.dropDirectory = $$a.concat([$$v]))
+                      } else {
+                        $$i > -1 &&
+                          (_vm.dropDirectory = $$a
+                            .slice(0, $$i)
+                            .concat($$a.slice($$i + 1)))
+                      }
+                    } else {
+                      _vm.dropDirectory = $$c
+                    }
+                  }
+                }
+              }),
+              _vm._v(" Drop directory\n        ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v("Not checked, filter the dragged folder")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c("div", { staticClass: "form-check" }, [
+            _c("label", { staticClass: "form-check-label" }, [
+              _c("input", {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.uploadAuto,
+                    expression: "uploadAuto"
+                  }
+                ],
+                staticClass: "form-check-input",
+                attrs: { type: "checkbox", id: "upload-auto" },
+                domProps: {
+                  checked: Array.isArray(_vm.uploadAuto)
+                    ? _vm._i(_vm.uploadAuto, null) > -1
+                    : _vm.uploadAuto
+                },
+                on: {
+                  change: function($event) {
+                    var $$a = _vm.uploadAuto,
+                      $$el = $event.target,
+                      $$c = $$el.checked ? true : false
+                    if (Array.isArray($$a)) {
+                      var $$v = null,
+                        $$i = _vm._i($$a, $$v)
+                      if ($$el.checked) {
+                        $$i < 0 && (_vm.uploadAuto = $$a.concat([$$v]))
+                      } else {
+                        $$i > -1 &&
+                          (_vm.uploadAuto = $$a
+                            .slice(0, $$i)
+                            .concat($$a.slice($$i + 1)))
+                      }
+                    } else {
+                      _vm.uploadAuto = $$c
+                    }
+                  }
+                }
+              }),
+              _vm._v(" Auto start\n        ")
+            ])
+          ]),
+          _vm._v(" "),
+          _c("small", { staticClass: "form-text text-muted" }, [
+            _vm._v("Automatically activate upload")
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "form-group" }, [
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-primary btn-lg btn-block",
+              attrs: { type: "button" },
+              on: {
+                click: function($event) {
+                  $event.preventDefault()
+                  _vm.isOption = !_vm.isOption
+                }
+              }
+            },
+            [_vm._v("Confirm")]
+          )
+        ])
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", {
+      class: { "modal-backdrop": true, fade: true, show: _vm.addData.show }
+    }),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        class: { modal: true, fade: true, show: _vm.addData.show },
+        attrs: { id: "modal-add-data", tabindex: "-1", role: "dialog" }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c("h5", { staticClass: "modal-title" }, [_vm._v("Add data")]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "close",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        _vm.addData.show = false
+                      }
+                    }
+                  },
+                  [_c("span", [_vm._v("×")])]
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.onAddData($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "name" } }, [
+                        _vm._v("Name:")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.addData.name,
+                            expression: "addData.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          required: "",
+                          id: "name",
+                          placeholder: "Please enter a file name"
+                        },
+                        domProps: { value: _vm.addData.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.addData, "name", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm._m(2)
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "type" } }, [
+                        _vm._v("Type:")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.addData.type,
+                            expression: "addData.type"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          required: "",
+                          id: "type",
+                          placeholder: "Please enter the MIME type"
+                        },
+                        domProps: { value: _vm.addData.type },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.addData, "type", $event.target.value)
+                          }
+                        }
+                      }),
+                      _vm._v(" "),
+                      _vm._m(3)
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "content" } }, [
+                        _vm._v("Content:")
+                      ]),
+                      _vm._v(" "),
+                      _c("textarea", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.addData.content,
+                            expression: "addData.content"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          required: "",
+                          id: "content",
+                          rows: "3",
+                          placeholder: "Please enter the file contents"
+                        },
+                        domProps: { value: _vm.addData.content },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(
+                              _vm.addData,
+                              "content",
+                              $event.target.value
+                            )
+                          }
+                        }
+                      })
+                    ])
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            _vm.addData.show = false
+                          }
+                        }
+                      },
+                      [_vm._v("Close")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("Save")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _c("div", {
+      class: { "modal-backdrop": true, fade: true, show: _vm.editFile.show }
+    }),
+    _vm._v(" "),
+    _c(
+      "div",
+      {
+        class: { modal: true, fade: true, show: _vm.editFile.show },
+        attrs: { id: "modal-edit-file", tabindex: "-1", role: "dialog" }
+      },
+      [
+        _c(
+          "div",
+          { staticClass: "modal-dialog modal-lg", attrs: { role: "document" } },
+          [
+            _c("div", { staticClass: "modal-content" }, [
+              _c("div", { staticClass: "modal-header" }, [
+                _c("h5", { staticClass: "modal-title" }, [_vm._v("Edit file")]),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "close",
+                    attrs: { type: "button" },
+                    on: {
+                      click: function($event) {
+                        $event.preventDefault()
+                        _vm.editFile.show = false
+                      }
+                    }
+                  },
+                  [_c("span", [_vm._v("×")])]
+                )
+              ]),
+              _vm._v(" "),
+              _c(
+                "form",
+                {
+                  on: {
+                    submit: function($event) {
+                      $event.preventDefault()
+                      return _vm.onEditorFile($event)
+                    }
+                  }
+                },
+                [
+                  _c("div", { staticClass: "modal-body" }, [
+                    _c("div", { staticClass: "form-group" }, [
+                      _c("label", { attrs: { for: "name" } }, [
+                        _vm._v("Name:")
+                      ]),
+                      _vm._v(" "),
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.editFile.name,
+                            expression: "editFile.name"
+                          }
+                        ],
+                        staticClass: "form-control",
+                        attrs: {
+                          type: "text",
+                          required: "",
+                          id: "name",
+                          placeholder: "Please enter a file name"
+                        },
+                        domProps: { value: _vm.editFile.name },
+                        on: {
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.editFile, "name", $event.target.value)
+                          }
+                        }
+                      })
+                    ]),
+                    _vm._v(" "),
+                    _vm.editFile.show &&
+                    _vm.editFile.blob &&
+                    _vm.editFile.type &&
+                    _vm.editFile.type.substr(0, 6) === "image/"
+                      ? _c("div", { staticClass: "form-group" }, [
+                          _c("label", [_vm._v("Image: ")]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "edit-image" }, [
+                            _c("img", {
+                              ref: "editImage",
+                              attrs: { src: _vm.editFile.blob }
+                            })
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "edit-image-tool" }, [
+                            _c(
+                              "div",
+                              {
+                                staticClass: "btn-group",
+                                attrs: { role: "group" }
+                              },
+                              [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.rotate(-90)"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.editFile.cropper.rotate(-90)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-undo",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.rotate(90)"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.editFile.cropper.rotate(90)
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-repeat",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "div",
+                              {
+                                staticClass: "btn-group",
+                                attrs: { role: "group" }
+                              },
+                              [
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.crop()"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.editFile.cropper.crop()
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-check",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                ),
+                                _vm._v(" "),
+                                _c(
+                                  "button",
+                                  {
+                                    staticClass: "btn btn-primary",
+                                    attrs: {
+                                      type: "button",
+                                      title: "cropper.clear()"
+                                    },
+                                    on: {
+                                      click: function($event) {
+                                        return _vm.editFile.cropper.clear()
+                                      }
+                                    }
+                                  },
+                                  [
+                                    _c("i", {
+                                      staticClass: "fa fa-remove",
+                                      attrs: { "aria-hidden": "true" }
+                                    })
+                                  ]
+                                )
+                              ]
+                            )
+                          ])
+                        ])
+                      : _vm._e()
+                  ]),
+                  _vm._v(" "),
+                  _c("div", { staticClass: "modal-footer" }, [
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-secondary",
+                        attrs: { type: "button" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            _vm.editFile.show = false
+                          }
+                        }
+                      },
+                      [_vm._v("Close")]
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-primary",
+                        attrs: { type: "submit" }
+                      },
+                      [_vm._v("Save")]
+                    )
+                  ])
+                ]
+              )
+            ])
+          ]
+        )
+      ]
+    ),
+    _vm._v(" "),
+    _vm._m(4)
+  ])
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("#")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Thumb")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Size")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Speed")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Status")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Action")])
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("h4", [
+      _vm._v("Drop files anywhere to upload"),
+      _c("br"),
+      _vm._v("or")
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("small", { staticClass: "form-text text-muted" }, [
+      _vm._v("Such as "),
+      _c("code", [_vm._v("filename.txt")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("small", { staticClass: "form-text text-muted" }, [
+      _vm._v("Such as "),
+      _c("code", [_vm._v("text/plain")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "pt-5" }, [
+      _vm._v("\n    Source code: "),
+      _c(
+        "a",
+        {
+          attrs: {
+            href:
+              "https://github.com/lian-yue/vue-upload-component/blob/master/docs/views/examples/Full.vue"
+          }
+        },
+        [_vm._v("/docs/views/examples/Full.vue")]
+      )
+    ])
+  }
+]
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/SimpleUploaderComponent.vue?vue&type=template&id=1a0fbb82&":
 /*!**************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/SimpleUploaderComponent.vue?vue&type=template&id=1a0fbb82& ***!
@@ -38365,35 +40353,198 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "example-drag" }, [
-    _c("div", { staticClass: "upload" }, [
-      _vm.files.length
-        ? _c(
-            "ul",
-            _vm._l(_vm.files, function(file, index) {
-              return _c("li", { key: file.id }, [
-                _c("span", [_vm._v(_vm._s(index + 1))]),
-                _vm._v(" -\n                 "),
-                _c("img", {
-                  attrs: { src: file.blob, width: "50", height: "50" }
-                }),
-                _vm._v(" "),
-                _c("span", [_vm._v(_vm._s(file.name))]),
-                _vm._v(" -\n                "),
-                _c("span", [_vm._v(_vm._s(file.size))]),
-                _vm._v("\n                -\n                "),
-                file.error
-                  ? _c("span", [_vm._v(_vm._s(file.error))])
-                  : file.success
-                  ? _c("span", [_vm._v("success")])
-                  : file.active
-                  ? _c("span", [_vm._v("active")])
-                  : _c("span")
-              ])
-            }),
-            0
-          )
-        : _c("ul", [_vm._m(0)]),
+    _c("table", { staticClass: "table table-hover" }, [
+      _vm._m(0),
       _vm._v(" "),
+      _c(
+        "tbody",
+        [
+          !_vm.files.length ? _c("tr", [_vm._m(1)]) : _vm._e(),
+          _vm._v(" "),
+          _vm._l(_vm.files, function(file, index) {
+            return _c("tr", { key: file.id }, [
+              _c("td", [_vm._v(_vm._s(index))]),
+              _vm._v(" "),
+              _c("td", [
+                file.blob
+                  ? _c("img", {
+                      attrs: { src: file.blob, width: "40", height: "auto" }
+                    })
+                  : _c("span", [_vm._v("No Image")])
+              ]),
+              _vm._v(" "),
+              _c("td", [
+                _c("div", { staticClass: "filename" }, [
+                  _vm._v(_vm._s(file.name))
+                ]),
+                _vm._v(" "),
+                file.active || file.progress !== "0.00"
+                  ? _c("div", { staticClass: "progress" }, [
+                      _c(
+                        "div",
+                        {
+                          class: {
+                            "progress-bar": true,
+                            "progress-bar-striped": true,
+                            "bg-danger": file.error,
+                            "progress-bar-animated": file.active
+                          },
+                          style: { width: file.progress + "%" },
+                          attrs: { role: "progressbar" }
+                        },
+                        [_vm._v(_vm._s(file.progress) + "%")]
+                      )
+                    ])
+                  : _vm._e()
+              ]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(_vm._f("formatSize")(file.size)))]),
+              _vm._v(" "),
+              _c("td", [_vm._v(_vm._s(_vm._f("formatSize")(file.speed)))]),
+              _vm._v(" "),
+              file.error
+                ? _c("td", [_vm._v(_vm._s(file.error))])
+                : file.success
+                ? _c("td", [_vm._v("success")])
+                : file.active
+                ? _c("td", [_vm._v("active")])
+                : _c("td"),
+              _vm._v(" "),
+              _c("td", [
+                _c("div", { staticClass: "dropdown" }, [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary dropdown-toggle",
+                      attrs: {
+                        type: "button",
+                        id: "dropdownMenuButton",
+                        "data-toggle": "dropdown",
+                        "aria-haspopup": "true",
+                        "aria-expanded": "false"
+                      }
+                    },
+                    [_vm._v("\n                  Action\n              ")]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "div",
+                    {
+                      staticClass: "dropdown-menu",
+                      attrs: { "aria-labelledby": "dropdownMenuButton" }
+                    },
+                    [
+                      _c(
+                        "a",
+                        {
+                          class: {
+                            "dropdown-item": true,
+                            disabled: !file.active
+                          },
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              file.active
+                                ? _vm.$refs.upload.update(file, {
+                                    error: "cancel"
+                                  })
+                                : false
+                            }
+                          }
+                        },
+                        [_vm._v("Cancel")]
+                      ),
+                      _vm._v(" "),
+                      file.active
+                        ? _c(
+                            "a",
+                            {
+                              staticClass: "dropdown-item",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.$refs.upload.update(file, {
+                                    active: false
+                                  })
+                                }
+                              }
+                            },
+                            [_vm._v("Abort")]
+                          )
+                        : file.error &&
+                          file.error !== "compressing" &&
+                          _vm.$refs.upload.features.html5
+                        ? _c(
+                            "a",
+                            {
+                              staticClass: "dropdown-item",
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  return _vm.$refs.upload.update(file, {
+                                    active: true,
+                                    error: "",
+                                    progress: "0.00"
+                                  })
+                                }
+                              }
+                            },
+                            [_vm._v("Retry upload")]
+                          )
+                        : _c(
+                            "a",
+                            {
+                              class: {
+                                "dropdown-item": true,
+                                disabled:
+                                  file.success || file.error === "compressing"
+                              },
+                              attrs: { href: "#" },
+                              on: {
+                                click: function($event) {
+                                  $event.preventDefault()
+                                  file.success || file.error === "compressing"
+                                    ? false
+                                    : _vm.$refs.upload.update(file, {
+                                        active: true
+                                      })
+                                }
+                              }
+                            },
+                            [_vm._v("Upload")]
+                          ),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "dropdown-divider" }),
+                      _vm._v(" "),
+                      _c(
+                        "a",
+                        {
+                          staticClass: "dropdown-item",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function($event) {
+                              $event.preventDefault()
+                              return _vm.$refs.upload.remove(file)
+                            }
+                          }
+                        },
+                        [_vm._v("Remove")]
+                      )
+                    ]
+                  )
+                ])
+              ])
+            ])
+          })
+        ],
+        2
+      )
+    ]),
+    _vm._v(" "),
+    _c("div", { staticClass: "upload" }, [
       _c(
         "div",
         {
@@ -38409,7 +40560,7 @@ var render = function() {
         },
         [_c("h3", [_vm._v("Drop files to upload")])]
       ),
-      _vm._v("\n        token :: " + _vm._s(this.csrf_token) + "\n        "),
+      _vm._v(" "),
       _c(
         "div",
         { staticClass: "example-btn" },
@@ -38445,7 +40596,7 @@ var render = function() {
             },
             [
               _c("i", { staticClass: "fa fa-plus" }),
-              _vm._v("\n                Select files\n            ")
+              _vm._v("Select files\n      ")
             ]
           ),
           _vm._v(" "),
@@ -38467,7 +40618,7 @@ var render = function() {
                     staticClass: "fa fa-arrow-up",
                     attrs: { "aria-hidden": "true" }
                   }),
-                  _vm._v("\n                Start Upload\n            ")
+                  _vm._v("\n        Start Upload\n      ")
                 ]
               )
             : _c(
@@ -38487,15 +40638,13 @@ var render = function() {
                     staticClass: "fa fa-stop",
                     attrs: { "aria-hidden": "true" }
                   }),
-                  _vm._v("\n                Stop Upload\n            ")
+                  _vm._v("\n        Stop Upload\n      ")
                 ]
               )
         ],
         1
       )
-    ]),
-    _vm._v(" "),
-    _vm._m(1)
+    ])
   ])
 }
 var staticRenderFns = [
@@ -38503,21 +40652,21 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("td", { attrs: { colspan: "7" } }, [
-      _c("div", { staticClass: "text-center p-5" }, [
-        _c("h4", [
-          _vm._v(
-            "\n                        Drop files anywhere to upload\n                        "
-          ),
-          _c("br"),
-          _vm._v("or\n                    ")
-        ]),
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("#")]),
         _vm._v(" "),
-        _c(
-          "label",
-          { staticClass: "btn btn-lg btn-primary", attrs: { for: "file" } },
-          [_vm._v("Select Files")]
-        )
+        _c("th", [_vm._v("Thumb")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Name")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Size")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Speed")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Status")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Action")])
       ])
     ])
   },
@@ -38525,17 +40674,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "pt-5" }, [
-      _vm._v("\n        Source code:\n        "),
+    return _c("td", { attrs: { colspan: "7", align: "center" } }, [
+      _c("h4", [
+        _vm._v("\n            Drop files anywhere to upload\n            "),
+        _c("br"),
+        _vm._v("or\n          ")
+      ]),
+      _vm._v(" "),
       _c(
-        "a",
-        {
-          attrs: {
-            href:
-              "https://github.com/lian-yue/vue-upload-component/blob/master/docs/views/examples/Drag.vue"
-          }
-        },
-        [_vm._v("/docs/views/examples/Drag.vue")]
+        "label",
+        { staticClass: "btn btn-lg btn-primary", attrs: { for: "file" } },
+        [_vm._v("Select Files")]
       )
     ])
   }
@@ -50735,6 +52884,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 Vue.component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]);
 Vue.component('simpleuploader-component', __webpack_require__(/*! ./components/SimpleUploaderComponent.vue */ "./resources/js/components/SimpleUploaderComponent.vue")["default"]);
+Vue.component('fulluploader-component', __webpack_require__(/*! ./components/FullUploaderComponent.vue */ "./resources/js/components/FullUploaderComponent.vue")["default"]);
 Vue.component('file-upload', VueUploadComponent);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -50742,6 +52892,19 @@ Vue.component('file-upload', VueUploadComponent);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+Vue.filter('formatSize', function (size) {
+  if (size > 1024 * 1024 * 1024 * 1024) {
+    return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB';
+  } else if (size > 1024 * 1024 * 1024) {
+    return (size / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+  } else if (size > 1024 * 1024) {
+    return (size / 1024 / 1024).toFixed(2) + ' MB';
+  } else if (size > 1024) {
+    return (size / 1024).toFixed(2) + ' KB';
+  }
+
+  return size.toString() + ' B';
+});
 var app = new Vue({
   el: '#app'
 });
@@ -50857,6 +53020,93 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./resources/js/components/FullUploaderComponent.vue":
+/*!***********************************************************!*\
+  !*** ./resources/js/components/FullUploaderComponent.vue ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _FullUploaderComponent_vue_vue_type_template_id_53b2b605___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./FullUploaderComponent.vue?vue&type=template&id=53b2b605& */ "./resources/js/components/FullUploaderComponent.vue?vue&type=template&id=53b2b605&");
+/* harmony import */ var _FullUploaderComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./FullUploaderComponent.vue?vue&type=script&lang=js& */ "./resources/js/components/FullUploaderComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _FullUploaderComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FullUploaderComponent.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _FullUploaderComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _FullUploaderComponent_vue_vue_type_template_id_53b2b605___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _FullUploaderComponent_vue_vue_type_template_id_53b2b605___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/FullUploaderComponent.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/FullUploaderComponent.vue?vue&type=script&lang=js&":
+/*!************************************************************************************!*\
+  !*** ./resources/js/components/FullUploaderComponent.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./FullUploaderComponent.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css&":
+/*!********************************************************************************************!*\
+  !*** ./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css& ***!
+  \********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader!../../../node_modules/css-loader??ref--6-1!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/src??ref--6-2!../../../node_modules/vue-loader/lib??vue-loader-options!./FullUploaderComponent.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_style_loader_index_js_node_modules_css_loader_index_js_ref_6_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_src_index_js_ref_6_2_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./resources/js/components/FullUploaderComponent.vue?vue&type=template&id=53b2b605&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/FullUploaderComponent.vue?vue&type=template&id=53b2b605& ***!
+  \******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_template_id_53b2b605___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./FullUploaderComponent.vue?vue&type=template&id=53b2b605& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/FullUploaderComponent.vue?vue&type=template&id=53b2b605&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_template_id_53b2b605___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_FullUploaderComponent_vue_vue_type_template_id_53b2b605___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
