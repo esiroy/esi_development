@@ -23,6 +23,8 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 
 Vue.component('simpleuploader-component', require('./components/SimpleUploaderComponent.vue').default);
 
+Vue.component('file-upload', VueUploadComponent)
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -31,4 +33,5 @@ Vue.component('simpleuploader-component', require('./components/SimpleUploaderCo
 
 const app = new Vue({
     el: '#app',
+
 });

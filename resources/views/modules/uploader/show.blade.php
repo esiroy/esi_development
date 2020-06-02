@@ -18,7 +18,7 @@
                 <div class="card-header">Upload Folder</div>
                 <div class="card-body">
                   
-                  <simpleUploader-component></fulluploader-component>
+                <simpleuploader-component/>
 
                 </div>
             </div>

@@ -1948,28 +1948,115 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'imageUpload',
   data: function data() {
     return {
-      previewImage: null
+      files: []
     };
-  },
-  methods: {
-    uploadImage: function uploadImage(e) {
-      var _this = this;
-
-      var image = e.target.files[0];
-      var reader = new FileReader();
-      reader.readAsDataURL(image);
-
-      reader.onload = function (e) {
-        _this.previewImage = e.target.result;
-        console.log(_this.previewImage);
-      };
-    }
   }
-}); // missing closure added
+});
 
 /***/ }),
 
@@ -6415,7 +6502,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.uploading-image{\n  display:flex;\n}\n", ""]);
+exports.push([module.i, "\n.example-drag label.btn {\n  margin-bottom: 0;\n  margin-right: 1rem;\n}\n.example-drag .drop-active {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  z-index: 9999;\n  opacity: 0.6;\n  text-align: center;\n  background: #000;\n}\n.example-drag .drop-active h3 {\n  margin: -0.5em 0 0;\n  position: absolute;\n  top: 50%;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n  font-size: 40px;\n  color: #fff;\n  padding: 0;\n}\n", ""]);
 
 // exports
 
@@ -38208,14 +38295,167 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _c("input", {
-      attrs: { type: "file", accept: "image/jpeg, image/png " },
-      on: { change: _vm.uploadImage }
-    })
+  return _c("div", { staticClass: "example-drag" }, [
+    _c("div", { staticClass: "upload" }, [
+      _vm.files.length
+        ? _c(
+            "ul",
+            _vm._l(_vm.files, function(file, index) {
+              return _c("li", { key: file.id }, [
+                _c("span", [_vm._v(_vm._s(file.name))]),
+                _vm._v(" -\n        "),
+                _c("span", [_vm._v(_vm._s(file.size))]),
+                _vm._v(" -\n        "),
+                file.error
+                  ? _c("span", [_vm._v(_vm._s(file.error))])
+                  : file.success
+                  ? _c("span", [_vm._v("success")])
+                  : file.active
+                  ? _c("span", [_vm._v("active")])
+                  : _c("span")
+              ])
+            }),
+            0
+          )
+        : _c("ul", [_vm._m(0)]),
+      _vm._v(" "),
+      _c(
+        "div",
+        {
+          directives: [
+            {
+              name: "show",
+              rawName: "v-show",
+              value: _vm.$refs.upload && _vm.$refs.upload.dropActive,
+              expression: "$refs.upload && $refs.upload.dropActive"
+            }
+          ],
+          staticClass: "drop-active"
+        },
+        [_c("h3", [_vm._v("Drop files to upload")])]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "example-btn" },
+        [
+          _c(
+            "file-upload",
+            {
+              ref: "upload",
+              staticClass: "btn btn-primary",
+              attrs: {
+                "post-action": "/upload",
+                multiple: true,
+                drop: true,
+                "drop-directory": true,
+                extensions: "jpeg,jpg,gif,pdf,mp3,wav,png,webp, mpeg",
+                accept:
+                  "image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg,image/webp"
+              },
+              model: {
+                value: _vm.files,
+                callback: function($$v) {
+                  _vm.files = $$v
+                },
+                expression: "files"
+              }
+            },
+            [
+              _c("i", { staticClass: "fa fa-plus" }),
+              _vm._v("\n        Select files\n      ")
+            ]
+          ),
+          _vm._v(" "),
+          !_vm.$refs.upload || !_vm.$refs.upload.active
+            ? _c(
+                "button",
+                {
+                  staticClass: "btn btn-success",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.$refs.upload.active = true
+                    }
+                  }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fa fa-arrow-up",
+                    attrs: { "aria-hidden": "true" }
+                  }),
+                  _vm._v("\n        Start Upload\n      ")
+                ]
+              )
+            : _c(
+                "button",
+                {
+                  staticClass: "btn btn-danger",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function($event) {
+                      $event.preventDefault()
+                      _vm.$refs.upload.active = false
+                    }
+                  }
+                },
+                [
+                  _c("i", {
+                    staticClass: "fa fa-stop",
+                    attrs: { "aria-hidden": "true" }
+                  }),
+                  _vm._v("\n        Stop Upload\n      ")
+                ]
+              )
+        ],
+        1
+      )
+    ]),
+    _vm._v(" "),
+    _vm._m(1)
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("td", { attrs: { colspan: "7" } }, [
+      _c("div", { staticClass: "text-center p-5" }, [
+        _c("h4", [
+          _vm._v("\n            Drop files anywhere to upload\n            "),
+          _c("br"),
+          _vm._v("or\n          ")
+        ]),
+        _vm._v(" "),
+        _c(
+          "label",
+          { staticClass: "btn btn-lg btn-primary", attrs: { for: "file" } },
+          [_vm._v("Select Files")]
+        )
+      ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "pt-5" }, [
+      _vm._v("\n    Source code:\n    "),
+      _c(
+        "a",
+        {
+          attrs: {
+            href:
+              "https://github.com/lian-yue/vue-upload-component/blob/master/docs/views/examples/Drag.vue"
+          }
+        },
+        [_vm._v("/docs/views/examples/Drag.vue")]
+      )
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -50411,6 +50651,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 Vue.component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]);
 Vue.component('simpleuploader-component', __webpack_require__(/*! ./components/SimpleUploaderComponent.vue */ "./resources/js/components/SimpleUploaderComponent.vue")["default"]);
+Vue.component('file-upload', VueUploadComponent);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
