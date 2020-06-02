@@ -2587,7 +2587,7 @@ __webpack_require__.r(__webpack_exports__);
     inputFilter: function inputFilter(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         // Filter non-image file
-        if (!/\.(jpeg|jpe|jpg|gif|png|webp)$/i.test(newFile.name)) {
+        if (!/\.(jpeg|jpe|jpg|gif|png|webp|pdf|mp3|mp4|doc|docx)$/i.test(newFile.name)) {
           return prevent();
         }
       }
@@ -40577,7 +40577,7 @@ var render = function() {
                 multiple: true,
                 drop: true,
                 "drop-directory": true,
-                extensions: "jpeg,jpg,gif,pdf,mp3,wav,png,webp, mpeg",
+                extensions: "jpeg,jpg,gif,pdf,mp3,wav,png,webp,mpeg",
                 accept:
                   "image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg, image/webp"
               },
