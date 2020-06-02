@@ -16,16 +16,16 @@ class FileUploadController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-    }
 
-
-    public function index()
-    {
-        $data = [
+        $this->data = [
             'folders' => Folder::get()
         ];
 
-        return view('modules.uploader.index', $data);
+    }
+
+    public function index()
+    {
+        return view('modules.uploader.index', $this->data);
     }
 
     public function create() 
@@ -34,7 +34,18 @@ class FileUploadController extends Controller
     }
 
 
-  
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+
+
+        return view('modules.uploader.show', $this->data);
+    }
 
 
     /**
