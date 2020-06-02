@@ -27,3 +27,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 /* Folder Controllers */
 Route::resource('uploader', 'FileUploadController');
+
+/*Upload Controller */
+Route::post('uploader/fileUploader', 'FileUploadController@upload');

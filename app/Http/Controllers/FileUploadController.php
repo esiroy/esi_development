@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use Validator;
+use Input;
+use Image;
 
 use App\Models\User;
 use App\Models\Folder;
@@ -23,6 +25,26 @@ class FileUploadController extends Controller
 
     }
 
+    public function upload(Request $request) {
+  
+        if ($files = $request->file('file')) {
+
+            $originalPath = 'storage/uploads/';
+            $newFilename = $originalPath.time().$files->getClientOriginalName();
+            
+            // for save original image
+            $path = $request->file('file')->store('file');
+        }
+        
+        return Response()->json([
+            "success" => true,
+            "file"  => $request->file('file')->getClientOriginalName(),
+            "path"  => $path
+           
+        ]);
+    }
+
+    //Folders Controllers
     public function index()
     {
         return view('modules.uploader.index', $this->data);
@@ -33,30 +55,14 @@ class FileUploadController extends Controller
         return view('modules.uploader.create');
     }
 
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-
-
         return view('modules.uploader.show', $this->data);
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    //store new folder
     public function store(Request $request)
     {
-
         //Disallows duplicate folder name
         $validator = Validator::make($request->all(), [
             'folder_name' => 'required|unique:folders|max:255',
@@ -76,7 +82,9 @@ class FileUploadController extends Controller
         ]);
 
         return redirect()->route('uploader.index');
-
-        
     }
+
+
+
+
 }

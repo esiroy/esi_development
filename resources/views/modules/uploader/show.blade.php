@@ -18,7 +18,7 @@
                 <div class="card-header">Upload Folder</div>
                 <div class="card-body">
                   
-                <simpleuploader-component/>
+                    <simpleuploader-component csrf_token="{{ csrf_token() }}"/>
 
                 </div>
             </div>

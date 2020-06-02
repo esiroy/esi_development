@@ -2050,11 +2050,80 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    csrf_token: {
+      type: String
+    }
+  },
   data: function data() {
     return {
       files: []
     };
+  },
+  methods: {
+    updatetValue: function updatetValue(value) {
+      this.files = value;
+    },
+
+    /**
+     * Has changed
+     * @param  Object|undefined   newFile   Read only
+     * @param  Object|undefined   oldFile   Read only
+     * @return undefined
+     */
+    inputFile: function inputFile(newFile, oldFile) {
+      if (newFile && oldFile && !newFile.active && oldFile.active) {
+        // Get response data
+        console.log('response', newFile.response);
+
+        if (newFile.xhr) {
+          //  Get the response status code
+          console.log('status', newFile.xhr.status);
+        }
+      }
+    },
+
+    /**
+     * Pretreatment
+     * @param  Object|undefined   newFile   Read and write
+     * @param  Object|undefined   oldFile   Read only
+     * @param  Function           prevent   Prevent changing
+     * @return undefined
+     */
+    inputFilter: function inputFilter(newFile, oldFile, prevent) {
+      if (newFile && !oldFile) {
+        // Filter non-image file
+        if (!/\.(jpeg|jpe|jpg|gif|png|webp)$/i.test(newFile.name)) {
+          return prevent();
+        }
+      } // Create a blob field
+
+
+      newFile.blob = '';
+      var URL = window.URL || window.webkitURL;
+
+      if (URL && URL.createObjectURL) {
+        newFile.blob = URL.createObjectURL(newFile.file);
+        console.log(newFile.blob);
+      }
+    }
   }
 });
 
@@ -6502,7 +6571,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n.example-drag label.btn {\n  margin-bottom: 0;\n  margin-right: 1rem;\n}\n.example-drag .drop-active {\n  top: 0;\n  bottom: 0;\n  right: 0;\n  left: 0;\n  position: fixed;\n  z-index: 9999;\n  opacity: 0.6;\n  text-align: center;\n  background: #000;\n}\n.example-drag .drop-active h3 {\n  margin: -0.5em 0 0;\n  position: absolute;\n  top: 50%;\n  left: 0;\n  right: 0;\n  transform: translateY(-50%);\n  font-size: 40px;\n  color: #fff;\n  padding: 0;\n}\n", ""]);
+exports.push([module.i, "\n.example-drag label.btn {\n    margin-bottom: 0;\n    margin-right: 1rem;\n}\n.example-drag .drop-active {\n    top: 0;\n    bottom: 0;\n    right: 0;\n    left: 0;\n    position: fixed;\n    z-index: 9999;\n    opacity: 0.6;\n    text-align: center;\n    background: #000;\n}\n.example-drag .drop-active h3 {\n    margin: -0.5em 0 0;\n    position: absolute;\n    top: 50%;\n    left: 0;\n    right: 0;\n    transform: translateY(-50%);\n    font-size: 40px;\n    color: #fff;\n    padding: 0;\n}\n", ""]);
 
 // exports
 
@@ -38302,10 +38371,16 @@ var render = function() {
             "ul",
             _vm._l(_vm.files, function(file, index) {
               return _c("li", { key: file.id }, [
+                _c("span", [_vm._v(_vm._s(index + 1))]),
+                _vm._v(" -\n                 "),
+                _c("img", {
+                  attrs: { src: file.blob, width: "50", height: "50" }
+                }),
+                _vm._v(" "),
                 _c("span", [_vm._v(_vm._s(file.name))]),
-                _vm._v(" -\n        "),
+                _vm._v(" -\n                "),
                 _c("span", [_vm._v(_vm._s(file.size))]),
-                _vm._v(" -\n        "),
+                _vm._v("\n                -\n                "),
                 file.error
                   ? _c("span", [_vm._v(_vm._s(file.error))])
                   : file.success
@@ -38334,7 +38409,7 @@ var render = function() {
         },
         [_c("h3", [_vm._v("Drop files to upload")])]
       ),
-      _vm._v(" "),
+      _vm._v("\n        token :: " + _vm._s(this.csrf_token) + "\n        "),
       _c(
         "div",
         { staticClass: "example-btn" },
@@ -38345,13 +38420,20 @@ var render = function() {
               ref: "upload",
               staticClass: "btn btn-primary",
               attrs: {
-                "post-action": "/upload",
+                name: "file",
+                "post-action": "fileUploader",
+                headers: { "X-CSRF-TOKEN": this.csrf_token },
                 multiple: true,
                 drop: true,
                 "drop-directory": true,
                 extensions: "jpeg,jpg,gif,pdf,mp3,wav,png,webp, mpeg",
                 accept:
-                  "image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg,image/webp"
+                  "image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg, image/webp"
+              },
+              on: {
+                input: _vm.updatetValue,
+                "input-file": _vm.inputFile,
+                "input-filter": _vm.inputFilter
               },
               model: {
                 value: _vm.files,
@@ -38363,7 +38445,7 @@ var render = function() {
             },
             [
               _c("i", { staticClass: "fa fa-plus" }),
-              _vm._v("\n        Select files\n      ")
+              _vm._v("\n                Select files\n            ")
             ]
           ),
           _vm._v(" "),
@@ -38385,7 +38467,7 @@ var render = function() {
                     staticClass: "fa fa-arrow-up",
                     attrs: { "aria-hidden": "true" }
                   }),
-                  _vm._v("\n        Start Upload\n      ")
+                  _vm._v("\n                Start Upload\n            ")
                 ]
               )
             : _c(
@@ -38405,7 +38487,7 @@ var render = function() {
                     staticClass: "fa fa-stop",
                     attrs: { "aria-hidden": "true" }
                   }),
-                  _vm._v("\n        Stop Upload\n      ")
+                  _vm._v("\n                Stop Upload\n            ")
                 ]
               )
         ],
@@ -38424,9 +38506,11 @@ var staticRenderFns = [
     return _c("td", { attrs: { colspan: "7" } }, [
       _c("div", { staticClass: "text-center p-5" }, [
         _c("h4", [
-          _vm._v("\n            Drop files anywhere to upload\n            "),
+          _vm._v(
+            "\n                        Drop files anywhere to upload\n                        "
+          ),
           _c("br"),
-          _vm._v("or\n          ")
+          _vm._v("or\n                    ")
         ]),
         _vm._v(" "),
         _c(
@@ -38442,7 +38526,7 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("div", { staticClass: "pt-5" }, [
-      _vm._v("\n    Source code:\n    "),
+      _vm._v("\n        Source code:\n        "),
       _c(
         "a",
         {
