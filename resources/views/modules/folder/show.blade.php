@@ -10,13 +10,17 @@
                 <div class="card-header"> Files</div>
                 <div class="card-body">
                     @foreach ($files as $file)
-                    <div class="row mb-2">
-                        <div class="col">
+                    <div class="row mb-3">
+                        <div class="col-md-9">
                             {{ $file->file_name }}
                         </div>
+                  
                         <div class="col">
+                            <a href="{{ asset($file->path) }}" target="_blank">
+                                <button class="btn btn-primary btn-sm"><i class="fa fa-download"></i>View</button>
+                            </a>
                             <a href="{{ asset($file->path) }}" download="{{ $file->file_name }}">
-                                <button class="btn btn-primary btn-sm"><i class="fa fa-download"></i>Download File</button>
+                                <button class="btn btn-primary btn-sm"><i class="fa fa-download"></i>Download</button>
                             </a>
                         </div>
                     </div>
