@@ -36,4 +36,12 @@ class Folder extends Model
     ];
 
 
+    /**
+     * Get the comments for the blog post.
+     */
+    public function files()
+    {
+        return $this->hasMany('App\Models\File');
+    }
+
 }

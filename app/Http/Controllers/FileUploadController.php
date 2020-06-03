@@ -6,11 +6,10 @@ use Illuminate\Http\Request;
 
 use Validator;
 use Input;
-use Image;
 
 use App\Models\User;
 use App\Models\Folder;
-
+use App\Models\File;
 
 class FileUploadController extends Controller
 {
@@ -26,22 +25,54 @@ class FileUploadController extends Controller
     }
 
     public function upload(Request $request) {
-  
+
         if ($files = $request->file('file')) {
 
+            //file path
             $originalPath = 'storage/uploads/';
-            $newFilename = $originalPath.time().$files->getClientOriginalName();
+
+            $newFilename = time()."_". preg_replace('/\s+/', '_', $files->getClientOriginalName());
+
+            $newFilename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $newFilename);
+            
+            // Remove any runs of periods (thanks falstro!)
+            $newFilename = mb_ereg_replace("([\.]{2,})", '', $newFilename);
+
             
             // for save original image
-            $path = $request->file('file')->store('file');
+            //$path = $request->file('file')->store('public/uploads');
+
+            //save in storage -> storage/public/uploads/
+            $path = $request->file('file')->storeAs(
+                'public/uploads/'.$request->folder_id , $newFilename
+            );
+
+            //create public path -> public/storage/uploads/{folder_id}
+            $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
+
+            // Save to file
+            File::create([
+                'folder_id' => $request->folder_id,
+                'file_name' => $request->file('file')->getClientOriginalName(),
+                'path'      => $public_file_path
+            ]);
+            
+            //Output json reply
+            return Response()->json([
+                "success"   => true,
+                'folder_id' => $request->folder_id,
+                "file"      => $request->file('file')->getClientOriginalName(),
+                "path"      => $path
+            ]);
+        
+        } else {
+            return Response()->json([
+                "success" => false
+            ]);
+
         }
         
-        return Response()->json([
-            "success" => true,
-            "file"  => $request->file('file')->getClientOriginalName(),
-            "path"  => $path
-           
-        ]);
+
     }
 
     //Folders Controllers
@@ -55,9 +86,18 @@ class FileUploadController extends Controller
         return view('modules.uploader.create');
     }
 
-    public function show($id)
+    public function show($name)
     {
-        return view('modules.uploader.show', $this->data);
+
+        $folder = Folder::where('folder_name', $name)->first();
+        $files  = Folder::find($folder->id)->files;
+
+        $data = [
+            'folder' => $folder,
+            'files'  => $files
+        ];
+        
+        return view('modules.uploader.show', $data);
     }
 
     //store new folder
@@ -76,7 +116,7 @@ class FileUploadController extends Controller
         }
        
         //Create Folder 
-         Folder::create([
+        Folder::create([
             'folder_name' => $request['folder_name'],
             'folder_description' => $request['folder_description']
         ]);

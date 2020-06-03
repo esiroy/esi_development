@@ -30,3 +30,10 @@ Route::resource('uploader', 'FileUploadController');
 
 /*Upload Controller */
 Route::post('uploader/fileUploader', 'FileUploadController@upload');
+
+
+/* Public Folder View */
+Route::get('folder/{id}', 'FolderController@show');
+
+/* Download Controller*/
+Route::resource('download', 'DownloadController');

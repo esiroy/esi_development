@@ -4,11 +4,11 @@
       <thead>
         <tr>
           <th>#</th>
-          <th>Thumb</th>
+          <!--<th>Thumb</th>-->
           <th>Name</th>
           <th>Size</th>
-          <th>Speed</th>
-          <th>Status</th>
+          <!--<th>Speed</th>-->
+          <!--<th>Status</th>-->
           <th>Action</th>
         </tr>
       </thead>
@@ -23,11 +23,13 @@
           </td>
         </tr>
         <tr v-for="(file, index) in files" :key="file.id">
-          <td>{{index}}</td>
+          <td>{{index + 1}}</td>
+          <!--
           <td>
             <img v-if="file.blob" :src="file.blob" width="40" height="auto" />
             <span v-else>No Image</span>
           </td>
+          -->
           <td>
             <div class="filename">{{file.name}}</div>
             <div class="progress" v-if="file.active || file.progress !== '0.00'">
@@ -39,12 +41,15 @@
             </div>
           </td>
           <td>{{file.size | formatSize}}</td>
-          <td>{{file.speed | formatSize}}</td>
+          <!--<td>{{file.speed | formatSize}}</td>-->
 
+          <!--
           <td v-if="file.error">{{file.error}}</td>
           <td v-else-if="file.success">success</td>
           <td v-else-if="file.active">active</td>
           <td v-else></td>
+          -->
+
           <td>
 
             
@@ -110,51 +115,41 @@
       </ul>
       -->
 
-      <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
-        <h3>Drop files to upload</h3>
-      </div>
-      <!-- csrf token :: {{ this.csrf_token }} -->
+        <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
+            <h3>Drop files to upload</h3>
+        </div>
 
+      
+        
+        <div class="btn">
+            <file-upload
+                name="file"
+                class="btn btn-primary"
+                extensions="jpeg,jpg,gif,pdf,mp3,wav,png,webp,mpeg"
+                accept="image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg, image/webp"
+                v-model="files"
+                post-action="fileUploader"
+                :headers="{ 'X-CSRF-TOKEN': this.csrf_token }"
+                :multiple="true"
+                :drop="true"
+                :drop-directory="true"
+                @input="updatetValue"
+                @input-file="inputFile"
+                @input-filter="inputFilter"
+                :data="{folder_id: this.folder_id}"
+                ref="upload">
+                <i class="fa fa-plus"></i>
+                Select files
+            </file-upload>
 
-      <div class="example-btn">
-        <file-upload
-          name="file"
-          class="btn btn-primary"
-          post-action="fileUploader"
-          :headers="{ 'X-CSRF-TOKEN': this.csrf_token }"
-          :multiple="true"
-          :drop="true"
-          :drop-directory="true"
-          @input="updatetValue"
-          extensions="jpeg,jpg,gif,pdf,mp3,wav,png,webp,mpeg"
-          accept="image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg, image/webp"
-          v-model="files"
-          @input-file="inputFile"
-          @input-filter="inputFilter"
-          ref="upload"
-        >
-          <i class="fa fa-plus"></i>Select files
-        </file-upload>
-
-        <button
-          type="button"
-          class="btn btn-success"
-          v-if="!$refs.upload || !$refs.upload.active"
-          @click.prevent="$refs.upload.active = true"
-        >
-          <i class="fa fa-arrow-up" aria-hidden="true"></i>
-          Start Upload
+        <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+          <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
         </button>
 
-        <button
-          type="button"
-          class="btn btn-danger"
-          v-else
-          @click.prevent="$refs.upload.active = false"
-        >
-          <i class="fa fa-stop" aria-hidden="true"></i>
-          Stop Upload
+        <button type="button" class="btn btn-danger" v-else @click.prevent="$refs.upload.active = false">
+          <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
         </button>
+        
       </div>
     </div>
   </div>
@@ -195,6 +190,9 @@
 export default {
   props: {
     csrf_token: {
+      type: String
+    },
+    folder_id: {
       type: String
     }
   },
