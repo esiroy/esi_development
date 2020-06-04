@@ -55,20 +55,22 @@ class FileUploadController extends Controller
 
                 // Save to file
                 $file = File::create([
-                    'folder_id' => $request->folder_id,
-                    'file_name' => $request->file('file')->getClientOriginalName(),
-                    'size'      => $request->file('file')->getSize(),
-                    'path'      => $public_file_path
+                    'folder_id'     => $request->folder_id,
+                    'file_name'     => $request->file('file')->getClientOriginalName(), //original filename
+                    'upload_name'   => $request->file('file')->getFileName(), //generated filename
+                    'size'          => $request->file('file')->getSize(),
+                    'path'          => $public_file_path
                 ]);
                 
                 //Output JSON reply
                 return Response()->json([
-                    "success"   => true,
-                    'id'        => $file->id,
-                    'folder_id' => $request->folder_id,
-                    "file"      => $request->file('file')->getClientOriginalName(),
-                    'size'      => $request->file('file')->getSize(),
-                    "path"      => $path
+                    "success"       => true,
+                    'id'            => $file->id,
+                    'folder_id'     => $request->folder_id,
+                    "file"          => $request->file('file')->getClientOriginalName(), //original filename
+                    "upload_name"   => $request->file('file')->getFileName(),  //generated filename
+                    'size'          => $request->file('file')->getSize(),
+                    "path"          => $path,
                 ]);
 
             } else {

@@ -79,10 +79,22 @@ class FileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Request $request)
     {
+        if ($id === null && $request->upload_name) {
 
-        $file = File::find($id);
+            $removeFile = File::where('upload_name', $request->upload_name)->first();
+            $rid = $removeFile->id;
+
+            //removed or cancelled id
+            $file = File::find($rid);
+
+        } else {
+
+            //destroy id
+            $file = File::find($id);
+        }
+
 
         if ($file) {
 
@@ -100,4 +112,7 @@ class FileController extends Controller
 
         }
     }
+
+
+
 }

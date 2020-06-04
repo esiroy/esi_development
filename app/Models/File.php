@@ -12,7 +12,7 @@ class File extends Model
      * @var array
      */
     protected $fillable = [
-        'folder_id', 'file_name', 'size', 'path', 
+        'folder_id', 'file_name', 'upload_name', 'size', 'path', 
 
     ];
 

@@ -232,7 +232,36 @@ export default {
                         }]
 
             let files = this.$root.$refs.folderComponent.files.push(...file);
+
+          } else {
+
+            console.log(newFile);
+            let upload_name = newFile.id;
+            let folder_id   = newFile.data.folder_id;
+
+            //delete
+            axios.post(
+                "/file/" + upload_name,
+                { 
+                    _method: "delete",
+                    id: null,
+                    folder_id: folder_id,
+                    upload_name: upload_name,
+                    
+                }
+            )
+            .then(response => {
+                //success
+                console.log(response.data);
+                //this.$root.$refs.folderComponent.files.splice(index, 1);
+            })
+            .catch(function(error) {
+                // handle error
+                //alert("Error " + error);
+                console.log(error);
+            });   
           }
+
         }
       }
     },
