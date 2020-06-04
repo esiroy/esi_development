@@ -82,38 +82,57 @@ class FileController extends Controller
     public function destroy($id, Request $request)
     {
 
-        echo $request->upload_name;
-        
-        if ($id === null && $request->upload_name) {
+        if ($request->upload_name) {
+
+            echo $request->upload_name;
 
             $removeFile = File::where('upload_name', $request->upload_name)->first();
-            $rid = $removeFile->id;
 
-            //removed or cancelled id
-            $file = File::find($rid);
+            if ($removeFile) {
+
+                $removeFile->delete();
+                
+                //Output JSON reply
+                return Response()->json([
+                    "success"   => true,
+                    "message"   => "cancelled file has been removed"
+                ]); 
+
+            } else {
+
+                return Response()->json([
+                    "success"   => false,
+                    "message"   => "cancelled file can not be removed"
+                ]);         
+            }
+   
+
 
         } else {
 
             //destroy id
             $file = File::find($id);
+
+            if ($file) {
+
+                $file->delete();
+                
+                //Output JSON reply
+                return Response()->json([
+                    "success"   => true,
+                ]);     
+            } else {
+                //Output JSON reply
+                return Response()->json([
+                    "success"   => false,
+                ]); 
+    
+            }
+
         }
 
 
-        if ($file) {
 
-            $file->delete();
-            
-            //Output JSON reply
-            return Response()->json([
-                "success"   => true,
-            ]);     
-        } else {
-            //Output JSON reply
-            return Response()->json([
-                "success"   => false,
-            ]); 
-
-        }
     }
 
 
