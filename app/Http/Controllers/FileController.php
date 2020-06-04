@@ -81,6 +81,9 @@ class FileController extends Controller
      */
     public function destroy($id, Request $request)
     {
+
+        echo $request->upload_name;
+        
         if ($id === null && $request->upload_name) {
 
             $removeFile = File::where('upload_name', $request->upload_name)->first();
