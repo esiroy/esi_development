@@ -32,7 +32,7 @@
                     Action
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="#" @click.prevent="$refs.upload.remove(file)">Delete</a>
+                    <a class="dropdown-item" v-on:click="deleteFile(index, file.id)">Delete</a>
                 </div>
             </div>
           </td>
@@ -89,9 +89,31 @@ export default {
     };
   },
   methods: {
-    updatetValue(value) {
-      this.files = value;
-    },
+    deleteFile(index, id) {
+
+      
+
+      axios.post(
+            "/file/" + id,
+            { 
+                _method: "delete",
+                id: id
+            }
+        )
+        .then(response => {
+            //success
+            //console.log(response.data);
+            this.files.splice(index, 1);
+            
+        })
+        .catch(function(error) {
+            // handle error
+            alert("Error " + error);
+            console.log(error);
+        });
+
+
+    }
  },
  mounted: function () {
   this.$nextTick(function () {

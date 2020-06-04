@@ -26,7 +26,10 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 /* Folder Controllers */
-Route::resource('uploader', 'FileUploadController');
+Route::resource('uploader', 'FolderCreatorController');
+
+/*File Controller*/
+Route::resource('file', 'FileController');
 
 /*Upload Controller */
 Route::post('uploader/fileUploader', 'FileUploadController@upload');

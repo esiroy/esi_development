@@ -26,7 +26,7 @@ class PublicFolderController extends Controller
                 'files' => $files
             ];
 
-            return view('modules/folder/show', $data);
+            return view('modules/publicfolder/show', $data);
 
 
         } else {

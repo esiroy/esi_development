@@ -51,15 +51,16 @@ class FileUploadController extends Controller
             $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
 
             // Save to file
-            File::create([
+            $file = File::create([
                 'folder_id' => $request->folder_id,
                 'file_name' => $request->file('file')->getClientOriginalName(),
                 'path'      => $public_file_path
             ]);
             
-            //Output json reply
+            //Output JSON reply
             return Response()->json([
                 "success"   => true,
+                'id'        => $file->id,
                 'folder_id' => $request->folder_id,
                 "file"      => $request->file('file')->getClientOriginalName(),
                 "path"      => $path
@@ -71,60 +72,10 @@ class FileUploadController extends Controller
             ]);
 
         }
-        
-
-    }
-
-    //Folders Controllers
-    public function index()
-    {
-        return view('modules.uploader.index', $this->data);
-    }
-
-    public function create() 
-    {
-        return view('modules.uploader.create');
-    }
-
-    public function show($name)
-    {
-
-        $folder = Folder::where('folder_name', $name)->first();
-        $files  = Folder::find($folder->id)->files;
-
-        $data = [
-            'folder' => $folder,
-            'files'  => $files
-        ];
-        
-        return view('modules.uploader.show', $data);
-    }
-
-    //store new folder
-    public function store(Request $request)
-    {
-        //Disallows duplicate folder name
-        $validator = Validator::make($request->all(), [
-            'folder_name' => 'required|unique:folders|max:255',
-           
-        ]);
-
-        if ($validator->fails()) {
-            return redirect('uploader/create')
-                        ->withErrors($validator)
-                        ->withInput();
-        }
-       
-        //Create Folder 
-        Folder::create([
-            'folder_name' => $request['folder_name'],
-            'folder_description' => $request['folder_description']
-        ]);
-
-        return redirect()->route('uploader.index');
     }
 
 
+    
 
 
 }

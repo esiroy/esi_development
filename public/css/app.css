@@ -10928,3 +10928,9 @@ a.text-dark:focus {
   }
 }
 
+.btn:focus,
+.btn:active {
+  outline: none !important;
+  box-shadow: none;
+}
+

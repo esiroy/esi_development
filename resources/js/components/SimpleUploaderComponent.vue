@@ -212,9 +212,19 @@ export default {
      * @return undefined
      */
     inputFile: function(newFile, oldFile) {
+
       if (newFile && oldFile && !newFile.active && oldFile.active) {
         // Get response data
         console.log("response", newFile.response);
+
+        //Add to the folderComponent - uploader/show.blade.php
+        let file = [{
+                        'id'       : newFile.response.id,
+                        'file_name': newFile.response.file
+                    }]
+
+       let files = this.$root.$refs.folderComponent.files.push(...file);
+
         if (newFile.xhr) {
           //  Get the response status code
           console.log("status", newFile.xhr.status);
@@ -239,14 +249,12 @@ export default {
 
       if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
         // Create a blob field
-        // 创建 blob 字段
         newFile.blob = ''
         let URL = window.URL || window.webkitURL
         if (URL && URL.createObjectURL) {
           newFile.blob = URL.createObjectURL(newFile.file)
         }
         // Thumbnails
-        // 缩略图
         newFile.thumb = ''
         if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
           newFile.thumb = newFile.blob
