@@ -5,6 +5,7 @@
         <tr>
           <th>#</th>
           <th>File Name</th>
+          <th>File Size</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -25,7 +26,9 @@
           <td>
             <div class="filename">{{file.file_name}}</div>
           </td>
-         
+          <td>
+            <div class="filesize">{{ file.size | formatSize }}</div>
+          </td>
           <td>
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -90,8 +93,6 @@ export default {
   },
   methods: {
     deleteFile(index, id) {
-
-      
 
       axios.post(
             "/file/" + id,

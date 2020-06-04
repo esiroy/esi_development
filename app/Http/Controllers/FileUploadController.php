@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 use Validator;
 use Input;
@@ -54,6 +55,7 @@ class FileUploadController extends Controller
             $file = File::create([
                 'folder_id' => $request->folder_id,
                 'file_name' => $request->file('file')->getClientOriginalName(),
+                'size'      => $request->file('file')->getSize(),
                 'path'      => $public_file_path
             ]);
             
@@ -63,6 +65,7 @@ class FileUploadController extends Controller
                 'id'        => $file->id,
                 'folder_id' => $request->folder_id,
                 "file"      => $request->file('file')->getClientOriginalName(),
+                'size'      => $request->file('file')->getSize(),
                 "path"      => $path
             ]);
         
