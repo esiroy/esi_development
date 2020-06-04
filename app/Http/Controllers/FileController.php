@@ -82,15 +82,15 @@ class FileController extends Controller
     public function destroy($id, Request $request)
     {
 
-        if ($request->upload_name) {
+        if ($id == null) 
+        {
+            $removeFiles = File::where('size', 0)->get();
 
-            echo $request->upload_name;
+            if ($removeFiles) {
 
-            $removeFile = File::where('upload_name', $request->upload_name)->first();
-
-            if ($removeFile) {
-
-                $removeFile->delete();
+                foreach($removeFiles as $removeFile) {
+                    $removeFile->delete();
+                }
                 
                 //Output JSON reply
                 return Response()->json([
