@@ -40,7 +40,7 @@ class FileUploadController extends Controller
 
             
             // for save original image
-            //$path = $request->file('file')->store('public/uploads');
+            $path = $request->file('file')->store('public/uploads');
 
             //save in storage -> storage/public/uploads/
             $path = $request->file('file')->storeAs(
