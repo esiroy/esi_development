@@ -45,7 +45,8 @@ Vue.filter('formatSize', function(size) {
     } else if (size > 1024) {
         return (size / 1024).toFixed(2) + ' KB'
     }
-    return size.toString() + ' B'
+
+    return size + ' B'
 })
 
 const app = new Vue({

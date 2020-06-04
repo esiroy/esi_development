@@ -217,19 +217,22 @@ export default {
         // Get response data
         console.log("response", newFile.response);
 
-
-        //Add to the folderComponent - uploader/show.blade.php
-        let file = [{
-                        'id'        : newFile.response.id,
-                        'file_name' : newFile.response.file,
-                        'size'      : newFile.response.size
-                    }]
-
-       let files = this.$root.$refs.folderComponent.files.push(...file);
-
         if (newFile.xhr) {
           //  Get the response status code
           console.log("status", newFile.xhr.status);
+
+          if ( newFile.xhr.status === 200) {
+
+            //console.log("uploaded");
+            //Add to the folderComponent - uploader/show.blade.php
+            let file = [{
+                            'id'        : newFile.response.id,
+                            'file_name' : newFile.response.file,
+                            'size'      : newFile.response.size
+                        }]
+
+            let files = this.$root.$refs.folderComponent.files.push(...file);
+          }
         }
       }
     },
