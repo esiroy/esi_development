@@ -48,26 +48,37 @@ class FileUploadController extends Controller
                 'public/uploads/'.$request->folder_id , $newFilename
             );
 
-            //create public path -> public/storage/uploads/{folder_id}
-            $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
 
-            // Save to file
-            $file = File::create([
-                'folder_id' => $request->folder_id,
-                'file_name' => $request->file('file')->getClientOriginalName(),
-                'size'      => $request->file('file')->getSize(),
-                'path'      => $public_file_path
-            ]);
-            
-            //Output JSON reply
-            return Response()->json([
-                "success"   => true,
-                'id'        => $file->id,
-                'folder_id' => $request->folder_id,
-                "file"      => $request->file('file')->getClientOriginalName(),
-                'size'      => $request->file('file')->getSize(),
-                "path"      => $path
-            ]);
+            if ($path) {
+                //create public path -> public/storage/uploads/{folder_id}
+                $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
+
+                // Save to file
+                $file = File::create([
+                    'folder_id' => $request->folder_id,
+                    'file_name' => $request->file('file')->getClientOriginalName(),
+                    'size'      => $request->file('file')->getSize(),
+                    'path'      => $public_file_path
+                ]);
+                
+                //Output JSON reply
+                return Response()->json([
+                    "success"   => true,
+                    'id'        => $file->id,
+                    'folder_id' => $request->folder_id,
+                    "file"      => $request->file('file')->getClientOriginalName(),
+                    'size'      => $request->file('file')->getSize(),
+                    "path"      => $path
+                ]);
+
+            } else {
+
+                return Response()->json([
+                    "success"   => false,
+                    "message"   => "File Aborted or cancelled"
+                ]);
+            }
+      
         
         } else {
             return Response()->json([
