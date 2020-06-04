@@ -82,7 +82,7 @@ class FileController extends Controller
     public function destroy($id, Request $request)
     {
 
-        if ($request->type == "cancel") 
+        if ($request->action == "cancel") 
         {
             $removeFiles = File::where('size', 0)->get();
 

@@ -244,7 +244,7 @@ export default {
                 "/file/" + upload_name,
                 { 
                     _method: "delete",
-                    action: "cancel",
+                    type: "cancel",
                     folder_id: folder_id,
                     upload_name: upload_name,
                     
