@@ -52,6 +52,19 @@
 
                 <div class="card-body">
                     
+
+                     <div class="row">
+                        <div class="col-md-5 small text-muted">
+                            Folder ID
+                        </div>
+                        <div class="col-md-7 small text-muted">
+                            <a href="{{ asset('folder/' . $folder->folder_name) }}" alt="open public link" title="open public link" target="_blank">
+                                {{ $folder->id }}
+                            </a>
+                        </div>
+                    </div>
+
+
                     <div class="row">
                         <div class="col-md-5 small text-muted">
                             Folder
@@ -119,6 +132,8 @@
                 </div>
             @endif
 
+
+          
 
             <div class="card">
                 <div class="card-header">Upload Files</div>
