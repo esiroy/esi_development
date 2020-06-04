@@ -33,7 +33,7 @@ Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
 
 /* Public Folder View */
-Route::get('folder/{id}', 'FolderController@show');
+Route::get('folder/{id}', 'PublicFolderController@show');
 
 /* Download Controller*/
 Route::resource('download', 'DownloadController');

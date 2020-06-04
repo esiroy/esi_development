@@ -129,7 +129,7 @@
                 accept="image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg, image/webp"
                 v-model="files"
                 post-action="fileUploader"
-                :headers="{ 'X-CSRF-TOKEN': this.csrf_token }"
+                :headers="{'X-CSRF-TOKEN': this.csrf_token }"
                 :multiple="true"
                 :drop="true"
                 :drop-directory="true"

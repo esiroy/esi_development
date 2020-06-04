@@ -10,7 +10,7 @@ use App\Models\User;
 use App\Models\Folder;
 use App\Models\File;
 
-class FolderController extends Controller
+class PublicFolderController extends Controller
 {
     //Public view
     public function show($name)
