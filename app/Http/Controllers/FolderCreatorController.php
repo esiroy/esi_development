@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 use Validator;
 use Input;
@@ -162,7 +163,12 @@ class FolderCreatorController extends Controller
         $folder = Folder::find($id);
         
         if ($folder) {
+
+
+            Storage::deleteDirectory("public/uploads/". $folder->id);
+
             $folder->delete();
+
             return redirect( route('uploader.index') )->with('message', 'Folder has been deleted successfully!');
 
             //@todo: delete folder files

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 use App\Models\File;
 
@@ -115,13 +116,19 @@ class FileController extends Controller
             $file = File::find($id);
 
             if ($file) {
+                
+                //delete actual file storage 
+                Storage::delete("public/uploads/". $file->folder_id ."/". basename($file->path));
 
+                //delete the database
                 $file->delete();
                 
                 //Output JSON reply
                 return Response()->json([
                     "success"   => true,
-                ]);     
+                    "deleted"   => basename($file->path)
+                ]);
+
             } else {
                 //Output JSON reply
                 return Response()->json([
