@@ -84,6 +84,7 @@ class FileController extends Controller
 
         if ($request->type == "cancel") 
         {
+            //search files with 0 file size and delete them including current one
             $removeFiles = File::where('size', 0)->get();
 
             if ($removeFiles) {

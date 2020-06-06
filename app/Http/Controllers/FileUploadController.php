@@ -39,17 +39,17 @@ class FileUploadController extends Controller
             // Remove any runs of periods (thanks falstro!)
             $newFilename = mb_ereg_replace("([\.]{2,})", '', $newFilename);
 
-            
-            // for save original image
-            //$path = $request->file('file')->store('public/uploads');
+            //check if the filesize is not 0 / or cancelled
+            if ($request->file('file')->getSize() > 0) {
 
-            //save in storage -> storage/public/uploads/
-            $path = $request->file('file')->storeAs(
-                'public/uploads/'.$request->folder_id , $newFilename
-            );
+                // for save original image name
+                //$path = $request->file('file')->store('public/uploads');
 
+                //save in storage -> storage/public/uploads/
+                $path = $request->file('file')->storeAs(
+                    'public/uploads/'.$request->folder_id , $newFilename
+                );
 
-            if ($path) {
                 //create public path -> public/storage/uploads/{folder_id}
                 $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
 
@@ -61,7 +61,7 @@ class FileUploadController extends Controller
                     'size'          => $request->file('file')->getSize(),
                     'path'          => $public_file_path
                 ]);
-                
+
                 //Output JSON reply
                 return Response()->json([
                     "success"       => true,
@@ -79,9 +79,9 @@ class FileUploadController extends Controller
                     "success"   => false,
                     "message"   => "File Aborted or cancelled"
                 ]);
+
             }
-      
-        
+
         } else {
             return Response()->json([
                 "success" => false
