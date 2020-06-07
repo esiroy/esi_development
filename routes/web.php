@@ -17,11 +17,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Auth::routes();
+
 
 Route::get('/home', 'HomeController@index')->name('home');
 
@@ -34,9 +33,26 @@ Route::resource('file', 'FileController');
 /*Upload Controller */
 Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
-
 /* Public Folder View */
 Route::get('folder/{id}', 'PublicFolderController@show');
 
 /* Download Controller*/
 Route::resource('download', 'DownloadController');
+
+
+/* Admin Panel */
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
+
+    Route::get('login', 'AuthController@showLoginForm')->name('showLoginForm');
+    Route::post('login', 'AuthController@login')->name('login');
+    Route::get('logout', 'AuthController@logout')->name('logout');
+    Route::post('logout', 'AuthController@logout')->name('logout');
+
+    Route::group(['middleware' => 'admin.auth'], function(){
+        Route::resource('/', 'dashboardController');
+        Route::resource('/dashboard', 'dashboardController');
+    });
+});
+
+
+Auth::routes();
