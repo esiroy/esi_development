@@ -49,8 +49,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::post('logout', 'AuthController@logout')->name('logout');
 
     Route::group(['middleware' => 'admin.auth'], function(){
-        Route::resource('/', 'dashboardController');
-        Route::resource('/dashboard', 'dashboardController');
+        Route::resource('/', 'DashboardController');
+        Route::resource('/dashboard', 'DashboardController');
     });
 });
 
