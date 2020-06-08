@@ -21,13 +21,10 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 
 //Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
-//Vue.component('simpleuploader-component', require('./components/SimpleUploaderComponent.vue').default);
+//Vue.component('file-upload', VueUploadComponent)
+//Vue.component('draggable', vuedraggable)
 
-//Vue.component('fulluploader-component', require('./components/FullUploaderComponent.vue').default);
 
-//Vue.component('fulluploader-component', require('./components/FullUploaderComponent.vue').default);
-
-Vue.component('file-upload', VueUploadComponent)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -51,5 +48,7 @@ Vue.filter('formatSize', function(size) {
 
 const app = new Vue({
     el: '#app',
-
+    components: {
+        draggable: window['vuedraggable']
+    },
 });

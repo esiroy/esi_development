@@ -39,6 +39,7 @@ Route::get('folder/{id}', 'PublicFolderController@show');
 /* Download Controller*/
 Route::resource('download', 'DownloadController');
 
+Route::resource('writing', 'WritingServiceController');
 
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
@@ -51,6 +52,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::group(['middleware' => 'admin.auth'], function(){
         Route::resource('/', 'DashboardController');
         Route::resource('/dashboard', 'DashboardController');
+        Route::resource('formbuilder', 'formbuilderController');
     });
 });
 
