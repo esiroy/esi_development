@@ -1,10 +1,17 @@
-@extends('layouts.admin')
+@extends('layouts.adminpublic')
 
 @section('content')
-<div class="container">
+
+
+<div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
+        <div class="col-md-7">
+
+            <div class="text-center">
+                <img src="https://writing.mytutor-jpn.info/wp-content/uploads/2017/11/title_full.png" alt="my-tutor" alt="my-tutor administratrion panel">
+            </div>
+
+            <div class="card mt-2">
                 <div class="card-header">{{ __('Administrator Login') }}</div>
 
                 <div class="card-body">
@@ -70,4 +77,9 @@
         </div>
     </div>
 </div>
+
+
+
+
+
 @endsection

@@ -1,22 +1,20 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
+<div class="container-fluid">
+    <div class="row">
 
-        <div class="col-md-3"></div>
-        <div class="col-md-9">
-            <formbuilder-component/>
+        <div class="col-md-2 pl-0">
+            @include('admin.sections.sidebar')
+        </div>
 
-            <div class="card">
-                <div class="card-header">{{ __('Form Builder') }}</div>
+        <div class="col-md-10 py-4">
 
-                <div class="card-body">
-                    (( TEST MODE ))
+            <formbuilder-component />
 
-                    <formbuilder-component/>
-                </div>
-            </div>
+          
+
+            {{ "testing mode: version 0.1" }}
         </div>
     </div>
 </div>

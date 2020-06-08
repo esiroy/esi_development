@@ -9,17 +9,13 @@
 
     <title>{{ config('app.name', 'My Tutor') }}</title>
 
-
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
-
-   
-
+  
     <script src="https://cdn.jsdelivr.net/npm/vue-axios@2.1.5/dist/vue-axios.min.js"></script>
-    
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
-
+    
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -27,11 +23,15 @@
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
-                <a class="navbar-brand" href="{{ url('/') }}">
+            <div class="container-fluid">
+                
+                <a class="navbar-brand" href="{{ url( route('admin.dashboard.index') ) }}">
                     {{ config('app.name', 'My Tutor') }}
                 </a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+
+                <button 
+                    class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" 
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -80,12 +80,10 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <main class="">
             @yield('content')
         </main>
     </div>
-
-
 
 </body>
 </html>

@@ -39,14 +39,14 @@ Route::get('folder/{id}', 'PublicFolderController@show');
 /* Download Controller*/
 Route::resource('download', 'DownloadController');
 
-Route::resource('writing', 'WritingServiceController');
+
 
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
     Route::get('login', 'AuthController@showLoginForm')->name('showLoginForm');
     Route::post('login', 'AuthController@login')->name('login');
-    Route::get('logout', 'AuthController@logout')->name('logout');
+  
     Route::post('logout', 'AuthController@logout')->name('logout');
 
     Route::group(['middleware' => 'admin.auth'], function(){

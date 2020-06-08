@@ -1,37 +1,70 @@
 <template>
-  <div class="row">
-    <div class="col-3">
-      <h3>Draggable 1</h3>
-      <draggable
-        class="dragArea list-group"
-        :list="list1"
-        :group="{ name: 'people', pull: 'clone', put: false }"
-        :clone="cloneDog"
-        @change="log"
-      >
-        <div class="list-group-item" v-for="element in list1" :key="element.id">
-          {{ element.name }}
+  <div class="container">
+    <div class="row">
+      <div class="col-3">
+        <div class="card">
+          <div class="card-header">Standard Fields</div>
+          <div class="card-body">
+            <draggable
+              class="dragArea list-group"
+              :list="list1"
+              :group="{ name: 'people', pull: 'clone', put: false }"
+              :clone="cloneItem"
+              @change="log"
+            >
+                <button
+                type="button"
+                class="btn btn-light my-1"
+                v-for="element in list1"
+                :key="element.id"
+                >{{ element.name }}</button>
+            </draggable>
+          </div>
         </div>
-      </draggable>
+      </div>
+
+      <div class="col-8">
+        <div class="card">
+          <div class="card-header">Create Form</div>
+          <div class="card-body">
+
+                <draggable class="dragArea list-group" :list="list2" group="people" @change="log">
+
+                 
+                    <div class="list-group-item" v-for="element in list2" :key="element.id">
+
+                        <div v-if="element.type === 'input' ">
+                            <input type="text" :name="element.name">
+                        </div>
+                        <div v-else-if="element.type === 'select' ">
+
+                            <div class="form-group">
+                                <label for="sel1">Select list:</label>
+                                <select class="form-control" id="sel1">
+                                    <option v-for="value in element.values" :key="value">
+                                        {{ value }}
+                                    </option>
+                                </select>
+                            </div>
+
+                        </div>
+                            
+                        
+                    </div>
+                </draggable>
+
+          </div>
+        </div>
+
+
+      </div>
     </div>
 
-    <div class="col-3">
-      <h3>Draggable 2</h3>
-      <draggable
-        class="dragArea list-group"
-        :list="list2"
-        group="people"
-        @change="log"
-      >
-        <div class="list-group-item" v-for="element in list2" :key="element.id">
-          {{ element.name }}
-        </div>
-      </draggable>
+    <div class="row">
+      <rawDisplayer class="col-6" :value="list1" title="List 1" />
+
+      <rawDisplayer class="col-6" :value="list2" title="List 2" />
     </div>
-
-    <rawDisplayer class="col-3" :value="list1" title="List 1" />
-
-    <rawDisplayer class="col-3" :value="list2" title="List 2" />
   </div>
 </template>
 
@@ -46,15 +79,22 @@ export default {
   data() {
     return {
       list1: [
-        { name: "dog 1", id: 1 },
-        { name: "dog 2", id: 2 },
-        { name: "dog 3", id: 3 },
-        { name: "dog 4", id: 4 }
+        {   
+            id: 1, 
+            name: "Input Text Field", 
+            type: "input", 
+            inputType: 'text' 
+        },
+        {
+            id: 2,
+            name: 'select',
+            type: 'select',
+            label: 'Skills',
+            model: 'skills',
+            values: ['Javascript', 'VueJS', 'CSS3', 'HTML5']
+        },
       ],
-      list2: [
-        { name: "cat 5", id: 5 },
-        { name: "cat 6", id: 6 },
-        { name: "cat 7", id: 7 }
+      list2: [ 
       ]
     };
   },
@@ -62,10 +102,12 @@ export default {
     log: function(evt) {
       window.console.log(evt);
     },
-    cloneDog({ id }) {
+    cloneItem({ id, name, type, values}) {
       return {
         id: idGlobal++,
-        name: `cat ${id}`
+        name: `${name}`,
+        type: `${type}`,
+        values: values,
       };
     }
   }
