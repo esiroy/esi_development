@@ -52,7 +52,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::group(['middleware' => 'admin.auth'], function(){
         Route::resource('/', 'DashboardController');
         Route::resource('/dashboard', 'DashboardController');
-        Route::resource('formbuilder', 'formbuilderController');
+        Route::resource('formbuilder', 'FormbuilderController');
     });
 });
 
