@@ -20,11 +20,7 @@ const files = require.context('./', true, /\.vue$/i)
 files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 //Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-
-//Vue.component('file-upload', VueUploadComponent)
-//Vue.component('draggable', vuedraggable)
-
-
+//Vue.component('file-upload', VueUploadComponent);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -49,6 +45,16 @@ Vue.filter('formatSize', function(size) {
 const app = new Vue({
     el: '#app',
     components: {
-        draggable: window['vuedraggable']
+        draggable: window['vuedraggable'],
+        //VueUploadComponent: window['vue-upload-component']
     },
 });
+
+
+/* non-render blocking css files */
+(function() {
+    var link = document.createElement('link');
+    link.rel = "stylesheet";
+    link.href = "//fonts.googleapis.com/css?family=Nunito";
+    document.querySelector("head").appendChild(link);
+})();

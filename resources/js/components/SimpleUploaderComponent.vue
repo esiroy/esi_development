@@ -187,7 +187,13 @@
 </style>
 
 <script>
+
+import FileUpload from 'vue-upload-component'
+
 export default {
+  components: {
+    FileUpload,
+  },
   props: {
     csrf_token: {
       type: String
