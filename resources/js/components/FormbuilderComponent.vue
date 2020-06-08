@@ -31,26 +31,36 @@
                 <draggable class="dragArea list-group" :list="list2" group="people" @change="log">
 
                  
-                    <div class="list-group-item" v-for="element in list2" :key="element.id">
+                    <div class="py-1" v-for="element in list2" :key="element.id">
 
                         <div v-if="element.type === 'input' ">
-                            <input type="text" :name="element.name">
+                            <div class="card">
+                                <div class="card-header">Input Text Field</div>
+                                <div class="card-body"><input class="form-control" type="text" :name="element.name"></div>
+                            </div>
                         </div>
+
+
                         <div v-else-if="element.type === 'select' ">
 
-                            <div class="form-group">
-                                <label for="sel1">Select list:</label>
-                                <select class="form-control" id="sel1">
-                                    <option v-for="value in element.values" :key="value">
-                                        {{ value }}
-                                    </option>
-                                </select>
+                           <div class="card">
+                                <div class="card-header">Select</div>
+                                <div class="card-body">
+
+                                    <select class="form-control" :id="element.id">
+                                        <option v-for="value in element.values" :key="value">
+                                            {{ value }}
+                                        </option>
+                                    </select>
+                                </div>
                             </div>
 
                         </div>
-                            
-                        
+
+
+
                     </div>
+
                 </draggable>
 
           </div>
