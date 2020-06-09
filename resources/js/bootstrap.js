@@ -9,7 +9,38 @@ window._ = require('lodash');
 try {
     window.Popper = require('popper.js').default;
     window.$ = window.jQuery = require('jquery');
+
     require('bootstrap');
+
+
+
+    var dt = require('datatables.net')(window, $);
+
+    /*
+    var buttons = require('datatables.net-buttons')(window, $);
+
+
+    require('datatables.net-buttons/js/dataTables.buttons.js')(window, $);
+    require('datatables.net-buttons/js/buttons.colVis.js')(window, $);
+    require('datatables.net-buttons/js/buttons.colVis.js')(window, $);
+    require('datatables.net-buttons/js/buttons.html5.js')(window, $);
+    require('datatables.net-buttons/js/buttons.flash.js')(window, $);
+    require('datatables.net-buttons/js/buttons.print.js')(window, $);
+
+
+    require('datatables.net-bs4')(window, $);
+    require('datatables.net-buttons')(window, $);
+    require('datatables.net-buttons/js/buttons.print.js')(window, $);
+    require('datatables.net-rowgroup-bs4')(window, $);
+    require('datatables.net-select-bs4')(window, $);
+    require('datatables.net-rowreorder-bs4')(window, $);
+    require('datatables.net-responsive-bs4')(window, $);
+    */
+
+
+
+
+
 } catch (e) {}
 
 /**

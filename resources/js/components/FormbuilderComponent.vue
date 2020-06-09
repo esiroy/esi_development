@@ -48,17 +48,11 @@
                                 <div class="card-body">
 
                                     <select class="form-control" :id="element.id">
-                                        <option v-for="value in element.values" :key="value">
-                                            {{ value }}
-                                        </option>
+                                        <option v-for="value in element.values" :key="value" :value="value">{{ value }}</option>
                                     </select>
                                 </div>
                             </div>
-
                         </div>
-
-
-
                     </div>
 
                 </draggable>

@@ -9,7 +9,7 @@ const mix = require('laravel-mix');
  | for your Laravel application. By default, we are compiling the Sass
  | file for the application as well as bundling up all the JS files.
  |
- */
+
 
 
 mix.js([
@@ -17,3 +17,13 @@ mix.js([
     ], 'public/js')
     .sass('resources/sass/app.scss', 'public/css')
     .sourceMaps();
+ */
+
+mix.js('resources/js/app.js', 'public/js')
+    .sass('resources/sass/app.scss', 'public/css')
+    //Datatable Buttons
+    .copy('node_modules/datatables.net-buttons/js/dataTables.buttons.min.js', 'public/js/dataTables.buttons.min.js', true)
+    .version()
+    .options({
+        processCssUrls: false
+    }).sourceMaps();

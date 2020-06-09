@@ -1,6 +1,6 @@
 <?php
 
-use App\Permission;
+use App\Models\Permission;
 use Illuminate\Database\Seeder;
 
 class PermissionsTableSeeder extends Seeder
@@ -104,6 +104,13 @@ class PermissionsTableSeeder extends Seeder
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',
             ],
+            [
+                'id'         => '17',
+                'title'      => 'admin_access',
+                'created_at' => '2019-09-28 14:22:15',
+                'updated_at' => '2019-09-28 14:22:15',
+            ],
+            
         ];
 
         Permission::insert($permissions);

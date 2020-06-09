@@ -6,7 +6,7 @@
 
         <div class="col-md-2 pl-0">
 
-            @include('admin.sections.sidebar')
+            @include('admin.partials.sidebar')
 
         </div>
 

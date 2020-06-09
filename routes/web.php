@@ -44,15 +44,35 @@ Route::resource('download', 'DownloadController');
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
+    /* Admin Auth */
     Route::get('login', 'AuthController@showLoginForm')->name('showLoginForm');
     Route::post('login', 'AuthController@login')->name('login');
-  
     Route::post('logout', 'AuthController@logout')->name('logout');
 
     Route::group(['middleware' => 'admin.auth'], function(){
         Route::resource('/', 'DashboardController');
         Route::resource('/dashboard', 'DashboardController');
-        Route::resource('formbuilder', 'FormBuilderController');
+
+        /* Administrator Module Lists */
+        Route::group(['prefix' => 'module'], function() {
+            Route::resource('formbuilder', 'FormBuilderController');
+
+            /* @todo : Start Dynamic Module Routes */
+        });
+
+
+
+           
+        //User Management - Admin Area
+        Route::group(['prefix' => 'user-management'], function() {
+            Route::resource('/users', 'UserController');
+            Route::resource('/roles', 'RoleController');
+           
+            Route::delete('/permissions/destroy', 'PermissionController@massDestroy')->name('permissions.massDestroy');
+            Route::resource('/permissions', 'PermissionController');
+        });
+
+
     });
 });
 
