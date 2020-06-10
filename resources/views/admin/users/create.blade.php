@@ -110,7 +110,10 @@
                             </p>
                         </div>
                         <div>
-                            <input class="btn btn-danger" type="submit" value="{{ trans('global.save') }}">
+                            <input class="btn btn-success" type="submit" value="{{ trans('global.save') }}">
+                            <a class="btn btn-danger" href="{{ route('admin.users.index') }}">
+                                {{ trans('global.cancel') }}
+                            </a>
                         </div>
                     </form>
 
