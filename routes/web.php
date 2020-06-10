@@ -54,25 +54,31 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/dashboard', 'DashboardController');
 
         /* Administrator Module Lists */
-        Route::group(['prefix' => 'module'], function() {
+        Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'modules.'], function() 
+        {
             Route::resource('formbuilder', 'FormBuilderController');
 
-            /* @todo : Start Dynamic Module Routes */
+            Route::delete('/filemanager/destroy', 'FileManagerController@massDestroy')->name('filemanager.massDestroy');
+            Route::resource('filemanager', 'FileManagerController');
+
+            /* @todo : Start Dynamic Module Routes 
+            **
+            **
+            */
         });
-
-
-
            
         //User Management - Admin Area
         Route::group(['prefix' => 'user-management'], function() {
+            
+            Route::delete('/users/destroy', 'UserController@massDestroy')->name('users.massDestroy');
             Route::resource('/users', 'UserController');
+
+            Route::delete('/roles/destroy', 'RoleController@massDestroy')->name('roles.massDestroy');
             Route::resource('/roles', 'RoleController');
            
             Route::delete('/permissions/destroy', 'PermissionController@massDestroy')->name('permissions.massDestroy');
             Route::resource('/permissions', 'PermissionController');
         });
-
-
     });
 });
 

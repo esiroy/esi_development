@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'actions'                              => 'Actions',
+    'id'                                   => 'ID',
     'add'                                  => 'Add',
     'allRightsReserved'                    => 'All rights reserved.',
     'areYouSure'                           => 'Are you sure?',
@@ -24,6 +24,7 @@ return [
     'logout'                               => 'Logout',
     'month'                                => 'Month',
     'no'                                   => 'No',
+    'cancel'                               => 'Cancel',
     'pleaseSelect'                         => 'Please select',
     'register'                             => 'Register',
     'remember_me'                          => 'Remember me',
@@ -61,6 +62,8 @@ return [
         'zero_selected' => 'No rows selected',
     ],
     'action'                               => 'Action',
+    'actions'                              => 'Actions',
+    'File Manager'                         => 'File Manager',
     'action_id'                            => 'Action id',
     'action_model'                         => 'Action model',
     'address'                              => 'Address',

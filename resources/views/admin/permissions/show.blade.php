@@ -10,13 +10,11 @@
 
         <div class="col-10 py-4">
             <div class="card">
+                <div class="card-header">
+                    {{ trans('global.show') }}
+                    {{ trans('cruds.permission.title') }}
+                </div>
                 <div class="card-body">
-
-                    <h6>
-                        {{ trans('global.show') }}
-                        {{ trans('cruds.permission.title') }}
-                    </h6>
-
                     <table class="table table-bordered table-striped">
                         <tbody>
                             <tr>

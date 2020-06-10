@@ -95,9 +95,7 @@ class FolderCreatorController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect('uploader/create')
-                        ->withErrors($validator)
-                        ->withInput();
+            return redirect('uploader/create')->withErrors($validator)->withInput();
         }
        
         //Create Folder 
@@ -130,13 +128,12 @@ class FolderCreatorController extends Controller
         [
             'folder_name' => [
                 'required',
-                'max:255',
+                'max:190',
                 Rule::unique('folders')->ignore($folder->id),
             ],
             'folder_description' => [
                 'max:255'
             ]
-
         ]);
 
         if ($validator->fails()) {

@@ -128,7 +128,7 @@
                 extensions="jpeg,jpg,gif,pdf,mp3,wav,png,webp,mpeg"
                 accept="image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg, image/webp"
                 v-model="files"
-                post-action="fileUploader"
+                post-action="/uploader/fileUploader"
                 :headers="{'X-CSRF-TOKEN': this.csrf_token }"
                 :multiple="true"
                 :drop="true"

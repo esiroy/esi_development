@@ -7,15 +7,19 @@
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="Description" content="{{ config('app.name', 'My Tutor')}} {{'- ' . ucwords(Request::segment(3)) ?? '' }} ">
 
-    <title>{{ config('app.name', 'My Tutor') }}</title>
+    <title>
+        {{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(3))->replace('-', ' ') ) ?? '' }} {{ " - " . ucwords( Str::of(Request::segment(2))->replace('-', ' ') ) ?? '' }}
+    </title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
-   
     <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link href="//fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link href="//cdn.datatables.net" rel="preconnect" crossorigin/>
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -35,15 +39,19 @@
     <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.colVis.min.js" defer></script>
     <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js" defer></script>
     <script src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js" defer></script>
-    
+    <!-- Select Options -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js" defer></script>
    
+
+    <!--DataTables Styles -->
     <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.bootstrap4.min.css" rel="stylesheet" />
-    
     <link href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
     <link href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css" rel="stylesheet" />
 
-
+    <!--Select Options Styles-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" rel="stylesheet" />
+    
 
 </head>
 
@@ -77,11 +85,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
                             </li>
-@if(Route::has('register'))
+                            @if(Route::has('register'))
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
                                 </li>
-@endif
+                            @endif
                             -->
                         @else
                             <li class="nav-item dropdown">
@@ -116,18 +124,41 @@
 
     <script type="text/javascript">
         window.addEventListener('load', function () {
-
             $(function () {
+
                 console.log("admin panel has been loaded");
 
+                //sidebar menu
                 $('.dropdown-toggle').on('click', function () {
                     dropdownToggleIcon($(this))
                 });
-            
+
+                //tableData
+                $("#selectAll").change(function() {
+                    if ($(this).prop("checked")) { 
+                        $('.buttons-select-all').trigger('click');
+                    } else {
+                        $('.buttons-select-none').trigger('click');
+                    }
+                });
+
+                //selection dropdown
+                $('.select-all').click(function () {
+                  let $select2 = $(this).parent().siblings('.select2')
+                  $select2.find('option').prop('selected', 'selected')
+                  $select2.trigger('change')
+                })
+
+                $('.deselect-all').click(function () {
+                  let $select2 = $(this).parent().siblings('.select2')
+                  $select2.find('option').prop('selected', '')
+                  $select2.trigger('change')
+                })
+
+                $('.select2').select2();
+
+
             });
-
-
-
 
             function dropdownToggleIcon(element) {
                 if (element.parent().hasClass('.dropup')) {
@@ -138,21 +169,12 @@
                     element.parent().removeClass("dropup");
                 }
             }
-
-        })
-
+        });
     </script>
 
-
-
- 
-
-    <script>
-        window.addEventListener('load', function () {
-
-
-      
-            
+    <script type="text/javascript">
+        window.addEventListener('load', function () 
+        {
             let copyButtonTrans = '{{ trans('global.datatables.copy') }}'
             let csvButtonTrans = '{{ trans('global.datatables.csv') }}'
             let excelButtonTrans = '{{ trans('global.datatables.excel') }}'
@@ -188,9 +210,25 @@
                 pageLength: 100,
                 dom: 'lBfrtip<"actions">',
                 buttons: [
+                 {
+                    extend: 'selectAll',
+                    className: 'btn-default d-none',
+                    text: "select all",
+                    exportOptions: {
+                      columns: ':hidden'
+                    }
+                  },
+                  {
+                    extend: 'selectNone',
+                    className: 'btn-default d-none',
+                    text: "select none",
+                    exportOptions: {
+                      columns: ':hidden'
+                    }
+                  },
                   {
                     extend: 'copy',
-                    className: 'btn-default',
+                    className: 'btn-default ml-2',
                     text: copyButtonTrans,
                     exportOptions: {
                       columns: ':visible'
@@ -239,63 +277,10 @@
                 ]
               });
             $.fn.dataTable.ext.classes.sPageButton = '';
-            
-            let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-            let _token = "{{ csrf_token() }}"
-
-            @can('permission_delete')
-                let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
-                let deleteButton = {
-                text: deleteButtonTrans,
-                url: "{{ route('admin.permissions.massDestroy') }}",
-                className: 'btn-danger',
-                action: function (e, dt, node, config) {
-                    var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {
-                        return $(entry).data('entry-id')
-                    });
-
-                    if (ids.length === 0) {
-                    alert('{{ trans('global.datatables.zero_selected') }}')
-
-                    return
-                    }
-
-                    if (confirm('{{ trans('global.areYouSure') }}')) {
-                    $.ajax({
-                        headers: {'x-csrf-token': _token},
-                        method: 'POST',
-                        url: config.url,
-                        data: { ids: ids, _method: 'DELETE' }})
-                        .done(function () { location.reload() })
-                    }
-                }
-                }
-                dtButtons.push(deleteButton)
-            @endcan
-
-            $.extend(true, $.fn.dataTable.defaults, {
-                order: [[ 1, 'desc' ]],
-                pageLength: 100,
-            });
-
-            $('#dataTablePermission').DataTable({ buttons: dtButtons })
-
-           /*
-            var table = $('#dataTablePermission').DataTable( {
-                lengthChange: true,
-                buttons: [ 'copy', 'excel', 'csv', 'pdf', 'print', 'colvis' ]
-            } );
-
-            table.buttons().container().appendTo( '#dataTablePermission_wrapper .col-md-6:eq(0)' );
-            */
-
-
         });
     </script>
 
-
-
-
+    @yield('scripts')
 </body>
 
 </html>

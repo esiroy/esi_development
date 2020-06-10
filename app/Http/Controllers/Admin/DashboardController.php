@@ -10,19 +10,22 @@ use Gate;
 
 class DashboardController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    /*
+    public function __construct(Request $request) {
+        $this->middleware(function ($request, $next) {
+
+            abort_if(Gate::denies('admin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+            return $next($request);
+        });
+    }*/
+
+    
     public function index()
     {
         abort_if(Gate::denies('admin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-
         return view('admin.dashboard');
-        
-        
     }
 
     /**
