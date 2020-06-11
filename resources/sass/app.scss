@@ -1,13 +1,33 @@
 // Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
+//@import url('https://fonts.googleapis.com/css?family=Nunito');
 // Variables
 @import 'variables';
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
-// Datatables
-// Custom CSS
+
+/* sass imported (list only)
+    "resources/sass/datatables/dataTables.bootstrap4.css",
+    "resources/sass/datatables/buttons.bootstrap4.css",
+    "resources/sass/datatables/fixedColumns.dataTables.css",
+    "resources/sass/datatables/select.dataTables.css",
+    "resources/sass/select2/select2.css"
+*/
+
+
+/* Datatables*/
+
+@import 'datatables/dataTables.bootstrap4.css';
+@import 'datatables/buttons.bootstrap4.css';
+@import 'datatables/fixedColumns.dataTables.css';
+@import 'datatables/select.dataTables.css';
+@import 'select2/select2.css';
+
+/* Custom CSS */
+
 @import 'custom';
-//Outlines
+
+/* Remove outlines */
+
 .btn:focus,
 .btn:active {
     outline: none !important;

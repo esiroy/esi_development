@@ -18,41 +18,67 @@
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-    <link href="//fonts.gstatic.com" rel="preconnect" crossorigin />
-    <link href="//cdn.datatables.net" rel="preconnect" crossorigin/>
+    <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
+    <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
 
-    <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    
+    <script src="{{ asset('js/vfs_fonts.js') }}" defer></script>
+
+    <!--
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" defer></script>
+
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.js" defer></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.js" defer></script
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" defer></script>
+
+
+    <script src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.js" defer></script>
+-->
 
     <!-- Scripts -->
     <!--<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" defer></script>-->
-    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" defer></script>
+    <!--<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" defer></script>-->
 
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js" defer></script>
+ 
+    <!-- Datatable Buttons -->
+    <!--
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.js" defer></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.min.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.colVis.min.js" defer></script>
-    <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.min.js" defer></script>
-    <script src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.min.js" defer></script>
-    <!-- Select Options -->
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.js" defer></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.js" defer></script>
+    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.colVis.js" defer></script>
+    <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.js" defer></script>
+    <script src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.js" defer></script>
+    -->
+
+    <!-- Select Options 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js" defer></script>
+    -->
    
 
     <!--DataTables Styles -->
-    <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.bootstrap4.min.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.min.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.min.css" rel="stylesheet" />
+    <!--
+    <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.bootstrap4.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.css" rel="stylesheet" />
+-->
 
     <!--Select Options Styles-->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.min.css" rel="stylesheet" />
+    <!--
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.css" rel="stylesheet" />
+-->
     
-
+    <!-- Styles -->
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -212,7 +238,7 @@
                 buttons: [
                  {
                     extend: 'selectAll',
-                    className: 'btn-default d-none',
+                    className: 'btn btn-default d-none',
                     text: "select all",
                     exportOptions: {
                       columns: ':hidden'
@@ -220,7 +246,7 @@
                   },
                   {
                     extend: 'selectNone',
-                    className: 'btn-default d-none',
+                    className: 'btn btn-default d-none',
                     text: "select none",
                     exportOptions: {
                       columns: ':hidden'
@@ -228,7 +254,7 @@
                   },
                   {
                     extend: 'copy',
-                    className: 'btn-default ml-2',
+                    className: 'btn btn-default ml-2',
                     text: copyButtonTrans,
                     exportOptions: {
                       columns: ':visible'
@@ -236,7 +262,7 @@
                   },
                   {
                     extend: 'csv',
-                    className: 'btn-default',
+                    className: 'btn btn-default',
                     text: csvButtonTrans,
                     exportOptions: {
                       columns: ':visible'
@@ -244,7 +270,7 @@
                   },
                   {
                     extend: 'excel',
-                    className: 'btn-default',
+                    className: 'btn btn-default',
                     text: excelButtonTrans,
                     exportOptions: {
                       columns: ':visible'
@@ -252,7 +278,7 @@
                   },
                   {
                     extend: 'pdf',
-                    className: 'btn-default',
+                    className: 'btn btn-default',
                     text: pdfButtonTrans,
                     exportOptions: {
                       columns: ':visible'
@@ -260,7 +286,7 @@
                   },
                   {
                     extend: 'print',
-                    className: 'btn-default',
+                    className: 'btn btn-default',
                     text: printButtonTrans,
                     exportOptions: {
                       columns: ':visible'
@@ -268,7 +294,7 @@
                   },
                   {
                     extend: 'colvis',
-                    className: 'btn-default',
+                    className: 'btn btn-default',
                     text: colvisButtonTrans,
                     exportOptions: {
                       columns: ':visible'
