@@ -50,6 +50,7 @@ return [
     'yes'                                  => 'Yes',
     'youAreLoggedIn'                       => 'You are logged in!',
     'yourAccountNeedsAdminApproval'        => 'Your accounts needs an administrator approval in order to log in',
+    'accessDenied'                         => 'Your account access is denied, please contact administrator to activate this feature.',
     'submit'                               => 'Submit',
     'datatables'                           => [
         'copy'          => 'Copy',
@@ -249,4 +250,6 @@ return [
     'you_have_no_messages'                 => 'You have no messages.',
     'content'                              => 'Content',
     'no_alerts'                            => 'No alerts',
+    'warning'                               => 'Warning',
+    'danger'                                => 'Danger'
 ];

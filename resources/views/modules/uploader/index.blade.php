@@ -8,6 +8,7 @@
             <div class="card">
                 <div class="card-header">Folders
                 
+                    @can('filemanager_create')
                     <div class="float-right">
                         <a href="{{ URL::route('uploader.create') }}" alt="create new folder" title="create new folder">                  
                             <svg class="bi bi-folder-plus" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -17,6 +18,7 @@
                             </svg>
                         </a>
                     </div>
+                    @endcan
 
                 </div>
                 <div class="card-body">
@@ -37,7 +39,7 @@
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-md-9">
 
             @if (session('message'))
                 <div class="alert alert-success">
@@ -59,6 +61,8 @@
                         </div>
                     @endif
 
+
+                    @can('filemanager_create')
                     <div class="col-md-3 text-center">
                         <a href="{{ URL::route('uploader.create') }}" alt="create new folder" title="create new folder">                  
                             <svg class="bi bi-folder-plus" width="2em" height="2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -69,6 +73,7 @@
                             <div class="small">Create Folder</div>
                         </a>
                     </div>
+                    @endcan
                    
                 </div>
             </div>

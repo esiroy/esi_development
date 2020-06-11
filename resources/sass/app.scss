@@ -40,6 +40,10 @@ body {
     max-height: 100%;
 }
 
+.navbar {
+    z-index: 9999;
+}
+
 #sidebar {
     border-right: 1px solid #ccc;
     max-width: 280px;

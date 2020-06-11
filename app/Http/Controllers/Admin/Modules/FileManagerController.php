@@ -5,8 +5,13 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
+use App\Models\User;
 use App\Models\Folder;
+use App\Models\File;
+
 use Gate;
 use Validator;
 use Input;
@@ -36,7 +41,11 @@ class FileManagerController extends Controller
      */
     public function create()
     {
-        //
+        abort_if(Gate::denies('filemanager_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $roles = Folder::all()->pluck('id','folder_name', 'folder_description', 'created_at');
+
+        return view('admin.modules.filemanager.create', compact('roles'));
     }
 
     /**
@@ -47,7 +56,29 @@ class FileManagerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        abort_if(Gate::denies('filemanager_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        //disallow duplicate folder name
+        $validator = Validator::make($request->all(), [
+            'folder_name' => 'required|unique:folders|max:191',
+            'folder_description' => [
+                'max:191'
+            ]
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.module.filemanager.create')->withErrors($validator)->withInput();
+        }
+       
+        //Create Folder 
+        $folder = Folder::create([
+            'folder_name'           => $request['folder_name'],
+            'folder_description'    => $request['folder_description']
+        ]);
+
+        //return redirect()->route('uploader.index');
+
+        return redirect(route('admin.module.filemanager.show', $folder->id))->with('message', 'Folder has been create successfully!');
     }
 
     /**
@@ -58,8 +89,11 @@ class FileManagerController extends Controller
      */
     public function show($id)
     {
+
         abort_if(Gate::denies('filemanager_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        //@can('filemanager_upload_delete)
+        $can_user_delete_uploads = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';
        
         $folder = Folder::find($id);
 
@@ -69,15 +103,12 @@ class FileManagerController extends Controller
 
             $files  = Folder::find($folder->id)->files;
             
-            return view('admin.modules.filemanager.show', compact('folders', 'folder', 'files'));
+            return view('admin.modules.filemanager.show', compact('folders', 'folder', 'files', 'can_user_delete_uploads'));
 
         } else {
 
-            return redirect( route('uploader.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
+            return redirect( route('admin.module.filemanager.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
         }
-
-
-        
     }
 
     /**
@@ -88,7 +119,24 @@ class FileManagerController extends Controller
      */
     public function edit($id)
     {
-        //
+        abort_if(Gate::denies('filemanager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $folder = Folder::find($id);
+
+        if ($folder) {
+
+            $folders = Folder::get();
+            $files  = Folder::find($folder->id)->files;
+
+            return view('admin.modules.filemanager.edit', compact('folders', 'folder', 'files'));
+
+        } else {
+
+            return redirect( route('uploader.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
+
+        }
+
+        
     }
 
     /**
@@ -100,7 +148,39 @@ class FileManagerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        abort_if(Gate::denies('filemanager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+ 
+        $folder = Folder::find($id);
+
+        //disallow duplicate folder name
+        $validator = Validator::make($request->all(), 
+        [
+            'folder_name' => [
+                'required',
+                'max:191',
+                Rule::unique('folders')->ignore($folder->id),
+            ],
+            'folder_description' => [
+                'max:191'
+            ]
+        ]);
+
+        if ($validator->fails()) {
+            return redirect( route('admin.module.filemanager.edit', $name))
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+
+
+        //Update Folder 
+        $folder->update([
+            'folder_name'           => $request['folder_name'],
+            'folder_description'    => $request['folder_description']
+        ]);
+
+
+        return redirect( route('admin.module.filemanager.index', $id) )->with('message', 'Folder has been updated successfully!');
     }
 
     /**
@@ -111,6 +191,23 @@ class FileManagerController extends Controller
      */
     public function destroy($id)
     {
-        //
+        abort_if(Gate::denies('filemanager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $folder = Folder::find($id);
+        
+        if ($folder) {
+
+
+            Storage::deleteDirectory("public/uploads/". $folder->id);
+
+            $folder->delete();
+
+            return redirect( route('admin.module.filemanager.index') )->with('message', 'Folder has been deleted successfully!');
+            
+        } else {
+
+            return redirect( route('admin.module.filemanager.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
+        }
+
     }
 }

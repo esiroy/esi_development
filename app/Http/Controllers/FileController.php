@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
 use App\Models\File;
+use Gate;
 
 class FileController extends Controller
 {
@@ -82,6 +84,8 @@ class FileController extends Controller
      */
     public function destroy($id, Request $request)
     {
+
+        abort_if(Gate::denies('filemanager_upload_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($request->type == "cancel") 
         {

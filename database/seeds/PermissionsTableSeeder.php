@@ -126,12 +126,18 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'id'         => '20',
-                'title'      => 'filemanager_show',
+                'title'      => 'filemanager_create',
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',
             ],
             [
                 'id'         => '21',
+                'title'      => 'filemanager_show',
+                'created_at' => '2019-09-28 14:22:15',
+                'updated_at' => '2019-09-28 14:22:15',
+            ],
+            [
+                'id'         => '22',
                 'title'      => 'filemanager_delete',
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',

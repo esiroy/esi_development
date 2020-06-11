@@ -30,9 +30,9 @@
                         <div class="row my-3">
                             <div class="col-lg-12">
                                 <a class="btn btn-success"
-                                    href="{{ route("admin.modules.filemanager.create") }}">
+                                    href="{{ route("admin.module.filemanager.create") }}">
                                     {{ trans('global.add') }}
-                                    {{ trans('cruds.filemanager.title_singular') }}
+                                    {{ trans('modules/filemanager.folder') }}
                                 </a>
                             </div>
                         </div>
@@ -80,21 +80,21 @@
                                         <td>
                                             @can('filemanager_show')
                                                 <a class="btn btn-sm btn-primary"
-                                                    href="{{ route('admin.modules.filemanager.show', $folder->id) }}">
+                                                    href="{{ route('admin.module.filemanager.show', $folder->id) }}">
                                                     {{ trans('global.view') }}
                                                 </a>
                                             @endcan
 
                                             @can('filemanager_edit')
                                                 <a class="btn btn-sm btn-info"
-                                                    href="{{ route('admin.modules.filemanager.edit', $filemanager->id) }}">
+                                                    href="{{ route('admin.module.filemanager.edit', $folder->id) }}">
                                                     {{ trans('global.edit') }}
                                                 </a>
                                             @endcan
 
                                             @can('filemanager_delete')
                                                 <form
-                                                    action="{{ route('admin.modules.filemanager.destroy', $folder->id) }}"
+                                                    action="{{ route('admin.module.filemanager.destroy', $folder->id) }}"
                                                     method="POST"
                                                     onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
                                                     style="display: inline-block;">
@@ -134,7 +134,7 @@
             let deleteButtonTrans = '{{ trans('global.datatables.delete') }}'
             let deleteButton = {
             text: deleteButtonTrans,
-            url: "{{ route('admin.modules.filemanager.massDestroy') }}",
+            url: "{{ route('admin.module.filemanager.massDestroy') }}",
             className: 'btn-danger',
             action: function (e, dt, node, config) {
                 var ids = $.map(dt.rows({ selected: true }).nodes(), function (entry) {

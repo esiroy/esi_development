@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Response;
 
+use Gate;
 use Validator;
 use Input;
 
@@ -25,19 +27,101 @@ class FolderCreatorController extends Controller
 
     }
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
+        abort_if(Gate::denies('filemanager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         return view('modules.uploader.index', $this->data);
     }
 
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function create() 
     {
+        abort_if(Gate::denies('filemanager_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         return view('modules.uploader.create', $this->data);
     }
 
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        abort_if(Gate::denies('filemanager_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        //disallow duplicate folder name
+        $validator = Validator::make($request->all(), [
+            'folder_name' => 'required|unique:folders|max:191',
+            'folder_description' => [
+                'max:191'
+            ]
+        ]);
+
+        if ($validator->fails()) {
+            return redirect('uploader/create')->withErrors($validator)->withInput();
+        }
+       
+        //Create Folder 
+        Folder::create([
+            'folder_name'           => $request['folder_name'],
+            'folder_description'    => $request['folder_description']
+        ]);
+
+        //return redirect()->route('uploader.index');
+
+        return redirect('uploader/'. $request->folder_name)->with('message', 'Folder has been create successfully!');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($name)
+    {
+        abort_if(Gate::denies('filemanager_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        // Can user Delete upload variable is sent to vuejs component
+        $can_user_delete_uploads = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';   
+        $folder = Folder::where('folder_name', $name)->first();
+
+        if ($folder) {
+            $files  = Folder::find($folder->id)->files;
+            $folders = Folder::get();
+
+            return view('modules.uploader.show', compact('folders', 'folder', 'files', 'can_user_delete_uploads'));
+        } else {
+
+            return redirect( route('uploader.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
+        }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
     public function edit($name)
     {
+        abort_if(Gate::denies('filemanager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $folder = Folder::where('folder_name', $name)->first();
 
         if ($folder) {
@@ -58,58 +142,7 @@ class FolderCreatorController extends Controller
 
         }
 
-
     }
-
-
-
-    public function show($name)
-    {
-        $folder = Folder::where('folder_name', $name)->first();
-
-        if ($folder) {
-            $files  = Folder::find($folder->id)->files;
-
-            $data = [
-                'folders' => Folder::get(),
-                'folder' => $folder,
-                'files'  => $files
-            ];
-            
-            return view('modules.uploader.show', $data);
-        } else {
-
-            return redirect( route('uploader.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
-        }
-    }
-
-    //store new folder
-    public function store(Request $request)
-    {
-        //disallow duplicate folder name
-        $validator = Validator::make($request->all(), [
-            'folder_name' => 'required|unique:folders|max:255',
-            'folder_description' => [
-                'max:255'
-            ]
-        ]);
-
-        if ($validator->fails()) {
-            return redirect('uploader/create')->withErrors($validator)->withInput();
-        }
-       
-        //Create Folder 
-        Folder::create([
-            'folder_name'           => $request['folder_name'],
-            'folder_description'    => $request['folder_description']
-        ]);
-
-        //return redirect()->route('uploader.index');
-
-        return redirect('uploader/'. $request->folder_name)->with('message', 'Folder has been create successfully!');
-    }
-
-
 
     /**
      * Update the specified resource in storage.
@@ -120,6 +153,7 @@ class FolderCreatorController extends Controller
      */
     public function update(Request $request, $name)
     {
+        abort_if(Gate::denies('filemanager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $folder = Folder::where('folder_name', $name)->first();
 
@@ -128,11 +162,11 @@ class FolderCreatorController extends Controller
         [
             'folder_name' => [
                 'required',
-                'max:190',
+                'max:191',
                 Rule::unique('folders')->ignore($folder->id),
             ],
             'folder_description' => [
-                'max:255'
+                'max:191'
             ]
         ]);
 
@@ -157,6 +191,8 @@ class FolderCreatorController extends Controller
 
     public function destroy($id)
     {
+        abort_if(Gate::denies('filemanager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $folder = Folder::find($id);
         
         if ($folder) {
@@ -168,7 +204,7 @@ class FolderCreatorController extends Controller
 
             return redirect( route('uploader.index') )->with('message', 'Folder has been deleted successfully!');
 
-            //@todo: delete folder files
+           
             
         } else {
             return redirect( route('uploader.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');

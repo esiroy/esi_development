@@ -6,7 +6,7 @@
           <th>#</th>
           <th>File Name</th>
           <th>File Size</th>
-          <th>Action</th>
+          <th v-if="(can_user_delete_uploads === true)">Action</th>
         </tr>
       </thead>
       <tbody>
@@ -29,12 +29,13 @@
           <td>
             <div class="filesize">{{ file.size | formatSize }}</div>
           </td>
-          <td>
-            <div class="dropdown">
+          <td v-if="(can_user_delete_uploads === true)">
+            <div class="dropdown" v-if="(can_user_delete_uploads === true)">
+               
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Action
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" v-if="(can_user_delete_uploads === true)">
                     <a class="dropdown-item" v-on:click="deleteFile(index, file.id)">Delete</a>
                 </div>
             </div>
@@ -84,6 +85,9 @@ export default {
     },
     folder_files: {
         type: Array
+    },
+    can_user_delete_uploads: {
+      type: Boolean
     }
   },
   data() {

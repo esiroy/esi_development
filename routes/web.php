@@ -54,7 +54,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/dashboard', 'DashboardController');
 
         /* Administrator Module Lists */
-        Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'modules.'], function() 
+        Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 
         {
             Route::resource('formbuilder', 'FormBuilderController');
 

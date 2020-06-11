@@ -12,7 +12,23 @@
             <div class="card">
                 <div class="card-header">Upload Files</div>
                 <div class="card-body">
-                    <simple-uploader-component ref="uploaderComponent" folder_id="{{ $folder->id }}" csrf_token="{{ csrf_token() }}"/>
+
+                   @can('filemanager_upload')
+
+                        <simple-uploader-component 
+                            ref="uploaderComponent" 
+                            user_can_delete="{{ $can_user_delete_uploads }}"
+                            folder_id="{{ $folder->id }}" csrf_token="{{ csrf_token() }}"
+                        />
+
+                    @elsecan('filemanager_show')
+
+                        <div class="alert alert-danger">
+                            <strong>Warning!</strong> @lang('global.accessDenied')</a>.
+                        </div>
+                        
+                    @endcan
+
                 </div>
             </div>
             <div class="card mt-4">
@@ -21,7 +37,11 @@
                 </div>
 
                 <div class="card-body">
-                    <folder-files-component ref="folderComponent" v-bind:folder_files="{{ json_encode($files) }}"/>
+                    <folder-files-component 
+                        ref="folderComponent" 
+                        :folder_files="{{ json_encode($files) }}"
+                        :can_user_delete_uploads="{{ $can_user_delete_uploads }}"
+                    />
                 </div>
             </div>
         </div>
@@ -39,10 +59,10 @@
                             </svg>
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item small" href="{{ URL::route('uploader.edit', $folder->folder_name) }}">Edit Folder</a>
+                            <a class="dropdown-item small" href="{{ URL::route('admin.module.filemanager.edit', $folder->folder_name) }}">Edit Folder</a>
                            
 
-                            <form action="{{ URL::route('uploader.destroy', $folder->id) }}" method="POST">
+                            <form action="{{ URL::route('admin.module.filemanager.destroy', $folder->id) }}" method="POST">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <button class="dropdown-item small">Delete Folder</button>
@@ -62,7 +82,7 @@
                             </svg>
                         </a>
 
-                        <a href="{{ URL::route('uploader.index') }}" alt="back to folders" title="back to folders">
+                        <a href="{{ URL::route('admin.module.filemanager.index') }}" alt="back to folders" title="back to folders">
                             <svg class="bi bi-arrow-left-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                             <path fill-rule="evenodd" d="M8.354 11.354a.5.5 0 0 0 0-.708L5.707 8l2.647-2.646a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708 0z"/>
@@ -114,7 +134,7 @@
                 <div class="card-header">
                     Folder List
                     <div class="float-right">
-                        <a href="{{ URL::route('admin.modules.filemanager.index') }}">
+                        <a href="{{ URL::route('admin.module.filemanager.index') }}">
                             <svg class="bi bi-arrow-left-square" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M14 1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z"/>
                             <path fill-rule="evenodd" d="M8.354 11.354a.5.5 0 0 0 0-.708L5.707 8l2.647-2.646a.5.5 0 1 0-.708-.708l-3 3a.5.5 0 0 0 0 .708l3 3a.5.5 0 0 0 .708 0z"/>

@@ -4,81 +4,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="Description" content="{{ config('app.name', 'My Tutor')}} {{'- ' . ucwords(Request::segment(3)) ?? '' }} ">
-
     <title>
         {{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(3))->replace('-', ' ') ) ?? '' }} {{ " - " . ucwords( Str::of(Request::segment(2))->replace('-', ' ') ) ?? '' }}
     </title>
-
-    <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
-
-    <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
+    <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
-
-    <script src="{{ asset('js/vfs_fonts.js') }}" defer></script>
-
-    <!--
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js" defer></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" defer></script>
-
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.js" defer></script
-
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" defer></script>
-
-
-    <script src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.js" defer></script>
--->
-
-    <!-- Scripts -->
-    <!--<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js" defer></script>-->
-    <!--<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js" defer></script>-->
-
- 
-    <!-- Datatable Buttons -->
-    <!--
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.bootstrap4.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.print.js" defer></script>
-    <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.colVis.js" defer></script>
-    <script src="https://cdn.datatables.net/select/1.3.1/js/dataTables.select.js" defer></script>
-    <script src="https://cdn.datatables.net/fixedcolumns/3.3.1/js/dataTables.fixedColumns.js" defer></script>
-    -->
-
-    <!-- Select Options 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/js/select2.full.min.js" defer></script>
-    -->
-   
-
-    <!--DataTables Styles -->
-    <!--
-    <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.bootstrap4.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/fixedcolumns/3.3.1/css/fixedColumns.dataTables.css" rel="stylesheet" />
-    <link href="https://cdn.datatables.net/select/1.3.1/css/select.dataTables.css" rel="stylesheet" />
--->
-
-    <!--Select Options Styles-->
-    <!--
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/css/select2.css" rel="stylesheet" />
--->
-    
-    <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/vfs_fonts.js') }}" defer></script>
 </head>
 
 <body>
@@ -151,9 +90,6 @@
     <script type="text/javascript">
         window.addEventListener('load', function () {
             $(function () {
-
-                console.log("admin panel has been loaded");
-
                 //sidebar menu
                 $('.dropdown-toggle').on('click', function () {
                     dropdownToggleIcon($(this))
@@ -188,7 +124,6 @@
 
             function dropdownToggleIcon(element) {
                 if (element.parent().hasClass('.dropup')) {
-                    console.log('This is firing');
                     element.parent().removeClass('dropup');
 
                 } else {

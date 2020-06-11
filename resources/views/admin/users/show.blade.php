@@ -12,7 +12,7 @@
             <div class="card">
                 <div class="card-header">
                     {{ trans('global.show') }}
-                    {{ trans('cruds.permission.title') }}
+                    {{ trans('cruds.user.title_singular') }}
                 </div>
                 <div class="card-body">
                     <table class="table table-bordered table-striped">

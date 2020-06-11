@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Storage;
 
 use Validator;
 use Input;
+use Gate;
 
 use App\Models\User;
 use App\Models\Folder;
@@ -25,7 +27,10 @@ class FileUploadController extends Controller
 
     }
 
-    public function upload(Request $request) {
+    public function upload(Request $request) 
+    {
+
+        abort_if(Gate::denies('filemanager_upload'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($files = $request->file('file')) {
 
