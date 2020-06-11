@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class RedirectIfAuthenticated
 {
@@ -21,13 +22,20 @@ class RedirectIfAuthenticated
         if (Auth::guard($guard)->check()) {
 
             if (strtolower($request->segment(1)) == 'admin') {
-                return redirect(route('admin.dashboard.index'));
+       
+                $roles[] = Auth::user()->roles()->get()->pluck('title');
+                
+                if (array_intersect(['admin','moderator'], $roles)) {
+
+                    return redirect(route('admin.dashboard.index'));
+
+                } else {
+                    return redirect(RouteServiceProvider::HOME);
+                }
+
             } else {
                 return redirect(RouteServiceProvider::HOME);
             }
-            
-
-           
         }
 
         return $next($request);

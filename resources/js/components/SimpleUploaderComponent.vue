@@ -228,18 +228,23 @@ export default {
             //  Get the response status code
             console.log("status", newFile.xhr.status);
 
-            if ( newFile.xhr.status === 200) {
+            if ( newFile.xhr.status === 200) 
+            {
 
-            //Add to the $ref='folderComponent' - uploader/show.blade.php
-            let file = [{
-                            'id'        : newFile.response.id,
-                            'file_name' : newFile.response.file,
-                            'size'      : newFile.response.size
-                        }]
+              $refs.upload.remove(newFile)
 
-            let files = this.$root.$refs.folderComponent.files.push(...file);
+              //Add to the $ref='folderComponent' - uploader/show.blade.php
+              let file = [{
+                              'id'        : newFile.response.id,
+                              'file_name' : newFile.response.file,
+                              'size'      : newFile.response.size
+                          }]
 
-            } else {
+              let files = this.$root.$refs.folderComponent.files.push(...file);
+
+              
+
+              } else {
 
                 /*
 

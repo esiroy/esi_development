@@ -132,24 +132,30 @@ class PermissionsTableSeeder extends Seeder
             ],
             [
                 'id'         => '21',
-                'title'      => 'filemanager_show',
+                'title'      => 'filemanager_edit',
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',
             ],
             [
                 'id'         => '22',
-                'title'      => 'filemanager_delete',
+                'title'      => 'filemanager_show',
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',
             ],
             [
                 'id'         => '23',
-                'title'      => 'filemanager_upload',
+                'title'      => 'filemanager_delete',
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',
             ],
             [
                 'id'         => '24',
+                'title'      => 'filemanager_upload',
+                'created_at' => '2019-09-28 14:22:15',
+                'updated_at' => '2019-09-28 14:22:15',
+            ],
+            [
+                'id'         => '25',
                 'title'      => 'filemanager_upload_delete',
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',
