@@ -79,7 +79,7 @@ class UserController extends Controller
         } else {
 
             $user = User::create($request->all());
-            $user->roles()->sync($request->input('roles', []));
+            $user->roles()->sync( $request->input('roles', []) );
 
             return redirect()->route('admin.users.index')->with('message', 'User has been added successfully!');
         }

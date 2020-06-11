@@ -19,10 +19,12 @@ class Controller extends BaseController
     * Check if current user has site wide admin access @value: admin_access
     * Deny access if the current user has no privilidge to view admin access */
     public function __construct(Request $request) {
-        $this->middleware(function ($request, $next) {
-            abort_if(Gate::denies('admin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-            return $next($request);
-        });
+        if (strtolower($request->segment(1)) == 'admin') {
+            $this->middleware(function ($request, $next) {
+                abort_if(Gate::denies('admin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+                return $next($request);
+            });
+        }
     }
 
 
