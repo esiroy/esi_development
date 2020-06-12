@@ -6,6 +6,7 @@ use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Gate;
 
 class RedirectIfAuthenticated
 {
@@ -23,16 +24,12 @@ class RedirectIfAuthenticated
 
             if (strtolower($request->segment(1)) == 'admin') {
        
-                $roles[] = Auth::user()->roles()->get()->pluck('title');
-                
-                if (array_intersect(['admin','moderator'], $roles)) {
-
-                    return redirect(route('admin.dashboard.index'));
-
-                } else {
+                if(Gate::denies('admin_access')) {
                     return redirect(RouteServiceProvider::HOME);
+                } else {
+                    return redirect(route('admin.dashboard.index'));
                 }
-
+                
             } else {
                 return redirect(RouteServiceProvider::HOME);
             }
