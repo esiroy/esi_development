@@ -52,9 +52,17 @@ const app = new Vue({
 
 
 /* non-render blocking css files */
-(function() {
-    var link = document.createElement('link');
-    link.rel = "stylesheet";
-    link.href = "//fonts.googleapis.com/css?family=Nunito";
-    document.querySelector("head").appendChild(link);
-})();
+var deferCSS = [];
+deferCSS.push(
+    "//fonts.googleapis.com/css?family=Nunito&display=swap",
+    //window.location.protocol + "//" + window.location.host + "/css/app.css"
+);
+deferCSS.reverse(); /* Items in the array are added to the page in reverse order */
+deferCSS.forEach(function(thisDeferCSS) {
+    var css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = thisDeferCSS;
+    css.type = 'text/css';
+    var goDefer = document.getElementsByTagName('link')[0];
+    goDefer.parentNode.insertBefore(css, goDefer);
+});

@@ -13,9 +13,13 @@
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="{{ asset('js/admin.js') }}" defer></script>
     <script src="{{ asset('js/vfs_fonts.js') }}" defer></script>
+    <noscript>
+        <link rel="stylesheet" type="text/css" href="">
+    </noscript>
 </head>
 
 <body>

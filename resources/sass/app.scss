@@ -4,18 +4,7 @@
 @import 'variables';
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
-
-/* sass imported (list only)
-    "resources/sass/datatables/dataTables.bootstrap4.css",
-    "resources/sass/datatables/buttons.bootstrap4.css",
-    "resources/sass/datatables/fixedColumns.dataTables.css",
-    "resources/sass/datatables/select.dataTables.css",
-    "resources/sass/select2/select2.css"
-*/
-
-
-/* Datatables*/
-
+//Datatables
 @import 'datatables/dataTables.bootstrap4.css';
 @import 'datatables/buttons.bootstrap4.css';
 @import 'datatables/fixedColumns.dataTables.css';

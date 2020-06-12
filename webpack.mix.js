@@ -32,6 +32,12 @@ mix.js('resources/js/app.js', 'public/js')
 
 mix.js(
         [
+            "resources/js/app.js"
+        ],
+        "public/js/app.js"
+    )
+    .js(
+        [
             "resources/js/datatables/jquery.dataTables.js",
             "resources/js/datatables/dataTables.bootstrap4.js",
             "resources/js/datatables/dataTables.buttons.js",
@@ -46,7 +52,7 @@ mix.js(
             "resources/js/datatables/dataTables.fixedColumns.js",
             "resources/js/app.js"
         ],
-        "public/js/app.js"
+        "public/js/admin.js"
     )
     .copy(
         "node_modules/pdfmake/build/vfs_fonts.js",
