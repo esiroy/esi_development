@@ -51,6 +51,7 @@
                 <div class="card-header">
                     Folder Details
 
+                    @canany(['filemanager_edit', 'filemanager_delete'])
                     <div class="dropdown" style="display:inline-block;">
                         <button class="btn btn-sm pl-0 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <svg class="bi bi-gear" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -58,19 +59,24 @@
                             <path fill-rule="evenodd" d="M8 5.754a2.246 2.246 0 1 0 0 4.492 2.246 2.246 0 0 0 0-4.492zM4.754 8a3.246 3.246 0 1 1 6.492 0 3.246 3.246 0 0 1-6.492 0z"/>
                             </svg>
                         </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item small" href="{{ URL::route('admin.module.filemanager.edit', $folder->folder_name) }}">Edit Folder</a>
-                           
 
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+                            @can('filemanager_edit')
+                            <a class="dropdown-item small" href="{{ URL::route('admin.module.filemanager.edit', $folder->folder_name) }}">Edit Folder</a>
+                            @endcan
+
+                            @can('filemanager_delete')
                             <form action="{{ URL::route('admin.module.filemanager.destroy', $folder->id) }}" method="POST">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <button class="dropdown-item small">Delete Folder</button>
                             </form>
-
+                            @endcan
+                            
                         </div>
                     </div>
-
+                    @endcanany
 
                     <div class="float-right">
                         <a href="{{ asset('folder/' . $folder->folder_name) }}" alt="open public link" title="open public link" target="_blank">
