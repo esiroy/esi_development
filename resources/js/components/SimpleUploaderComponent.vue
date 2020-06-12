@@ -231,8 +231,6 @@ export default {
             if ( newFile.xhr.status === 200) 
             {
 
-              $refs.upload.remove(newFile)
-
               //Add to the $ref='folderComponent' - uploader/show.blade.php
               let file = [{
                               'id'        : newFile.response.id,

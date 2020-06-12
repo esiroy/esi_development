@@ -36,7 +36,10 @@ class Controller extends BaseController
                     $user_roles[] = strtolower($role);
                 }
                 if (array_intersect(['user'], $user_roles)) {
-                    return redirect(RouteServiceProvider::HOME);
+                    if(Gate::denies('admin_access')) {
+                        return redirect(RouteServiceProvider::HOME);
+                    }
+                    return $next($request);
                 } else {
                     abort_if(Gate::denies('admin_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
                     return $next($request);
