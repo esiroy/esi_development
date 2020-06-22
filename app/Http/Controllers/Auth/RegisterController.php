@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 use App\Models\User;
 use App\Models\Role;
@@ -75,6 +76,8 @@ class RegisterController extends Controller
             'last_name' => $data['last_name'],
             'username' => $data['username'],
             'email' => $data['email'],
+            //'api_token' => Str::random(60),
+            'api_token' => Hash('sha256', Str::random(80)),
             'password' => Hash::make($data['password']),
         ]);
 

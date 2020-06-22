@@ -13,16 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
+Route::get('/', 'PublicController@index')->name('welcome');
 Route::get('/home', 'HomeController@index')->name('home');
 
-
-
-Route::get('/home', 'HomeController@index')->name('home');
 
 /* Folder Controllers */
 Route::resource('uploader', 'FolderCreatorController');
@@ -34,13 +27,20 @@ Route::resource('file', 'FileController');
 Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
 /* Public Folder View */
-Route::get('folder/{id}', 'PublicFolderController@show');
+//Route::get('folder/{id}', 'PublicFolderController@show');
+
+/*
+Route::get('folder/{name?}', function ($name = null) {
+
+})->where('name', '.*');
+*/
+
+Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
+
+
 
 /* Download Controller*/
 Route::resource('download', 'DownloadController');
-
-
-
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 

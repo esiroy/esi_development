@@ -9,30 +9,32 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Folder;
 use App\Models\File;
+use App\Models\Permalink;
 
 class PublicFolderController extends Controller
 {
+    public function index()
+    { 
+        return view('welcome');
+
+    }
+
     //Public view
     public function show($name)
     {
-        $folder = Folder::where('folder_name', $name)->first();
+       $permalink =  Permalink::where('permalink', $name)->first();
 
-        if ($folder) {
-
-            $files = Folder::find($folder->id)->files;
-
+       if (isset($permalink->folder)) {
+            $files = Folder::find($permalink->folder->id)->files;
             $data = [
-                'folder' => $folder,
+                'folder' => $permalink->folder,
                 'files' => $files
             ];
 
             return view('modules/publicfolder/show', $data);
-
-
         } else {
 
             abort(404);
         }
-
     }
 }

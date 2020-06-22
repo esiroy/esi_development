@@ -8,6 +8,20 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+/* Components Javascript Import*/
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import 'bootstrap/dist/css/bootstrap.css'
+import 'bootstrap-vue/dist/bootstrap-vue.css'
+Vue.use(BootstrapVue);
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(IconsPlugin)
+
+
+
+import VueTreeList from 'vue-tree-list'
+Vue.use(VueTreeList);
+
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue

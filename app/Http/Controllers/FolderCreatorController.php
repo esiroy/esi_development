@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Str;
 
 use Gate;
 use Validator;
@@ -17,6 +18,8 @@ use App\Models\File;
 
 class FolderCreatorController extends Controller
 {
+
+    public $parent_id;
 
     public function __construct()
     {
@@ -64,22 +67,34 @@ class FolderCreatorController extends Controller
     {
         abort_if(Gate::denies('filemanager_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        //disallow duplicate folder name
-        $validator = Validator::make($request->all(), [
-            'folder_name' => 'required|unique:folders|max:191',
+        $validator = Validator::make($request->all(), 
+        [
+            'folder_name' => [
+                'required',
+                'max:191',
+                Rule::unique('folders')->where(function ($query) {
+                    return $query->where('parent_id', 0);
+                })
+            ],
             'folder_description' => [
                 'max:191'
             ]
         ]);
+
 
         if ($validator->fails()) {
             return redirect('uploader/create')->withErrors($validator)->withInput();
         }
        
         //Create Folder 
+        $folder = Folder::where('parent_id', 0)->get();
+        $next_order_id =  ($folder->max('order_id')) ? $folder->max('order_id') + 1 : 1;
+
         Folder::create([
+            'slug'                  => Str::slug($request['folder_name'], '-'),
             'folder_name'           => $request['folder_name'],
-            'folder_description'    => $request['folder_description']
+            'folder_description'    => $request['folder_description'],
+            'order_id'              => $next_order_id 
         ]);
 
         //return redirect()->route('uploader.index');
@@ -157,13 +172,16 @@ class FolderCreatorController extends Controller
 
         $folder = Folder::where('folder_name', $name)->first();
 
-        //disallow duplicate folder name
+        $this->parent_id = $folder->parent_id;
+
         $validator = Validator::make($request->all(), 
         [
             'folder_name' => [
                 'required',
                 'max:191',
-                Rule::unique('folders')->ignore($folder->id),
+                Rule::unique('folders')->where(function ($query) {
+                    return $query->where('parent_id', $this->parent_id);
+                })->ignore($folder->id)
             ],
             'folder_description' => [
                 'max:191'
@@ -179,6 +197,7 @@ class FolderCreatorController extends Controller
 
         //Update Folder 
         $folder->update([
+            'slug'                  => Str::slug($request['folder_name'], '-'),
             'folder_name'           => $request['folder_name'],
             'folder_description'    => $request['folder_description']
         ]);

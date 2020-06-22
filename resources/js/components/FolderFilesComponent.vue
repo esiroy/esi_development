@@ -1,5 +1,5 @@
 <template>
-  <div class="example-drag">
+  <div class="folder-files">
     <table class="table table-hover">
       <thead>
         <tr>

@@ -28,11 +28,32 @@ class FileManagerController extends Controller
 
         abort_if(Gate::denies('filemanager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        //@can('filemanager_upload_delete)
+        $can_user_delete_uploads = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';
+
+       // $folders = (Folder::getFoldersRecursively());
+
+        $folders = Array();
+
+        return view('admin.modules.filemanager.index', compact('folders', 'files', 'can_user_delete_uploads'));
+    }
+
+
+
+    public function dataTableIndex()
+    {
+
+        abort_if(Gate::denies('filemanager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        //@can('filemanager_upload_delete)
+        $can_user_delete_uploads = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';
+
         $folders = Folder::all();
         
 
-        return view('admin.modules.filemanager.index', compact('folders'));
+        return view('admin.modules.filemanager.index-datatables', compact('folders', 'files', 'can_user_delete_uploads'));
     }
+
 
     /**
      * Show the form for creating a new resource.

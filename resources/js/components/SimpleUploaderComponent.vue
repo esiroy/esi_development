@@ -209,6 +209,7 @@ export default {
   },
   methods: {
     updatetValue(value) {
+     
       this.files = value;
     },
     /**
@@ -218,6 +219,9 @@ export default {
      * @return undefined
      */
     inputFile: function(newFile, oldFile) {
+
+       console.log(this.folder_id);
+       console.log(this.csrf_token);
 
       if (newFile && oldFile && !newFile.active && oldFile.active) {
         // Get response data
@@ -239,6 +243,7 @@ export default {
                           }]
 
               let files = this.$root.$refs.folderComponent.files.push(...file);
+             
 
               
 

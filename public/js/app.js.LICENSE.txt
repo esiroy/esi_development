@@ -5,6 +5,14 @@
   */
 
 /*!
+ * BootstrapVue Icons, generated from Bootstrap Icons 1.0.0-alpha4
+ *
+ * @link https://icons.getbootstrap.com/
+ * @license MIT
+ * https://github.com/twbs/icons/blob/master/LICENSE.md
+ */
+
+/*!
  * Name: vue-upload-component
  * Version: 2.8.20
  * Author: LianYue
@@ -39,6 +47,17 @@
  * https://jquery.org/license
  *
  * Date: 2020-05-04T22:49Z
+ */
+
+/*! 
+  * portal-vue © Thorsten Lünborg, 2019 
+  * 
+  * Version: 2.1.7
+  * 
+  * LICENCE: MIT 
+  * 
+  * https://github.com/linusborg/portal-vue
+  * 
  */
 
 /**
