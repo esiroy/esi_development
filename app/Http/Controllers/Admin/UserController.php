@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 use App\Models\User;
 use App\Models\Role;
@@ -81,6 +82,10 @@ class UserController extends Controller
             $user = User::create($request->all());
             $user->roles()->sync( $request->input('roles', []) );
 
+            User::find($user->id)->update([
+                'api_token'      => Hash('sha256', Str::random(80))
+            ]);
+
             return redirect()->route('admin.users.index')->with('message', 'User has been added successfully!');
         }
     }
@@ -128,6 +133,11 @@ class UserController extends Controller
     {
         $user->update($request->all());
         $user->roles()->sync($request->input('roles', []));
+
+        User::find($user->id)->update([
+            'api_token'      => Hash('sha256', Str::random(80))
+        ]);
+        
         return redirect()->route('admin.users.index')->with('message', 'User has been updated successfully!');
     }
 
