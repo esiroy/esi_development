@@ -35,14 +35,32 @@ class FolderCreatorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+     /*
     public function index()
     {
         abort_if(Gate::denies('filemanager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        return view('modules.uploader.index', $this->data);
+        return view('modules.uploader.indexv1', $this->data);
     }
+    */
 
 
+    public function index()
+    {
+        abort_if(Gate::denies('filemanager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        //@can('filemanager_upload_delete)
+        $can_user_delete_uploads = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';
+
+       // $folders = (Folder::getFoldersRecursively());
+
+        $folders = Array();
+
+        $files = Array();
+        
+        return view('modules.uploader.index', compact('folders', 'files', 'can_user_delete_uploads'));
+    }
 
     /**
      * Show the form for creating a new resource.

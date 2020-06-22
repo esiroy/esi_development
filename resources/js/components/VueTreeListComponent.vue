@@ -146,10 +146,11 @@
 						<span class="icon" slot="treeNodeIcon">🌲</span>
 					</vue-tree-list>
 
-					<!--<button @click="getNewTree">Get new tree</button>-->
+					<!--<button @click="getNewTree">Get new tree</button>
 					<pre>
                         {{newTree}}
                         </pre>
+					-->
 				</div>
 			</div>
 		</div>
