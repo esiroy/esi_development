@@ -35,6 +35,8 @@ class FileManagerController extends Controller
 
         $folders = Array();
 
+        $files = Array();
+        
         return view('admin.modules.filemanager.index', compact('folders', 'files', 'can_user_delete_uploads'));
     }
 
