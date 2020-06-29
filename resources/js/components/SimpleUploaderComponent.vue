@@ -209,7 +209,6 @@ export default {
   },
   methods: {
     updatetValue(value) {
-     
       this.files = value;
     },
     /**
@@ -219,22 +218,13 @@ export default {
      * @return undefined
      */
     inputFile: function(newFile, oldFile) {
-
-       console.log(this.folder_id);
-       console.log(this.csrf_token);
-
-      if (newFile && oldFile && !newFile.active && oldFile.active) {
-        // Get response data
-        console.log("response", newFile.response);
-
+       //console.log(this.folder_id);
+       //console.log(this.csrf_token);
+      if (newFile && oldFile && !newFile.active && oldFile.active) 
+      {
         if (newFile.xhr) {
-
-            //  Get the response status code
-            console.log("status", newFile.xhr.status);
-
             if ( newFile.xhr.status === 200) 
             {
-
               //Add to the $ref='folderComponent' - uploader/show.blade.php
               let file = [{
                               'id'        : newFile.response.id,
@@ -243,43 +233,7 @@ export default {
                           }]
 
               let files = this.$root.$refs.folderComponent.files.push(...file);
-             
-
-              
-
-              } else {
-
-                /*
-
-                console.log(newFile);
-                let upload_name = newFile.id;
-                let folder_id   = newFile.data.folder_id;
-
-                //delete
-                axios.post(
-                    "/file/" + upload_name,
-                    { 
-                        _method: "delete",
-                        type: "cancel",
-                        folder_id: folder_id,
-                        upload_name: upload_name,
-                        
-                    }
-                )
-                .then(response => {
-                    //success
-                    console.log(response.data);
-                    //this.$root.$refs.folderComponent.files.splice(index, 1);
-                })
-                .catch(function(error) {
-                    // handle error
-                    //alert("Error " + error);
-                    console.log(error);
-                });   
-
-                */
-
-          }
+            }
         }
       }
     },

@@ -24,11 +24,12 @@ class FolderController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth')->except(['getChildFolders', 'getPublicFiles']);
     }
 
     public function folders(Request $request) 
     {
+        //$request
         $folders = (Folder::getFoldersRecursively());
 
         return Response()->json([
@@ -37,6 +38,34 @@ class FolderController extends Controller
         ]);
     }
 
+    public function getChildFolders(Request $request) {
+       
+        $folderID   = $request['public_folder_id'];
+
+        $folders = (Folder::getPublicFolder($folderID));
+
+        return Response()->json([
+            "success"               => true,
+            "folders"               =>  $folders
+        ]);   
+    }
+
+
+    public function getPublicFiles(Request $request) 
+    {
+        $folderID   = $request['folder_id'];
+        $folder     = Folder::find($folderID);
+        $files      = $folder->files;
+    
+        return Response()->json([
+            "success"               => true,
+            'folder_id'             => $folder['id'],
+            "folder_name"           => $folder['folder_name'],
+            "folder_description"    => $folder['folder_description'],
+            "permalink"             => Folder::getLink($folderID),
+            "files"                 => json_decode($files)
+        ]);
+    }
 
     public function files(Request $request) 
     {

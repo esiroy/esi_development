@@ -16,7 +16,7 @@ class UpdateFoldersTable extends Migration
         Schema::table('folders', function (Blueprint $table) {
             $table->bigInteger('parent_id')->default(0)->after('id');; //zero is the parent
             $table->bigInteger('order_id')->after('parent_id');
-            $table->string('slug', 100)->after('order_id');
+            $table->text('slug')->after('order_id');
             
         });
     }

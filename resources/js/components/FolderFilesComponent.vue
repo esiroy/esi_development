@@ -127,7 +127,6 @@ export default {
 
     this.files = this.folder_files;
 
-    console.log(this.folder_files)
   })
 }
 

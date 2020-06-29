@@ -10,9 +10,11 @@
 					</b-modal>
 
 					<div class="createNewFolderContainter">
-						<div class="mb-4">
+
+						<div class="mb-4" v-if="(can_user_create_folder === true)">
 							<b-button v-b-modal.createNewFolder>Create New Folder</b-button>
 						</div>
+
 						<b-modal
 							id="createNewFolder"
 							ref="modalCreateNewFolder"
@@ -114,14 +116,10 @@
 							</form>
 						</b-modal>
 					</div>
-					<!--
-					<button @click="addNode">Add Folder</button>
-					-->
-					<!--
-						//
-					-->
+
 
 					<vue-tree-list
+                        v-bind:default-expanded="true"
 						@click="onClick"
 						@change-name="onChangeName"
 						@delete-node="onDel"
@@ -132,11 +130,8 @@
 						:model="data"
 						default-tree-node-name="New Folder"
 						default-leaf-node-name="New Page"
-						v-bind:default-expanded="false"
 					>
-
-					
-						<span class="icon" slot="addTreeNodeIcon" >📂</span>
+						<span class="icon" slot="addTreeNodeIcon">📂</span>
 						<span class="icon" slot="addLeafNodeIcon">＋</span>
  						<span class="icon" slot="editNodeIcon">
 							<a href="#" @click.stop.prevent="onEditFolder($event)">📃</a>
@@ -157,10 +152,9 @@
 
 		<!-- DISPLAY FOLDER DETAILS -->
 		<div class="col-md-8">
-
 			<div class="card mb-4" v-if="this.folderCurrentID !== null">
 				<div class="card-header">
-					Upload Files
+					Folder Details
 				</div>
 				<div class="card-body">
 					<div class="row"> 
@@ -187,7 +181,8 @@
 				</div>
 			</div>
 
-			<div class="card" >
+
+			<div class="card my-4" v-if="can_user_upload">
 				<div class="card-body">
 					<admin-uploader-component
 						ref="uploaderComponent"
@@ -198,7 +193,7 @@
 				</div>
 			</div>
 
-			<div class="card my-4">
+			<div class="card">
 				<folder-files-component 
 					ref="folderFilesComponent" 
 					:folder_files="this.files"
@@ -206,9 +201,6 @@
 				/>
 			</div>
 		</div>
-
-
-
 	</div>
 </template>
 
@@ -220,17 +212,27 @@ export default {
 		VueTreeList
 	},
 	props: {
+        public: {
+            type: Boolean
+        },
+        public_folder_id: {
+            type: Number
+        },
 		folders: {
 			type: Array
 		},
-		
-		
 		folder_files: {
 			type: Array
-		},
+        },
+		can_user_upload: {
+			type: Boolean
+        },
 		can_user_delete_uploads: {
 			type: Boolean
-		},
+        },
+        can_user_create_folder: {
+            type: Boolean
+        },
 		csrf_token: {
 			type: String
 		},
@@ -241,17 +243,15 @@ export default {
 			type: String
 		}
 	},
-	beforeMount() {
-		this.getFolders();
-	},
-	mounted() {
-		//console.log("mounted", this.can_user_delete_uploads)
-	},
 	data() {
 		return {
-
+           
 			//Files
-			files: [],
+            files: [],
+            
+            URLEndPoint: '',
+
+            prevIDClicked: '',
 			
 			//feedbacks
 			invalidFeedbackMessage: "Name is required",
@@ -284,13 +284,61 @@ export default {
 			//The Data for the Tree
 			data: new Tree(this.folders)
 		};
+    },
+    
+	beforeMount() {
+		
+	},
+	mounted() {
+        this.getFolders();
+
+        if (this.public === true ) 
+        {
+            this.autoClickFolder(this.public_folder_id);
+        }
+       
 	},
 	methods: {
 		getFolders() {
-			
-			axios.get("/api/get_folders?api_token=" + this.api_token,
+
+            if (this.public === true) {
+                this.URLEndPoint = "/api/get_child_folders"
+                this.getPublicFolders();
+            } else {
+                this.URLEndPoint = "/api/get_folders?api_token=" + this.api_token;
+                this.getFolderPermission();
+            }
+        },
+        getPublicFolders() {
+			axios.post(this.URLEndPoint,
 				{ 
-					method: "GET",
+                    method: "POST",
+                    public_folder_id: this.public_folder_id
+				}
+			)
+			.then(response => {
+                this.data = new Tree(response.data.folders);
+                
+              
+
+			})
+			.catch(function(error) {
+				console.log(error);
+			});  
+        },
+        autoClickFolder(id) {
+         
+			let nodeItem = {
+				id: id
+			};
+
+            this.onClick(nodeItem)
+         
+        },
+        getFolderPermission() {
+			axios.post(this.URLEndPoint,
+				{ 
+                    method: "POST",
 				}
 			)
 			.then(response => {
@@ -299,15 +347,18 @@ export default {
 			.catch(function(error) {
 				console.log(error);
 			});  
-
-			
-		},
+        },
 		getFolderFiles(folderID) {
 
-			//console.log("get folder files", folderID);
 
+            if (this.public === true) {
+                this.URLEndPoint = "/api/get_public_folder_files"
+            } else {
+                this.URLEndPoint = "/api/get_folder_files?api_token=" + this.api_token
+            }
+		
 			axios.post(
-				"/api/get_folder_files?api_token=" + this.api_token,
+				this.URLEndPoint,
 				{ 
 					method: "POST",
 					folder_id: folderID,
@@ -326,13 +377,18 @@ export default {
 				this.folderName = response.data.folder_name;
 				this.folderDescription = response.data.folder_description;
 
-				this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = response.data.files;
+                this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = response.data.files;
+                
+
+
+            
 			})
 			.catch(function(error) {
 				console.log(error);
 			});  
 		},
 		onClick(node) {
+
 			console.log(node.id);
 			console.log('name', node.name);
 			console.log('description', node.description);
@@ -344,9 +400,21 @@ export default {
 			this.folderCurrentID = node.id.toString();
 			this.getFolderFiles(node.id);
 
-			//reset the uploader and files
-			this.$root.$refs.treeListComponent.$refs.uploaderComponent.files = [];
-			this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = [];
+            //reset the uploader and files
+            if (this.can_user_upload) {
+                this.$root.$refs.treeListComponent.$refs.uploaderComponent.files = [];
+            }
+            this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = [];
+
+
+            if (this.prevIDClicked) {
+                document.getElementById(this.prevIDClicked).getElementsByClassName( 'vtl-node-main' )[0].removeAttribute("style");
+                document.getElementById(node.id).getElementsByClassName( 'vtl-node-main' )[0].style.backgroundColor = "#f0f0f0";
+            } else {
+               // document.getElementById(this.public_folder_id).getElementsByClassName( 'vtl-node-main' )[0].style.backgroundColor = "#f0f0f0";
+            }
+            
+            this.prevIDClicked = node.id;
 		},
 		onCreateNewSubFolder(params) {
 			this.$bvModal.show("createNewSubFolder");
@@ -354,9 +422,6 @@ export default {
 			console.log(params)
 		},
 		onDel(node) {
-			console.log({node});
-			
-
 
 			axios.post(
 				"/api/delete_folder?api_token=" + this.api_token,

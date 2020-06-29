@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Permalink;
+use Gate;
+
 class Folder extends Model
 {
 
@@ -131,38 +133,22 @@ class Folder extends Model
         $nodeTransferring   = Folder::find($data['node']->id);
         $nodeTarget         = Folder::find($data['target']->id);
 
-        if ($nodeTransferring && $nodeTarget) {
+        if ($nodeTransferring && $nodeTarget) 
+        {
 
             $siblings = Folder::where('parent_id', $nodeTarget->parent_id)
                 ->where('id', '!=', $nodeTransferring->id)
                 ->where('folder_name', $nodeTransferring->folder_name)->get();
 
-            if ($siblings->isEmpty()) {
-
-                try {
-    
+            if ($siblings->isEmpty()) 
+            {
+                try 
+                {
                     //insert or transfer the node to a new location
                     $nodeTransferring->parent_id    = $nodeTarget->parent_id;
                     $nodeTransferring->order_id     = $nodeTarget->order_id;
                     $nodeTransferring->save();
-    
                     $permalinks = Folder::updateChildrenPermalinks($nodeTarget->parent_id);
-
-                    /*
-                    //generate permalink when moving into parent
-                    $permalink = Folder::getURLSegments($nodeTransferring->id);
-                    $queryPermalink = Permalink::find($nodeTransferring->id);
-                    if (isset($queryPermalink)) {
-                        $queryPermalink->update([
-                            'permalink'     => $permalink
-                        ]);
-                    } else {
-                        Permalink::create([
-                            'id'            => $nodeTransferring->id,
-                            'permalink'     => $permalink
-                        ]);  
-                    }*/
-    
                     $response = [
                         'success'       => true,
                         'message'       => "Transfering to a parent folder  has been successfull",
@@ -175,16 +161,18 @@ class Folder extends Model
                         'message'   => $e->getMessage()
                     ];
                 }
-
-            } else {
-
+            } 
+            else 
+            {
                 $response = [
                     "success"           => false,
                     "message"           => "Error, duplicate folder found while inserting into parent folder"
                 ];   
             }
          
-        } else {
+        } 
+        else 
+        {
             $response = [
                 'success'   => false,
                 'message' => "selected folder transferring from and target folder was not found"
@@ -204,7 +192,8 @@ class Folder extends Model
 
         if ($nodeTransferring && $nodeTarget) 
         {
-            try {
+            try 
+            {
                 $orders = Folder::where('parent_id', $nodeTarget->parent_id)
                 ->where('id', '!=', $nodeTransferring->id)
                 ->where('order_id','>=', $nodeTarget->order_id)
@@ -224,14 +213,18 @@ class Folder extends Model
                     'nodeTarget'    => $nodeTarget
                 ];
 
-            } catch (\Exception $e) {
+            } 
+            catch (\Exception $e) 
+            {
                 $response = [
                     'success' => false,
                     'message' => $e->getMessage()
                 ];
             }
 
-        } else {
+        } 
+        else 
+        {
             $response = [
                 'success' => false,
                 'message' => "selected folder id and target id was not found"
@@ -275,6 +268,13 @@ class Folder extends Model
         return url('folder/' . $segments);
     }
 
+    /**
+     * Recursive parsing of folders of node tree
+     * @returns JSON
+     */
+    public static function getPublicFolder($id) {
+        return Folder::getTreeRootFolders($id, false);
+    }
 
     /**
      * Recursive parsing of folders of node tree
@@ -282,25 +282,30 @@ class Folder extends Model
      */
     public static function getFoldersRecursively() 
     {
-       return Folder::getTreeRootFolders();
+       return Folder::getTreeChildren(0, (Gate::denies('filemanager_edit')) ? false : true);
     }
 
     /* 
-    ** Parsing for all folders for tree display 
+    ** Parsing for all folders for tree display from parent to children
     */
-    public static function getTreeRootFolders($rootID = 0, $folderData = []) {
-
-        $rootFolders = Folder::where('parent_id', 0)->orderBy('order_id','ASC')->get();
+    public static function getTreeRootFolders($parentID = 0, $draggable = true, $folderData = []) 
+    {
+        $rootFolders = Folder::where('id', $parentID)->orderBy('order_id','ASC')->get();
 
         //search for children
         foreach($rootFolders as $rootFolder) {
             $folderData[] = [
-                'name' => $rootFolder->folder_name,
-                'description'   => $rootFolder->folder_description,
-                'id'=> $rootFolder->id,
-                'pid'=> 0,
-                'addLeafNodeDisabled' => true,
-                'children'=> Folder::getTreeChildren($rootFolder->id)
+                'name'                  => $rootFolder->folder_name,
+                'description'           => $rootFolder->folder_description,
+                'id'                    => $rootFolder->id,
+                'default-expanded'      => true,
+                'pid'                   => $parentID,
+                'dragDisabled'          => !$draggable,
+                'addLeafNodeDisabled'   => true,
+                'addTreeNodeDisabled'   => (Gate::denies('filemanager_create')) ? true : false,
+                'editNodeDisabled'      => (Gate::denies('filemanager_edit')) ? true : false,
+                'delNodeDisabled'       => (Gate::denies('filemanager_delete')) ? true : false,
+                'children'=> Folder::getTreeChildren($rootFolder->id, $draggable)
             ];
         }
         return $folderData;
@@ -309,21 +314,25 @@ class Folder extends Model
     /* 
     ** Parsing for all folders for tree display 
     */
-    public static function getTreeChildren($parentID, $folderData = []) 
+    public static function getTreeChildren($parentID, $draggable = true, $folderData = []) 
     {
         $subFolders = Folder::where('parent_id', $parentID)->orderBy('order_id','ASC')->get();
 
         foreach($subFolders as $subfolder) {
             $folderData[] = [
-                'name'          => $subfolder->folder_name,
-                'description'   => $subfolder->folder_description,
-                'id'            => $subfolder->id,
-                'pid'           => $parentID,
-                'addLeafNodeDisabled' => true,
-                'children'      => Folder::getTreeChildren($subfolder->id)
+                'name'                  => $subfolder->folder_name,
+                'description'           => $subfolder->folder_description,
+                'id'                    => $subfolder->id,
+                'pid'                   => $parentID,
+                'default-expanded'      => true,
+                'dragDisabled'          => !$draggable,
+                'addLeafNodeDisabled'   => true, //leaf is always disabled
+                'addTreeNodeDisabled'   => (Gate::denies('filemanager_create')) ? true : false,
+                'editNodeDisabled'      => (Gate::denies('filemanager_edit')) ? true : false,
+                'delNodeDisabled'       => (Gate::denies('filemanager_delete')) ? true : false,
+                'children'      => Folder::getTreeChildren($subfolder->id, $draggable)
             ];
         }
-
         return $folderData;
     }
 
@@ -333,7 +342,6 @@ class Folder extends Model
     */
     public static function getChildrenIDs($id) 
     {
-        
         Folder::$ids = Array();
         Folder::recurseChildrenIDs($id);
         return Folder::$ids;
@@ -353,27 +361,19 @@ class Folder extends Model
     public static function updateChildrenPermalinks($id) 
     {
         $updated = Array();
-
         $ids = Folder::getChildrenIDs($id);
         foreach ($ids as $id) {
             $permalink = "";
-
             $permalink = Folder::getPermalink($id);
             $updatePermalink = Permalink::find($id);
-
             if ($updatePermalink) {
-
                 $updated[] = $permalink;
-
-
                 $updatePermalink->update([
                     'permalink'     => $permalink
                 ]);    
             }
         }
-
         return $updated;
-
     }
 
 }
