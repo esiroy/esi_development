@@ -45,6 +45,7 @@ class PublicFolderController extends Controller
             $files = Folder::find($permalink->folder->id)->files;
 
             $data = [
+                'title'  => $permalink->folder->folder_name,
                 'folder' => $permalink->folder,
                 'files' => $files,
                 'folders' => $folders,

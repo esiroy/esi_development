@@ -36,16 +36,16 @@
 
             
             <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Action
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a :class="{'dropdown-item': true, disabled: !file.active}" href="#" @click.prevent="file.active ? $refs.upload.update(file, {error: 'cancel'}) : false">Cancel</a>
-                    <a class="dropdown-item" href="#" v-if="file.active" @click.prevent="$refs.upload.update(file, {active: false})">Abort</a>
-                    <a class="dropdown-item" href="#" v-else-if="file.error && file.error !== 'compressing' && $refs.upload.features.html5" @click.prevent="$refs.upload.update(file, {active: true, error: '', progress: '0.00'})">Retry upload</a>
-                    <a :class="{'dropdown-item': true, disabled: file.success || file.error === 'compressing'}" href="#" v-else @click.prevent="file.success || file.error === 'compressing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
+                    <a :class="{'dropdown-item small': true, disabled: !file.active}" href="#" @click.prevent="file.active ? $refs.upload.update(file, {error: 'cancel'}) : false">Cancel</a>
+                    <a class="dropdown-item small" href="#" v-if="file.active" @click.prevent="$refs.upload.update(file, {active: false})">Abort</a>
+                    <a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing' && $refs.upload.features.html5" @click.prevent="$refs.upload.update(file, {active: true, error: '', progress: '0.00'})">Retry upload</a>
+                    <a :class="{'dropdown-item small': true, disabled: file.success || file.error === 'compressing'}" href="#" v-else @click.prevent="file.success || file.error === 'compressing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
+                    <a class="dropdown-item small" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
                 </div>
             </div>
 
@@ -56,14 +56,9 @@
 
 
     <div class="upload">
-     
-
         <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
             <h3>Drop files to upload</h3>
         </div>
-
-      
-        
         <div class="btn">
             <file-upload
                 name="file"

@@ -38,6 +38,7 @@
                                 <a class="dropdown-item small" :href="'/file/'+file.id" target="_blank">View File</a>
                                 <a class="dropdown-item small" :href="createLink(file)" :download="file.file_name">Download File</a>
 								<a class="dropdown-item small" v-on:click="copyFile(index, file)">Copy URL</a>
+                                <div class="dropdown-divider"  v-if="(can_user_delete_uploads === true)"></div>
 								<a class="dropdown-item small" v-on:click="deleteFile(index, file.id)" v-if="(can_user_delete_uploads === true)">Delete</a>
 							</div>
 						</div>

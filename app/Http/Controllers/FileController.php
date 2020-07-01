@@ -21,11 +21,12 @@ class FileController extends Controller
     public function show($id)
     {
         $file = File::find($id);
+        $title          = $file->file_name;
         $url            = url($file->path);
         $path           = parse_url($url, PHP_URL_PATH);       // get path from url
         $extension      = pathinfo($path, PATHINFO_EXTENSION); // get ext from path
         $filename       = pathinfo($path, PATHINFO_FILENAME);  // get name from path
-        return view('modules.publicfile.show', compact('url', 'file', 'filename', 'extension'));
+        return view('modules.publicfile.show', compact('title', 'url', 'file', 'filename', 'extension'));
     }
 
 
