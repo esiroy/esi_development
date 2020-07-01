@@ -142,11 +142,13 @@ class FolderController extends Controller
                 'permalink'     =>  $permalink
             ]);
 
+            $folderData['permalink'] = Folder::getLink($folderData->id);
+
             return Response()->json([
                 "success" => true,
-                "permalink" =>  $permalink,
+                //"permalink" =>  $permalink,
                 "folder_id" => $folderData->id,
-                "folder"    => $folderData
+                "folder"    => $folderData,
             ]);
 
 

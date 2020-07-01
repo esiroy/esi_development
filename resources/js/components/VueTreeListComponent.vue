@@ -670,24 +670,14 @@ export default {
 			if (this.FolderType == "rootFolder") {
 				//Create the root folder
 				this.createFolderOnServer(0);
-				this.$nextTick(() => {
-					//this.$bvModal.hide("createNewFolder");
-					this.getFolders();
-				});
+	
 			} else if (this.FolderType == "subFolder") {
 				//create the subfolder
 				this.createFolderOnServer(this.currentNodeCreated.parent.id);
-				this.$nextTick(() => {
-					//this.$bvModal.hide("createNewSubFolder");
-					this.getFolders();
-				});
+		
 			} else if (this.FolderType == "editFolder") {
 				this.updateFolderOnServer(this.folderID);
 
-				this.$nextTick(() => {
-					//this.$bvModal.hide("editFolder");
-					this.getFolders();
-				});
 			}
 		},
 		onAddNode(params) {
@@ -715,8 +705,7 @@ export default {
 			//////this.getFolders();
 		},
 		createFolderOnServer(parent_id) {
-			axios
-				.post("/api/create_folder?api_token=" + this.api_token, {
+			axios.post("/api/create_folder?api_token=" + this.api_token, {
 					method: "POST",
 					parent_id: parent_id,
 					folder_name: this.folderName,
@@ -734,18 +723,26 @@ export default {
 						//console.log("new folder id ", this.folderID);
 
 						if (this.FolderType == "rootFolder") {
-							this.addNode(response.data.folder);
-							this.$bvModal.hide("createNewFolder");
+                            this.addNode(response.data.folder);
+                            this.$bvModal.hide("createNewFolder");
 						} else if (this.FolderType == "subFolder") {
-							//this.addNode(response.data.folder);
-
 							this.currentNodeCreated.id = response.data.folder.id;
 							this.currentNodeCreated.name = this.folderName;
 							this.currentNodeCreated.description = this.folderDescription;
 							this.currentNodeCreated.addLeafNodeDisabled = true;
+                            this.$bvModal.hide("createNewSubFolder");
+                        }
+                        
+                        this.$nextTick(function() {
+                            let nodeItem = {
+                                id: response.data.folder.id,
+                                name: this.folderName,
+                                description: this.folderDescription,
+                                permalink: response.data.folder.permalink
+                            };
+                            this.onClick(nodeItem);
+                        });
 
-							this.$bvModal.hide("createNewSubFolder");
-						}
 					}
 				})
 				.catch(function(error) {
@@ -753,8 +750,53 @@ export default {
 					alert("Error " + error);
 					console.log(error);
 				});
+        },
+        
+		updateFolderOnServer(folderID) {
+			axios
+				.post("/api/update_folder?api_token=" + this.api_token, {
+					method: "POST",
+					folder_id: folderID,
+					folder_name: this.folderName,
+					folder_description: this.folderDescription
+				})
+				.then(response => {
+					if (response.data.success === false) {
+						this.invalidFeedbackMessage = response.data.message;
+						this.folderNameState = false;
+					} else {
+						//success
+						this.folderID = response.data.folder.id;
+						this.folderName = response.data.folder.folder_name;
+						this.folderDescription = response.data.folder.folder_description;
 
-			this.getFolders();
+						//display folder
+						this.displayfolderID = response.data.folder.id;
+						this.displayFolderName = response.data.folder.folder_name;
+						this.displayFolderDesc = response.data.folder.folder_description;
+						this.displayFolderLink = response.data.folder.permalink;
+
+						this.onChangeName(this.folderID);
+                        this.$bvModal.hide("editFolder");
+                        
+                        let nodeItem = {
+                            id: response.data.folder.id,
+                            name: response.data.folder.folder_name,
+                            description: response.data.folder.folder_description,
+                            permalink: response.data.folder.permalink
+                        };
+                        console.log(nodeItem);
+
+                        //this.onClick(nodeItem);
+
+                        
+					}
+				})
+				.catch(function(error) {
+					// handle error
+					//alert("Error " + error);
+					console.log(error);
+				});
 		},
 		onMoveInto(item) {
 			//console.log("Move Into Folder");
@@ -893,52 +935,7 @@ export default {
 			this.handleSubmit();
 		},
 
-		updateFolderOnServer(folderID) {
-			axios
-				.post("/api/update_folder?api_token=" + this.api_token, {
-					method: "POST",
-					folder_id: folderID,
-					folder_name: this.folderName,
-					folder_description: this.folderDescription
-				})
-				.then(response => {
-					if (response.data.success === false) {
-						this.invalidFeedbackMessage = response.data.message;
-						this.folderNameState = false;
-					} else {
-						//success
-						this.folderID = response.data.folder.id;
-						this.folderName = response.data.folder.folder_name;
-						this.folderDescription = response.data.folder.folder_description;
 
-						//display folder
-						this.displayfolderID = response.data.folder.id;
-						this.displayFolderName = response.data.folder.folder_name;
-						this.displayFolderDesc = response.data.folder.folder_description;
-						this.displayFolderLink = response.data.folder.permalink;
-
-						console.log(this.displayFolderLink);
-
-						this.onChangeName(this.folderID);
-
-                        this.$bvModal.hide("editFolder");
-                        
-                        let nodeItem = {
-                            id: response.data.folder.id,
-                            name: response.data.folder.folder_name,
-                            description: response.data.folder.folder_description,
-                            permalink: response.data.folder.permalink
-                        };
-            
-                        this.onClick(nodeItem);
-					}
-				})
-				.catch(function(error) {
-					// handle error
-					//alert("Error " + error);
-					console.log(error);
-				});
-		},
 
 		showLoading() {
 			this.$bvModal.show("loadingModal");
