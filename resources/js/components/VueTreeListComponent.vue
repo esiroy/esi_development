@@ -370,6 +370,7 @@ export default {
 	beforeMount() {},
 	mounted() {
         this.getFolders();
+
         let elements = document.getElementsByClassName("vtl");
         Array.from(elements).forEach((element) => {
             element.addEventListener('contextmenu', () => this.openMenu(event, element));
@@ -732,7 +733,7 @@ export default {
 							this.currentNodeCreated.addLeafNodeDisabled = true;
                             this.$bvModal.hide("createNewSubFolder");
                         }
-                        
+
                         this.$nextTick(function() {
                             let nodeItem = {
                                 id: response.data.folder.id,
@@ -741,6 +742,8 @@ export default {
                                 permalink: response.data.folder.permalink
                             };
                             this.onClick(nodeItem);
+
+                            this.getFolders();
                         });
 
 					}
@@ -779,15 +782,18 @@ export default {
 						this.onChangeName(this.folderID);
                         this.$bvModal.hide("editFolder");
                         
-                        let nodeItem = {
-                            id: response.data.folder.id,
-                            name: response.data.folder.folder_name,
-                            description: response.data.folder.folder_description,
-                            permalink: response.data.folder.permalink
-                        };
-                        console.log(nodeItem);
+                        this.$nextTick(function() {
+                            console.log("")
+                            let nodeItem = {
+                                id: response.data.folder.id,
+                                name: response.data.folder.folder_name,
+                                description: response.data.folder.folder_description,
+                                permalink: response.data.folder.permalink
+                            }
+                            this.onClick(nodeItem);
 
-                        //this.onClick(nodeItem);
+                            this.getFolders();
+                        });
 
                         
 					}
