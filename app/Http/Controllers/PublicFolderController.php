@@ -38,6 +38,8 @@ class PublicFolderController extends Controller
         $folders = Array();
         $files = Array();
 
+    
+
         if (isset($permalink->folder)) 
         {
             $files = Folder::find($permalink->folder->id)->files;
@@ -46,12 +48,11 @@ class PublicFolderController extends Controller
                 'folder' => $permalink->folder,
                 'files' => $files,
                 'folders' => $folders,
-                
                 'can_user_upload' => 'false',
                 'can_user_delete_uploads' => 'false', 
                 'can_user_create_folder' => 'false',
-                'can_user_edit_folder' => $can_user_edit_folder, 
-                'can_user_delete_folder' =>  $can_user_delete_folder
+                'can_user_edit_folder' => 'false', 
+                'can_user_delete_folder' =>  'false'
             ];
 
             return view('modules/publicfolder/show', $data);

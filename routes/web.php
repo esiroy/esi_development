@@ -12,35 +12,27 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::resource('test', 'dummyController');
 
-Route::get('/', 'PublicFolderController@index')->name('welcome'); 
+Route::get('/', 'PublicFolderController@index')->name('welcome');
 Route::get('/home', 'HomeController@index')->name('home');
 
-
-/* Folder Controllers */
-Route::resource('uploader', 'FolderCreatorController');
+/* Public Folder View */
+Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
 
 /*File Controller*/
 Route::resource('file', 'FileController');
 
+
+/* Folder Manager Controllers */
+Route::resource('uploader', 'FolderCreatorController');
+
 /*Upload Controller */
 Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
-/* Public Folder View */
-//Route::get('folder/{id}', 'PublicFolderController@show');
-
-/*
-Route::get('folder/{name?}', function ($name = null) {
-
-})->where('name', '.*');
-*/
-
-Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
-
-
-
 /* Download Controller*/
 Route::resource('download', 'DownloadController');
+
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
@@ -49,9 +41,15 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::post('login', 'AuthController@login')->name('login');
     Route::post('logout', 'AuthController@logout')->name('logout');
 
-    Route::group(['middleware' => 'admin.auth'], function(){
+    Route::group(['middleware' => 'admin.auth'], function()
+    {
+        /*
         Route::resource('/', 'DashboardController');
         Route::resource('/dashboard', 'DashboardController');
+        */
+
+        Route::resource('/', 'Modules\FileManagerController');
+        Route::resource('/dashboard', 'Modules\FileManagerController');
 
         /* Administrator Module Lists */
         Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 

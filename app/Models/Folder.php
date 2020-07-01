@@ -295,9 +295,10 @@ class Folder extends Model
         //search for children
         foreach($rootFolders as $rootFolder) {
             $folderData[] = [
+                'id'                    => $rootFolder->id,
                 'name'                  => $rootFolder->folder_name,
                 'description'           => $rootFolder->folder_description,
-                'id'                    => $rootFolder->id,
+                'permalink'             => Folder::getLink($rootFolder->id),
                 'default-expanded'      => true,
                 'pid'                   => $parentID,
                 'dragDisabled'          => !$draggable,
@@ -320,9 +321,10 @@ class Folder extends Model
 
         foreach($subFolders as $subfolder) {
             $folderData[] = [
+                'id'                    => $subfolder->id,
                 'name'                  => $subfolder->folder_name,
                 'description'           => $subfolder->folder_description,
-                'id'                    => $subfolder->id,
+                'permalink'             => Folder::getLink($subfolder->id),
                 'pid'                   => $parentID,
                 'default-expanded'      => true,
                 'dragDisabled'          => !$draggable,

@@ -27,6 +27,7 @@ class FolderController extends Controller
         $this->middleware('auth')->except(['getChildFolders', 'getPublicFiles']);
     }
 
+    /* Private Page Folders Retrieval*/
     public function folders(Request $request) 
     {
         //$request
@@ -38,25 +39,26 @@ class FolderController extends Controller
         ]);
     }
 
+    /* Public Child Folder Retrieval*/
     public function getChildFolders(Request $request) {
-       
-        $folderID   = $request['public_folder_id'];
+        
+    $folderID   = $request['public_folder_id'];
 
-        $folders = (Folder::getPublicFolder($folderID));
+    $folders = (Folder::getPublicFolder($folderID));
 
-        return Response()->json([
-            "success"               => true,
-            "folders"               =>  $folders
-        ]);   
+    return Response()->json([
+        "success"               => true,
+        "folders"               =>  $folders
+    ]);   
     }
 
-
+    /* Public Folder Files*/
     public function getPublicFiles(Request $request) 
     {
         $folderID   = $request['folder_id'];
         $folder     = Folder::find($folderID);
         $files      = $folder->files;
-    
+
         return Response()->json([
             "success"               => true,
             'folder_id'             => $folder['id'],
@@ -66,7 +68,8 @@ class FolderController extends Controller
             "files"                 => json_decode($files)
         ]);
     }
-
+ 
+    /* Private Folder Files*/
     public function files(Request $request) 
     {
         $folderID   = $request['folder_id'];
@@ -91,6 +94,8 @@ class FolderController extends Controller
      */
     public function store(Request $request) 
     {
+        abort_if(Gate::denies('filemanager_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $this->parent_id = $request['parent_id'];
 
         //disallow duplicate folder name
@@ -189,14 +194,21 @@ class FolderController extends Controller
             'parent_id'             => $folder->parent_id,
             'slug'                  => Str::slug($request['folder_name'], '-'),
             'folder_name'           => $request['folder_name'],
-            'folder_description'    => $request['folder_description']
+            'folder_description'    => $request['folder_description'],
         ];
 
         //Update Folder 
         $folder->update($folderData);
 
+        //update permalink
+        $folderData['permalink'] = Folder::getLink($folder->id);
+
+
+
         //generate permalink when moving into parent
-        $permalink = Folder::getURLSegments($folder->id);
+        $permalink = Folder::getPermalink($folder->id);
+        Folder::updateChildrenPermalinks($folder->id);
+        
         $queryPermalink = Permalink::find($folder->id);
         if (isset($queryPermalink)) {
             $queryPermalink->update([
@@ -224,6 +236,7 @@ class FolderController extends Controller
      */
     public function moveIntoParent(Request $request) 
     {
+        abort_if(Gate::denies('filemanager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $node   = (object) $request['node'];
         $parent = (object) $request['src'];
@@ -263,76 +276,34 @@ class FolderController extends Controller
 
                     //Insert to the first the new inserted node, 
                     //if the parent id and nodeTarget is not the same only, since you will be dropping it to own folder
-                    if ($nodeTransferring->parent_id  != $nodeTarget->id) 
+                    if ($nodeTransferring->parent_id  !== $nodeTarget->id && $nodeData['node']->id !== $nodeData['target']->id) 
                     {
                         $nodeTransferring->parent_id    = $nodeTarget->id;
                         $nodeTransferring->order_id     =  1;
                         $nodeTransferring->save();
 
+                        $folderData = [
+                            'slug'                  => Str::slug($nodeTransferring->folder_name, '-'),
+                            'folder_name'           => $nodeTransferring->folder_name,
+                            'parent_id'             => $nodeTransferring->parent_id,
+                            'folder_description'    => $nodeTransferring->folder_description,
+                            "permalink"             => Folder::getLink($nodeData['node']->id)
+                        ];
+
                         $permalinks = Folder::updateChildrenPermalinks($nodeTarget->parent_id);
-
-
                         return Response()->json([
                             "success"           => true,
                             "message"           => "Folder has been successfully transferred",
-                            "permalinks"         => $permalinks 
-                        ]);    
-
-                        /*
-                        //generate permalink when moving into parent
-                        $permalink = Folder::getURLSegments($nodeTransferring->id);
-                        $queryPermalink = Permalink::find($nodeTransferring->id);
-                        if ($queryPermalink) 
-                        {
-                            try {
-                                $queryPermalink->update([
-                                    'permalink'     => $permalink
-                                ]);
-
-                                return Response()->json([
-                                    "success"           => true,
-                                    "message"           => "transfer successfull"
-                                ]);
-
-                            } catch (\Exception $e) {
-
-                                return Response()->json([
-                                    'success' => false,
-                                    'message'   => $e->getMessage()
-                                ]);
-
-                            }
-
-                        } else {
-
-                            try {
-                                Permalink::create([
-                                    'id'            => $nodeTransferring->id,
-                                    'permalink'     => $permalink
-                                ]);
-
-                                return Response()->json([
-                                    "success"           => true,
-                                    "message"           => "transfer successfull"
-                                ]);
-
-                             } catch (\Exception $e) {
-
-                                return Response()->json([
-                                    'success' => false,
-                                    'message'   => $e->getMessage()
-                                ]);
-                            }
-
-                        }
-                        */
+                            "folder"            =>  $folderData,
+                            //"permalinks"        => $permalinks 
+                        ]);
 
 
                     } else {
 
                         return Response()->json([
                             "success"           => false,
-                            "message"           => "Error, Transferring to the same folder found"
+                            "message"           => "Error, Transferring to the same folder"
                         ]);      
                     }
 
@@ -371,6 +342,9 @@ class FolderController extends Controller
      */
     public function reorderSiblingFolders(Request $request) 
     {
+        abort_if(Gate::denies('filemanager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        
         $node   = (object) $request['node'];
         $parent = (object) $request['src'];
         $target = (object) $request['target'];
