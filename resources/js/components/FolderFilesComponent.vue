@@ -27,8 +27,7 @@
 					</td>
 					<td>
 						<div class="dropdown">
-							<button
-								class="btn btn-secondary dropdown-toggle"
+							<button class="btn btn-secondary btn-sm dropdown-toggle "
 								type="button"
 								id="dropdownMenuButton"
 								data-toggle="dropdown"
@@ -36,10 +35,10 @@
 								aria-expanded="false"
 							>Action</button>
 							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item" :href="'/file/'+file.id" target="_blank">View File</a>
-                                <a class="dropdown-item" :href="createLink(file)" :download="file.file_name">Download File</a>
-								<a class="dropdown-item" v-on:click="copyFile(index, file)">Copy URL</a>
-								<a class="dropdown-item" v-on:click="deleteFile(index, file.id)" v-if="(can_user_delete_uploads === true)">Delete</a>
+                                <a class="dropdown-item small" :href="'/file/'+file.id" target="_blank">View File</a>
+                                <a class="dropdown-item small" :href="createLink(file)" :download="file.file_name">Download File</a>
+								<a class="dropdown-item small" v-on:click="copyFile(index, file)">Copy URL</a>
+								<a class="dropdown-item small" v-on:click="deleteFile(index, file.id)" v-if="(can_user_delete_uploads === true)">Delete</a>
 							</div>
 						</div>
 					</td>
