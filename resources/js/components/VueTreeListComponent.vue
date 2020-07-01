@@ -833,8 +833,6 @@ export default {
                 this.moveIntoParentItem(nodeItem, parentNode, targetNode);
             }
 			
-
-			this.getFolders();
 		},
 		onInsertBefore(item) {
 			//console.log("onInsertBefore");
@@ -862,8 +860,6 @@ export default {
 			};
 
 			this.reorderItems(nodeItem, parentNode, targetNode);
-
-			this.getFolders();
 		},
 		onInsertAfter(node) {
 			//console.log("onInsertAfter");
@@ -963,10 +959,11 @@ export default {
 						this.getFolders();
 					} else {
 						this.displayFolderLink = response.data.folder.permalink;
-
 						console.log(this.displayFolderLink);
-
-						this.$bvModal.hide("loadingModal");
+                        this.$bvModal.hide("loadingModal");
+                        this.$nextTick(function() {
+                            this.getFolders();
+                        });
 					}
 				})
 				.catch(function(error) {
@@ -989,7 +986,11 @@ export default {
 					if (response.data.success === false) {
 						alert(response.data.message);
 						this.getFolders();
-					}
+					} else {
+                        this.$nextTick(function() {
+                            this.getFolders();
+                        });
+                    }
 				})
 				.catch(function(error) {
 					// handle error
