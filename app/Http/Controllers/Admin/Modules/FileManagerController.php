@@ -15,6 +15,7 @@ use App\Models\File;
 use Gate;
 use Validator;
 use Input;
+use DB;
 
 class FileManagerController extends Controller
 {
@@ -29,22 +30,36 @@ class FileManagerController extends Controller
         abort_if(Gate::denies('filemanager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //@can('filemanager_upload_delete)
+        $can_user_share_folder  = (Gate::denies('filemanager_share')) ? 'false' : 'true';
         $can_user_create_folder  = (Gate::denies('filemanager_create')) ? 'false' : 'true';
         $can_user_edit_folder    = (Gate::denies('filemanager_edit')) ? 'false' : 'true';
         $can_user_delete_folder    = (Gate::denies('filemanager_delete')) ? 'false' : 'true';
         $can_user_upload         = (Gate::denies('filemanager_upload')) ? 'false' : 'true';
         $can_user_delete_uploads = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';
 
-        //$folders = (Folder::getFoldersRecursively());
+     
+        $all_users = User::get();
+        foreach ($all_users as $user) {
+            $users[] = [
+                'id'    => $user->id,
+                'name'  => $user->name,
+                'code' => $user->id,
+            ];
+        }
+
         $folders = Array();
         $files = Array();
+       
+
         
         return view('admin.modules.filemanager.index', compact(
+            'users',
             'folders', 
             'files', 
             'can_user_upload',
             'can_user_delete_uploads', 
             'can_user_create_folder',
+            'can_user_share_folder',
             'can_user_edit_folder',
             'can_user_delete_folder'
         ));

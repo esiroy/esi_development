@@ -1,33 +1,78 @@
 <template>
 	<div class="row">
-		<div class="col-md-4">
+
+		<div class="col-sm-4 col-md-4 mb-4">
 			<div class="card">
 				<div class="card-header">Folders</div>
 				<div class="card-body">
+
 					<b-modal id="loadingModal" ref="loadingModal" title="Please wait">
 						<b-spinner class="m-5" label="Busy"></b-spinner>
 					</b-modal>
+
+			
+                    <div class="sharefolderContainer"> 
+						<b-modal
+							id="shareFolder"
+							ref="modalShareFolder"
+							:title="'Share Folder - ' + this.node.name"
+							@show="resetShareModal"
+							@hidden="resetShareModal"
+							@ok="handleOk">
+
+                            <form ref="form" @submit.stop.prevent="handleSubmit">
+
+                                <div class="permalinks">
+                                    <div class="form-group">
+                                        <div class="container">
+                                            <div class="row">
+                                                <div class="col-9 px-0">
+                                                    <input type="text" class="form-control pr-2" :value="this.contextMenuPermalink" placeholder="Permalink">
+                                                </div>
+                                                <div class="col-3 pl-2 pr-0">
+                                                    <button type="button" class="col-12 btn btn-secondary" v-clipboard:copy="contextMenuPermalink" v-clipboard:success="onCopy" v-clipboard:error="onError">Copy</button>
+                                                 </div>
+                                            </div>
+                                         </div>
+                                    </div>
+                                </div>
+
+                                <multiselect v-model="sharingValues" deselect-label="Can't remove this value" track-by="code" label="name" placeholder="Select one" 
+                                :options="sharingOptions" :searchable="false" :allow-empty="false">
+                                    <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></strong></template>
+                                </multiselect>
+                                <br>
+                                <span v-if="this.sharingValues.code === 'private'">Share With Specific Users</span>
+                                <multiselect v-if="this.sharingValues.code === 'private'"
+                                    v-model="userValues" tag-placeholder="Add this as new user" 
+                                    placeholder="Search or add a user" label="name" 
+                                    track-by="code" 
+                                    :options="userOptions" 
+                                    :multiple="true" 
+                                    :taggable="true" 
+                                    @tag="addTag">
+                                </multiselect>
+                            </form>
+						</b-modal>
+                    </div>
 
 					<div class="createNewFolderContainter">
 						<div class="mb-4" v-if="(can_user_create_folder === true)">
 							<b-button v-b-modal.createNewFolder>Create New Folder</b-button>
 						</div>
 
-						<b-modal
-							id="createNewFolder"
+						<b-modal id="createNewFolder"
 							ref="modalCreateNewFolder"
 							title="Create New Folder"
 							@show="resetModal"
 							@hidden="resetModal"
-							@ok="handleOk"
-						>
+							@ok="handleOk">
 							<form ref="form" @submit.stop.prevent="handleSubmit">
 								<b-form-group
 									:state="folderNameState"
 									label="Name"
 									label-for="name-input"
-									:invalid-feedback="invalidFeedbackMessage"
-								>
+									:invalid-feedback="invalidFeedbackMessage">
 									<b-form-input id="name-input" v-model="folderName" :state="folderNameState" required></b-form-input>
 								</b-form-group>
 
@@ -35,8 +80,7 @@
 									:state="folderDescriptionState"
 									label="Description"
 									label-for="description-input"
-									invalid-feedback="Description is required"
-								>
+									invalid-feedback="Description is required">
 									<b-form-textarea
 										id="description-input"
 										v-model="folderDescription"
@@ -121,54 +165,59 @@
 						</b-modal>
 					</div>
 
-					<vue-tree-list
-						v-bind:default-expanded="true"
-						@click="onClick"
-						@change-name="onChangeName"
-						@delete-node="onDel"
-						@add-node="onCreateNewSubFolder"
-						@drop="onMoveInto"
-						@drop-before="onInsertBefore"
-						@drop-after="onInsertAfter"
-						:model="data"
-						default-tree-node-name="New Folder"
-						default-leaf-node-name="New Page"
-					>
-						<span class="icon" slot="addTreeNodeIcon">
-                            <a href="#" name="addNode" class="addNode">
-                                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-folder-plus mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
-                                    <path fill-rule="evenodd" d="M13.5 10a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
-                                    <path fill-rule="evenodd" d="M13 12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0v-2z"/>
-                                </svg>
-                            </a>
-                        </span>
-						<span class="icon" slot="addLeafNodeIcon">＋</span>
-						<span class="icon" slot="editNodeIcon">
-							<a href="#" @click.stop.prevent="onEditFolder($event)" class="editNode">
-                                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-window mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path fill-rule="evenodd" d="M14 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"/>
-                                    <path fill-rule="evenodd" d="M15 6H1V5h14v1z"/>
-                                    <path d="M3 3.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
-                                </svg>
-                            </a>
-						</span>
-						<span class="icon" slot="delNodeIcon">
-                            <a href="#" name="deleteNode" class="deleteNode">
-                                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-trash mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
-                                </svg>
-                            </a>
-                        </span>
-						<span class="icon" slot="leafNodeIcon">🍃</span>
-						<span class="icon" slot="treeNodeIcon">
-                            <svg class="bi bi-folder mr-2" width="1.2em" height="1.2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z"/>
-                                <path fill-rule="evenodd" d="M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z"/>
-                            </svg>
-                        </span>
-					</vue-tree-list>
+                    <div class="folder-tree-container mb-4">
+                        <vue-tree-list 
+                            v-bind:default-expanded="true"
+                            @click="onClick"
+                            @change-name="onChangeName"
+                            @delete-node="onDel"
+                            @add-node="onCreateNewSubFolder"
+                            @drop="onMoveInto"
+                            @drop-before="onInsertBefore"
+                            @drop-after="onInsertAfter"
+                            :model="data"
+                            default-tree-node-name="New Folder"
+                            default-leaf-node-name="New Page">
+
+                            <span class="icon" slot="addTreeNodeIcon" title="Add folder">
+                              
+                                <a href="#" name="addNode" class="addNode" title="Add folder">
+                                    <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-folder-plus mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M9.828 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91H9v1H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181L15.546 8H14.54l.265-2.91A1 1 0 0 0 13.81 4H9.828zm-2.95-1.707L7.587 3H2.19c-.24 0-.47.042-.684.12L1.5 2.98a1 1 0 0 1 1-.98h3.672a1 1 0 0 1 .707.293z"/>
+                                        <path fill-rule="evenodd" d="M13.5 10a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1H13v-1.5a.5.5 0 0 1 .5-.5z"/>
+                                        <path fill-rule="evenodd" d="M13 12.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0v-2z"/>
+                                    </svg>
+                                </a>
+                            </span>
+                            <span class="icon" slot="addLeafNodeIcon">＋</span>
+                            <span class="icon" slot="editNodeIcon">
+                                <a href="#" @click.stop.prevent="onEditFolder($event)" class="editNode">
+                                    <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-window mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M14 2H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1zM2 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2H2z"/>
+                                        <path fill-rule="evenodd" d="M15 6H1V5h14v1z"/>
+                                        <path d="M3 3.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm1.5 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z"/>
+                                    </svg>
+                                </a>
+                            </span>
+                            <span class="icon" slot="delNodeIcon">
+                                <a href="#" name="deleteNode" class="deleteNode">
+                                    <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-trash mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
+                                        <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4L4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                                    </svg>
+                                </a>
+                            </span>
+                            <span class="icon" slot="leafNodeIcon">🍃</span>
+                            <span class="icon" slot="treeNodeIcon">
+                                <div class="icon-folder">
+                                    <svg class="bi bi-folder mr-2" width="1.2em" height="1.2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z"/>
+                                        <path fill-rule="evenodd" d="M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z"/>
+                                    </svg>
+                                </div>
+                            </span>
+                        </vue-tree-list>
+                    </div>
 
 					<!--<button @click="getNewTree">Get new tree</button>
 					<pre>
@@ -180,8 +229,16 @@
 		</div>
 
 		<!-- DISPLAY FOLDER DETAILS -->
-		<div class="col-md-8">
-			<div class="card mb-4" v-if="this.folderCurrentID !== null">
+
+		<div class="col-sm-8 col-md-8">
+            
+            <div class="card mb-4" v-if="!this.data.children && !can_user_upload">
+                <div class="card-body text-center"> 
+                   No Shared folders found
+                </div>
+            </div>
+
+			<div class="card mb-4" v-else-if="this.folderCurrentID !== null">
 				<div class="card-header">Folder Details</div>
 				<div class="card-body">
 					<div class="row">
@@ -213,34 +270,33 @@
 				</div>
 			</div>
 
-			<div class="card my-4" v-if="can_user_upload">
-				<div class="card-body">
-					<admin-uploader-component
-						ref="uploaderComponent"
-						:user_can_delete="'true'"
-						:folder_id="this.folderCurrentID"
-						:csrf_token="this.folderCurrentToken"
-					/>
-				</div>
+			<div class="container p-0 mb-4" v-if="can_user_upload">
+                <admin-uploader-component
+                    ref="uploaderComponent"
+                    :user_can_delete="'true'"
+                    :folder_id="this.folderCurrentID"
+                    :csrf_token="this.folderCurrentToken"/>
 			</div>
 
-			<div class="card">
-				<folder-files-component
-					ref="folderFilesComponent"
-					:folder_files="this.files"
-					:can_user_delete_uploads="can_user_delete_uploads"
-				/>
-			</div>
+			<div class="container p-0 mb-4">
+                <folder-files-component
+                    ref="folderFilesComponent"
+                    :can_user_upload="this.can_user_upload"
+                    :public="this.public"
+                    :folder_files="this.files"
+                    :can_user_delete_uploads="can_user_delete_uploads"
+                />
+            </div>
 		</div>
 
 
-        <ul id="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">
-            <li @click="contextMenuGetLink">
-                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-clipboard mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+        <ul :id="this.parentID" class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">
+            <li @click="contextmenuShare" v-if="can_user_share_folder">
+                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-share mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M11.724 3.947l-7 3.5-.448-.894 7-3.5.448.894zm-.448 9l-7-3.5.448-.894 7 3.5-.448.894z"/>
+                <path fill-rule="evenodd" d="M13.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-11-6.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
                 </svg>
-                Copy Folder Link
+                 Share Folder
             </li>
             <li @click="contextMenuCreate" v-if="can_user_create_folder">
                 <svg class="bi bi-folder mr-2" width="1.2em" height="1.2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -258,6 +314,15 @@
                 </svg>
                 Edit Folder
             </li>
+
+            <li @click="contextMenuGetLink">
+                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-clipboard mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                </svg>
+                Copy Folder Link
+            </li>
+
             <li @click="contextMenuDelete"  v-if="can_user_delete_folder">
                 <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-trash mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
@@ -273,17 +338,30 @@
 <script>
 import qs from "qs";
 import { VueTreeList, Tree, TreeNode } from "vue-tree-list";
+import Multiselect from 'vue-multiselect'
+import VueClipboard from 'vue-clipboard2'
+
+VueClipboard.config.autoSetContainer = true // add this line
+Vue.use(VueClipboard)
+
 export default {
 	components: {
-		VueTreeList
+        VueTreeList,
+        Multiselect
 	},
 	props: {
 		public: {
 			type: Boolean
-		},
+        },
+        public_viewer_id: {
+            type: Number
+        },
 		public_folder_id: {
 			type: Number
-		},
+        },
+        users: {
+            type: Array
+        },
 		folders: {
 			type: Array
 		},
@@ -295,7 +373,10 @@ export default {
 		},
 		can_user_delete_uploads: {
 			type: Boolean
-		},
+        },
+        can_user_share_folder: {
+            type: Boolean
+        },
 		can_user_create_folder: {
 			type: Boolean
         },
@@ -317,16 +398,27 @@ export default {
 	},
 	data() {
 		return {
+             message: 'Copy These Text',
+
 			firstLoad: true,
             parentID: null,
 			URLEndPoint: "",
             prevIDClicked: null,
+
+            node: {},
+            //Users Select
+            userValues: [],
+            userOptions: this.users,
+            //Sharing
+            sharingValues: [],
+            sharingOptions: [
+                { name: 'Public', code: 'public' },
+                { name: 'Private', code: 'private' }
+            ],
 			//Files
             files: [],
-            
             //context Menu
             contextMenuPermalink: null,
-
 			//feedbacks
 			invalidFeedbackMessage: "Name is required",
 
@@ -334,7 +426,11 @@ export default {
 			displayfolderID: "",
 			displayFolderLink: "",
 			displayFolderName: "",
-			displayFolderDesc: "",
+            displayFolderDesc: "",
+            
+            iconSharedFolder: "<svg class='bi bi-folder-symlink mr-2' width='1.2em' height='1.2em' viewBox='0 0 16 16'  fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path d='M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z'/><path fill-rule='evenodd' d='M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z'/> <path d='M8.616 10.24l3.182-1.969a.443.443 0 0 0 0-.742l-3.182-1.97c-.27-.166-.616.036-.616.372V6.7c-.857 0-3.429 0-4 4.8 1.429-2.7 4-2.4 4-2.4v.769c0 .336.346.538.616.371z'/></svg>",
+
+            iconPrivateFolder: "<svg class='bi bi-folder mr-2' width='1.2em' height='1.2em' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path d='M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z'/><path fill-rule='evenodd' d='M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z'/></svg>",            
 
 			//Modals Inputs
 			folderID: "",
@@ -369,8 +465,10 @@ export default {
 
 	beforeMount() {},
 	mounted() {
+
         this.getFolders();
 
+        //context menus
         let elements = document.getElementsByClassName("vtl");
         Array.from(elements).forEach((element) => {
             element.addEventListener('contextmenu', () => this.openMenu(event, element));
@@ -378,7 +476,28 @@ export default {
         document.addEventListener('click', () => this.closeMenu(event));
 	},
 	methods: {
-        getPermalink(oldNode, id) {
+        onCopy: function (e) {
+            //alert('You just copied: ' + e.text)
+        },
+        onError: function (e) {
+            alert('Failed to copy texts')
+        },
+        addTag (newTag) {
+            const tag = {
+                name: newTag,
+                code: newTag.substring(0, 2) + Math.floor((Math.random() * 10000000))
+            }
+            this.options.push(tag)
+            this.value.push(tag)
+        },
+        copyPermalinkHandler() {
+            let container = this.$refs.container
+            this.$copyText("Text to copy", container)
+        },
+        getPermalink(id) {
+             this.searchPermalink(this.data, id)
+        },
+        searchPermalink(oldNode, id) {
             var newNode = {};
             for (var k in oldNode) {
                 if (k !== "children" && k !== "parent") {
@@ -393,15 +512,55 @@ export default {
                         this.contextMenuPermalink = (oldNode.children[i].permalink) ;
                     }
                     newNode.children.push(
-                        this.getPermalink(oldNode.children[i], id)
+                        this.searchPermalink(oldNode.children[i], id)
                     );
                 }
             }
         },
+        getNode(id) {
+            this.getNodeData(this.data, id);
+        },
+        getNodeData(oldNode, id) {
+            var newNode = {};
+            for (var k in oldNode) {
+                if (k !== "children" && k !== "parent") {
+                    newNode[k] = oldNode[k];
+                }
+            }
+
+            if (oldNode.children && oldNode.children.length > 0) {
+                newNode.children = [];
+                for (var i = 0, len = oldNode.children.length;i < len;i++) {
+                    if (oldNode.children[i].id == id) 
+                    {
+                         console.log("yo -> " + oldNode.children[i].id);
+
+                        this.node = {
+                            id          : oldNode.children[i].id,
+                            name        : oldNode.children[i].name,
+                            description : oldNode.children[i].description,
+                            permalink   : oldNode.children[i].permalink,
+                            privacy     : oldNode.children[i].privacy,
+                            sharedTo    : oldNode.children[i].sharedTo
+                        }             
+
+                    }
+                    newNode.children.push(
+                        this.getNodeData(oldNode.children[i], id)
+                    );
+                }
+            }
+        },
+  
         contextMenuGetLink()
         {
-			let link = this.getPermalink(this.data, this.parentID);
-            this.textToClipboard(this.contextMenuPermalink);
+            this.getPermalink(this.parentID);
+            console.log("id", this.parentID);
+
+            this.$nextTick(function(){
+                console.log(this.contextMenuPermalink);
+                this.textToClipboard(this.contextMenuPermalink);
+            });
         },
         textToClipboard (text) {
             let dummy = document.createElement("textarea");
@@ -410,7 +569,35 @@ export default {
             dummy.select();
             document.execCommand("copy");
             document.body.removeChild(dummy);
+           
         },
+        contextmenuShare: function(event, element)  
+        {
+            this.getParentID(event.target);
+            this.getNode(this.parentID);
+            this.$nextTick(function() {
+                 this.$nextTick(function() 
+                 {
+                    this.contextMenuPermalink    = this.node.permalink;
+                    this.sharingValues           = {
+                                                        'code': this.node.privacy, 
+                                                        'name': this.node.privacy.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())
+                                                    };
+                    this.userValues              = [...this.node.sharedTo];
+                    this.$bvModal.show("shareFolder");
+                 });
+            });
+                    
+        },
+        openMenu: function(event, element) 
+        {
+            this.getParentID(event.target);
+            this.viewMenu = true;
+            Vue.nextTick(function() {
+                this.setMenu(event)
+            }.bind(this))
+			event.preventDefault();
+		},
         contextMenuCreate() {
             document.getElementById(this.parentID).getElementsByClassName("addNode")[0].click();
         },
@@ -435,25 +622,13 @@ export default {
                 this.parentID = element.id;
            }
         },
-		openMenu: function(event, element) {
 
-            this.getParentID(event.target);
-            console.log(this.parentID)
-
-            this.viewMenu = true;
-            Vue.nextTick(function() {
-                this.setMenu(event)
-            }.bind(this))
-
-			event.preventDefault();
-		},
 		getFolders() {
 			if (this.public === true) {
 				this.URLEndPoint = "/api/get_child_folders";
 				this.getPublicFolders();
 			} else {
-				this.URLEndPoint =
-					"/api/get_folders?api_token=" + this.api_token;
+				this.URLEndPoint = "/api/get_folders?api_token=" + this.api_token;
 				this.getPrivateFolder();
 			}
 		},
@@ -461,15 +636,30 @@ export default {
         {
 			axios.post(this.URLEndPoint, {
 					method: "POST",
-					public_folder_id: this.public_folder_id
+                    public_folder_id: this.public_folder_id,
+                    public_viewer_id: this.public_viewer_id,
 				})
 				.then(response => {
 					this.data = new Tree(response.data.folders);
 
-					this.$nextTick(function() {
+                    this.$nextTick(function() 
+                    {
+                         this.$bvModal.hide("shareFolder");
+
+                        this.$nextTick(function(){
+                            let icons = document.getElementsByClassName("vtl-tree-node");
+                            Array.from(icons).forEach((icon) => {
+                            console.log("icon", icon.id)
+                            });
+                        })
+
 						if (this.public === true) {
-							this.autoClickFolder(this.data.children[0]);
-						}
+                            try {
+                                this.autoClickFolder(this.data.children[0]);
+                            } catch(e) {
+                                //console.log("no folder found")
+                            }
+                        }
 					});
 				})
 				.catch(function(error) {
@@ -482,18 +672,58 @@ export default {
 					method: "POST"
 				})
 				.then(response => {
-					this.data = new Tree(response.data.folders);
-					this.$nextTick(function() {
+                    this.data = new Tree(response.data.folders);
+                    this.$nextTick(function() 
+                    {
+                         this.$bvModal.hide("shareFolder");
+
+                        this.$nextTick(function()
+                        {
+                            let elements = document.getElementsByClassName("vtl-tree-node");
+                            Array.from(elements).forEach((element) => {
+                                
+                               this.getNode(element.id);
+
+                               console.log( (this.node.sharedTo).length );
+
+                               let content = document.getElementById(element.id);
+
+                               let icon = content.querySelectorAll(".icon-folder");
+
+                               
+                               console.log(this.node.privacy)
+                               if (this.node.privacy == "public") 
+                               {
+                                    icon[0].innerHTML = this.iconSharedFolder;
+                                    
+                               } else if (this.node.privacy == "private" && (this.node.sharedTo).length >= 1) {
+
+                                    icon[0].innerHTML = this.iconSharedFolder;
+                               } else {
+                                    icon[0].innerHTML = this.iconPrivateFolder;                 
+                               }
+
+                             
+                              
+                               
+                            });
+                        })
+
 						if (this.firstLoad === true) {
-							this.autoClickFolder(this.data.children[0]);
+                            try {
+                                this.autoClickFolder(this.data.children[0]);
+                            } catch(e) {
+                                console.log("no folder found")
+                            }
+							
 							this.firstLoad = false;
-						}
-					});
+                        }
+                    });
 				})
 				.catch(function(error) {
 					console.log(error);
 				});
-		},
+        },
 		autoClickFolder(data) {
 
 			let nodeItem = {
@@ -509,8 +739,7 @@ export default {
 			if (this.public === true) {
 				this.URLEndPoint = "/api/get_public_folder_files";
 			} else {
-				this.URLEndPoint =
-					"/api/get_folder_files?api_token=" + this.api_token;
+				this.URLEndPoint = "/api/get_folder_files?api_token=" + this.api_token;
 			}
 
 			axios.post(this.URLEndPoint, {
@@ -621,7 +850,25 @@ export default {
                         id: node.id
                     })
                     .then(response => {
-                        node.remove();
+                       
+                        this.$nextTick(function() {
+                            node.remove();
+
+                            if (node.id == this.folderCurrentID) 
+                            {
+                                //user has deleted the current selected folder, therefore none is selected
+                                //reset the uploader and files
+                                this.folderCurrentID = null;
+                                if (this.can_user_upload) {
+                                    this.$root.$refs.treeListComponent.$refs.uploaderComponent.files = [];
+                                }
+                                this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = [];
+                                this.$forceUpdate();
+                            }
+
+                        });
+
+                       
                     })
                     .catch(function(error) {
                         // handle error
@@ -668,7 +915,11 @@ export default {
 				return;
 			}
 
-			if (this.FolderType == "rootFolder") {
+			if (this.FolderType == "shareFolder") {
+               
+                this.shareFolderOnServer(this.parentID);
+
+            }if (this.FolderType == "rootFolder") {
 				//Create the root folder
 				this.createFolderOnServer(0);
 	
@@ -704,55 +955,97 @@ export default {
 			this.data.addChildren(node);
 
 			//////this.getFolders();
-		},
-		createFolderOnServer(parent_id) {
-			axios.post("/api/create_folder?api_token=" + this.api_token, {
-					method: "POST",
-					parent_id: parent_id,
-					folder_name: this.folderName,
-					folder_description: this.folderDescription
-				})
-				.then(response => {
-					if (response.data.success === false) {
-						this.invalidFeedbackMessage = response.data.message;
-						this.folderNameState = false;
-					} else {
-						//success
-						//console.log("create on folder -- id " + response.data.folder.id)
+        },
+        shareFolderOnServer(folderID)
+        {
+            axios.post("/api/share_folder?api_token=" + this.api_token, 
+            {
+                method: "POST",
+                folderID        : folderID,
+                privacy         : this.sharingValues.code,
+                userValues      : this.userValues,
+            })
+            .then(response => 
+            {
+                if (response.data.success === false) {
+                    this.invalidFeedbackMessage = response.data.message;
+                    alert (this.invalidFeedbackMessage);
+                } else {
 
-						//this.folderID = response.data.folder.id;
-						//console.log("new folder id ", this.folderID);
+                    this.$nextTick(function() 
+                    {
+                        this.getFolders();
+                        let nodeItem = {
+                            id: response.data.folder.id,
+                            name: this.folderName,
+                            description: this.folderDescription,
+                            permalink: response.data.folder.permalink
+                        };
 
-						if (this.FolderType == "rootFolder") {
-                            this.addNode(response.data.folder);
-                            this.$bvModal.hide("createNewFolder");
-						} else if (this.FolderType == "subFolder") {
-							this.currentNodeCreated.id = response.data.folder.id;
-							this.currentNodeCreated.name = this.folderName;
-							this.currentNodeCreated.description = this.folderDescription;
-							this.currentNodeCreated.addLeafNodeDisabled = true;
-                            this.$bvModal.hide("createNewSubFolder");
-                        }
+                        this.onClick(nodeItem);
+                        
+                    });
 
-                        this.$nextTick(function() {
-                            let nodeItem = {
-                                id: response.data.folder.id,
-                                name: this.folderName,
-                                description: this.folderDescription,
-                                permalink: response.data.folder.permalink
-                            };
-                            this.onClick(nodeItem);
+                    
 
-                            this.getFolders();
-                        });
 
-					}
-				})
-				.catch(function(error) {
-					// handle error
-					alert("Error " + error);
-					console.log(error);
-				});
+
+                }
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                console.log(error);
+			});
+        },
+        createFolderOnServer(parent_id) 
+        {
+            axios.post("/api/create_folder?api_token=" + this.api_token, 
+            {
+                method: "POST",
+                parent_id: parent_id,
+                folder_name: this.folderName,
+                folder_description: this.folderDescription
+            })
+            .then(response => 
+            {
+                if (response.data.success === false) {
+                    this.invalidFeedbackMessage = response.data.message;
+                    this.folderNameState = false;
+                } else {
+                    //success
+                    //console.log("create on folder -- id " + response.data.folder.id)
+                    //this.folderID = response.data.folder.id;
+                    //console.log("new folder id ", this.folderID);
+
+                    if (this.FolderType == "rootFolder") {
+                        this.addNode(response.data.folder);
+                        this.$bvModal.hide("createNewFolder");
+                    } else if (this.FolderType == "subFolder") {
+                        this.currentNodeCreated.id = response.data.folder.id;
+                        this.currentNodeCreated.name = this.folderName;
+                        this.currentNodeCreated.description = this.folderDescription;
+                        this.currentNodeCreated.addLeafNodeDisabled = true;
+                        this.$bvModal.hide("createNewSubFolder");
+                    }
+
+                    this.$nextTick(function() {
+                        let nodeItem = {
+                            id: response.data.folder.id,
+                            name: this.folderName,
+                            description: this.folderDescription,
+                            permalink: response.data.folder.permalink
+                        };
+                        this.onClick(nodeItem);
+
+                        this.getFolders();
+                    });
+
+                }
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                console.log(error);
+			});
         },
         
 		updateFolderOnServer(folderID) {
@@ -918,6 +1211,11 @@ export default {
 			this.folderNameState = null;
 			this.folderDescriptionState = null;
 		},
+        resetShareModal() {
+            this.FolderType = "shareFolder";
+            //this.sharingValue = [];
+            //this.sharingOptions;
+        },
 		resetSubFolderModal() {
 			this.FolderType = "subFolder";
 			this.folderName = "";
@@ -936,9 +1234,6 @@ export default {
 			// Trigger submit handler
 			this.handleSubmit();
 		},
-
-
-
 		showLoading() {
 			this.$bvModal.show("loadingModal");
 		},
@@ -956,7 +1251,9 @@ export default {
 				.then(response => {
 					if (response.data.success === false) {
 						alert(response.data.message);
-						this.getFolders();
+                        this.$nextTick(function() {
+                            this.getFolders();
+                        });
 					} else {
 						this.displayFolderLink = response.data.folder.permalink;
 						console.log(this.displayFolderLink);
@@ -966,9 +1263,12 @@ export default {
                         });
 					}
 				})
-				.catch(function(error) {
+				.catch(error => {
 					// handle error
-					console.log(error);
+                    //console.log(error);
+                    this.$nextTick(function() {
+                        this.getFolders();
+                    });
 				});
 		},
 		reorderItems(node, src, target) {
@@ -985,16 +1285,21 @@ export default {
 				.then(response => {
 					if (response.data.success === false) {
 						alert(response.data.message);
-						this.getFolders();
+                        this.$nextTick(function() {
+                            this.getFolders();
+                        });
 					} else {
                         this.$nextTick(function() {
                             this.getFolders();
                         });
                     }
 				})
-				.catch(function(error) {
+				.catch(error => {
 					// handle error
-					console.log(error);
+                    //console.log(error);
+                    this.$nextTick(function() {
+                        this.getFolders();
+                    });
 				});
 		}
 	}
@@ -1003,8 +1308,11 @@ export default {
 
 <style lang="scss">
 .vtl {
+    .vtl-node {
+        cursor: pointer;
+    }
     .vtl-tree-margin {
-        margin-left: 1em;
+        margin-left: 0.8em;
         cursor: pointer;
     }
     .vtl-node-main {
@@ -1013,6 +1321,7 @@ export default {
             margin-left: -1rem;
             position: relative;
             top: 3px;
+            cursor: pointer;
         }
     }
     .vtl-up {
@@ -1033,6 +1342,7 @@ export default {
 		 background-color: #d0cfcf; 
     }
     */
+
     .deleteNode {
         color: #dc3545
     }
@@ -1048,8 +1358,7 @@ export default {
 	}
 }
 
-
-#right-click-menu {
+.right-click-menu {
 	background: #fafafa;
 	border: 1px solid #bdbdbd;
 	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
@@ -1063,20 +1372,20 @@ export default {
 	z-index: 999999;
 }
 
-#right-click-menu li {
+.right-click-menu li {
 	border-bottom: 1px solid #e0e0e0;
 	margin: 0;
 	padding: 5px 35px;
 }
 
-#right-click-menu li:last-child {
+.right-click-menu li:last-child {
 	border-bottom: none;
 }
 
-#right-click-menu li:hover {
+.right-click-menu li:hover {
 	background: #1e88e5;
 	color: #fafafa;
 }
-
-
 </style>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

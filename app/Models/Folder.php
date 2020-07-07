@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Permalink;
 use Gate;
+use Auth;
 
 class Folder extends Model
 {
@@ -15,19 +16,19 @@ class Folder extends Model
 
     public static $ids = Array();
 
-
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
+        'user_id',
         'parent_id',
         'slug',
         'folder_name', 
         'folder_description',
-        'order_id'
+        'order_id',
+        'privacy'
     ];
 
     /**
@@ -58,6 +59,64 @@ class Folder extends Model
         return $this->hasMany('App\Models\File');
     }
 
+    public function users() 
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    /** 
+    * Determine if users is permitted to view this folder
+    * @var userID   
+    * @var folderID
+    * @var returns  Boolen 
+    */
+    public static function hasPermission($userID, $folderID) 
+    {
+        //Look for the permitted users of this folder
+        $usersSharedTo = [];
+        $folder = Folder::find($folderID);
+
+        //folder has multiple owners find this owners
+        $folderUsers = $folder->users;
+
+        foreach ($folderUsers as $folderUser) 
+        {
+            $usersSharedTo[] = $folderUser->id;
+        }
+
+
+        
+        if (array_intersect([$userID], $usersSharedTo) || $userID == $folder->user_id) 
+        {
+            return true;
+
+        } else {
+           
+            return false;
+        }
+    }
+
+    public static function getPermittedUsers($folderID) 
+    {
+       //Look for the permitted users of this folder
+       $shared = [];
+       $folder = Folder::find($folderID);
+
+       //folder has multiple owners find this owners
+       $sharedFolderUserFolders = $folder->users;
+
+       foreach ($sharedFolderUserFolders as $sharedFolderUserFolder) 
+       {
+           $shared[] = [
+                        'id'    => $sharedFolderUserFolder->id,
+                        'code'  => $sharedFolderUserFolder->id,
+                        'name'  => $sharedFolderUserFolder->name,
+                        ];
+       }
+
+       return $shared;
+    }
+ 
 
     /**
      * @return Get the parent ids of the target node
@@ -272,25 +331,65 @@ class Folder extends Model
      * Recursive parsing of folders of node tree
      * @returns JSON
      */
-    public static function getPublicFolder($id) {
-        return Folder::getTreeRootFolders($id, false);
+    public static function getPublicFolder($id, $viewer_id) 
+    {
+        return Folder::getTreeRootFolders($id, $viewer_id, false);
     }
 
     /**
      * Recursive parsing of folders of node tree
      * @returns JSON
      */
-    public static function getFoldersRecursively() 
+    public static function getPrivateFolders() 
     {
        return Folder::getTreeChildren(0, (Gate::denies('filemanager_edit')) ? false : true);
     }
 
+
+ 
+    
     /* 
-    ** Parsing for all folders for tree display from parent to children
+    ** Parsing for all folders for tree display from parent to children (this is for public / getPublicFolder function)
+    ** @id          : The Folder id
+    ** @viewer_id   : The current logged in viewer, returns null if not logged in
+    ** @draggable   : Sets the mode of draggable of the tree node
+    ** @folderData  : folder data
     */
-    public static function getTreeRootFolders($parentID = 0, $draggable = true, $folderData = []) 
+    public static function getTreeRootFolders($id = 0, $viewer_id = null, $draggable = true, $folderData = []) 
     {
-        $rootFolders = Folder::where('id', $parentID)->orderBy('order_id','ASC')->get();
+
+        if ( $viewer_id == null) {
+            //viewer is not logged in
+            $rootFolders = Folder::where('id', $id)->where('privacy', 'public')->orderBy('order_id','ASC')->get();
+
+            
+        } else {
+
+            //User is logged in (find the viewer id
+            $user = User::find($viewer_id);
+
+            //get folder id of what has been shared to me and this currend folder 
+            $userFolderQuery = User::find($viewer_id)->folders;
+            $userSharedFolders = Folder::where('id', $id)->whereIn('id', $userFolderQuery->pluck('id'))->get();
+    
+            if (Gate::forUser($user)->denies('permission', "filemanager_admin")) {
+              
+                //this will show only his folder, public folders, and shared
+                $myFolders = Folder::where('id', $id)->where('user_id', $viewer_id)->orderBy('order_id','ASC')->get();
+
+                $publicFolders = Folder::where('id', $id)->where('privacy', 'public')->orderBy('order_id','ASC')->get();
+
+                $myFolders = $myFolders->merge($publicFolders);
+
+                $all = $myFolders->merge($userSharedFolders);
+
+                $rootFolders = $all->values()->sortBy('order_id');
+
+            } else {
+                //(ADMIN MODE) this user has the rights to view all folders without restriction 
+                $rootFolders = Folder::where('id', $id)->orderBy('order_id','ASC')->get();
+            }
+        }
 
         //search for children
         foreach($rootFolders as $rootFolder) {
@@ -299,14 +398,16 @@ class Folder extends Model
                 'name'                  => $rootFolder->folder_name,
                 'description'           => $rootFolder->folder_description,
                 'permalink'             => Folder::getLink($rootFolder->id),
+                'privacy'               =>  $rootFolder->privacy,
+                'sharedTo'              => Folder::getPermittedUsers($rootFolder->id),
                 'default-expanded'      => true,
-                'pid'                   => $parentID,
+                'pid'                   => $id,
                 'dragDisabled'          => !$draggable,
                 'addLeafNodeDisabled'   => true,
                 'addTreeNodeDisabled'   => (Gate::denies('filemanager_create')) ? true : false,
                 'editNodeDisabled'      => (Gate::denies('filemanager_edit')) ? true : false,
                 'delNodeDisabled'       => (Gate::denies('filemanager_delete')) ? true : false,
-                'children'=> Folder::getTreeChildren($rootFolder->id, $draggable)
+                'children'              => Folder::getTreeChildren($rootFolder->id, $viewer_id, $draggable)
             ];
         }
         return $folderData;
@@ -315,16 +416,73 @@ class Folder extends Model
     /* 
     ** Parsing for all folders for tree display 
     */
-    public static function getTreeChildren($parentID, $draggable = true, $folderData = []) 
+    public static function getTreeChildren($parentID, $viewer_id = null, $draggable = true, $folderData = []) 
     {
-        $subFolders = Folder::where('parent_id', $parentID)->orderBy('order_id','ASC')->get();
+        if (Auth::check() || $viewer_id !== null) {
 
+            // The user is logged in via Authentication
+            $userID = (isset(Auth::user()->id))? Auth::user()->id : $viewer_id;
+            $userFolderQuery = User::find($userID)->folders;
+
+            // Shared Folders
+            $userSharedFolders = Folder::where('parent_id', $parentID)->whereIn('id', $userFolderQuery->pluck('id'))->get();
+
+            if (Gate::denies('filemanager_admin')) {
+
+                //this will show only his folder and any public folders
+                $myFolders = Folder::where('parent_id', $parentID)->where('user_id', $userID)->orderBy('order_id','ASC')->get();
+
+                $publicFolders = Folder::where('parent_id', $parentID)->where('privacy', 'public')->orderBy('order_id','ASC')->get();
+
+                $all = $myFolders->merge($publicFolders);
+
+                $myFolders = $all->values()->sortBy('order_id');
+
+            } else {
+
+                //this user has the rights to administer all folders
+                $myFolders = Folder::where('parent_id', $parentID)->orderBy('order_id','ASC')->get();
+            }
+
+            //Users Shared Folders Merges with my folders
+            $subFolders = $myFolders->merge($userSharedFolders);
+        
+
+        } else {
+
+    
+            //$userFolderQuery = User::find($viewer_id)->folders;
+
+            // Shared Folders
+           // $userSharedFolders = Folder::where('parent_id', $parentID)->whereIn('id', $userFolderQuery->pluck('id'))->get();
+
+            //public folder view
+            if ( $viewer_id == null) {
+                //viewer is not logged in
+                $subFolders = Folder::where('parent_id', $parentID)->where('privacy', 'public')->orderBy('order_id','ASC')->get();
+            } else {
+
+                //viewer is logged in
+                $myFolders = Folder::where('parent_id', $parentID)->where('privacy', 'public')->orderBy('order_id','ASC')->get();
+
+                $publicFolders = Folder::where('parent_id', $parentID)->where('user_id', $viewer_id)->orderBy('order_id','ASC')->get();
+
+                $subFolders = $myFolders->merge($publicFolders);
+            }
+
+            //Users Shared Folders Merges with my folders
+            //$subFolders = $myFolders->merge($userSharedFolders);
+
+        }
+        
         foreach($subFolders as $subfolder) {
             $folderData[] = [
                 'id'                    => $subfolder->id,
                 'name'                  => $subfolder->folder_name,
                 'description'           => $subfolder->folder_description,
                 'permalink'             => Folder::getLink($subfolder->id),
+                'sharedTo'              => Folder::getPermittedUsers($subfolder->id),
+                'privacy'               => $subfolder->privacy,
                 'pid'                   => $parentID,
                 'default-expanded'      => true,
                 'dragDisabled'          => !$draggable,
@@ -332,7 +490,7 @@ class Folder extends Model
                 'addTreeNodeDisabled'   => (Gate::denies('filemanager_create')) ? true : false,
                 'editNodeDisabled'      => (Gate::denies('filemanager_edit')) ? true : false,
                 'delNodeDisabled'       => (Gate::denies('filemanager_delete')) ? true : false,
-                'children'      => Folder::getTreeChildren($subfolder->id, $draggable)
+                'children'              => Folder::getTreeChildren($subfolder->id, $viewer_id, $draggable)
             ];
         }
         return $folderData;

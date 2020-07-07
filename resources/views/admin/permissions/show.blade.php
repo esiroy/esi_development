@@ -4,7 +4,7 @@
 <div class="container-fluid">
     <div class="row">
 
-        <div id="sidebar" class="col-md-2">
+        <div id="sidebar" class="col-2">
             @include('admin.partials.sidebar')
         </div>
 

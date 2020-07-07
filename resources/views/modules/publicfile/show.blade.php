@@ -58,8 +58,12 @@
 
 
 @section('scripts')
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script>
-    <script>PDFObject.embed("{{ $url }}", "#pdfObject");</script>
+
+    @if ($extension == 'pdf')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js"></script>
+        <script>PDFObject.embed("{{ $url }}", "#pdfObject");</script>
+    @endif
+
     <script>
         function copy() {
             let link = document.getElementById('copy').href;

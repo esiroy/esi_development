@@ -3,9 +3,11 @@
 @section('content')
 <div class="container">
     <div class="row">
-        <div class="folder-container col-md-12 my-4">
+        <div class="folder-container col-md-12">
             <vue-tree-list-component 
                 ref="treeListComponent"
+                :users="{{ json_encode($users) }}"
+                :can_user_share_folder="{{ $can_user_share_folder }}"
                 :can_user_create_folder="{{ $can_user_create_folder }}"
                 :can_user_edit_folder="{{ $can_user_edit_folder }}"
                 :can_user_delete_folder="{{ $can_user_delete_folder }}"

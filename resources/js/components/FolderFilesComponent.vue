@@ -1,51 +1,58 @@
 <template>
-	<div class="folder-files">
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>#</th>
-					<th>File Name</th>
-					<th>File Size</th>
-					<th>Action</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-if="!files.length">
-					<td colspan="7" align="center">
-						<h4>No Files</h4>
-					</td>
-				</tr>
-				<tr v-for="(file, index) in files" :key="file.id">
-					<td>{{index + 1}}</td>
-					<td>
-						<div class="filename">
-							<a :href="'/file/'+file.id" target="_blank">{{file.file_name}}</a>
-						</div>
-					</td>
-					<td>
-						<div class="filesize">{{ file.size | formatSize }}</div>
-					</td>
-					<td>
-						<div class="dropdown">
-							<button class="btn btn-secondary btn-sm dropdown-toggle "
-								type="button"
-								id="dropdownMenuButton"
-								data-toggle="dropdown"
-								aria-haspopup="true"
-								aria-expanded="false"
-							>Action</button>
-							<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                <a class="dropdown-item small" :href="'/file/'+file.id" target="_blank">View File</a>
-                                <a class="dropdown-item small" :href="createLink(file)" :download="file.file_name">Download File</a>
-								<a class="dropdown-item small" v-on:click="copyFile(index, file)">Copy URL</a>
-                                <div class="dropdown-divider"  v-if="(can_user_delete_uploads === true)"></div>
-								<a class="dropdown-item small" v-on:click="deleteFile(index, file.id)" v-if="(can_user_delete_uploads === true)">Delete</a>
-							</div>
-						</div>
-					</td>
-				</tr>
-			</tbody>
-		</table>
+
+    <div class="card" v-if="!files.length && !this.can_user_upload">
+         <div class="card-body text-center">No files found on this folder</div>
+    </div>
+	<div class="card" v-else-if="files.length">
+        <div class="card-header">Files</div>
+        <div class="card-body table-responsive">
+            <table class="table table-borderless table-hover">
+                <thead >
+                    <tr>
+                        <th>#</th>
+                        <th>File Name</th>
+                        <th>File Size</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="!files.length">
+                        <td colspan="7" align="center">
+                            <h4>No Files</h4>
+                        </td>
+                    </tr>
+                    <tr v-for="(file, index) in files" :key="file.id">
+                        <td>{{index + 1}}</td>
+                        <td>
+                            <div class="filename">
+                                <a :href="'/file/'+file.id" target="_blank">{{file.file_name}}</a>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="filesize">{{ file.size | formatSize }}</div>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary btn-sm dropdown-toggle "
+                                    type="button"
+                                    id="dropdownMenuButton"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true"
+                                    aria-expanded="false"
+                                >Action</button>
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <a class="dropdown-item small" :href="'/file/'+file.id" target="_blank">View File</a>
+                                    <a class="dropdown-item small" :href="createLink(file)" :download="file.file_name">Download File</a>
+                                    <a class="dropdown-item small" v-on:click="copyFile(index, file)">Copy URL</a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item small" v-on:click="deleteFile(index, file.id)" v-if="(can_user_delete_uploads === true)">Delete</a>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 	</div>
 </template>
 
@@ -55,6 +62,12 @@
 <script>
 export default {
 	props: {
+        public: {
+            type:Boolean
+        },
+        can_user_upload: {
+            type:Boolean
+        },
 		folder_id: {
 			type: String
 		},

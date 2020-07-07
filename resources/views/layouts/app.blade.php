@@ -21,6 +21,7 @@
     <!-- Styles -->
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @yield('styles')
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>
@@ -81,8 +82,8 @@
         <main class="py-4">
             @yield('content')
         </main>
-
-
     </div>
+
+    @yield('scripts')
 </body>
 </html>

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 
 use Laravel\Passport\Passport;
+use App\Models\User;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -26,6 +27,25 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+
+        Gate::define('permission', function ($user, $permission) {
+
+            $user = User::find($user->id);
+            $roles = $user->roles;
+    
+            foreach ($roles as $role) {
+                foreach ($role->permissions->pluck('title') as $permission) {
+                    $user_permissions[] = $permission;
+                }
+            }
+
+            if (array_intersect(['filemanager_admin'], $user_permissions)) {
+                return true;
+            } else {
+                return false;
+            }
+    
+        });
 
         Passport::routes();
     }

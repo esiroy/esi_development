@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Gate;
 use Validator;
 use Input;
+use Auth;
 
 use App\Models\User;
 use App\Models\Folder;
@@ -27,11 +28,58 @@ class FolderController extends Controller
         $this->middleware('auth')->except(['getChildFolders', 'getPublicFiles']);
     }
 
+    public function share(Request $request) 
+    {
+
+        
+        $folder = Folder::find($request->folderID);
+        
+        if ($folder) 
+        {
+            $folder->update([
+                'privacy'   => strtolower($request->privacy)
+            ]);
+
+            
+                $folders = $folder->users()->sync(collect($request->userValues)->pluck('id'));
+           
+           
+          
+            return Response()->json([
+                "success"               => true,
+                "folder"                => [
+                    'id'            => $request->folderID,
+                    'shared'        => Folder::find($request->folderID)->users(),
+                    'privacy'       => Folder::find($request->folderID)->privacy
+                ]
+            ]);   
+            
+        }
+
+    }
+
+
+    /* Public Child Folder Retrieval*/
+    public function getChildFolders(Request $request) 
+    {
+        $folder_id = $request['public_folder_id'];
+
+        //Currently Viewing person if logged in
+        $viewer_id   = $request['public_viewer_id'];
+
+        $folders = (Folder::getPublicFolder($folder_id, $viewer_id));
+
+        return Response()->json([
+            "success"               => true,
+            "folders"               =>  $folders
+        ]);   
+    }
+    
     /* Private Page Folders Retrieval*/
     public function folders(Request $request) 
     {
         //$request
-        $folders = (Folder::getFoldersRecursively());
+        $folders = (Folder::getPrivateFolders());
 
         return Response()->json([
             "success"               => true,
@@ -39,18 +87,7 @@ class FolderController extends Controller
         ]);
     }
 
-    /* Public Child Folder Retrieval*/
-    public function getChildFolders(Request $request) {
-        
-    $folderID   = $request['public_folder_id'];
 
-    $folders = (Folder::getPublicFolder($folderID));
-
-    return Response()->json([
-        "success"               => true,
-        "folders"               =>  $folders
-    ]);   
-    }
 
     /* Public Folder Files*/
     public function getPublicFiles(Request $request) 
@@ -61,6 +98,7 @@ class FolderController extends Controller
 
         return Response()->json([
             "success"               => true,
+            'user_id'               => (isset(Auth::user()->id)) ? Auth::user()->id : null,
             'folder_id'             => $folder['id'],
             "folder_name"           => $folder['folder_name'],
             "folder_description"    => $folder['folder_description'],
@@ -78,6 +116,7 @@ class FolderController extends Controller
     
         return Response()->json([
             "success"               => true,
+            'user_id'               => (isset(Auth::user()->id)) ? Auth::user()->id : null,
             'folder_id'             => $folder['id'],
             "folder_name"           => $folder['folder_name'],
             "folder_description"    => $folder['folder_description'],
@@ -125,11 +164,12 @@ class FolderController extends Controller
             $next_order_id =  ($folder->max('order_id')) ? $folder->max('order_id') + 1 : 1;
 
             $folderData = [
+                'user_id'               => Auth::user()->id,
+                'parent_id'             => $request['parent_id'],
+                'order_id'              => $next_order_id,
                 'slug'                  => Str::slug($request['folder_name'], '-'),
                 'folder_name'           => $request['folder_name'],
-                'parent_id'             => $request['parent_id'],
-                'folder_description'    => $request['folder_description'],
-                'order_id'              => $next_order_id
+                'folder_description'    => $request['folder_description']
             ];
         
             //Create Folder 

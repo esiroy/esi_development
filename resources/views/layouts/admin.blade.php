@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="Description" content="{{ config('app.name', 'My Tutor')}} {{'- ' . ucwords(Request::segment(3)) ?? '' }} ">
     <title>
@@ -93,7 +93,7 @@
         window.addEventListener('load', function () {
             $(function () {
                 //sidebar menu
-                $('.dropdown-toggle').on('click', function () {
+                $('list-group-item.dropdown-toggle').on('click', function () {
                     dropdownToggleIcon($(this))
                 });
 
@@ -125,11 +125,10 @@
             });
 
             function dropdownToggleIcon(element) {
-                if (element.parent().hasClass('.dropup')) {
+                if (element.parent().hasClass('dropup')) {
                     element.parent().removeClass('dropup');
-
                 } else {
-                    element.parent().removeClass("dropup");
+                    element.parent().addClass("dropup");
                 }
             }
         });

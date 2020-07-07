@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Storage;
 
+use Auth;
 use Validator;
 use Input;
 use Gate;
@@ -60,6 +61,7 @@ class FileUploadController extends Controller
 
                 // Save to file
                 $file = File::create([
+                    'user_id'       => Auth::user()->id,
                     'folder_id'     => $request->folder_id,
                     'file_name'     => $request->file('file')->getClientOriginalName(), //original filename
                     'upload_name'   => $request->file('file')->getFileName(), //generated filename
@@ -71,6 +73,7 @@ class FileUploadController extends Controller
                 return Response()->json([
                     "success"       => true,
                     'id'            => $file->id,
+                    'user_id'       => Auth::user()->id,
                     'folder_id'     => $request->folder_id,
                     "file"          => $request->file('file')->getClientOriginalName(), //original filename
                     "upload_name"   => $request->file('file')->getFileName(),  //generated filename

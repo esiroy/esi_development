@@ -33,9 +33,16 @@ body {
     z-index: 9;
 }
 
+.svg-icon {
+    font-size: 16px;
+    margin-bottom: 3px;
+    margin-right: 3px;
+    color: #2d3236;
+}
+
 #sidebar {
     border-right: 1px solid #ccc;
-    max-width: 280px;
+    //max-width: 280px;
     padding: 0px;
     //sidebar wrapper
     #sidebar-wrapper {
