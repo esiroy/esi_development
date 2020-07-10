@@ -90,7 +90,7 @@
 		<div class="col-sm-8 col-md-8">
             <!-- DISPLAY FOLDER DETAILS -->
             <div class="card mb-4" v-if="!this.data.children && !can_user_upload">
-                <div class="card-body text-center"> 
+                <div class="card-body text-center" v-if="this.folderLoading == false"> 
                    No Shared folders found
                 </div>
             </div>
@@ -464,7 +464,8 @@ export default {
 	data() {
 		return {
             //variables
-			firstLoad       : true,
+            firstLoad       : true,
+            folderLoading   : null,
             parentID        : null,
 			URLEndPoint     : "",
             prevIDClicked   : null,
@@ -732,6 +733,7 @@ export default {
         },
 
 		getFolders() {
+            this.folderLoading = true;
 			if (this.public === true) {
 				this.URLEndPoint = "/api/get_child_folders";
 				this.getPublicFolders();
@@ -752,6 +754,7 @@ export default {
 
                     this.$nextTick(function() 
                     {
+                         this.folderLoading = false;
                          this.$bvModal.hide("shareFolder");
 
                             let elements = document.getElementsByClassName("vtl-tree-node");
@@ -796,6 +799,7 @@ export default {
                     this.data = new Tree(response.data.folders);
                     this.$nextTick(function() 
                     {
+                        this.folderLoading = false;
                         this.$bvModal.hide("shareFolder");
                         this.$nextTick(function()
                         {
