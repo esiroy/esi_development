@@ -91,13 +91,14 @@ class File extends Model
 
             if (isset($folder)) 
             {
-                if (strtolower($file->privacy) == 'public' || strtolower($folder->id) == 'public') 
+                if (strtolower($file->privacy) == 'public' || strtolower($folder->privacy) == 'public') 
                 {
                     $response = ['success' => true, 'file' => $file];
                 } 
                 else if (Auth::check()) 
                 {
                     $user   = Auth::user();
+                    
                     if (Folder::hasPermission($user->id,  $folder->id) == false && File::hasPermission($user->id, $file->id) == false)
                     {
                         $response = ['success' => false, 'message' => "You have no permission to view this file"];

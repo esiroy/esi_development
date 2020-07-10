@@ -345,7 +345,11 @@ class Folder extends Model
      */
     public static function getPrivateFolders() 
     {
-       return Folder::getTreeChildren(0, (Gate::denies('filemanager_edit')) ? false : true);
+        $viewer_id = null;
+
+        $draggable = (Gate::denies('filemanager_edit')) ? true : false; 
+        
+       return Folder::getTreeChildren(0, $viewer_id, $draggable);
     }
     
     /* 
@@ -393,6 +397,9 @@ class Folder extends Model
 
             $user = User::find($rootFolder->user_id);
 
+            //if denied the dragDisabled is true, or the default draggble
+            //$draggable = (Gate::denies('filemanager_edit')) ? true : false; 
+            
             $folderData[] = [
                 'id'                    => $rootFolder->id,
                 'pid'                   => $id,
@@ -404,7 +411,7 @@ class Folder extends Model
                 'sharedTo'              => Folder::getPermittedUsers($rootFolder->id),
                 'default-expanded'      => true,
                 'created_at'            => date('F d, Y', strtotime($rootFolder->created_at)),
-                'dragDisabled'          => !$draggable,
+                'dragDisabled'          => $draggable,
                 'addLeafNodeDisabled'   => true,
                 'addTreeNodeDisabled'   => (Gate::denies('filemanager_create')) ? true : false,
                 'editNodeDisabled'      => (Gate::denies('filemanager_edit')) ? true : false,
@@ -469,6 +476,9 @@ class Folder extends Model
 
             $user = User::find($subfolder->user_id);
 
+            //if denied the dragDisabled is true, or the default draggble
+            $draggable = (Gate::denies('filemanager_edit')) ? true : false; 
+
             $folderData[] = [
                 'id'                    => $subfolder->id,
                 'pid'                   => $parentID,
@@ -480,7 +490,7 @@ class Folder extends Model
                 'privacy'               => $subfolder->privacy,
                 'created_at'            => date('F d, Y', strtotime($subfolder->created_at)),
                 'default-expanded'      => true,
-                'dragDisabled'          => !$draggable,
+                'dragDisabled'          => $draggable,
                 'addLeafNodeDisabled'   => true, //leaf is always disabled
                 'addTreeNodeDisabled'   => (Gate::denies('filemanager_create')) ? true : false,
                 'editNodeDisabled'      => (Gate::denies('filemanager_edit')) ? true : false,
