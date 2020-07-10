@@ -238,7 +238,7 @@ export default {
                 { name: 'Public', code: 'public' },
                 { name: 'Private', code: 'private' }
             ],
-            file_loading: true,
+            file_loading: false,
 		};
     },
     created() {
