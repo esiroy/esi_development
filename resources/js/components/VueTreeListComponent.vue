@@ -93,6 +93,17 @@
                 <div class="card-body text-center" v-if="this.folderLoading == false"> 
                    No Shared folders found
                 </div>
+                <div class="card-body text-center py-4" v-else>
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-secondary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
             </div>
 			<div class="card mb-4" v-else-if="this.folderCurrentID !== null">
 				<div class="card-header">Folder Details</div>
