@@ -79,9 +79,22 @@
             </div>
         </nav>
 
-        <main class="py-4">
+        <main class="main-container py-4">
             @yield('content')
         </main>
+
+        <footer class="pt-4 pt-md-4 pb-md-4 border-top">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12 col-md text-center">
+                        <a class="navbar-brand" href="{{ url( route('admin.dashboard.index') ) }}">
+                            {{ config('app.name', 'My Tutor') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
     </div>
 
     @yield('scripts')

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 Route::resource('test', 'dummyController');
 
 Route::get('/', 'PublicFolderController@index')->name('welcome');
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'FolderCreatorController@index')->name('home');
 
 /* Public Folder View */
 Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
