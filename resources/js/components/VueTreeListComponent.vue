@@ -847,7 +847,9 @@ export default {
                 owner       : data.owner,
                 created_at  : data.created_at,
 			};
-			this.onClick(nodeItem);
+            this.onClick(nodeItem);
+            
+            this.$root.$refs.treeListComponent.$refs.folderFilesComponent.currentFolderViewing = true;
 		},
 		getFolderFiles(folderID) {
 
@@ -880,6 +882,7 @@ export default {
         onClick(node) 
         {
             this.getFolderFiles(node.id);
+
            
             //set the display info
             this.folderCurrentID        = node.id.toString();
@@ -900,9 +903,11 @@ export default {
 			if (this.prevIDClicked) {
                 try {
                     document.getElementById(this.prevIDClicked).getElementsByClassName("vtl-node-main")[0].removeAttribute("style");
+                     this.$root.$refs.treeListComponent.$refs.folderFilesComponent.currentFolderViewing = true;
                 }
                 catch(err) {
                     //console.log(err.message);
+                    this.$root.$refs.treeListComponent.$refs.folderFilesComponent.currentFolderViewing = null;
                 }
 			}
 			document.getElementById(node.id).getElementsByClassName("vtl-node-main")[0].style.backgroundColor = "#f0f0f0";
@@ -931,6 +936,7 @@ export default {
                 }
                 catch(err) {
                     //console.log(err.message);
+                    this.$root.$refs.treeListComponent.$refs.folderFilesComponent.currentFolderViewing = null;
                 }
 			}
 			document.getElementById(this.folderID).getElementsByClassName("vtl-node-main")[0].style.backgroundColor = "#f0f0f0";
@@ -951,22 +957,22 @@ export default {
                        
                         this.$nextTick(function() {
                             node.remove();
+                            this.$root.$refs.treeListComponent.$refs.folderFilesComponent.currentFolderViewing = null;
 
                             if (node.id == this.folderCurrentID) 
                             {
                                 //user has deleted the current selected folder, therefore none is selected
                                 //reset the uploader and files
                                 this.folderCurrentID = null;
+
                                 if (this.can_user_upload) {
                                     this.$root.$refs.treeListComponent.$refs.uploaderComponent.files = [];
                                 }
                                 this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = [];
                                 this.$forceUpdate();
+
                             }
-
                         });
-
-                       
                     })
                     .catch(function(error) {
                         // handle error

@@ -1,21 +1,26 @@
 <template>
-    <div class="card" v-if="!files.length /*&& !this.can_user_upload */">
-
-         <div class="card-body text-center py-4" v-if="file_loading"> 
-
-            <div class="spinner-grow text-primary" role="status">
-                <span class="sr-only">Loading...</span>
+   
+    <div v-if="!files.length /*&& !this.can_user_upload */">
+        <div v-if="currentFolderViewing !== null">
+            <div class="card" v-if="file_loading"> 
+                <div class="card-body text-center py-4">
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-secondary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
             </div>
-            <div class="spinner-grow text-secondary" role="status">
-                <span class="sr-only">Loading...</span>
+            <div class="card" v-else> 
+                <div class="card-body text-center py-4">
+                    No files found on this folder
+                </div>
             </div>
-            <div class="spinner-grow text-success" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>     
         </div>
-         
-         <div class="card-body text-center" v-else>No files found on this folder</div>
-
     </div>
 	<div class="card" v-else-if="files.length">
 
@@ -220,6 +225,7 @@ export default {
             //selected file
             file : {},
             //ID of the selected element
+            currentFolderViewing: null,
             parentID: null,
              //context menus
             viewMenu: false,
