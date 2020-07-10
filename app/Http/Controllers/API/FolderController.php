@@ -28,36 +28,57 @@ class FolderController extends Controller
         $this->middleware('auth')->except(['getChildFolders', 'getPublicFiles']);
     }
 
-    public function share(Request $request) 
+    public function shareFolder(Request $request) 
     {
-
-        
         $folder = Folder::find($request->folderID);
-        
-        if ($folder) 
-        {
+        if ($folder) {
             $folder->update([
                 'privacy'   => strtolower($request->privacy)
             ]);
 
             
-                $folders = $folder->users()->sync(collect($request->userValues)->pluck('id'));
-           
-           
-          
+
+            $folder->users()->sync( collect(collect($request->userValues)->pluck('id'), [Auth::user()->id]) );
+
             return Response()->json([
                 "success"               => true,
                 "folder"                => [
                     'id'            => $request->folderID,
-                    'shared'        => Folder::find($request->folderID)->users(),
-                    'privacy'       => Folder::find($request->folderID)->privacy
+                    'shared'        => Folder::find($request->folderID)->users,
+                    'privacy'       => Folder::find($request->folderID)->privacy,
+                    'permalink'     => Folder::getLink($request->folderID),
+                    "owner"         => User::find($folder->user_id),
+                    "created_at"    => date("F d, y", strtotime($folder->created_at)),
                 ]
-            ]);   
-            
+            ]);
         }
-
     }
 
+    public function shareFile(Request $request) 
+    {
+        $file = File::find($request->fileID);
+
+        if ($file) {
+
+            $file->users()->sync(collect($request->userValues)->pluck('id'));
+
+            $file->update([
+                'privacy'   => strtolower($request->privacy)
+            ]);
+
+            return Response()->json([
+                "success"           => true,
+                "folder"            => [
+                    'id'            => $request->folderID,
+                    'shared'        => File::find($request->fileID)->users->pluck('id'),
+                    'privacy'       => File::find($request->fileID)->privacy,
+                    'permalink'     => File::getLink($request->fileID),
+                    "owner"         => User::find($file->user_id),
+                    "created_at"    => date("F d, y", strtotime($file->created_at)),
+                ]
+            ]);
+        }
+    }
 
     /* Public Child Folder Retrieval*/
     public function getChildFolders(Request $request) 
@@ -66,7 +87,6 @@ class FolderController extends Controller
 
         //Currently Viewing person if logged in
         $viewer_id   = $request['public_viewer_id'];
-
         $folders = (Folder::getPublicFolder($folder_id, $viewer_id));
 
         return Response()->json([
@@ -96,6 +116,12 @@ class FolderController extends Controller
         $folder     = Folder::find($folderID);
         $files      = $folder->files;
 
+        //add shared
+        foreach ($files as $key => $file) {
+            $files[$key]['sharedTo'] = $file->shared; 
+            $files[$key]['owner']    = User::find($file->user_id);
+        }
+        
         return Response()->json([
             "success"               => true,
             'user_id'               => (isset(Auth::user()->id)) ? Auth::user()->id : null,
@@ -114,6 +140,12 @@ class FolderController extends Controller
         $folder     = Folder::find($folderID);
         $files      = $folder->files;
     
+        //add shared
+        foreach ($files as $key => $file) {
+            $files[$key]['sharedTo'] = $file->shared; 
+            $files[$key]['owner']    = User::find($file->user_id);
+        }
+
         return Response()->json([
             "success"               => true,
             'user_id'               => (isset(Auth::user()->id)) ? Auth::user()->id : null,
@@ -181,8 +213,13 @@ class FolderController extends Controller
                 'id'            => $folderData->id,
                 'permalink'     =>  $permalink
             ]);
-
+          
+            //send the repsone newly created data
             $folderData['permalink'] = Folder::getLink($folderData->id);
+
+            $newFolder                  = Folder::find($folderData->id);
+            $folderData['owner']        = User::find($newFolder->user_id);
+            $folderData['created']   = date("F d, Y", strtotime($newFolder->created_at));
 
             return Response()->json([
                 "success" => true,
@@ -237,6 +274,8 @@ class FolderController extends Controller
             'slug'                  => Str::slug($request['folder_name'], '-'),
             'folder_name'           => $request['folder_name'],
             'folder_description'    => $request['folder_description'],
+            'owner'                 => User::find($folder->user_id),
+            "created_at"            => date("F d, y", strtotime($folder->created_at)),
         ];
 
         //Update Folder 

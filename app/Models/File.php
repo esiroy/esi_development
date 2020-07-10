@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Auth;
+use Gate;
 
 class File extends Model
 {
@@ -17,7 +19,9 @@ class File extends Model
         'file_name', 
         'upload_name', 
         'size', 
-        'path'
+        'path',
+        'type',
+        'privacy',
     ];
 
     /**
@@ -38,5 +42,126 @@ class File extends Model
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
+
+
+    public function users() 
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function getSharedAttribute()
+    {
+        return $this->getPermittedUsers($this->id);
+    }
+
+
+    public static function getPermittedUsers($fileID) 
+    {
+       //Look for the permitted users of this folder
+       $shared = [];
+       $file = File::find($fileID);
+
+       //File has multiple owners, let us find this owners
+       $sharedFileUserFiles = $file->users;
+
+       foreach ($sharedFileUserFiles as $sharedFileUserFile) 
+       {
+           $shared[] = [
+                        'id'    => $sharedFileUserFile->id,
+                        'code'  => $sharedFileUserFile->id,
+                        'name'  => $sharedFileUserFile->name,
+                        ];
+       }
+
+       return $shared;
+    }
+
+    /** 
+    * Determine if users is permitted to view the pagess
+    * @var fileID
+    * @return Array $response  true - successs, false - failed, message : failed message
+    */
+    public static function canView($id) 
+    {
+        $file  = File::find($id);
+
+        if (isset($file)) 
+        {
+            $folder = Folder::find($file->folder_id);
+
+            if (isset($folder)) 
+            {
+                if (strtolower($file->privacy) == 'public' || strtolower($folder->id) == 'public') 
+                {
+                    $response = ['success' => true, 'file' => $file];
+                } 
+                else if (Auth::check()) 
+                {
+                    $user   = Auth::user();
+                    if (Folder::hasPermission($user->id,  $folder->id) == false && File::hasPermission($user->id, $file->id) == false)
+                    {
+                        $response = ['success' => false, 'message' => "You have no permission to view this file"];
+                    }
+                    else 
+                    {
+                        $response = ['success' => true, 'file' => $file];
+                    }
+                } 
+                else 
+                {
+                    if ($folder->privacy == 'public') 
+                    {
+                        $response = ['success' => true, 'file' => $file];
+
+                    } else {
+                        $response = ['success' => false, 'message' => "You must be logged in to view this file"];
+                    }
+                }
+            } else {
+                $response = ['success' => false, 'message' => "Folder not found"];
+            }
+        } 
+        else 
+        {
+            $response = ['success' => false, 'message' => "File is not found"];   
+        }
+
+        return (object) $response;
+    }
+
+
+    /** 
+    * Determine if users is permitted to view this file
+    * @var userID   
+    * @var fileID
+    * @var returns  Boolen 
+    */
+    public static function hasPermission($userID, $fileID) 
+    {
+        //Look for the permitted users of this file
+        $usersSharedTo = [];
+        $file = File::find($fileID);
+
+        //file has multiple owners find this owners
+        $fileUsers = $file->users;
+        foreach ($fileUsers as $fileUser) 
+        {
+            $usersSharedTo[] = $fileUser->id;
+        }
+
+        //return true it has permission, false for no permssion
+        if (array_intersect([$userID], $usersSharedTo) || $userID == $file->user_id) 
+        {
+            return true;
+
+        } else {
+
+            return false;
+        }
+    }
+
+    public static function getLink($id) {
+        return url("file/$id");
+    }
 
 }

@@ -42,8 +42,6 @@
                 </td>
                 <td>{{file.size | formatSize}}</td>
                 <td>
-
-                    
                     <div class="dropdown">
                         <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Action
@@ -171,17 +169,17 @@ export default {
      */
     inputFile: function(newFile, oldFile) {
 
-       console.log(this.folder_id);
-       console.log(this.csrf_token);
+       //console.log(this.folder_id);
+       //console.log(this.csrf_token);
 
       if (newFile && oldFile && !newFile.active && oldFile.active) {
         // Get response data
-        console.log("response", newFile.response);
+        //console.log("response", newFile.response);
 
         if (newFile.xhr) {
 
             //Get the response status code
-            console.log("status", newFile.xhr.status);
+            //console.log("status", newFile.xhr.status);
 
             if ( newFile.xhr.status === 200) 
             {
@@ -190,12 +188,22 @@ export default {
                 let file = [{
                                 'id'        : newFile.response.id,
                                 'file_name' : newFile.response.file,
-                                'size'      : newFile.response.size
+                                'size'      : newFile.response.size,
+                                'owner'     : newFile.response.owner,
                             }]
 
                 //let files = this.$root.$refs.folderComponent.files.push(...file);
                 let files = this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files.push(...file);
-            } 
+
+                //remove the files
+                this.files.splice(this.files.findIndex(function(i){
+                    return i.id === newFile.id;
+                }), 1);
+            }
+
+    
+
+
         }
       }
     },

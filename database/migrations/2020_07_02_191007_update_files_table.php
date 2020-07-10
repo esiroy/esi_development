@@ -15,7 +15,7 @@ class UpdateFilesTable extends Migration
     {
         Schema::table('files', function (Blueprint $table) {
             $table->bigInteger('user_id')->after('folder_id');
-            $table->enum('privacy', 'public', 'private');
+            $table->enum('privacy', ['public', 'private'])->default('private');
         });
     }
 

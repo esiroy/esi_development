@@ -30,6 +30,7 @@ class FileManagerController extends Controller
         abort_if(Gate::denies('filemanager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //@can('filemanager_upload_delete)
+        $can_user_share_uploads  = (Gate::denies('filemanager_upload_share')) ? 'false' : 'true';
         $can_user_share_folder  = (Gate::denies('filemanager_share')) ? 'false' : 'true';
         $can_user_create_folder  = (Gate::denies('filemanager_create')) ? 'false' : 'true';
         $can_user_edit_folder    = (Gate::denies('filemanager_edit')) ? 'false' : 'true';
@@ -37,7 +38,7 @@ class FileManagerController extends Controller
         $can_user_upload         = (Gate::denies('filemanager_upload')) ? 'false' : 'true';
         $can_user_delete_uploads = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';
 
-     
+        
         $all_users = User::get();
         foreach ($all_users as $user) {
             $users[] = [
@@ -57,6 +58,7 @@ class FileManagerController extends Controller
             'folders', 
             'files', 
             'can_user_upload',
+            'can_user_share_uploads',
             'can_user_delete_uploads', 
             'can_user_create_folder',
             'can_user_share_folder',

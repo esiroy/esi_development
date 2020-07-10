@@ -7,26 +7,34 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
 
 use App\Models\File;
+use App\Models\Folder;
 use Gate;
+use Auth;
 
 class FileController extends Controller
 {
 
     /**
-     * Display the specified resource.
+     * Display the file on file/$id.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
     {
-        $file = File::find($id);
-        $title          = $file->file_name;
-        $url            = url($file->path);
-        $path           = parse_url($url, PHP_URL_PATH);       // get path from url
-        $extension      = pathinfo($path, PATHINFO_EXTENSION); // get ext from path
-        $filename       = pathinfo($path, PATHINFO_FILENAME);  // get name from path
-        return view('modules.publicfile.show', compact('title', 'url', 'file', 'filename', 'extension'));
+        $canView = File::canView($id);
+        if ($canView->success) {
+            $file = $canView->file;
+            $title          = $file->file_name;
+            $url            = url($file->path);
+            $path           = parse_url($url, PHP_URL_PATH);       // get path from url
+            $extension      = pathinfo($path, PATHINFO_EXTENSION); // get ext from path
+            $filename       = pathinfo($path, PATHINFO_FILENAME);  // get name from path
+            return view('modules.publicfile.show', compact('title', 'url', 'file', 'filename', 'extension'));
+        } else {
+            $data   = ['message' => $canView->message];
+            return view('modules.publicfolder.message', $data);
+        }
     }
 
 
@@ -66,9 +74,6 @@ class FileController extends Controller
                     "message"   => "cancelled file can not be removed"
                 ]);         
             }
-   
-
-
         } else {
 
             //destroy id

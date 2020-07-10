@@ -10,7 +10,9 @@
         <div class="folder-container my-4 col-10">
             <vue-tree-list-component 
                 ref="treeListComponent"
+                :user="{{ Auth::user() }}"
                 :users="{{ json_encode($users) }}"
+                :can_user_share_uploads="{{ $can_user_share_uploads }}"
                 :can_user_share_folder="{{ $can_user_share_folder }}"
                 :can_user_create_folder="{{ $can_user_create_folder }}"
                 :can_user_edit_folder="{{ $can_user_edit_folder }}"

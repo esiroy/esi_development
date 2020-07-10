@@ -66,7 +66,7 @@ class FileUploadController extends Controller
                     'file_name'     => $request->file('file')->getClientOriginalName(), //original filename
                     'upload_name'   => $request->file('file')->getFileName(), //generated filename
                     'size'          => $request->file('file')->getSize(),
-                    'path'          => $public_file_path
+                    'path'          => $public_file_path,
                 ]);
 
                 //Output JSON reply
@@ -79,6 +79,7 @@ class FileUploadController extends Controller
                     "upload_name"   => $request->file('file')->getFileName(),  //generated filename
                     'size'          => $request->file('file')->getSize(),
                     "path"          => $path,
+                    "owner"         => Auth::user()
                 ]);
 
             } else {

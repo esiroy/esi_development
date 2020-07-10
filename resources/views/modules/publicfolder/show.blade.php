@@ -8,6 +8,7 @@
                 :public="{{ $public }}"
                 :public_viewer_id="{{ $public_viewer_id }}"
                 :public_folder_id="{{ $folder->id }}"
+                :can_user_share_uploads="{{ $can_user_share_uploads }}"
                 :can_user_create_folder="{{ $can_user_create_folder }}"
                 :can_user_edit_folder="{{ $can_user_edit_folder }}"
                 :can_user_delete_folder="{{ $can_user_delete_folder }}"

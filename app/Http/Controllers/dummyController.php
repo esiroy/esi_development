@@ -27,6 +27,20 @@ class dummyController extends Controller
     public function index()
     {
 
+
+        $folder     = Folder::find(3);
+
+        if ($folder) {
+            $files      = $folder->files;
+            foreach ($files as $file) {
+                print_r ($file->shared);
+            }
+            exit();
+    
+        }
+ 
+
+        /*
         $permittedUsers = Folder::getPermittedUsers(66);
 
         print_r ($permittedUsers);
@@ -61,7 +75,7 @@ class dummyController extends Controller
             echo $folder->folder_name ."<BR>";
         }
         
-        /*
+        
         $folder = Folder::find(1);
 
         echo "<pre>";

@@ -46,8 +46,6 @@ class PublicFolderController extends Controller
                         ];
 
                         return view('modules/publicfolder/message', $data);
-
-
                     }
                 } else {
                     //public folder
@@ -59,8 +57,6 @@ class PublicFolderController extends Controller
         } else {
             if ($permalink->folder->privacy == 'private') 
             {
-              
-
                 $data = [
                     'success'   => false,
                     'message'   => "You must be logged in to view this folder"
@@ -78,6 +74,7 @@ class PublicFolderController extends Controller
 
         /** Enable below if you want activate file permission on public page */
         /*
+        $can_user_share_uploads     = (Gate::denies('filemanager_upload_share')) ? 'false' : 'true';
         $can_user_create_folder  = (Gate::denies('filemanager_create')) ? 'false' : 'true';
         $can_user_edit_folder    = (Gate::denies('filemanager_edit')) ? 'false' : 'true';
         $can_user_delete_folder    = (Gate::denies('filemanager_delete')) ? 'false' : 'true';
@@ -91,17 +88,18 @@ class PublicFolderController extends Controller
             $files = Folder::find($permalink->folder->id)->files;
 
             $data = [
-                'public'              => 'true',
-                'public_viewer_id'    => $public_viewer_id,
-                'title'  => $permalink->folder->folder_name,
-                'folder' => $permalink->folder,
-                'files' => $files,
-                'folders' => $folders,
-                'can_user_upload'   => 'false',
-                'can_user_delete_uploads' => 'false', 
-                'can_user_create_folder' => 'false',
-                'can_user_edit_folder' => 'false', 
-                'can_user_delete_folder' =>  'false'
+                'public'                    => 'true',
+                'public_viewer_id'          => $public_viewer_id,
+                'title'                     => $permalink->folder->folder_name,
+                'folder'                    => $permalink->folder,
+                'files'                     => $files,
+                'folders'                   => $folders,
+                'can_user_share_uploads'    => 'false',
+                'can_user_upload'           => 'false',
+                'can_user_delete_uploads'   => 'false', 
+                'can_user_create_folder'    => 'false',
+                'can_user_edit_folder'      => 'false', 
+                'can_user_delete_folder'    =>  'false'
             ];
 
             return view('modules/publicfolder/show', $data);
