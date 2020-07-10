@@ -666,14 +666,18 @@ export default {
                     this.userOptions        = userOptionsList;
                 }
 
-                if (this.node.owner.id !== this.user.id) {
-                    if (this.can_user_manage_folder == false) {
-                         this.isSharingDisabled = true;
+                if (!this.public) {
+                    if (this.node.owner.id !== this.user.id) {
+                        if (this.can_user_manage_folder == false) {
+                            this.isSharingDisabled = true;
+                        } else {
+                            this.isSharingDisabled = false; //filemanger admin mode
+                        }
                     } else {
-                        this.isSharingDisabled = false; //filemanger admin mode
+                        this.isSharingDisabled = false;
                     }
                 } else {
-                     this.isSharingDisabled = false;
+                    this.isSharingDisabled = false;
                 }
 
                 this.viewMenu = true;
