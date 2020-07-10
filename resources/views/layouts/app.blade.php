@@ -87,7 +87,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12 col-md text-center">
-                        <a class="navbar-brand" href="{{ url( route('admin.dashboard.index') ) }}">
+                        <a class="navbar-brand" href="{{ url( route('home') ) }}">
                             {{ config('app.name', 'My Tutor') }}
                         </a>
                     </div>
