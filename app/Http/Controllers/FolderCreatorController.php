@@ -15,6 +15,7 @@ use Input;
 use App\Models\User;
 use App\Models\Folder;
 use App\Models\File;
+use Auth;
 
 class FolderCreatorController extends Controller
 {
@@ -57,6 +58,7 @@ class FolderCreatorController extends Controller
         $can_user_delete_folder     = (Gate::denies('filemanager_delete')) ? 'false' : 'true';
         $can_user_upload            = (Gate::denies('filemanager_upload')) ? 'false' : 'true';
         $can_user_delete_uploads    = (Gate::denies('filemanager_upload_delete')) ? 'false' : 'true';
+        $can_user_manage_folder    = (Gate::forUser(Auth::user())->denies('permission', "filemanager_admin")) ? 'false': 'true';
      
         $all_users = User::get();
         foreach ($all_users as $user) {
@@ -82,7 +84,8 @@ class FolderCreatorController extends Controller
             'can_user_create_folder',
             'can_user_share_folder',
             'can_user_edit_folder',
-            'can_user_delete_folder'
+            'can_user_delete_folder',
+            'can_user_manage_folder'
         ));
 
     }

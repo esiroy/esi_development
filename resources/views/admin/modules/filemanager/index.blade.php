@@ -19,6 +19,7 @@
                 :can_user_delete_folder="{{ $can_user_delete_folder }}"
                 :can_user_upload="{{ $can_user_delete_uploads }}"
                 :can_user_delete_uploads="{{ $can_user_delete_uploads }}"
+                :can_user_manage_folder="{{ $can_user_manage_folder }}"
                 :folders="{{ json_encode($folders) }}"
                 api_token="{{ Auth::user()->api_token }}"
                 csrf_token="{{ csrf_token() }}"

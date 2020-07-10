@@ -461,7 +461,10 @@ export default {
         },
 		can_user_delete_folder: {
 			type: Boolean
-		},
+        },
+        can_user_manage_folder: {
+			type: Boolean
+        },
 		csrf_token: {
 			type: String
 		},
@@ -664,7 +667,11 @@ export default {
                 }
 
                 if (this.node.owner.id !== this.user.id) {
-                    this.isSharingDisabled = true;
+                    if (this.can_user_manage_folder == false) {
+                         this.isSharingDisabled = true;
+                    } else {
+                        this.isSharingDisabled = false; //filemanger admin mode
+                    }
                 } else {
                      this.isSharingDisabled = false;
                 }
@@ -1444,6 +1451,10 @@ export default {
 
     .deleteNode:hover {
         color: #FF0000
+    }
+
+    .vtl-operation {
+        display:none;
     }
 }
 
