@@ -69,8 +69,8 @@ const app = new Vue({
 /* non-render blocking css files */
 var deferCSS = [];
 deferCSS.push(
-    "//fonts.googleapis.com/css?family=Nunito&display=swap",
-    //window.location.protocol + "//" + window.location.host + "/css/app.css"
+    //"//fonts.googleapis.com/css?family=Nunito&display=swap",
+    window.location.protocol + "//" + window.location.host + "/css/app.css"
 );
 deferCSS.reverse(); /* Items in the array are added to the page in reverse order */
 deferCSS.forEach(function(thisDeferCSS) {

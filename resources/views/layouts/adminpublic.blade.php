@@ -13,11 +13,11 @@
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}" >
 </head>
 <body>
     <div id="app">
-        <main class="py-4">
+        <main class="py-0">
             @yield('content')
         </main>
     </div>

@@ -59,8 +59,9 @@ mix.js(
         "public/js/vfs_fonts.js",
         true
     )
-    .sass(
-        "resources/sass/app.scss", "public/css/app.css")
+    .copy("resources/images/*.*", "public/images/")
+    .sass("resources/sass/app.scss", "public/css/app.css")
+    .sass("resources/sass/admin.scss", "public/css/admin.css")
     .version()
     .options({
         processCssUrls: false

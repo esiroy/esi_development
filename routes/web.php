@@ -48,8 +48,33 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/dashboard', 'DashboardController');
         */
 
+        /* 
+        //File Manager as a homepage
         Route::resource('/', 'Modules\FileManagerController');
         Route::resource('/dashboard', 'Modules\FileManagerController');
+        */
+
+        Route::resource('/', 'Modules\LessonController');
+
+        /*This module alias */
+        Route::resource('/dashboard', 'Modules\LessonController');
+        Route::resource('/lesson', 'Modules\LessonController');
+
+        //Member
+        Route::resource('/member', 'Modules\MemberController');
+        Route::resource('/tutor', 'Modules\TutorController');
+        Route::resource('/manager', 'Modules\ManagerController');
+        Route::resource('/agent', 'Modules\AgentController');
+
+        //Manage
+        Route::resource('/questionnaires', 'Modules\QuestionnaireController');
+        Route::resource('/announcement', 'Modules\AnnouncementController');
+        Route::resource('/course', 'Modules\CourseController');
+        Route::resource('/accounts', 'Modules\AccountController');
+        Route::resource('/company', 'Modules\CompanyController');
+
+        //Report
+        Route::resource('/report', 'Modules\ReportController');
 
         /* Administrator Module Lists */
         Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 
@@ -77,7 +102,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
             Route::delete('/permissions/destroy', 'PermissionController@massDestroy')->name('permissions.massDestroy');
             Route::resource('/permissions', 'PermissionController');
         });
-    });
+
+    }); //End [Admin Area]
+
 });
 
 

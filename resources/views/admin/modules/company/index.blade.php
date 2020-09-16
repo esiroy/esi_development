@@ -1,0 +1,99 @@
+@extends('layouts.admin')
+
+@section('content')
+<div class="container bg-light px-0">
+
+    <div class="bg-lightblue2">
+        <div class="container px-0">
+            <nav class="submenu nav nav-pills flex-column flex-sm-row">
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/questionnaires') }}">Questionnaires</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/announcement') }}">Message</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/accounts') }}">Accounts</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/course') }}">Material</a>
+                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-primary active" href="{{ url('admin/company') }}">Company</a>
+            </nav>
+        </div>
+    </div>
+
+    <div class="esi-box">
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-light ">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Members</li>
+            </ol>
+        </nav>
+
+
+        <div class="container">
+            <!--[start card] -->
+            <div class="card">
+                <div class="card-header">
+                    Company
+                </div>
+                <div class="card-body">
+
+                    <div class="row">
+                        <div class="col-12 pt-3">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th class="small text-center">Copmany Email </th>
+                                            <th class="small text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th class="small text-center"> company-email@email.com</th>
+
+                                            <th class="small text-center">
+                                                <a href="#">Edit</a> | <a href="#">Delete</a>
+                                            </th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+
+                        <div class="row py-4">
+                            <div class="col-12">
+
+                                <div class="container">
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-primary btn-sm">Add Another</button>                                            
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <button type="button" class="btn btn-primary btn-sm">Save</button>
+                                            <button type="button" class="btn btn-primary btn-sm">Cancel</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+       
+                    </div>
+                </div>
+            </div>
+            <!--[end] card-->
+
+
+        </div>
+
+
+
+
+    </div>
+</div>
+
+</div>
+@endsection

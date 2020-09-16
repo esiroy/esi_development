@@ -1,0 +1,40 @@
+/** 
+ filename     : Admin CSS
+ description  : CSS for admin panel login
+*/
+body {
+    background-color: #e2e2e2;
+}
+
+
+.login {
+    background: linear-gradient(to bottom, #00aff0 30%, #e2e2e2 0) repeat-x #e2e2e2;
+    width: 100%; 
+    display: inline-table;
+    overflow-x: visible;    
+}
+
+.login-box {
+    background: #fff;
+    padding: 20px;
+    border: 3px solid #efefef;
+    border-radius: 10px 10px;
+    width: 385px;
+}
+
+.bg-admin
+{  
+    background: url(../images/bg_login.png) 0 90px no-repeat;
+    width: 780px;
+    height: 598px;
+    padding: 138px 0 0 60px;
+    margin: 0 auto;    
+    background-size: contain;
+}
+
+.heading {
+    margin: 0 0 10px 0;
+    font: bold 16px Arial;
+    color: #818181; 
+}
+

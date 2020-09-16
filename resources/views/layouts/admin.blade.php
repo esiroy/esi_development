@@ -22,13 +22,13 @@
     </noscript>
 </head>
 
-<body>
+<body class="bg-gray">
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container-fluid">
+            <div class="container">
 
                 <a class="navbar-brand" href="{{ url( route('admin.dashboard.index') ) }}">
-                    {{ config('app.name', 'My Tutor') }}
+                   <img src="{{ url("images/mytutor_logo.png") }}" alt="{{ config('app.name', 'My Tutor') }}" alt="{{ config('app.name', 'My Tutor') }} administratrion panel">
                 </a>
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -47,7 +47,6 @@
                     <ul class="navbar-nav ml-auto">
                         <!-- Authentication Links -->
                         @guest
-
                             <!--
                             <li class="nav-item">
                                 <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
@@ -84,14 +83,28 @@
             </div>
         </nav>
 
+    
+        <div class="bg-lightblue">
+          <div class="container px-0">
+            <nav class="nav nav-pills flex-column flex-sm-row">
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/lesson') }}">My Page</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/member') }}">User</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('admin/questionnaires') }}">Manage</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/report') }}">Report</a>
+            </nav>
+          </div>
+        </div>
+
+
         <main class="main-container">
             @yield('content')
         </main>
 
-        <footer class="pt-4 pt-md-4 pb-md-4 border-top">
-            <div class="container">
+
+        <footer class="container py-4 px-0 bg-light">
+            <div class="container border-top">
                 <div class="row">
-                    <div class="col-12 col-md text-center">
+                    <div class="col-12 text-center py-3">
                         <a class="navbar-brand" href="{{ url( route('admin.dashboard.index') ) }}">
                             {{ config('app.name', 'My Tutor') }}
                         </a>
