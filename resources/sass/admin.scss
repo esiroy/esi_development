@@ -2,39 +2,72 @@
  filename     : Admin CSS
  description  : CSS for admin panel login
 */
+html,
 body {
+    height: 100%;
+    max-height: 100%;
     background-color: #e2e2e2;
 }
 
+.navbar {
+    z-index: 9;
+}
 
-.login {
-    background: linear-gradient(to bottom, #00aff0 30%, #e2e2e2 0) repeat-x #e2e2e2;
-    width: 100%; 
+.svg-icon {
+    font-size: 16px;
+    margin-bottom: 3px;
+    margin-right: 3px;
+    color: #2d3236;
+}
+
+#sidebar {
+    border-right: 1px solid #ccc;
+    //max-width: 280px;
+    padding: 0px;
+    //sidebar wrapper
+    #sidebar-wrapper {
+        height: calc(100vh - 55px);
+        border-right: 0px !important;
+    }
+}
+
+/* Style to reverse the caret icon from pointing downwards to upwards */
+.caret.caret-up {
+    border-top-width: 0;
+    border-bottom: 4px solid #fff;
+}
+
+.btn:focus,
+.btn:active {
+    outline: none !important;
+    box-shadow: none;
+}
+
+/*****************************
+    ADMIN LOGIN FORM
+******************************/
+#login {
+    background: linear-gradient(to bottom, #00aff0 30%, #e2e2e2 0) repeat-x
+        #e2e2e2;
+    width: 100%;
     display: inline-table;
-    overflow-x: visible;    
-}
+    overflow-x: visible;
 
-.login-box {
-    background: #fff;
-    padding: 20px;
-    border: 3px solid #efefef;
-    border-radius: 10px 10px;
-    width: 385px;
-}
+    .bg-admin-login {
+        background: url(../images/bg_login.png) center top no-repeat;
+        min-height: 538px;
+        background-size: contain;
+    }
 
-.bg-admin
-{  
-    background: url(../images/bg_login.png) 0 90px no-repeat;
-    width: 780px;
-    height: 598px;
-    padding: 138px 0 0 60px;
-    margin: 0 auto;    
-    background-size: contain;
-}
+    .login-box {
+        background: #fff;
+        border: 3px solid #efefef;
+        border-radius: 10px 10px;
+    }
 
-.heading {
-    margin: 0 0 10px 0;
-    font: bold 16px Arial;
-    color: #818181; 
+    .heading {
+        margin: 10px;
+        font: bold 16px Arial;
+        color: #818181;
+    }
 }
-

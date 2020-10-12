@@ -17,10 +17,7 @@ class ReportController extends Controller
         return view('admin.modules.report.index');
     }
 
-    public function salary()
-    {
-        return view('admin.modules.report.salary');
-    }
+
 
     /**
      * Show the form for creating a new resource.

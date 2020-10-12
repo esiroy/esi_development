@@ -57,7 +57,7 @@
                         </div>
 
 
-                        <div class="row py-4">
+                        <div class="row py-1">
                             <div class="col-12">
 
                                 <div class="container">
@@ -68,7 +68,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
+                                    <div class="row mt-4">
                                         <div class="col-12">
                                             <button type="button" class="btn btn-primary btn-sm">Save</button>
                                             <button type="button" class="btn btn-primary btn-sm">Cancel</button>

@@ -1,0 +1,46 @@
+/*
+    Name: login.scss
+    Description: Customize the user web interface 
+*/
+
+#login {
+    background: linear-gradient(to bottom, #00aff0 30%, #e2e2e2 0) repeat-x #e2e2e2;
+    width: 100%;
+    display: inline-table;
+    overflow-x: visible;
+
+    .bg-member-login {
+        background: url(../images/bg_user_login.png) center top no-repeat;
+        background-size: 794px 538px; //original size
+        font-size: 12px;
+        min-height: 538px;
+    }
+
+    .login-box {
+        div > label {
+            font-size: 13px;
+            color: #007dc5;
+            padding-right: 5px;
+            font-weight: bold;
+        }
+    }
+}
+
+#register {
+    .btn-register {
+        padding-top: 100px;
+        padding-left: 80px;
+    }
+}
+
+#login {
+    #logo {
+        margin-top: 60px;
+        margin-left: 10px;
+    }
+    .login-box {
+        #btn-login {
+            margin-right: 0px;
+        }
+    }
+}

@@ -35,7 +35,7 @@ class MemberController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.modules.member.create', compact('members'));
     }
 
     /**

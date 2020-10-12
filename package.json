@@ -15,8 +15,8 @@
         "cross-env": "^7.0",
         "jquery": "^3.5.1",
         "jquery-ui": "^1.12.1",
-        "laravel-mix": "^5.0.1",
-        "lodash": "^4.17.13",
+        "laravel-mix": "^5.0.5",
+        "lodash": "^4.17.20",
         "popper.js": "^1.12",
         "resolve-url-loader": "^2.3.1",
         "sass": "^1.26.9",
@@ -38,10 +38,13 @@
         "qs": "^6.9.4",
         "v-select2-component": "^0.4.3",
         "vue-clipboard2": "^0.3.1",
+        "vue-moment": "^4.1.0",
         "vue-multiselect": "^2.1.6",
         "vue-tree-list": "^1.4.5",
         "vue-upload-component": "^2.8.20",
         "vuedraggable": "^2.23.2",
-        "vuejs-tree": "^2.0.0-5"
+        "vuejs-datepicker": "^1.6.2",
+        "vuejs-tree": "^2.0.0-5",
+        "vuelidate": "^0.7.5"
     }
 }

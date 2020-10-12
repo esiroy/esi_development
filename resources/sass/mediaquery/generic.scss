@@ -1,0 +1,160 @@
+/* Large desktops and laptops */
+@media (min-width: 1200px) {
+    #login {
+        .bg-member-login {
+            background-size: 794px 538px; 
+        }
+    }
+
+    #register .btn-register {
+        padding-top: 100px;
+        padding-left: 98px;
+    }
+}
+
+/* Landscape tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+    #login {
+        .bg-member-login {
+            background-size: 794px 538px; 
+        }
+    }
+
+    #login .login-box {
+        width: 100%;
+    }
+
+    #register .btn-register {
+        padding-top: 100px;
+        padding-left: 98px;
+    }    
+
+}
+
+/* Portrait tablets, small desktops and landscape large mobile phones - iphonex) */
+@media (min-width: 768px) and (max-width: 991px) {
+    #login {
+        #logo {
+            margin-top: 48px;
+            margin-left: 0px;
+        }
+        .bg-member-login {
+            background-size: 700px 445px; 
+        }        
+        .login-box {
+            width: 100%;
+            .heading {
+                padding-right: 4px;
+                font-size: 9px;
+                text-align: left;
+            }
+            div > label {
+                font-size: 8px;
+            }
+            a {
+                font-size: 8px;
+            }
+            #btn-login {
+                margin-right: 12px;
+            }
+            .form-control-sm {
+                height: calc(1.5em + 0.5rem + 2px);
+                padding: 0.15rem 0.25rem;
+                font-size: 0.5rem;
+                line-height: 1;
+                border-radius: 0.2rem;
+            }
+        }
+    }
+
+    #register {
+        .btn-register {
+            position: relative;
+            left: 160px;
+            padding-top: 87px;
+            padding-left: 0px;
+            img {
+                width: 35%;
+            }
+        }
+    }
+
+    
+}
+
+
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+    #login {
+        #logo {
+            margin-top: 12px;
+            margin-left: 0px;
+        }
+
+        .bg-member-login {
+            background-size: 348px 236px            
+        }    
+
+        .login-box {
+            width: 204px;
+            margin-left: 12px;
+            .heading {
+                padding-right: 4px;
+                font-size: 9px;
+                text-align: left;
+            }
+            div > label {
+                font-size: 8px;
+                text-align: right;
+            }
+            a {
+                font-size: 8px;
+            }
+            button {
+                font-size: 8px;
+            }
+            #btn-login {
+                margin-right: 16px;
+              
+            }
+            .form-control-sm {
+                height: calc(1.5em + 0.5rem + 2px);
+                padding: 0.15rem 0.25rem;
+                font-size: 0.5rem;
+                line-height: 1;
+                border-radius: 0.2rem;
+            }
+        }
+    }
+
+    #register {
+        .btn-register {
+            position: relative;    
+            left: 40px;
+            padding-top: 42px;
+            padding-left: 0px;
+            img {
+                width: 50px;
+            }
+        }
+    }
+
+
+}
+
+
+@media (min-width: 375px) and (max-width: 667px) {
+
+    #login #logo {
+        margin-top: 12px;
+        margin-left: 12px;
+    }
+
+    #login .login-box {
+        margin-top: 12px;
+        width: 204px;
+        margin-left: 12px;
+    }
+    
+}
+

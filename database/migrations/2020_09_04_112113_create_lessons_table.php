@@ -15,8 +15,8 @@ class CreateLessonsTable extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {            
             $table->id();
-            $table->bigInteger('teacher_id'); //teacher id
-            $table->bigInteger('student_id'); //member id            
+            $table->bigInteger('tutor_id');
+            $table->bigInteger('member_id');
             $table->bigInteger('lesson_status_id');
             $table->bigInteger('creator_id');
             $table->bigInteger('email_type_id');

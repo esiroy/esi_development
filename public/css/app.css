@@ -991,6 +991,26 @@ div.dataTables_wrapper span.select-item {
 .select2-container--classic.select2-container--open .select2-dropdown {
   border-color: #5897fb; }
 @charset "UTF-8";
+.bg-gray {
+  background-color: #e2e2e2;
+}
+
+.bg-lightgray {
+  background-color: #f5f5f5;
+}
+
+.bg-lightblue {
+  background-color: #35bbeb;
+}
+
+.bg-lightblue2 {
+  background-color: #009fd9;
+}
+
+.bg-darkblue {
+  background-color: #0076be;
+}
+
 /*!
  * Bootstrap v4.5.0 (https://getbootstrap.com/)
  * Copyright 2011-2020 The Bootstrap Authors
@@ -3016,10 +3036,6 @@ pre code {
   opacity: 1;
 }
 .form-control:-ms-input-placeholder {
-  color: #6c757d;
-  opacity: 1;
-}
-.form-control::-ms-input-placeholder {
   color: #6c757d;
   opacity: 1;
 }
@@ -5356,15 +5372,15 @@ input[type=button].btn-block {
 .card-body {
   flex: 1 1 auto;
   min-height: 1px;
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 .card-title {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 
 .card-subtitle {
-  margin-top: -0.175rem;
+  margin-top: -0.125rem;
   margin-bottom: 0;
 }
 
@@ -5376,11 +5392,11 @@ input[type=button].btn-block {
   text-decoration: none;
 }
 .card-link + .card-link {
-  margin-left: 1rem;
+  margin-left: 0.5rem;
 }
 
 .card-header {
-  padding: 0.35rem 1rem;
+  padding: 0.25rem 0.5rem;
   margin-bottom: 0;
   background-color: rgba(0, 0, 0, 0.03);
   border-bottom: 1px solid rgba(0, 0, 0, 0.125);
@@ -5393,7 +5409,7 @@ input[type=button].btn-block {
 }
 
 .card-footer {
-  padding: 0.35rem 1rem;
+  padding: 0.25rem 0.5rem;
   background-color: rgba(0, 0, 0, 0.03);
   border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
@@ -5402,15 +5418,15 @@ input[type=button].btn-block {
 }
 
 .card-header-tabs {
-  margin-right: -0.5rem;
-  margin-bottom: -0.35rem;
-  margin-left: -0.5rem;
+  margin-right: -0.25rem;
+  margin-bottom: -0.25rem;
+  margin-left: -0.25rem;
   border-bottom: 0;
 }
 
 .card-header-pills {
-  margin-right: -0.5rem;
-  margin-left: -0.5rem;
+  margin-right: -0.25rem;
+  margin-left: -0.25rem;
 }
 
 .card-img-overlay {
@@ -5502,7 +5518,7 @@ input[type=button].btn-block {
 }
 
 .card-columns .card {
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.25rem;
 }
 @media (min-width: 576px) {
   .card-columns {
@@ -10980,7 +10996,6 @@ h3 {
     border-color: #dee2e6;
   }
 }
-/* Custom CSS */
 .ck-editor__editable,
 textarea {
   min-height: 150px;
@@ -11220,60 +11235,16 @@ div.dt-button-collection .dt-button.active {
   color: #fff;
 }
 
-/* Remove outlines */
-.btn:focus,
-.btn:active {
-  outline: none !important;
-  box-shadow: none;
-}
-
-html,
-body {
-  height: 100%;
-  max-height: 100%;
-}
-
-.navbar {
-  z-index: 9;
-}
-
-.svg-icon {
-  font-size: 16px;
-  margin-bottom: 3px;
-  margin-right: 3px;
-  color: #2d3236;
-}
-
-#sidebar {
-  border-right: 1px solid #ccc;
-  padding: 0px;
-}
-#sidebar #sidebar-wrapper {
-  height: calc(100vh - 55px);
-  border-right: 0px !important;
-}
-
-/* Style to reverse the caret icon from pointing downwards to upwards */
-.caret.caret-up {
-  border-top-width: 0;
-  border-bottom: 4px solid #fff;
-}
-
 /****************** ADMIN PANEL ***************/
-.bg-gray {
-  background-color: #e2e2e2;
+.esi-card {
+  border: 2px solid #cbe5ee;
 }
 
-.bg-lightgray {
-  background-color: #f5f5f5;
-}
-
-.bg-lightblue {
-  background-color: #35bbeb;
-}
-
-.bg-lightblue2 {
-  background-color: #009fd9;
+.esi-card-header {
+  background-color: #fff;
+  border-bottom: 1px solid #cbe5ee;
+  font: bold 18px Arial;
+  color: #0eadd9;
 }
 
 .submenu.nav {
@@ -11340,4 +11311,316 @@ body {
   width: 16px;
   height: 12px;
   display: inline-block;
+}
+
+/*custom card */
+.card label {
+  font-size: 12px;
+}
+
+/*custom table */
+.esi-table {
+  border-collapse: separate;
+  border-spacing: 2px;
+  margin-bottom: 0px;
+  white-space: nowrap;
+}
+.esi-table thead td {
+  background-color: #d0e8f7;
+  border-bottom: 3px solid #7dbae0;
+  text-align: center;
+}
+.esi-table td {
+  font-size: 12px;
+  text-align: center;
+  font: normal 11px Arial;
+  border: 0px;
+  border-right: 1px solid #d0e8f7;
+  vertical-align: top;
+  padding: 5px;
+}
+
+.legend {
+  font-size: 12px;
+}
+.legend table {
+  white-space: nowrap;
+}
+.legend div {
+  font-size: 12px;
+}
+.legend td {
+  font-size: 12px;
+  width: 25px;
+}
+
+/*
+    Name: login.scss
+    Description: Customize the user web interface 
+*/
+#login {
+  background: linear-gradient(to bottom, #00aff0 30%, #e2e2e2 0) repeat-x #e2e2e2;
+  width: 100%;
+  display: inline-table;
+  overflow-x: visible;
+}
+#login .bg-member-login {
+  background: url(../images/bg_user_login.png) center top no-repeat;
+  background-size: 794px 538px;
+  font-size: 12px;
+  min-height: 538px;
+}
+#login .login-box div > label {
+  font-size: 13px;
+  color: #007dc5;
+  padding-right: 5px;
+  font-weight: bold;
+}
+
+#register .btn-register {
+  padding-top: 100px;
+  padding-left: 80px;
+}
+
+#login #logo {
+  margin-top: 60px;
+  margin-left: 10px;
+}
+#login .login-box #btn-login {
+  margin-right: 0px;
+}
+
+/* Large desktops and laptops */
+@media (min-width: 1200px) {
+  #login .bg-member-login {
+    background-size: 794px 538px;
+  }
+
+  #register .btn-register {
+    padding-top: 100px;
+    padding-left: 98px;
+  }
+}
+/* Landscape tablets and medium desktops */
+@media (min-width: 992px) and (max-width: 1199px) {
+  #login .bg-member-login {
+    background-size: 794px 538px;
+  }
+
+  #login .login-box {
+    width: 100%;
+  }
+
+  #register .btn-register {
+    padding-top: 100px;
+    padding-left: 98px;
+  }
+}
+/* Portrait tablets, small desktops and landscape large mobile phones - iphonex) */
+@media (min-width: 768px) and (max-width: 991px) {
+  #login #logo {
+    margin-top: 48px;
+    margin-left: 0px;
+  }
+  #login .bg-member-login {
+    background-size: 700px 445px;
+  }
+  #login .login-box {
+    width: 100%;
+  }
+  #login .login-box .heading {
+    padding-right: 4px;
+    font-size: 9px;
+    text-align: left;
+  }
+  #login .login-box div > label {
+    font-size: 8px;
+  }
+  #login .login-box a {
+    font-size: 8px;
+  }
+  #login .login-box #btn-login {
+    margin-right: 12px;
+  }
+  #login .login-box .form-control-sm {
+    height: calc(1.5em + 0.5rem + 2px);
+    padding: 0.15rem 0.25rem;
+    font-size: 0.5rem;
+    line-height: 1;
+    border-radius: 0.2rem;
+  }
+
+  #register .btn-register {
+    position: relative;
+    left: 160px;
+    padding-top: 87px;
+    padding-left: 0px;
+  }
+  #register .btn-register img {
+    width: 35%;
+  }
+}
+/* Landscape phones and portrait tablets */
+@media (max-width: 767px) {
+  #login #logo {
+    margin-top: 12px;
+    margin-left: 0px;
+  }
+  #login .bg-member-login {
+    background-size: 348px 236px;
+  }
+  #login .login-box {
+    width: 204px;
+    margin-left: 12px;
+  }
+  #login .login-box .heading {
+    padding-right: 4px;
+    font-size: 9px;
+    text-align: left;
+  }
+  #login .login-box div > label {
+    font-size: 8px;
+    text-align: right;
+  }
+  #login .login-box a {
+    font-size: 8px;
+  }
+  #login .login-box button {
+    font-size: 8px;
+  }
+  #login .login-box #btn-login {
+    margin-right: 16px;
+  }
+  #login .login-box .form-control-sm {
+    height: calc(1.5em + 0.5rem + 2px);
+    padding: 0.15rem 0.25rem;
+    font-size: 0.5rem;
+    line-height: 1;
+    border-radius: 0.2rem;
+  }
+
+  #register .btn-register {
+    position: relative;
+    left: 40px;
+    padding-top: 42px;
+    padding-left: 0px;
+  }
+  #register .btn-register img {
+    width: 50px;
+  }
+}
+@media (min-width: 375px) and (max-width: 667px) {
+  #login #logo {
+    margin-top: 12px;
+    margin-left: 12px;
+  }
+
+  #login .login-box {
+    margin-top: 12px;
+    width: 204px;
+    margin-left: 12px;
+  }
+}
+/* ----------- iPhone 4 and 4S ----------- */
+/* Portrait and Landscape */
+/* Portrait */
+/* Landscape */
+/* ----------- iPhone 5, 5S, 5C and 5SE ----------- */
+/* Portrait and Landscape */
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
+  #login .login-box {
+    width: 170px;
+    margin-left: 10px;
+    margin-top: 6px;
+  }
+}
+/* Portrait */
+/* Landscape */
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  #login #logo {
+    margin-left: 12px;
+  }
+
+  #login .login-box {
+    width: 170px;
+    margin-left: 62px;
+    margin-top: 5px;
+  }
+
+  #register .btn-register {
+    position: relative;
+    left: 29px;
+    padding-top: 42px;
+    padding-left: 0px;
+  }
+}
+/* ----------- iPhone 6, 6S, 7 and 8 ----------- */
+/* Portrait and Landscape */
+/* Portrait */
+/* Landscape */
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: landscape) {
+  #register .btn-register {
+    position: relative;
+    left: 30px;
+    padding-top: 42px;
+    padding-left: 0px;
+    margin-left: 82px;
+  }
+}
+/* ----------- iPhone 6+, 7+ and 8+ ----------- */
+/* Portrait and Landscape */
+@media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) {
+  #login #logo {
+    margin-top: 12px;
+    margin-left: 20px;
+  }
+
+  #login .login-box {
+    width: 170px;
+    margin-left: 18px;
+    margin-top: 6px;
+  }
+}
+/* Portrait */
+/* Landscape */
+@media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) and (orientation: landscape) {
+  #register .btn-register {
+    position: relative;
+    left: 30px;
+    padding-top: 42px;
+    padding-left: 0px;
+  }
+}
+/* ----------- iPhone X ----------- */
+/* Portrait and Landscape */
+/* Portrait */
+/* Landscape */
+.input {
+  background-color: #f7f7f7;
+  border: 1px solid #c7c7c7;
+  padding: 0.3rem 0.5rem;
+  border-radius: 2px;
+}
+.hasError .input {
+  border-color: red;
+}
+
+.hasError label {
+  color: red;
+}
+
+.button {
+  background: #3ab409;
+  padding: 0.5rem 1rem;
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 3px;
+  border-radius: 2px;
+  border-bottom: 2px solid #2e9106;
+  transition: 0.3s;
+}
+.button:hover {
+  background: #2e9107;
+  border-bottom: 2px solid #226906;
 }

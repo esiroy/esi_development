@@ -70,9 +70,11 @@ const app = new Vue({
 var deferCSS = [];
 deferCSS.push(
     //"//fonts.googleapis.com/css?family=Nunito&display=swap",
-    window.location.protocol + "//" + window.location.host + "/css/app.css"
+    //window.location.protocol + "//" + window.location.host + "/css/app.css"
 );
-deferCSS.reverse(); /* Items in the array are added to the page in reverse order */
+/* Items in the array are added to the page in reverse order */
+/*
+deferCSS.reverse(); 
 deferCSS.forEach(function(thisDeferCSS) {
     var css = document.createElement('link');
     css.rel = 'stylesheet';
@@ -81,3 +83,4 @@ deferCSS.forEach(function(thisDeferCSS) {
     var goDefer = document.getElementsByTagName('link')[0];
     goDefer.parentNode.insertBefore(css, goDefer);
 });
+*/

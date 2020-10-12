@@ -14,6 +14,7 @@
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="{{ asset('js/admin.js') }}" defer></script>
     <script src="{{ asset('js/vfs_fonts.js') }}" defer></script>
@@ -90,7 +91,7 @@
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/lesson') }}">My Page</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/member') }}">User</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('admin/questionnaires') }}">Manage</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/report') }}">Report</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/lessons') }}">Report</a>
             </nav>
           </div>
         </div>

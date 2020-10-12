@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('test', 'dummyController');
 
-Route::get('/', 'PublicFolderController@index')->name('welcome');
+//Route::get('/', 'PublicFolderController@index')->name('welcome');
+
+Route::get('/', 'HomeController@index')->name('welcome');
 Route::get('/home', 'FolderCreatorController@index')->name('home');
 
 /* Public Folder View */
@@ -74,7 +76,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/company', 'Modules\CompanyController');
 
         //Report
-        Route::resource('/report', 'Modules\ReportController');
+        Route::resource('/lessons', 'Modules\ReportController');
+        Route::resource('/salary', 'Modules\SalaryReportController');
 
         /* Administrator Module Lists */
         Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 

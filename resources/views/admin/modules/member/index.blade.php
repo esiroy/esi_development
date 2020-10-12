@@ -126,13 +126,14 @@
             </div>
             <!--[end] card-->
 
+            <create-member-component/>
 
+            
+            <!--
             <div class="card mt-4">
                 <div class="card-header">Member Form</div>
                 <div class="card-body">
-
                     <div id="member-persional-information" class="section">
-
                         <div class="card-title bg-gray p-1">
                             <div class="pl-2 font-weight-bold small">Personal Information</div>
                         </div>
@@ -678,10 +679,6 @@
 
 
                 </div>
-                <!--[end] card body -->
-
-
-
                 <div class="row py-4">
                     <div class="col-2"></div>
                     <div class="col-3 text-left">
@@ -689,9 +686,10 @@
                         <button type="button" class="btn btn-primary btn-sm">Cancel</button>
                     </div>
                 </div>
-
-
             </div>
+            -->
+
+
         </div>
 
 
