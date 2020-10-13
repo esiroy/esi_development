@@ -17,7 +17,7 @@ class CreateFieldsTable extends Migration
             $table->id();
             $table->string('field_name');
             $table->string('field_description'); 
-            $table->json('field_settings');
+            //$table->json('field_settings');
             $table->timestamps();
         });
     }
