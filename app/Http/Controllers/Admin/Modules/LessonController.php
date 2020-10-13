@@ -29,7 +29,7 @@ class LessonController extends Controller
     {
         //abort_if(Gate::denies('lesson_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $lessons = Lesson::all();
+        //$lessons = Lesson::all();
 
         $tutors = User::whereHas(
             'roles', function($q){
