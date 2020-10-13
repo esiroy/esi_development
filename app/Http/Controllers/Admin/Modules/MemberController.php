@@ -25,7 +25,7 @@ class MemberController extends Controller
             }
         )->get();            
 
-        return view('admin.modules.member.index', compact('members'));
+        return view('admin.modules.member.index', compact('tutors'));
     }
 
     /**
@@ -35,7 +35,7 @@ class MemberController extends Controller
      */
     public function create()
     {
-        return view('admin.modules.member.create', compact('members'));
+        return view('admin.modules.member.create');
     }
 
     /**
