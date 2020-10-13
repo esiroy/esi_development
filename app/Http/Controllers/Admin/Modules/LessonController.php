@@ -37,7 +37,7 @@ class LessonController extends Controller
             }
         )->get();      
 
-        return view('admin.modules.lesson.index', compact('lessons', 'tutors'));
+        return view('admin.modules.lesson.index', compact('tutors'));
     }
 
     /**
