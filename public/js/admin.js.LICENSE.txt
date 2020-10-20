@@ -113,7 +113,15 @@ https://github.com/nodeca/pako/blob/master/LICENSE
  * ©2016-2020 SpryMedia Ltd - datatables.net/license
  */
 
+/*! Buttons for DataTables 1.6.5
+ * ©2016-2020 SpryMedia Ltd - datatables.net/license
+ */
+
 /*! DataTables 1.10.21
+ * ©2008-2020 SpryMedia Ltd - datatables.net/license
+ */
+
+/*! DataTables 1.10.22
  * ©2008-2020 SpryMedia Ltd - datatables.net/license
  */
 
@@ -177,13 +185,6 @@ https://github.com/nodeca/pako/blob/master/LICENSE
  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
- */
-
-/**!
- * Sortable 1.10.2
- * @author	RubaXa   <trash@rubaxa.org>
- * @author	owenm    <owen23355@gmail.com>
- * @license MIT
  */
 
 //! moment.js

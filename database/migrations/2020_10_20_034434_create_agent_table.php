@@ -25,7 +25,12 @@ class CreateAgentTable extends Migration
             $table->string('inclination');
             $table->date('contract_date')->nullable();
             $table->longText('agent_remark')->nullable();
-            $table->boolean('is_terminated')->nullable();                
+            $table->boolean('is_terminated')->nullable();            
+            //points
+            $table->date('initial_date_of_purchase')->nullable();
+            $table->integer('point_balance')->nullable();
+            $table->date('expire_date')->nullable();
+            $table->decimal('purchased_amount', 8, 2)->nullable();
             $table->timestamps();
         });
     }

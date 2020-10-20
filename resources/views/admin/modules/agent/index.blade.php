@@ -96,24 +96,16 @@
                                             <td class="small text-center">{{$agent->agentInfo->contract_date}}</td>
                                             <td class="small text-center"><img src="/images/iHistory.jpg"></td>
 
-                                            <td class="small text-center">{{$agent->agentContract->initial_date_of_purchase}}</td>
-                                            <td class="small text-center">{{$agent->agentContract->point_balance}}</td>
-                                            <td class="small text-center">{{$agent->agentContract->expire_date}}</td>
-                                            <td class="small text-center">{{$agent->agentContract->lesson}}</td>
-
-                                            <td class="small text-center">215.99</td>
+                                            <td class="small text-center">{{$agent->agentInfo->initial_date_of_purchase}}</td>
+                                            <td class="small text-center">{{$agent->agentInfo->point_balance}}</td>
+                                            <td class="small text-center">{{$agent->agentInfo->expire_date}}</td>
+                                            <td class="small text-center">{{$agent->agentInfo->purchased_amount}}</td>
+                                            
                                             <td class="small text-center">Account | Edit  | Delete </td>
                                         </tr>
-                                        <tr>
-                                            <td class="small text-center">{{$agent->agentInfo->name_en}}</td>                                        
-                                            <td class="small text-center">{{$agent->agentInfo->user_id}}</td>                                            
-                                            <td class="small text-center">{{$agent->username}}</td>
-                                            <th class="small text-center">{{$agent->email}}</th>            
-                                            <td class="small text-center">
-                                                <a href="#">Edit</a> | 
-                                                <a href="#">Delete</a>                                            
-                                            </td>
-                                        </tr>
+
+
+                    
                                         @endforeach
                                     @endif
 
