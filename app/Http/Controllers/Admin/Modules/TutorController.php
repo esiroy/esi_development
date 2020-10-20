@@ -32,16 +32,7 @@ class TutorController extends Controller
 
         $tutors = User::whereHas('roles', function($q) { $q->where('title', 'tutor'); })->get();         
 
-        /*
-        foreach ($tutors as $tutor) {
-            echo  $tutor->id ."<BR>";
-            echo "first name : " . $tutor->email;
-            echo "<BR>";
-            echo "name jp : " . $tutor->tutorInfo->name_jp;
-            echo "<BR><BR>";
-        } 
-        exit();
-        */
+     
 
 
         $grades = Grade::all();
@@ -75,22 +66,20 @@ class TutorController extends Controller
         $validator = Validator::make($request->all(), [
             //'first_name' => ['required', 'string', 'max:255'],
             //'last_name' => ['required', 'string', 'max:255'],
-
             //'username'      => ['required', 'string', 'max:16', Rule::unique('users')->whereNull('deleted_at')],
             //'password'      => ['required', 'string', 'min:8', 'confirmed'],
-
-            'email'         => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
-            'password'      => ['required', 'string', 'min:8'],            
-            'sort'          => ['required', 'integer'],
-            'salary_rate'   => ['integer'],
-            'skype_name'    => ['required'],
-            'skype_id'    => ['required'],
-            'name_en'       => ['required'],
-            'name_jp'       => ['required'],
-            'gender'        => ['required'],
             //'birthdate'      => ['required'],
-            'japanese_fluency'      => ['required'],
-            'shift'                 => ['required']
+            'email'             => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'password'          => ['required', 'string', 'min:8'],            
+            'sort'              => ['required', 'integer'],
+            'salary_rate'       => ['integer'],
+            'skype_name'        => ['required'],
+            'skype_id'          => ['required'],
+            'name_en'           => ['required'],
+            'name_jp'           => ['required'],
+            'gender'            => ['required'],
+            'japanese_fluency'  => ['required'],
+            'shift'             => ['required']
         ]);
 
 
@@ -106,7 +95,8 @@ class TutorController extends Controller
                 'first_name'    => '',
                 'last_name'     => '',
                 'username'      => $request['email'],
-                'password'      => $request['password']
+                'password'      => $request['password'],
+                'api_token'      => Hash('sha256', Str::random(80))
             ];
 
             $user = User::create($userData);          
@@ -136,11 +126,7 @@ class TutorController extends Controller
             ];              
 
             $tutor = Tutor::create($tutorData);
-            $user->tutors()->sync([$tutor->id], false);             
-
-            User::find($user->id)->update([
-                'api_token'      => Hash('sha256', Str::random(80))
-            ]);           
+            $user->tutors()->sync([$tutor->id], false);  
 
             return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been added successfully!');
         }

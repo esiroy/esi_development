@@ -210,7 +210,7 @@
                             </label>
                             <div class="col-md-3">
                                 @foreach($grades as $grade)
-                                    <input type="radio" name="grade" value="{{ $grade->id }}" @if(old('grade') == $grade->id)? {{ "checked" }} @endif>  {{$grade->name}} 
+                                    <input type="radio" name="grade" value="{{ $grade->id }}" @if(old('grade') == $grade->id)? {{ "checked" }} @endif> {{$grade->name}} 
                                 @endforeach
                             </div>
                         </div>

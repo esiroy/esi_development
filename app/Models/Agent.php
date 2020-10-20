@@ -7,13 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Agent extends Model
 {
 
-    public $table = 'managers';
+    //public $table = 'agents';
 
     protected $guarded = array('created_at', 'updated_at');
-    
-    
-    public function setDateAttribute($value)
-    {       
+
+
+    public function setBirthdateAttribute($value)
+    {
+       
         $this->attributes['birthdate'] = date('Y-m-d', strtotime($value)); 
+
     }
+    
+    
 }

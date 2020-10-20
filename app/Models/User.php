@@ -93,6 +93,8 @@ class User extends Authenticatable
         return $this->belongsToMany(Folder::class);
     }
 
+
+    //tutors
     public function tutors()
     {
         return $this->belongsToMany(Tutor::class);
@@ -103,6 +105,7 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\Tutor');
     }
 
+    //Managers
     public function managers()
     {
         return $this->belongsToMany(Manager::class);
@@ -112,5 +115,17 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Models\Manager');
     }
+
+
+    //Agents
+    public function agents()
+    {
+        return $this->belongsToMany(Agent::class);
+    } 
+    
+    public function agentInfo() 
+    {
+        return $this->hasOne('App\Models\Agent');
+    }    
 
 }

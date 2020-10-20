@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             RoleUserTableSeeder::class,
             GradesTableSeeder::class,
             TutorTableSeeder::class,
+            IndustriesTableSeeder::class,
         ]);
     }
 }

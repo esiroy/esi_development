@@ -16,13 +16,13 @@ class CreateAgentTable extends Migration
         Schema::create('agents', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');            
-            $table->enum('industryType', ['INDIVIDUAL', 'PUBLIC_SCHOOL', 'COMPANY']);         
+            $table->integer('industry_type_id');         
             $table->string('name_en');
             $table->string('name_jp');
-            $table->string('representative')->nullable();
+            $table->string('representative');
             $table->string('hiragana')->nullable();
             $table->string('address')->nullable();            
-            $table->string('inclination');
+            $table->string('inclination')->nullable();
             $table->date('contract_date')->nullable();
             $table->longText('agent_remark')->nullable();
             $table->boolean('is_terminated')->nullable();            

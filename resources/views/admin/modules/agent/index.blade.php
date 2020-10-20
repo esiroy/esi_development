@@ -25,14 +25,28 @@
 
         <div class="container">
 
+            @if (session('message'))
+                <div class="alert alert-success">
+                    {{ session('message') }}
+                </div>
+            @elseif (session('error_message'))
+                <div class="alert alert-danger">
+                    {{ session('error_message') }}
+                </div>
+            @endif
+            
+            
             <!--[start card] -->
             <div class="card">
                 <div class="card-header">
                     Agent List
                 </div>
                 <div class="card-body">
+
+
+
                     <div class="row">    
-                        <form class="form-inline" style="width:100%">  
+                        <form class="form-inline" style="width:100%">
                             <div class="col-md-3">                   
                                 <div class="form-group">
                                     <label for="nickname" class="small col-4">Username:</label>
@@ -41,17 +55,18 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">   
-                                    <label for="nickname" class="small col-4">Name:</label>                      
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-8" value="">
+                                    <label for="nickname" class="small col-sm-9 col-md-2">Name:</label>                      
+                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-8 col-md-10" value="">
                                 </div>
                             </div>                        
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <div class="form-group">   
-                                    <label for="name" class="small col-2">Email:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-4" value="">                
-                                    <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
-
+                                    <label for="name" class="small col-sm-9 col-md-2">Email:</label>
+                                    <input id="name" name="name" type="text" class="form-control form-control-sm  col-xs-3 col-sm-2 col-md-10" value="">                                    
                                 </div>                                
+                            </div>
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-sm ml-0">Go</button>
                             </div>
                         </form>
                     </div>
@@ -66,6 +81,7 @@
 
                     <div class="row">
                         <div class="col-12 pt-3">
+
                             <!--<agent-list-component/>-->
 
                             <div class="table-responsive">
@@ -77,6 +93,7 @@
                                         <th class="small text-center">ID</th>
                                         <!--<th class="small text-center">Area</th>-->
                                         <th class="small text-center">Member<br/>List</th>
+
                                         <th class="small text-center">First Date of<br/>Purchase</th>
                                         <th class="small text-center">Point Purchase<br/>History</th>                                        
                                         <th class="small text-center">Point<br/>Balance</th>
@@ -89,23 +106,21 @@
                                     @if (isset($agents))
                                         @foreach ($agents as $agent)
                                         <tr>
-                                            <td class="small">{{$agent->agentInfo->name_en}}</td>
-                                            <td class="small">{{$agent->agentInfo->user_id}}</td>
+                                            <td class="small text-center">{{$agent->agentInfo->name_en}}</td>
+                                            <td class="small text-center">{{$agent->agentInfo->user_id}}</td>
                                             <!--<td class="small text-center">{{$agent->agentInfo->address}}</td>-->
                                             <td class="small text-center"><img src="/images/iMemberList.jpg"></td>
-                                            <td class="small text-center">{{$agent->agentInfo->contract_date}}</td>
-                                            <td class="small text-center"><img src="/images/iHistory.jpg"></td>
 
                                             <td class="small text-center">{{$agent->agentInfo->initial_date_of_purchase}}</td>
+                                            <td class="small text-center"><img src="/images/iHistory.jpg"></td>
+
+                                            
                                             <td class="small text-center">{{$agent->agentInfo->point_balance}}</td>
                                             <td class="small text-center">{{$agent->agentInfo->expire_date}}</td>
                                             <td class="small text-center">{{$agent->agentInfo->purchased_amount}}</td>
 
                                             <td class="small text-center">Account | Edit  | Delete </td>
                                         </tr>
-
-
-                    
                                         @endforeach
                                     @endif
 
@@ -121,117 +136,168 @@
             <div class="card mt-4">
                 <div class="card-header">Agent Form</div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-2 small">
-                            <span class="text-danger">*</span>	業種
+
+                    <form method="POST" action="{{ route('admin.agent.store') }}">
+                        @csrf
+                        <div class="row">
+                            <div class="col-2 small">
+                                <span class="text-danger">*</span>	業種
+                            </div>
+                            <div class="col-3">
+                                <select name="industry_type" class="form-control form-control-sm @error('industry_type') is-invalid @enderror" value="{{ old('industry_type') }}" required>
+                                    <option value="">-- Select Type --</option>                                    
+                                    @foreach ($industries as $industry)
+                                        <option value="{{$industry->id}}" @if (old('industry_type') == $industry->id) {{ 'selected' }} @endif >{{$industry->name }}</option>
+                                    @endforeach;
+                                    <!--
+                                    <option value="PRIVATE_SCHOOL">Private School</option>
+                                    <option value="PUBLIC_SCHOOL">Public School</option>
+                                    <option value="COMPANY">Company</option>
+                                    <option value="INDIVIDUAL">Individual</option>
+                                    -->                                    
+                                </select>                                
+                                @error('industry_type')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror                                
+                            </div>
                         </div>
-                        <div class="col-3">
-                            <select name="industryType" class="form-control form-control-sm">
-                                <option value="">-- Select Type --</option>
-                                <option value="PRIVATE_SCHOOL">Private School</option>
-                                <option value="PUBLIC_SCHOOL">Public School</option>
-                                <option value="COMPANY">Company</option>
-                                <option value="INDIVIDUAL">Individual</option>
-                            </select>
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                                <span class="text-danger">*</span>	Email
+                            </div>
+                            <div class="col-3">
+                                <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror                                
+                            </div>
                         </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                            <span class="text-danger">*</span>	Email
+
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                                <span class="text-danger">*</span>	Password
+                            </div>
+                            <div class="col-3">
+                               <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required autocomplete="password">
+                                @error('password')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror                                
+                            </div>
                         </div>
-                        <div class="col-3">
-                            <input type="text" name="email" class="form-control form-control-sm" placeholder="E-mail Address">
+
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                                <span class="text-danger">*</span> Name (English)
+                            </div>
+                            <div class="col-3">
+                                <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" name="name_en" value="{{ old('name_en') }}" required autocomplete="name_en">
+                                @error('name_en')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                            <span class="text-danger">*</span>	Password
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                                <span class="text-danger">*</span>	Name (Japanese)
+                            </div>
+                            <div class="col-3">
+                                <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" value="{{ old('name_jp') }}" required autocomplete="name_jp">
+                                @error('name_jp')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+                        </div>                    
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                            <span class="text-danger">*</span> ID
+                            </div>
+                            <div class="col-3">
+                                <input id="id" type="id" class="form-control form-control-sm @error('id') is-invalid @enderror" name="id" value="{{ old('id') }}" required autocomplete="id">
+                                @error('id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="col-3">
-                            <input type="text" name="password" class="form-control form-control-sm" placeholder="Password">
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                            <span class="text-danger">*</span>	担当者
+                            </div>
+                            <div class="col-3">                                
+                                <input id="representative" type="representative" class="form-control form-control-sm @error('representative') is-invalid @enderror" name="representative" value="{{ old('representative') }}" required autocomplete="representative">
+                                @error('representative')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
                         </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                            <span class="text-danger">*</span>	Name (English)
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                            ひらがな
+                            </div>
+                            <div class="col-3">
+                                <input type="text" name="hiragana" class="form-control form-control-sm" placeholder="ひらがな Agent Hiragana" value="{{ old('hiragana') }}">
+                            </div>
                         </div>
-                        <div class="col-3">
-                            <input type="text" name="name_en" class="form-control form-control-sm" placeholder="Name (English)">
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                            Address
+                            </div>
+                            <div class="col-3">
+                                <textarea name="address" class="form-control">{{ old('address') }}</textarea>
+                            </div>
+                        </div>        
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                            ふりがな
+                            </div>
+                            <div class="col-3">
+                                <input type="text" name="inclination" class="form-control form-control-sm" placeholder="ふりがな Agent Inclination" value="{{ old('inclination') }}">
+                            </div>
                         </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                            <span class="text-danger">*</span>	Name (Japanese)
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                            <span class="text-danger">*</span> 
+                            ポイント購入日
+                            </div>
+                            <div class="col-3">                                
+                                <input type="date" name="contract_date" class="datepicker form-control form-control-sm @error('contract_date') is-invalid @enderror" required value="{{ old('contract_date') }}">
+                                @error('contract_date')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror                                   
+                            </div>
+                        </div>                     
+                        <div class="row pt-2">
+                            <div class="col-2 small">
+                            備考 
+                            </div>
+                            <div class="col-3">
+                                <textarea name="remark" class="form-control" placeholder="備考 Agent Remark">{{ old('remark') }}</textarea>
+                            </div>
+                        </div> 
+                        <div class="row pt-3">
+                            <div class="col-2"></div>
+                            <div class="col-3 text-left">
+                                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                <button type="clear" class="btn btn-primary btn-sm">Cancel</button>
+                            </div>
                         </div>
-                        <div class="col-3">
-                            <input type="text" name="name_jp" class="form-control form-control-sm" placeholder="Name (Japanese)">
-                        </div>
-                    </div>                    
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                           ID
-                        </div>
-                        <div class="col-3">
-                            <input type="text" name="id" class="form-control form-control-sm" placeholder="Agent ID">
-                        </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                           <span class="text-danger">*</span>	担当者
-                        </div>
-                        <div class="col-3">
-                            <input type="text" name="representative" class="form-control form-control-sm" placeholder="担当者 Agent Representative">
-                        </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                           ひらがな
-                        </div>
-                        <div class="col-3">
-                            <input type="text" name="hiragana" class="form-control form-control-sm" placeholder="ひらがな Agent Hiragana">
-                        </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                           Address
-                        </div>
-                        <div class="col-3">
-                            <textarea name="address" class="form-control"></textarea>
-                        </div>
-                    </div>        
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                           ふりがな
-                        </div>
-                        <div class="col-3">
-                            <input type="text" name="inclination" class="form-control form-control-sm" placeholder="ふりがな Agent Inclination">
-                        </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                           ポイント購入日
-                        </div>
-                        <div class="col-3">
-                            <input type="text" name="contract_date" class="form-control form-control-sm" placeholder="ポイント購入日 Contract Date">
-                        </div>
-                    </div>                     
-                    <div class="row pt-2">
-                        <div class="col-2 small">
-                           備考 
-                        </div>
-                        <div class="col-3">
-                             <textarea name="remark" class="form-control" placeholder="備考 Agent Remark"></textarea>
-                        </div>
-                    </div> 
-                    <div class="row pt-3">
-                        <div class="col-2"></div>
-                        <div class="col-3 text-left">
-                            <button type="button" class="btn btn-primary btn-sm">Save</button>
-                            <button type="button" class="btn btn-primary btn-sm">Cancel</button>
-                        </div>
-                    </div>
                            
-                                       
+                    </form>                 
                 </div>
             </div>
 
