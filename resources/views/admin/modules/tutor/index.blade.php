@@ -6,7 +6,7 @@
     <div class="bg-lightblue2">
         <div class="container px-0">
             <nav class="submenu nav nav-pills flex-column flex-sm-row">
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/lesson') }}">Member</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/member') }}">Member</a>
                 <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-primary active" href="{{ url('admin/tutor') }}">Tutor</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/manager') }}">Manager</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/agent') }}">Agent</a>
@@ -177,7 +177,7 @@
                                 <div class="float-right">:</div>
                             </label>
                             <div class="col-md-3">
-                                <input id="sort" type="sort" class="form-control form-control-sm @error('sort') is-invalid @enderror" name="sort" value="{{ old('sort') }}" required autocomplete="sort">
+                                <input id="sort" type="number" class="form-control form-control-sm @error('sort') is-invalid @enderror" name="sort" value="{{ old('sort') }}" required autocomplete="sort">
                                 @error('sort')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -194,7 +194,7 @@
                                 <div class="float-right">:</div>
                             </label>
                             <div class="col-md-3">
-                                <input id="salary_rate" type="salary_rate" class="form-control form-control-sm @error('salary_rate') is-invalid @enderror" name="salary_rate" value="{{ old('salary_rate') }}" required autocomplete="salary_rate">
+                                <input id="salary_rate" type="number" class="form-control form-control-sm @error('salary_rate') is-invalid @enderror" name="salary_rate" value="{{ old('salary_rate') }}" required autocomplete="salary_rate">
                                 @error('salary_rate')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>

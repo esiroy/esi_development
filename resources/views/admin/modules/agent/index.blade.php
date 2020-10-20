@@ -6,7 +6,7 @@
         <div class="bg-lightblue2">
           <div class="container px-0">
             <nav class="submenu nav nav-pills flex-column flex-sm-row">
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/lesson') }}">Member</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/member') }}">Member</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/tutor') }}">Tutor</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('admin/manager') }}">Manager</a>
                 <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-primary active" href="{{ url('admin/agent') }}">Agent</a>
@@ -100,7 +100,7 @@
                                             <td class="small text-center">{{$agent->agentInfo->point_balance}}</td>
                                             <td class="small text-center">{{$agent->agentInfo->expire_date}}</td>
                                             <td class="small text-center">{{$agent->agentInfo->purchased_amount}}</td>
-                                            
+
                                             <td class="small text-center">Account | Edit  | Delete </td>
                                         </tr>
 
