@@ -139,10 +139,10 @@
                                 <div class="col-6">
                                     <div class="form-group my-0 pt-2">
                                         <div class="form-group">                                           
-                                            <input type="radio" v-model="user.gender" id="gender" name="gender" checked="checked" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
+                                            <input type="radio" v-model="user.gender" name="gender" checked="checked" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                             <label for="gender" class="small col-2 px-0">Male</label>
 
-                                            <input type="radio" v-model="user.gender" id="gender" name="gender" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
+                                            <input type="radio" v-model="user.gender" name="gender" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                             <label for="gender" class="small col-2 px-0">Female</label>
 
                                             <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
@@ -211,7 +211,7 @@
                         </div>
                     </div>
 
-                    <div id="email-row" class="row pt-2">
+                    <div id="member-email-row" class="row pt-2">
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
@@ -237,14 +237,14 @@
                         </div>
                     </div>
 
-                    <div id="password-row" class="row pt-2">
+                    <div id="member-password-row" class="row pt-2">
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-2 small pr-0">
                                     <label for="password" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Password <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" v-model="user.password" id="password" name="password" class="col-4 form-control form-control-sm" 
+                                    <input type="password" v-model="user.password" id="password" name="password" class="col-4 form-control form-control-sm" 
                                         :class="{ 'is-invalid': submitted && $v.user.password.$error }" 
                                         @blur='checkIsValid($v.user.password, $event)'
                                     />
@@ -260,14 +260,14 @@
                         </div>
                     </div>
 
-                    <div id="password-row" class="row pt-2">
+                    <div id="member-confirmPassword-row" class="row pt-2">
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-2 small pr-0">
                                     <label for="password" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Confirm Password <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" v-model="user.confirmPassword" id="confirmPassword" name="confirmPassword" class="col-4 form-control form-control-sm" 
+                                    <input type="password" v-model="user.confirmPassword" id="confirmPassword" name="confirmPassword" class="col-4 form-control form-control-sm" 
                                         :class="{ 'is-invalid': submitted && $v.user.confirmPassword.$error }" 
                                         @blur='checkIsValid($v.user.confirmPassword, $event)'
                                     />
@@ -353,7 +353,10 @@
 
                             <div class="row">
                                 <div class="col-2 small pr-0">
-                                    <label for="purpose" class="p-0 col-md-12 col-form-label"><span class="text-danger">*</span> Purpose <div class="float-right">:</div></label>
+                                    <label for="purpose" class="p-0 col-md-12 col-form-label">
+                                        <!--<span class="text-danger">*</span>-->
+                                        Purpose <div class="float-right">:</div>
+                                    </label>
                                 </div>
                                 <div class="col-8">
 
@@ -425,9 +428,12 @@
                                         </li>
                                     </ul>
 
+                                    <!-- loop all purposes
                                     <div v-if="submitted && !$v.user.purposes.required" class="invalid-feedback" style="display: block">
                                         Member Purpose is required, Please check at least one of the choices
                                     </div>
+                                    -->
+
                                 </div>
 
                             </div>
@@ -440,7 +446,7 @@
                                     Lesson Class<div class="float-right">:</div></label>                                    
                                 </div>
                                 
-                                <div  class="col-4">
+                                <div  class="col-6">
 
                                     <div class="row bg-lightgray border-bottom">
                                         <div class="col-3 col-md-3 text-center bold">
@@ -456,12 +462,12 @@
 
                                     <div class="row py-2 bg-lightgray border-bottom">
                                         <div class="col-3 col-md-3 pr-0">
-                                            <select id="year" name="year" v-model="user.preference.lesson.class.year" class="form-control form-control-sm pl-0" >
+                                            <select id="lessonClassYear" name="examRecordYear" v-model="user.preference.lesson.class.year" class="form-control form-control-sm pl-0" >
                                                 <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
                                             </select>                                              
                                         </div>
                                         <div class="col-3 col-md-3 pr-0">
-                                            <select id="month" name="month" v-model="user.preference.lesson.class.month" class="form-control form-control-sm pl-0">
+                                            <select id="lessonClassMonth" name="lessonClassMonth" v-model="user.preference.lesson.class.month" class="form-control form-control-sm pl-0">
                                                 <option value="JAN" class="mx-0 px-0">January</option>
                                                 <option value="FEB">Febuary</option>
                                                 <option value="MAR">March</option>
@@ -477,27 +483,25 @@
                                             </select>
                                         </div>
                                         <div class="col-3 col-md-3">                                            
-                                            <input type="text"  v-model="user.preference.lesson.class.grade" class="form-control form-control-sm" />
+                                            <input id="lessonClassGrade" name="lessonClassGrade" type="text" v-model="user.preference.lesson.class.grade" class="form-control form-control-sm" />
                                         </div>                                        
                                         <div class="col-3 col-md-3 text-center">     
                                             <button class="btn btn-success btn-sm col-12" @click.prevent="addLessonClass()">Add</button>
                                         </div>                                        
                                     </div>
 
-                                    <!--[start] enumaration of all added timeslot */-->
+                                    <!--[start] enumaration of all added timeslot -->
                                     <div class="row py-2 bg-lightgray border-bottom" v-for="lessonClass in user.preference.lessonClasses" :key="lessonClass.id" >
                                         <div class="col-3 col-md-3 text-center">
                                              {{ lessonClass.attribute }}                                     
                                         </div>
-                                        <div year="col-3 col-md-3 text-center">
-                                            {{ lessonClass.year }}
-                                        </div>
-                                        <div id="month" class="col-3 col-md-3 text-center">                                            
-                                            {{ lessonClass.month }}
-                                        </div>                                        
+                                        <div year="col-3 col-md-3 text-center">{{ lessonClass.year }} {{ lessonClass.month }}</div>                                        
                                         <div class="col-3 col-md-3 text-center">     
                                             <input type="text" :value="lessonClass.grade" class="form-control form-control-sm d-inline-block" />
                                         </div> 
+                                        <div class="col-3 col-md-3 text-center">     
+                                            <small>Delete</small>
+                                        </div>
                                     </div>
 
                                     
@@ -525,8 +529,7 @@
                                     <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> 
                                     Member Since<div class="float-right">:</div></label>
                                 </div>
-                                <div class="col-6">
-                                    <!--<input type="text" name="agent_id" class="form-control  form-control-sm">-->
+                                <div class="col-6">                                    
                                     <datepicker 
                                         :language="ja"
                                         id="member_since" 
@@ -546,16 +549,23 @@
                                     <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span>
                                     Lesson Time<div class="float-right">:</div></label>
                                 </div>
+
                                 <div class="col-6">
-                                    <select id="lessonshiftid" name="lessonshiftid" class="form-control form-control-sm">
+                                    <select id="lessonshiftid" name="lessonshiftid"
+                                        v-model="user.lessonshiftid"
+                                        class="form-control form-control-sm" 
+                                        :class="{ 'is-invalid': submitted && $v.user.lessonshiftid.$error }"
+                                        @blur='checkIsValid($v.user.lessonshiftid, $event)'
+                                        @change="propagateMainTutorOptions"   
+                                    >
                                         <option value="">-- Select --</option>
                                         <option value="25">25 mins</option>
                                         <option value="40">40 mins</option>
                                     </select>
+                                    <div v-if="submitted && !$v.user.lessonshiftid.required" class="invalid-feedback">
+                                        Lesson Time is required
+                                    </div>                                    
                                 </div>
-                                <div v-if="submitted && !$v.user.lessonshiftid.required" class="invalid-feedback">
-                                    Lesson Time is required
-                                </div>                                
                             </div>
                         </div>
                     </div>
@@ -568,9 +578,19 @@
                                     Main Tutor<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <select id="maintutor" name="maintutor" class="form-control form-control-sm">
+                                    <select id="maintutor" name="maintutor" 
+                                        v-model="user.maintutorid"
+                                        class="form-control form-control-sm"
+                                        :class="{ 'is-invalid': submitted && $v.user.maintutorid.$error }"
+                                        @blur='checkIsValid($v.user.maintutorid, $event)'                                                                            
+                                    >
                                         <option value="">-- Select --</option>
+                                        <!--@todo loop dynamically the teacher of times -->
+                                        <option v-for="mainTutor in mainTutors" :value="mainTutor.id" :key="mainTutor.id">{{ mainTutor.name }}</option>
                                     </select>
+                                    <div v-if="submitted && !$v.user.maintutorid.required" class="invalid-feedback">
+                                        Main Tutor is required
+                                    </div>                                       
                                 </div>
                             </div>
                         </div>
@@ -579,135 +599,7 @@
                 </div>
                 <!--[end] Lesson Details -->
 
-
-                <!--current-->
-                <div id="member-exam-records" class="section">
-                    <div class="card-title bg-gray p-1 mt-4">
-                        <div class="pl-2 font-weight-bold small">Exam Record</div>
-                    </div>
-
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 small pr-0 pt-4">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label">
-                                        <!--<span class="text-danger">*</span> -->
-                                        TOEIC
-                                        <div class="float-right">:</div>
-                                    </label>
-                                </div>
-                                <div class="col-10">
-
-                                    <div class="row">
-                                        <div class="col-2 pr-0">
-                                            <div class="text-center">Year</div>
-                                            <select id="year" name="year" v-model="user.preference.lesson.toeic.year" class="form-control form-control-sm">
-                                                <!--<option value="">-- Select --</option>-->
-                                                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-2 pr-0">
-                                            <div class="text-center">Month</div>
-                                            <select id="month" name="month" v-model="user.preference.lesson.toeic.month" class="form-control form-control-sm">
-                                                <option value="">-- Select --</option>
-                                                <option value="JAN" class="mx-0 px-0">January</option>
-                                                <option value="FEB">Febuary</option>
-                                                <option value="MAR">March</option>
-                                                <option value="APR">April</option>
-                                                <option value="MAY">May</option>
-                                                <option value="JUN">June</option>
-                                                <option value="JUL">July</option>
-                                                <option value="AUG">August</option>
-                                                <option value="SEP">September</option>
-                                                <option value="OCT">October</option>
-                                                <option value="NOV">November</option>
-                                                <option value="DEC">December</option>                                                
-                                            </select>
-                                        </div>
-                                        <div class="col-2 pr-0">
-                                            <div class="text-center">Grade</div>
-                                            <input id="toeicGrade" type="text" name="toeicGrade" v-model="user.preference.lesson.toeic.grade" class="form-control  form-control-sm d-inline-block">
-                                        </div>
-                                        <div class="col-6">
-                                            <button class="btn btn-success btn-sm d-inline-block mt-4"  @click.prevent="addTOEIC()">Add</button>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                      
-                        <div class="col-6 offset-md-2">
-                            <!--[start] enumaration of all TOEIC timeslot */-->
-                            <div class="row py-2 bg-lightgray border-bottom" v-for="toeic in user.preference.toeicList" :key="toeic.id" >
-                                <div id="year" class="col-3 col-md-3 text-center">
-                                    {{ toeic.year }}
-                                </div>
-                                <div id="month" class="col-3 col-md-3 text-center">                                            
-                                    {{ toeic.month }}
-                                </div>                                        
-                                <div class="col-3 col-md-3 text-center">     
-                                    <input type="text" :value="toeic.grade" class="form-control form-control-sm d-inline-block" />
-                                </div> 
-                            </div> 
-                        </div>
-
-                    </div>
-
-              
-
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label">
-                                        <!--<span class="text-danger">*</span> !-->
-                                        EIKEN
-                                        <div class="float-right">:</div>
-                                    </label>
-                                </div>
-                                <div class="col-10">
-
-                                    <div class="row">
-                                        <div class="col-2 pr-0">
-
-                                            <select id="year" name="year" class="form-control form-control-sm">
-                                                <!--<option value="">-- Select --</option>-->
-                                                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-2 pr-0">
-
-                                            <select id="month" name="month" class="form-control form-control-sm">
-                                                <option value="">-- Select --</option>
-                                                <option value="JAN" class="mx-0 px-0">January</option>
-                                                <option value="FEB">Febuary</option>
-                                                <option value="MAR">March</option>
-                                                <option value="APR">April</option>
-                                                <option value="MAY">May</option>
-                                                <option value="JUN">June</option>
-                                                <option value="JUL">July</option>
-                                                <option value="AUG">August</option>
-                                                <option value="SEP">September</option>
-                                                <option value="OCT">October</option>
-                                                <option value="NOV">November</option>
-                                                <option value="DEC">December</option>                                                
-                                            </select>
-                                        </div>
-                                        <div class="col-2 pr-0">
-                                            <input type="text" name="agent_id" class="form-control  form-control-sm d-inline-block">
-                                        </div>
-                                        <div class="col-6">
-                                            <button class="btn btn-success btn-sm d-inline-block">Add</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
+                <!--Report Requirement-->
                 <div id="member-report-requirement" class="section">
                     <div class="card-title bg-gray p-1 mt-4">
                         <div class="pl-2 font-weight-bold small">Report Requirement</div>
@@ -717,13 +609,15 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-2 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Report Card<div class="float-right">:</div></label>
+                                    <label for="agent" class="px-0 col-md-12 pt-4 col-form-label">                                    
+                                        Report Card <div class="float-right">:</div>
+                                    </label>
                                 </div>
                                 <div class="col-10">
                                     <div class="row">
                                         <div class="col-2 pr-0">
                                             <div class="text-center">Member</div>
-                                            <select id="year" name="year" class="form-control form-control-sm">
+                                            <select name="year" class="form-control form-control-sm" v-model="user.reportCard.member">
                                                 <option value="">-- Select --</option>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
@@ -731,7 +625,7 @@
                                         </div>
                                         <div class="col-2 pr-0">
                                             <div class="text-center">Agent</div>
-                                            <select id="month" name="month" class="form-control form-control-sm">
+                                            <select name="month" class="form-control form-control-sm" v-model="user.reportCard.agent">
                                                 <option value="">-- Select --</option>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
@@ -746,19 +640,21 @@
                         <div class="col-12">
                             <div class="row">
                                 <div class="col-2 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Report Card<div class="float-right">:</div></label>
+                                    <label for="agent" class="px-0 col-md-12 col-form-label">                                        
+                                        Monthly Report <div class="float-right">:</div>
+                                    </label>
                                 </div>
                                 <div class="col-10">
                                     <div class="row">
                                         <div class="col-2 pr-0">
-                                            <select id="year" name="year" class="form-control form-control-sm">
+                                            <select name="year" class="form-control form-control-sm" v-model="user.monthlyReport.member">
                                                 <option value="">-- Select --</option>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
                                             </select>
                                         </div>
                                         <div class="col-2 pr-0">
-                                            <select id="month" name="month" class="form-control form-control-sm">
+                                            <select id="month" name="month" class="form-control form-control-sm" v-model="user.monthlyReport.agent">
                                                 <option value="">-- Select --</option>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
@@ -786,7 +682,7 @@
                                 <div class="col-10">
                                     <div class="row">
                                         <div class="col-2 pr-0">
-                                            <select id="pointpurchase" name="pointpurchase" class="form-control form-control-sm">
+                                            <select id="pointpurchase" name="pointpurchase" class="form-control form-control-sm" v-model="user.pointPurchase">
                                                 <option value="">-- Select --</option>
                                                 <option value="AGENT">Agent</option>
                                                 <option value="DIRECT">Direct</option>
@@ -811,7 +707,7 @@
                                 <div class="col-10">
                                     <div class="row">
                                         <div class="col-2 pr-0">
-                                            <select id="selectDay" class="form-control form-control-sm d-inline-block">
+                                            <select id="selectDay" name="desiredDay"  v-model="user.desiredSchedule.day" class="form-control form-control-sm d-inline-block">
                                                 <option value="">-- Select --</option>
                                                 <option value="MONDAY">Monday</option>
                                                 <option value="TUESDAY">Tuesday</option>
@@ -822,15 +718,29 @@
                                                 <option value="SUNDAY">Sunday</option>
                                             </select>
                                         </div>
-                                        <div class="col-2 pr-0">
-                                            <input type="text" name="agent_id" class="form-control form-control-sm d-inline-block">
+                                        <div class="col-3">                                                                                        
+                                            <b-form-timepicker id="timepicker-sm" size="sm" v-model="user.desiredSchedule.time" local="en" class="mb-4"></b-form-timepicker>
                                         </div>
-                                        <div class="col-6">
-                                            <button class="btn btn-success btn-sm d-inline-block">Add</button>
+                                        <div class="col-3">
+                                            <button class="btn btn-success btn-sm d-inline-block"  @click.prevent="addDesiredSchedule()">Add</button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-6 offset-md-2">
+                                    <!--[start] enumaration of all TOEIC timeslot */-->
+                                    <div class="row py-2 bg-lightgray border-bottom" v-for="schedule in user.desiredScheduleList" :key="schedule.id" >
+                                        <div id="scheduleDayr" class="col-3 col-md-3 text-center">
+                                            {{ schedule.day }}
+                                        </div>
+                                        <div id="scheduleMo" class="col-3 col-md-3 text-center">                                            
+                                            {{ schedule.time }}
+                                        </div>                                         
+                                    </div> 
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -847,6 +757,7 @@
 
         </div>
         <!--[end] card body -->
+        
     </div>
 </template>
 
@@ -859,15 +770,31 @@ import * as Moment from 'moment'
 import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale';
 
+
 export default {
     name: "app",
     components: {
         Datepicker
     },
+    props: {
+		csrf_token: {
+			type: String
+		},
+		api_token: {
+			type: String
+		},
+    },    
     data() {
         return {
             submitted: false,
-            ja: ja, //set calendar characters to japanese
+            //set calendar characters to japanese
+            ja: ja, 
+            //list of main tutors
+            mainTutors: [
+                { id: 1, name: "roy tester 1"},
+                { id: 2, name: "roy tester 2"},
+                { id: 3, name: "roy tester 3"}
+            ],
             user: {
                 firstName: "",
                 lastName: "",
@@ -881,17 +808,18 @@ export default {
                 age: "",
                 membership: "",
                 password: "",
-                confirmPassword: "",
-
-                
+                confirmPassword: "",               
 
                 //Lesson Details - Section
-                member_since: "",   
-
+                member_since: "",
                 lessonshiftid: "",
+                
+                maintutorid: "",
+
 
                 //Preferred Tutor - Section
-                preference: {                    
+                preference: 
+                {                    
                     purpose: {
                         conversation: "",
                         antieken: "",
@@ -909,25 +837,49 @@ export default {
                             month:  "",
                             year:   "",
                             grade:  ""
-                        },
-                        toeic: {
-                            month:  "",
-                            year:   "",
-                            grade:  ""
-                        },
-                        eiken: {
-                            month:  "",
-                            year:   "",
-                            grade:  ""                            
                         }
                     },
 
-                    //Array: enumaration of lesson classes!
                     lessonClasses: [],
-
-                    toeicList: [],
-                    eikenList: [],
                 },
+
+                examRecord: {
+                    toeic: {
+                        month:  "",
+                        year:   "",
+                        grade:  ""
+                    },
+                    eiken: {
+                        month:  "",
+                        year:   "",
+                        grade:  ""                            
+                    }
+                },
+                //Array: enumaration of lesson classes!
+              
+                toeicList: [],
+                eikenList: [],                
+
+                //Report Requirement
+                reportCard: {
+                    member: "",
+                    agent: ""
+                },
+                monthlyReport: {
+                    member: "",
+                    agent: ""
+                },
+
+                //Point Purchase
+                pointPurchase: "",
+
+                //desired schedule list
+                desiredSchedule: {
+                    day: "",
+                    time: ""
+                },
+
+                desiredScheduleList: [],                
 
               
             },
@@ -971,9 +923,11 @@ export default {
                 required
             },
 
-            purposes: {
+            maintutorid: {
                 required
             }
+
+            /*purposes: required */
         }
 
     },
@@ -995,12 +949,30 @@ export default {
             this.$v.$touch();
 
             if (this.$v.$invalid) {
+
+                alert ("Errors found, please check the form for errors");
+
                 return;
             }
 
             console.log (this.submitted, this.$v.$invalid);
 
             alert("SUCCESS!! :-)\n\n" + JSON.stringify(this.user));
+
+            axios.post("/api/create_member?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                user            : JSON.stringify(this.user)
+            })
+            .then(response => 
+            {
+              
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                console.log(error);
+            });
+                        
         },          
         checkIsValid (val, event) 
         {
@@ -1048,15 +1020,15 @@ export default {
             return age;
         },
         addLessonClass() 
-        {
-            //alert (this.user.preference.lesson.class.month + " " + this.user.preference.lesson.class.year + " " + this.user.preference.lesson.class.grade);
+        {            
             if (this.user.attribute) {
+                
                 let year =  this.user.preference.lesson.class.year;
                 let month = this.user.preference.lesson.class.month;
                 let grade =  this.user.preference.lesson.class.grade;
 
                 if (year && month && grade) {
-                    const result =  this.user.preference.lessonClasses.find(item => item.year === this.user.preference.lesson.class.year && item.month === this.user.preference.lesson.class.month);
+                    const result =  this.user.preference.lessonClasses.find(item => item.year === year && item.month === month);
                     if (result) {
                         alert ("Selected item is already in the list");
                         return false;
@@ -1078,23 +1050,99 @@ export default {
         },
         addTOEIC()
         {
-            alert ("toeic list!")
-            let year =  this.user.preference.lesson.toeic.year;
-            let month = this.user.preference.lesson.toeic.month;
-            let grade =  this.user.preference.lesson.toeic.grade;
+            
+            let year =  this.user.examRecord.toeic.year;
+            let month = this.user.examRecord.toeic.month;
+            let grade =  this.user.examRecord.toeic.grade;
 
             console.log(year + " " + month, grade);
 
-            if (year && month && grade) {            
-                this.user.preference.toeicList.push({                                      
-                    year:  this.user.preference.lesson.toeic.year,
-                    month: this.user.preference.lesson.toeic.month,
-                    grade:  this.user.preference.lesson.toeic.grade
-                });            
+            if (year && month && grade) {
+                let result =  this.user.toeicList.find(item => item.year === year && item.month === month);
+                if (result) {
+                    alert ("Selected item is already in the list");
+                    return false;
+                } else {
+                    this.user.toeicList.push({                                      
+                        year:  this.user.examRecord.toeic.year,
+                        month: this.user.examRecord.toeic.month,
+                        grade:  this.user.examRecord.toeic.grade
+                    });     
+                }       
             } else {
                 alert ("Please enter TOEIC month, year and grade");
             }
-        }      
+        },
+        addEIKEN()
+        {
+           
+            let year =  this.user.examRecord.eiken.year;
+            let month = this.user.examRecord.eiken.month;
+            let grade =  this.user.examRecord.eiken.grade;
+
+            console.log(year + " " + month, grade);
+
+            if (year && month && grade) {     
+                let result =  this.user.eikenList.find(item => item.year === year && item.month === month);
+                if (result) {
+                    alert ("Selected item is already in the list");
+                    return false;
+                } else {
+                    this.user.eikenList.push({                                      
+                        year:  this.user.examRecord.eiken.year,
+                        month: this.user.examRecord.eiken.month,
+                        grade:  this.user.examRecord.eiken.grade
+                    });
+                }       
+            } else {
+                alert ("Please enter eiken month, year and grade");
+            }
+        },
+        addDesiredSchedule() 
+        {
+        
+            let day     = this.user.desiredSchedule.day;
+            let time    = this.user.desiredSchedule.time;
+
+            if (day && time) {
+                
+                let result =  this.user.desiredScheduleList.find(item => item.day === day && item.time === time);
+
+                if (result) {
+                    alert ("Selected schedule is already added in the list");
+                    return false;
+                } else {
+                    this.user.desiredScheduleList.push({                                      
+                        day:  day,
+                        time: time 
+                    });
+                }
+            } else {
+                 alert ("Please enter schedule day and time");
+            }
+                
+        },
+        propagateMainTutorOptions() {
+            alert(lessonshiftid.value);
+
+            axios.post("/api/get_tutors?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                shift            : lessonshiftid.value
+            })
+            .then(response => 
+            {
+              
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                console.log(error);
+            });
+            
+            
+            this.user.eikenList.push(["40-1"]);
+        }
+
 
     },
     computed : {
@@ -1107,7 +1155,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .form__input-shake {
   animation: shake 0.2s;
   animation-iteration-count: 3;
@@ -1119,5 +1167,12 @@ export default {
   50% { transform: translateX(0px)  }
   75% { transform: translateX(-2px) }
   100% { transform: translateX(0px)  }
-}    
+}
+
+.b-form-timepicker .b-form-spinbutton.form-control
+{
+    height: 100px !important;    
+}
+
+
 </style>

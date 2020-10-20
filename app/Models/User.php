@@ -45,6 +45,7 @@ class User extends Authenticatable
     {
         return "{$this->first_name} {$this->last_name}";
     }
+    
 
     public function getFirstNameAttribute($value)
     {
@@ -90,6 +91,26 @@ class User extends Authenticatable
     public function folders()
     {
         return $this->belongsToMany(Folder::class);
-
     }
+
+    public function tutors()
+    {
+        return $this->belongsToMany(Tutor::class);
+    }
+
+    public function tutorInfo() 
+    {
+        return $this->hasOne('App\Models\Tutor');
+    }
+
+    public function managers()
+    {
+        return $this->belongsToMany(Manager::class);
+    } 
+    
+    public function managerInfo() 
+    {
+        return $this->hasOne('App\Models\Manager');
+    }
+
 }

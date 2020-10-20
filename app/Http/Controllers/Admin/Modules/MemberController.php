@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use App\Models\User;
+use DB;
 
 
 class MemberController extends Controller
@@ -19,13 +20,16 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $tutors = User::whereHas(
-            'roles', function($q){
-                $q->where('title', 'member');
-            }
-        )->get();            
 
-        return view('admin.modules.member.index', compact('tutors'));
+        $members = User::select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name"))
+                   ->whereHas('roles', function($q) { $q->where('title', 'Member'); })->get();       
+
+
+        
+        $tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'tutor'); })->get();         
+        $tutors = json_encode($tutorQuery);
+
+        return view('admin.modules.member.index', compact('tutors', 'members'));
     }
 
     /**

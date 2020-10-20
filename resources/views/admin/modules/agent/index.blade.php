@@ -48,12 +48,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">   
                                     <label for="name" class="small col-2">Email:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-4" value="">
-                                    <select id="filterLessonShift" name="filterLessonShift" class="form-control form-control-sm col-3 ml-1">
-                                        <option value="">-- Select --</option>
-                                        <option value="4">25 mins</option>
-                                        <option value="5">40 mins</option>
-                                    </select>
+                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-4" value="">                
                                     <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
 
                                 </div>                                
@@ -61,15 +56,71 @@
                         </form>
                     </div>
 
+                    <!--
                     <div class="row">
                         <div class="col-12 pt-3">
                             <button type="button" class="btn btn-primary btn-sm">Generate Agent List</button>
                         </div>
                     </div>
+                    -->
 
                     <div class="row">
                         <div class="col-12 pt-3">
-                            <agent-list-component/>
+                            <!--<agent-list-component/>-->
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+
+                                        <th class="small text-center">Agent Name</th>
+                                        <th class="small text-center">ID</th>
+                                        <!--<th class="small text-center">Area</th>-->
+                                        <th class="small text-center">Member<br/>List</th>
+                                        <th class="small text-center">First Date of<br/>Purchase</th>
+                                        <th class="small text-center">Point Purchase<br/>History</th>                                        
+                                        <th class="small text-center">Point<br/>Balance</th>
+                                        <th class="small text-center">Expire<br/>Data</th>
+                                        <th class="small text-center">Purchase<br/>Amount</th>
+                                        <th class="small text-center">Action</th>                                    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (isset($agents))
+                                        @foreach ($agents as $agent)
+                                        <tr>
+                                            <td class="small">{{$agent->agentInfo->name_en}}</td>
+                                            <td class="small">{{$agent->agentInfo->user_id}}</td>
+                                            <!--<td class="small text-center">{{$agent->agentInfo->address}}</td>-->
+                                            <td class="small text-center"><img src="/images/iMemberList.jpg"></td>
+                                            <td class="small text-center">{{$agent->agentInfo->contract_date}}</td>
+                                            <td class="small text-center"><img src="/images/iHistory.jpg"></td>
+
+                                            <td class="small text-center">{{$agent->agentContract->initial_date_of_purchase}}</td>
+                                            <td class="small text-center">{{$agent->agentContract->point_balance}}</td>
+                                            <td class="small text-center">{{$agent->agentContract->expire_date}}</td>
+                                            <td class="small text-center">{{$agent->agentContract->lesson}}</td>
+
+                                            <td class="small text-center">215.99</td>
+                                            <td class="small text-center">Account | Edit  | Delete </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="small text-center">{{$agent->agentInfo->name_en}}</td>                                        
+                                            <td class="small text-center">{{$agent->agentInfo->user_id}}</td>                                            
+                                            <td class="small text-center">{{$agent->username}}</td>
+                                            <th class="small text-center">{{$agent->email}}</th>            
+                                            <td class="small text-center">
+                                                <a href="#">Edit</a> | 
+                                                <a href="#">Delete</a>                                            
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    @endif
+
+                                </tbody>
+                                </table>
+                            </div>
+
                         </div>                
                     </div>
                 </div>

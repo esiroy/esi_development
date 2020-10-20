@@ -27,6 +27,18 @@
 
         <div class="container">
 
+
+            @if (session('message'))
+                <div class="alert alert-success">
+                    {{ session('message') }}
+                </div>
+            @elseif (session('error_message'))
+                <div class="alert alert-danger">
+                    {{ session('error_message') }}
+                </div>
+            @endif
+
+
             <!--[start card] -->
             <div class="card">
                 <div class="card-header">
@@ -41,12 +53,14 @@
                                     <input id="nickname" name="nickname" type="text" class="form-control form-control-sm col-8" value="">
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="nickname" class="small col-4">Name:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-8" value="">
+                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-5" value="">
+                                    <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
                                 </div>
                             </div>
+                            <!--
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="small col-2">Email:</label>
@@ -56,24 +70,57 @@
                                         <option value="4">25 mins</option>
                                         <option value="5">40 mins</option>
                                     </select>
-                                    <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
-
                                 </div>
                             </div>
+                            -->
                         </form>
                     </div>
 
+                    <!--
                     <div class="row">
                         <div class="col-12 pt-3">
                             <button type="button" class="btn btn-primary btn-sm">Generate Manager List</button>
                         </div>
                     </div>
+                    -->
 
                     <div class="row">
                         <div class="col-12 pt-3">
 
+                            <!--
                             <manager-list-component />
+                            -->
 
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                <thead>
+                                    <tr>                     
+                                        <th class="small text-center">ID</th>
+                                        <th class="small text-center">Name</th>                    
+                                        <th class="small text-center">Username</th>
+                                        <th class="small text-center">E-Mail</th>
+                                        <th class="small text-center">Action</th>                                    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @if (isset($managers))
+                                    @foreach ($managers as $manager)
+                                    <tr>                                        
+                                        <td class="small text-center">{{$manager->managerInfo->user_id}}</td>
+                                        <td class="small text-center">{{$manager->managerInfo->name_en}}</td>
+                                        <td class="small text-center">{{$manager->username}}</td>
+                                        <th class="small text-center">{{$manager->email}}</th>            
+                                        <td class="small text-center">
+                                            <a href="#">Edit</a> | 
+                                            <a href="#">Delete</a>                                            
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                @endif
+                                </tbody>
+                                </table>
+                            </div>
+                                                        
                         </div>
                     </div>
                 </div>
@@ -81,6 +128,10 @@
             <!--[end] card-->
 
             <div class="card mt-4">
+                <form method="POST" action="{{ route('admin.manager.store') }}">
+
+                @csrf
+
                 <div class="card-header">Manager Form</div>
 
                 <div class="card-body">
@@ -91,7 +142,12 @@
                                     <label for="email" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> E-Mail<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" name="email_id" class="form-control form-control-sm">
+                                    <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                    @error('email')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -104,7 +160,12 @@
                                     <label for="password" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Password<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" name="password" class="form-control form-control-sm">
+                                    <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required autocomplete="password">
+                                    @error('password')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -117,7 +178,12 @@
                                     <label for="name_en" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Name (English)<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" name="name_en" class="form-control form-control-sm">
+                                    <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" name="name_en" value="{{ old('name_en') }}" required autocomplete="name_en">
+                                    @error('name_en')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -131,7 +197,12 @@
                                     <label for="name_jp" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Name (Japanese)<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" name="name_jp" class="form-control form-control-sm">
+                                    <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" value="{{ old('name_jp') }}" required autocomplete="name_jp">
+                                    @error('name_jp')
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
@@ -141,7 +212,7 @@
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
-                                    <label for="name_jp" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Is Japanese?<div class="float-right">:</div></label>
+                                    <label for="name_jp" class="px-0 col-md-12 col-form-label">&nbsp; Is Japanese?<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
                                     <input type="checkbox" name="is_japanese" class="mt-2">
@@ -153,11 +224,15 @@
                     <div class="row py-4">
                         <div class="col-2"></div>
                         <div class="col-3 text-left">
-                            <button type="button" class="btn btn-primary btn-sm">Save</button>
-                            <button type="button" class="btn btn-primary btn-sm">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                            <button type="clear" class="btn btn-primary btn-sm">Cancel</button>
                         </div>
                     </div>
+
+
                 </div>
+
+                </form>
 
             </div>
 

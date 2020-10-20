@@ -23,16 +23,32 @@
             </ol>
         </nav>
 
-
-
         <div class="container">
 
+            <!--
+            @if($errors->any())
+            <h4>{{$errors->first()}}</h4>
+            @endif
+            -->
+
+            @if (session('message'))
+                <div class="alert alert-success">
+                    {{ session('message') }}
+                </div>
+            @elseif (session('error_message'))
+                <div class="alert alert-danger">
+                    {{ session('error_message') }}
+                </div>
+            @endif
+            
             <!--[start card] -->
             <div class="card">
                 <div class="card-header">
                     Tutor List
                 </div>
                 <div class="card-body">
+
+                
                     <div class="row">
                         <form class="form-inline" style="width:100%">
                             <div class="col-md-3">
@@ -64,18 +80,57 @@
                         </form>
                     </div>
 
+                    <!--
                     <div class="row">
                         <div class="col-12 pt-3">
                             <button type="button" class="btn btn-primary btn-sm">Generate Tutor List</button>
                         </div>
                     </div>
+                    -->
 
                     <div class="row">
                         <div class="col-12 pt-3">
 
-                            <tutor-list-component />
+                            <!--
+                            <tutor-list-component
+                                :tutors="{{ json_encode($tutors) }}"
+                            />
+                            -->
 
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th class="small text-center">Sort</th>
+                                    <th class="small text-center">ID</th>
+                                    <th class="small text-center">Name</th>
+                                    <th class="small text-center">Nickname</th>
+                                    <th class="small text-center">Email</th>                                    
+                                    <th class="small text-center">Member (Main)</th>
+                                    <th class="small text-center">Member (Support)</th> 
+                                    <th class="small text-center">Action</th>                                    
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (isset($tutors))
+                                @foreach ($tutors as $tutor)
+                                <tr>
+                                    <td class="small text-center">{{ $tutor->tutorInfo->sort}}</td>
+                                    <td class="small text-center">{{ $tutor->tutorInfo->user_id}}</td>
+                                    <td class="small text-center">{{$tutor->tutorInfo->name_en}}</td>
+                                    <td class="small text-center">{{$tutor->username}}</td>
+                                    <th class="small text-center">{{$tutor->email}}</th>
+                                    <td class="small text-center"><a href="{{ url('admin/maintutor') }}"><img src="/images/iMemberMain.gif"></a></td>
+                                    <td class="small text-center"><a href="{{ url('admin/supporttutor') }}"><img src="/images/iMemberSupport.gif"></a></td>                
+                                    <td class="small text-center">Edit  | Delete</td>
+                                </tr>
+                                @endforeach
+                            @endif
+                            </tbody>
+                            </table>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -84,293 +139,291 @@
             <div class="card mt-4">
                 <div class="card-header">Member Form</div>
                 <div class="card-body">
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="email" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Email <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="email" class="form-control  form-control-sm">
-                                </div>
+
+                    <form method="POST" action="{{ route('admin.tutor.store') }}">
+                        @csrf
+
+                        <div class="form-group row">
+                            <label for="email" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('E-Mail') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Password <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="password" class="form-control  form-control-sm">
-                                </div>
+
+                        <div class="form-group row">
+                            <label for="password" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Password') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required autocomplete="password">
+                                @error('password')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Sort <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="password" class="form-control  form-control-sm">
-                                </div>
+                        <div class="form-group row">
+                            <label for="Sort" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Sort') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="sort" type="sort" class="form-control form-control-sm @error('sort') is-invalid @enderror" name="sort" value="{{ old('sort') }}" required autocomplete="sort">
+                                @error('sort')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="salary_rate" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Salary Rate <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="salary_rate" class="form-control  form-control-sm">
-                                </div>
+
+                        <div class="form-group row">
+                            <label for="salary_rate" class="col-md-2 pr-0 col-form-label ">
+                                <!--<span class="text-danger">* </span>-->
+                                {{ __('Salary Rate') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="salary_rate" type="salary_rate" class="form-control form-control-sm @error('salary_rate') is-invalid @enderror" name="salary_rate" value="{{ old('salary_rate') }}" required autocomplete="salary_rate">
+                                @error('salary_rate')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 small pr-0">
-                                    <label for="grade" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Grade<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="radio" name="grade" value="STANDARD" checked=""> Standard
-                                    <input type="radio" name="grade" value="UPGRADE" class="ml-2"> Upgrade
-                                    <input type="radio" name="grade" value="PLATINUM" class="ml-2"> Platinum
-                                </div>
+
+                        <div class="form-group row">
+                            <label for="grade" class="col-md-2 pr-0 col-form-label ">{{ __('Grade') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                @foreach($grades as $grade)
+                                    <input type="radio" name="grade" value="{{ $grade->id }}" @if(old('grade') == $grade->id)? {{ "checked" }} @endif>  {{$grade->name}} 
+                                @endforeach
                             </div>
                         </div>
-                    </div>
 
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="skype_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Skype Name <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="skype_name" class="form-control  form-control-sm">
-                                </div>
+                        <div class="form-group row">
+                            <label for="skype_name" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Skype Name') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="skype_name" type="skype_name" class="form-control form-control-sm @error('skype_name') is-invalid @enderror" name="skype_name" value="{{ old('skype_name') }}" required autocomplete="skype_name">
+                                @error('skype_name')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
 
-
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="skype_id" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Skype ID <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="skype_id" class="form-control  form-control-sm">
-                                </div>
+                        <div class="form-group row">
+                            <label for="skype_id" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Skype ID') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="skype_id" type="skype_id" required class="form-control form-control-sm @error('skype_id') is-invalid @enderror" name="skype_id" value="{{ old('skype_id') }}" required autocomplete="skype_id">
+                                @error('skype_id')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="name_en" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Name (English)<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="name_en" class="form-control  form-control-sm">
-                                </div>
+
+                        <div class="form-group row">
+                            <label for="name_en" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Name (English)') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" name="name_en" value="{{ old('name_en') }}" required autocomplete="name_en">
+                                @error('name_en')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="name_jp" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Name (Japanese)<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="name_jp" class="form-control  form-control-sm">
-                                </div>
+
+                        <div class="form-group row">
+                            <label for="name_jp" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Name (Japanese)') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" value="{{ old('name_jp') }}" required autocomplete="name_jp">
+                                @error('name_jp')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="name_jp" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Gender <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-check">
-                                        <input type="radio" name="gender" value="MALE" class="form-check-input" checked=""> 男 (Male)
-                                        <input type="radio" name="gender" value="FEMALE" class="ml-2"> 女 (Female)
-                                    </div>
-                                </div>
+                        <div class="form-group row">
+                            <label for="gender" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Gender') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input type="radio" name="gender" value="MALE" checked="" class="@error('gender') is-invalid @enderror" name="gender" value="{{ old('gender') }}" required autocomplete="gender"> 男 (Male)
+                                <input type="radio" name="gender" value="FEMALE" class="@error('gender') is-invalid @enderror" name="gender" value="{{ old('gender') }}" required autocomplete="gender"> 女 (Female)
+                                @error('gender')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="hobby" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Hobby<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="hobby" class="form-control  form-control-sm">
-                                </div>
+
+                        <div class="form-group row">
+                            <label for="hobby" class="col-md-2 pr-0 col-form-label ">{{ __('Hobby') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">                                
+                                <input type="text" name="hobby" class="form-control form-control-sm @error('hobby') is-invalid @enderror"  value="{{ old('hobby') }}">
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="birthday" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Birthday<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="birthday" class="form-control  form-control-sm">
-                                </div>
+
+                        <div class="form-group row">
+                            <label for="birthdate" class="col-md-2 pr-0 col-form-label ">
+                                {{ __('Birthday') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror"  value="{{ old('birthdate') }}">
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="major" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Major in<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="major" class="form-control  form-control-sm">
-                                </div>
+                        <div class="form-group row">                            
+                            <label for="major" class="col-md-2 pr-0 col-form-label ">{{ __('Major in') }}
+                                <div class="float-right">:</div>
+                            </label>                            
+                             <div class="col-md-3">                               
+                                <input type="text" name="major" class="form-control form-control-sm">
                             </div>
                         </div>
-                    </div>
 
 
-
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="introduction" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Introduction By Host <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <textarea name="introduction" class="form-control"></textarea>
-                                </div>
+                        <div class="form-group row">                            
+                            <label for="introduction" class="col-md-2 pr-0 col-form-label ">{{ __('Introduction By Host') }}
+                                <div class="float-right">:</div>
+                            </label>                            
+                             <div class="col-md-3">
+                               <textarea name="introduction" class="form-control"></textarea>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="nickname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Nickname <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="nickname" class="form-control form-control-sm">
-                                </div>
+
+
+
+
+                        <div class="form-group row">
+                            <label for="japanese_fluency" class="col-md-2 pr-0 col-form-label ">
+                                <span class="text-danger">* </span>
+                                {{ __('Japanese') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+
+                                <select name="japanese_fluency" class="form-control form-control-sm @error('japanese_fluency') is-invalid @enderror" required> 
+                                    <option value="">-- Select --</option>					
+                                    <option value="FLUENTLY" @if(old('japanese_fluency') == 'FLUENTLY')? {{"selected"}} @endif>流暢に話す (Fluently)</option>					
+                                    <option value="DAILY_CONVERSATION" @if(old('japanese_fluency') == 'DAILY_CONVERSATION')? {{"selected"}} @endif>日常会話程度 (Daily Conversation)</option>					
+                                    <option value="LITTLE" @if(old('japanese_fluency') == 'LITTLE')? {{"selected"}} @endif>少し話せる (Little)</option>					
+                                    <option value="CANT_SPEAK" @if(old('japanese_fluency') == 'CANT_SPEAK')? {{"selected"}} @endif>話せない (Can't Speak)</option>					
+                                </select>
+
+                                @error('japanese_fluency')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
+
+                       <div class="form-group row">                            
+                            <label for="shift" class="col-md-2 pr-0 col-form-label ">
+                                <span class="text-danger">* </span>
+                                {{ __('Shift') }}
+                                <div class="float-right">:</div>
+                            </label>                            
+                             <div class="col-md-3">
+                                <select name="shift" class="form-control form-control-sm @error('shift') is-invalid @enderror" required>
+                                    <option value="">-- Select --</option>					 
+                                    <option value="4" @if(old('shift') == 4)? {{"selected"}} @endif>25 mins</option>
+                                    <option value="5" @if(old('shift') == 5)? {{"selected"}} @endif>40 mins</option>					
+                                </select>
+                            </div>
+                            @error('shift')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror                            
+                        </div>                        
 
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="fluency" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Japanese <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <select name="fluency" class="form-control form-control-sm">
-                                        <option value="">-- Select --</option>
-                                        <option value="FLUENTLY">流暢に話す (Fluently)</option>
-                                        <option value="DAILY_CONVERSATION">日常会話程度 (Daily Conversation)</option>
-                                        <option value="LITTLE">少し話せる (Little)</option>
-                                        <option value="CANT_SPEAK">話せない (Can't Speak)</option>
-                                    </select>
-                                </div>
+                        <div class="form-group row">
+                            <label for="default_main_tutor" class="col-md-2 pr-0 col-form-label ">{{ __('Default Main Tutor)') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input type="checkbox" name="default_main_tutor" value="true" class="@error('default_main_tutor') is-invalid @enderror" >
+                                @error('default_main_tutor')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="shift" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Shift <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <select name="shift" class="form-control form-control-sm">
-                                        <option value="">-- Select --</option>
-                                        <option value="4">25 mins</option>
-                                        <option value="5">40 mins</option>
-                                    </select>
-                                </div>
+                        <div class="form-group row">
+                            <label for="is_terminated" class="col-md-2 pr-0 col-form-label "> {{ __('Is Terminated)') }}
+                                <div class="float-right">:</div>
+                            </label>
+                            <div class="col-md-3">
+                                <input type="checkbox" name="is_terminated" value="true" class="@error('is_terminated') is-invalid @enderror" >
+                                @error('is_terminated')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="shift" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Default Main Tutor <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <div class="mt-2">
-                                        <input type="checkbox" name="isDefaultMainTutor" value="true">
-                                    </div>
-                                </div>
+
+
+                        <div class="row py-4">
+                            <div class="col-2"></div>
+                            <div class="col-3 text-left">
+                                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                <button type="clear" class="btn btn-primary btn-sm">Cancel</button>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="is_terminated" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Is Terminated <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <div class="mt-2">
-                                        <input type="checkbox" name="is_terminated" value="true">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="row py-4">
-                        <div class="col-2"></div>
-                        <div class="col-3 text-left">
-                            <button type="button" class="btn btn-primary btn-sm">Save</button>
-                            <button type="button" class="btn btn-primary btn-sm">Cancel</button>
-                        </div>
-                    </div>
 
                 </div>
-            </div><!--[emd] member form-->
+            </div>
+            <!--[emd] member form-->
 
 
-
+            </form>
 
         </div>
     </div>

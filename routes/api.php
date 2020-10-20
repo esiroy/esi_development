@@ -20,8 +20,6 @@ use App\Models\Folder;
 |
 */
 
-
-
 /*
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     $data = $request->user();
@@ -29,7 +27,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 */
 
+//[start] My Page scheduler
+Route::middleware('auth:api')->post('/create_member', 'API\MemberController@store')->name('APICreateMember');
 
+
+
+//[start] File Manager
 Route::middleware('auth:api')->post('/get_folders', 'API\FolderController@folders')->name('APIGetFolders');
 Route::middleware('auth:api')->post('/get_folder_files', 'API\FolderController@files')->name('APIGetFolderFiles');
 Route::middleware('auth:api')->post('/create_folder', 'API\FolderController@store')->name('APICreateFolder');
@@ -39,6 +42,14 @@ Route::middleware('auth:api')->post('/share_file', 'API\FolderController@shareFi
 Route::middleware('auth:api')->post('/move_into_parent', 'API\FolderController@moveIntoParent')->name('APIMoveIntoParentFolder');
 Route::middleware('auth:api')->post('/reorder_items', 'API\FolderController@reorderSiblingFolders')->name('APIReorderSiblingFolders');
 Route::middleware('auth:api')->post('/delete_folder', 'API\FolderController@deleteFolder')->name('APIDeleteFolders');
-
 Route::post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
 Route::post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
+
+//[start] Scheduler
+Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@index')->name('APIDeleteFolders');
+
+
+
+
+
+

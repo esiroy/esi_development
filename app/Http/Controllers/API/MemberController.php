@@ -35,7 +35,25 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
+        //validate entry
+        $validator = Validator::make($request->all(), 
+        [
+            'folder_name' => [
+                'required',
+                'max:191',
+                Rule::unique('folders')->where(function ($query) {
+                    return $query->where('parent_id', $this->parent_id);
+                })
+            ],
+            'folder_description' => [
+                'max:191'
+            ]
+        ]);
+
+
     }
 
     /**
