@@ -33,9 +33,6 @@ class LessonController extends Controller
         $status = Status::all();
       
         //default on load without any parameters
-
-       
-
         if (isset($request['inputDate'])) {
             $dateToday = date('Y-m-d', strtotime($request['inputDate']));
 
