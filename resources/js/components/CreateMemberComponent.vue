@@ -4,7 +4,7 @@
         <div class="card-header">Member Form</div>
 
         <div class="card-body">
-            <form @submit.prevent="handleSubmit">
+            <form name="createMemberForm" @submit.prevent="handleSubmit">
                 <!-- [start] member information section-->
                 <div id="information-section" class="section">
 
@@ -30,7 +30,7 @@
                                     <label for="agent" class="px-0 col-md-12 col-form-label">Agent ID<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" name="agent_id" class="form-control  form-control-sm">
+                                    <input type="text" name="agent_id" v-model="user.agent_id" class="form-control  form-control-sm">
                                 </div>
                             </div>
                         </div>
@@ -44,14 +44,14 @@
                                 </div>
                                 <div class="col-6">
                                     <input type="text"                                                
-                                            v-model="user.lastName"                                                 
-                                            id="lastName" 
-                                            name="lastName" 
+                                            v-model="user.last_name"                                                 
+                                            id="last_name" 
+                                            name="last_name" 
                                             class="form-control form-control-sm"
-                                            :class="{ 'is-invalid' : submitted && $v.user.lastName.$error }"
-                                            @blur='checkIsValid($v.user.lastName, $event)' 
+                                            :class="{ 'is-invalid' : submitted && $v.user.last_name.$error }"
+                                            @blur='checkIsValid($v.user.last_name, $event)' 
                                     />
-                                    <div v-if="submitted && !$v.user.lastName.required" class="invalid-feedback">
+                                    <div v-if="submitted && !$v.user.last_name.required" class="invalid-feedback">
                                         Last Name is required
                                     </div>
                                 </div>
@@ -65,14 +65,14 @@
                                 <div class="col-6">                                       
                                     <div class="form-group">
                                         <input type="text" 
-                                                v-model="user.firstName"                                                    
-                                                id="firstName" 
-                                                name="firstName" 
+                                                v-model="user.first_name"                                                    
+                                                id="first_name" 
+                                                name="first_name" 
                                                 class="form-control form-control-sm" 
-                                                :class="{ 'is-invalid' : submitted && $v.user.firstName.$error}"
-                                                @blur='checkIsValid($v.user.firstName, $event)'
+                                                :class="{ 'is-invalid' : submitted && $v.user.first_name.$error}"
+                                                @blur='checkIsValid($v.user.first_name, $event)'
                                         />
-                                        <div v-if="submitted && !$v.user.firstName.required" class="invalid-feedback">
+                                        <div v-if="submitted && !$v.user.first_name.required" class="invalid-feedback">
                                             First Name is required
                                         </div>                                 
                                     </div>
@@ -95,9 +95,7 @@
                                         @blur='checkIsValid($v.user.attribute, $event)'
                                     >
                                         <option value="">-- Select --</option>
-                                        <option value="TRIAL">Trial</option>
-                                        <option value="MEMBER">Member</option>
-                                        <option value="WITHDRAW">Withdraw</option>
+                                        <option v-for="attribute in this.attributes" :value="attribute" :key="attribute.id">{{ attribute.name }}</option>
                                     </select>
                                     <div v-if="submitted && !$v.user.attribute.required" class="invalid-feedback">
                                         Member attribute is required
@@ -111,16 +109,16 @@
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
-                                    <label for="nickname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Nickname <div class="float-right">:</div></label>
+                                    <label for="username" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Nickname <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <input type="text" v-model="user.nickname" id="nickname" name="nickname" 
+                                        <input type="text" v-model="user.username" id="username" name="username" 
                                                 class="form-control form-control-sm" 
-                                                :class="{ 'is-invalid': submitted && $v.user.nickname.$error }" 
-                                                @blur='checkIsValid($v.user.nickname, $event)'
+                                                :class="{ 'is-invalid': submitted && $v.user.username.$error }" 
+                                                @blur='checkIsValid($v.user.username, $event)'
                                         />
-                                        <div v-if="submitted && !$v.user.nickname.required" class="invalid-feedback">
+                                        <div v-if="submitted && !$v.user.username.required" class="invalid-feedback">
                                             Nickname is required
                                         </div>
                                     </div>
@@ -313,10 +311,10 @@
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
-                                    <label for="birthday" class="px-0 col-md-12 col-form-label"><span class="text-danger"> &nbsp;</span> Age <div class="float-right">:</div></label>
+                                    <label for="age" class="px-0 col-md-12 col-form-label"><span class="text-danger"> &nbsp;</span> Age <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-2">
-                                    <input type="text" v-model="user.age" name="birthday" class="form-control form-control-sm" placeholder="">
+                                    <input type="text" v-model="user.age" name="age" class="form-control form-control-sm" placeholder="">
                                 </div>
                             </div>
                         </div>
@@ -329,11 +327,12 @@
                                     <label for="membership" class="px-0 col-md-12 col-form-label"><span class="text-danger"> &nbsp;</span> Membership <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-8">
-                                    <select name="membership" class="form-control form-control-sm">
+                                    <select name="membership" v-model="user.membership" class="form-control form-control-sm">
                                         <option value="">-- Select --</option>
-                                        <option value="Point Balance">Point Balance</option>
+                                        <option v-for="membership in this.memberships" :value="membership.id" :key="membership.id">{{ membership.name }}</option>
+                                        <!--<option value="Point Balance">Point Balance</option>
                                         <option value="Monthly">Monthly</option>
-                                        <option value="Both">Both</option>
+                                        <option value="Both">Both</option>-->
                                     </select>
                                 </div>
                             </div>
@@ -370,10 +369,10 @@
                                             <label>Get conversation(communication) skill</label>
 
                                             <ul id="goalList" class="checkbox-options" v-if="user.preference.purpose.conversation">
-                                                <li><input type="radio" name="goal" value="BEGINNER" checked=""> Beginner- easy daily conversation level</li>
-                                                <li><input type="radio" name="goal" value="INTERMEDIATE"> Intermediate- Daily conversation level</li>
-                                                <li><input type="radio" name="goal" value="ADVANCE"> Advance - Social, Environment, Business English</li>
-                                                <li><input type="radio" name="goal" value="NATIVE"> Be native level</li>
+                                                <li><input type="radio" name="goal" value="BEGINNER" checked="" v-model="user.preference.purposeExtraDetails.conversation"> Beginner- easy daily conversation level</li>
+                                                <li><input type="radio" name="goal" value="INTERMEDIATE" v-model="user.preference.purposeExtraDetails.conversation"> Intermediate- Daily conversation level</li>
+                                                <li><input type="radio" name="goal" value="ADVANCE" v-model="user.preference.purposeExtraDetails.conversation"> Advance - Social, Environment, Business English</li>
+                                                <li><input type="radio" name="goal" value="NATIVE" v-model="user.preference.purposeExtraDetails.conversation"> Be native level</li>
                                             </ul>
                                             <input type="hidden" name="extraDetails" value="BEGINNER">
                                         </li>
@@ -382,49 +381,51 @@
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="antieken" v-model="user.preference.purpose.antieken"  value="ANTI_EIKEN">
                                             English certification exam in Japan
-                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.antieken" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+
+                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.antieken" v-model="user.preference.purposeExtraDetails.antieken" class="col-3 pl-1 form-control form-control-sm d-inline-block">
                                         </li>
 
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="antiexam" v-model="user.preference.purpose.antiexam"  value="ANTI_EXAM"> 
                                             Enter school
                                             <ul id="examLevel" v-if="user.preference.purpose.antiexam" style="list-style-type: none;">
-                                                <li><input type="radio" name="antiExamLevel" value="JUNIOR_HIGH" checked=""> Junior High</li>
-                                                <li><input type="radio" name="antiExamLevel" value="HIGHSCHOOL"> High school</li>
-                                                <li><input type="radio" name="antiExamLevel" value="UNIVERSITY"> University</li>
+                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.antiexam" value="JUNIOR_HIGH" checked=""> Junior High</li>
+                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.antiexam" value="HIGHSCHOOL"> High school</li>
+                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.antiexam" value="UNIVERSITY"> University</li>
                                             </ul>                                            
                                         </li>
 
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="toefl" v-model="user.preference.purpose.toefl" value="TOEFL" > 
                                             TOEFL(目標スコアー 点)
-                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.toefl" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.toefl" v-model="user.preference.purposeExtraDetails.toefl" class="col-3 pl-1 form-control form-control-sm d-inline-block">
                                         </li>
 
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="toeic" v-model="user.preference.purpose.toeic" value="TOEIC">  
                                             TOEIC(目標スコアー 点)
-                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.toeic" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.toeic" v-model="user.preference.purposeExtraDetails.toeic" class="col-3 pl-1 form-control form-control-sm d-inline-block">
                                         </li>
 
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="studyabroad" v-model="user.preference.purpose.studyabroad" value="STUDY_ABROAD"> Study Abroad
-                                            <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.studyabroad">
-                                                <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" checked=""> Junior High</li>
-                                                <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL"> High school</li>
-                                                <li><input type="radio" name="studyAbroadLevel" value="UNIVERSITY"> University</li>
+                                            <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.studyabroad" >
+                                                <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" checked="" v-model="user.preference.purposeExtraDetails.studyabroad"> Junior High</li>
+                                                <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL" v-model="user.preference.purposeExtraDetails.studyabroad"> High school</li>
+                                                <li><input type="radio" name="studyAbroadLevel" value="UNIVERSITY" v-model="user.preference.purposeExtraDetails.studyabroad"> University</li>
                                             </ul>
                                         </li>
 
 
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="business" v-model="user.preference.purpose.business" value="BUSINESS"> Business English
-                                            <input type="hidden" name="extraDetails" v-if="user.preference.purpose.business">
+                                            <input type="hidden" name="extraDetails" v-if="user.preference.purpose.business" v-model="user.preference.purposeExtraDetails.business">
                                         </li>
 
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.others" value="OTHERS"> Others 
-                                            <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" v-if="user.preference.purpose.others"></textarea>
+                                            <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
+                                                v-if="user.preference.purpose.others" v-model="user.preference.purposeExtraDetails.others"></textarea>
                                         </li>
                                     </ul>
 
@@ -493,7 +494,7 @@
                                     <!--[start] enumaration of all added timeslot -->
                                     <div class="row py-2 bg-lightgray border-bottom" v-for="lessonClass in user.preference.lessonClasses" :key="lessonClass.id" >
                                         <div class="col-3 col-md-3 text-center">
-                                             {{ lessonClass.attribute }}                                     
+                                             {{ lessonClass.attribute.name }}                                     
                                         </div>
                                         <div year="col-3 col-md-3 text-center">{{ lessonClass.year }} {{ lessonClass.month }}</div>                                        
                                         <div class="col-3 col-md-3 text-center">     
@@ -559,8 +560,8 @@
                                         @change="propagateMainTutorOptions"   
                                     >
                                         <option value="">-- Select --</option>
-                                        <option value="25">25 mins</option>
-                                        <option value="40">40 mins</option>
+                                        <option v-for="shift in shifts" :value="shift.id" :key="shift.id">{{ shift.name }}</option>
+
                                     </select>
                                     <div v-if="submitted && !$v.user.lessonshiftid.required" class="invalid-feedback">
                                         Lesson Time is required
@@ -586,7 +587,7 @@
                                     >
                                         <option value="">-- Select --</option>
                                         <!--@todo loop dynamically the teacher of times -->
-                                        <option v-for="mainTutor in mainTutors" :value="mainTutor.id" :key="mainTutor.id">{{ mainTutor.name }}</option>
+                                        <option v-for="mainTutor in mainTutors" :value="mainTutor.id" :key="mainTutor.id">{{ mainTutor.name_en }}</option>
                                     </select>
                                     <div v-if="submitted && !$v.user.maintutorid.required" class="invalid-feedback">
                                         Main Tutor is required
@@ -617,7 +618,7 @@
                                     <div class="row">
                                         <div class="col-2 pr-0">
                                             <div class="text-center">Member</div>
-                                            <select name="year" class="form-control form-control-sm" v-model="user.reportCard.member">
+                                            <select name="memberReportCard" class="form-control form-control-sm" v-model="user.reportCard.member">
                                                 <option value="">-- Select --</option>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
@@ -625,7 +626,7 @@
                                         </div>
                                         <div class="col-2 pr-0">
                                             <div class="text-center">Agent</div>
-                                            <select name="month" class="form-control form-control-sm" v-model="user.reportCard.agent">
+                                            <select name="agentReportCard" class="form-control form-control-sm" v-model="user.reportCard.agent">
                                                 <option value="">-- Select --</option>
                                                 <option value="Yes">Yes</option>
                                                 <option value="No">No</option>
@@ -748,8 +749,9 @@
                 <div id="submit-button" class="section row py-4">
                     <div class="col-2"></div>
                     <div class="col-3 text-left">
-                        <button  class="btn btn-primary btn-sm">Save</button>
-                        <button  class="btn btn-primary btn-sm">Cancel</button>
+                        <button class="btn btn-primary btn-sm">Save</button>
+                        <input type="reset" value="Cancel" class="btn btn-primary btn-sm">
+                        
                     </div>
                 </div>
 
@@ -777,6 +779,15 @@ export default {
         Datepicker
     },
     props: {
+        memberships : {
+            type: Array
+        },
+        attributes: {
+            type: Array
+        },
+        shifts : {
+            type: Array
+        },        
 		csrf_token: {
 			type: String
 		},
@@ -790,17 +801,14 @@ export default {
             //set calendar characters to japanese
             ja: ja, 
             //list of main tutors
-            mainTutors: [
-                { id: 1, name: "roy tester 1"},
-                { id: 2, name: "roy tester 2"},
-                { id: 3, name: "roy tester 3"}
-            ],
+            mainTutors: [],
             user: {
-                firstName: "",
-                lastName: "",
+                agent_id: "",
+                first_name: "",
+                last_name: "",
                 attribute: "",
                 email: "",
-                nickname: "",
+                username: "",
                 gender: "",
                 communication_app: "",
                 communication_app_username: "",
@@ -812,16 +820,15 @@ export default {
 
                 //Lesson Details - Section
                 member_since: "",
-                lessonshiftid: "",
-                
+                lessonshiftid: "",                
                 maintutorid: "",
-
 
                 //Preferred Tutor - Section
                 preference: 
                 {                    
                     purpose: {
-                        conversation: "",
+                        bilingual: "",
+                        conversation: "",                        
                         antieken: "",
                         antiexam: "",
                         toefl: "",
@@ -830,6 +837,18 @@ export default {
                         business: "",
                         others: ""
                     },
+                    purposeExtraDetails: {
+                        conversation: "",                        
+                        antieken: "",
+                        antiexam: "",
+                        toefl: "",
+                        toeic: "",
+                        studyabroad: "",
+                        business: "",
+                        others: ""
+
+                    },
+
                     //array list of purpose
                     purposes: [],
                     lesson: {
@@ -888,19 +907,18 @@ export default {
     },  
     validations: 
     {
-
         user: 
         {            
-            firstName: { 
+            first_name: { 
                 required                
             },
-            lastName: { 
+            last_name: { 
                 required                
             },
             attribute: {
                 required
             },
-            nickname: {
+            username: {
                 required
             },
             gender: {
@@ -929,36 +947,21 @@ export default {
 
             /*purposes: required */
         }
-
     },
-
     methods: {
-        handleSubmit(e) {
+
+        handleSubmit(e) 
+        {
             this.submitted = true;
-
-
-            /*
-            this.user.preference.purposes = document.querySelectorAll('input[name="purposes"]:checked');
-            console.log(this.user.preference.purposes.length);
-            this.user.preference.purposes.forEach(function (purpose) {
-                console.log(purpose.value)
-            })
-            */
-
-            // stop here if form is invalid            
+            // stop here if form is invalid
             this.$v.$touch();
-
             if (this.$v.$invalid) {
-
                 alert ("Errors found, please check the form for errors");
-
                 return;
             }
-
             console.log (this.submitted, this.$v.$invalid);
-
-            alert("SUCCESS!! :-)\n\n" + JSON.stringify(this.user));
-
+            //alert("SUCCESS!! :-)\n\n" + JSON.stringify(this.user));
+            console.log(JSON.stringify(this.user));
             axios.post("/api/create_member?api_token=" + this.api_token, 
             {
                 method          : "POST",
@@ -966,14 +969,26 @@ export default {
             })
             .then(response => 
             {
-              
+                console.log(response)
+
+                if (response.data.success === false) {
+
+                    alert (response.data.message);
+
+                } else {
+
+                    alert ("success");
+
+                }
+
 			}).catch(function(error) {
                 // handle error
                 alert("Error " + error);
-                console.log(error);
+                //console.log(error);
             });
                         
-        },          
+        },
+
         checkIsValid (val, event) 
         {
             if (val.$anyError) 
@@ -1122,8 +1137,9 @@ export default {
             }
                 
         },
-        propagateMainTutorOptions() {
-            alert(lessonshiftid.value);
+        propagateMainTutorOptions() 
+        {
+            //alert(lessonshiftid.value);
 
             axios.post("/api/get_tutors?api_token=" + this.api_token, 
             {
@@ -1133,6 +1149,10 @@ export default {
             .then(response => 
             {
               
+              console.log(response.data.tutors);
+
+              this.mainTutors = response.data.tutors;
+
 			}).catch(function(error) {
                 // handle error
                 alert("Error " + error);

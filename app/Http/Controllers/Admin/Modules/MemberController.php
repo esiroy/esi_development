@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use App\Models\User;
+use App\Models\Member;
+use App\Models\Attribute;
+use App\Models\Membership;
+use App\Models\Shift;
+
 use DB;
 
 
@@ -20,16 +25,26 @@ class MemberController extends Controller
      */
     public function index()
     {
+        //@todo:attributes
+        $attributes = Attribute::all();
+        $memberships = Membership::all();
+        
+        $shifts = Shift::all();
 
+        /*
         $members = User::select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name"))
-                   ->whereHas('roles', function($q) { $q->where('title', 'Member'); })->get();       
-
+                   ->whereHas('roles', function($q) { $q->where('title', 'Member'); })->get();   
+        */
+        $members = Member::join('users', 'users.id', '=', 'members.user_id')
+                    ->join('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+                    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, attributes.name as attribute"))
+                    ->get();
 
         
         $tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'tutor'); })->get();         
         $tutors = json_encode($tutorQuery);
 
-        return view('admin.modules.member.index', compact('tutors', 'members'));
+        return view('admin.modules.member.index', compact('memberships', 'shifts', 'attributes', 'tutors', 'members'));
     }
 
     /**

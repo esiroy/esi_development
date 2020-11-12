@@ -15,13 +15,15 @@ class CreateLessonsTable extends Migration
     {
         Schema::create('lessons', function (Blueprint $table) {            
             $table->id();
+            $table->bigInteger('creator_id')->nullable(); //the admininstrator id
             $table->bigInteger('tutor_id');
-            $table->bigInteger('member_id');
-            $table->bigInteger('lesson_status_id');
-            $table->bigInteger('creator_id');
-            $table->bigInteger('email_type_id');
-            $table->dateTime('scheduled_at');
-            $table->integer('duration');            
+            $table->bigInteger('member_id')->nullable(); 
+            $table->string('startTime');
+            $table->string('endTime');
+            $table->string('email_type')->nullable();            
+            $table->date('scheduled_at');
+            $table->integer('duration');
+            $table->string('status');       
             $table->timestamps();            
         });
     }

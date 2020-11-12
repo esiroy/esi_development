@@ -15,8 +15,10 @@ class CreateMemberDesiredSchedulesTable extends Migration
     {
         Schema::create('member_desired_schedules', function (Blueprint $table) {
             $table->id();
-            $table->date('descired_schedules');
-            $table->timestamps();
+            $table->bigInteger('user_id');
+            $table->string('day');
+            $table->string('time');
+            //$table->timestamps();
         });
     }
 

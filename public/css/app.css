@@ -23868,6 +23868,18 @@ div.dt-button-collection .dt-button.active {
   width: 25px;
 }
 
+/* user */
+.blueBox {
+  background: #d7f3fa;
+  padding: 10px;
+}
+
+.blueBrokenLineBox {
+  border: 2px dashed #b8e9fa;
+  padding: 10px;
+  margin: 10px 0 0 0;
+}
+
 /*
     Name: login.scss
     Description: Customize the user web interface 
@@ -23902,6 +23914,52 @@ div.dt-button-collection .dt-button.active {
 }
 #login .login-box #btn-login {
   margin-right: 0px;
+}
+
+/* Login */
+.arrow-active {
+  background: url(../images/arrowActive.png) center top no-repeat;
+  background-repeat: no-repeat;
+  width: 195px;
+  height: 60px;
+  text-align: center;
+  color: #fff;
+  font-weight: bolder;
+  z-index: 9999;
+  display: inline-block;
+  position: relative;
+  padding-top: 6px;
+  padding-right: 12px;
+  margin-right: -40px;
+}
+
+.arrow {
+  background: url(../images/arrow.png) center top no-repeat;
+  background-repeat: no-repeat;
+  width: 195px;
+  height: 60px;
+  text-align: center;
+  color: #5a889f;
+  font-weight: bolder;
+  z-index: 1;
+  display: inline-block;
+  position: relative;
+  padding-top: 6px;
+  padding-right: 12px;
+  margin-right: -40px;
+}
+
+.blueSolidBorderBox {
+  border: 2px solid #cbe5ee;
+  padding: 10px;
+  margin: 20px 0 0 0;
+}
+
+.tblRegister th, .tblRegister2 th {
+  padding: 6px;
+  font-weight: bold;
+  background: #e9e9e9;
+  text-align: left;
 }
 
 /* Large desktops and laptops */

@@ -22,20 +22,29 @@
                     Lesson
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="col-3">
-                            <label for="inputDate" class="pr-3">Date:</label>
-                            <input e="inputDate" id="inputDate" type="text" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8" value="2020年 9月 7日">
-                        </div>
-                        <div class="col-2">
-                            <select e="lessonshiftid" id="shiftValue" class="form-control form-control-sm">
-                                <option value="4" selected="">25 mins</option>
-                                <option value="5">40 mins</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <div class="legend bg-lightgray">
+                    <form name="dateForm" method="GET">
+                    <div class="row">
+                           
+
+                            <div class="col-3">
+                                <label for="inputDate" class="pr-3">Date:</label>
+                                <input type="date" id="inputDate" name="inputDate" value="{{ $dateToday }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8">                            
+                            </div>
+                            <div class="col-2">
+                                <select name="shift_duration" id="shift_duration" class="form-control form-control-sm">
+                                    <option value="25" @if (Request::input('shift_duration') == '25') {{'selected'}} @endif>25 mins</option>
+                                    <option value="40" @if (Request::input('shift_duration') == '40') {{'selected'}} @endif>40 mins</option>
+                                </select>
+                            </div>
+                            <div class="col-2">
+                                <input type="submit" class="btn btn-primary btn-sm" value="Go">
+                            </div>
+                        
+                    </div>
+                    </form>
+
+                    <div class="legend bg-lightgray mt-2">
                         <table cellspacing="0" cellpadding="5">
                             <tbody>
                                 <tr>
@@ -62,61 +71,21 @@
                     </div>
                     <p class="card-text"></p>
 
-                    <!--schedules
-                    <div id="schedules">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                ( Date Here ) 2020年 9月 7日
-                            </div>
-                            <div class="card-body scrollable-x">
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <td></td>
-                                        <td>
-                                            10:30
-                                        </td>
-                                        <td>
-                                            11:30
-                                            12:00
-                                        </td>
-                                        <td>12:00</td>
-                                        <td>12:30</td>
-                                        <td>1:00</td>
-                                        <td>1:30</td>
-                                        <td>2:00</td>
-                                        <td>2:30</td>
-                                        <td>3:00</td>
-                                        <td>3:30</td>
-                                        <td>4:00</td>
-                                        <td>4:30</td>
-                                        <td>5:00</td>
-                                        <td>5:30</td>
-                                        <td>6:00</td>
-                                        <td>6:30</td>
-                                        <td>7:00</td>
-                                        <td>7:30</td>
-                                        <td>8:00</td>
-                                        <td>8:30</td>
-                                        <td>9:00</td>
-                                        <td>9:30</td>
-                                        <td>10:00</td>
-                                        <td>10:30</td>
-                                        <td>11:00</td>
-                                        <td>11:30</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Tutor 1</td>
-                                        <td> sched</td>
-                                    </tr>
-                                </table>
+
+                    <lesson-scheduler-component
+                        ref="schedulesComponent"
+                        :scheduled_at="'{{ $dateToday }}'"
+                        :year="{{ $year}}" :month="{{ $month }}" :day="{{ $day}}"
+
+                        :duration="{{ $shiftDuration }}"
+                        :lessons="{{ json_encode($lessons) }}"
+                        :tutors="{{ $tutors }}"
+                        :members="{{ $members }}"
+                        api_token="{{ Auth::user()->api_token }}"
+                        csrf_token="{{ csrf_token() }}"
 
 
-                            </div>
-                        </div>
-                    </div>
-                    -->
-
-                    <lesson-scheduler-component/>
+                    />
 
                 </div>
             </div>

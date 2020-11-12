@@ -8,17 +8,14 @@ use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
-
-
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Tutor;
 use App\Models\Grade;
-
+use App\Models\Shift;
 use App\Models\Permission;
 use Validator;
 use Auth;
-
 
 class TutorController extends Controller
 {
@@ -29,16 +26,10 @@ class TutorController extends Controller
      */
     public function index(User $user, Tutor $tutor)
     {
-
         $tutors = User::whereHas('roles', function($q) { $q->where('title', 'tutor'); })->get();         
-
-     
-
-
+        $shifts = Shift::all();
         $grades = Grade::all();
-        //$tutors = $tutor->all();
-
-        return view('admin.modules.tutor.index', compact('tutors', 'grades'));
+        return view('admin.modules.tutor.index', compact('shifts', 'tutors', 'grades'));
     }
 
     /**
@@ -73,6 +64,7 @@ class TutorController extends Controller
             'password'          => ['required', 'string', 'min:8'],            
             'sort'              => ['required', 'integer'],
             'salary_rate'       => ['integer'],
+            'grade'             => ['required'],
             'skype_name'        => ['required'],
             'skype_id'          => ['required'],
             'name_en'           => ['required'],
@@ -98,7 +90,6 @@ class TutorController extends Controller
                 'password'      => $request['password'],
                 'api_token'      => Hash('sha256', Str::random(80))
             ];
-
             $user = User::create($userData);          
 
             //Add Role

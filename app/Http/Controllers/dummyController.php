@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\User;
+use App\Models\Shift;
+use App\Models\Tutor;
 
 use Gate;
 use Auth;
@@ -26,8 +28,15 @@ class dummyController extends Controller
      */
     public function index()
     {
-
-
+        //get shifts
+        $shift = Shift::where('value', 40)->first();          
+        $tutors = Tutor::where('shift_id', $shift->id)->get();               
+        foreach ($tutors as $tutor) {
+            $users[] = $tutor->name_en;
+        }
+        exit();
+        
+        /*
         $folder     = Folder::find(3);
 
         if ($folder) {
@@ -38,6 +47,7 @@ class dummyController extends Controller
             exit();
     
         }
+        */
  
 
         /*

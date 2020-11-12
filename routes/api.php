@@ -27,10 +27,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 */
 
-//[start] My Page scheduler
 Route::middleware('auth:api')->post('/create_member', 'API\MemberController@store')->name('APICreateMember');
-
-
 
 //[start] File Manager
 Route::middleware('auth:api')->post('/get_folders', 'API\FolderController@folders')->name('APIGetFolders');
@@ -45,8 +42,15 @@ Route::middleware('auth:api')->post('/delete_folder', 'API\FolderController@dele
 Route::post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
 Route::post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
 
-//[start] Scheduler
-Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@index')->name('APIDeleteFolders');
+//[start] My Page Scheduler
+Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@getTutors')->name('APIGetTutors');
+Route::middleware('auth:api')->post('/create_tutor_schedule', 'API\TutorScheduleController@store')->name('APICreateTutorSchedule');
+
+//Route::middleware('auth:api')->delete('/delete_tutor_schedule/{id}','API\TutorScheduleController@destroy')->name('APIDeleteTutorSchedule');
+
+Route::middleware('auth:api')->post('/delete_tutor_schedule', 'API\TutorScheduleController@deleteTutorSchedule')->name('APIDeleteTutorSchedule');
+
+
 
 
 

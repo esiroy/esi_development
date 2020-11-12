@@ -38,20 +38,20 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="nickname" class="small col-4">Nickname:</label>
-                                    <input id="nickname" name="nickname" type="text" class="form-control form-control-sm col-8" value="">
+                                    <input name="nickname" type="text" class="form-control form-control-sm col-8" value="">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="nickname" class="small col-4">Name:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-8" value="">
+                                    <input name="name" type="text" class="form-control form-control-sm col-8" value="">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="name" class="small col-2">Email:</label>
-                                    <input id="email" name="name" type="text" class="form-control form-control-sm col-4" value="">
+                                    <input name="name" type="text" class="form-control form-control-sm col-4" value="">
 
                                     <select id="filterLessonShift" name="filterLessonShift" class="form-control form-control-sm col-3 ml-1">
                                         <option value="">-- Select --</option>
@@ -76,8 +76,7 @@
                     <div class="row">
                         <div class="col-12 pt-3">
 
-                           <member-list-component-test
-                               
+                           <member-list-component                               
                                 :members="{{ json_encode($members) }}"
                                 api_token="{{ Auth::user()->api_token }}"
                                 csrf_token="{{ csrf_token() }}"                            
@@ -127,6 +126,7 @@
                                 </table>
                             </div>
                             -->
+
                         </div>
                     </div>
                 </div>
@@ -134,6 +134,9 @@
             <!--[end] card-->
 
             <create-member-component
+                :memberships="{{ json_encode($memberships) }}"
+                :attributes="{{ json_encode($attributes) }}"
+                :shifts="{{ json_encode($shifts) }}"
                 api_token="{{ Auth::user()->api_token }}"
                 csrf_token="{{ csrf_token() }}"             
             />

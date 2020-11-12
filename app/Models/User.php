@@ -92,7 +92,12 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Folder::class);
     }
-
+    
+    //members
+    public function members()
+    {
+        return $this->belongsToMany(Member::class);
+    }    
 
     //tutors
     public function tutors()
@@ -127,5 +132,6 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Models\Agent');
     }    
+
 
 }

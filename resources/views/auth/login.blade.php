@@ -93,7 +93,7 @@
                     <div id="register" class="col-5">
                         <!--[start] regsiter button -->
                         <div class="btn-register">
-                            <a href="{{ url('register') }}"><img src="{{ url("images/btnRegister.png") }}" alt="my-tutor administratrion panel" class="img-fluid"></a>
+                            <a href="{{ url('signup') }}"><img src="{{ url("images/btnRegister.png") }}" alt="my-tutor administratrion panel" class="img-fluid"></a>
                         </div>
                     </div>
                 </div>

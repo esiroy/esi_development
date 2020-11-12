@@ -13,13 +13,14 @@ class CreateMemberLessonClassesTable extends Migration
      */
     public function up()
     {
-        Schema::create('member_lesson_classes', function (Blueprint $table) {
+        Schema::create('member_lessons', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
+            $table->string('attribute');
             $table->integer('year');
-            $table->integer('month');
+            $table->string('month');
             $table->string('grade');
-            $table->timestamps();            
+            $table->timestamps();
         });
     }
 
@@ -30,6 +31,6 @@ class CreateMemberLessonClassesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('member_lesson_classes');
+        Schema::dropIfExists('member_lessons');
     }
 }

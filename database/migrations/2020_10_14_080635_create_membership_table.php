@@ -13,9 +13,9 @@ class CreateMembershipTable extends Migration
      */
     public function up()
     {
-        Schema::create('membership', function (Blueprint $table) {
+        Schema::create('memberships', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable(); //trial, member, withdraw
+            $table->string('name')->nullable(); //trial, member, withdraw
             $table->timestamps();           
         });
     }
@@ -27,6 +27,6 @@ class CreateMembershipTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('membership');
+        Schema::dropIfExists('memberships');
     }
 }

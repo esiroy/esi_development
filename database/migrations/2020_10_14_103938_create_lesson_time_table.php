@@ -15,8 +15,9 @@ class CreateLessonTimeTable extends Migration
     {
         Schema::create('lesson_time', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('lesson_time');              
-            $table->timestamps();
+            $table->string('start_time');
+            $table->string('end_time');
+            $table->integer('order_id');            
         });
     }
 

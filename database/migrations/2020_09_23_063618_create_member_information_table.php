@@ -13,43 +13,39 @@ class CreateMemberInformationTable extends Migration
      */
     public function up()
     {
-        Schema::create('member_information', function (Blueprint $table) {
+        Schema::create('members', function (Blueprint $table) {
             //personal info
             $table->id();
             $table->bigInteger('user_id');
-            $table->bigInteger('member_attribute_id');
-            $table->bigInteger('agent_id');
-            $table->enum('gender', ['male', 'female']);
-            $table->date('birthdate');
-            $table->integer('age');
+            $table->bigInteger('member_attribute_id')->nullable();
+            $table->bigInteger('agent_id')->nullable();
+            $table->string('nickname');
+            
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->date('birthdate')->nullable();
+            $table->integer('age')->nullable();
+
             $table->string('communication_app_name');
             $table->string('communication_app_username');            
-            $table->bigInteger('membership_id');
-
-            //purpose
-            $table->bigInteger('preferred_tutor_id');
-            $table->bigInteger('member_lesson_classes_id');
+            $table->bigInteger('membership_id')->nullable();
 
             //lesson details
-            $table->date('member_since');
-            $table->bigInteger('lesson_time_id');
-            $table->bigInteger('main_tutor_id');
+            $table->date('member_since')->nullable();
+            $table->bigInteger('lesson_time_id')->nullable();
+            $table->bigInteger('main_tutor_id')->nullable();
 
             //exam record
-            $table->bigInteger('exam_record_id');
+            $table->bigInteger('exam_record_id')->nullable();
 
             //report card
-            $table->boolean('member_report_card');
-            $table->boolean('agent_report_card');
-            $table->boolean('member_monthly_report');
-            $table->boolean('agent_monthly_report');
+            $table->boolean('member_report_card')->nullable();
+            $table->boolean('agent_report_card')->nullable();
+            $table->boolean('member_monthly_report')->nullable();
+            $table->boolean('agent_monthly_report')->nullable();
 
             //point purchase
-            $table->enum('Direct', ['Agent', 'Direct']);
-
-            //Desired Schedule
-            $table->date('descired_schedules');
-
+            $table->enum('point_purchase', ['Agent', 'Direct'])->nullable();
+           
             //timestamp of transaction
             $table->timestamps();
         });
@@ -62,6 +58,6 @@ class CreateMemberInformationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('member_information');
+        Schema::dropIfExists('members');
     }
 }

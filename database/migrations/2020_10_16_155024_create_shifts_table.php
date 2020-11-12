@@ -15,8 +15,8 @@ class CreateShiftsTable extends Migration
     {
         Schema::create('shifts', function (Blueprint $table) {
             $table->id();
-            $table->integer('shift'); //minute 1 hour is 60            
-            $table->timestamps();
+            $table->string('name');  //25 minutes, 40 minutes
+            $table->integer('value'); //value in minutes : minute 1 hour is 60
         });
     }
 

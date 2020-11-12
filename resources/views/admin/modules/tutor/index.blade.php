@@ -70,8 +70,9 @@
 
                                     <select id="filterLessonShift" name="filterLessonShift" class="form-control form-control-sm col-3 ml-1">
                                         <option value="">-- Select --</option>
-                                        <option value="4">25 mins</option>
-                                        <option value="5">40 mins</option>
+                                        @foreach ($shifts as $shift)
+                                        <option value="{{$shift->id}}">{{$shift->name}}</option>                                        
+                                        @endforeach
                                     </select>
                                     <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
 
@@ -205,12 +206,14 @@
 
 
                         <div class="form-group row">
-                            <label for="grade" class="col-md-2 pr-0 col-form-label ">{{ __('Grade') }}
+                            <label for="grade" class="col-md-2 pr-0 col-form-label ">
+                                <span class="text-danger">* </span>
+                                {{ __('Grade') }}
                                 <div class="float-right">:</div>
                             </label>
                             <div class="col-md-3">
                                 @foreach($grades as $grade)
-                                    <input type="radio" name="grade" value="{{ $grade->id }}" @if(old('grade') == $grade->id)? {{ "checked" }} @endif> {{$grade->name}} 
+                                    <input type="radio" name="grade" required value="{{ $grade->id }}" @if(old('grade') == $grade->id)? {{ "checked" }} @endif> {{$grade->name}} 
                                 @endforeach
                             </div>
                         </div>
@@ -366,9 +369,10 @@
                             </label>                            
                              <div class="col-md-3">
                                 <select name="shift" class="form-control form-control-sm @error('shift') is-invalid @enderror" required>
-                                    <option value="">-- Select --</option>					 
-                                    <option value="4" @if(old('shift') == 4)? {{"selected"}} @endif>25 mins</option>
-                                    <option value="5" @if(old('shift') == 5)? {{"selected"}} @endif>40 mins</option>					
+                                    <option value="">-- Select --</option>
+                                    @foreach ($shifts as $shift)
+                                    <option value="{{$shift->id}}" @if(old('shift') == $shift->id)? {{"selected"}} @endif>{{$shift->name}}</option>                                        
+                                    @endforeach
                                 </select>
                             </div>
                             @error('shift')

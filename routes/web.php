@@ -14,10 +14,15 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('test', 'dummyController');
 
-//Route::get('/', 'PublicFolderController@index')->name('welcome');
+Route::get('/home', 'ScheduleController@index')->name('home');
 
-Route::get('/', 'HomeController@index')->name('welcome');
-Route::get('/home', 'FolderCreatorController@index')->name('home');
+Route::get('/', 'Auth\LoginController@showLoginForm')->name('welcomeLogin');
+
+//Route::get('/', 'HomeController@index')->name('welcome');
+//Route::get('/home', 'FolderCreatorController@index')->name('home');
+
+//Route::get('/', 'ScheduleController@index')->name('welcome');
+
 
 /* Public Folder View */
 Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
@@ -109,6 +114,15 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     }); //End [Admin Area]
 
 });
+
+Route::get('/signup', 'Auth\SignUpController@showSignUpForm')->name('signup');
+Route::post('/validateSignUpForm', 'Auth\SignUpController@validateSignUpForm')->name('validateSignUp');
+Route::get('/confirmation', 'Auth\SignUpController@showConfirmationForm')->name('signUpConfirmation');
+Route::post('/createMember','Auth\SignUpController@store')->name('createMember');
+
+//step 3 (user has been emailed and waiting for verification)
+Route::get('/saveuser','Auth\SignUpController@step3')->name('step3');
+
 
 
 Auth::routes();

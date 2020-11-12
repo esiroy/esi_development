@@ -2,12 +2,60 @@
 
 @section('content')
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
 
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-12">
+            <div class="card">
+                <!--<div class="card-header">{{ __('Register') }}</div>-->
                 <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8">  
+                            <div id="steps_nav">
+                                <div class="arrow-active">STEP 1 <br> 登録情報のご入力</div>
+                                <div class="arrow">STEP 2 <br> 内容のご確認</div>						
+                                <div class="arrow">STEP 3 <br> メールのご確認</div>						
+                                <div class="arrow">STEP 4 <br> 登録完了</div>
+                            </div>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-md-6 text-center">
+                            <div class="mt-3">
+                                <div>確認メールが届かない場合でも、12時間以内に会員登録は完了します。</div>
+                                <div>無料会員にご登録後、無料体験レッスンをご受講いただけます。</div>
+                                <div>ご登録内容をご入力後、確認ボタンをクリックしてください。</div>
+                                無料体験は2回受講できます
+                            </div>
+                        </div>
+                        <div class="col-md-3"></div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-1"></div>
+                        <div class="col-md-8">
+                            全てご記入ください
+                        </div>
+                    </div>
+
+                <!--
+                    <div class="form-group row">
+                        <div id="steps_nav">
+                            <div style="background-image: url(images/arrowActive.png);padding-top: 12px;color:white;font-weight: bolder;">STEP 1 <br> 登録情報のご入力</div>
+                            <div style="background-image: url(images/arrow.png);position: relative;z-index: 2;background-repeat: no-repeat;width: 195px;height: 60px;float: left;z-index: 2;margin-left: -182px;padding-top: 12px;color: rgb(90,136,159);font-weight: bolder;">STEP 2 <br> 内容のご確認</div>
+                            <div style="background-image: url(images/arrow.png);position: relative;z-index: 2;background-repeat: no-repeat;width: 195px;height: 60px;float: left;z-index: 1;margin-left: -30px;padding-top: 12px;color: rgb(90,136,159);font-weight: bolder;">STEP 3 <br> メールのご確認</div>
+                            <div style="background-image: url(images/arrow.png);position: relative;z-index: 2;background-repeat: no-repeat;width: 195px;height: 60px;float: left;z-index: 0;margin-left: -30px;padding-top: 12px;color: rgb(90,136,159);font-weight: bolder;">STEP 4 <br> 登録完了</div>                    
+                        </div>
+                    </div>
+                    -->
+
+                    <br>
+
                     <form method="POST" action="{{ route('register') }}">
                         @csrf
 

@@ -9,8 +9,11 @@ use Illuminate\Validation\Rule;
 
 
 use App\Models\Lesson;
-
 use App\Models\User;
+use App\Models\Tutor;
+use App\Models\Shift;
+use App\Models\Member;
+use App\Models\Status;
 
 use Gate;
 use Validator;
@@ -25,84 +28,59 @@ class LessonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Lesson $lesson, Request $request)
     {
-        //abort_if(Gate::denies('lesson_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $status = Status::all();
+      
+        //default on load without any parameters
 
-        //$lessons = Lesson::all();
+       
 
-        $tutors = User::whereHas(
-            'roles', function($q){
-                $q->where('title', 'tutor');
-            }
-        )->get();      
+        if (isset($request['inputDate'])) {
+            $dateToday = date('Y-m-d', strtotime($request['inputDate']));
 
-        return view('admin.modules.lesson.index', compact('tutors'));
+            $year           = date('Y', strtotime($request['inputDate']));
+            $month           = date('m', strtotime($request['inputDate']));
+            $day           = date('d', strtotime($request['inputDate']));
+
+        } else {           
+            $dateToday      =  date('Y-m-d');
+
+            $year           = date('Y');
+            $month           = date('m');
+            $day           = date('d');
+        }
+
+       
+
+        if (isset($request['shift_duration'])) {
+            $shiftDuration  = $request['shift_duration'];
+        } else {
+            $shiftDuration  = 25;
+        }
+
+        //echo $dateToday . " " . $shiftDuration;
+
+        //search the ID
+        $shift  = Shift::where("value", $shiftDuration)->first();
+
+        //get tutors for this shift id
+        $tutors = Tutor::where('shift_id', $shift->id)->get();
+
+        //get the members
+        $members = Member::join('users', 'users.id', '=', 'members.user_id')
+        ->join('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+        ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, attributes.name as attribute"))
+        ->get();
+
+        $lessons = $lesson->getLessons($dateToday, $shiftDuration);    
+        
+        if (count($lessons) == 0) {
+            $lessons = (object) ['0' => null];
+        }
+
+        return view('admin.modules.lesson.index', compact('dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'lessons'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+  
 }

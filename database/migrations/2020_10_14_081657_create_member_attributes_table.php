@@ -13,9 +13,9 @@ class CreateMemberAttributesTable extends Migration
      */
     public function up()
     {
-        Schema::create('member_attributes', function (Blueprint $table) {
+        Schema::create('attributes', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable();            
+            $table->string('name')->nullable();            
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ class CreateMemberAttributesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('member_attributes');
+        Schema::dropIfExists('attributes');
     }
 }
