@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('test', 'dummyController');
 
-Route::get('/home', 'ScheduleController@index')->name('home');
+Route::get('/home', 'Dashboard@index')->name('home');
 
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('welcomeLogin');
 
@@ -69,8 +69,25 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
         //Member
         Route::resource('/member', 'Modules\MemberController');
+        Route::get('/member/account/{id}', 'Modules\MemberController@account')->name('member.account');
+        Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist');
+
+
+        //tutor
+        Route::delete('/tutor/destroy', 'Modules\TutorController@massDestroy')->name('tutor.massDestroy');
+        Route::post('/tutor/resetPassword', 'Modules\TutorController@resetPassword')->name('tutor.resetPassword');
         Route::resource('/tutor', 'Modules\TutorController');
+
+        Route::delete('/manager/destroy', 'Modules\ManagerController@massDestroy')->name('manager.massDestroy');
+        Route::post('/manager/resetPassword', 'Modules\ManagerController@resetPassword')->name('manager.resetPassword');        
         Route::resource('/manager', 'Modules\ManagerController');
+
+        //Agent
+        Route::get('/agent/account/{id}', 'Modules\AgentController@account')->name('agent.account');
+        Route::post('/agent/updateAccount', 'Modules\AgentController@updateAccount')->name('agent.updateAccount');
+
+        Route::delete('/agent/destroy', 'Modules\AgentController@massDestroy')->name('agent.massDestroy');
+        Route::post('/agent/resetPassword', 'Modules\AgentController@resetPassword')->name('agent.resetPassword');        
         Route::resource('/agent', 'Modules\AgentController');
 
         //Manage

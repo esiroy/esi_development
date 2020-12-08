@@ -14,8 +14,11 @@ use App\Models\Tutor;
 use App\Models\Grade;
 use App\Models\Shift;
 use App\Models\Permission;
-use Validator;
+
 use Auth;
+use Gate;
+use Validator;
+use Input;
 
 class TutorController extends Controller
 {
@@ -26,9 +29,12 @@ class TutorController extends Controller
      */
     public function index(User $user, Tutor $tutor)
     {
-        $tutors = User::whereHas('roles', function($q) { $q->where('title', 'tutor'); })->get();         
+        //$tutors = User::whereHas('roles', function($q) { $q->where('title', 'tutor'); })->get();
+
+        $tutors = Tutor::get();
         $shifts = Shift::all();
         $grades = Grade::all();
+
         return view('admin.modules.tutor.index', compact('shifts', 'tutors', 'grades'));
     }
 
@@ -52,8 +58,6 @@ class TutorController extends Controller
     {
         //abort_if(Gate::denies('tutor_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-
-  
         $validator = Validator::make($request->all(), [
             //'first_name' => ['required', 'string', 'max:255'],
             //'last_name' => ['required', 'string', 'max:255'],
@@ -112,7 +116,7 @@ class TutorController extends Controller
                 'introduction'          => $request['introduction'],
                 'japanese_fluency_id'   => $request['japanese_fluency'],
                 'shift_id'              => $request['shift'],
-                'is_default_main_tutor' => (boolean) $request['default_main_tutor'],
+                'is_default_main_tutor' => (boolean) $request['is_default_main_tutor'],
                 'is_terminated'         => (boolean) $request['is_terminated']                 
             ];              
 
@@ -141,11 +145,19 @@ class TutorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Tutor $tutor)
     {
-        //
-    }
+        //abort_if(Gate::denies('tutor_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $shifts = Shift::all();
+        $grades = Grade::all();
+
+        return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));
+    }
+    
+    public function resetPassword(Tutor $tutor) {
+
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -153,9 +165,70 @@ class TutorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Tutor $tutor)
     {
-        //
+        $validator = Validator::make($request->all(), 
+        [
+            'email'             => ['required', 'string', 'email', 'max:255', 
+                                    Rule::unique('users')->ignore($tutor->user_id)->whereNull('deleted_at')
+                                   ],
+            'sort'              => ['required', 'integer'],
+            'salary_rate'       => ['integer'],
+            'grade'             => ['required'],
+            'skype_name'        => ['required'],
+            'skype_id'          => ['required'],
+            'name_en'           => ['required'],
+            'name_jp'           => ['required'],
+            'gender'            => ['required'],
+            'japanese_fluency'  => ['required'],
+            'shift'             => ['required']
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.tutor.index')->withErrors($validator)->withInput();       
+        } else {
+
+
+            $userData =
+            [
+                'email'         => $request['email'],
+                'username'      => $request['email'],                
+                'api_token'      => Hash('sha256', Str::random(80))
+            ];
+
+            $user = User::find($tutor->user_id);
+            $user->update($userData);
+
+            //Add Role
+            $roles[] = Role::where('title', 'Tutor')->first()->id;
+            $user->roles()->sync($roles); 
+             
+            $tutorData = [
+                'sort'                  => $request['sort'],
+                'user_id'               => $user->id,
+                'salary_rate'           => $request['salary_rate'],
+                'member_grade_id'       => $request['grade'],
+                'skype_id'              => $request['skype_id'],
+                'skype_name'            => $request['skype_name'],                
+                'name_en'               => $request['name_en'],
+                'name_jp'               => $request['name_jp'],
+                'gender'                => $request['gender'], 
+                'hobby'                 => $request['hobby'],
+                'birthdate'             => $request['birthdate'],
+                'major_in'              => $request['major_in'],
+                'introduction'          => $request['introduction'],
+                'japanese_fluency_id'   => $request['japanese_fluency'],
+                'shift_id'              => $request['shift'],
+                'is_default_main_tutor' => (boolean) $request['is_default_main_tutor'],
+                'is_terminated'         => (boolean) $request['is_terminated']                 
+            ];              
+
+            $tutor = Tutor::find($tutor->id);
+            $tutor->update($tutorData);
+            //$user->tutors()->sync([$tutor->id], false);  
+
+            return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been update successfully!');
+        }
     }
 
     /**
@@ -164,8 +237,21 @@ class TutorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Tutor $tutor)
     {
-        //
+        abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $tutor->delete();
+        return back()->with('message', 'Tutor has been deleted successfully!');
     }
+
+
+    public function massDestroy(Request $request)
+    {
+        abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        Tutor::whereIn('id', request('ids'))->delete();
+        return response(null, Response::HTTP_NO_CONTENT);
+
+    }
+
+ 
 }

@@ -13,11 +13,7 @@ class UsersTableSeeder extends Seeder
                 'id'             => 1,
                 'first_name'     => 'Admin',
                 'last_name'      => 'Account',
-
-                'first_name_jp'     => 'Admin',
                 'last_name_jp'      => 'Account',
-                
-                
                 'email'          => 'admin@admin.com',
                 'username'       => 'admin@admin.com',
                 'password'       => '$2y$10$6an7csz5VY5vq/0qw/VJ0.YX4u4bHl6QKeoJT.Cqc.nncudsc70Hi',

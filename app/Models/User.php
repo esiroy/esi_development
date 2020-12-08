@@ -121,6 +121,11 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\Manager');
     }
 
+    //Agent
+    public function agent() 
+    {
+        return $this->hasOne('App\Models\Agent');
+    }
 
     //Agents
     public function agents()

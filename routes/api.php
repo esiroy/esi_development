@@ -45,9 +45,7 @@ Route::post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->
 //[start] My Page Scheduler
 Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@getTutors')->name('APIGetTutors');
 Route::middleware('auth:api')->post('/create_tutor_schedule', 'API\TutorScheduleController@store')->name('APICreateTutorSchedule');
-
-//Route::middleware('auth:api')->delete('/delete_tutor_schedule/{id}','API\TutorScheduleController@destroy')->name('APIDeleteTutorSchedule');
-
+Route::middleware('auth:api')->post('/update_tutor_schedule', 'API\TutorScheduleController@update')->name('APIUpdateTutorSchedule');
 Route::middleware('auth:api')->post('/delete_tutor_schedule', 'API\TutorScheduleController@deleteTutorSchedule')->name('APIDeleteTutorSchedule');
 
 

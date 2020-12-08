@@ -45,7 +45,12 @@ class CreateMemberInformationTable extends Migration
 
             //point purchase
             $table->enum('point_purchase', ['Agent', 'Direct'])->nullable();
-           
+
+            //sumarry of points
+            $table->bigInteger('credits')->nullable();
+            $table->dateTime('credits_expiration')->nullable();
+            $table->dateTime('latest_purchase_date')->nullable();
+            
             //timestamp of transaction
             $table->timestamps();
         });

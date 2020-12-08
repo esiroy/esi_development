@@ -18,8 +18,8 @@ class CreateLessonsTable extends Migration
             $table->bigInteger('creator_id')->nullable(); //the admininstrator id
             $table->bigInteger('tutor_id');
             $table->bigInteger('member_id')->nullable(); 
-            $table->string('startTime');
-            $table->string('endTime');
+            $table->string('start_time');
+            $table->string('end_time');
             $table->string('email_type')->nullable();            
             $table->date('scheduled_at');
             $table->integer('duration');

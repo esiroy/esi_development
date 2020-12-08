@@ -22,8 +22,10 @@ class DatabaseSeeder extends Seeder
             IndustriesTableSeeder::class,
             ShiftsTableSeeder::class,
             AttributeTableSeeder::class,
-            MembershipsTableSeeder::class,
-            TutorTableSeeder::class
+            MembershipsTableSeeder::class,            
+            TutorTableSeeder::class,
+            MemberTableSeeder::class,
+            AgentTableSeeder::class,
         ]);
     }
 }

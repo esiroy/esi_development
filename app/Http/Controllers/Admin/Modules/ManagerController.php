@@ -14,8 +14,13 @@ use App\Models\Role;
 use App\Models\Manager;
 use App\Models\Grade;
 use App\Models\Permission;
-use Validator;
+use App\Models\Tutor;
+ 
+
 use Auth;
+use Gate;
+use Validator;
+use Input;
 
 class ManagerController extends Controller
 {
@@ -27,8 +32,11 @@ class ManagerController extends Controller
     public function index()
     {
         
-        $managers = User::whereHas('roles', function($q) { $q->where('title', 'Manager'); })->get(); 
-        return view('admin.modules.manager.index', compact( 'managers'));
+        //$managers = User::whereHas('roles', function($q) { $q->where('title', 'Manager'); })->get(); 
+
+        $managers = Manager::get();
+
+        return view('admin.modules.manager.index', compact('managers'));
     }
 
     /**
@@ -106,15 +114,27 @@ class ManagerController extends Controller
         //
     }
 
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $manager
+     * @return \Illuminate\Http\Response
+     */    
+    public function resetPassword(Manager $manager)
+    {
+        echo "reset password";
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  object  $manager
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Manager $manager)
     {
-        //
+        return view('admin.modules.manager.edit', compact('manager'));        
     }
 
     /**
@@ -124,9 +144,53 @@ class ManagerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Manager $manager)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'email'             => ['required', 'string', 'email', 'max:255', 
+                                    Rule::unique('users')->ignore($manager->user->id)->whereNull('deleted_at')
+                                   ],            
+            //'password'      => ['required', 'string', 'min:8'],
+            'name_en'       => ['required'],
+            'name_jp'       => ['required']
+        ]);
+
+        if ($validator->fails()) {
+
+            return redirect()->route('admin.manager.edit', $manager)->withErrors($validator)->withInput();       
+
+        } else {
+
+            //Update User
+            $userData =
+            [
+                'email'         => $request['email'],
+                'first_name'    => '',
+                'last_name'     => '',
+                'username'      => $request['email'],
+                'password'      => $request['password'],
+                'api_token'     => Hash('sha256', Str::random(80))                
+            ];
+
+            $user = User::find($manager->user->id);
+            $user->update($userData);             
+
+            //Update Manager Info
+            $managerData = [           
+                'user_id'               => $user->id,                           
+                'name_en'               => $request['name_en'],
+                'name_jp'               => $request['name_jp'],
+                'is_japanese'           => (boolean) $request['is_japanese']
+            ];
+            
+            $manager = Manager::find($manager->id);
+            $manager->update($managerData);
+            
+            return redirect()->route('admin.manager.index')->with('message', 'Manager has been updated successfully!');
+
+        }
+
     }
 
     /**
@@ -135,8 +199,10 @@ class ManagerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Manager $manager)
     {
-        //
+        //abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $manager->delete();
+        return back()->with('message', 'Manager has been deleted successfully!');
     }
 }

@@ -38,8 +38,7 @@
                         </div>
                     @endcan
                     <div class="table-responsive">
-                        <table id="userPermission"
-                            class="table table-bordered table-striped table-hover datatable">
+                        <table id="userPermission" class="table table-bordered table-striped table-hover datatable">
                             <thead>
                                 <tr>
                                     <th width="50" class="text-center">

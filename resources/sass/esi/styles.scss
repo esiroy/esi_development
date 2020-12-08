@@ -10,6 +10,22 @@
     color: #0eadd9;
 }
 
+.esi-box {
+    table {
+        tr {
+            th {
+                background-color: #e6e6e6;
+            }
+
+            th, td {
+                font-size: 11px;
+                text-align: center;
+            }
+        }
+    }
+}
+
+
 .submenu.nav {
     text-decoration: none;
     font: bold 12px Arial;
@@ -34,15 +50,12 @@
 }
 
 /* LESSSON MODULE */
-
 /*class*/
 .class-schedule {
     font-size: 12px;
     vertical-align: top;
 }
-.class-schedule-container {
-    width: 65px;
-}
+
 
 /*checkbox*/
 .checkbox-options {
@@ -88,20 +101,46 @@
     margin-bottom: 0px;
     white-space: nowrap;
     thead {
+        tr {
+            th {
+                padding: 2px 5px 2px;
+                min-width: 45px;
+                min-height: 29px;
+            }
+
+            th::before, th::after {
+                top:1px;
+            }
+
+            td {
+                background-color: #d0e8f7;
+                border-bottom: 3px solid #7dbae0;
+                text-align: center;
+                min-width: 45px;
+                min-height: 29px;            
+            }            
+        }
+
+    }
+    tbody {
         td {
-            background-color: #d0e8f7;
-            border-bottom: 3px solid #7dbae0;
-            text-align: center;
+            font-size: 12px;
+            text-align: center;            
+            border: 0px;
+            border-right: 1px solid #d0e8f7;
+            vertical-align: top;
+            padding: 5px 0px 5px;
+            min-width: 45px;
+            min-height: 29px;        
         }
     }
+
+}
+
+.table-schedules {
     td {
-        font-size: 12px;
-        text-align: center;
-        font: normal 11px Arial;
-        border: 0px;
-        border-right: 1px solid #d0e8f7;
-        vertical-align: top;
-        padding: 5px;
+        min-width: 80px;
+        min-height: 29px;   
     }
 }
 
@@ -119,6 +158,12 @@
     }
 }
 
+.esi-card-header-title { 
+    background: #0076be;
+    font: bold 18px Arial;
+    color: #ffffff;
+    text-align: center;
+}
 
 
 /* user */

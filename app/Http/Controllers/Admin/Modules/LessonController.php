@@ -65,11 +65,18 @@ class LessonController extends Controller
         $tutors = Tutor::where('shift_id', $shift->id)->get();
 
         //get the members
+        /*
         $members = Member::join('users', 'users.id', '=', 'members.user_id')
         ->join('attributes', 'attributes.id', '=', 'members.member_attribute_id')
         ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, attributes.name as attribute"))
         ->get();
+        */
 
+        $members = Member::join('users', 'users.id', '=', 'members.user_id')
+            ->select('members.*','users.first_name', 'users.last_name')
+            ->get();
+
+      
         $lessons = $lesson->getLessons($dateToday, $shiftDuration);    
         
         if (count($lessons) == 0) {

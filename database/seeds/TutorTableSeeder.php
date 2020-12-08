@@ -42,7 +42,7 @@ class TutorTableSeeder extends Seeder
             "member_grade_id" => "1",
             "skype_name" => "tutor@tutor.com",
             "skype_id" => "tutor@tutor.com",
-            "name_en" => "Jessica Soho",
+            "name_en" => "Veronica",
             "name_jp" => "(Soho, Son Jessica Gozia)",
             "gender" => "male",
             "hobby" => "none",
@@ -54,7 +54,7 @@ class TutorTableSeeder extends Seeder
             "is_default_main_tutor" => true,
         ];
         $tutor = Tutor::create($tutorData);
-        $user->tutors()->sync([$tutor->id], false);  
+        $user->tutors()->sync([$tutor->id], false);
         
         //User::findOrFail(2)->roles()->sync(3); //find user 2, with roles (3)
     }

@@ -15,7 +15,6 @@
     </div>
 
     <div class="esi-box">
-
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -23,11 +22,8 @@
             </ol>
         </nav>
 
-
-
         <div class="container">
-
-            <!--[start card] -->
+           <!--Member List -->
             <div class="card">
                 <div class="card-header">
                     Member List
@@ -59,9 +55,10 @@
                                         <option value="5">40 mins</option>
                                     </select>
                                     <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
-
                                 </div>
                             </div>
+
+                            
                         </form>
                     </div>
 
@@ -131,8 +128,7 @@
                     </div>
                 </div>
             </div>
-            <!--[end] card-->
-
+            <!--Member List -->
             <create-member-component
                 :memberships="{{ json_encode($memberships) }}"
                 :attributes="{{ json_encode($attributes) }}"
@@ -140,15 +136,7 @@
                 api_token="{{ Auth::user()->api_token }}"
                 csrf_token="{{ csrf_token() }}"             
             />
-
-            
- 
-
-
         </div>
-
-
-
 
     </div>
 </div>

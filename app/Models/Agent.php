@@ -13,11 +13,15 @@ class Agent extends Model
 
 
     public function setBirthdateAttribute($value)
-    {
-       
+    {       
         $this->attributes['birthdate'] = date('Y-m-d', strtotime($value)); 
-
     }
-    
+
+
+    public function user() 
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
     
 }

@@ -10,7 +10,7 @@
     <div id="schedules">
 
         <b-modal id="schedulesModal" 
-            title="BootstrapVue"
+            title="Schedule Lesson"
             button-size="sm"
             @show="resetModal"
             @hidden="hideModal"
@@ -22,26 +22,15 @@
                     <label>Status :</label>
                 </div>
                 <div class="col-md-9">
-                    <select
-                        name="status"
-                        ref="status"     
-                        v-model="status"                  
-                        @change="setMemberListLock()"
-                    >
+                    <select name="status" ref="status" v-model="status" @change="setMemberListLock()">
                         <option value="">Please Select A Status</option>
                         <option value="Tutor Scheduled">Tutor Scheduled</option>
-
                         <option value="Client Reserved">Client Reserved</option>
                         <option value="Client Reserved B">Client Reserved B</option>
                         <option value="Tutor Cancelled">Tutor Cancelled</option>
                         <option value="Nothing">Nothing</option>
-
-                        <option value="Client Not Available"
-                            >Client Not Available</option
-                        >
-                        <option value="Suppressed Schedule"
-                            >Suppressed Schedule</option
-                        >
+                        <option value="Client Not Available">Client Not Available</option>
+                        <option value="Suppressed Schedule">Suppressed Schedule</option>
                         <option value="Completed">Completed</option>
                     </select>
                 </div>
@@ -63,12 +52,9 @@
                     >
                         <option value="">-- Select A Member --</option>
                         <option v-for="member in members"
-                            :value="member.user_id"
-                            :key="member.user_id">{{ member.first_name }} {{ member.last_name }}</option>
+                            :value="member.id"
+                            :key="member.id">{{ member.first_name }} {{ member.last_name }}</option>
                     </select>
-
-
-
                 </div>
             </div>
 
@@ -77,14 +63,8 @@
                 <div class="col-md-3">Email Type:</div>
                 <div class="col-md-9">
                     <!--@todo: show only if client is cancelling -->
-                    <select
-                        name="cancelationType"
-                        id="cancelationType"
-                        class="form-control form-control-sm hidden"
-                        ref="cancelationType"
-                        v-model="cancelationType">
-
-                        <option value="">-- Sect Email Type --</option>
+                    <select name="cancelationType" id="cancelationType" class="form-control form-control-sm hidden" ref="cancelationType" v-model="cancelationType">
+                        <!--<option value="">-- Sect Email Type --</option>-->
                         <option value="Regular Cancel">Regular Cancel</option>
                         <option value="Cancel with replacement"
                             >Cancel with replacement</option
@@ -93,18 +73,13 @@
                 </div>
             </div>
 
-  
+ 
   
             <div class="row" v-show="this.status === 'Client Reserved' || this.status === 'Client Reserved B'">
                 <div class="col-md-3">Email Type:</div>
                 <div class="col-md-9">                 
-                    <select name="reservationType"
-                            id="reservationType"
-                            class="form-control form-control-sm hidden"
-                            ref="reservationType"
-                            v-model="reservationType">
-                            
-                        <option value="">-- Sect Email Type --</option>
+                    <select name="reservationType" id="reservationType" class="form-control form-control-sm hidden" ref="reservationType" v-model="reservationType">                            
+                        <!--<option value="">-- Sect Email Type --</option>-->
                         <option value="Regular reservation">Regular reservation</option>
                         <option value="For replacement">For replacement</option>
                     </select>
@@ -115,510 +90,114 @@
         </b-modal>
 
         <div class="card">
-            <div class="card-header text-center">
+            <div class="card-header esi-card-header-title text-center">
                 {{ year }} 年 {{ month }}月 {{ day}}日
             </div>
 
-            <div class="card-body scrollable-x">
-
-                <table class="table table-bordered table-schedules">
-
-                    
+            <div class="card-body scrollable-x p-0">
+                <table class="etable table-bordered table-schedules">
                     <tr>
-                        <td></td>
-                        <td>
+                        <td class="schedTime"></td>
+                        <td class="schedTime" v-for="time in timeList" :key="time.id">
                             <div class="class-schedule-container">
                                 <span class="flag-ph"></span>
-                                <span class="class-schedule class-schedule-start">10:00</span>
+                                <span class="class-schedule class-schedule-start">{{time.startTime}}</span>
                             </div>
                             <div class="class-schedule-container">
                                 <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end">11:00</span>
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >10:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >11:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >11:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >12:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >11:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >12:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >12:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >13:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >12:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >1:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >13:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >14:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >13:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >14:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >14:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >15:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >14:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >15:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >15:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >16:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >15:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >16:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >16:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >17:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >16:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >17:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >17:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >18:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >17:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >18:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >18:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >19:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >18:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >19:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >19:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >20:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >19:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >20:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >20:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >21:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >20:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >21:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >21:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >22:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >21:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >22:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >22:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >23:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >22:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >23:30</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >23:00</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >24:00</span
-                                >
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span
-                                    class="class-schedule class-schedule-start"
-                                    >23:30</span
-                                >
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end"
-                                    >24:30</span
-                                >
+                                <span class="class-schedule class-schedule-end">{{time.endTime}}</span>
                             </div>
                         </td>
                     </tr>
 
                     <tr v-for="tutor in tutors" :key="tutor.id">
-                        <td class="schedTime">
-                            <div style="width:125px">{{ tutor.name_en }}</div>
+                        <td class="">
+                            <div style="width:125px">{{ tutor.id }} - {{ tutor.name_en }}</div>
                         </td>
 
-                        <td class="schedTime" v-for="time in timeList" :key="time.id">
-
-                            {{ time.startTime  }} - {{ time.endTime}}
-                            <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal
+                        <td class="" v-for="time in timeList" :key="time.id">
+                            <!--{{ time.startTime  }} - {{ time.endTime}}-->
+                            <input v-show="checkButton({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })" type="button" value="" class="btnAdd" v-b-modal.addScheduleModal 
                                 @click="openSchedule({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"/>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Tutor Scheduled' })" class="tutor_scheduled">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Tutor Scheduled'})"><img src="/images/iDelete.gif"></a></div>
+                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Tutor Scheduled' })" class="tutor_scheduled">                              
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>                                   
+                                </div>                                
+                                <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Tutor Scheduled'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Tutor Scheduled'})"><img src="/images/iDelete.gif"></a></div>
+                                </div>                                
                             </div>
                             
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Client Reserved' })" class="client_reserved">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Reserved'})"><img src="/images/iDelete.gif"></a></div>
+                            <div v-show="checkStatus({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Client Reserved' })" class="client_reserved">
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>                                   
+                                </div>
+                                <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Reserved'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Reserved'})"><img src="/images/iDelete.gif"></a></div>
+                                </div>
                             </div> 
 
                             <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Client Reserved B' })" class="client_reserved_b">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Reserved B'})"><img src="/images/iDelete.gif"></a></div>  
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
+                                </div>
+                                <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Reserved B'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Reserved B'})"><img src="/images/iDelete.gif"></a></div>  
+                                </div>
                             </div>
 
                             <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Tutor Cancelled' })" class="tutor_cancelled">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Tutor Cancelled'})"><img src="/images/iDelete.gif"></a></div>  
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
+                                </div>                            
+                                <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Tutor Cancelled'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Tutor Cancelled'})"><img src="/images/iDelete.gif"></a></div>  
+                                </div>
                             </div>
 
                             <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Nothing' })" class="nothing">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Nothing'})"><img src="/images/iDelete.gif"></a></div>  
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
+                                </div>                            
+                                <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Nothing'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Nothing'})"><img src="/images/iDelete.gif"></a></div>  
+                                </div>
                             </div>
 
                             <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Client Not Available' })" class="client_not_available">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Not Available'})"><img src="/images/iDelete.gif"></a></div>  
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
+                                </div>                            
+                               <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Not Available'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Client Not Available'})"><img src="/images/iDelete.gif"></a></div>  
+                                </div>
                             </div> 
 
                             <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Suppressed Schedule' })" class="suppressed_schedule">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Suppressed Schedule'})"><img src="/images/iDelete.gif"></a></div>  
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
+                                </div>                                
+                                <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Suppressed Schedule'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Suppressed Schedule'})"><img src="/images/iDelete.gif"></a></div>  
+                                </div>
                             </div> 
 
                             <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'Completed' })" class="completed">
-                                <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule(tutorData)"><img src="/images/iEdit.gif"></a></div>
-                                <div class="iDelete"><a href="javascript:void(0);" @click="deleteSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'completed'})"><img src="/images/iDelete.gif"></a></div>  
+                                <div class="client">
+                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
+                                </div>                            
+                                <div class="btn-container">
+                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Completed'})"><img src="/images/iEdit.gif"></a></div>
+                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'Completed'})"><img src="/images/iDelete.gif"></a></div>  
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -638,9 +217,10 @@ export default {
         
 	},
     props: {
-        year: { type: String },
-        month: { type: String },
-        day: { type: String },
+        year: { type: Number },
+        month: { type: Number },
+        day: { type: Number },
+
         scheduled_at: { type: String },
         duration: { type: Number },
         //date for schedules
@@ -653,16 +233,17 @@ export default {
     },
     data() {
         return {
-            
-            //Data
-            lessonsData: [],
-            status: "",
-            tutorData: null,
-            memberSelectedID: "",
+            modalType: null,
 
+            //Data
+            lessonsData: [],           
+            tutorData: null,
+            status: "",
+            memberSelectedID: "",
+            
             //emailType
-            cancelationType: "",
-            reservationType: "",
+            cancelationType: "Regular Cancel",
+            reservationType: "Regular reservation",
             memberListLock: "disabled",
             isStatusDisabled: true,
 
@@ -685,13 +266,13 @@ export default {
                 {id:6, startTime: '12:30', endTime: '13:30'},
 
                 {id:7, startTime: '13:00', endTime: '14:00'},
-                {id:8, startTime: '13:00', endTime: '14:30'},
+                {id:8, startTime: '13:30', endTime: '14:30'},
 
                 {id:9, startTime: '14:00', endTime: '15:00'},
-                {id:10,startTime: '14:00', endTime: '15:30'},
+                {id:10,startTime: '14:30', endTime: '15:30'},
 
                 {id:11, startTime: '15:00', endTime: '16:00'},
-                {id:12, startTime: '15:00', endTime: '16:30'},
+                {id:12, startTime: '15:30', endTime: '16:30'},
 
                 {id:13, startTime: '16:00', endTime: '17:00'},
                 {id:14, startTime: '16:30', endTime: '17:30'},
@@ -723,101 +304,187 @@ export default {
        
     },
     mounted() {
-
         //console.log("Component mounted.");
-        this.setMemberListLock(); //disabler of additoinal options
-        
+        this.setMemberListLock(); //disabler of additoinal options        
         this.lessonsData = this.lessons;
-
         console.log("Lessons Mounted : ", this.lessonsData);
-
         this.shiftDuration  = this.duration;
-
-
     },
     methods: {
-        checkStatus(data) 
-        {      
-            let isFound = false;
+        getMemberData(scheduleData) {
+            let data = null;
+            if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
+                data = null;       
+            } else {
+                let lessons = this.lessonsData[scheduleData.tutorID];
+                lessons.forEach(function (lesson, index) 
+                {
+                    if (lesson.startTime === scheduleData.startTime && lesson.endTime === scheduleData.endTime) 
+                    {
+                        data = lesson;                        
+                    }
+                });
+            }
+            return data;      
+        },
+        getMember(scheduleData) {
+            let member = null;
+            let memberID = null;
 
+            if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
+                memberID = null;
+                member  = null;
+            } else {
+                let lessons = this.lessonsData[scheduleData.tutorID];
+                lessons.forEach(function (lesson, index) 
+                {
+                    if (lesson.startTime === scheduleData.startTime && lesson.endTime === scheduleData.endTime) 
+                    {
+                        memberID = lesson.member_id;
+                        member = lesson.member_name_en;
+                    }
+                });
+            }
+            return "<a href='/member/details/"+ memberID +"'>"+ member + "</a>";
+         },
+        //check button if it has schedule then we will hide it, and if not we need to show it
+        checkButton(data) {
+            let show = true;
             $.each(this.lessonsData[data.tutorID], function(key, value) 
-            {   
-                //console.log(data)
-
-                let test = null;
-
-                if ( value.scheduled_at === this.scheduled_at) {
-                     test = "same";
-                } else{
-                     test = "not same";
-                }
-
-                console.log(value.scheduled_at + " ===? "+ this.scheduled_at + " " + test);
-
+            {
                 if (
-                    value.tutor_id === data.tutorID &&
+                    //value.tutor_id === data.tutorID &&                   
+                    value.startTime === data.startTime && 
+                    value.endTime === data.endTime &&
+                    value.scheduled_at === this.scheduled_at
+                )
+                {
+                    //it has been found in the lesson data array, we will hide the add schedule button
+                    show = false;
+                }
+            });
+            return show; 
+        },
+        //check reservation status and show if available
+        checkStatus(data) 
+        { 
+            let isFound = false;
+            $.each(this.lessonsData[data.tutorID], function(key, value) 
+            {
+                if (
+                   // value.tutor_id === data.tutorID &&
                     value.status === data.status && 
                     value.startTime === data.startTime && 
                     value.endTime === data.endTime &&
-                    value.scheduled_at === this.scheduled_at //&&
-                    //value.duration === this.shiftDuration
-                    )
+                    value.scheduled_at === this.scheduled_at
+                )
                 {
-                    isFound = true;
-                    console.log("found")
-                   
+                    isFound = true;                   
                 }
-            });          
-
-            return isFound;
-
-                    
+            });
+            return isFound;                    
         },
         openSchedule(tutorData) 
         {
-
+            this.modalType = "save";
             console.log(tutorData);
-            
-            //show the modal
             this.$bvModal.show("schedulesModal");
-
-            //log tutorData
-            //console.log("opened item -> ", tutorData);
-
-            //make this data global (this.tutorData)
             this.tutorData = tutorData;
-        },    
+        },
+        editSchedule(scheduleData) {
+            //set tutor
+            this.tutorData = scheduleData;
+
+            this.modalType = "edit";
+            let member = this.getMemberData(scheduleData);
+            this.$bvModal.show("schedulesModal");            
+            this.status = scheduleData.status;
+
+            console.log("this is status", this.status);
+
+            this.memberSelectedID = member.member_id;
+            //this.isStatusDisabled = false;
+            this.cancelationType = member.email_type;
+            this.reservationType = member.email_type;
+            this.setMemberListLock();
+        },         
         hideModal() {
-            //console.log("hide modal");
+            console.log("hide modal");
         },
         resetModal() {
-           //console.log("reset modal");
-        },
-        isScheduleExist() {
-
+            console.log("reset modal"); //this will reset every time it closes.
+            this.memberSelectedID = "";
+            this.status = "";
+            this.isStatusDisabled = true; 
         },
         handleOk(bvModalEvt) 
-        {   
-
-            this.setTutorSchedule();
+        {
+            if (this.status === "Nothing")
+            {
+                this.confirmDelete(this.tutorData);
+            } else {            
+                if (this.modalType === 'save') {
+                    console.log ("saving...")            
+                    this.setTutorSchedule();
+                } else {
+                    this.updateTutorSchedule();
+                }
+            }
             bvModalEvt.preventDefault();
         },
-
         scheduleExists(scheduleData) 
-        {   
-            if (this.lessonsData[scheduleData.tutorID] == undefined)  {
-                return false
-            } 
-
-
-            let result =  this.lessonsData[scheduleData.tutorID].find(item => item.startTime === scheduleData.startTime && item.duration === scheduleData.duration);
-            if (result) {               
-                return true; //found
+        {
+            let scheduleGate = false;
+            if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
+                scheduleGate  = false;
             } else {
-                return false; 
-            }          
+                let lessons = this.lessonsData[scheduleData.tutorID];
+                lessons.forEach(function (lesson, index) 
+                {
+                    if (lesson.startTime === scheduleData.startTime && lesson.endTime === scheduleData.endTime) 
+                    {
+                        scheduleGate = true;
+                    }
+                });
+            }
+            return scheduleGate;
+        },
+        updateTutorSchedule() {
+            //get the selected id
+            let memberData = {
+                id: this.memberSelectedID
+            };
 
-        },         
+            axios.post("/api/update_tutor_schedule?api_token=" + this.api_token, 
+            {
+                method              : "POST",               
+                memberData          : memberData,
+                scheduled_at        : this.scheduled_at,
+                shiftDuration       : this.shiftDuration,
+                tutorData           : this.tutorData,
+                status              : this.status,
+                reservationType     : this.reservationType,
+                cancelationType     : this.cancelationType,
+            })
+            .then(response => 
+            {
+                //hide schedule
+                this.$bvModal.hide("schedulesModal");
+                if (response.data.success === true) 
+                {
+                    this.$nextTick(function()
+                    {  
+                        this.lessonsData = response.data.tutorLessonsData;
+                        this.$forceUpdate(); 
+                    });
+                } 
+                else {                    
+                    alert (response.data.message);                   
+                }
+			}).catch(function(error) {
+                alert("Error " + error);                
+			});            
+        },
         setTutorSchedule() 
         {
             //get the selected id
@@ -831,8 +498,6 @@ export default {
                 return false;
             } 
 
-            console.log("go on creating schedule");
-
             axios.post("/api/create_tutor_schedule?api_token=" + this.api_token, 
             {
                 method              : "POST",               
@@ -843,7 +508,6 @@ export default {
                 status              : this.status,
                 reservationType     : this.reservationType,
                 cancelationType     : this.cancelationType,
-
             })
             .then(response => 
             {
@@ -855,103 +519,88 @@ export default {
                     {  
                         this.lessonsData = response.data.tutorLessonsData;
                         this.$forceUpdate(); 
-
-                        /*
-                        if (this.lessonsData[response.data.tutorData.tutorID] === undefined) {                           
-                         this.lessonsData[response.data.tutorData.tutorID] = [];
-                        } 
-                        this.lessonsData[response.data.tutorData.tutorID].push({
-                            tutorID:  response.data.tutorData.tutorID,
-                            startTime: response.data.tutorData.startTime,
-                            endTime: response.data.tutorData.endTime,
-                            status: this.status
-                        });
-                        */
-
-                                                
-                      
                     });
                 } 
-                else 
-                {                    
+                else {                    
                     alert (response.data.message);                   
                 }
-
 			}).catch(function(error) {
-                // handle error
-                alert("Error " + error);
-                console.log(error);
+                alert("Error " + error);                
 			});
+        },
+        confirmDelete(scheduleData) 
+        {
+            if (confirm('Are you sure you want to delete this reservation?')) {
+                this.deleteSchedule(scheduleData);
+            } else {
+            // Do nothing!
+            }
         },
         deleteSchedule(scheduleData) 
-        {         
-
+        {           
             axios.post("/api/delete_tutor_schedule?api_token=" + this.api_token,             
             {
-                method              : "POST",             
+                method             : "POST",             
                 scheduled_at       : this.scheduled_at,
-                shiftDuration       : this.shiftDuration,                  
-                scheduleData         : scheduleData,
+                shiftDuration      : this.shiftDuration,                  
+                scheduleData       : scheduleData,
             })
             .then(response => 
-            {                
-
+            {
                 if (response.data.success === true) 
                 {
-
                     this.lessonsData = response.data.tutorLessonsData;
-
-                } else {
-                   
+                    this.$bvModal.hide("schedulesModal");
+                } else {                   
                     alert (response.data.message);
+                    this.$bvModal.hide("schedulesModal"); 
                 }
-
-
 			}).catch(function(error) {
                 // handle error
                 alert("Error " + error);
-                console.log(error);
-			});
-              
+                this.$bvModal.hide("schedulesModal"); 
+			});              
         },
-
-        setMemberListLock() {
-            
+        setMemberListLock() {            
             if (this.status === "Tutor Cancelled") {
-
                 this.membersSelection = 0;
-                this.isStatusDisabled = true;
-                
+                this.isStatusDisabled = true;                
             } else if (this.status === 'Client Reserved' || this.status === "Client Reserved B" 
                 || this.status === "Tutor Cancelled" || this.status === "Nothing"
                 || this.status === 'Client Not Available'
-            )
-            {
+            ){
                 this.isStatusDisabled = false;
-            
-
             } else {
                 this.membersSelection = 0;
                 this.isStatusDisabled = true;
-            }
-           
+            }           
         }
     }
 };
 </script>
 
-<style >
+<style>
     .table-schedules td.schedTime {
-        background: #ffffff;
+        background: #d0e8f7;
         text-align: center;
         font: bold 12px Arial;
         border: 1px solid #d0e8f7;
-        border-left: none;
-        border-top: none;
+        border-bottom: 3px solid #72add2;
+         border-right: 1px solid #ffffff;
         vertical-align: top;
+        width: 80px;
+        height: 29px;
+    }
+
+    .table-schedules td {
+        vertical-align: top;
+        height: 39px;
         width: 110px;
-        height: 40px;
-        padding: 3px;
+    }
+
+    .class-schedule-container {
+        width: 100%;
+        text-align: center;
     }
 
     .iEdit, .iDelete {
@@ -964,7 +613,7 @@ export default {
         color: #c60000;
     }
     .btnAdd {
-        margin: 2px 2px 0 0;
+        margin: 2px 2px 0 80px;
         padding: 1px 2px 1px 12px;
         color: #000000;
         background: url(/images/btnAdd.png) 4px 3px no-repeat #d0d0d0;
@@ -978,15 +627,41 @@ export default {
         float: right;
     }
 
-    .actionButtons {
+    .client {
+        height: 12px;
+    }
+
+    .client a {
+        font-size: 11px; 
+        text-decoration: none;
+        color: #c60000;        
+    }
+
+    .btn-container {
         margin: 3px 0 0 0;
         padding: 2px 0 0 0px;
         background: #ececec;
-        text-align: center;
+        text-align: center;      
     }
 
-    .tutor_scheduled {
+    .btn-padded {
+        margin: 13px 0 0 0;
+        padding: 2px 0 0 0px;
+        background: #ececec;
+        text-align: center;      
+    }
+    
+    .nothing {
+        background: #ffffff;
+        border: 1px solid #c3c3c3;
+        padding: 2px;
+        line-height: 10px;
+        color: #000000;
+        width: 110px;
+        margin: 2px;     
+    }    
 
+    .tutor_scheduled {
         background: #aae966;
         border-bottom: 1px solid #ffffff;
         padding: 2px;

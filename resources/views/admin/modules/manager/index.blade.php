@@ -15,7 +15,6 @@
     </div>
 
     <div class="esi-box">
-
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -23,11 +22,7 @@
             </ol>
         </nav>
 
-
-
         <div class="container">
-
-
             @if (session('message'))
                 <div class="alert alert-success">
                     {{ session('message') }}
@@ -60,41 +55,16 @@
                                     <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
                                 </div>
                             </div>
-                            <!--
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="name" class="small col-2">Email:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-4" value="">
-                                    <select id="filterLessonShift" name="filterLessonShift" class="form-control form-control-sm col-3 ml-1">
-                                        <option value="">-- Select --</option>
-                                        <option value="4">25 mins</option>
-                                        <option value="5">40 mins</option>
-                                    </select>
-                                </div>
-                            </div>
-                            -->
                         </form>
                     </div>
 
-                    <!--
                     <div class="row">
                         <div class="col-12 pt-3">
-                            <button type="button" class="btn btn-primary btn-sm">Generate Manager List</button>
-                        </div>
-                    </div>
-                    -->
-
-                    <div class="row">
-                        <div class="col-12 pt-3">
-
-                            <!--
-                            <manager-list-component />
-                            -->
-
                             <div class="table-responsive">
-                                <table class="table table-bordered">
+                                <table id="dataTable" class="table esi-table table-bordered table-striped table-hover datatable dataTable no-footer">
                                 <thead>
-                                    <tr>                     
+                                    <tr>
+                                        <th class="small text-center">&nbsp;</th>                     
                                         <th class="small text-center">ID</th>
                                         <th class="small text-center">Name</th>                    
                                         <th class="small text-center">Username</th>
@@ -105,14 +75,20 @@
                                 <tbody>
                                 @if (isset($managers))
                                     @foreach ($managers as $manager)
-                                    <tr>                                        
-                                        <td class="small text-center">{{$manager->managerInfo->user_id}}</td>
-                                        <td class="small text-center">{{$manager->managerInfo->name_en}}</td>
-                                        <td class="small text-center">{{$manager->username}}</td>
-                                        <th class="small text-center">{{$manager->email}}</th>            
-                                        <td class="small text-center">
-                                            <a href="#">Edit</a> | 
-                                            <a href="#">Delete</a>                                            
+                                    <tr data-entry-id="{{ $manager->id }}">
+                                        <td class="small text-center">&nbsp;</td>   
+                                        <td class="small text-center">{{$manager->id}}</td>
+                                        <td class="small text-center">{{$manager->name_en}}</td>
+                                        <td class="small text-center">{{$manager->user->username}}</td>
+                                        <td class="small text-center">{{$manager->user->email}}</td>            
+                                        <td class="small text-center">                                                 
+                                            <a href="{{ route('admin.manager.edit', $manager->id) }}" class="btn btn-sm btn-info">Edit</a>  
+                                            <form action="{{ route('admin.manager.destroy', $manager->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
+                                                style="display: inline-block;">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                <input type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}">
+                                            </form>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -243,4 +219,56 @@
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+    window.addEventListener('load', function() {
+        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        let _token = "{{ csrf_token() }}"
+
+        /*@can('manager_delete')*/
+
+        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
+        let deleteButton = { 
+            text: deleteButtonTrans, 
+            url: "{{ route('admin.manager.massDestroy') }}",
+            className: 'btn-danger',
+            action: function(e, dt, node, config) {
+                var ids = $.map(dt.rows({
+                    selected: true
+                }).nodes(), function(entry) {
+                    return $(entry).data('entry-id')
+                });
+
+                if (ids.length === 0) {
+                    alert('{{ trans('global.datatables.zero_selected') }}')
+                    return
+                }
+
+                if (confirm('{{ trans('global.areYouSure ') }}')) 
+                {
+                    $.ajax({
+                        headers: {'x-csrf-token': _token}, method: 'POST', url: config.url, 
+                        data: {
+                            ids: ids,
+                            _method: 'DELETE'
+                        }
+                    }).done(function() {
+                        location.reload()
+                    })
+                }
+            }
+        }
+        dtButtons.push(deleteButton)
+        /* @endcan */
+
+        $.extend(true, $.fn.dataTable.defaults, {order: [ [1, 'desc']], pageLength: 100,});
+        $('#dataTable').DataTable({
+            buttons: dtButtons
+        })
+    });
+
+</script>
 @endsection

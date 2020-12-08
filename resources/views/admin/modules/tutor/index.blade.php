@@ -16,6 +16,7 @@
 
     <div class="esi-box">
 
+
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -25,53 +26,45 @@
 
         <div class="container">
 
-            <!--
-            @if($errors->any())
-            <h4>{{$errors->first()}}</h4>
-            @endif
-            -->
-
             @if (session('message'))
-                <div class="alert alert-success">
-                    {{ session('message') }}
-                </div>
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
             @elseif (session('error_message'))
-                <div class="alert alert-danger">
-                    {{ session('error_message') }}
-                </div>
+            <div class="alert alert-danger">
+                {{ session('error_message') }}
+            </div>
             @endif
-            
-            <!--[start card] -->
+
+          
             <div class="card">
                 <div class="card-header">
                     Tutor List
                 </div>
                 <div class="card-body">
-
-                
                     <div class="row">
                         <form class="form-inline" style="width:100%">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="nickname" class="small col-4">Nickname:</label>
-                                    <input id="nickname" name="nickname" type="text" class="form-control form-control-sm col-8" value="">
+                                    <label for="username" class="small col-4">Username:</label>
+                                    <input id="username" name="username" type="text" class="form-control form-control-sm col-8" value="">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="nickname" class="small col-4">Name:</label>
+                                    <label for="Name" class="small col-4">Name:</label>
                                     <input id="name" name="name" type="text" class="form-control form-control-sm col-8" value="">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="email" class="small col-2">Email:</label>
-                                    <input id="email" name="name" type="text" class="form-control form-control-sm col-4" value="">
+                                    <label for="searchEmail" class="small col-2">Email:</label>
+                                    <input id="searchEmail" name="searchEmail" type="text" class="form-control form-control-sm col-4" value="">
 
                                     <select id="filterLessonShift" name="filterLessonShift" class="form-control form-control-sm col-3 ml-1">
                                         <option value="">-- Select --</option>
                                         @foreach ($shifts as $shift)
-                                        <option value="{{$shift->id}}">{{$shift->name}}</option>                                        
+                                        <option value="{{$shift->id}}">{{$shift->name}}</option>
                                         @endforeach
                                     </select>
                                     <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
@@ -81,64 +74,70 @@
                         </form>
                     </div>
 
-                    <!--
+                    <!--[start] Tutor List -->
                     <div class="row">
                         <div class="col-12 pt-3">
-                            <button type="button" class="btn btn-primary btn-sm">Generate Tutor List</button>
+                            <div class="table-responsive">
+                                <table id="dataTable" class="table esi-table table-bordered table-striped table-hover datatable">
+                                    <thead>
+                                        <tr>
+                                            <th class="small text-center">&nbsp;</th>
+                                            <th class="small text-center">Sort</th>
+                                            <th class="small text-center">ID</th>
+                                            <th class="small text-center">Name</th>                                            
+                                            <th class="small text-center">Member (Main)</th>
+                                            <th class="small text-center">Member (Support)</th>
+                                            <th class="small text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (isset($tutors))
+                                        @foreach ($tutors as $tutor)
+                                        <tr data-entry-id="{{ $tutor->id }}">
+                                            <td class="small text-center">&nbsp;</td>
+                                            <td class="small text-center">{{ $tutor->sort}}</td>
+                                            <td class="small text-center">{{ $tutor->id}}</td>
+                                            <td class="small text-center">{{ $tutor->name_en}}</td>                                             
+                                            <td class="small text-center"><a href="{{ url('admin/maintutor') }}"><img src="/images/iMemberMain.gif"></a></td>
+                                            <td class="small text-center"><a href="{{ url('admin/supporttutor') }}"><img src="/images/iMemberSupport.gif"></a></td>
+                                            <td class="small text-center">
+
+                                                <!--@can('tutor_delete')-->
+                                               
+                                                <!--@endcan-->
+
+                                               
+                                                <!--@can('tutor_delete')-->
+                                                    
+                                                <!--@endcan-->
+                                                
+                                                <a href="{{ route('admin.tutor.edit', $tutor->id) }}" class="btn btn-sm btn-info">Edit</a>  
+
+                                                <form action="{{ route('admin.tutor.destroy', $tutor->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
+                                                    style="display: inline-block;">
+                                                    <input type="hidden" name="_method" value="DELETE">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                    <input type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}">
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+
+
                         </div>
                     </div>
-                    -->
+                    <!--[end] Tutor List -->
 
-                    <div class="row">
-                        <div class="col-12 pt-3">
-
-                            <!--
-                            <tutor-list-component
-                                :tutors="{{ json_encode($tutors) }}"
-                            />
-                            -->
-
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th class="small text-center">Sort</th>
-                                    <th class="small text-center">ID</th>
-                                    <th class="small text-center">Name</th>
-                                    <th class="small text-center">Nickname</th>
-                                    <th class="small text-center">Email</th>                                    
-                                    <th class="small text-center">Member (Main)</th>
-                                    <th class="small text-center">Member (Support)</th> 
-                                    <th class="small text-center">Action</th>                                    
-                                </tr>
-                            </thead>
-                            <tbody>
-                            @if (isset($tutors))
-                                @foreach ($tutors as $tutor)
-                                <tr>
-                                    <td class="small text-center">{{ $tutor->tutorInfo->sort}}</td>
-                                    <td class="small text-center">{{ $tutor->tutorInfo->user_id}}</td>
-                                    <td class="small text-center">{{$tutor->tutorInfo->name_en}}</td>
-                                    <td class="small text-center">{{$tutor->username}}</td>
-                                    <th class="small text-center">{{$tutor->email}}</th>
-                                    <td class="small text-center"><a href="{{ url('admin/maintutor') }}"><img src="/images/iMemberMain.gif"></a></td>
-                                    <td class="small text-center"><a href="{{ url('admin/supporttutor') }}"><img src="/images/iMemberSupport.gif"></a></td>                
-                                    <td class="small text-center">Edit  | Delete</td>
-                                </tr>
-                                @endforeach
-                            @endif
-                            </tbody>
-                            </table>
-                        </div>
-
-
-                    </div>
                 </div>
-            </div>
-            <!--[end] tutor list card-->
+            </div><!--[end] tutor list card-->
 
+            <!--[start] create member form -->
             <div class="card mt-4">
-                <div class="card-header">Member Form</div>
+                <div class="card-header">Tutor Form</div>
                 <div class="card-body">
 
                     <form method="POST" action="{{ route('admin.tutor.store') }}">
@@ -213,7 +212,7 @@
                             </label>
                             <div class="col-md-3">
                                 @foreach($grades as $grade)
-                                    <input type="radio" name="grade" required value="{{ $grade->id }}" @if(old('grade') == $grade->id)? {{ "checked" }} @endif> {{$grade->name}} 
+                                <input type="radio" name="grade" required value="{{ $grade->id }}" @if(old('grade')==$grade->id)? {{ "checked" }} @endif> {{$grade->name}}
                                 @endforeach
                             </div>
                         </div>
@@ -298,8 +297,8 @@
                             <label for="hobby" class="col-md-2 pr-0 col-form-label ">{{ __('Hobby') }}
                                 <div class="float-right">:</div>
                             </label>
-                            <div class="col-md-3">                                
-                                <input type="text" name="hobby" class="form-control form-control-sm @error('hobby') is-invalid @enderror"  value="{{ old('hobby') }}">
+                            <div class="col-md-3">
+                                <input type="text" name="hobby" class="form-control form-control-sm @error('hobby') is-invalid @enderror" value="{{ old('hobby') }}">
                             </div>
                         </div>
 
@@ -310,26 +309,26 @@
                                 <div class="float-right">:</div>
                             </label>
                             <div class="col-md-3">
-                                <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror"  value="{{ old('birthdate') }}">
+                                <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror" value="{{ old('birthdate') }}">
                             </div>
                         </div>
 
-                        <div class="form-group row">                            
-                            <label for="major" class="col-md-2 pr-0 col-form-label ">{{ __('Major in') }}
+                        <div class="form-group row">
+                            <label for="major_in" class="col-md-2 pr-0 col-form-label ">{{ __('Major in') }}
                                 <div class="float-right">:</div>
-                            </label>                            
-                             <div class="col-md-3">                               
-                                <input type="text" name="major" class="form-control form-control-sm">
+                            </label>
+                            <div class="col-md-3">
+                                <input type="text" name="major_in" class="form-control form-control-sm" value="{{ old('major_in') }}">
                             </div>
                         </div>
 
 
-                        <div class="form-group row">                            
+                        <div class="form-group row">
                             <label for="introduction" class="col-md-2 pr-0 col-form-label ">{{ __('Introduction By Host') }}
                                 <div class="float-right">:</div>
-                            </label>                            
-                             <div class="col-md-3">
-                               <textarea name="introduction" class="form-control"></textarea>
+                            </label>
+                            <div class="col-md-3">
+                                <textarea name="introduction" class="form-control">{{ old('introduction') }}</textarea>
                             </div>
                         </div>
 
@@ -345,12 +344,12 @@
                             </label>
                             <div class="col-md-3">
 
-                                <select name="japanese_fluency" class="form-control form-control-sm @error('japanese_fluency') is-invalid @enderror" required> 
-                                    <option value="">-- Select --</option>					
-                                    <option value="FLUENTLY" @if(old('japanese_fluency') == 'FLUENTLY')? {{"selected"}} @endif>流暢に話す (Fluently)</option>					
-                                    <option value="DAILY_CONVERSATION" @if(old('japanese_fluency') == 'DAILY_CONVERSATION')? {{"selected"}} @endif>日常会話程度 (Daily Conversation)</option>					
-                                    <option value="LITTLE" @if(old('japanese_fluency') == 'LITTLE')? {{"selected"}} @endif>少し話せる (Little)</option>					
-                                    <option value="CANT_SPEAK" @if(old('japanese_fluency') == 'CANT_SPEAK')? {{"selected"}} @endif>話せない (Can't Speak)</option>					
+                                <select name="japanese_fluency" class="form-control form-control-sm @error('japanese_fluency') is-invalid @enderror" required>
+                                    <option value="">-- Select --</option>
+                                    <option value="FLUENTLY" @if(old('japanese_fluency')=='FLUENTLY' )? {{"selected"}} @endif>流暢に話す (Fluently)</option>
+                                    <option value="DAILY_CONVERSATION" @if(old('japanese_fluency')=='DAILY_CONVERSATION' )? {{"selected"}} @endif>日常会話程度 (Daily Conversation)</option>
+                                    <option value="LITTLE" @if(old('japanese_fluency')=='LITTLE' )? {{"selected"}} @endif>少し話せる (Little)</option>
+                                    <option value="CANT_SPEAK" @if(old('japanese_fluency')=='CANT_SPEAK' )? {{"selected"}} @endif>話せない (Can't Speak)</option>
                                 </select>
 
                                 @error('japanese_fluency')
@@ -361,17 +360,17 @@
                             </div>
                         </div>
 
-                       <div class="form-group row">                            
+                        <div class="form-group row">
                             <label for="shift" class="col-md-2 pr-0 col-form-label ">
                                 <span class="text-danger">* </span>
                                 {{ __('Shift') }}
                                 <div class="float-right">:</div>
-                            </label>                            
-                             <div class="col-md-3">
+                            </label>
+                            <div class="col-md-3">
                                 <select name="shift" class="form-control form-control-sm @error('shift') is-invalid @enderror" required>
                                     <option value="">-- Select --</option>
                                     @foreach ($shifts as $shift)
-                                    <option value="{{$shift->id}}" @if(old('shift') == $shift->id)? {{"selected"}} @endif>{{$shift->name}}</option>                                        
+                                    <option value="{{$shift->id}}" @if(old('shift')==$shift->id)? {{"selected"}} @endif>{{$shift->name}}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -379,17 +378,17 @@
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
                             </span>
-                            @enderror                            
-                        </div>                        
+                            @enderror
+                        </div>
 
 
                         <div class="form-group row">
-                            <label for="default_main_tutor" class="col-md-2 pr-0 col-form-label ">{{ __('Default Main Tutor)') }}
+                            <label for="is_default_main_tutor" class="col-md-2 pr-0 col-form-label ">{{ __('Default Main Tutor)') }}
                                 <div class="float-right">:</div>
                             </label>
                             <div class="col-md-3">
-                                <input type="checkbox" name="default_main_tutor" value="true" class="@error('default_main_tutor') is-invalid @enderror" >
-                                @error('default_main_tutor')
+                                <input type="checkbox" name="is_default_main_tutor" value="true" @if(old('is_default_main_tutor')) ? {{ "checked" }} @endif class="@error('is_default_main_tutor') is-invalid @enderror">
+                                @error('is_default_main_tutor')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -403,7 +402,7 @@
                                 <div class="float-right">:</div>
                             </label>
                             <div class="col-md-3">
-                                <input type="checkbox" name="is_terminated" value="true" class="@error('is_terminated') is-invalid @enderror" >
+                                <input type="checkbox" name="is_terminated" value="true" @if(old('is_terminated')) ? {{ "checked" }} @endif class="@error('is_terminated') is-invalid @enderror">
                                 @error('is_terminated')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -417,20 +416,74 @@
                         <div class="row py-4">
                             <div class="col-2"></div>
                             <div class="col-3 text-left">
-                                <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                                <button type="clear" class="btn btn-primary btn-sm">Cancel</button>
+                                <button type="submit" class="btn btn-primary btn-sm">Save</button>                                
+                                <input type="reset" value="Cancel" class="btn btn-primary btn-sm">
                             </div>
                         </div>
 
+                     </form>
+                     
                 </div>
             </div>
             <!--[emd] member form-->
 
 
-            </form>
+           
 
         </div>
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+    window.addEventListener('load', function() {
+        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        let _token = "{{ csrf_token() }}"
+
+        /*@can('tutor_delete')*/
+
+        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
+        let deleteButton = { 
+            text: deleteButtonTrans, 
+            url: "{{ route('admin.tutor.massDestroy') }}",
+            className: 'btn-danger',
+            action: function(e, dt, node, config) {
+                var ids = $.map(dt.rows({
+                    selected: true
+                }).nodes(), function(entry) {
+                    return $(entry).data('entry-id')
+                });
+
+                if (ids.length === 0) {
+                    alert('{{ trans('global.datatables.zero_selected') }}')
+                    return
+                }
+
+                if (confirm('{{ trans('global.areYouSure ') }}')) 
+                {
+                    $.ajax({
+                        headers: {'x-csrf-token': _token}, method: 'POST', url: config.url, 
+                        data: {
+                            ids: ids,
+                            _method: 'DELETE'
+                        }
+                    }).done(function() {
+                        location.reload()
+                    })
+                }
+            }
+        }
+        dtButtons.push(deleteButton)
+        /* @endcan */
+
+        $.extend(true, $.fn.dataTable.defaults, {order: [ [1, 'desc']], pageLength: 100,});
+        $('#dataTable').DataTable({
+            buttons: dtButtons
+        })
+    });
+
+</script>
 @endsection

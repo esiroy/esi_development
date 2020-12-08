@@ -3,9 +3,31 @@
         <b-container fluid >
             <!-- User Interface controls -->
             <b-table striped hover :items="items" :fields="fields">
-                <template v-slot:cell(name)="row">
-                    {{ row.item.first_name }} {{ row.item.last_name }}
-                </template>            
+                <template v-slot:cell(skype_zoom)="row">
+                    {{ row.item.communication_app_name }}: {{ row.item.communication_app_username }}
+                </template>
+
+                <template v-slot:cell(class)="row">                    
+                    <a :href="'member/schedulelist/'+row.item.id" alt="Summary List of Schedules" title="Summary List of Schedules"><img src="/images/iClass.jpg"></a>
+                </template>   
+
+                <template v-slot:cell(history)="row">
+                    <a href="/member/paypmenthistory" alt="Payment History" title="Payment History"><img src="/images/iHistory.jpg"></a>
+                </template>
+                <template v-slot:cell(report_card)="row">
+                    <a href="/member/reportcardlist" alt="List of Report Card" title="List of Report Card"><img src="/images/iReportCard.jpg"></a>
+                </template>
+
+                <template v-slot:cell(writing_report)="row">
+                    <a href="/member/reportcarddatelist" alt="List of Monthly Report Card" title="List of Monthly Report Card"><img src="/images/iMonthlyRC.jpg"></a>
+                </template>
+
+                <template v-slot:cell(actions)="row">
+                    <a :href="'member/account/'+row.item.id">Account</a> | 
+                    <a :href="'member/edit/'+row.item.id">Edit</a> | 
+                    <a :href="'member/delete'+row.item.id">Delete</a>
+                </template>
+
             </b-table>
         </b-container>
     </div>        
@@ -38,6 +60,7 @@ export default {
                     sortable: true,
                     sortDirection: "asc"
                 },
+                /*
                 {
                     key: "attribute",
                     label: "Attribute",
@@ -49,30 +72,31 @@ export default {
                     label: "Agent",
                     sortable: true,
                     sortDirection: "asc"
-                },
+                },*/
                 {
                     key: "email",
                     label: "E-Mail",
                     sortable: true,
                     sortDirection: "asc"
                 },   
+
                 {
-                    key: "email",
-                    label: "E-Mail",
-                    sortable: true,
-                    sortDirection: "asc"
-                },
-                {
-                    key: "Skype/Zoom",
+                    key: "skype_zoom",
                     label: "Skype/Zoom",
                     sortable: false                    
                 },
                 {
-                    key: "credit",
+                    key: "credits",
                     label: "Credit",
                     sortable: true,
                     sortDirection: "asc"
-                },                  
+                },        
+                {
+                    key: "class",
+                    label: "Class",
+                    sortable: false,
+                    sortDirection: "asc"
+                },                           
                 {
                     key: "main_tutor_name",
                     label: "Main Tutor",
@@ -182,8 +206,9 @@ export default {
 };
 </script>
 
-<style >
+<style>
 .b-table-custom .table thead th {
     font-size: 11px;
+    text-align: center
 }
 </style>
