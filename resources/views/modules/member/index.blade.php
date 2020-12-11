@@ -32,7 +32,8 @@
                 </div>
 
                 <div class="col-md-9">
-
+                    <a href="lessonrecord"><button type="button" class="btn btn-warning">Warning</button></a>
+                    <a href=""><button type="button" class="btn btn-primary">Primary</button></a>
                 </div>
 
                 

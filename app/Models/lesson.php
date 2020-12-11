@@ -24,13 +24,63 @@ class Lesson extends Model
         return $lessons;
     }
     
-    
+
     public function getTutorScheduledLesson($tutorID) 
     {
         $tutor = Tutor::find($tutorID);
         $lessons = Lesson::where('tutor_id', $tutor['user_id'])->get();
         return $lessons;
     }
+
+
+    public function getTutorLessons($tutorID, $dateFrom, $dateTo) 
+    {
+        $lessons = [];
+        
+        $tutor = Tutor::find($tutorID);
+        
+        $lessonItems = Lesson::where('tutor_id', $tutorID)
+                                ->where('scheduled_at', '>=', $dateFrom)
+                                ->where('scheduled_at', '<=', $dateTo)
+                                ->get();
+
+        foreach ($lessonItems as $lessonItem) 
+        {
+            $member     = Member::find($lessonItem->member_id);
+            $user       = User::find($member['user_id']);
+            //@done: user my be empty if not reserved
+            if (isset($user['first_name'])) {
+                $fname = $user['first_name'];
+                $fname_jp = $user['first_name_jp'];
+            } else {
+                $fname = "";
+                $fname_jp = "";
+            }
+
+            $dateKey = date('m/d/Y', strtotime($lessonItem->scheduled_at));
+
+            $lessons[$dateKey][$lessonItem->start_time] = [
+                'id'                => $lessonItem->id,
+                'startTime'         => $lessonItem->start_time,
+                'endTime'           => $lessonItem->end_time,
+                'email_type'        => $lessonItem->email_type,
+                'scheduled_at'      => $lessonItem->scheduled_at,
+                'duration'          => $lessonItem->duration,                    
+                'status'            => $lessonItem->status,
+                'tutor_id'          => $lessonItem->tutor_id,
+                'tutor_name_en'     => $tutor->name_en,
+                'tutor_name_jp'     => $tutor->name_jp,
+                'creator_id'        => $lessonItem->creator_id,
+                'member_id'         => $lessonItem->member_id,                    
+                'member_name_en'    => $fname,
+                'member_name_jp'    => $fname_jp
+            ];            
+        }     
+        
+        return $lessons;
+        
+    }
+        
 
     public function getLessons($date, $duration) 
     {  

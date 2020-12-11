@@ -100,8 +100,8 @@
                                             <td class="small text-center">{{$agent->credits_expiration}}</td>
                                             <td class="small text-center">{{$agent->purchased_amount}}</td>
                                             <td class="small text-center">
-                                                <a href="{{ route('admin.agent.account', $agent->id) }}"  class="btn btn-sm btn-info">Account</a>                                                
-                                                <a href="{{ route('admin.agent.edit', $agent->id) }}" class="btn btn-sm btn-info">Edit</a>
+                                                <a href="{{ route('admin.agent.account', $agent->id) }}"  class="btn btn-sm btn-info">Account</a>|                                              
+                                                <a href="{{ route('admin.agent.edit', $agent->id) }}" class="btn btn-sm btn-info">Edit</a> |
                                                 <form action="{{ route('admin.agent.destroy', $agent->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
                                                     style="display: inline-block;">
                                                     <input type="hidden" name="_method" value="DELETE">

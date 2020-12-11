@@ -69,6 +69,7 @@
                             </tbody>
                         </table>
                     </div>
+                    
                     <p class="card-text"></p>
 
 

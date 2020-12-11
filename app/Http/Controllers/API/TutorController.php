@@ -18,7 +18,7 @@ class TutorController extends Controller
         //@do: get shift id then query on tutors for that id, then loop?
         //$shift  = Shift::find($request['shift'])->first();
 
-        $tutors = Tutor::where('shift_id', $request['shift'])->get(); 
+        $tutors = Tutor::where('shift_id', $request['shift_id'])->get(); 
         return Response()->json([
             "success" => true,  
             "tutors" => $tutors,            

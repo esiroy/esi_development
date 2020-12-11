@@ -25,11 +25,20 @@ class Member extends Model
     }
 
     public function getLatestPurchaseDateAttribute($value) {
-        return \Carbon\Carbon::parse($value)->format('m/d/Y  g:i:s a');
+        if (isset($value)) {
+            return \Carbon\Carbon::parse($value)->format('m/d/Y  g:i:s a');
+        } else {
+            return null;
+        }
+        
     }
 
     public function getCreditsExpirationAttribute($value) {
-        return \Carbon\Carbon::parse($value)->format('m/d/Y  g:i:s a');
+        if (isset($value)) {
+            return \Carbon\Carbon::parse($value)->format('m/d/Y  g:i:s a');
+        } else {
+            return null;
+        }
     }
 
 }

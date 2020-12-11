@@ -28,6 +28,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 */
 
 Route::middleware('auth:api')->post('/create_member', 'API\MemberController@store')->name('APICreateMember');
+Route::middleware('auth:api')->post('/update_member', 'API\MemberController@update')->name('APIUpdateMember');
 
 //[start] File Manager
 Route::middleware('auth:api')->post('/get_folders', 'API\FolderController@folders')->name('APIGetFolders');

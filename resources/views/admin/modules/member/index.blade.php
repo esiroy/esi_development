@@ -30,32 +30,30 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <form class="form-inline" style="width:100%">
+                        <form class="form-inline" style="width:100%" method="GET">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="nickname" class="small col-4">Nickname:</label>
-                                    <input name="nickname" type="text" class="form-control form-control-sm col-8" value="">
+                                    <label for="member_id" class="small col-4">ID:</label>
+                                    <input name="member_id" type="text" class="form-control form-control-sm col-8"
+                                     value="{{ request()->has('member_id') ? request()->get('member_id') : '' }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="nickname" class="small col-4">Name:</label>
-                                    <input name="name" type="text" class="form-control form-control-sm col-8" value="">
+                                    <label for="name" class="small col-4">Name:</label>
+                                    <input name="name" type="text" class="form-control form-control-sm col-8" 
+                                        value="{{ request()->has('name') ? request()->get('name') : '' }}">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="name" class="small col-2">Email:</label>
-                                    <input name="name" type="text" class="form-control form-control-sm col-4" value="">
-
-                                    <select id="filterLessonShift" name="filterLessonShift" class="form-control form-control-sm col-3 ml-1">
-                                        <option value="">-- Select --</option>
-                                        <option value="4">25 mins</option>
-                                        <option value="5">40 mins</option>
-                                    </select>
-                                    <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
+                                <div class="form-group">                                 
+                                    <label for="email" class="small col-2">Email:</label>
+                                    <input name="email" type="text" class="form-control form-control-sm col-4" value="{{ request()->has('email') ? request()->get('email') : '' }}">                                   
+                             
+                                    <input type="submit" class="btn btn-primary btn-sm col-1 ml-1" value="Go"></button>                                   
                                 </div>
+                                
                             </div>
 
                             
@@ -72,64 +70,17 @@
 
                     <div class="row">
                         <div class="col-12 pt-3">
-
                            <member-list-component                               
                                 :members="{{ json_encode($members) }}"
                                 api_token="{{ Auth::user()->api_token }}"
                                 csrf_token="{{ csrf_token() }}"                            
                             />
-                            
-                            
-
-                            <!--
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                <thead>
-                                    <tr>
-                                        <th class="small text-center">ID</th>
-                                        <th class="small text-center">Name</th>
-                                        <th class="small text-center">Nickname</th>
-                                        <th class="small text-center">Attribute</th>
-                                        <th class="small text-center">Agent</th>
-                                        <th class="small text-center">Email</th>
-                                        <th class="small text-center">Skype / Zoom</th>
-                                        <th class="small text-center">Credit</th>
-                                        <th class="small text-center">Class</th>
-                                        <th class="small text-center">Main Tutor</th>
-                                        <th class="small text-center">History</th>
-                                        <th class="small text-center">Report<br>Card</th>
-                                        <th class="small text-center">Writing<br>Report</th>
-                                        <th class="small text-center">Action</th>                                    
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td class="small">1</td>
-                                        <td class="small">Roy</td>
-                                        <td class="small">Programmer</td>
-                                        <td class="small">Member</td>
-                                        <td class="small">Mr. Smith</td>
-                                        <td class="small">mrsmith@gmail.com</td>
-                                        <td class="small">mrsmith@gmail.com</td>
-                                        <td class="small">99.0</td>
-                                        <td class="small text-center"><img src="{{ url('images/iClass.jpg')}}"></td>
-                                        <td class="small">該当なし</td>
-                                        <td class="small text-center"><img src="{{ url('images/iHistory.jpg')}}"></td>
-                                        <td class="small text-center"><img src="{{ url('images/iReportCard.jpg')}}"></td>
-                                        <td class="small text-center"><img src="{{ url('images/iMonthlyRC.jpg')}}"></td>
-                                        <td class="small text-center">Account | Edit  | Delete </td>                                   
-                                    </tr>
-                                </tbody>
-                                </table>
-                            </div>
-                            -->
-
                         </div>
                     </div>
                 </div>
             </div>
             <!--Member List -->
-            <create-member-component
+            <member-create-component
                 :memberships="{{ json_encode($memberships) }}"
                 :attributes="{{ json_encode($attributes) }}"
                 :shifts="{{ json_encode($shifts) }}"
@@ -140,6 +91,13 @@
 
     </div>
 </div>
-
-</div>
 @endsection
+
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+    window.addEventListener('load', function() {
+    });
+</script>
+@endsection    

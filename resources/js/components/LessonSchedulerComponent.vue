@@ -95,7 +95,7 @@
             </div>
 
             <div class="card-body scrollable-x p-0">
-                <table class="etable table-bordered table-schedules">
+                <table class="table table-bordered table-schedules">
                     <tr>
                         <td class="schedTime"></td>
                         <td class="schedTime" v-for="time in timeList" :key="time.id">

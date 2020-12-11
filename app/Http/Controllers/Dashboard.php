@@ -49,7 +49,8 @@ class Dashboard extends Controller
             return view('modules/member/index', compact('member', 'data'));
         } else {
             //member not found
-            abort (404);
+            //echo "member not found";
+            abort (404, "Member Not Found");
         }
     }
 

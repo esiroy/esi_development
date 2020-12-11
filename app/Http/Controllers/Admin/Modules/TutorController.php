@@ -239,7 +239,8 @@ class TutorController extends Controller
      */
     public function destroy(Tutor $tutor)
     {
-        abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $tutor->delete();
         return back()->with('message', 'Tutor has been deleted successfully!');
     }
@@ -247,10 +248,9 @@ class TutorController extends Controller
 
     public function massDestroy(Request $request)
     {
-        abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         Tutor::whereIn('id', request('ids'))->delete();
         return response(null, Response::HTTP_NO_CONTENT);
-
     }
 
  

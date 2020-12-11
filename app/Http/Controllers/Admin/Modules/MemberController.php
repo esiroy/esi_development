@@ -17,6 +17,9 @@ use App\Models\Shift;
 use App\Models\MemberPointPurchaseHistory;
 use App\Models\Agent;
 use App\Models\Tutor;
+use App\Models\Purpose;
+use App\Models\MemberLesson;
+use App\Models\MemberDesiredSchedule;
 
 use DB, Auth, Validator;
 
@@ -34,13 +37,14 @@ class MemberController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-
-        //@todo: search
-
-
-        //@todo:attributes
+        //request variables      
+        $member_id  = $request->member_id;
+        $name       = $request->name;
+        $email      = $request->email;
+        
+        //[DROPDOWN OPTIONS] - attributes, membership, Shifts
         $attributes = Attribute::all();
         $memberships = Membership::all();        
         $shifts = Shift::all();
@@ -49,7 +53,9 @@ class MemberController extends Controller
         $members = User::select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name"))
                    ->whereHas('roles', function($q) { $q->where('title', 'Member'); })->get();   
         */
-        $members = Member::join('users', 'users.id', '=', 'members.user_id')
+
+
+        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')
                     ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
                     ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
                     ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
@@ -57,10 +63,26 @@ class MemberController extends Controller
                                             attributes.name as attribute, 
                                             members.id as id,
                                             tutors.name_en as main_tutor_name
-                                        "))                    
-                    ->get();
+                                        "));
 
-        
+        //@[START] USER SEARCH - if user search for a member
+        if(isset($member_id) || isset($name) || isset($email)) {        
+            if (isset($member_id)) {    
+                $memberQuery = $memberQuery->where('members.id', $member_id);
+            }
+            if (isset($name)) {     
+                $memberQuery = $memberQuery->orWhere('users.first_name', 'like', '%' .  $name . '%')->orWhere('users.last_name', 'like', '%' .  $name . '%'); 
+            }
+
+            if (isset($email)) {
+                $memberQuery = $memberQuery->orWhere('users.email', $email);
+           }
+        } //[END] USER SEARCH
+
+
+        $members = $memberQuery->get();
+
+        //Tutor Query
         $tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();         
         $tutors = json_encode($tutorQuery);
 
@@ -91,6 +113,26 @@ class MemberController extends Controller
 
        return view('admin.modules.member.account', compact('member', 'transactions', 'purchaseHistory'));
     }
+
+    
+    /**
+     * Display a listing of the payment history.     
+     * @param $memberID
+    */  
+    public function paymenthistory($memberID) {
+        $member         = Member::find($memberID);
+        if (!isset($member)) {
+            abort(404);
+        }
+
+        $purchaseHistory  = MemberCredits::join('users', 'users.id', '=', 'member_credits.user_id')
+                        ->where('member_credits.transaction_type', '!=', 'AGENT_SUBTRACT')
+                        ->where('user_id', $member->user_id)->get();
+
+        return view('admin.modules.member.paymenthistory', compact('member', 'purchaseHistory'));
+    }
+
+
     
     public function schedulelist($memberID, Lesson $lesson) 
     {
@@ -118,6 +160,7 @@ class MemberController extends Controller
     }
 
 
+
     /**
      * Show the form for creating a new resource.
      *
@@ -136,7 +179,7 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        //api storing
     }
 
     /**
@@ -147,7 +190,8 @@ class MemberController extends Controller
      */
     public function show($id)
     {
-        echo $id;
+        //not available
+        //@todo: remove this?
     }
 
     /**
@@ -156,9 +200,39 @@ class MemberController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Member $member)
     {
-        //
+        //[DROPDOWN OPTIONS] - attributes, membership, Shifts
+        $attributes = Attribute::all();
+        $memberships = Membership::all();        
+        $shifts = Shift::all();
+
+        //Member Information
+        $memberInfo = Member::join('users', 'users.id', '=', 'members.user_id')
+                    ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+                    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+                    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+                    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, 
+                                            attributes.name as attribute, 
+                                            members.id as id,
+                                            tutors.name_en as main_tutor_name
+                                        "))->where('members.id', $member->id)->first();
+
+        //LessonClasses
+        $lessonClasses = MemberLesson::where('user_id', $member->user_id)->get();
+
+        $desiredSchedule = MemberDesiredSchedule::where('user_id', $member->user_id)->get();
+
+        foreach($desiredSchedule as $item) {
+            echo $item->day ." " . $item->time ."<BR>";
+        }
+
+        //Purpose List
+        $purposes = Purpose::where('user_id', $member->user_id)->get();     
+
+        //View all the stufff
+        return view('admin.modules.member.edit', compact('memberships', 'shifts', 'attributes', 'tutors', 'member', 
+                                                        'memberInfo', 'purposes', 'lessonClasses', 'desiredSchedule'));
     }
 
     /**
@@ -210,6 +284,8 @@ class MemberController extends Controller
        
         if (isset($request->expiry_date)) {
             $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
+        } else {
+           $expiry_date    = date('Y-m-d G:i:s', strtotime('+6 months'));
         }
         
         //Update Member
@@ -251,6 +327,8 @@ class MemberController extends Controller
      */
     public function destroy($id)
     {
-        //
+         $member = Member::find($id);
+         $member->delete();
+         return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
     }
 }

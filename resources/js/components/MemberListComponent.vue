@@ -1,8 +1,15 @@
 <template>
     <div class="b-table-custom">
         <b-container fluid >
+
             <!-- User Interface controls -->
-            <b-table striped hover :items="items" :fields="fields">
+            <b-table striped hover 
+                :items="items"             
+                :fields="fields"
+                :current-page="currentPage"
+                :per-page="perPage"
+                stacked="md"
+            >
                 <template v-slot:cell(skype_zoom)="row">
                     {{ row.item.communication_app_name }}: {{ row.item.communication_app_username }}
                 </template>
@@ -12,23 +19,60 @@
                 </template>   
 
                 <template v-slot:cell(history)="row">
-                    <a href="/member/paypmenthistory" alt="Payment History" title="Payment History"><img src="/images/iHistory.jpg"></a>
+                    <a :href="'member/paymenthistory/'+row.item.id" alt="Payment History" title="Payment History"><img src="/images/iHistory.jpg"></a>
                 </template>
                 <template v-slot:cell(report_card)="row">
-                    <a href="/member/reportcardlist" alt="List of Report Card" title="List of Report Card"><img src="/images/iReportCard.jpg"></a>
+                    <a :href="'member/reportcardlist/'+row.item.id" alt="List of Report Card" title="List of Report Card"><img src="/images/iReportCard.jpg"></a>
                 </template>
 
                 <template v-slot:cell(writing_report)="row">
-                    <a href="/member/reportcarddatelist" alt="List of Monthly Report Card" title="List of Monthly Report Card"><img src="/images/iMonthlyRC.jpg"></a>
+                    <a href="member/reportcarddatelist" alt="List of Monthly Report Card" title="List of Monthly Report Card"><img src="/images/iMonthlyRC.jpg"></a>
                 </template>
 
                 <template v-slot:cell(actions)="row">
-                    <a :href="'member/account/'+row.item.id">Account</a> | 
-                    <a :href="'member/edit/'+row.item.id">Edit</a> | 
-                    <a :href="'member/delete'+row.item.id">Delete</a>
-                </template>
+                    <a :href="'member/account/'+row.item.id" >Account</a> |
+                    <a :href="'member/'+row.item.id+'/edit'" >Edit</a> | 
+                    <form :action="'member/'+row.item.id" method="POST" onsubmit="return confirm('are you sure you want to delete?');"
+                        style="display: inline-block;">
+                        <input type="hidden" name="_method" value="delete" />
+                        <input type="hidden" name="_token" :value="csrf_token"> 
+                        <input type="submit" value="Delete" style="border: none; background: none; color: #c60000">
+                    </form>
 
+                </template>
             </b-table>
+
+            <!--Pagination-->
+            
+            <b-row>
+                <b-col sm="4" md="6" class="my-1">
+                    <b-pagination
+                        v-model="currentPage"
+                        :total-rows="totalRows"
+                        :per-page="perPage"
+                        align="fill"
+                        size="sm"
+                        class="my-0"
+                    ></b-pagination>
+                </b-col>
+                <b-col sm="5" md="6" class="my-1">
+                    <b-form-group
+                        label="Per page"
+                        label-cols-sm="6"
+                        label-cols-md="4"
+                        label-cols-lg="3"
+                        label-align-sm="right"
+                        label-size="sm"
+                        label-for="perPageSelect"
+                        class="mb-0"
+                    >
+                        <b-form-select v-model="perPage" id="perPageSelect" size="sm" :options="pageOptions"></b-form-select>
+                    </b-form-group>
+                </b-col>
+
+            </b-row>
+            <!--Pagiation-->
+
         </b-container>
     </div>        
 </template>
@@ -46,7 +90,7 @@ export default {
     data() {
         return {
             items: this.members,
-
+            //fields
             fields: [
                 {
                     key: "id",
@@ -158,8 +202,8 @@ export default {
             ],
             totalRows: 1,
             currentPage: 1,
-            perPage: 15,
-            pageOptions: [5, 10, 15],
+            perPage: 10,
+            pageOptions: [10, 15, 20, 50, 100, 500],
             sortBy: "",
             sortDesc: false,
             sortDirection: "asc",

@@ -40,6 +40,8 @@ Route::post('uploader/fileUploader', 'FileUploadController@upload');
 /* Download Controller*/
 Route::resource('download', 'DownloadController');
 
+
+
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
@@ -50,6 +52,12 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
+
+        /*This module alias */
+        Route::resource('/dashboard', 'Modules\LessonController');
+        Route::resource('/lesson', 'Modules\LessonController');
+
+
         /*
         Route::resource('/', 'DashboardController');
         Route::resource('/dashboard', 'DashboardController');
@@ -63,14 +71,15 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
         Route::resource('/', 'Modules\LessonController');
 
-        /*This module alias */
-        Route::resource('/dashboard', 'Modules\LessonController');
-        Route::resource('/lesson', 'Modules\LessonController');
+
 
         //Member
+        Route::delete('/member/destroy', 'Modules\MemberController@massDestroy')->name('member.massDestroy');
         Route::resource('/member', 'Modules\MemberController');
+        
+        Route::get('/member/paymenthistory/{id}', 'Modules\MemberController@paymenthistory')->name('member.paymenthistory');
         Route::get('/member/account/{id}', 'Modules\MemberController@account')->name('member.account');
-        Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist');
+        Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist')->name('member.schedulelist');
 
 
         //tutor

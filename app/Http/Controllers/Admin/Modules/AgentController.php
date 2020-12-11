@@ -147,9 +147,9 @@ class AgentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Agent $agent)
     {
-        //
+        return view('admin.modules.agent.edit', compact('agent'));
     }
 
     /**
@@ -238,8 +238,16 @@ class AgentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Agent $agent)
     {
-        //
+        $agent->delete();
+        return back()->with('message', 'Agent has been deleted successfully!');
+    }
+
+    public function massDestroy(Request $request)
+    {
+        //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        Tutor::whereIn('id', request('ids'))->delete();
+        return response(null, Response::HTTP_NO_CONTENT);
     }
 }

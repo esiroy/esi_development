@@ -19,11 +19,12 @@ class ShiftsTableSeeder extends Seeder
                 'name'          => "25 Minutes",
                 'value'         => 25,
             ],
+            /*
             [
                 'id'            => 2,
                 'name'          => "40 Minutes",
                 'value'         => 40
-            ]
+            ]*/
         ];
 
         

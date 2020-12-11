@@ -102,6 +102,13 @@
                                     </div>
                                 </div>
 
+                                <div class="row py-2">
+                                    <div class="col-md-3"></div>
+                                    <div class="col-md-9">
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Add Transaction">
+                                    </div>
+                                </div>
+
                             </div>
 
                             <!--[start right column]-->
@@ -120,14 +127,14 @@
                                 </div>
                             </div>
                             <!--[end right column]-->
+
+
+
+
                         </div>
                         <!--[end] first row-->
 
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input type="submit" class="btn btn-primary btn-sm" value="Add Transaction">
-                            </div>
-                        </div>
+
                     </form>
                 </div>
                 <!--[end] card body-->
@@ -159,7 +166,7 @@
                                 <td>{{ $transaction->credits }}</td>
                                 <td>{{ $transaction->original_credit_expiration_date }}</td>
                                 <td>{{ $transaction->remarks }}</td>
-                                
+
                             </tr>
                             @endforeach
 
@@ -185,25 +192,40 @@
 
                             @foreach($purchaseHistory as $history)
                             <tr>
-                                <td>{{ $history->created_at }}</td>                         
+                                <td>{{ $history->created_at }}</td>
                                 <td>{{ $history->credits }}</td>
                                 <td>{{ $history->lesson_time_duration }}</td>
-                                <td>¥ {{ $history->amount }}</td>                                
+                                <td>¥ {{ $history->amount }}</td>
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
-
-
-
-
         </div>
-
-
     </div>
-
 </div>
+@endsection
 
+@section('scripts')
+@parent
+<script type="text/javascript">
+    function checkSelected() {
+
+        $('#expiry_date').prop('disabled', true);
+
+        let type = $("#transaction_type option:selected").val()
+
+        if (type !== 'CREDITS_EXPIRATION' || type == null) {
+            $('#expiry_date').prop('disabled', true);
+        } else {
+            $('#expiry_date').prop('disabled', false);
+        }
+    }
+
+    window.addEventListener('load', function() {
+        checkSelected();
+    });
+
+</script>
 @endsection
