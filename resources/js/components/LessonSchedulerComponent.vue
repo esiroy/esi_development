@@ -9,13 +9,15 @@
 <template>
     <div id="schedules">
 
-        <b-modal id="schedulesModal" 
+        <b-modal 
+            id="schedulesModal" 
             title="Schedule Lesson"
             button-size="sm"
+            no-close-on-backdrop="true"
             @show="resetModal"
             @hidden="hideModal"
             @ok="handleOk"
-        
+                    
         >
             <div class="row">
                 <div class="col-md-3">
@@ -41,8 +43,12 @@
                     <label>Member :</label>
                 </div>
                 <div class="col-md-9">
+
+                    <v-select placeholder="-- Select A Member --" :disabled="this.isStatusDisabled" v-model="memberSelectedID" :options="this.memberOptionList"></v-select>
+
                     <!--@todo: 1. disable if "tutor scheduled, suppressed schedule, completed" -->
                     <!--@todo: 2. enabled only if "Client Resererve (A, B), -->
+                    <!--
                     <select :disabled="this.isStatusDisabled"
                         name="membersSelection"
                         id="membersSelection"
@@ -50,11 +56,13 @@
                         v-model="memberSelectedID"
                         class="form-control form-control-sm"
                     >
-                        <option value="">-- Select A Member --</option>
+                        <option value="">-- Select A Member --</option>                       
                         <option v-for="member in members"
                             :value="member.id"
                             :key="member.id">{{ member.first_name }} {{ member.last_name }}</option>
                     </select>
+                    -->
+
                 </div>
             </div>
 
@@ -211,11 +219,18 @@
 
 
 <script>
-export default {
-    
+
+import Vue from 'vue'
+import vSelect from 'vue-select'
+import 'vue-select/dist/vue-select.css';
+
+
+Vue.component('v-select', vSelect)
+
+export default {    
 	components: {
         
-	},
+    },
     props: {
         year: { type: Number },
         month: { type: Number },
@@ -233,6 +248,7 @@ export default {
     },
     data() {
         return {
+            memberOptionList: [],
             modalType: null,
 
             //Data
@@ -309,6 +325,17 @@ export default {
         this.lessonsData = this.lessons;
         console.log("Lessons Mounted : ", this.lessonsData);
         this.shiftDuration  = this.duration;
+
+        var options = [];
+        this.members.forEach(function (member, index) 
+        {   
+            options.push({'id': member.id, 'code': member.id, 'label': member.first_name + " "+ member.last_name  });        
+        });
+
+        this.memberOptionList = options;
+
+
+
     },
     methods: {
         getMemberData(scheduleData) {
@@ -458,7 +485,7 @@ export default {
             axios.post("/api/update_tutor_schedule?api_token=" + this.api_token, 
             {
                 method              : "POST",               
-                memberData          : memberData,
+                memberData          : memberData.id,
                 scheduled_at        : this.scheduled_at,
                 shiftDuration       : this.shiftDuration,
                 tutorData           : this.tutorData,
@@ -501,7 +528,7 @@ export default {
             axios.post("/api/create_tutor_schedule?api_token=" + this.api_token, 
             {
                 method              : "POST",               
-                memberData          : memberData,
+                memberData          : memberData.id,
                 scheduled_at        : this.scheduled_at,
                 shiftDuration       : this.shiftDuration,
                 tutorData           : this.tutorData,
