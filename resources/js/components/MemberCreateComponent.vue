@@ -980,7 +980,7 @@ export default {
 
                 } else {
 
-                    alert ("success");
+                   location.reload();
 
                 }
 
@@ -996,7 +996,7 @@ export default {
         {
             if (val.$anyError) 
             {
-                console.log("shake!")
+                //console.log("shake!")
                 event.target.classList.add('form__input-shake')
                 
                 setTimeout(() => {
