@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Models\Member;
 
 class RegisterController extends Controller
 {
@@ -71,18 +72,49 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+
+        
+        //note: this is now transferred to Signup Controller
         $user = User::create([
             'first_name' => $data['first_name'],
             'last_name' => $data['last_name'],
             'username' => $data['username'],
+            'first_name_jp'  => $data['first_name_jp'],
+            'last_name_jp'  => $data['last_name_jp'],
             'email' => $data['email'],
             'api_token' => Hash('sha256', Str::random(80)),
             'password' => Hash::make($data['password']),
         ]);
 
-        $roles[] = Role::where('title', 'user')->first()->id;
+        $roles[] = Role::where('title', 'Member')->first()->id;
         $user->roles()->sync($roles);
 
+        //note: this is now transferred to Signup Controller
+        $memberInformation =
+        [
+            'user_id'                   =>  $user->id,
+            'member_attribute_id'       =>  null,
+            'nickname'                  =>  $data['username'],
+            'agent_id'                  =>  null,
+            'gender'                    =>  null,
+            'birthdate'                 =>  null, //date('Y-m-d', strtotime($data->birthday)),
+            'age'                       =>  null,
+            'communication_app_name'    =>  $data['commApp'],
+            'communication_app_username' => $data['communication_app_username'],
+            'membership_id'             =>  1,                    
+            'exam_record_id'            =>  1, //@todo: remove exam or nullify
+            'member_since'              => date('Y-m-d'),
+            'lesson_time_id'            => 1,
+            'main_tutor_id'             => null,
+            'agent_report_card'         => false,
+            'agent_monthly_report'      => false,
+            'member_report_card'        => false,
+            'member_monthly_report'     => false,    
+            'point_purchase'            =>  null,
+            
+        ];
+        $member = Member::create($memberInformation);
+        $user->members()->sync([$member->id], false);   
         return $user;
     }
 }

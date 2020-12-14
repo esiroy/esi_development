@@ -15,7 +15,7 @@ class CreateAgentTable extends Migration
     {
         Schema::create('agents', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');            
+            $table->unsignedBigInteger('user_id');            
             $table->integer('industry_type_id');         
             $table->string('name_en');
             $table->string('name_jp');
@@ -37,6 +37,10 @@ class CreateAgentTable extends Migration
 
             $table->timestamps();
         });
+
+        Schema::table('agents', function($table) {
+            $table->foreign('user_id', 'user_id_fk_7558')->references('id')->on('users')->onDelete('cascade');            
+        });             
     }
 
     /**

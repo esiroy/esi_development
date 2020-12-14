@@ -20,7 +20,7 @@ class AdminAuthenticate
 
         if (! $request->expectsJson()) {
             if (! Auth::guard($guard)->check()) {
-                return redirect()->route('admin.login');
+                return redirect()->route('admin.AdminLogin');
             }
         }
 

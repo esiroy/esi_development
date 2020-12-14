@@ -15,13 +15,17 @@ class CreateManagerTable extends Migration
     {
         Schema::create('managers', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('user_id');            
+            $table->unsignedBigInteger('user_id');            
             $table->string('name_en');
             $table->string('name_jp');            
             $table->boolean('is_japanese');
             $table->boolean('is_terminated')->nullable();             
             $table->timestamps();
         });
+
+        Schema::table('managers', function($table) {
+            $table->foreign('user_id', 'user_id_fk_5558')->references('id')->on('users')->onDelete('cascade');            
+        });           
     }
 
     /**

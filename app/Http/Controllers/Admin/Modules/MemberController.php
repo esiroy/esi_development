@@ -232,7 +232,7 @@ class MemberController extends Controller
         $purposes = Purpose::where('user_id', $member->user_id)->get();     
 
         //View all the stufff
-        return view('admin.modules.member.edit', compact('memberships', 'shifts', 'attributes', 'tutors', 'member', 
+        return view('admin.modules.member.edit', compact('memberships', 'shifts', 'attributes', 'member', 
                                                         'memberInfo', 'purposes', 'lessonClasses', 'desiredSchedule'));
     }
 

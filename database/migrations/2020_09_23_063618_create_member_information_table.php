@@ -16,9 +16,9 @@ class CreateMemberInformationTable extends Migration
         Schema::create('members', function (Blueprint $table) {
             //personal info
             $table->id();
-            $table->bigInteger('user_id');
-            $table->bigInteger('member_attribute_id')->nullable();
-            $table->bigInteger('agent_id')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('member_attribute_id')->nullable();
+            $table->unsignedBigInteger('agent_id')->nullable();
             $table->string('nickname');
             
             $table->enum('gender', ['male', 'female'])->nullable();
@@ -54,6 +54,10 @@ class CreateMemberInformationTable extends Migration
             //timestamp of transaction
             $table->timestamps();
         });
+
+        Schema::table('members', function($table) {
+            $table->foreign('user_id', 'user_id_fk_5555')->references('id')->on('users')->onDelete('cascade');            
+        });        
     }
 
     /**
