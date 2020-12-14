@@ -62,7 +62,8 @@ class MemberController extends Controller
                     ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, 
                                             attributes.name as attribute, 
                                             members.id as id,
-                                            tutors.name_en as main_tutor_name
+                                            tutors.name_en as main_tutor_name,
+                                            members.credits as credits
                                         "));
 
         //@[START] USER SEARCH - if user search for a member

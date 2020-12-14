@@ -13,14 +13,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::resource('test', 'dummyController');
+Route::get('/home', 'MemberDashboard@index')->name('home');
 
-Route::get('/home', 'Dashboard@index')->name('home');
 
+
+//User Reservation
+Route::resource('/reservation', 'Members\ReservationController');
+Route::get('/memberschedule', 'Members\ReservationController@create');
+
+
+
+
+//Login Form
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('welcomeLogin');
 
 //Route::get('/', 'HomeController@index')->name('welcome');
 //Route::get('/home', 'FolderCreatorController@index')->name('home');
-
 //Route::get('/', 'ScheduleController@index')->name('welcome');
 
 
@@ -47,21 +55,23 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
     /* Admin Auth */
     Route::get('login', 'AuthController@showLoginForm')->name('showLoginForm');
-    Route::post('login', 'AuthController@login')->name('login');
-    Route::post('logout', 'AuthController@logout')->name('logout');
+    Route::post('login', 'AuthController@login')->name('AdminLogin');
+    Route::post('logout', 'AuthController@logout')->name('AdminLogout');
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
+      
+        Route::resource('/', 'Modules\LessonController');
 
         /*This module alias */
         Route::resource('/dashboard', 'Modules\LessonController');
         Route::resource('/lesson', 'Modules\LessonController');
 
-
-        /*
-        Route::resource('/', 'DashboardController');
-        Route::resource('/dashboard', 'DashboardController');
-        */
+        
+        
+        //Route::resource('/dashboard', 'DashboardController');
+          //Route::resource('/', 'DashboardController');
+        
 
         /* 
         //File Manager as a homepage
@@ -69,9 +79,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/dashboard', 'Modules\FileManagerController');
         */
 
-        Route::resource('/', 'Modules\LessonController');
-
-
+      
 
         //Member
         Route::delete('/member/destroy', 'Modules\MemberController@massDestroy')->name('member.massDestroy');
@@ -152,3 +160,5 @@ Route::get('/saveuser','Auth\SignUpController@step3')->name('step3');
 
 
 Auth::routes();
+Route::post('login', 'Auth\LoginController@login')->name('login');
+Route::post('logout', 'Auth\LoginController@logout')->name('logout');

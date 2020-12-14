@@ -15,9 +15,15 @@
         <div class="container">
 
             <div class="row">
+                <!--sidebar-->
                 <div class="col-md-3">
-                    @include('modules.member.sidebar.profile')                    
-                </div>
+                    <div>
+                        @include('modules.member.sidebar.profile')
+                    </div>
+                    <div class="mt-3 mb-4">
+                        @include('modules.member.sidebar.reports')
+                    </div>
+                </div><!--[end sidebar]-->
                 
                 <div class="col-md-9">
                     <div class="blueBrokenLineBox">
@@ -29,14 +35,16 @@
                             <span style="font-size: medium;"><a href="https://www.mytutor-jpn.com/info/2020/0317152413.html">一時的　在宅勤務講師のご案内　</a></span>
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-9">
-                    <a href="lessonrecord"><button type="button" class="btn btn-warning">Warning</button></a>
-                    <a href=""><button type="button" class="btn btn-primary">Primary</button></a>
-                </div>
+                    <div class="row">
+                        <div class="col-md-12 mt-3">
+                            <a href="lessonrecord"><button type="button" class="btn btn-warning text-white">受講履歴/添削履歴</button></a>
+                            <a href="reservation"><button type="button" class="btn btn-primary">レッスンの予約</button></a>
+                            <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');"><button type="button" class="btn btn-success">添削くん</button></a>
+                        </div>
+                    </div>
 
-                
+                </div>                
             </div>
 
 

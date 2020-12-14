@@ -183,7 +183,21 @@ class PermissionsTableSeeder extends Seeder
                 'title'      => 'formbuilder_access',
                 'created_at' => '2019-09-28 14:22:15',
                 'updated_at' => '2019-09-28 14:22:15',
-            ]
+            ],
+            [
+                'id'         => '30',
+                'title'      => 'admin_lesson_scheduler_access',
+                'created_at' => '2019-09-28 14:22:15',
+                'updated_at' => '2019-09-28 14:22:15',
+            ],
+            [
+                'id'         => '31',
+                'title'      => 'tutor_lesson_scheduler_access',
+                'created_at' => '2019-09-28 14:22:15',
+                'updated_at' => '2019-09-28 14:22:15',
+            ]                       
+
+
         ];
 
         

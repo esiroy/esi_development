@@ -77,15 +77,12 @@
                         ref="schedulesComponent"
                         :scheduled_at="'{{ $dateToday }}'"
                         :year="{{ $year}}" :month="{{ $month }}" :day="{{ $day}}"
-
                         :duration="{{ $shiftDuration }}"
                         :lessons="{{ json_encode($lessons) }}"
                         :tutors="{{ $tutors }}"
                         :members="{{ $members }}"
                         api_token="{{ Auth::user()->api_token }}"
                         csrf_token="{{ csrf_token() }}"
-
-
                     />
 
                 </div>

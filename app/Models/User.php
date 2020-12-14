@@ -99,6 +99,11 @@ class User extends Authenticatable
         return $this->belongsToMany(Member::class);
     }    
 
+    public function memberInfo() 
+    {
+        return $this->hasOne('App\Models\Member');
+    }
+
     //tutors
     public function tutors()
     {

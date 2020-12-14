@@ -21,7 +21,6 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         if (Auth::guard($guard)->check()) {
-
             if (strtolower($request->segment(1)) == 'admin') {
        
                 if(Gate::denies('admin_access')) {
@@ -34,7 +33,6 @@ class RedirectIfAuthenticated
                 return redirect(RouteServiceProvider::HOME);
             }
         }
-
         return $next($request);
     }
 }

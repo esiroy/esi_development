@@ -23761,10 +23761,10 @@ div.dt-button-collection .dt-button.active {
   color: #0eadd9;
 }
 
-.esi-box table tr th {
+.esi-box .esi-table tr th {
   background-color: #e6e6e6;
 }
-.esi-box table tr th, .esi-box table tr td {
+.esi-box .esi-table tr th, .esi-box .esi-table tr td {
   font-size: 11px;
   text-align: center;
 }
@@ -23905,6 +23905,31 @@ div.dt-button-collection .dt-button.active {
   border: 2px dashed #b8e9fa;
   padding: 10px;
   margin: 10px 0 0 0;
+}
+
+.reservationTable {
+  border: 2px solid #d3eff1;
+  border-radius: 5px 5px;
+  padding: 5px;
+  margin: 0 150px;
+  width: 60%;
+}
+
+.reservationTable th {
+  background-color: #caf3f5;
+  padding: 7px 0;
+  font-size: 12px;
+  text-align: center;
+}
+
+.reservationTable th.heading {
+  background: #8bdade;
+  font: bold 14px Arial;
+}
+
+.reservationTable td {
+  background: #fff;
+  font: bold 14px Arial;
 }
 
 /*

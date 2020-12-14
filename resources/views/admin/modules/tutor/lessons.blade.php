@@ -14,19 +14,19 @@
 
         <div class="container">
             <!--[start card] -->
-            <div class="card">
-                <div class="card-header">Lesson {{ date('m/d/Y', strtotime($dateFrom)) }}</div>
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">Lesson</div>
                 <div class="card-body">
 
                     <form name="dateForm" method="GET">
                         <div class="row">
                             <div class="col-3">
                                 <label for="inputDate" class="pr-3">Date:</label>
-                                <input type="date" id="dateFrom" name="dateFrom" value="{{ $dateFrom }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8">
+                                <input type="date" id="dateFrom" required name="dateFrom" value="{{ $dateFrom }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8">
                             </div>
                             <div class="col-3">
                                 <label for="inputDate" class="pr-3">Date:</label>
-                                <input type="date" id="dateTo" name="dateTo" value="{{ $dateTo }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8">
+                                <input type="date" id="dateTo" required name="dateTo" value="{{ $dateTo }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8">
                             </div>
                             <div class="col-2">
                                 <input type="submit" class="btn btn-primary btn-sm" value="Go">
@@ -34,8 +34,6 @@
 
                         </div>
                     </form>
-
-
 
                     <div class="legend bg-lightgray mt-2">
                         <table cellspacing="0" cellpadding="5">

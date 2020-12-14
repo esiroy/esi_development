@@ -16,7 +16,7 @@
 
                                     <h2 class="heading"> Member Login </h2>
 
-                                    <form method="POST" action="{{ route('admin.login') }}">
+                                    <form method="POST" action="{{ route('admin.AdminLogin') }}">
                                         @csrf
 
                                         <div class="form-group row mb-1 mt-1">

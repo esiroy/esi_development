@@ -25,7 +25,7 @@ use Auth;
 class LessonController extends Controller
 {
     
-    public $timeList;
+    public $timeSlots;
 
     public function __construct() 
     {
@@ -73,7 +73,8 @@ class LessonController extends Controller
     {
         if(Gate::allows('admin_lesson_scheduler_access')) 
         {
-            $status = Status::all();      
+            //$status = Status::all();      
+            
             //default on load without any parameters
             if (isset($request['inputDate'])) {
                 $dateToday = date('Y-m-d', strtotime($request['inputDate']));
@@ -93,11 +94,7 @@ class LessonController extends Controller
                 $shiftDuration  = 25;
             }
           
-            //search the ID
-            $shift  = Shift::where("value", $shiftDuration)->first();
-    
-            //get tutors for this shift id
-            $tutors = Tutor::where('shift_id', $shift->id)->get();
+
     
             //get the members
             /*
@@ -106,10 +103,14 @@ class LessonController extends Controller
             ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, attributes.name as attribute"))
             ->get();
             */
-    
+            //search the ID
+            $shift  = Shift::where("value", $shiftDuration)->first();    
+            //get tutors for this shift id
+            $tutors = Tutor::where('shift_id', $shift->id)->get();   
             $members = Member::join('users', 'users.id', '=', 'members.user_id')
                 ->select('members.*','users.first_name', 'users.last_name')
                 ->get();
+           
     
           
             $lessons = $lesson->getLessons($dateToday, $shiftDuration);    
@@ -127,14 +128,12 @@ class LessonController extends Controller
             $timeSlots = $this->timeSlots;
 
             //date of the query
-            if (isset($request['dateFrom']) || isset($request['dateTo'])) {
-
-     
-
+            if (isset($request['dateFrom']) || isset($request['dateTo'])) 
+            {                
                 $dateFrom = date('Y-m-d', strtotime($request['dateFrom']));
                 $dateTo = date('Y-m-d', strtotime($request['dateTo']));
-
-            } else
+            }
+            else
             {
 
                 //$dateFrom = "2020-12-01";
@@ -157,14 +156,10 @@ class LessonController extends Controller
             //@todo: Tutor - get the lessons of the current user only since this is tutor  
             $tutor = Tutor::where('user_id', Auth::user()->id)->first();
             $lessons = $lesson->getTutorLessons($tutor->id, $dateFrom, $dateTo);
-
-           
-        
-           
-
-            
             return view('admin.modules.tutor.lessons', compact('tutorLessons',  'dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));
             
+        } else {
+            echo "admin_lesson_scheduler_access or tutor_lesson_scheduler_access is disallowed";
         }
 
       

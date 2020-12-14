@@ -21,7 +21,7 @@
 
                                     <h2 class="heading"> Member Login </h2>
 
-                                    <form method="POST" action="{{ route('admin.login') }}">
+                                    <form method="POST" action="{{ route('login') }}">
                                         @csrf
 
                                         <div class="form-group row mb-1 mt-1">
@@ -121,7 +121,7 @@
                 </div>
                 <div class="login-box mt-3 p-3">
                     <h2 class="heading"> Member Login </h2>
-                    <form method="POST" action="{{ route('admin.login') }}">
+                    <form method="POST" action="{{ route('login') }}">
                         @csrf
 
                         <div class="form-group row mb-1 mt-4">
