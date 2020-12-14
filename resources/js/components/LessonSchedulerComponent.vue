@@ -13,7 +13,7 @@
             id="schedulesModal" 
             title="Schedule Lesson"
             button-size="sm"
-            no-close-on-backdrop="true"
+            :no-close-on-backdrop="true"
             @show="resetModal"
             @hidden="hideModal"
             @ok="handleOk"
@@ -44,7 +44,28 @@
                 </div>
                 <div class="col-md-9">
 
-                    <v-select placeholder="-- Select A Member --" :disabled="this.isStatusDisabled" v-model="memberSelectedID" :options="this.memberOptionList"></v-select>
+                    
+                    <multiselect ref="membersSelection"
+                        :disabled="this.isStatusDisabled"
+                        v-model="memberSelectedID"
+                        :options="this.memberOptionList"
+                        placeholder="-- Select A Member --"
+                        track-by="id"
+                        label="name"
+                    >
+                        <template slot="singleLabel" slot-scope="{ option }">
+                            <strong style='color:#000; font-size:12px'>{{ option.name }}</strong>
+                        </template>
+
+                    </multiselect>
+
+                    <!--
+                    <multiselect v-model="memberSelectedID" :options="memberOptionList" placeholder="-- Select A Member --" track-by="name">
+                       <template slot="singleLabel" slot-scope="{ option }">
+                            <strong style='color:#000'>{{ option.name }}</strong> is written in<strong>  {{ option.language }}</strong>
+                        </template>
+                    </multiselect>
+                    -->
 
                     <!--@todo: 1. disable if "tutor scheduled, suppressed schedule, completed" -->
                     <!--@todo: 2. enabled only if "Client Resererve (A, B), -->
@@ -219,15 +240,11 @@
 
 
 <script>
+import Multiselect from 'vue-multiselect'
+// register globally
+Vue.component('multiselect', Multiselect)
 
-import Vue from 'vue'
-import vSelect from 'vue-select'
-import 'vue-select/dist/vue-select.css';
-
-
-Vue.component('v-select', vSelect)
-
-export default {    
+export default {
 	components: {
         
     },
@@ -326,14 +343,14 @@ export default {
         console.log("Lessons Mounted : ", this.lessonsData);
         this.shiftDuration  = this.duration;
 
+        //optionLists of Members
         var options = [];
         this.members.forEach(function (member, index) 
         {   
-            options.push({'id': member.id, 'code': member.id, 'label': member.first_name + " "+ member.last_name  });        
+            options.push({'id': member.id, 'name': member.first_name + " "+ member.last_name  });        
         });
-
         this.memberOptionList = options;
-
+     
 
 
     },
@@ -423,13 +440,14 @@ export default {
             this.tutorData = scheduleData;
 
             this.modalType = "edit";
-            let member = this.getMemberData(scheduleData);
+            let member = this.getMemberData(scheduleData); 
             this.$bvModal.show("schedulesModal");            
             this.status = scheduleData.status;
 
-            console.log("this is status", this.status);
+            console.log(member);
 
-            this.memberSelectedID = member.member_id;
+            this.memberSelectedID = [{ id: member.member_id , 'name': member.member_name_en  +" " + member.member_name_jp }];
+
             //this.isStatusDisabled = false;
             this.cancelationType = member.email_type;
             this.reservationType = member.email_type;
@@ -605,6 +623,10 @@ export default {
     }
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
+
 
 <style>
     .table-schedules td.schedTime {
