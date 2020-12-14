@@ -24,7 +24,7 @@
                     <label>Status :</label>
                 </div>
                 <div class="col-md-9">
-                    <select name="status" ref="status" v-model="status" @change="setMemberListLock()">
+                    <select name="status" ref="status" v-model="status" @change="setMemberListLock()"  class="form-control form-control-sm">
                         <option value="">Please Select A Status</option>
                         <option value="Tutor Scheduled">Tutor Scheduled</option>
                         <option value="Client Reserved">Client Reserved</option>
@@ -38,13 +38,11 @@
                 </div>
             </div>
 
-            <div class="row">
+            <div class="row mt-2">
                 <div class="col-md-3">
                     <label>Member :</label>
                 </div>
                 <div class="col-md-9">
-
-                    
                     <multiselect style='color:#000; font-size:12px'
                         ref="membersSelection"
                         :disabled="this.isStatusDisabled"
