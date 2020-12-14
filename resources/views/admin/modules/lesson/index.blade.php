@@ -34,7 +34,7 @@
                             <div class="col-2">
                                 <select name="shift_duration" id="shift_duration" class="form-control form-control-sm">
                                     <option value="25" @if (Request::input('shift_duration') == '25') {{'selected'}} @endif>25 mins</option>
-                                    <option value="40" @if (Request::input('shift_duration') == '40') {{'selected'}} @endif>40 mins</option>
+                                    <!--<option value="40" @if (Request::input('shift_duration') == '40') {{'selected'}} @endif>40 mins</option>-->
                                 </select>
                             </div>
                             <div class="col-2">
