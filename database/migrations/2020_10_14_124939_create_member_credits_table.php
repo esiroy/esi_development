@@ -24,7 +24,7 @@ class CreateMemberCreditsTable extends Migration
             //Payment
             $table->double('amount')->nullable();
             $table->integer('credits')->nullable();
-            $table->text('remarks')->default('')->nullable(true);
+            $table->text('remarks')->nullable();
            
             //date
             $table->dateTime('original_credit_expiration_date', 0)->nullable();            
