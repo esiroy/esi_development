@@ -45,7 +45,8 @@
                 <div class="col-md-9">
 
                     
-                    <multiselect ref="membersSelection"
+                    <multiselect style='color:#000; font-size:12px'
+                        ref="membersSelection"
                         :disabled="this.isStatusDisabled"
                         v-model="memberSelectedID"
                         :options="this.memberOptionList"
@@ -56,7 +57,6 @@
                         <template slot="singleLabel" slot-scope="{ option }">
                             <strong style='color:#000; font-size:12px'>{{ option.name }}</strong>
                         </template>
-
                     </multiselect>
 
                     <!--
@@ -88,7 +88,7 @@
             </div>
 
             <!--#SHOW - DISABLED -->
-            <div class="row" v-show="this.status === 'Tutor Cancelled'">
+            <div class="row mt-2" v-show="this.status === 'Tutor Cancelled'">
                 <div class="col-md-3">Email Type:</div>
                 <div class="col-md-9">
                     <!--@todo: show only if client is cancelling -->
@@ -100,11 +100,10 @@
                         >
                     </select>
                 </div>
-            </div>
-
- 
+            </div> 
   
-            <div class="row" v-show="this.status === 'Client Reserved' || this.status === 'Client Reserved B'">
+            <!--#Email Type-->
+            <div class="row mt-2" v-show="this.status === 'Client Reserved' || this.status === 'Client Reserved B'">
                 <div class="col-md-3">Email Type:</div>
                 <div class="col-md-9">                 
                     <select name="reservationType" id="reservationType" class="form-control form-control-sm hidden" ref="reservationType" v-model="reservationType">                            
@@ -625,9 +624,6 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-
-
-
 <style>
     .table-schedules td.schedTime {
         background: #d0e8f7;
@@ -789,4 +785,22 @@ export default {
         margin: 2px;           
     }
 
+    .multiselect__input {
+        color: #adadad;
+        margin-bottom: 1px;
+        padding-top: 0px;
+        font-size: 12px !important;
+        padding: 0px;
+        margin: 0px; 
+    }
+    
+    .multiselect__placeholder {
+        color: #495057;
+        display: inline-block;
+        margin-bottom: 1px;
+        padding-top: 0px;
+        font-size: 12px;
+        padding: 0px;
+        margin: 0px;
+    }
 </style>
