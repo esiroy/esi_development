@@ -107,12 +107,19 @@
                                     <!--@PLOTTER
                                     {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
                                     -->
-                                    @if(isset($lessons[date('m/d/Y', strtotime($dateFrom ." + $ctr day"))][$timeSlot['startTime']]['status']))
-                                    <div class="@php echo str_replace(' ', '_', strtolower($lessons[date('m/d/Y', strtotime($dateFrom ." + $ctr day"))][$timeSlot['startTime']]['status'])) @endphp">
-                                        <div class="client">
+
+                                    @php                                       
+                                        $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
+                                    @endphp
+
+                                    @if(isset($lessons[$dateView][$timeSlot['startTime']]['status']))
+                                    <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp">
+                                        <div class="client text-center text-white">
                                             <small>
-                                                @if (isset($lessons[date('m/d/Y', strtotime($dateFrom ." + $ctr day"))][$timeSlot['startTime']]['member_name_en'])) 
-                                                    {{$lessons[date('m/d/Y', strtotime($dateFrom ." + $ctr day"))][$timeSlot['startTime']]['member_name_en']}}
+                                                @if (isset($lessons[$dateView][$timeSlot['startTime']]['member_name_en'])) 
+                                                    <!--@todo: add a form link -->
+                                                    {{$lessons[$dateView][$timeSlot['startTime']]['status']}}
+                                                    {{$lessons[$dateView][$timeSlot['startTime']]['member_name_en']}}
                                                 @endif
                                             </small>
                                         </div>

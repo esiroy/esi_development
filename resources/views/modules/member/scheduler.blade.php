@@ -65,18 +65,46 @@
                                     </div>
                                 </td>
 
-
-            
-
                                 @foreach($lessonSlots as $lessonSlot) 
                                 <td>               
                                     @php 
-                                        $startTimePH = date('h:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
+                                        $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
                                     @endphp
+
+                                    
                                     @foreach ($lessons as $lesson)
-                                        @if(isset($lesson[$startTimePH])) 
-                                            <a href="#">reserve tutor</a>
-                                        @endif
+                                       @if($lesson->tutor_id == $tutor->id)                                           
+                                            @if ( $startTimePH ==  $lesson->start_time)
+
+                                                @if ($lesson->status == 'completed') 
+                                                    <a href="javascript:void(0)">completed</a>                                                    
+                                                @elseif(strtolower($lesson->status) == 'tutor scheduled')
+                                                    <!--@todo: open popup if pressed.
+                                                        @question: 予約してもいいですか？
+                                                        @yes: はい
+                                                        @no: いいえ
+                                                    -->
+                                                    <a href="javascript:void(0)">予約</a>
+                                                @elseif(strtolower($lesson->status) == 'client reserved' || strtolower($lesson->status) == 'client reserved b') 
+                                                    <!--@todo: 
+                                                            @cancelMsgBox: このレッスンをキャンセルしてもいいですか？
+                                                    -->
+                                                    <div style="padding:15px">
+                                                        <div id="{{ $lesson->id }}" style="float:right">
+                                                            <a href="javascript:void(0)"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                                        </div>
+                                                        <br/>
+                                                        <a href="javascript:void(0)">済</a>
+                                                    </div>
+                                                @elseif(strtolower($lesson->status) == 'suppressed schedule' ) 
+                                                    {{'済他'}}
+                                                @elseif(strtolower($lesson->status) == 'client not available')
+                                                    {{'欠席'}}
+                                                @elseif(strtolower($lesson->status) == 'tutor cancelled') 
+                                                    {{ "予約" }}
+                                                @endif                                               
+                                            @endif
+                                       @endif
                                     @endforeach                                    
                                 </td>
                                 @endforeach     

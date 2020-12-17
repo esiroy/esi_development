@@ -31,6 +31,8 @@ class LessonController extends Controller
     {
         $this->middleware('auth'); //->except();
 
+   
+
         $this->timeSlots = array(
             ['id'=> 1, 'startTime'=> '10:00', 'endTime'=> '11:00'],
             ['id'=> 2, 'startTime'=> '10:30', 'endTime'=> '11:30'],
@@ -71,6 +73,13 @@ class LessonController extends Controller
      */
     public function index(Lesson $lesson, Request $request)
     {
+
+        if(Gate::denies('admin_access')) {
+            //redirect to home page
+            return redirect(url('home'));
+        }     
+
+
         if(Gate::allows('admin_lesson_scheduler_access')) 
         {
             //$status = Status::all();      

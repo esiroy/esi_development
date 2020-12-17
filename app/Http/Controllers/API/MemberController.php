@@ -21,9 +21,22 @@ use App\Models\Member;
 use App\Models\MemberLesson;
 use App\Models\Purpose;
 use App\Models\MemberDesiredSchedule;
+use App\Models\Lesson;
 
 class MemberController extends Controller
 {
+
+    public function cancelSchedule($scheduleID) 
+    {
+
+        //@todo: refund points if status is [client reserved]
+        //@todo : no refund points if status if [client reserved b]
+        //@todo: (cancellation is 3 hours grace period)
+
+
+
+    }
+
     /**
      * Store a newly created resource in storage.
      *

@@ -14,6 +14,21 @@ class Lesson extends Model
     protected $guarded = array('created_at', 'updated_at');
 
 
+    /**
+    * PLOT RESERVATIONS FOR USERS 
+    * @param  $dateFrom 
+    * @return lessons
+
+    */
+    public function getReservations($dateFrom, $dateTo) 
+    {
+      
+        $lessonItems = Lesson::where('scheduled_at', '>=', $dateFrom)->where('scheduled_at', '<=', $dateTo)->get();
+        return $lessonItems;
+    }    
+
+
+
     public function getMemberScheduledLesson($memberID) 
     {
         $member = Member::find($memberID);        
@@ -35,6 +50,8 @@ class Lesson extends Model
 
     public function getTutorLessons($tutorID, $dateFrom, $dateTo) 
     {
+
+      
         $lessons = [];
         
         $tutor = Tutor::find($tutorID);
@@ -57,6 +74,12 @@ class Lesson extends Model
                 $fname_jp = "";
             }
 
+            /*
+            echo "<pre>";
+            print_r ($lessonItem);
+            echo "</pre>";
+            */
+
             $dateKey = date('m/d/Y', strtotime($lessonItem->scheduled_at));
 
             $lessons[$dateKey][$lessonItem->start_time] = [
@@ -73,7 +96,8 @@ class Lesson extends Model
                 'creator_id'        => $lessonItem->creator_id,
                 'member_id'         => $lessonItem->member_id,                    
                 'member_name_en'    => $fname,
-                'member_name_jp'    => $fname_jp
+                'member_name_jp'    => $fname_jp,
+                'status'            => $lessonItem->status,
             ];            
         }     
         
