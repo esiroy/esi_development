@@ -89,12 +89,12 @@
           <div class="container px-0">
             <nav class="nav nav-pills flex-column flex-sm-row">
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/lesson') }}">My Page</a>
+
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/member') }}">User</a>
 
                 @can('manage_access', Auth::user())
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('admin/questionnaires') }}">Manage</a>
                 @endcan
-
                 
                 @can('report_access', Auth::user())
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/lessons') }}">Report</a>
