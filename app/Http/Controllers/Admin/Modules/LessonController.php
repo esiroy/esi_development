@@ -31,8 +31,6 @@ class LessonController extends Controller
     {
         $this->middleware('auth'); //->except();
 
-   
-
         $this->timeSlots = array(
             ['id'=> 1, 'startTime'=> '10:00', 'endTime'=> '11:00'],
             ['id'=> 2, 'startTime'=> '10:30', 'endTime'=> '11:30'],
@@ -73,13 +71,6 @@ class LessonController extends Controller
      */
     public function index(Lesson $lesson, Request $request)
     {
-
-        if(Gate::denies('admin_access')) {
-            //redirect to home page
-            return redirect(url('home'));
-        }     
-
-
         if(Gate::allows('admin_lesson_scheduler_access')) 
         {
             //$status = Status::all();      
@@ -164,7 +155,9 @@ class LessonController extends Controller
 
             //@todo: Tutor - get the lessons of the current user only since this is tutor  
             $tutor = Tutor::where('user_id', Auth::user()->id)->first();
+            
             $lessons = $lesson->getTutorLessons($tutor->id, $dateFrom, $dateTo);
+
             return view('admin.modules.tutor.lessons', compact('tutorLessons',  'dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));
             
         } else {

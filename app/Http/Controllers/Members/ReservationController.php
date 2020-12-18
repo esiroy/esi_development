@@ -149,6 +149,7 @@ class ReservationController extends Controller
                 }
             }*/
             
+            
 
             return view('/modules/member/scheduler', compact('dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'lessons', 'lessonSlots'));
 

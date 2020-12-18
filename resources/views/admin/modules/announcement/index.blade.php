@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.adminsimple')
 
 @section('content')
 <div class="container bg-light px-0">
@@ -20,71 +20,177 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Members</li>
+                <li class="breadcrumb-item active" aria-current="page">Announcements</li>
             </ol>
         </nav>
 
-
         <div class="container">
+
+            @if (session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+            @elseif (session('error_message'))
+            <div class="alert alert-danger">
+                {{ session('error_message') }}
+            </div>
+            @endif
+
+
             <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
                     Announcements
                 </div>
                 <div class="card-body">
 
                     <div class="row">
                         <div class="col-12 pt-3">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                <thead>                                    
-                                    <tr>
-                                        <th class="small text-center">From </th>
-                                        <th class="small text-center">To </th>
-                                        <th class="small text-center">Announcement</th>
-                                        <th class="small text-center">Hidden</th>
-                                        <th class="small text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th class="small text-center">2012/3/30 18:29</th>
-                                        <th class="small text-center">2012/3/30 18:29</th>
-                                        <th class="small text-center">
-                                            <div>Lorem epsum Lorem epsum Lorem epsum dollor</div>
-                                            <div>Lorem epsum Lorem epsum Lorem epsum dollor</div>
-                                            <div>Lorem epsum Lorem epsum Lorem epsum dollor</div>
-                                            <div>Lorem epsum Lorem epsum Lorem epsum dollor</div>
-                                            <div>Lorem epsum Lorem epsum Lorem epsum dollor</div>
-                                            <div>Lorem epsum Lorem epsum Lorem epsum dollor</div><div>Lorem epsum Lorem epsum Lorem epsum dollor</div>
-                                            <p>Lorem epsum Lorem epsum Lorem epsum dollor</p>
-                                            <p>Lorem epsum Lorem epsum Lorem epsum dollor</p><p>Lorem epsum Lorem epsum Lorem epsum dollor</p><p>Lorem epsum Lorem epsum Lorem epsum dollor</p><p>Lorem epsum Lorem epsum Lorem epsum dollor</p><p>Lorem epsum Lorem epsum Lorem epsum dollor</p>
-                                            <p>Lorem epsum Lorem epsum Lorem epsum dollor</p><p>Lorem epsum Lorem epsum Lorem epsum dollor</p><p>Lorem epsum Lorem epsum Lorem epsum dollor</p><p>Lorem epsum Lorem epsum Lorem epsum dollor</p>
-                                        </th>
-                                        <th class="small text-center">false</th>
-                                        <th class="small text-center">
-                                            <a href="#">Edit</a> |  <a href="#">Delete</a>
-                                        </th>
-                             
-                                    </tr>
-                                </tbody>
-                                </table>
+                            <div class="float-right">
+                                <ul class="pagination pagination-sm">
+                                    <small class="mr-4 pt-2">Page :</small>
+                                    {{ $announcements->appends(request()->query())->links() }}
+                                </ul>
                             </div>
-                          
                         </div>
                     </div>
+
+                    <div class="row">
+                        <div class="col-12 pt-3">
+                            <div class="table-responsive ">
+                                <table class="table table-bordered table-sm table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">From </th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">To </th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Announcement</th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Hidden</th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @foreach($announcements as $announcement)
+                                        <tr>
+                                            <th class="small text-center">{{ $announcement->date_from }}</th>
+                                            <th class="small text-center">{{ $announcement->date_to }}</th>
+                                            <th class="small text-center">
+                                                {!!html_entity_decode(htmlspecialchars($announcement->body)) !!}
+
+                                            </th>
+                                            <th class="small text-center">{{ $announcement->is_hidden ? 'true' : 'false' }}</th>
+                                            <th class="small text-center">
+                                                <a href="{{ route('admin.announcement.edit', $announcement->id)}}">Edit</a> |
+                                                <a href="{{ route('admin.announcement.destroy', ['announcement' => $announcement]) }}" onclick="event.preventDefault();document.getElementById('delete-form-{{ $announcement->id }}').submit();">Delete
+                                                </a>
+                                                <form id="delete-form-{{ $announcement->id }}" action="{{ route('admin.announcement.destroy', ['announcement' => $announcement]) }}" method="POST" style="display: none;">
+                                                    @method("DELETE")
+                                                    @csrf
+                                                </form>
+                                            </th>
+                                        </tr>
+                                        @endforeach
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 pt-3">
+                            <div class="float-right">
+                                <ul class="pagination pagination-sm">
+                                    <small class="mr-4 pt-2">Page :</small>
+                                    {{ $announcements->appends(request()->query())->links() }}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
                 </div>
             </div>
             <!--[end] card-->
-
-
         </div>
 
 
+        <div class="container mt-4">
+            <!--[start card] -->
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
+                    Announcements
+                </div>
+                <div class="card-body">
+
+                    <form action="{{ route("admin.announcement.store") }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <table cellspacing="9" cellpadding="0" class="table table-borderless">
+                            <tbody>
+                                <tr valign="top">
+                                    <td>Announcement</td>
+                                    <td>:</td>
+                                    <td>
+                                        <textarea required style="width: 450px; height: 300px; display: none;" id="body" name="body"></textarea>
+                                    </td>
+                                </tr>
+
+                                <tr valign="top">
+                                    <td>From</td>
+                                    <td>:</td>
+                                    <td><input required type="date" id="dateFrom*" name="dateFrom" value="" class="hasDatepicker"></td>
+                                </tr>
+
+                                <tr valign="top">
+                                    <td>To</td>
+                                    <td>:</td>
+                                    <td><input required type="date" id="dateTo*" name="dateTo" value="" class="hasDatepicker"></td>
+                                </tr>
+
+                                <tr valign="top">
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="2"><input type="checkbox" id="isHidden" name="isHidden"> Hide this announcement </td>
+                                </tr>
+
+                                <tr valign="top">
+                                    <td></td>
+                                    <td></td>
+                                    <td colspan="4">
+                                        <input type="checkbox" name="usertypes[]" value="ADMINISTRATOR"> Administrator
+                                        <input type="checkbox" name="usertypes[]" value="MANAGER"> MANAGER
+                                        <input type="checkbox" name="usertypes[]" value="MEMBER"> Member
+                                        <input type="checkbox" name="usertypes[]" value="AGENT"> Agent
+                                        <input type="checkbox" name="usertypes[]" value="TUTOR"> Tutor
+                                    </td>
+                                </tr>
+
+                                <tr valign="top">
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <input type="submit" value="Save" class="btnPink">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
 
 
     </div>
 </div>
+@endsection
 
-</div>
+
+@section('scripts')
+<script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('body');
+
+</script>
 @endsection

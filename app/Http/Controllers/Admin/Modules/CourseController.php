@@ -5,6 +5,12 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+
+use App\Models\Tutor;
+use App\Models\Member;
+use App\Models\Lesson;
+use App\Models\CourseCategory;
+
 class CourseController extends Controller
 {
     /**
@@ -14,7 +20,13 @@ class CourseController extends Controller
      */
     public function index()
     {
-        return view('admin.modules.course.index');
+
+        $categories = CourseCategory::orderBy('parent_course_category', 'ASC')
+                        ->where('valid', 1)
+                        ->paginate(50);
+        
+                        
+        return view('admin.modules.course.index', compact('categories'));
     }
 
     /**
@@ -35,7 +47,16 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = [            
+            'name'						=> $request->name,
+            'parent_course_category'    => $request->parentid,
+			'description'				=> $request->body,      
+			'valid'						=> true
+        ];
+        $item = CourseCategory::create($data);
+
+        return redirect()->route('admin.course.index')->with('message', 'Course category added successfully!');
+
     }
 
     /**
@@ -55,9 +76,13 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(CourseCategory $courseCategory)
     {
-        //
+
+        $categories = CourseCategory::orderBy('parent_course_category', 'ASC')->get();
+                        
+								
+        return view('admin.modules.course.edit', compact('courseCategory', 'categories'));        
     }
 
     /**

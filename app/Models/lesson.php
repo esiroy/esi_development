@@ -105,7 +105,7 @@ class Lesson extends Model
         
     }
         
-
+    /*GET LESSONS ITEM FORM ADMINISTORATOR VIEW */
     public function getLessons($date, $duration) 
     {  
         $tutors = Tutor::all();

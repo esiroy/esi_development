@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}" >
 </head>
 <body>
-    <div id="app">
+    <div>
         <main class="py-0">
             @yield('content')
         </main>

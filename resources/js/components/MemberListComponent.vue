@@ -31,6 +31,7 @@
 
                 <template v-slot:cell(actions)="row">
                     <a :href="'member/account/'+row.item.id" >Account</a> |
+                    
                     <a :href="'member/'+row.item.id+'/edit'" >Edit</a> | 
                     <form :action="'member/'+row.item.id" method="POST" onsubmit="return confirm('are you sure you want to delete?');"
                         style="display: inline-block;">
@@ -80,6 +81,18 @@
 <script>
 export default {
     props: {
+        can_member_access: {
+            type:Boolean
+        },
+        can_member_edit: {
+			type: Boolean
+        },
+        can_member_view: {
+            type:Boolean
+        },
+        can_member_delete: {
+			type: Boolean
+        },
         csrf_token: {
             type: String
         },

@@ -5,6 +5,15 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+
+use App\Models\Tutor;
+use App\Models\Member;
+use App\Models\Lesson;
+use App\Models\Announcement;
+use App\Models\AnnouncementUserType;
+
+use Auth;
+
 class AnnouncementController extends Controller
 {
     /**
@@ -14,7 +23,12 @@ class AnnouncementController extends Controller
      */
     public function index()
     {
-        return view('admin.modules.announcement.index');
+        $announcements = Announcement::orderBy('id', 'desc')
+                        ->where('valid', 1)
+                        ->paginate(30);
+        
+        
+        return view('admin.modules.announcement.index', compact('announcements'));
     }
 
     /**
@@ -35,7 +49,32 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = [            
+            'date_from'         => date('Y-m-d H:i:s', strtotime($request->dateFrom)),
+            'date_to'           => date('Y-m-d H:i:s', strtotime($request->dateTo)),
+            'body'              => $request->body,
+            'updatedby_user_id' => Auth::user()->id,
+            'valid'             => true,
+            'is_hidden'         => ($request->isHidden == "on")? 1 : 0
+        ];
+        $item = Announcement::create($data);
+
+        //announcement user type
+        if (is_array($request->usertypes)) {
+            foreach ($request->usertypes as $type) 
+            {
+                $type = [            
+                    'announcement_id'    => $item->id,
+                    'element'            => $type
+                ];
+                AnnouncementUserType::create($type);
+            }
+    
+        }
+
+
+        return redirect()->route('admin.announcement.index')->with('message', 'Announcement added successfully!');
+         
     }
 
     /**
@@ -55,9 +94,9 @@ class AnnouncementController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Announcement $announcement)
     {
-        //
+        return view('admin.modules.announcement.edit', compact('announcement'));
     }
 
     /**
@@ -78,8 +117,9 @@ class AnnouncementController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Announcement $announcement)
     {
-        //
+        $announcement->delete();
+        return redirect()->back()->with('message','Announcement has been deleted successfully');
     }
 }

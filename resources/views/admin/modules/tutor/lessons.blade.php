@@ -103,19 +103,20 @@
 
                                 @for($ctr=0; $ctr <= $lessonDays; $ctr++) 
                                 <td class>
-
                                     <!--@PLOTTER
                                     {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
                                     -->
-
                                     @php                                       
                                         $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
-                                    @endphp
+                                    @endphp                              
 
                                     @if(isset($lessons[$dateView][$timeSlot['startTime']]['status']))
-                                    <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp">
+
+                                    <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%">
                                         <div class="client text-center text-white">
                                             <small>
+                                                {{ $timeSlot['startTime'] }}
+
                                                 @if (isset($lessons[$dateView][$timeSlot['startTime']]['member_name_en'])) 
                                                     <!--@todo: add a form link -->
                                                     {{$lessons[$dateView][$timeSlot['startTime']]['status']}}

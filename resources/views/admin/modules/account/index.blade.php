@@ -27,15 +27,14 @@
 
         <div class="container">
             <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
                     Accounts
                 </div>
                 <div class="card-body">
 
                     <div class="row">
-                        <div class="col-12 pt-3">
-                        
+                        <div class="col-12 pt-4 pb-4">
                             Page coming soon!
 
                         </div>

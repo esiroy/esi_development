@@ -17,16 +17,14 @@
         <div class="container">
 
             <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
                     Lesson
                 </div>
                 <div class="card-body">
 
                     <form name="dateForm" method="GET">
                     <div class="row">
-                           
-
                             <div class="col-3">
                                 <label for="inputDate" class="pr-3">Date:</label>
                                 <input type="date" id="inputDate" name="inputDate" value="{{ $dateToday }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8">                            
@@ -76,7 +74,9 @@
                     <lesson-scheduler-component
                         ref="schedulesComponent"
                         :scheduled_at="'{{ $dateToday }}'"
-                        :year="{{ $year}}" :month="{{ $month }}" :day="{{ $day}}"
+                        :year="{{ $year}}" 
+                        :month="{{ $month }}" 
+                        :day="{{ $day}}"
                         :duration="{{ $shiftDuration }}"
                         :lessons="{{ json_encode($lessons) }}"
                         :tutors="{{ $tutors }}"

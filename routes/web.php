@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 Route::resource('test', 'dummyController');
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
+//Route::get('/', 'HomeController@index')->name('welcome');
+//Route::get('/home', 'FolderCreatorController@index')->name('home');
+//Route::get('/', 'ScheduleController@index')->name('welcome');
+
+//Login Form
+Route::get('/', 'Auth\LoginController@showLoginForm')->name('welcomeLogin');
+
 
 
 //User Reservation
@@ -23,13 +30,6 @@ Route::get('/memberschedule', 'Members\ReservationController@create');
 
 
 
-
-//Login Form
-Route::get('/', 'Auth\LoginController@showLoginForm')->name('welcomeLogin');
-
-//Route::get('/', 'HomeController@index')->name('welcome');
-//Route::get('/home', 'FolderCreatorController@index')->name('home');
-//Route::get('/', 'ScheduleController@index')->name('welcome');
 
 
 /* Public Folder View */
@@ -49,6 +49,9 @@ Route::post('uploader/fileUploader', 'FileUploadController@upload');
 Route::resource('download', 'DownloadController');
 
 
+/*Customer Support */
+Route::resource('customersupport', 'CustomerSupportController');
+
 
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
@@ -64,8 +67,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/', 'Modules\LessonController');
 
         /*This module alias */
-        Route::resource('/dashboard', 'Modules\LessonController');
-        Route::resource('/lesson', 'Modules\LessonController');
+        Route::resource('/dashboard', 'Modules\ScheduleItemController');
+        Route::resource('/lesson', 'Modules\ScheduleItemController');
 
         
         
@@ -92,7 +95,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
         //tutor
         Route::delete('/tutor/destroy', 'Modules\TutorController@massDestroy')->name('tutor.massDestroy');
-        Route::post('/tutor/resetPassword', 'Modules\TutorController@resetPassword')->name('tutor.resetPassword');
+        Route::post('/tutor/resetPassword/{id}', 'Modules\TutorController@resetPassword')->name('tutor.resetPassword');
         Route::resource('/tutor', 'Modules\TutorController');
 
         Route::delete('/manager/destroy', 'Modules\ManagerController@massDestroy')->name('manager.massDestroy');
@@ -104,13 +107,16 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::post('/agent/updateAccount', 'Modules\AgentController@updateAccount')->name('agent.updateAccount');
 
         Route::delete('/agent/destroy', 'Modules\AgentController@massDestroy')->name('agent.massDestroy');
-        Route::post('/agent/resetPassword', 'Modules\AgentController@resetPassword')->name('agent.resetPassword');        
+        Route::post('/agent/resetPassword/{id}', 'Modules\AgentController@resetPassword')->name('agent.resetPassword');        
         Route::resource('/agent', 'Modules\AgentController');
 
         //Manage
         Route::resource('/questionnaires', 'Modules\QuestionnaireController');
         Route::resource('/announcement', 'Modules\AnnouncementController');
+
+        Route::get('/course/sort', 'Modules\CourseController@sort');
         Route::resource('/course', 'Modules\CourseController');
+
         Route::resource('/accounts', 'Modules\AccountController');
         Route::resource('/company', 'Modules\CompanyController');
 

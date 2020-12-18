@@ -21,7 +21,7 @@ use App\Models\Purpose;
 use App\Models\MemberLesson;
 use App\Models\MemberDesiredSchedule;
 
-use DB, Auth, Validator;
+use DB, Auth, Validator, Gate;
 
 class MemberController extends Controller
 {
@@ -39,7 +39,7 @@ class MemberController extends Controller
      */
     public function index(Request $request)
     {
-        //request variables      
+        //request variables        
         $member_id  = $request->member_id;
         $name       = $request->name;
         $email      = $request->email;
@@ -62,9 +62,13 @@ class MemberController extends Controller
                     ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, 
                                             attributes.name as attribute, 
                                             members.id as id,
+                                            agents.id as agent_id,
                                             tutors.name_en as main_tutor_name,
                                             members.credits as credits
                                         "));
+
+        //find the user authenticated model for Acess Control Gates
+        //$userAuthenticated  = User::find(Auth::user()->id);
 
         //@[START] USER SEARCH - if user search for a member
         if(isset($member_id) || isset($name) || isset($email)) {        
@@ -87,7 +91,29 @@ class MemberController extends Controller
         $tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();         
         $tutors = json_encode($tutorQuery);
 
-        return view('admin.modules.member.index', compact('memberships', 'shifts', 'attributes', 'tutors', 'members'));
+
+          
+        /*
+        $roles = Auth::User()->roles->pluck('title');
+        foreach ($roleItems as $roleItem) {
+            if ($role = "Tutor") {
+                echo "this is a tutor";
+            }
+        }
+          exit();
+        */
+
+
+        //MEMBER ACCESS CONTROL
+        $can_member_access  = (Gate::denies('member_acesss')) ? 'false' : 'true';
+        $can_member_delete  = (Gate::denies('member_delete')) ? 'false' : 'true';
+        $can_member_edit  = (Gate::denies('member_edit')) ? 'false' : 'true';
+        $can_member_view  = (Gate::denies('member_view')) ? 'false' : 'true';
+        
+      
+
+        return view('admin.modules.member.index', compact('memberships', 'shifts', 'attributes', 'tutors', 'members',
+                                                        'can_member_access', 'can_member_edit', 'can_member_view','can_member_delete'));
     }
 
     /**
@@ -193,6 +219,8 @@ class MemberController extends Controller
     {
         //not available
         //@todo: remove this?
+
+        echo "report card date list " . $id;
     }
 
     /**

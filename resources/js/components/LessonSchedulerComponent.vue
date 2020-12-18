@@ -623,6 +623,17 @@ export default {
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style>
+    .table td {
+        font-size: 11px;
+    }
+
+    .esi-table a, .b-table a {
+        text-decoration: none;
+        color: #c60000;
+        font-size: 11px;                
+    }    
+
+
     .table-schedules td.schedTime {
         background: #d0e8f7;
         text-align: center;
@@ -651,10 +662,10 @@ export default {
         width: 15px;
     }
 
-    a {
-        text-decoration: none;
-        color: #c60000;
-    }
+    
+    
+    
+
     .btnAdd {
         margin: 2px 2px 0 80px;
         padding: 1px 2px 1px 12px;

@@ -14,6 +14,7 @@ use App\Models\Tutor;
 use App\Models\Grade;
 use App\Models\Shift;
 use App\Models\Permission;
+use Illuminate\Support\Facades\Hash;
 
 use Auth;
 use Gate;
@@ -22,6 +23,12 @@ use Input;
 
 class TutorController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -136,7 +143,7 @@ class TutorController extends Controller
      */
     public function show($id)
     {
-        //
+      
     }
 
     /**
@@ -155,9 +162,19 @@ class TutorController extends Controller
         return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));
     }
     
-    public function resetPassword(Tutor $tutor) {
+    public function resetPassword($id, Request $request) 
+    {
+        $tutor = Tutor::find($id);
+        $userData = [
+            'password' => Hash::make($request->password)
+        ];      
+        $user = User::find($tutor->user_id);
+        $user->update($userData);
 
+        return redirect()->route('admin.tutor.edit', $id)->with('message', 'Tutor password has been updated successfully!');
     }
+
+    
     /**
      * Update the specified resource in storage.
      *
@@ -227,7 +244,7 @@ class TutorController extends Controller
             $tutor->update($tutorData);
             //$user->tutors()->sync([$tutor->id], false);  
 
-            return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been update successfully!');
+            return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been updated successfully!');
         }
     }
 
@@ -241,7 +258,12 @@ class TutorController extends Controller
     {
         //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
+        $user = User::find($tutor->user_id);
+        $user->delete();
+
+        //delete tutor if there is still added
         $tutor->delete();
+
         return back()->with('message', 'Tutor has been deleted successfully!');
     }
 

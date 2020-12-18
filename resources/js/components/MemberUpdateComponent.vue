@@ -772,14 +772,14 @@ export default {
 	{
 		console.log(this.member);
 		//load to user
-		this.user.agent_id						= this.member.id;     
+		this.user.agent_id						= this.member.agent_id;     
 		this.user.agent_name_en					= this.member.name_en;
 
 		this.user.first_name					= this.member.first_name;
 		this.user.last_name						= this.member.last_name;
 		this.user.attribute						= this.member.attribute;
 		this.user.email							= this.member.email;
-		this.user.username						= this.member.username;
+		this.user.username						= this.member.nickname;
 		this.user.gender						= this.member.gender;
 		
 		this.user.communication_app             = this.member.communication_app_name;

@@ -5,6 +5,13 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\Tutor;
+use App\Models\Member;
+use App\Models\Lesson;
+use App\Models\Questionnaire;
+use App\Models\QuestionnaireItem;
+
+
 class QuestionnaireController extends Controller
 {
     /**
@@ -12,9 +19,30 @@ class QuestionnaireController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.modules.questionnaires.index');
+        //@todo: items_per_page from user settings
+        $items_per_page = 10;
+
+        if (isset($request->date_from) && isset($request->date_to)) 
+        {
+            $from = date($request->date_from);
+            $to = date($request->date_to);      
+
+            $questionnaires = Questionnaire::whereBetween('created_at', [$from, $to])->orderBy('created_at', 'DESC')->paginate(10);
+
+
+        } else {            
+            $questionnaires = Questionnaire::orderBy('questionnaire.id', 'ASC')
+                            //->join('lessons', 'questionnaire.schedule_item_id', '=', 'lessons.id')
+                            ->paginate(10);
+        }
+        
+
+      
+        $questionnaireItem = New QuestionnaireItem();
+
+        return view('admin.modules.questionnaires.index', compact('questionnaires', 'questionnaireItem'));
     }
 
     /**

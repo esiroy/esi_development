@@ -4,16 +4,8 @@
 
 <div class="container bg-light px-0">
 
-    <div class="bg-lightblue2">
-        <div class="container px-0">
-            <nav class="submenu nav nav-pills flex-column flex-sm-row">
-                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-left border-primary active" href="{{ url('admin/member') }}">Member</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/tutor') }}">Tutor</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/manager') }}">Manager</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/agent') }}">Agent</a>
-            </nav>
-        </div>
-    </div>
+
+    @include('admin.modules.member.includes.menu')
 
     <div class="esi-box">
 

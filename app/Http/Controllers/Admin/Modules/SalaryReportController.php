@@ -18,6 +18,7 @@ class SalaryReportController extends Controller
 
         $shift = Shift::all();
         
+        
     }
 
     /**

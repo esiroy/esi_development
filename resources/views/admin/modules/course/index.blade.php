@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.adminsimple')
 
 @section('content')
 <div class="container bg-light px-0">
@@ -20,78 +20,97 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Members</li>
+                <li class="breadcrumb-item active" aria-current="page">Course</li>
             </ol>
         </nav>
 
-
         <div class="container">
-            <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
-                    Materials
-                </div>
-                <div class="card-body">
-
-                    <div class="row">
-                        <div class="col-12 pt-3">
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                <thead>                                    
-                                    <tr>
-
-                                        <th class="small text-center">Course</th>
-                                        <th class="small text-center">Parent</th>
-                                        <th class="small text-center">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th class="small text-center">                                           
-                                            <div class="font-weight-bold">Lorem epsum Lorem epsum Lorem epsum dollor</div>
-                                        </th>
-                                        <th class="small text-center">Category 1</th>
-                                        <th class="small text-center">
-                                            <a href="#">Edit</a> | <a href="#">Sort</a> | <a href="#">Delete</a>
-                                        </th>                             
-                                    </tr>
-                                    <tr>
-                                        <th class="small text-center">                                           
-                                            <div class="font-weight-bold">epsum dollor</div>
-                                        </th>
-                                        <th class="small text-center">Category 2</th>
-                                        <th class="small text-center">
-                                            <a href="#">Edit</a> | <a href="#">Sort</a> | <a href="#">Delete</a>
-                                        </th>                             
-                                    </tr>
-                                    <tr>
-                                        <th class="small text-center">                                           
-                                            <div class="font-weight-bold">Lorem </div>
-                                        </th>
-                                        <th class="small text-center">Category 3</th>
-                                        <th class="small text-center">
-                                            <a href="#">Edit</a> | <a href="#">Sort</a> | <a href="#">Delete</a>
-                                        </th>                             
-                                    </tr>                                    
-
-                                </tbody>
-                                </table>
-                            </div>
-                          
-                        </div>
+            <div class="row">
+                <div class="col-md-12">
+                    @if (session('message'))
+                    <div class="alert alert-success">
+                        {{ session('message') }}
                     </div>
+                    @elseif (session('error_message'))
+                    <div class="alert alert-danger">
+                        {{ session('error_message') }}
+                    </div>
+                    @endif
                 </div>
             </div>
-            <!--[end] card-->
-
-
         </div>
 
+        <div class="container pt-4">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
+                    Category Form
+                </div>
+                <div class="card-body esi-card-body">
+
+                    <form action="{{ route("admin.course.store") }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <table cellspacing="9" cellpadding="0" class="table table-borderless">
+                            <tbody>
+
+                                <tr valign="top">
+                                    <td>Parent Category</td>
+                                    <td>:</td>
+                                    <td>
+                                        <select name="parentid">
+                                            <option value="">-- Select --</option>
+                                            @foreach($categories as $category)
+                                            <option value="">{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                </tr>
 
 
+                                <tr valign="top">
+                                    <td>Name</td>
+                                    <td>:</td>
+                                    <td>
+                                        <input required type="text" id="name*" name="name">
+                                    </td>
+                                </tr>
+
+                                <tr valign="top">
+                                    <td>Category Description</td>
+                                    <td>:</td>
+                                    <td>
+                                        <textarea id="body" name="body"></textarea>
+                                    </td>
+                                </tr>
+
+
+
+                                <tr valign="top">
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <input type="submit" value="Save" class="btnPink">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
 
     </div>
 </div>
 
 </div>
+@endsection
+
+
+@section('scripts')
+<script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace('body');
+
+</script>
 @endsection

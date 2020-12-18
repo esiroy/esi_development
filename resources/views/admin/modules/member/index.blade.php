@@ -3,16 +3,7 @@
 @section('content')
 <div class="container bg-light px-0">
 
-    <div class="bg-lightblue2">
-        <div class="container px-0">
-            <nav class="submenu nav nav-pills flex-column flex-sm-row">
-                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-left border-primary active" href="{{ url('admin/member') }}">Member</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/tutor') }}">Tutor</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/manager') }}">Manager</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/agent') }}">Agent</a>
-            </nav>
-        </div>
-    </div>
+    @include('admin.modules.member.includes.menu')
 
     <div class="esi-box">
         <nav aria-label="breadcrumb">
@@ -62,7 +53,9 @@
 
                     <div class="row">
                         <div class="col-12 pt-3">
+                            @can('report_access', Auth::user())
                             <button type="button" class="btn btn-primary btn-sm">Generate Member List</button>
+                            @endcan
                             <button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button>
                             <button type="button" class="btn btn-primary btn-sm">Sort Expired</button>
                         </div>
@@ -84,6 +77,12 @@
                 :memberships="{{ json_encode($memberships) }}"
                 :attributes="{{ json_encode($attributes) }}"
                 :shifts="{{ json_encode($shifts) }}"
+
+                :can_member_access="{{ $can_member_access }}"                
+                :can_member_edit="{{ $can_member_edit }}"
+                :can_member_delete="{{ $can_member_delete }}"
+                :can_member_view="{{ $can_member_view }}"
+
                 api_token="{{ Auth::user()->api_token }}"
                 csrf_token="{{ csrf_token() }}"             
             />
