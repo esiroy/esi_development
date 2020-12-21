@@ -22,7 +22,7 @@ class IndustriesTableSeeder extends Seeder
             [
                 'id'            => 2,
                 'name'          => "Public School",
-                'value'         => "PRIVATE_SCHOOL"
+                'value'         => "PUBLIC_SCHOOL"
             ],
             [
                 'id'            => 3,
