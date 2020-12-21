@@ -76,13 +76,15 @@ class CourseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(CourseCategory $courseCategory)
+    public function edit(CourseCategory $course)
     {
 
-        $categories = CourseCategory::orderBy('parent_course_category', 'ASC')->get();
-                        
+        $categories = CourseCategory::get();
+        $courseCategory = CourseCategory::find($course->id);
+
+       
 								
-        return view('admin.modules.course.edit', compact('courseCategory', 'categories'));        
+        return view('admin.modules.course.edit', compact('course','courseCategory', 'categories'));        
     }
 
     /**
@@ -94,7 +96,17 @@ class CourseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $course = CourseCategory::find($id);
+
+        $data = [            
+            'name'						=> $request->name,
+            'parent_course_category'    => $request->parentid,
+			'description'				=> $request->body,      
+			'valid'						=> true
+        ];
+        $item = $course->update($data);
+
+        return redirect()->route('admin.course.index')->with('message', 'Course category added successfully!');
     }
 
     /**
@@ -105,6 +117,8 @@ class CourseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $item = CourseCategory::find($id);
+        $item->delete();
+        return redirect()->back()->with('success','Category deleted successfully');
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\ScheduleItem;
+
 class ReportController extends Controller
 {
     /**
@@ -12,9 +14,46 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.modules.report.index');
+
+        $per_page = 15;
+        $from   = date("Y年 m月 j日");
+        $to   = null;
+
+        if (isset($request->status)) {
+
+            $status = str_replace(" ", "_", strtoupper($request->status));
+            $schedules = ScheduleItem::where('schedule_status', $status )->orderBy('created_at', 'DESC')->paginate(30);
+
+
+        } 
+        else if (isset($request->date_from) && isset($request->date_to)) 
+        {
+            $from = date($request->date_from);
+            $to = date($request->date_to);      
+
+            $schedules = ScheduleItem::whereBetween('created_at', [$from, $to])
+                    ->orderBy('created_at', 'DESC')
+                    ->paginate($per_page);
+            
+        } 
+        else if (isset($request->date_from) && isset($request->date_to) && isset($request->status)) 
+        {
+            $from = date($request->date_from);
+            $to = date($request->date_to);  
+
+            $schedules = ScheduleItem::whereBetween('created_at', [$from, $to])
+            ->where('schedule_status', $request->status)
+            ->orderBy('created_at', 'DESC')
+            ->paginate($per_page);
+
+        } else {
+            $schedules = ScheduleItem::paginate($per_page);
+        }
+
+       
+        return view('admin.modules.report.index', compact('schedules', 'date', 'from', 'to'));
     }
 
 

@@ -40,6 +40,42 @@
             </div>
         </div>
 
+
+        <div class="container pt-4">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
+
+                    <table class="table esi-table">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Parent</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($categories as $category)
+                            <tr>
+                                <td class="small">{{ $category->name }}</td>
+                                <td>{{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}</td>
+                                <td>
+                                    <a href="{{ route('admin.course.edit', ['course' => $category->id]) }}">Edit</a> |
+                                    <a href="{{ route('admin.course.destroy', ['course' => $category->id]) }}" onclick="event.preventDefault();document.getElementById('delete-form-{{ $category->id }}').submit();">Delete
+                                    </a>
+                                    <form id="delete-form-{{ $category->id }}" action="{{ route('admin.course.destroy', ['course' => $category->id]) }}" method="POST" style="display: none;">
+                                        @method("DELETE")
+                                        @csrf
+                                    </form>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+
         <div class="container pt-4">
             <div class="card esi-card">
                 <div class="card-header esi-card-header">

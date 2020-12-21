@@ -26,6 +26,22 @@
 }
 
 
+/*background*/
+.bg-gray {
+    background-color: #e2e2e2;
+}
+
+.grayBackgroundBox {
+    background: url(../images/bgGray.gif);
+    padding: 10px;
+}
+
+.grayBox {
+    border: 2px solid #eeeeee;
+    padding: 10px;
+    margin: 20px 0 0 0;
+}
+
 .submenu.nav {
     text-decoration: none;
     font: bold 12px Arial;
@@ -203,5 +219,29 @@
     background: #fff;
     font: bold 14px Arial;
     
+}
+
+a.blue {
+    font: normal 12px Arial;
+    color: #01abdd;
+    text-decoration: none;
+}
+
+a.blue:hover {
+    font: normal 12px Arial;
+    color: #006684;
+    text-decoration: none;    
+}
+
+a.red {
+    font: normal 12px Arial;
+    color: #e9333f;
+    text-decoration: none;  
+}
+
+a.red:hover {   
+    font: normal 12px Arial;
+    color: #7b0009;
+    text-decoration: none;      
 }
 

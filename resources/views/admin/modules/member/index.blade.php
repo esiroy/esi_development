@@ -67,18 +67,29 @@
                                 :members="{{ json_encode($members) }}"
                                 api_token="{{ Auth::user()->api_token }}"
                                 csrf_token="{{ csrf_token() }}"                            
+
+                                :can_member_access="{{ $can_member_access }}"                
+                                :can_member_edit="{{ $can_member_edit }}"
+                                :can_member_delete="{{ $can_member_delete }}"
+                                :can_member_view="{{ $can_member_view }}"
+
                             />
                         </div>
                     </div>
                 </div>
             </div>
+
+            
             <!--Member List -->
-            <member-create-component
+
+            @if ($can_member_create)
+            <member-create-component                
                 :memberships="{{ json_encode($memberships) }}"
                 :attributes="{{ json_encode($attributes) }}"
                 :shifts="{{ json_encode($shifts) }}"
 
-                :can_member_access="{{ $can_member_access }}"                
+                :can_member_access="{{ $can_member_access }}"
+                :can_member_create="{{ $can_member_create }}"                
                 :can_member_edit="{{ $can_member_edit }}"
                 :can_member_delete="{{ $can_member_delete }}"
                 :can_member_view="{{ $can_member_view }}"
@@ -86,6 +97,8 @@
                 api_token="{{ Auth::user()->api_token }}"
                 csrf_token="{{ csrf_token() }}"             
             />
+            @endif
+
         </div>
 
     </div>

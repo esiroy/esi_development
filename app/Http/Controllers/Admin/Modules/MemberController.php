@@ -32,6 +32,20 @@ class MemberController extends Controller
     }
     
     
+ /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    { 
+        $member = Member::where('id', $id)->first();
+
+        return view('admin.modules.member.memberInfo', compact('member'));
+      
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -106,6 +120,8 @@ class MemberController extends Controller
 
         //MEMBER ACCESS CONTROL
         $can_member_access  = (Gate::denies('member_acesss')) ? 'false' : 'true';
+        $can_member_create  = (Gate::denies('can_member_create')) ? 'false' : 'true';
+
         $can_member_delete  = (Gate::denies('member_delete')) ? 'false' : 'true';
         $can_member_edit  = (Gate::denies('member_edit')) ? 'false' : 'true';
         $can_member_view  = (Gate::denies('member_view')) ? 'false' : 'true';
@@ -113,7 +129,8 @@ class MemberController extends Controller
       
 
         return view('admin.modules.member.index', compact('memberships', 'shifts', 'attributes', 'tutors', 'members',
-                                                        'can_member_access', 'can_member_edit', 'can_member_view','can_member_delete'));
+                                                        'can_member_access', 'can_member_create','can_member_edit', 
+                                                        'can_member_view','can_member_delete'));
     }
 
     /**
@@ -209,19 +226,7 @@ class MemberController extends Controller
         //api storing
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //not available
-        //@todo: remove this?
-
-        echo "report card date list " . $id;
-    }
+   
 
     /**
      * Show the form for editing the specified resource.

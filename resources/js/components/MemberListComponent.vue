@@ -14,30 +14,48 @@
                     {{ row.item.communication_app_name }}: {{ row.item.communication_app_username }}
                 </template>
 
-                <template v-slot:cell(class)="row">                    
-                    <a :href="'member/schedulelist/'+row.item.id" alt="Summary List of Schedules" title="Summary List of Schedules"><img src="/images/iClass.jpg"></a>
+                <template v-slot:cell(class)="row">          
+                    <div class="text-center">          
+                        <a :href="'member/schedulelist/'+row.item.id" alt="Summary List of Schedules" title="Summary List of Schedules"><img src="/images/iClass.jpg"></a>
+                    </div>
                 </template>   
 
                 <template v-slot:cell(history)="row">
-                    <a :href="'member/paymenthistory/'+row.item.id" alt="Payment History" title="Payment History"><img src="/images/iHistory.jpg"></a>
+                    <div class="text-center">
+                        <a :href="'member/paymenthistory/'+row.item.id" alt="Payment History" title="Payment History"><img src="/images/iHistory.jpg"></a>
+                    </div>
                 </template>
                 <template v-slot:cell(report_card)="row">
-                    <a :href="'member/reportcardlist/'+row.item.id" alt="List of Report Card" title="List of Report Card"><img src="/images/iReportCard.jpg"></a>
+                    <div class="text-center">
+                        <a :href="'reportcardlist/'+row.item.id" alt="List of Report Card" title="List of Report Card"><img src="/images/iReportCard.jpg"></a>
+                    </div>
                 </template>
 
                 <template v-slot:cell(writing_report)="row">
-                    <a href="member/reportcarddatelist" alt="List of Monthly Report Card" title="List of Monthly Report Card"><img src="/images/iMonthlyRC.jpg"></a>
+                    <div id="monthly_report_card" class="text-center">
+                        <a :href="'reportcarddatelist/'+row.item.id" alt="List of Monthly Report Card" title="List of Monthly Report Card"><img src="/images/iMonthlyRC.jpg"></a>  
+                    </div>
+                    <div class="write_report hide" style="background-color:#fff">
+                        <a :href="'reportcarddate/'+row.item.id" class="small red">Write Grade</a>
+                    </div>                    
+                    
                 </template>
 
                 <template v-slot:cell(actions)="row">
-                    <a :href="'member/account/'+row.item.id" >Account</a> |
+
+                    <span v-if="can_member_view"><a :href="'member/'+row.item.id"  >View </a></span>
+
+                    <span v-if="can_member_edit"> | <a :href="'member/account/'+row.item.id" >Account</a></span>
                     
-                    <a :href="'member/'+row.item.id+'/edit'" >Edit</a> | 
-                    <form :action="'member/'+row.item.id" method="POST" onsubmit="return confirm('are you sure you want to delete?');"
+                    <span v-if="can_member_edit"> | <a :href="'member/'+row.item.id+'/edit'"  >Edit</a></span>
+                    
+                    <form v-if="can_member_delete"
+                        :action="'member/'+row.item.id" method="POST" onsubmit="return confirm('are you sure you want to delete?');"
                         style="display: inline-block;">
                         <input type="hidden" name="_method" value="delete" />
                         <input type="hidden" name="_token" :value="csrf_token"> 
-                        <input type="submit" value="Delete" style="border: none; background: none; color: #c60000">
+
+                        <input type="submit" value="Delete"  style="border: none; background: none; color: #c60000">
                     </form>
 
                 </template>
@@ -268,4 +286,33 @@ export default {
     font-size: 11px;
     text-align: center
 }
+
+.write_report {
+    background-color:#fff;
+} 
+
+.hide {
+  display: none;
+}
+
+
+
+.write_report a {
+    color: red;
+    font-size:12px;
+}
+
+.write_report:hover {
+  display: block;
+  color: red;    
+}
+
+
+
+#monthly_report_card:hover  + .hide{
+  display: block;
+  color: red;
+  font-size:11px;
+}
+
 </style>

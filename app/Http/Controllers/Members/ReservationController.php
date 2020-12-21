@@ -11,6 +11,8 @@ use App\Models\Tutor;
 use App\Models\Shift;
 use App\Models\Member;
 use App\Models\Status;
+use App\Models\ScheduleItem;
+use App\Models\ReportCard;
 
 use Gate;
 use Validator;
@@ -84,9 +86,21 @@ class ReservationController extends Controller
                 'skypeID'   => $skypeID,            
             ];  
 
-            return view('modules/member/reservations', compact('member', 'data'));
+            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
+
+            return view('modules/member/reservations', compact('member', 'data', 'latestReportCard'));
         } else {        
-            return view('/modules/member/reservations');
+
+            $roles = Auth::user()->roles;
+            if (!$roles->contains('title', 'Member')) {
+                return redirect(route('admin.dashboard.index'));
+            } else {                
+                /**
+                 * @todo: make a proper message here to your users that 
+                 * @todo: other roles tried to view this page, abort the page.                 
+                 */
+                abort(403, 'Unauthorized action, you are not allowed to view this page');
+            }
         }
     }
 
@@ -95,8 +109,11 @@ class ReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Lesson $lesson, Request $request)
+    public function create(ScheduleItem $scheduleItem, Request $request)
     {      
+
+        
+
         if(Gate::allows('member_lesson_scheduler_access')) 
         {
 
@@ -137,21 +154,24 @@ class ReservationController extends Controller
             $lessonSlots = $this->lessonSlots;            
 
             //GET LESSONS FROM DATE TODAY ONLY
-            $lessons = $lesson->getReservations($dateToday, $dateToday);   
+            $schedules = $scheduleItem->getReservations($dateToday);   
 
             /*
             foreach($lessonSlots as $lessonSlot) { 
+
                 $startTimePH = date('h:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
-                foreach ($lessons as $lesson) {    
-                    if(isset($lesson[$startTimePH])) {
+                foreach ($schedules as $schedule) {  
+
+                    if(isset($schedule[$startTimePH])) {
                         echo "scheduler link";
                     }
                 }
             }*/
-            
-            
+                       
+    
+            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();            
 
-            return view('/modules/member/scheduler', compact('dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'lessons', 'lessonSlots'));
+            return view('/modules/member/scheduler', compact('dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'schedules', 'lessonSlots', 'latestReportCard'));
 
         } else {
 

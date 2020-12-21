@@ -35,7 +35,8 @@
                                 <input type="submit" class="btn btn-primary btn-sm form-control form-control-sm d-inline col-3" value="Go">
                             </div>
                         </div>
-                    </form><!--[end] Update Date -->
+                    </form>
+                    <!--[end] Update Date -->
 
                     <div class="card-header esi-card-header-title text-center">
                         {{ date('Y', strtotime($dateToday)) }} 年 {{ date('m', strtotime($dateToday)) }}月 {{ date('d', strtotime($dateToday)) }}日
@@ -50,12 +51,12 @@
                                     <div>
                                         <div class="text-small">{{ $lessonSlot['startTime'] }}</div>
                                         <div class="text-small">{{ $lessonSlot['endTime'] }}</div>
-                                    </div>                                    
+                                    </div>
                                 </td>
-                                @endforeach        
-                            </tr>            
+                                @endforeach
+                            </tr>
 
-                                                
+
                             @foreach($tutors as $tutor)
                             <tr>
                                 <!--[start] Tutor Information-->
@@ -65,67 +66,157 @@
                                     </div>
                                 </td>
 
-                                @foreach($lessonSlots as $lessonSlot) 
-                                <td>               
-                                    @php 
-                                        $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
+                                @foreach($lessonSlots as $lessonSlot)
+                                <td>
+                                    @php
+                                    $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
                                     @endphp
 
-                                    
-                                    @foreach ($lessons as $lesson)
-                                       @if($lesson->tutor_id == $tutor->id)                                           
-                                            @if ( $startTimePH ==  $lesson->start_time)
+                                    @foreach ($schedules as $schedule)
+                                    @if($schedule->tutor_id == $tutor->id)
+                                    @if ( $startTimePH == date("H:i", strtotime($schedule->lesson_time)))
 
-                                                @if ($lesson->status == 'completed') 
-                                                    <a href="javascript:void(0)">completed</a>                                                    
-                                                @elseif(strtolower($lesson->status) == 'tutor scheduled')
-                                                    <!--@todo: open popup if pressed.
+                                    @if (strtolower($schedule->schedule_status) == 'completed')
+                                    <a href="javascript:void(0)">completed</a>
+                                    @elseif(strtolower($schedule->schedule_status) == 'tutor_scheduled')
+                                    <!--@todo: open popup if pressed.
                                                         @question: 予約してもいいですか？
                                                         @yes: はい
                                                         @no: いいえ
                                                     -->
-                                                    <a href="javascript:void(0)">予約</a>
-                                                @elseif(strtolower($lesson->status) == 'client reserved' || strtolower($lesson->status) == 'client reserved b') 
-                                                    <!--@todo: 
+                                    
+
+                                    <div class="button_{{$schedule->id}}">
+                                        <a class="book" onclick="book('{{$schedule->id}}')" href="javascript:void(0)">予約</a>
+                                        <div class="cancel" style="padding:15px; display:none">
+                                            <div id="{{ $schedule->id }}" style="float:right">
+                                                <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                            </div>
+                                            <br />
+                                            <a href="javascript:void(0)">済</a>
+                                        </div>
+                                    </div>
+
+                                    @elseif(strtolower($schedule->schedule_status) == 'client_reserved' || strtolower($schedule->schedule_status) == 'client_reserved_b')
+                                    <!--@todo: 
                                                             @cancelMsgBox: このレッスンをキャンセルしてもいいですか？
-                                                    -->
-                                                    <div style="padding:15px">
-                                                        <div id="{{ $lesson->id }}" style="float:right">
-                                                            <a href="javascript:void(0)"><img src="{{ url('/images/btnDelete.png') }}"></a>
-                                                        </div>
-                                                        <br/>
-                                                        <a href="javascript:void(0)">済</a>
-                                                    </div>
-                                                @elseif(strtolower($lesson->status) == 'suppressed schedule' ) 
-                                                    {{'済他'}}
-                                                @elseif(strtolower($lesson->status) == 'client not available')
-                                                    {{'欠席'}}
-                                                @elseif(strtolower($lesson->status) == 'tutor cancelled') 
-                                                    {{ "予約" }}
-                                                @endif                                               
-                                            @endif
-                                       @endif
-                                    @endforeach                                    
+                                                   
+                                    <div style="padding:15px">
+                                        <div id="{{ $schedule->id }}" style="float:right">
+                                            <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                        </div>
+                                        <br />
+                                        <a href="javascript:void(0)">済</a>
+                                    </div> -->
+                                    @php
+                                        $member = \App\Models\Member::where('user_id', Auth::user()->id)->first()
+                                    @endphp
+                                    
+                       
+                              
+                                    
+                                    <div class="cancel_button_{{$schedule->id}}">
+                                        <a class="book" onclick="book('{{$schedule->id}}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>
+
+                                        @if ( $member->id == $schedule->member_id)
+                                        <div class="cancel" >
+                                            <div id="{{ $schedule->id }}" style="float:right">
+                                                <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                            </div>
+                                            <br />
+                                            <a href="javascript:void(0)">済</a>
+                                        </div>
+                                        @endif
+
+                                    </div>
+                                    
+
+
+                                    @elseif(strtolower($schedule->schedule_status) == 'suppressed_schedule' )
+                                    {{'済他'}}
+                                    @elseif(strtolower($schedule->schedule_status) == 'client_not_available')
+                                    {{'欠席'}}
+                                    @elseif(strtolower($schedule->schedule_status) == 'tutor_cancelled')
+                                    {{ "予約" }}
+                                    @endif
+                                    @endif
+                                    @endif
+                                    @endforeach
                                 </td>
-                                @endforeach     
-                           
-                            </tr>               
-                            @endforeach  
+                                @endforeach
+
+                            </tr>
+                            @endforeach
 
                         </table>
                     </div>
-
-
-
-
-
                 </div>
             </div>
         </div>
 
-     
-
     </div>
 
 </div>
+@endsection
+
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+    var api_token = "{{ Auth::user()->api_token }}";
+
+    function book(id) {
+        $.ajax({
+            type: 'POST', url: 'api/book?api_token=' + api_token, data: {
+                id: id
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }, success: function(data) {
+                $("#msg").html(data.msg);
+                $('.button_' + id + ' .book').hide();
+                $('.button_' + id + ' .cancel').show();
+            }
+        });
+    }
+
+
+    function cancel(id) {
+        $.ajax({
+            type: 'POST', 
+            url: 'api/cancelSchedule?api_token=' + api_token,
+            data: {
+                id: id
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }, success: function(data) {
+                $("#msg").html(data.msg);
+                $('.cancel_button_' + id + ' .book').show();
+                $('.cancel_button_' + id + ' .cancel').hide();                
+            }
+        });
+    }
+
+    window.addEventListener('load', function() {
+
+        console.log('loaded')
+
+        $('.book').on('click', function() {
+            /*
+                @todo: open popup if pressed.
+                @question: 予約してもいいですか？
+                @yes: はい
+                @no: いいえ
+            */
+
+            if (confirm('予約してもいいですか？')) {
+                // Save it!
+                console.log('Thing was saved to the database.');
+            } else {
+                // Do nothing!
+                //console.log('Thing was not saved to the database.');
+            }
+        })
+    });
+
+</script>
 @endsection

@@ -22,19 +22,65 @@ use App\Models\MemberLesson;
 use App\Models\Purpose;
 use App\Models\MemberDesiredSchedule;
 use App\Models\Lesson;
+use App\Models\ScheduleItem;
+
 
 class MemberController extends Controller
 {
 
-    public function cancelSchedule($scheduleID) 
+    /*  
+     Book a schedule
+    */
+    public function bookSchedule(Request $request) 
     {
+       $id = $request->id;
+
+       //@todo: check if the schedule is unique
+
+
+       //@todo: check if 3 hours and have attribute
+
+
+
+       //@todo: save to database       
+       $schedule = ScheduleItem::find($id);
+       $data = ['schedule_status'=> 'CLIENT_RESERVED'];
+       $schedule->update($data);
+       
+
+       return Response()->json([
+           "success"       => true,
+           "message"       => "Member has been scheduled",
+           "userData"      => $request['user']
+       ]);
+
+    }
+
+
+    public function cancelSchedule(Request $request) 
+    {
+        $id = $request->id;
+
+        //@todo: check if the schedule is present
 
         //@todo: refund points if status is [client reserved]
         //@todo : no refund points if status if [client reserved b]
         //@todo: (cancellation is 3 hours grace period)
 
+       //@todo: save to database       
+       $schedule = ScheduleItem::find($id);
+       $data = [
+            'member_id'         => null,
+            'schedule_status'   => 'CLIENT_NOT_AVAILABLE'
+        ];
+       $schedule->update($data);
+       
 
-
+       return Response()->json([
+           "success"       => true,
+           "message"       => "Member has been cancelled scheduled",
+           "userData"      => $request['user']
+       ]);        
     }
 
     /**

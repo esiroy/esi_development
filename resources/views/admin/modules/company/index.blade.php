@@ -27,8 +27,8 @@
 
         <div class="container">
             <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
                     Company
                 </div>
                 <div class="card-body">
@@ -36,63 +36,69 @@
                     <div class="row">
                         <div class="col-12 pt-3">
                             <div class="table-responsive">
-                                <table class="table table-bordered">
+                                <table class="table table-bordered table-sm table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="small text-center">Copmany Email </th>
-                                            <th class="small text-center">Action</th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Company Email </th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @foreach($companies as $company)
                                         <tr>
-                                            <th class="small text-center"> company-email@email.com</th>
+                                            <th class="small text-center">{{ $company->email }}</th>
 
                                             <th class="small text-center">
-                                                <a href="#">Edit</a> | <a href="#">Delete</a>
+                                                <a href="{{ route('admin.company.destroy', ['company' => $company]) }}" 
+                                                    class="red"
+                                                    onclick="event.preventDefault();document.getElementById('delete-form-{{ $company->id }}').submit();">Delete
+                                                </a>
+                                                <form id="delete-form-{{ $company->id }}" action="{{ route('admin.company.destroy', ['company' => $company]) }}" method="POST" style="display: none;">
+                                                    @method("DELETE")
+                                                    @csrf
+                                                </form>
+
                                             </th>
                                         </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
                         </div>
+                    </div>
 
-
-                        <div class="row py-1">
-                            <div class="col-12">
-
-                                <div class="container">
-
-                                    <div class="row">
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-primary btn-sm">Add Another</button>                                            
-                                        </div>
-                                    </div>
-
-                                    <div class="row mt-4">
-                                        <div class="col-12">
-                                            <button type="button" class="btn btn-primary btn-sm">Save</button>
-                                            <button type="button" class="btn btn-primary btn-sm">Cancel</button>
-                                        </div>
-                                    </div>
-
+                    <div class="row">
+                        <div class="col-12 mt-3">
+                            <div class="card esi-card">
+                                <div class="card-header esi-card-header">
+                                  
+                                    Add Company
+                                </div>
+                                <div class="card-body">
+                                    <form method="POST" action="{{ route('admin.company.store') }}">
+                                        @csrf
+                                        <input required id="email"  name="email"  type="email" class="form-control col-md-4 form-control-sm @error('company') 
+                                        is-invalid @enderror"value="{{ old('company') }}" required autocomplete="company">
+                                        <button type="submit" class="btn btn-primary btn-sm mt-2">Save</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-
-
-       
                     </div>
+
+
                 </div>
             </div>
-            <!--[end] card-->
-
-
         </div>
-
-
+        <!--[end] card-->
 
 
     </div>
+
+
+
+
+</div>
 </div>
 
 </div>

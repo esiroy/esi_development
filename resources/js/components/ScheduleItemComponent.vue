@@ -4,7 +4,7 @@
 @Company: ESucess Inc.
 -->
 <template>
-    <div id="schedules">
+    <div id="scheduleItemModal">
 
         <b-modal  id="schedulesModal" 
             title="Schedule Lesson"
@@ -28,7 +28,7 @@
                         <option value="NOTHING">Nothing</option>
                         <option value="CLIENT_NOT_AVAILABLE">Client Not Available</option>
                         <option value="SUPPRESSED_SCHEDULE">Suppressed Schedule</option>
-                        <option value="TUTOR_SCHEDULED">Completed</option>
+                        <option value="COMPLETED">Completed</option>
                     </select>
                 </div>
             </div>
@@ -607,7 +607,7 @@ export default {
     .esi-table a, .b-table a {
         text-decoration: none;
         color: #c60000;
-        font-size: 11px;                
+                    
     }    
 
 

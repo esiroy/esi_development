@@ -3,7 +3,7 @@
 @section('content')
 <div class="container bg-light">
 
-    <div class="esi-box">
+    <div class="esi-box mb-5">
 
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
@@ -12,7 +12,7 @@
             </ol>
         </nav>
 
-        <div class="container">
+        <div class="container pb-5">
 
             <div class="row">
                 <!--sidebar-->
@@ -23,8 +23,9 @@
                     <div class="mt-3 mb-4">
                         @include('modules.member.sidebar.reports')
                     </div>
-                </div><!--[end sidebar]-->
-                
+                </div>
+                <!--[end sidebar]-->
+
                 <div class="col-md-9">
                     <div class="blueBrokenLineBox">
                         <div class="text-center">
@@ -38,13 +39,73 @@
 
                     <div class="row">
                         <div class="col-md-12 mt-3">
-                            <a href="lessonrecord"><button type="button" class="btn btn-warning text-white">受講履歴/添削履歴</button></a>
+                            <a href="{{ url('lessonrecord') }}"><button type="button" class="btn btn-warning text-white">受講履歴/添削履歴</button></a>
                             <a href="reservation"><button type="button" class="btn btn-primary">レッスンの予約</button></a>
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');"><button type="button" class="btn btn-success">添削くん</button></a>
                         </div>
                     </div>
 
-                </div>                
+
+                    <div class="grayBackgroundBox mt-4 pt-3 px-2">
+                        <p>今日のレッスンはいかがでしたか？ 今後の円滑な運営と質の高いレッスン のご提供のため、何かお気づきの点がありましたら アンケートにお答え下さい！</p>
+                        <p align="right">
+                            <a href="{{ url('lessonrecord') }}">
+                                <img src="images/btnRed2.gif" alt="Alternate Text Here" title="Title Text Here">
+                            </a>
+                        </p>
+                    </div>
+
+                    <div class="card  mt-4" style="">
+                        <div class="card-header esi-card-header text-center">
+                            予約表
+                            <small style="font-size:11px; color:#333">予約記録は最大５件まで表示されます</small>
+                        </div>
+
+                        <div class="card-body px-3">
+                            初めての講師の場合、講師からSkype(ZOOM)コンタクトリクエストがあります。 レッスン時間の15分前にSkype(ZOOM)を立ち上げ承認してコールをお待ちください。
+
+                            <table cellspacing="0" cellpadding="9" align="center" class="tblRegister mt-3" width="100%">
+                                <tbody>
+                                    <tr>
+                                        <th style="text-align: center;">Date</th>
+                                        <th style="text-align: center;" colspan="2">Tutor</th>
+                                        <th style="text-align: center;">講師への連絡</th>
+                                        <th style="text-align: center;">Action</th>
+                                    </tr>
+                                    <!-- COUNTER FOR PAGINATION -->
+                                    @foreach ($reserves as $reserve)
+                                    <tr class="row_reserve_{{$reserve->id}}">
+                                        <td style="text-align: center;">
+                                            {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time." + 1 hour ")) }}
+                                            {{  date('H:i', strtotime($reserve->lesson_time." + 85 minutes ")) }}
+                                        </td>
+                                        <td style="text-align: center;" colspan="2">                                            
+                                            @php
+                                                $tutor = \App\Models\Tutor::find($reserve->tutor_id);
+                                            @endphp
+                                            {{ $tutor['name_en'] }}
+                                        </td>
+                                        <td style="text-align: center;">
+                                            <a href="javascript:void()" onclick="memoForm('{{$reserve->id}}')"><img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡</a>
+                                        </td>
+                                        <td style="text-align: center;">
+                                            
+                                            <a href="javascript:void(0)" onClick="cancel('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                             
+                                        </td>
+                                    </tr>
+                                    @endforeach
+
+
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
             </div>
 
 
@@ -53,4 +114,32 @@
 
     </div>
 </div>
+@endsection
+
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+    var api_token = "{{ Auth::user()->api_token }}";
+
+    function cancel(id)
+    {
+        if (confirm('このレッスンをキャンセル（欠席）されるとポイントは消化されます。キャンセル(欠席）しますか？')) 
+        {
+            $.ajax({
+                type: 'POST', 
+                url: 'api/cancelSchedule?api_token=' + api_token,
+                data: {
+                    id: id
+                }, headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }, success: function(data) {
+                
+                    $('.row_reserve_' + id ).hide();                
+                }
+            });
+        }
+    }
+
+</script>
 @endsection

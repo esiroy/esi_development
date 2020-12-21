@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\ScheduleItem;
+use App\Models\Tutor;
+use Carbon\Carbon;
+
 class SalaryReportController extends Controller
 {
     /**
@@ -12,12 +16,35 @@ class SalaryReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        return view('admin.modules.salary.index');
+    public function index(Request $request)
+    {      
 
-        $shift = Shift::all();
+        $per_page = 15;
+        $from   = date("Y年 m月 j日");
+        $to   = null;
+
+       
+        if (isset($request->date_from) && isset($request->date_to)) 
+        {
+            $from = date($request->date_from);
+            $to = date($request->date_to);    
+            $query = ScheduleItem::whereBetween('created_at', [$from, $to])->where('valid', 1);                   
+            
+        } else {
+            $query = ScheduleItem::where('valid', 1);
+        }
+
+        if (isset($request->status)) 
+        {            
+            $status = str_replace(" ", "_", strtoupper($request->status));
+            $query->where('schedule_status', $status )->orderBy('created_at', 'DESC');
+        }
         
+      
+                       
+        $schedules = $query->get();
+       
+        return view('admin.modules.salary.index', compact('schedules', 'date', 'from', 'to'));        
         
     }
 

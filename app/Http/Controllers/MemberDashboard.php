@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\Lesson;
+
 use App\Models\User;
 use App\Models\Tutor;
 use App\Models\Shift;
 use App\Models\Member;
 use App\Models\Status;
+use App\Models\ScheduleItem;
+use App\Models\ReportCard;
 
 use Gate;
 use Validator;
@@ -31,6 +33,7 @@ class MemberDashboard extends Controller
      */
     public function index()
     {    
+        
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
 
@@ -47,7 +50,14 @@ class MemberDashboard extends Controller
                 'skypeID'   => $skypeID,            
             ];  
 
-            return view('modules/member/index', compact('member', 'data'));
+           // $schedules = ScheduleItem::where('member_id', Auth::user()->id)->get();
+
+            $reserves =  ScheduleItem::where('member_id', $member->id)->get();
+    
+            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
+
+            return view('modules/member/index', compact('member', 'data', 'schedules', 'reserves', 'latestReportCard'));
+
         } else {
            
             //abort (404, "Member Not Found");
@@ -65,69 +75,6 @@ class MemberDashboard extends Controller
         }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

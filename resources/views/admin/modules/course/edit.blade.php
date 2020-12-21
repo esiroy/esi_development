@@ -48,7 +48,11 @@
                 </div>
                 <div class="card-body esi-card-body">
 
-                    <form action="{{ route("admin.course.store") }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route("admin.course.update", ['course' => $course]) }}" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        @method('PATCH')
+
+                    
                         @csrf
                         <table cellspacing="9" cellpadding="0" class="table table-borderless">
                             <tbody>
@@ -60,7 +64,7 @@
                                         <select name="parentid">
                                             <option value="">-- Select --</option>
                                             @foreach($categories as $category)
-                                            <option value="">{{ $category->name }}</option>
+                                            <option value="" @if($category->id == $courseCategory->id) {{ "selected"}}@endif>{{ $category->name }}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -71,7 +75,7 @@
                                     <td>Name</td>
                                     <td>:</td>
                                     <td>
-                                        <input required type="text" id="name*" name="name">
+                                        <input required type="text" id="name*" name="name" value="{{ $courseCategory['name'] }}">
                                     </td>
                                 </tr>
 
@@ -79,7 +83,7 @@
                                     <td>Category Description</td>
                                     <td>:</td>
                                     <td>
-                                        <textarea id="body" name="body"></textarea>
+                                        <textarea id="body" name="body">{{ $courseCategory['description'] }}</textarea>
                                     </td>
                                 </tr>
 

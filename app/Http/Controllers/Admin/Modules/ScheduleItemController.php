@@ -29,10 +29,29 @@ class ScheduleItemController extends Controller
     
     public $timeSlots;
 
-    public function __construct() 
-    {
-        $this->middleware('auth'); //->except();
+ 
+    public function __construct(Request $request) {
 
+        //$this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            //authenticated by has no "admin_access" in his role attached
+            //@do: redirect to home (authenticated member will be his view)
+            if (Gate::denies('admin_access')) {
+                return redirect(route('home'));
+            }
+            return $next($request);           
+        });
+
+
+        //$this->middleware('auth'); //->except();
+        $this->setTimeSlots();
+    }
+    
+    
+    public function setTimeSlots() 
+    {
+        
         $this->timeSlots = array(
             ['id'=> 1, 'startTime'=> '10:00', 'endTime'=> '11:00'],
             ['id'=> 2, 'startTime'=> '10:30', 'endTime'=> '11:30'],
@@ -75,8 +94,6 @@ class ScheduleItemController extends Controller
     {
         if(Gate::allows('admin_lesson_scheduler_access')) 
         {              
-            
-
             //default on load without any parameters
             if (isset($request['inputDate'])) {
                 $dateToday      = date('Y-m-d', strtotime($request['inputDate']));                
@@ -147,12 +164,13 @@ class ScheduleItemController extends Controller
             $tutor = Tutor::where('user_id', Auth::user()->id)->first();
 
             $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
-          
 
             return view('admin.modules.tutor.lessons', compact('tutorLessons',  'dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));
+
+            
             
         } else {
-            echo "admin_lesson_scheduler_access or tutor_lesson_scheduler_access is disallowed";
+            //echo "admin_lesson_scheduler_access or tutor_lesson_scheduler_access is disallowed..";
         }
 
       

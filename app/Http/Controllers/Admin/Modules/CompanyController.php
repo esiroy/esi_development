@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\Company;
+
 class CompanyController extends Controller
 {
     /**
@@ -14,7 +16,11 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        return view('admin.modules.company.index');
+
+        $companies  = Company::all();
+
+
+        return view('admin.modules.company.index', compact('companies'));
     }
 
     /**
@@ -24,7 +30,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -35,7 +41,13 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = [            
+            'email'     => $request->email,
+            'valid'    => 1
+        ];
+        $item = Company::create($data);
+
+        return redirect()->route('admin.company.index')->with('message', 'Company added successfully!');
     }
 
     /**
@@ -78,8 +90,9 @@ class CompanyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Company $company)
     {
-        //
+        $company->delete();
+        return redirect()->back()->with('success','Company has been deleted successfully');
     }
 }

@@ -22,14 +22,18 @@ Route::get('/home', 'MemberDashboard@index')->name('home');
 //Login Form
 Route::get('/', 'Auth\LoginController@showLoginForm')->name('welcomeLogin');
 
+Route::get('/lessonrecord', 'LessonRecordController@index')->name('lessonrecord');
+Route::get('/reportcard/{id}', 'LessonRecordController@reportcard')->name('reportcard');
+Route::get('/userreportcarddate/{id}', 'LessonRecordController@userreportcarddate')->name('reportcarddate');
 
+
+//lesson materials
+
+Route::get('/lessonmaterials', 'MaterialsController@index')->name('materials');
 
 //User Reservation
 Route::resource('/reservation', 'Members\ReservationController');
 Route::get('/memberschedule', 'Members\ReservationController@create');
-
-
-
 
 
 /* Public Folder View */
@@ -61,28 +65,30 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::post('login', 'AuthController@login')->name('AdminLogin');
     Route::post('logout', 'AuthController@logout')->name('AdminLogout');
 
+    //settings
+    Route::get('settings', 'SettingsController@index')->name('settings');
+
     Route::group(['middleware' => 'admin.auth'], function()
     {
-      
-        Route::resource('/', 'Modules\LessonController');
-
-        /*This module alias */
+        //ADMIN HOME
+        Route::resource('/', 'Modules\ScheduleItemController');
         Route::resource('/dashboard', 'Modules\ScheduleItemController');
         Route::resource('/lesson', 'Modules\ScheduleItemController');
 
-        
-        
         //Route::resource('/dashboard', 'DashboardController');
-          //Route::resource('/', 'DashboardController');
-        
-
+        //Route::resource('/', 'DashboardController');
         /* 
         //File Manager as a homepage
         Route::resource('/', 'Modules\FileManagerController');
         Route::resource('/dashboard', 'Modules\FileManagerController');
         */
 
-      
+        Route::resource('/reportcard', 'Modules\ReportCardController');
+        Route::get('/reportcardlist/{id}', 'Modules\ReportCardController@reportcardlist');
+
+        Route::resource('/reportcarddate', 'Modules\ReportCardDateController');
+        Route::get('/reportcarddatelist/{id}', 'Modules\ReportCardController@reportcarddatelist');
+
 
         //Member
         Route::delete('/member/destroy', 'Modules\MemberController@massDestroy')->name('member.massDestroy');
@@ -162,8 +168,6 @@ Route::post('/createMember','Auth\SignUpController@store')->name('createMember')
 
 //step 3 (user has been emailed and waiting for verification)
 Route::get('/saveuser','Auth\SignUpController@step3')->name('step3');
-
-
 
 Auth::routes();
 Route::post('login', 'Auth\LoginController@login')->name('login');
