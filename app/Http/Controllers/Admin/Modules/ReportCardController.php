@@ -56,7 +56,7 @@ class ReportCardController extends Controller
         
         $member = Member::find( $member_id);
 
-        $reportcard = ReportCardDate::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
+        $reportcards = ReportCardDate::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
 
         return view('admin.modules.member.reportcarddatelist', compact('reportcards', 'member'));
     }
