@@ -165,7 +165,7 @@ class ScheduleItemController extends Controller
 
             $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
 
-            return view('admin.modules.tutor.lessons', compact('tutorLessons',  'dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));
+            return view('admin.modules.tutor.lessons', compact('dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));
 
             
             

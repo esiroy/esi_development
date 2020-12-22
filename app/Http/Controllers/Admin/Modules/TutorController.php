@@ -36,14 +36,32 @@ class TutorController extends Controller
      */
     public function index(User $user, Tutor $tutor)
     {
-        //$tutors = User::whereHas('roles', function($q) { $q->where('title', 'tutor'); })->get();
-
-        $tutors = Tutor::get();
         $shifts = Shift::all();
         $grades = Grade::all();
 
+        $tutors = Tutor::join('users', 'users.id', '=', 'tutors.user_id');
+
+
+        //@[START] USER SEARCH - if user search for a member
+        if(isset($member_id) || isset($name) || isset($email)) {        
+            if (isset($member_id)) {    
+                $tutors = $tutors->where('tutors.id', $member_id);
+            }
+            if (isset($name)) {     
+                $tutors = $tutors->orWhere('tutors.name_en', 'like', '%' .  $name . '%')->orWhere('tutors.name_en', 'like', '%' .  $name . '%'); 
+            }
+
+            if (isset($email)) {
+                $tutors = $tutors->orWhere('users.email', $email);
+           }
+        } //[END] USER SEARCH
+
+
+        $tutors = $tutors->get();
         return view('admin.modules.tutor.index', compact('shifts', 'tutors', 'grades'));
     }
+
+    
 
     /**
      * Show the form for creating a new resource.

@@ -101,8 +101,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
         //tutor
         Route::delete('/tutor/destroy', 'Modules\TutorController@massDestroy')->name('tutor.massDestroy');
-        Route::post('/tutor/resetPassword/{id}', 'Modules\TutorController@resetPassword')->name('tutor.resetPassword');
+        Route::post('/tutor/resetPassword/{id}', 'Modules\TutorController@resetPassword')->name('tutor.resetPassword');        
         Route::resource('/tutor', 'Modules\TutorController');
+        Route::get('/maintutor/{id}', 'Modules\TutorController@maintutor');
+        Route::get('/supporttutor/{id}', 'Modules\TutorController@supporttutor');
+        
 
         Route::delete('/manager/destroy', 'Modules\ManagerController@massDestroy')->name('manager.massDestroy');
         Route::post('/manager/resetPassword', 'Modules\ManagerController@resetPassword')->name('manager.resetPassword');        
