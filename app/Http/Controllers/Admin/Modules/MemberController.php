@@ -158,6 +158,22 @@ class MemberController extends Controller
        return view('admin.modules.member.account', compact('member', 'transactions', 'purchaseHistory'));
     }
 
+
+    public function details($memberID) {
+        $member = Member::join('users', 'users.id', '=', 'members.user_id')
+                    ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+                    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+                    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+                    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, 
+                                            attributes.name as attribute, 
+                                            members.id as id,
+                                            agents.id as agent_id,
+                                            tutors.name_en as main_tutor_name,
+                                            members.credits as credits
+                                        "))->where('members.id', $memberID)->first();
+
+        return view('admin.modules.member.details', compact('member'));
+    }
     
     /**
      * Display a listing of the payment history.     

@@ -320,7 +320,7 @@ export default {
         var options = [];
         this.members.forEach(function (member, index) 
         {   
-            options.push({'id': member.id, 'name': member.first_name + " "+ member.last_name  });        
+            options.push({'id': member.id, 'name': member.user_id + " " + member.first_name + " "+ member.last_name  });        
         });
         this.memberOptionList = options;
      
@@ -362,7 +362,7 @@ export default {
                     }
                 });
             }
-            return "<a href='/member/details/"+ memberID +"'>"+ member + "</a>";
+            return "<a href='/admin/member/details/"+ memberID +"'>"+ member + "</a>";
          },
         //check button if it has schedule then we will hide it, and if not we need to show it
         checkButton(data) {
