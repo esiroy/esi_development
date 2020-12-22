@@ -36,12 +36,14 @@
             </div>
             @endif
 
-          
+            <!--[start] tutor list-->
             <div class="card">
                 <div class="card-header">
                     Tutor List
                 </div>
                 <div class="card-body">
+
+                    <!-- [tutor search]
                     <div class="row">
                         <form class="form-inline" style="width:100%">
                             <div class="col-md-3">
@@ -73,6 +75,33 @@
                             </div>
                         </form>
                     </div>
+                    -->
+
+                        <div class="row">
+                            <form class="form-inline" style="width:100%" method="GET">
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="member_id" class="small col-4">ID:</label>
+                                        <input name="member_id" type="text" class="form-control form-control-sm col-8" value="{{ request()->has('member_id') ? request()->get('member_id') : '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="name" class="small col-4">Name:</label>
+                                        <input name="name" type="text" class="form-control form-control-sm col-8" value="{{ request()->has('name') ? request()->get('name') : '' }}">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="email" class="small col-2">Email:</label>
+                                        <input name="email" type="text" class="form-control form-control-sm col-4" value="{{ request()->has('email') ? request()->get('email') : '' }}">
+
+                                        <input type="submit" class="btn btn-primary btn-sm col-1 ml-1" value="Go"></button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>                    
 
                     <!--[start] Tutor List -->
                     <div class="row">

@@ -15,6 +15,8 @@
 
         <div class="container">
            <!--Member List -->
+
+            <!--[start card] -->
             <div class="card">
                 <div class="card-header">
                     Member List
@@ -44,10 +46,7 @@
                              
                                     <input type="submit" class="btn btn-primary btn-sm col-1 ml-1" value="Go"></button>                                   
                                 </div>
-                                
                             </div>
-
-                            
                         </form>
                     </div>
 
@@ -77,7 +76,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div><!--[end card]-->
 
             
             <!--Member List -->

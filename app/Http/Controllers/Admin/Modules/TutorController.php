@@ -34,13 +34,18 @@ class TutorController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $user, Tutor $tutor)
+    public function index(User $user, Tutor $tutor, Request $request)
     {
+
+        //request variables        
+        $member_id  = $request->member_id;
+        $name       = $request->name;
+        $email      = $request->email;
+        
+        
         $shifts = Shift::all();
         $grades = Grade::all();
-
         $tutors = Tutor::join('users', 'users.id', '=', 'tutors.user_id');
-
 
         //@[START] USER SEARCH - if user search for a member
         if(isset($member_id) || isset($name) || isset($email)) {        
