@@ -20,10 +20,10 @@
                                         @csrf
 
                                         <div class="form-group row mb-1 mt-1">
-                                            <label for="email" class="col-4 col-form-label text-md-right pt-1">{{ __('Username') }}</label>
+                                            <label for="username" class="col-4 col-form-label text-md-right pt-1">{{ __('Username') }}</label>
                                             <div class="col-7 pl-0">
-                                                <input id="email" type="email" class="form-control form-control-sm  @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
-                                                @error('email')
+                                                <input id="username" type="text" class="form-control form-control-sm  @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
+                                                @error('username')
                                                 <span class="invalid-feedback" role="alert">
                                                     <strong>{{ $message }}</strong>
                                                 </span>

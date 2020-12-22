@@ -144,7 +144,7 @@ trait AuthenticatesAdminUsers
      */
     public function username()
     {
-        return 'email';
+        return 'username';
     }
 
     /**
