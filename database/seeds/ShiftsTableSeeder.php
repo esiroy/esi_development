@@ -14,17 +14,11 @@ class ShiftsTableSeeder extends Seeder
     public function run()
     {
         $shifts = [
-            [           
-                'id'            => 1,
-                'name'          => "25 Minutes",
-                'value'         => 25,
-            ],
-            /*
             [
-                'id'            => 2,
-                'name'          => "40 Minutes",
-                'value'         => 40
-            ]*/
+                'id'            => 4,
+                'name'          => "25 Minutes",
+                'value'         => 25
+            ]
         ];
 
         
