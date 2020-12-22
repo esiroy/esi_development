@@ -50,7 +50,7 @@ class AuthController extends Controller
         }
 
         // check against old md5 password, if correct, create bcrypted updated pswd
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('username', $request->username)->first();
 
         if( $user && $user->password == md5($request->password) )
         {
