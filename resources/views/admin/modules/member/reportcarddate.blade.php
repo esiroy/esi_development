@@ -12,40 +12,38 @@
                 <div class="card-body">
 
                     <div class="row">
-                        <div class="col-md-6">
-
+                        <div class="col-md-5">
                             @include('admin.modules.member.includes.profile')
-
                         </div>
 
-
-                        <div class="col-md-6">
-
+                        <div class="col-md-7">
                             <form action="{{ route("admin.reportcarddate.store") }}"  method="POST" enctype="multipart/form-data" onsubmit="return validate(this)">
                                 @csrf
 
-                                <input type="hidden" name="memberid" value="{{ $member->id }}">
-                                <input type="hidden" name="tutorid" value="{{ $member->main_tutor_id }}">
-                                <input type="hidden" name="reportcarddateid" value="">
-                                <table>
+                                <input type="hidden" name="memberid" value="{{ $memberInfo->user_id }}">
+                                <input type="hidden" name="tutorid" value="{{ $memberInfo->tutor_id }}">
+                              
+                                <table class="table table-sm table-borderless">
                                     <tbody>
                                         <tr>
                                             <td>Date</td>
                                             <td>:</td>
-
                                             <td>
-                                                <input required name="inputDate" id="inputDate" type="date" class="inputDate hasDatepicker form-control form-control-sm" style="margin: 0px; width: 176px;" value="" required="">
+                                                <input required name="inputDate" id="inputDate" type="date" class="inputDate hasDatepicker form-control form-control-sm" style="margin: 0px; width: 176px;" value="" required>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Lesson Course</td>
                                             <td>:</td>
-                                            <td><input required type="text" name="lessonCourse" class="form-control form-control-sm" value="" required=""></td>
+                                            <td>
+                                                <input required type="text" name="lessonCourse" value="{{ $reportCardDate->lesson_course ?? '' }}"
+                                                    class="form-control form-control-sm"  required>
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>Lesson Material</td>
                                             <td>:</td>
-                                            <td><input required type="text" name="lessonMaterial" class="form-control form-control-sm"  value="" required=""></td>
+                                            <td><input required type="text" name="lessonMaterial" class="form-control form-control-sm"  value="" required></td>
                                         </tr>
                                         <tr>
                                             <td>Lesson Subject</td>

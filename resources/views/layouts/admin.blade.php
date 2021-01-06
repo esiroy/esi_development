@@ -163,75 +163,70 @@
             $.extend(true, $.fn.dataTable.defaults, {
                 language: {
                     url: languages['{{ app()->getLocale() }}']
-                }
-                , columnDefs: [{
-                        orderable: false
-                        , className: 'select-checkbox'
-                        , targets: 0
-                    }
-                    , {
-                        orderable: false
-                        , searchable: false
-                        , targets: -1
-                    }
-                ]
-                , select: {
-                    style: 'multi+shift'
-                    , selector: 'td:first-child'
-                }
-                , order: []
-                , scrollX: true
-                , pageLength: 100
-                , dom: 'lBfrtip<"actions">'
-                , buttons: [{
-                        extend: 'selectAll'
-                        , className: 'btn btn-default d-none'
-                        , text: "select all"
-                        , exportOptions: {
+                },
+                columnDefs: [{
+                    orderable: false,
+                    className: 'select-checkbox',
+                    targets: 0
+                },
+                {
+                    orderable: false,
+                    searchable: false,
+                    targets: -1
+                }],                
+                select: {style: 'multi+shift', selector: 'td:first-child'},              
+                order: ['asc'],
+                scrollX: true,
+                pageLength: 100,
+                dom: 'lBfrtip<"actions">',
+                buttons: [{
+                        extend: 'selectAll',
+                        className: 'btn btn-default d-none',
+                        text: "select all",
+                        exportOptions: {
                             columns: ':hidden'
                         }
-                    }
-                    , {
-                        extend: 'selectNone'
-                        , className: 'btn btn-default d-none'
-                        , text: "select none"
-                        , exportOptions: {
+                    },
+                    {
+                        extend: 'selectNone',
+                        className: 'btn btn-default d-none',
+                        text: "select none",
+                        exportOptions: {
                             columns: ':hidden'
                         }
-                    }
-                    , {
-                        extend: 'copy'
-                        , className: 'btn btn-default ml-2'
-                        , text: copyButtonTrans
-                        , exportOptions: {
+                    },
+                    {
+                        extend: 'copy',
+                        className: 'btn btn-default ml-2',
+                        text: copyButtonTrans,
+                        exportOptions: {
                             columns: ':visible'
                         }
-                    }
-                    , {
-                        extend: 'csv'
-                        , className: 'btn btn-default'
-                        , text: csvButtonTrans
-                        , exportOptions: {
+                    },
+                    {
+                        extend: 'csv',
+                        className: 'btn btn-default',
+                        text: csvButtonTrans,
+                        exportOptions: {
                             columns: ':visible'
                         }
-                    }
-                    , {
-                        extend: 'excel'
-                        , className: 'btn btn-default'
-                        , text: excelButtonTrans
-                        , exportOptions: {
+                    }, {
+                        extend: 'excel', 
+                        className: 'btn btn-default',
+                        text: excelButtonTrans,
+                        exportOptions: {
                             columns: ':visible'
                         }
-                    }
-                    , {
-                        extend: 'pdf'
-                        , className: 'btn btn-default'
-                        , text: pdfButtonTrans
-                        , exportOptions: {
+                    }, 
+                    {
+                        extend: 'pdf',
+                        className: 'btn btn-default',
+                        text: pdfButtonTrans,
+                        exportOptions: {
                             columns: ':visible'
                         }
-                    }
-                    , {
+                    },
+                    {
                         extend: 'print'
                         , className: 'btn btn-default'
                         , text: printButtonTrans

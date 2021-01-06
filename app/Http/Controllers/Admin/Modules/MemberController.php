@@ -10,11 +10,8 @@ use App\Models\Member;
 use App\Models\MemberAttribute;
 use App\Models\MemberCredits;
 use App\Models\MemberDesiredSchedule;
-use App\Models\MemberLesson;
-use App\Models\Purpose;
 use App\Models\ReportCard;
 use App\Models\ReportCardDate;
-
 use App\Models\ScheduleItem;
 use App\Models\Shift;
 use App\Models\Tutor;
@@ -40,7 +37,7 @@ class MemberController extends Controller
 
     /**
      * (v2)
-     * Display the specified resource. 
+     * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -52,43 +49,40 @@ class MemberController extends Controller
         $memberInfo = Member::where('user_id', $memberID)->first();
 
         if (isset($memberInfo)) {
-
             if (isset($memberInfo->tutor_id)) {
-                $tutorInfo = Tutor::where('user_id',  $memberInfo->tutor_id)->first();
+                $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
             } else {
                 $tutorInfo = null;
             }
-    
+
             if (isset($memberInfo->lesson_shift_id)) {
                 $shift = new Shift();
                 $duration = $shift->getDuration($memberInfo->lesson_shift_id);
             } else {
                 $duration = null;
             }
-    
+
             //get Lesson goals
             $goals = new LessonGoals();
             $lessonGoals = $goals->getLessonGoals($memberID);
-    
+
             //report cards
             $reportCard = new ReportCard();
             $latestReportCard = $reportCard->getLatest($memberID);
-    
-            //writing report cards 
-            $reportCardDate = new ReportCardDate();
-            $latestWritingReport = $reportCardDate->getLatest($memberID); 
 
-    
+            //writing report cards
+            $reportCardDate = new ReportCardDate();
+            $latestWritingReport = $reportCardDate->getLatest($memberID);
+
             return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport'));
         } else {
 
             abort(404, "Member Not Found");
         }
 
-      
     }
 
-    /** 
+    /**
      * (v2)
      * Display a listing of the resource.
      *
@@ -99,11 +93,11 @@ class MemberController extends Controller
         //request variables
         $member_id = $request->member_id;
         $name = $request->name;
-        $email = $request->email; 
+        $email = $request->email;
 
         $attributes = createAttributes();
         $memberships = createMembership();
-        
+
         $shifts = Shift::all();
 
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')
@@ -287,19 +281,19 @@ class MemberController extends Controller
      */
     public function edit($memberID)
     {
-   
+
         //Member Information
         /*
         $memberInfo = Member::join('users', 'users.id', '=', 'members.user_id')
-            ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-                                            attributes.name as attribute,
-                                            members.id as id,
-                                            tutors.name_en as main_tutor_name
-                                        "))->where('members.id', $member->id)->first();
-        */
+        ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+        ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+        ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+        ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
+        attributes.name as attribute,
+        members.id as id,
+        tutors.name_en as main_tutor_name
+        "))->where('members.id', $member->id)->first();
+         */
 
         //LessonClasses
         //$lessonClasses = MemberLesson::where('user_id', $member->user_id)->get();
@@ -308,22 +302,20 @@ class MemberController extends Controller
         $desiredSchedule = MemberDesiredSchedule::where('user_id', $member->user_id)->get();
 
         foreach ($desiredSchedule as $item) {
-            echo $item->day . " " . $item->time . "<BR>";
+        echo $item->day . " " . $item->time . "<BR>";
         }
 
         //Purpose List
         $purposes = Purpose::where('user_id', $member->user_id)->get();
-        */
-        //[DROPDOWN OPTIONS] - attributes, membership, Shifts 
+         */
+        //[DROPDOWN OPTIONS] - attributes, membership, Shifts
         //member info
-        $memberInfo = Member::where('user_id', $memberID)->first(); 
+        $memberInfo = Member::where('user_id', $memberID)->first();
 
         //user Info
-        $userInfo= User::where('id', $memberID)->select('id','firstname', 'lastname', 'email', 
-                    'japanese_firstname', 'japanese_lastname',
-                    'user_type','is_activated')->first(); 
-
-     
+        $userInfo = User::where('id', $memberID)->select('id', 'firstname', 'lastname', 'email',
+            'japanese_firstname', 'japanese_lastname',
+            'user_type', 'is_activated')->first();
 
         $attributes = createAttributes();
         $memberships = createMembership();
@@ -342,24 +334,20 @@ class MemberController extends Controller
         echo "<pre>";
         print_r ($lessonGoals);
         exit();
-        */
+         */
 
         //MemberAttribute - (lessonClasses)
         $memberAttribute = new MemberAttribute();
         $lessonClasses = $memberAttribute->getMemberAttribute($memberID);
 
-
-
-       
-
         $memberDesiredSchedule = new MemberDesiredSchedule();
         $desiredSchedule = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
 
         //View all the stufff
-        return view('admin.modules.member.edit', compact('agentInfo','memberships', 'shifts', 'attributes', 
-                                                'userInfo', 'memberInfo', 
-                                                'lessonGoals', 'lessonClasses', 'desiredSchedule'));
-        
+        return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
+            'userInfo', 'memberInfo',
+            'lessonGoals', 'lessonClasses', 'desiredSchedule'));
+
     }
 
     /**
@@ -453,8 +441,6 @@ class MemberController extends Controller
     {
         $member = Member::where('user_id', $id)->first();
         $user = User::find($member->user_id);
-
- 
 
         LessonGoals::where('member_id', $user->id)->delete();
         MemberAttribute::where('member_id', $user->id)->delete();

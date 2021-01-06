@@ -22,6 +22,7 @@
         <tbody>
             @foreach ($members as $member)
             <tr>
+              
                 <td class="small"></td>
                 <td class="small">{{$member->id}}</td>
                 <td class="small">{{ucfirst($member->lastname)}},<br>  {{ucfirst($member->firstname)}}</td>
@@ -70,14 +71,17 @@
 
                 <td class="small text-center">
 
-                    @can('member_view')
+                    @if (Auth::user()->user_type !== "ADMINISTRATOR")
+                    @can('member_view')                        
                         <div class="action">
                             <a href="{{ route('admin.member.show', $member->id) }}" class="red">View</a>
                              @can('member_edit')
                                 <span class="separator">|</span>
                              @endcan
                         </div>
+                       
                     @endcan
+                     @endif
 
                     @can('member_edit')
                     <div class="action">
@@ -112,10 +116,8 @@
 
     <div class="float-right mt-4">
         <ul class="pagination pagination-sm">
-            <small class="mr-4 pt-2">
-                Page :</small>
-            {{ $members->appends(request()->query())->links() }}
+            <small class="mr-4 pt-2"> Page :  {{ $members->currentPage() }} </small>          
+            {{ $members->appends(request()->query())->links() }}           
         </ul>
     </div>    
-
 </div>

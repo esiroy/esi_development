@@ -33,7 +33,7 @@
         <div class="card mt-2">
             <div class="card-header">Reset Password</div>
             <div class="card-body">
-                <form action="{{ route("admin.tutor.resetPassword", $tutor) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route("admin.tutor.resetPassword", $tutor->user_id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="form-group row m-0">
                         <label for="password" class="col-md-2 pr-0 col-form-label "><span class="text-danger">* </span>{{ __('Password') }}
@@ -60,16 +60,14 @@
         <!--[end] reset password card-->
     </div>
     <!--[end] reset password containter-->
-
-    {{ $tutor->email }}
-
+   
     <div class="container">
         <!--[start] create member form -->
         <div class="card mt-4">
             <div class="card-header">Update Tutor Information</div>
             <div class="card-body">
 
-                <form method="POST" action="{{ route('admin.tutor.update', $tutor) }}">
+                <form method="POST" action="{{ route('admin.tutor.update', $tutor->user_id) }}">
                     @csrf
                     @method('put')
 
@@ -131,12 +129,7 @@
                         </label>
                         <div class="col-md-3">
                             @foreach($grades as $grade)
-                            <input type="radio" name="grade" required value="{{ $grade->id }}" @if(isset($tutor->member_grade_id))
-                            @if($tutor->member_grade_id == $grade->id) {{ "checked" }} @endif
-                            @else
-                            @if(old('grade') == $grade->id) {{ "checked" }} @endif
-                            @endif
-                            >{{$grade->name}}
+                             <input type="radio" name="grade" required value="{{ $grade['name'] }}" @if(old('grade') ===  $grade['name'])? {{ "checked" }} @endif> {{$grade['name']}}
                             @endforeach
                         </div>
                     </div>

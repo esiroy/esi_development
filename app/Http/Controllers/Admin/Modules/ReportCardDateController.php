@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\ScheduleItem;
 use App\Models\ReportCardDate;
 use App\Models\Member;
+use App\Models\Tutor;
 use App\Models\UserImage;
 
 use Auth;
@@ -16,11 +17,22 @@ class ReportCardDateController extends Controller
 {
     public function show ($id, Request $request) 
     {
-
         //get member details        
         $memberInfo = Member::where('user_id', $id)->first();
 
-        return view('admin.modules.member.reportcarddate', compact('memberInfo'));
+        //get photo
+        $userImageObj = new UserImage();
+        $userImage = $userImageObj->getMemberPhoto($memberInfo);  
+
+        if (isset($memberInfo->tutor_id)) {
+            $tutorInfo = Tutor::where('user_id',  $memberInfo->tutor_id)->first();
+        } else {
+            $tutorInfo = null;
+        }
+
+        $reportCardDate = ReportCardDate::where('member_id', $id)->first();
+
+        return view('admin.modules.member.reportcarddate', compact('memberInfo', 'userImage', 'tutorInfo'));
     }
 
     public function store(Request $request) 
@@ -62,6 +74,8 @@ class ReportCardDateController extends Controller
                 'display_tutor_name'        =>  (boolean) $request->displayTutorName,
             ];
             ReportCardDate::create($reportData);
+
+
             return redirect()->route('admin.member.index')->with('message', "Report card saved.");
 
         } else {

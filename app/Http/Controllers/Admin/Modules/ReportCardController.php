@@ -19,7 +19,6 @@ class ReportCardController extends Controller
     /*
      Description: a link will show the report card in the tutor lesson plan  and will let the tutor report
     */
-    
     public function index(Request $request) 
     {
         $scheduleitemid = $request->scheduleitemid;
@@ -29,24 +28,17 @@ class ReportCardController extends Controller
         $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first();
         
         //get photo
-        if (isset( $memberInfo->user_id)) {
-            $userImage = UserImage::where('user_id', $memberInfo->user_id)->where('valid', 1)->first();
-        } else {
-            $userImage = null;
-        }
-        
+        $userImageObj = new UserImage();
+        $userImage = $userImageObj->getMemberPhoto($memberInfo);
+
 
         if (isset($memberInfo->tutor_id)) {
             $tutorInfo = Tutor::where('user_id',  $memberInfo->tutor_id)->first();
         } else {
             $tutorInfo = null;
         }
-        
 
         $reportCard = ReportCard::where('schedule_item_id', $scheduleitemid)->first();
-
-
-
 
         return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'memberInfo', 'tutorInfo'));
     }

@@ -50,6 +50,7 @@
                         </form>
                     </div>
 
+                    <!--@todo: get member list csv -->
                     <div class="row">
                         <div class="col-12 pt-3">
                             @can('report_access', Auth::user())
@@ -60,11 +61,14 @@
                         </div>
                     </div>
 
+                    <!--[start] Member List -->
                     <div class="row">
-                        <div class="col-12 pt-3">  
-                            @include('admin.modules.member.includes.memberlist')
+                        <div class="col-12 pt-3">                            
+                            @include('admin.modules.member.includes.memberlist')     
                         </div>
                     </div>
+                    <!--[end] Member List -->
+
                 </div>
             </div><!--[end card]-->        
             
@@ -111,10 +115,11 @@ table.dataTable thead>tr>th.sorting_desc {
 @parent
 <script type="text/javascript">
     window.addEventListener('load', function() {
-        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-        let _token = "{{ csrf_token() }}"
+        
 
-      
+        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        let _token = "{{ csrf_token() }}"      
+
         @can('member_delete')
         let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
         let deleteButton = { 
@@ -150,9 +155,23 @@ table.dataTable thead>tr>th.sorting_desc {
         dtButtons.push(deleteButton)
         @endcan
       
-            
+        @can('member_delete')
+            $.extend(true, $.fn.dataTable.defaults, {
+                    order: [[1, 'DES']],
+                    pageLength: 100
+            });
+        @else 
+            $.extend(true, $.fn.dataTable.defaults, {
+                order: [[0, 'DES']],
+                pageLength: 100,
+                "columnDefs": [{
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false
+                }]
+            });
+        @endcan
 
-        $.extend(true, $.fn.dataTable.defaults, {order: [ [1, 'desc']], pageLength: 100,});
         $('#dataTable').DataTable({
             "buttons": dtButtons,
             "paging":   false
@@ -162,3 +181,6 @@ table.dataTable thead>tr>th.sorting_desc {
 
 </script>
 @endsection
+
+          
+          

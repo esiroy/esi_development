@@ -141,11 +141,13 @@
 
                                                 @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                     
 
+                                                    @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id'] ))
                                                     <div class="text-dark">
                                                         <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
                                                             {{$lessons[$dateView][$timeSlot['startTime']]['member_name_en']}}
                                                         </a>
                                                     </div>
+                                                    @endif
 
                                                     <!--@todo: get member name -->
                                                     <div class="hide">                                                    

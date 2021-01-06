@@ -9,20 +9,24 @@ use App\Models\Role;
 use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
-use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
-use Validator;
+
+use DB, Validator, Gate;
 
 class TutorController extends Controller
 {
 
+    public $items_per_page;
+
     public function __construct()
     {
         $this->middleware('auth');
+
+        $this->items_per_page = 30;
     }
 
     /**
@@ -32,6 +36,8 @@ class TutorController extends Controller
      */
     public function index(User $user, Tutor $tutor, Request $request)
     {
+
+        abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //request variables
         $member_id = $request->member_id;
@@ -65,25 +71,29 @@ class TutorController extends Controller
 
     public function maintutor($id)
     {
+        $members = Member::join('users', 'users.id', '=', 'members.user_id')
+                    ->join('tutors', 'tutors.user_id', 'members.tutor_id')
+                    ->select('users.firstname', 'users.lastname',  'users.valid', 'members.*', 'tutors.is_default_main_tutor')
+                    ->where('members.tutor_id', $id)                  
+                    ->where('users.valid', 1)
+                    //->where('tutors.is_default_main_tutor', 1)                    
+                    ->paginate($this->items_per_page);
 
-        $tutors = Member::join('users', 'users.id', '=', 'members.user_id')
-            ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-                                            attributes.name as attribute,
-                                            members.id as id,
-                                            agents.id as agent_id,
-                                            agents.name_en as agent_name_en,
-                                            agents.name_jp as agent_name_jp,
-                                            tutors.name_en as main_tutor_name,
-                                            members.credits as credits
-                                        "))
-            ->where('tutors.is_default_main_tutor', 1)
-            ->where('members.main_tutor_id', $id)->get();
+        return view('admin.modules.tutor.maintutor', compact('members'));
+    }
 
-        return view('admin.modules.tutor.maintutor', compact('tutors'));
 
+    public function supporttutor($id)
+    {
+        $members = Member::join('users', 'users.id', '=', 'members.user_id')
+                    ->join('tutors', 'tutors.user_id', 'members.tutor_id')
+                    ->select('users.firstname', 'users.lastname',  'users.valid', 'members.*', 'tutors.is_default_support_tutor')
+                    ->where('members.tutor_id', $id)                  
+                    ->where('users.valid', 1)
+                    ->where('tutors.is_default_support_tutor', 1)                    
+                    ->paginate($this->items_per_page);
+
+        return view('admin.modules.tutor.supporttutor', compact('members'));
     }
 
     /**
@@ -162,6 +172,7 @@ class TutorController extends Controller
                 $mainTutor = false;
                 $supportTutor = true;
             }
+            
             $tutorData = [
                 'sort' => $request['sort'],
                 'user_id' => $user->id,
@@ -207,18 +218,26 @@ class TutorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Tutor $tutor)
-    {
-        //abort_if(Gate::denies('tutor_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+    public function edit($id, Request $request)
+    {      
+        abort_if(Gate::denies('tutor_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $shifts = Shift::all();
-        $grades = Grade::all();
+        $tutor = Tutor::join('users', 'users.id', '=', 'tutors.user_id')->where('user_id', $id)->first();
 
-        return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));
+        if (isset($tutor)) {
+            $shifts = Shift::all();
+            $grades = createGrades();
+
+            return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));    
+        }
+
+        
     }
 
     public function resetPassword($id, Request $request)
     {
+       
+
         $tutor = Tutor::find($id);
         $userData = [
             'password' => Hash::make($request->password),
@@ -322,7 +341,7 @@ class TutorController extends Controller
     {
         //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $user = User::find($tutor->user_id);
+        $user = User::where('user_id', $tutor->user_id)->find();
         $user->delete();
 
         //delete tutor if there is still added
@@ -334,7 +353,7 @@ class TutorController extends Controller
     public function massDestroy(Request $request)
     {
         //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        Tutor::whereIn('id', request('ids'))->delete();
+        Tutor::whereIn('user_id', request('ids'))->delete();
         return response(null, Response::HTTP_NO_CONTENT);
     }
 

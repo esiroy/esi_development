@@ -19,7 +19,7 @@
             <!--[start card] -->
             <div class="card esi-card mt-5">
                 <div class="card-header esi-card-header">
-                   List of Members as Main Tutor
+                   List of Members as Support Tutor
                 </div>
                 <div class="card-body">               
                     @include('admin.modules.tutor.includes.maintutorlist')
