@@ -25,6 +25,9 @@ class CreateScheduleItemTable extends Migration
             $table->tinyInteger('valid');
             $table->string('email_type')->nullable();
             $table->timestamps();
+
+   
+            $table->index(['lesson_shift_id', 'lesson_time', 'tutor_id', 'member_id', 'schedule_status', 'duration']);
         });
     }
 
