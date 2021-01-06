@@ -26,8 +26,14 @@ class CreateScheduleItemTable extends Migration
             $table->string('email_type')->nullable();
             $table->timestamps();
 
-   
-            $table->index(['lesson_shift_id', 'lesson_time', 'tutor_id', 'member_id', 'schedule_status', 'duration']);
+            $table->index('lesson_shift_id');
+            $table->index('lesson_time');
+            
+            $table->index('tutor_id');
+            $table->index('member_id');
+            $table->index('schedule_status');
+            $table->index('duration');
+          
         });
     }
 
