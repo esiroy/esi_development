@@ -77,7 +77,8 @@
                         </label>
                         <div class="col-md-3">
 
-                            <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email', isset($tutor->user->email ) ? $tutor->user->email : '') }}" required autocomplete="email">
+                            <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" 
+                            name="email" value="{{ old('email', isset($tutor->user->email ) ? $tutor->user->email : '') }}" required autocomplete="email">
 
                             @error('email')
                             <span class="invalid-feedback" role="alert">
@@ -92,7 +93,8 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="sort" type="number" class="form-control form-control-sm @error('sort') is-invalid @enderror" name="sort" value="{{ old('sort', isset($tutor->sort) ? $tutor->sort : '') }}" required autocomplete="sort">
+                            <input id="sort" type="number" class="form-control form-control-sm @error('sort') is-invalid @enderror" 
+                                name="sort" value="{{ old('sort', isset($tutor->sort) ? $tutor->sort : '') }}" required autocomplete="sort">
 
                             @error('sort')
                             <span class="invalid-feedback" role="alert">
@@ -110,7 +112,8 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="salary_rate" type="number" class="form-control form-control-sm @error('salary_rate') is-invalid @enderror" name="salary_rate" value="{{ old('salary_rate', isset($tutor->salary_rate ) ? $tutor->salary_rate : '') }}" required autocomplete="salary_rate">
+                            <input id="salary_rate" type="number" class="form-control form-control-sm @error('salary_rate') 
+                            is-invalid @enderror" name="salary_rate" value="{{ old('salary_rate', isset($tutor->salary_rate ) ? $tutor->salary_rate : '') }}" required autocomplete="salary_rate">
 
                             @error('salary_rate')
                             <span class="invalid-feedback" role="alert">
@@ -140,7 +143,8 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="skype_name" type="skype_name" class="form-control form-control-sm @error('skype_name') is-invalid @enderror" name="skype_name" value="{{ old('skype_name', isset($tutor->skype_name ) ? $tutor->skype_name : '') }}" required autocomplete="skype_name">
+                            <input id="skype_name" type="skype_name"
+                             class="form-control form-control-sm @error('skype_name') is-invalid @enderror" name="skype_name" value="{{ old('skype_name', isset($tutor->skype_name ) ? $tutor->skype_name : '') }}" required autocomplete="skype_name">
 
                             @error('skype_name')
                             <span class="invalid-feedback" role="alert">
@@ -156,7 +160,8 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="skype_id" type="skype_id" required class="form-control form-control-sm @error('skype_id') is-invalid @enderror" name="skype_id" value="{{ old('skype_id', isset($tutor->skype_id ) ? $tutor->skype_id : '') }}" required autocomplete="skype_id">
+                            <input id="skype_id" type="skype_id" required class="form-control form-control-sm @error('skype_id') is-invalid @enderror" 
+                            name="skype_id" value="{{ old('skype_id', isset($tutor->skype_id ) ? $tutor->skype_id : '') }}" required autocomplete="skype_id">
 
                             @error('skype_id')
                             <span class="invalid-feedback" role="alert">
@@ -172,7 +177,8 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" name="name_en" value="{{ old('name_en', isset($tutor->name_en ) ? $tutor->name_en : '') }}" required autocomplete="name_en">
+                            <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" 
+                            name="name_en" value="{{ old('name_en', isset($tutor->user->firstname ) ? $tutor->user->firstname : '') }}" required autocomplete="name_en">
 
                             @error('name_en')
                             <span class="invalid-feedback" role="alert">
@@ -188,7 +194,8 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" value="{{ old('name_jp', isset($tutor->name_jp ) ? $tutor->name_jp : '') }}" required autocomplete="name_jp">
+                            <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" 
+                                name="name_jp" value="{{ old('name_jp', isset($tutor->user->japanese_firstname ) ? $tutor->user->japanese_firstname : '') }}" required autocomplete="name_jp">
 
                             @error('name_jp')
                             <span class="invalid-feedback" role="alert">
@@ -230,7 +237,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror" value="{{ old('birthdate', isset($tutor->birthdate ) ? $tutor->birthdate : '') }}">
+                            <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror" value="{{ old('birthdate', isset($tutor->birthday ) ? $tutor->birthday : '') }}">
                         </div>
                     </div>
 
@@ -239,7 +246,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input type="text" name="major_in" class="form-control form-control-sm" value="{{ old('major_in', isset($tutor->major_in ) ? $tutor->major_in : '') }}">
+                            <input type="text" name="major_in" class="form-control form-control-sm" value="{{ old('major_in', isset($tutor->major ) ? $tutor->major : '') }}">
                         </div>
                     </div>
 
@@ -263,10 +270,10 @@
 
                             <select name="japanese_fluency" class="form-control form-control-sm @error('japanese_fluency') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
-                                <option value="FLUENTLY" @if(old('japanese_fluency')=='FLUENTLY' || $tutor->japanese_fluency_id =='FLUENTLY' ) {{"selected"}} @endif>流暢に話す (Fluently)</option>
-                                <option value="DAILY_CONVERSATION" @if(old('japanese_fluency')=='DAILY_CONVERSATION' || $tutor->japanese_fluency_id =='DAILY_CONVERSATION') {{"selected"}} @endif>日常会話程度 (Daily Conversation)</option>
-                                <option value="LITTLE" @if(old('japanese_fluency')=='LITTLE' || $tutor->japanese_fluency_id =='FLUENTLY') {{"LITTLE"}} @endif>少し話せる (Little)</option>
-                                <option value="CANT_SPEAK" @if(old('japanese_fluency')=='CANT_SPEAK' || $tutor->japanese_fluency_id =='CANT_SPEAK') {{"selected"}} @endif>話せない (Can't Speak)</option>
+                                <option value="FLUENTLY" @if(old('japanese_fluency') =='FLUENTLY' || $tutor->fluency =='FLUENTLY' ) {{"selected"}} @endif>流暢に話す (Fluently)</option>
+                                <option value="DAILY_CONVERSATION" @if(old('japanese_fluency')=='DAILY_CONVERSATION' || $tutor->fluency =='DAILY_CONVERSATION') {{"selected"}} @endif>日常会話程度 (Daily Conversation)</option>
+                                <option value="LITTLE" @if(old('japanese_fluency')=='LITTLE' || $tutor->fluency =='FLUENTLY') {{"LITTLE"}} @endif>少し話せる (Little)</option>
+                                <option value="CANT_SPEAK" @if(old('japanese_fluency')=='CANT_SPEAK' || $tutor->fluency =='CANT_SPEAK') {{"selected"}} @endif>話せない (Can't Speak)</option>
                             </select>
 
                             @error('japanese_fluency')
@@ -287,7 +294,7 @@
                             <select name="shift" class="form-control form-control-sm @error('shift') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 @foreach ($shifts as $shift)
-                                <option value="{{$shift->id}}" @if(old('shift')==$shift->id || $tutor->shift_id == $shift->id) {{"selected"}} @endif>{{$shift->name}}</option>
+                                <option value="{{$shift->id}}" @if(old('shift') == $shift->id || $tutor->lesson_shift_id == $shift->id) {{"selected"}} @endif>{{$shift->name}}</option>
                                 @endforeach
                             </select>
                         </div>

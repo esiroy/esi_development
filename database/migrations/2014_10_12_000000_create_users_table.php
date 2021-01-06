@@ -35,8 +35,10 @@ class CreateUsersTable extends Migration
 
             $table->bigInteger('company_id')->nullable();
             $table->tinyInteger('email_notification')->nullable();
-            $table->tinyInteger('items_per_page')->nullable();
-            $table->tinyInteger('no_page_item')->nullable();            
+            
+
+            $table->integer('items_per_page')->nullable();
+            $table->integer('no_page_item')->nullable();            
 
             $table->timestamp('email_verified_at')->nullable();
             $table->string('reset_password_code')->nullable();
