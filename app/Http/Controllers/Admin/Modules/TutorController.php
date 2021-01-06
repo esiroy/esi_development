@@ -3,19 +3,18 @@
 namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
-use App\Models\Grade;
 use App\Models\Member;
 use App\Models\Role;
 use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
+use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
-
-use DB, Validator, Gate;
+use Validator;
 
 class TutorController extends Controller
 {
@@ -72,26 +71,25 @@ class TutorController extends Controller
     public function maintutor($id)
     {
         $members = Member::join('users', 'users.id', '=', 'members.user_id')
-                    ->join('tutors', 'tutors.user_id', 'members.tutor_id')
-                    ->select('users.firstname', 'users.lastname',  'users.valid', 'members.*', 'tutors.is_default_main_tutor')
-                    ->where('members.tutor_id', $id)                  
-                    ->where('users.valid', 1)
-                    //->where('tutors.is_default_main_tutor', 1)                    
-                    ->paginate($this->items_per_page);
+            ->join('tutors', 'tutors.user_id', 'members.tutor_id')
+            ->select('users.firstname', 'users.lastname', 'users.valid', 'members.*', 'tutors.is_default_main_tutor')
+            ->where('members.tutor_id', $id)
+            ->where('users.valid', 1)
+        //->where('tutors.is_default_main_tutor', 1)
+            ->paginate($this->items_per_page);
 
         return view('admin.modules.tutor.maintutor', compact('members'));
     }
 
-
     public function supporttutor($id)
     {
         $members = Member::join('users', 'users.id', '=', 'members.user_id')
-                    ->join('tutors', 'tutors.user_id', 'members.tutor_id')
-                    ->select('users.firstname', 'users.lastname',  'users.valid', 'members.*', 'tutors.is_default_support_tutor')
-                    ->where('members.tutor_id', $id)                  
-                    ->where('users.valid', 1)
-                    ->where('tutors.is_default_support_tutor', 1)                    
-                    ->paginate($this->items_per_page);
+            ->join('tutors', 'tutors.user_id', 'members.tutor_id')
+            ->select('users.firstname', 'users.lastname', 'users.valid', 'members.*', 'tutors.is_default_support_tutor')
+            ->where('members.tutor_id', $id)
+            ->where('users.valid', 1)
+            ->where('tutors.is_default_support_tutor', 1)
+            ->paginate($this->items_per_page);
 
         return view('admin.modules.tutor.supporttutor', compact('members'));
     }
@@ -139,7 +137,7 @@ class TutorController extends Controller
 
         if ($validator->fails()) {
 
-            return redirect()->route('admin.tutor.index')->with('error_message', 'Error in adding tutor, please check the form below!')->withErrors($validator)->withInput();            
+            return redirect()->route('admin.tutor.index')->with('error_message', 'Error in adding tutor, please check the form below!')->withErrors($validator)->withInput();
 
         } else {
 
@@ -172,7 +170,7 @@ class TutorController extends Controller
                 $mainTutor = false;
                 $supportTutor = true;
             }
-            
+
             $tutorData = [
                 'sort' => $request['sort'],
                 'user_id' => $user->id,
@@ -190,7 +188,7 @@ class TutorController extends Controller
                 'lesson_shift_id' => $request['shift'],
                 'is_default_main_tutor' => $mainTutor,
                 'is_default_support_tutor' => $supportTutor,
-                'is_terminated' => (boolean) $request['is_terminated']
+                'is_terminated' => (boolean) $request['is_terminated'],
             ];
 
             $tutor = Tutor::create($tutorData);
@@ -219,7 +217,7 @@ class TutorController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id, Request $request)
-    {      
+    {
         abort_if(Gate::denies('tutor_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $tutor = Tutor::join('users', 'users.id', '=', 'tutors.user_id')->where('user_id', $id)->first();
@@ -228,20 +226,20 @@ class TutorController extends Controller
             $shifts = Shift::all();
             $grades = createGrades();
 
-            return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));    
+            return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));
         }
 
-        
     }
 
     public function resetPassword($id, Request $request)
     {
-       
 
-        $tutor = Tutor::find($id);
+        $tutor = Tutor::where('user_id', $id)->first();
+
         $userData = [
             'password' => Hash::make($request->password),
         ];
+
         $user = User::find($tutor->user_id);
         $user->update($userData);
 
@@ -255,8 +253,11 @@ class TutorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Tutor $tutor)
+    public function update($id, Request $request)
     {
+
+        $tutor = Tutor::where('user_id', $id)->first();
+
         $validator = Validator::make($request->all(),
             [
                 'email' => ['required', 'string', 'email', 'max:255',
@@ -280,12 +281,18 @@ class TutorController extends Controller
 
             $userData =
                 [
+                'firstname' => $request['name_en'],
+                'lastname' => '',
+                'japanese_firstname' => $request['name_jp'],
+                'japanese_lastname' => '',
                 'email' => $request['email'],
                 'username' => $request['email'],
+                //'password' => $request['password'],
                 'api_token' => Hash('sha256', Str::random(80)),
+                //'user_type' => "TUTOR",
+                //'valid' => true,
             ];
-
-            $user = User::find($tutor->user_id);
+            $user = User::find($id);
             $user->update($userData);
 
             //Add Role
@@ -323,8 +330,9 @@ class TutorController extends Controller
                 'is_terminated' => (boolean) $request['is_terminated'],
             ];
 
-            $tutor = Tutor::find($tutor->id);
+            $tutor = Tutor::where("user_id", $id);
             $tutor->update($tutorData);
+
             //$user->tutors()->sync([$tutor->id], false);
 
             return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been updated successfully!');

@@ -132,7 +132,7 @@
                         </label>
                         <div class="col-md-3">
                             @foreach($grades as $grade)
-                             <input type="radio" name="grade" required value="{{ $grade['name'] }}" @if(old('grade') ===  $grade['name'])? {{ "checked" }} @endif> {{$grade['name']}}
+                             <input type="radio" name="grade" required value="{{ $grade['name'] }}" @if( old('grade') ===  $grade['name'] ||  $grade['name'] === $tutor->grade )? {{ "checked" }} @endif> {{ $grade['name'] }}
                             @endforeach
                         </div>
                     </div>
@@ -211,7 +211,8 @@
                         </label>
                         <div class="col-md-3">
                             <input type="radio" name="gender" value="MALE" checked="" class="@error('gender') is-invalid @enderror" name="gender" value="{{ old('gender') }}" required autocomplete="gender"> 男 (Male)
-                            <input type="radio" name="gender" value="FEMALE" class="@error('gender') is-invalid @enderror" name="gender" value="{{ old('gender', isset($tutor->gender ) ? $tutor->gender : '') }}" required autocomplete="gender"> 女 (Female)
+                            <input type="radio" name="gender" value="FEMALE" class="@error('gender') is-invalid @enderror" name="gender" 
+                                value="{{ old('gender', isset($tutor->gender ) ? $tutor->gender : '') }}" required autocomplete="gender"> 女 (Female)
                             @error('gender')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -237,7 +238,8 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror" value="{{ old('birthdate', isset($tutor->birthday ) ? $tutor->birthday : '') }}">
+                            <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror" 
+                            value="{{ old('birthdate', isset($tutor->birthday ) ? $tutor->birthday : '') }}">
                         </div>
                     </div>
 
