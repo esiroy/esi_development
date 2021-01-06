@@ -107,7 +107,10 @@
 
                     <tr v-for="tutor in tutors" :key="tutor.id">
                         <td class="">
-                            <div style="width:125px">{{ tutor.id }} - {{ tutor.name_en }}</div>
+                            <div style="width:125px">
+                                <!--{{ tutor.id }} -->
+                                {{ tutor.firstname }}
+                            </div>
                         </td>
 
                         <td class="" v-for="time in timeList" :key="time.id">
@@ -245,6 +248,7 @@ export default {
             tutorData: null,
             status: "",
             memberSelectedID: "",
+            memberList: [],
             
             //emailType
             cancelationType: "Regular Cancel",
@@ -305,11 +309,24 @@ export default {
             ] 
         };
     },
-    beforeMount() {
+    async beforeMount() {
        
+        this.setMemberListLock(); //disabler of additoinal options        
+        this.lessonsData = this.schedule_items;
+        
+        console.log("Lessons Mounted : ", this.schedules);
+
+        this.shiftDuration  = this.duration;
+
+        //@todo: ajax load schedules (DONE)
+        this.schedules = this.getSchedules(this.scheduled_at, this.shiftDuration); 
+
+        this.memberList = this.getMemberList();
+               
     },
-    mounted() {
-     
+    async mounted() {
+
+        /* transferred to before mount 
         this.setMemberListLock(); //disabler of additoinal options        
         this.lessonsData = this.schedule_items;
         
@@ -323,7 +340,7 @@ export default {
             options.push({'id': member.id, 'name': member.user_id + " " + member.first_name + " "+ member.last_name  });        
         });
         this.memberOptionList = options;
-     
+        */
 
 
     },
@@ -362,7 +379,7 @@ export default {
                     }
                 });
             }
-            return "<a href='/admin/member/details/"+ memberID +"'>"+ member + "</a>";
+            return "<a href='/admin/member/"+ memberID +"'>"+ member + "</a>";
          },
         //check button if it has schedule then we will hide it, and if not we need to show it
         checkButton(data) {
@@ -388,7 +405,7 @@ export default {
             let isFound = false;
             $.each(this.lessonsData[data.tutorID], function(key, value) 
             {
-                console.log({value}, {data});
+                //console.log({value}, {data});
                 if (
                    // value.tutor_id === data.tutorID &&
                     value.status === data.status && 
@@ -467,6 +484,68 @@ export default {
                 });
             }
             return scheduleGate;
+        },
+        getMemberList() {
+            
+            axios.post("/api/get_members?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+                message             : "this is a test message",
+                
+            }).then(response => {
+
+                if (response.data.success === true) 
+                {
+                    this.$nextTick(function()
+                    {  
+                        this.memberList = response.data.members;
+                        
+                        //@todo: ajax load members         
+                        //optionLists of Members
+                        var options = [];
+                        this.memberList.forEach(function (member, index) 
+                        {   
+                            options.push({'id': member.user_id, 'name': member.user_id + " " + member.firstname + " "+ member.lastname  });        
+                        });
+                        this.memberOptionList = options;
+                          
+
+                        this.$forceUpdate(); 
+                    });
+                } 
+                else {                    
+                    alert (response.data.message);                   
+                }
+			}).catch(function(error) {
+                alert("Error " + error);                
+			});               
+        },
+        getSchedules(scheduled_at, shiftDuration) {
+
+            //getSchedules(this.scheduled_at, this.shiftDuration)
+
+            axios.post("/api/get_schedules?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+                scheduled_at        : scheduled_at,
+                shift_duration      : shiftDuration
+
+            }).then(response => {
+                if (response.data.success === true) 
+                {
+                    this.$nextTick(function()
+                    {  
+                        this.lessonsData = response.data.tutorLessonsData;
+                        this.$forceUpdate(); 
+                    });
+                } 
+                else {                    
+                    alert (response.data.message);                   
+                }
+			}).catch(function(error) {
+                alert("Error " + error);                
+			});            
+
         },
         updateTutorSchedule() {
             //get the selected id
@@ -638,9 +717,6 @@ export default {
         display: inline-block;
         width: 15px;
     }
-
-    
-    
     
 
     .btnAdd {

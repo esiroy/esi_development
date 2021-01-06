@@ -97,7 +97,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::get('/member/paymenthistory/{id}', 'Modules\MemberController@paymenthistory')->name('member.paymenthistory');
         Route::get('/member/account/{id}', 'Modules\MemberController@account')->name('member.account');
         Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist')->name('member.schedulelist');
-        Route::get('/member/details/{id}', 'Modules\MemberController@details')->name('member.details');
+        
+        Route::get('/member/{id}', 'Modules\MemberController@show')->name('member.details');
 
         //tutor
         Route::delete('/tutor/destroy', 'Modules\TutorController@massDestroy')->name('tutor.massDestroy');

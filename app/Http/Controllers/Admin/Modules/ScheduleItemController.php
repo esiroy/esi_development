@@ -90,7 +90,7 @@ class ScheduleItemController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ScheduleItem $scheduleItem, Request $request)
+    public function index(Request $request)
     {
         if(Gate::allows('admin_lesson_scheduler_access')) 
         {              
@@ -114,17 +114,38 @@ class ScheduleItemController extends Controller
             }
 
             //get tutors for this shift id
-            $shift  = Shift::where("value", $shiftDuration)->first();            
-            $tutors = Tutor::where('shift_id', $shift->id)->get();
+            $shift  = Shift::where("value", $shiftDuration)->first();   
 
-            //get members
-            $members = Member::join('users', 'users.id', '=', 'members.user_id')->select('members.*','users.first_name', 'users.last_name')->get();    
-            $scheduleItems = $scheduleItem->getSchedules($dateToday, $shiftDuration);          
+            $tutors = Tutor::where('lesson_shift_id', $shift->id)
+                        ->where('is_terminated', '!=', 1)
+                        ->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
+                        ->join('users', 'users.id', '=', 'tutors.user_id')
+                        ->orderBy('firstname', 'ASC')
+                        ->select('tutors.*',
+                                'users.firstname', 'users.lastname')->get();
+
+  
             
-            //remove errors from array to ojbects            
-            if (count($scheduleItems) == 0) {
-                $scheduleItems = (object) ['0' => null];
-            }
+            
+            //@todo: make this faster?
+            //get members
+            /*
+            $members = Member::join('users', 'users.id', '=', 'members.user_id')
+                        ->select('members.*','users.firstname', 'users.lastname', 'users.valid')
+                        ->where('valid', "=", 1)
+                        ->limit(1)
+                        ->get();
+            */
+            //$scheduleItems = $scheduleItem->getSchedules($dateToday, $shiftDuration);  
+
+            //@todo: load via ajax!     (set member, and schedules to null                                
+            $members = new Member();
+            $scheduleItems = (object) ['0' => null];
+
+            //if (count($scheduleItems) == 0) {
+                //$scheduleItems = new ScheduleItem();
+                //$scheduleItems = (object) ['0' => null];                
+           // }            
     
             return view('admin.modules.scheduleItem.index', compact('dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
 
@@ -142,14 +163,9 @@ class ScheduleItemController extends Controller
             }
             else
             {
-
-                //$dateFrom = "2020-12-01";
-                //$dateTo   = "2020-12-25";
-
                 $dateFrom = date('Y-m-d');
                 $dateTo   = date('Y-m-d', strtotime($dateFrom ." + 5 day"));                
             }
-
 
             $from = strtotime($dateFrom);
             $to = strtotime($dateTo);
@@ -163,8 +179,11 @@ class ScheduleItemController extends Controller
             //@todo: Tutor - get the lessons of the current user only since this is tutor  
             $tutor = Tutor::where('user_id', Auth::user()->id)->first();
 
-            $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
 
+            //@todo: ajax load lessons and members (NOT CHECKED)
+            $scheduleItem =  new ScheduleItem();
+            $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
+          
             return view('admin.modules.tutor.lessons', compact('dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));
 
             

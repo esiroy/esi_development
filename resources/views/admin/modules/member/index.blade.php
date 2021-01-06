@@ -17,8 +17,8 @@
            <!--Member List -->
 
             <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
+           <div class="card esi-card mt-5">
+                <div class="card-header esi-card-header">
                     Member List
                 </div>
                 <div class="card-body">
@@ -61,26 +61,14 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-12 pt-3">
-                           <member-list-component                               
-                                :members="{{ json_encode($members) }}"
-                                api_token="{{ Auth::user()->api_token }}"
-                                csrf_token="{{ csrf_token() }}"                            
-
-                                :can_member_access="{{ $can_member_access }}"                
-                                :can_member_edit="{{ $can_member_edit }}"
-                                :can_member_delete="{{ $can_member_delete }}"
-                                :can_member_view="{{ $can_member_view }}"
-
-                            />
+                        <div class="col-12 pt-3">  
+                            @include('admin.modules.member.includes.memberlist')
                         </div>
                     </div>
                 </div>
-            </div><!--[end card]-->
-
+            </div><!--[end card]-->        
             
             <!--Member List -->
-
             @if ($can_member_create)
             <member-create-component                
                 :memberships="{{ json_encode($memberships) }}"
@@ -104,11 +92,73 @@
 </div>
 @endsection
 
+@section('styles')
+@parent
+<style>
+table.dataTable thead>tr>td.sorting,
+table.dataTable thead>tr>td.sorting_asc, 
+table.dataTable thead>tr>td.sorting_desc, 
+table.dataTable thead>tr>th.sorting, 
+table.dataTable thead>tr>th.sorting_asc, 
+table.dataTable thead>tr>th.sorting_desc {
+    padding-right: 0px;
+}
+</style>
+
+@endsection
 
 @section('scripts')
 @parent
 <script type="text/javascript">
     window.addEventListener('load', function() {
+        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        let _token = "{{ csrf_token() }}"
+
+      
+        @can('member_delete')
+        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
+        let deleteButton = { 
+            text: deleteButtonTrans, 
+            url: "{{ route('admin.tutor.massDestroy') }}",
+            className: 'btn-danger',
+            action: function(e, dt, node, config) {
+                var ids = $.map(dt.rows({
+                    selected: true
+                }).nodes(), function(entry) {
+                    return $(entry).data('entry-id')
+                });
+
+                if (ids.length === 0) {
+                    alert('{{ trans('global.datatables.zero_selected') }}')
+                    return
+                }
+
+                if (confirm('{{ trans('global.areYouSure ') }}')) 
+                {
+                    $.ajax({
+                        headers: {'x-csrf-token': _token}, method: 'POST', url: config.url, 
+                        data: {
+                            ids: ids,
+                            _method: 'DELETE'
+                        }
+                    }).done(function() {
+                        location.reload()
+                    })
+                }
+            }
+        }
+        dtButtons.push(deleteButton)
+        @endcan
+      
+            
+
+        $.extend(true, $.fn.dataTable.defaults, {order: [ [1, 'desc']], pageLength: 100,});
+        $('#dataTable').DataTable({
+            "buttons": dtButtons,
+            "paging":   false
+        
+        })
     });
+
 </script>
-@endsection    
+@endsection

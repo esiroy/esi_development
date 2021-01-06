@@ -3,25 +3,32 @@
 namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-
-use App\Models\User;
-use App\Models\Member;
-use App\Models\Lesson;
-use App\Models\MemberCredits;
-use App\Models\Attribute;
-use App\Models\Membership;
-use App\Models\Shift;
-use App\Models\MemberPointPurchaseHistory;
 use App\Models\Agent;
-use App\Models\Tutor;
-use App\Models\Purpose;
-use App\Models\MemberLesson;
+use App\Models\AgentTransaction;
+use App\Models\LessonGoals;
+use App\Models\Member;
+use App\Models\MemberAttribute;
+use App\Models\MemberCredits;
 use App\Models\MemberDesiredSchedule;
+use App\Models\MemberLesson;
+use App\Models\Purpose;
+use App\Models\ReportCard;
+use App\Models\ReportCardDate;
 
-use DB, Auth, Validator, Gate;
+use App\Models\ScheduleItem;
+use App\Models\Shift;
+use App\Models\Tutor;
+use App\Models\User;
+use Auth;
+use DB;
+use Gate;
+
+//use App\Models\MemberPointPurchaseHistory;
+//use App\Models\Membership;
+
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Validator;
 
 class MemberController extends Controller
 {
@@ -30,142 +37,150 @@ class MemberController extends Controller
     {
         $this->middleware('auth');
     }
-    
-    
- /**
-     * Display the specified resource.
+
+    /**
+     * (v2)
+     * Display the specified resource. 
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    { 
-        $member = Member::where('id', $id)->first();
+    public function show($memberID)
+    {
+        $agent = new Agent();
+        $agentInfo = $agent->getMemberAgent($memberID);
+        $memberInfo = Member::where('user_id', $memberID)->first();
 
-        return view('admin.modules.member.memberInfo', compact('member'));
+        if (isset($memberInfo)) {
+
+            if (isset($memberInfo->tutor_id)) {
+                $tutorInfo = Tutor::where('user_id',  $memberInfo->tutor_id)->first();
+            } else {
+                $tutorInfo = null;
+            }
+    
+            if (isset($memberInfo->lesson_shift_id)) {
+                $shift = new Shift();
+                $duration = $shift->getDuration($memberInfo->lesson_shift_id);
+            } else {
+                $duration = null;
+            }
+    
+            //get Lesson goals
+            $goals = new LessonGoals();
+            $lessonGoals = $goals->getLessonGoals($memberID);
+    
+            //report cards
+            $reportCard = new ReportCard();
+            $latestReportCard = $reportCard->getLatest($memberID);
+    
+            //writing report cards 
+            $reportCardDate = new ReportCardDate();
+            $latestWritingReport = $reportCardDate->getLatest($memberID); 
+
+    
+            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport'));
+        } else {
+
+            abort(404, "Member Not Found");
+        }
+
       
     }
 
-    /**
+    /** 
+     * (v2)
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        //request variables        
-        $member_id  = $request->member_id;
-        $name       = $request->name;
-        $email      = $request->email;
+        //request variables
+        $member_id = $request->member_id;
+        $name = $request->name;
+        $email = $request->email; 
+
+        $attributes = createAttributes();
+        $memberships = createMembership();
         
-        //[DROPDOWN OPTIONS] - attributes, membership, Shifts
-        $attributes = Attribute::all();
-        $memberships = Membership::all();        
         $shifts = Shift::all();
 
-        /*
-        $members = User::select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name"))
-                   ->whereHas('roles', function($q) { $q->where('title', 'Member'); })->get();   
-        */
-
-
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')
-                    ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-                    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-                    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-                    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, 
-                                            attributes.name as attribute, 
-                                            members.id as id,
-                                            agents.id as agent_id,
-                                            tutors.name_en as main_tutor_name,
-                                            members.credits as credits
+            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+            ->leftJoin('tutors', 'tutors.id', '=', 'members.tutor_id')
+            ->select("*", DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name,
+                                            users.id as id,
+                                            agents.id as agent_id
                                         "));
 
-        //find the user authenticated model for Acess Control Gates
-        //$userAuthenticated  = User::find(Auth::user()->id);
-
         //@[START] USER SEARCH - if user search for a member
-        if(isset($member_id) || isset($name) || isset($email)) {        
-            if (isset($member_id)) {    
-                $memberQuery = $memberQuery->where('members.id', $member_id);
+        if (isset($member_id) || isset($name) || isset($email)) {
+            if (isset($member_id)) {
+                $memberQuery = $memberQuery->where('members.user_id', $member_id);
             }
-            if (isset($name)) {     
-                $memberQuery = $memberQuery->orWhere('users.first_name', 'like', '%' .  $name . '%')->orWhere('users.last_name', 'like', '%' .  $name . '%'); 
+            if (isset($name)) {
+                $memberQuery = $memberQuery->orWhere('users.firstname', 'like', '%' . $name . '%')->orWhere('users.lastname', 'like', '%' . $name . '%');
             }
 
             if (isset($email)) {
                 $memberQuery = $memberQuery->orWhere('users.email', $email);
-           }
+            }
         } //[END] USER SEARCH
 
-
-        $members = $memberQuery->get();
+        $members = $memberQuery->where('valid', 1)->orderby('users.id', 'ASC')->paginate(30);
 
         //Tutor Query
-        $tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();         
+        //$tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();
+        $tutorQuery = User::where('user_type', "TUTOR")->get();
         $tutors = json_encode($tutorQuery);
 
-
-          
-        /*
-        $roles = Auth::User()->roles->pluck('title');
-        foreach ($roleItems as $roleItem) {
-            if ($role = "Tutor") {
-                echo "this is a tutor";
-            }
-        }
-          exit();
-        */
-
-
         //MEMBER ACCESS CONTROL
-        $can_member_access  = (Gate::denies('member_acesss')) ? 'false' : 'true';
-        $can_member_create  = (Gate::denies('can_member_create')) ? 'false' : 'true';
+        $can_member_access = (Gate::denies('member_acesss')) ? 'false' : 'true';
+        $can_member_create = (Gate::denies('can_member_create')) ? 'false' : 'true';
 
-        $can_member_delete  = (Gate::denies('member_delete')) ? 'false' : 'true';
-        $can_member_edit  = (Gate::denies('member_edit')) ? 'false' : 'true';
-        $can_member_view  = (Gate::denies('member_view')) ? 'false' : 'true';
-        
-      
+        $can_member_delete = (Gate::denies('member_delete')) ? 'false' : 'true';
+        $can_member_edit = (Gate::denies('member_edit')) ? 'false' : 'true';
+        $can_member_view = (Gate::denies('member_view')) ? 'false' : 'true';
 
         return view('admin.modules.member.index', compact('memberships', 'shifts', 'attributes', 'tutors', 'members',
-                                                        'can_member_access', 'can_member_create','can_member_edit', 
-                                                        'can_member_view','can_member_delete'));
+            'can_member_access', 'can_member_create', 'can_member_edit',
+            'can_member_view', 'can_member_delete'));
     }
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-    */  
+     */
     public function account($memberID)
     {
-        $member         = Member::find($memberID);
+        $member = Member::find($memberID);
         if (!isset($member)) {
             abort(404);
         }
 
-        $user           = $member->user;
-        $agent          = $member->agent;        
+        $user = $member->user;
+        $agent = $member->agent;
 
         //Member Transactions
-        $transactions  = MemberCredits::join('users', 'users.id', '=', 'member_credits.user_id')
-                        ->where('user_id', $member->user_id)->get();
+        $transactions = MemberCredits::join('users', 'users.id', '=', 'member_credits.user_id')
+            ->where('user_id', $member->user_id)->get();
 
-        $purchaseHistory    = MemberPointPurchaseHistory::join('users', 'users.id', '=', 'member_point_purchase_history.user_id')
-                            ->where('user_id', $member->user_id)->get();
+        $purchaseHistory = MemberPointPurchaseHistory::join('users', 'users.id', '=', 'member_point_purchase_history.user_id')
+            ->where('user_id', $member->user_id)->get();
 
-       return view('admin.modules.member.account', compact('member', 'transactions', 'purchaseHistory'));
+        return view('admin.modules.member.account', compact('member', 'transactions', 'purchaseHistory'));
     }
 
-
-    public function details($memberID) {
+    public function details($memberID)
+    {
         $member = Member::join('users', 'users.id', '=', 'members.user_id')
-                    ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-                    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-                    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-                    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, 
-                                            attributes.name as attribute, 
+        //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
+                                            attributes.name as attribute,
                                             members.id as id,
                                             agents.id as agent_id,
                                             tutors.name_en as main_tutor_name,
@@ -174,52 +189,74 @@ class MemberController extends Controller
 
         return view('admin.modules.member.details', compact('member'));
     }
-    
+
     /**
-     * Display a listing of the payment history.     
+     * Display a listing of the payment history.
      * @param $memberID
-    */  
-    public function paymenthistory($memberID) {
-        $member         = Member::find($memberID);
-        if (!isset($member)) {
-            abort(404);
-        }
-
-        $purchaseHistory  = MemberCredits::join('users', 'users.id', '=', 'member_credits.user_id')
-                        ->where('member_credits.transaction_type', '!=', 'AGENT_SUBTRACT')
-                        ->where('user_id', $member->user_id)->get();
-
-        return view('admin.modules.member.paymenthistory', compact('member', 'purchaseHistory'));
-    }
-
-
-    
-    public function schedulelist($memberID, Lesson $lesson) 
+     */
+    public function paymenthistory($memberID)
     {
-        $memberInfo         = Member::find($memberID);
+        $memberInfo = Member::where('user_id', $memberID)->first();
 
         if ($memberInfo) {
-            $member             = $memberInfo->user;        
-            //agent     
-            $agentInfo          = Agent::find($memberInfo->agent_id);
-            $tutorInfo          = Tutor::find($memberInfo->main_tutor_id);
-    
+
+            $member = $memberInfo->user;
+
+            //agent
+            $agentInfo = Agent::where('user_id', $memberInfo->agent_id)->first();
+
+            //tutor for
+            $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
+
+            $agentTransaction = new AgentTransaction();
+            $paymentHistory = $agentTransaction->getPaymentHistory($memberID);
+
+            return view('admin.modules.member.paymenthistory', compact('member', 'memberInfo', 'agentInfo', 'tutorInfo', 'paymentHistory'));
+
+        } else {
+
+            abort(404);
+
+        }
+
+    }
+
+    public function schedulelist($memberID, ScheduleItem $scheduleItem)
+    {
+        $memberInfo = Member::where('user_id', $memberID)->first();
+
+        if ($memberInfo) {
+            $member = $memberInfo->user;
+
+            //agent
+            $agentInfo = Agent::where('user_id', $memberInfo->agent_id)->first();
+
+            //tutor for
+            $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
+
+            $thisMonth = strtoupper(date("M"));
+            $thisYear = date("Y");
+
+            //lesson limit (attribute)
+            $memberAttribute = MemberAttribute::where('member_id', $memberID)
+                ->where('month', $thisMonth)
+                ->where('month', $thisYear)
+                ->first();
+
             if ($agentInfo) {
                 $agent = $agentInfo->user;
-            } else {        
+            } else {
                 $agent = null;
             }
-    
-            $schedules  = $lesson->getMemberScheduledLesson($memberID);
-            
-            return view('admin.modules.member.schedulelist', compact('schedules', 'member', 'memberInfo', 'agent', 'agentInfo', 'tutorInfo'));
+
+            $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
+
+            return view('admin.modules.member.schedulelist', compact('schedules', 'member', 'memberInfo', 'agent', 'agentInfo', 'tutorInfo', 'memberAttribute'));
         } else {
             abort(404);
         }
 
     }
-
-
 
     /**
      * Show the form for creating a new resource.
@@ -242,47 +279,87 @@ class MemberController extends Controller
         //api storing
     }
 
-   
-
     /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Member $member)
+    public function edit($memberID)
     {
-        //[DROPDOWN OPTIONS] - attributes, membership, Shifts
-        $attributes = Attribute::all();
-        $memberships = Membership::all();        
-        $shifts = Shift::all();
-
+   
         //Member Information
+        /*
         $memberInfo = Member::join('users', 'users.id', '=', 'members.user_id')
-                    ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-                    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-                    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-                    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name, 
-                                            attributes.name as attribute, 
+            ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
+                                            attributes.name as attribute,
                                             members.id as id,
                                             tutors.name_en as main_tutor_name
                                         "))->where('members.id', $member->id)->first();
+        */
 
         //LessonClasses
-        $lessonClasses = MemberLesson::where('user_id', $member->user_id)->get();
+        //$lessonClasses = MemberLesson::where('user_id', $member->user_id)->get();
 
+        /*
         $desiredSchedule = MemberDesiredSchedule::where('user_id', $member->user_id)->get();
 
-        foreach($desiredSchedule as $item) {
-            echo $item->day ." " . $item->time ."<BR>";
+        foreach ($desiredSchedule as $item) {
+            echo $item->day . " " . $item->time . "<BR>";
         }
 
         //Purpose List
-        $purposes = Purpose::where('user_id', $member->user_id)->get();     
+        $purposes = Purpose::where('user_id', $member->user_id)->get();
+        */
+        //[DROPDOWN OPTIONS] - attributes, membership, Shifts 
+        //member info
+        $memberInfo = Member::where('user_id', $memberID)->first(); 
+
+        //user Info
+        $userInfo= User::where('id', $memberID)->select('id','firstname', 'lastname', 'email', 
+                    'japanese_firstname', 'japanese_lastname',
+                    'user_type','is_activated')->first(); 
+
+     
+
+        $attributes = createAttributes();
+        $memberships = createMembership();
+        $shifts = Shift::all();
+
+        //agent info
+        $agent = new Agent();
+        $agentInfo = $agent->getMemberAgent($memberID);
+
+        //get Lessongoals (purpose)
+        $goals = new LessonGoals();
+        $lessonGoals = $goals->getLessonGoals($memberID);
+
+        /*
+        echo $memberID;
+        echo "<pre>";
+        print_r ($lessonGoals);
+        exit();
+        */
+
+        //MemberAttribute - (lessonClasses)
+        $memberAttribute = new MemberAttribute();
+        $lessonClasses = $memberAttribute->getMemberAttribute($memberID);
+
+
+
+       
+
+        $memberDesiredSchedule = new MemberDesiredSchedule();
+        $desiredSchedule = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
 
         //View all the stufff
-        return view('admin.modules.member.edit', compact('memberships', 'shifts', 'attributes', 'member', 
-                                                        'memberInfo', 'purposes', 'lessonClasses', 'desiredSchedule'));
+        return view('admin.modules.member.edit', compact('agentInfo','memberships', 'shifts', 'attributes', 
+                                                'userInfo', 'memberInfo', 
+                                                'lessonGoals', 'lessonClasses', 'desiredSchedule'));
+        
     }
 
     /**
@@ -295,78 +372,75 @@ class MemberController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-			'transaction_type'  => ['required'],
-            'amount'            => ['required'],
-            'credits'           => ['required'],
+            'transaction_type' => ['required'],
+            'amount' => ['required'],
+            'credits' => ['required'],
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();       
-        }      
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         //variables
         $expiry_date = null;
 
         //AGENT_SUBTRACT
-        //DISTRIBUTE, CREDITS_EXPIRATION, MANUAL_ADD, FREE_CREDITS 
+        //DISTRIBUTE, CREDITS_EXPIRATION, MANUAL_ADD, FREE_CREDITS
         $member = Member::find($id);
 
         if (!isset($member)) {
             abort(404);
         }
-       
+
         $memberUserId = $member->user_id;
 
-        if ($request->transaction_type == 'AGENT_SUBTRACT') 
-        {            
-            $newCredit      = -abs($request->credits);
-            $totalCredits    = $member->credits - $request->credits;
+        if ($request->transaction_type == 'AGENT_SUBTRACT') {
+            $newCredit = -abs($request->credits);
+            $totalCredits = $member->credits - $request->credits;
         } else {
-            $newCredit      = $request->credits;
-            $totalCredits   = $member->credits + $newCredit;
+            $newCredit = $request->credits;
+            $totalCredits = $member->credits + $newCredit;
         }
 
         $member->update([
-            'credits'               => $totalCredits,
-            'credits_expiration'    => date('Y-m-d G:i:s', strtotime('+6 months')), 
-            'latest_purchase_date'  => date('Y-m-d G:i:s')            
+            'credits' => $totalCredits,
+            'credits_expiration' => date('Y-m-d G:i:s', strtotime('+6 months')),
+            'latest_purchase_date' => date('Y-m-d G:i:s'),
         ]);
-       
+
         if (isset($request->expiry_date)) {
             $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
         } else {
-           $expiry_date    = date('Y-m-d G:i:s', strtotime('+6 months'));
+            $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));
         }
-        
+
         //Update Member
         $MemberCredit = [
-            'transaction_type'                  => $request->transaction_type,
-            'user_id'                           => $memberUserId,
-            'transaction_user_id'               => Auth::user()->id,
-            'amount'                            => $request->amount,
-            'credits'                           => $newCredit,
-            'remarks'                           => $request->remarks,
-            'original_credit_expiration_date'   => $expiry_date
-        ];        
+            'transaction_type' => $request->transaction_type,
+            'user_id' => $memberUserId,
+            'transaction_user_id' => Auth::user()->id,
+            'amount' => $request->amount,
+            'credits' => $newCredit,
+            'remarks' => $request->remarks,
+            'original_credit_expiration_date' => $expiry_date,
+        ];
         MemberCredits::create($MemberCredit);
 
-        //@Get time duration of member        
+        //@Get time duration of member
         $duration = Shift::find($member->lesson_time_id)->value;
-
 
         //Insert into MemberPointPurchaseHistory
         $pointHistory = [
-            'user_id'                           => $memberUserId,
-            'transaction_user_id'               => Auth::user()->id,
-            'amount'                            => $request->amount,
-            'credits'                           => $newCredit,	
-            'lesson_time_duration'              => $duration
+            'user_id' => $memberUserId,
+            'transaction_user_id' => Auth::user()->id,
+            'amount' => $request->amount,
+            'credits' => $newCredit,
+            'lesson_time_duration' => $duration,
         ];
         MemberPointPurchaseHistory::create($pointHistory);
 
-
         return redirect()->route('admin.member.account', $id)->with('message', 'Member transaction has been added successfully!');
-			
+
     }
 
     /**
@@ -377,8 +451,18 @@ class MemberController extends Controller
      */
     public function destroy($id)
     {
-         $member = Member::find($id);
-         $member->delete();
-         return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
+        $member = Member::where('user_id', $id)->first();
+        $user = User::find($member->user_id);
+
+ 
+
+        LessonGoals::where('member_id', $user->id)->delete();
+        MemberAttribute::where('member_id', $user->id)->delete();
+        MemberDesiredSchedule::where('member_id', $user->id)->delete();
+
+        $member->delete();
+        $user->delete();
+
+        return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
     }
 }

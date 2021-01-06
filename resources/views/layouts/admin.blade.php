@@ -1,8 +1,7 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
-    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="Description" content="{{ config('app.name', 'My Tutor')}} {{'- ' . ucwords(Request::segment(3)) ?? '' }} ">
@@ -38,43 +37,27 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-
-                    </ul>
-
+                    <ul class="navbar-nav mr-auto"></ul>
 
                     <div class="text-right w-100">
                         <a class="blue pr-2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            @if(Auth::user()->first_name != '')
-                              {{ ucfirst(Auth::user()->first_name) }}
-                              {{ '(Administrator)' }}
-
-                            <span class="caret"></span>
-                            @elseif (Auth::user()->tutorInfo->name_en != '')
-                                {{ ucfirst(Auth::user()->tutorInfo->name_en) }} 
+                            {{ ucfirst(Auth::user()->firstname) }}
+                            @if(Auth::user()->user_type == 'ADMINISTRATOR')
+                              {{ '(Administrator)' }}                            
+                            @elseif (Auth::user()->user_type == 'TUTOR')                                
                                 {{ '(Tutor)' }}
-                                <span class="caret"></span>
-
-                            @elseif (Auth::user()->managerInfo->name_en != '')
-                                {{ ucfirst(Auth::user()->managerInfo->name_en) }}
+                            @elseif (Auth::user()->user_type == 'MANAGER')   
                                 {{ '(Manager)' }}
-                                <span class="caret"></span>
-
-                            @elseif (Auth::user()->agentInfo->name_en != '')
-                                {{ ucfirst(Auth::user()->managerInfo->name_en) }}
-                                {{ '(Agent)' }}
-                                <span class="caret"></span>
+                            @elseif (Auth::user()->user_type == 'AGENT')                               
+                                {{ '(Agent)' }}                              
                             @endif
+                            <span class="caret"></span>
                         </a>
-                          
-                       
-
-                        <!--
+                      
                         <span class="divide">|</span>
                         <a class="blue pl-2 pr-2" href="{{ route('admin.settings') }}">
                             {{ __('Settings') }}
                         </a>
-                        -->
 
                         <span class="divide">|</span>
                         
@@ -89,26 +72,20 @@
                       <span>netenglish.cebumanager</span></a>
                     </div>
 
-
-
                     <form id="logout-form" action="{{ route('admin.AdminLogout') }}"
                         method="POST" style="display: none;">
                         @csrf
                     </form>
-
                 </div>
             </div>
         </nav>
 
-
         @include('layouts.menu.main')
-
 
         <main class="main-container">
             @yield('content')
         </main>
-
-
+        
         <footer class="container py-4 px-0 bg-light">
             <div class="container border-top">
                 <div class="row">
@@ -279,6 +256,7 @@
 
     <script type="text/javascript" src="http://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
 
+    @yield('styles')
     @yield('scripts')
 </body>
 

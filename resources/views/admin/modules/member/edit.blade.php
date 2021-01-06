@@ -18,10 +18,16 @@
                 :memberships="{{ json_encode($memberships) }}"
                 :attributes="{{ json_encode($attributes) }}"
                 :shifts="{{ json_encode($shifts) }}"
-                :member="{{ json_encode($memberInfo) }}"
+
+                :agentinfo="{{ json_encode($agentInfo) }}"
+                :userinfo="{{ json_encode($userInfo)  }}"
+                :memberinfo="{{ json_encode($memberInfo) }}"
+
+                :purposes="{{ json_encode($lessonGoals) }}"
+
                 :lessonclasses="{{ json_encode($lessonClasses) }}"
                 :desiredschedule="{{ json_encode($desiredSchedule) }}"
-                :purposes="{{ json_encode($purposes) }}"
+                
                 api_token="{{ Auth::user()->api_token }}"
                 csrf_token="{{ csrf_token() }}"                     
             />

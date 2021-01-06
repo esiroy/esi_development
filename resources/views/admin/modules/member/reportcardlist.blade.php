@@ -9,11 +9,41 @@
                 <div class="card-header esi-card-header">
                     Report Card List
                 </div>
+                
                 <div class="card-body">
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            @include('admin.modules.member.includes.info')
+                    <div class="member mt-3">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-2">Name</div>
+                                <div class="col-md-9">
+                                    {{ $member->lastname  ?? ' - ' }},
+                                    {{ $member->firstname  ?? ' - ' }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Agent</div>
+                                <div class="col-md-9">
+                                    {{ $agentInfo->user->firstname  ?? ' - ' }}
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-2">Tutor</div>
+                                <div class="col-md-9">
+
+                                    {{ $tutorInfo->user->japanese_firstname  ?? ' - ' }}
+                                </div>
+                            </div>
+
+                            <!--
+                            <div class="row">
+                                <div class="col-md-2">Lesson Class</div>
+                                <div class="col-md-9">
+                                    毎月 {{$memberAttribute->lesson_limit ?? '0'}} 回クラス (あと　残り {{$memberAttribute->lesson_limit ?? '0'}}回)
+                                </div>
+                            </div>
+                            -->
                         </div>
                     </div>
 
@@ -36,19 +66,34 @@
 
                                     @foreach($reportcards as $item)
                                     <tr>
-                                        <td>{{ \App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'] }}</td>
-                                        <td>{{ $item->lesson_subject }}</td>
-                                        <td>{{ $item->lesson_course }}</td>
-                                        <td>{{ $item->lesson_material }}</td>
+                                        <td>
+                                            @php $time = \App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'] @endphp
+
+                                            {{ date('F d, Y H:i', strtotime(\App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'])) }}
+
+                                        </td>
+                                        <td>
+                                            {!! wordwrap($item->lesson_subject, 20, "<br />\n") !!}
+                                        </td>
+                                        <td>                                           
+                                            {!! wordwrap($item->lesson_course, 20, "<br />\n") !!}
+                                        </td>
+                                        <td>
+                                            {!! wordwrap($item->lesson_material, 20, "<br />\n") !!}
+                                        </td>
                                         <td>{{ $item->grade }}</td>
-                                        <td>{{ $item->comment }}</td>
+                                        <td>
+
+
+                                            {!! wordwrap($item->comment, 40, "<br />\n") !!}
+                                        </td>
                                         @php
 
                                         $tutorID = \App\Models\ScheduleItem::find($item->schedule_item_id)['tutor_id'];
-                                        $tutor = \App\Models\Tutor::find($tutorID);
+                                        $tutor = \App\Models\Tutor::where('user_id', $tutorID)->first();
 
                                         @endphp
-                                        <td>{{ $tutor->name_en }}</td>
+                                        <td>{{ $tutor->user->firstname }}</td>
                                     </tr>
                                     @endforeach
 

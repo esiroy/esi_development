@@ -17,13 +17,10 @@ class ReportCardDateController extends Controller
     public function show ($id, Request $request) 
     {
 
-        $member = Member::find($id);   
-        
-        //echo $member->id;
-        //echo $member->main_tutor_id;
+        //get member details        
+        $memberInfo = Member::where('user_id', $id)->first();
 
-
-        return view('admin.modules.member.reportcarddate', compact('member'));
+        return view('admin.modules.member.reportcarddate', compact('memberInfo'));
     }
 
     public function store(Request $request) 

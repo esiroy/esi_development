@@ -18,14 +18,14 @@ class CreateReportCardTable extends Migration
             $table->tinyInteger('valid');
             $table->text('comment')->nullable();
             $table->string('grade', 30);
-            $table->unsignedBigInteger('schedule_item_id');    //lesson schedule id
+            $table->unsignedBigInteger('schedule_item_id')->nullable();    //lesson schedule id
             $table->unsignedBigInteger('course_category_id')->nullable();  //null live/
             $table->unsignedBigInteger('course_item_id')->nullable(); //null on live
-            $table->string('lesson_course');
-            $table->string('lesson_material');
-            $table->string('lesson_subject');
+            $table->string('lesson_course', 255)->nullable();
+            $table->string('lesson_material', 255)->nullable();
+            $table->string('lesson_subject', 255)->nullable();
             $table->unsignedBigInteger('member_id')->nullable();
-            $table->Integer('lesson_level')->nullabel();            
+            $table->integer('lesson_level')->nullable();            
             $table->timestamps();
         });
     }

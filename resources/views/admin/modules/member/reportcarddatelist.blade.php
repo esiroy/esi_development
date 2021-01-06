@@ -7,7 +7,7 @@
         <div class="container mt-5">
             <div class="card esi-card mt-5">
                 <div class="card-header esi-card-header">
-                    Report Card List
+                   Writing Report Card Monthly List
                 </div>
                 <div class="card-body">
 
@@ -24,12 +24,12 @@
                                 <thead>
                                     <tr>
                                         <th>Lesson Date &amp; Time</th>
-                                        <th>Lesson Subject</th>
-                                        <th>Lesson Course</th>
-                                        <th>Lesson Material</th>
+                                        <th>Course</th>
+                                        <th>Material</th>
+                                        <th>Subject</th>
                                         <th>Grade</th>
-                                        <th>Comment</th>
-                                        <th>Tutor</th>
+                                        <th>Created By</th>
+                                        <th>Uploaded File</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -37,22 +37,21 @@
                                     @foreach($reportcards as $item)
                                     <tr>
                                         <td>{{ $item->lesson_date }}</td>
-                                        <td>{{ $item->lesson_subject }}</td>
                                         <td>{{ $item->lesson_course }}</td>
                                         <td>{{ $item->lesson_material }}</td>
+                                        <td>{{ $item->lesson_subject }}</td>
+
                                         <td>{{ $item->grade }}</td>
-                                        <td>{{ $item->comment }}</td>
-                                        @php
-
-                                        $tutorID = \App\Models\ScheduleItem::find($item->schedule_item_id)['tutor_id'];
-                                        $tutor = \App\Models\Tutor::find($tutorID);
-
-                                        @endphp
                                         <td>
-                                            @if (isset($tutor->name))
-                                            {{ $tutor->name_en }}
-                                            @endif
+                                        @php
+                                        $createBy = \App\Models\User::find($item->created_by_id)
+                                        @endphp
+
+                                        {{  $createBy->firstname }}
                                         </td>
+                                        <td>{{ $item->file_name }}</td>
+                          
+                              
                                     </tr>
                                     @endforeach
 

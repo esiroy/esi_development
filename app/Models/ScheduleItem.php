@@ -12,7 +12,7 @@ class ScheduleItem extends Model
 
     protected $guarded = array('created_at', 'updated_at');
         
-    
+    private $limit = 30;
 
     
     /**
@@ -22,16 +22,13 @@ class ScheduleItem extends Model
 
     */
     public function getReservations($dateFrom) 
-    {
-      
-        //$lessonItems = ScheduleItem::where('lesson_time', '>=', $dateFrom)->where('lesson_time', '<=', $dateTo)->get();
-
+    {   
         $scheduleItems = ScheduleItem::whereDate('lesson_time', $dateFrom)->get();   
         return $scheduleItems;
     }    
 
     
-    /**
+    /** @v2
      * @param tutorID - ID FROM tutor admin panel
      */
     public function getTutorLessons($tutorID, $dateFrom, $dateTo) 
@@ -46,14 +43,18 @@ class ScheduleItem extends Model
 
         foreach ($lessonItems as $lessonItem) 
         {
-            $member     = Member::find($lessonItem->member_id);
-            $user       = User::find($member['user_id']);
+            //$member     = Member::where('user_id', $lessonItem->member_id)->find();
+
+            $user       = User::find($lessonItem->member_id);
+
             //@done: user my be empty if not reserved
-            if (isset($user['first_name'])) {
-                $fname = $user['first_name'];
-                $fname_jp = $user['first_name_jp'];
+            if (isset($user->firstname)) {
+                $fname = $user->firstname;
+                $lname = $user->lastname;
+                $fname_jp = $user->japanese_firstname;
             } else {
                 $fname = "";
+                $lname = "";
                 $fname_jp = "";
             }
 
@@ -82,7 +83,7 @@ class ScheduleItem extends Model
                 'tutor_name_jp'     => $tutor->name_jp,
                 'creator_id'        => $lessonItem->creator_id,
                 'member_id'         => $lessonItem->member_id,                    
-                'member_name_en'    => $fname,
+                'member_name_en'    => $fname . " ". $lname,
                 'member_name_jp'    => $fname_jp,
                 'status'            => $lessonItem->schedule_status,
                
@@ -101,33 +102,37 @@ class ScheduleItem extends Model
     */
     public function getSchedules($date, $duration) 
     {
+
         $tutors = Tutor::all();
         //get the lessons
         $schedules = [];        
     
         foreach ($tutors as $tutor) 
         {                 
-            $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)->where('tutor_id', $tutor->id)->get();   
+            $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)->where('tutor_id', $tutor->id)->get();
             
             foreach ($scheduleItems as $item) 
             {
-                $member     = Member::find($item->member_id);
-                $user       = User::find($member['user_id']);
+                //$member     = Member::find($item->member_id);
+                //$user       = User::find($member->user_id);
+
+                //@todo: v2 - check member
+                //$member     = Member::where('user_id', $item->member_id)->first();
+                $user       = User::find($item->member_id);
                 
-                //@done: user my be empty if not reserved
+                
+                //@done: user may be empty if not reserved
                 if (isset($user['first_name'])) {
-                    $memberNameEN = $user['first_name'] . " " .  $user['last_name'];
-                    $memberNameJP = $user['first_name_jp'] . " " . $user['last_name_jp'];
+                    $memberNameEN = $user['firstname'] . " " .  $user['lastname'];
+                    $memberNameJP = $user['japanese_firstname'] . " " . $user['japanese_lastname'];
                 } else {
                     $memberNameEN = "";
                     $memberNameJP = "";
                 }
-
                
                 $schedules[$tutor->id][] = [
                     'id'                => $item->id,
                     'status'            => $item->schedule_status,
-                    //'lesson_time'       => $item->lesson_time, (date_time)
                     'startTime'         =>  date("H:i", strtotime($item->lesson_time)),
                     'endTime'           =>  date("H:i",  strtotime($item->lesson_time ."+1 hour")),
                     'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
@@ -135,17 +140,33 @@ class ScheduleItem extends Model
                     'duration'          => $item->duration,                    
                     'member_id'         => $item->member_id,   
                     'tutor_id'          => $item->tutor_id,
-                    'tutor_name_en'     => $tutor->name_en,
+                    'tutor_name_en'     => "tutor name ? : " . $tutor->name_en,
                     'tutor_name_jp'     => $tutor->name_jp,                               
                     'member_name_en'    => $memberNameEN,
                     'member_name_jp'    => $memberNameJP,
                 ];                
-            }            
+            } 
+                       
         }
         return $schedules;        
     }
 
 
+    //List ALL specific Member schedules
+    public function getMemberScheduledLesson($memberID) 
+    {
+        $member = Member::find($memberID);  
+        
+        $lessons = ScheduleItem::select('schedule_item.*', 'users.firstname', 'users.lastname')
+                    ->join('tutors', 'tutors.user_id', '=',  'schedule_item.tutor_id')
+                    ->join('users', 'users.id', '=',  'schedule_item.tutor_id')
+                    ->where('member_id', $member['id'])
+                    ->orderBy('schedule_item.id', 'DESC')
+                    ->paginate($this->limit);
+                    
+        return $lessons;
+    }
     
+
 
 }

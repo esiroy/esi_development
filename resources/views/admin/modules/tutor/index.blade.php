@@ -127,8 +127,8 @@
                                             <td class="small text-center">{{ $tutor->sort}}</td>
                                             <td class="small text-center">{{ $tutor->id}}</td>
                                             <td class="small text-center">{{ $tutor->name_en}}</td>                                             
-                                            <td class="small text-center"><a href="{{ url('admin/maintutor') }}"><img src="/images/iMemberMain.gif"></a></td>
-                                            <td class="small text-center"><a href="{{ url('admin/supporttutor') }}"><img src="/images/iMemberSupport.gif"></a></td>
+                                            <td class="small text-center"><a href="{{ url('admin/maintutor/'. $tutor->id) }}"><img src="/images/iMemberMain.gif"></a></td>
+                                            <td class="small text-center"><a href="{{ url('admin/supporttutor'. $tutor->id) }}"><img src="/images/iMemberSupport.gif"></a></td>
                                             <td class="small text-center">
 
                                                 <!--@can('tutor_delete')-->
@@ -241,7 +241,7 @@
                             </label>
                             <div class="col-md-3">
                                 @foreach($grades as $grade)
-                                <input type="radio" name="grade" required value="{{ $grade->id }}" @if(old('grade')==$grade->id)? {{ "checked" }} @endif> {{$grade->name}}
+                                <input type="radio" name="grade" required value="{{ $grade['name'] }}" @if(old('grade') ===  $grade['name'])? {{ "checked" }} @endif> {{$grade['name']}}
                                 @endforeach
                             </div>
                         </div>

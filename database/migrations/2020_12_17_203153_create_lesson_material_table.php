@@ -15,10 +15,13 @@ class CreateLessonMaterialTable extends Migration
     {
         Schema::create('lesson_material', function (Blueprint $table) {
             $table->id();            
-            $table->unsignedBigInteger('course_category_id')->nullable();
+            $table->tinyInteger('valid');
             $table->string('filename')->nullable();            
-            $table->string('path')->nullable();
-            $table->tinyInteger('valid');                        
+            $table->string('path')->nullable();            
+            $table->unsignedBigInteger('course_item_id')->nullable();
+            $table->unsignedBigInteger('course_category_id')->nullable();
+            $table->Integer('sequence_number')->nullable();      
+            $table->Integer('sort_order')->nullable();                                                                        
             $table->timestamps();
         });
     }

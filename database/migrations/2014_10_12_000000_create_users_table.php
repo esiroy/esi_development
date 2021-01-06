@@ -15,16 +15,34 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('first_name');
-            $table->string('last_name');
-            $table->string('first_name_jp')->default('NULL')->nullable(true);
-            $table->string('last_name_jp')->default('NULL')->nullable(true);
-                        
-            $table->string('email')->unique();
-            $table->string('username')->unique();
+            $table->tinyInteger('valid');
+
+            $table->string('activation_code', 50)->nullable();
+            //$table->string('email')->unique();
+            //$table->string('username')->unique();
+            $table->string('email');
+            $table->string('username');            
+            $table->string('password');
+
+            $table->string('firstname')->nullable();
+            $table->string('lastname')->nullable();
+            $table->string('japanese_lastname')->nullable();
+            $table->string('japanese_firstname')->nullable();
+
+            $table->string('user_type', 50);
+            $table->tinyInteger('is_activated')->nullable();
+            $table->dateTime('last_login')->nullable();
+
+            $table->bigInteger('company_id')->nullable();
+            $table->tinyInteger('email_notification')->nullable();
+            $table->tinyInteger('items_per_page')->nullable();
+            $table->tinyInteger('no_page_item')->nullable();            
 
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('reset_password_code')->nullable();
+            $table->tinyInteger('is_japanese')->nullable();
+
+
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -10,6 +10,8 @@ class Tutor extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
+    public $timestamps = false;    
+
     public function setBirthdateAttribute($value)
     {       
         $this->attributes['birthdate'] = date('Y-m-d', strtotime($value)); 

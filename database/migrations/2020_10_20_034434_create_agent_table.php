@@ -15,27 +15,19 @@ class CreateAgentTable extends Migration
     {
         Schema::create('agents', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');            
-            $table->integer('industry_type_id');         
-            $table->string('name_en');
-            $table->string('name_jp');
-            $table->string('representative');
-            $table->string('hiragana')->nullable();
-            $table->string('address')->nullable();            
-            $table->string('inclination')->nullable();
+            $table->string('address')->nullable();
+            $table->string('agent_id')->nullable();
             $table->date('contract_date')->nullable();
-            $table->longText('agent_remark')->nullable();
-            $table->boolean('is_terminated')->nullable();     
-
-
-            //sumarry of points
-            $table->date('initial_date_of_purchase')->nullable();                        
-            $table->decimal('purchased_amount', 8, 2)->nullable();
-            $table->bigInteger('credits')->nullable();
+            $table->unsignedBigInteger('user_id');
+            $table->string('industry_type')->nullable(); 
+            $table->double('management_expense', 15, 8)->nullable();
+            $table->double('registration_fee', 15, 8)->nullable();
+            $table->longText('remark')->nullable();
+            $table->string('representative', 50)->nullable();
+            $table->string('hiragana')->nullable();
+            $table->string('inclination')->nullable();           
             $table->dateTime('credits_expiration')->nullable();
-            $table->dateTime('latest_purchase_date')->nullable();
-
-            $table->timestamps();
+            
         });
 
         Schema::table('agents', function($table) {

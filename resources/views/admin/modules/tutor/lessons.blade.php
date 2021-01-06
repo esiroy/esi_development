@@ -112,39 +112,57 @@
 
                                     @if(isset($lessons[$dateView][$timeSlot['startTime']]['status']))
 
-                                    <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%">
-                                        <div class="client text-center text-white">
+                                    <div class="toggleHide">
 
-                                            <!--@todo: link to lesson report card, status is client reserved, complete
-                                            <small>
-                                                {{ $timeSlot['startTime'] }}
-                                                @if (isset($lessons[$dateView][$timeSlot['startTime']]['member_name_en']))                                             
-                                                    {{$lessons[$dateView][$timeSlot['startTime']]['status']}}
-                                                    {{$lessons[$dateView][$timeSlot['startTime']]['member_name_en']}}
+                                        <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%; padding:5px">
+
+                                            <div class="client text-center text-white">
+
+                                                <!--@todo: link to lesson report card, status is client reserved, complete
+                                                <small>
+                                                    {{ $timeSlot['startTime'] }}
+                                                    @if (isset($lessons[$dateView][$timeSlot['startTime']]['member_name_en']))                                             
+                                                        {{$lessons[$dateView][$timeSlot['startTime']]['status']}}
+                                                        {{$lessons[$dateView][$timeSlot['startTime']]['member_name_en']}}
+                                                    @endif
+                                                </small>
+                                                -->
+
+                                                <!--@done: check if client_reserved, completed, if so then add a report card -->
+
+                                                <!--
+                                                    @todo(Grade) hover link -->
+                                                <!--@todo: reportcard.do page -->                                            
+
+                                                @php 
+                                                $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
+                                                $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
+                                                @endphp
+
+                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                     
+
+                                                    <div class="text-dark">
+                                                        <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
+                                                            {{$lessons[$dateView][$timeSlot['startTime']]['member_name_en']}}
+                                                        </a>
+                                                    </div>
+
+                                                    <!--@todo: get member name -->
+                                                    <div class="hide">                                                    
+                                                        <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
+                                                    </div>
                                                 @endif
-                                            </small>
+
+                                            </div>
+                                            <!--
+                                            <div class="btn-container">
+                                                div class="iEdit"><a href="javascript:void(0);"><img src="/images/iEdit.gif"></a></div>
+                                                &nbsp;
+                                            </div>
                                             -->
-
-                                            <!--@todo: check if client_reserved, completed, if so then add a report card (Grade) hover link -->
-                                            <!--@todo: reportcard.do page -->                                            
-
-                                            @php 
-                                              $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
-                                              $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
-                                            @endphp
-
-                                            @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                               
-                                                <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
-                                            @endif
-
                                         </div>
-                                        <!--
-                                        <div class="btn-container">
-                                            div class="iEdit"><a href="javascript:void(0);"><img src="/images/iEdit.gif"></a></div>
-                                            &nbsp;
-                                        </div>
-                                        -->
                                     </div>
+
                                     @endif
 
                                 </td>

@@ -43,60 +43,92 @@
                 </div>
 
 
-                <div class="card-body esi-card-body">
+                <div class="card-body esi-card">
 
-
-                    <div class="row mb-4">
-                        <div class="col-md-6">
-                            <div class="row py-1">
-                                <div class="col-md-2">Member : </div>
-                                <div class="col-md-8">{{ $member->user->last_name }}, {{ $member->user->first_name }}</div>
-                            </div>
-                            <div class="row py-1">
-                                <div class="col-md-2">Agent : </div>
+                    <div class="member mt-3">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-2">Name</div>
                                 <div class="col-md-9">
-                                    {{ $member->agent->name_en ?? " ~ " }}
+                                    {{ $member->lastname  ?? ' - ' }},
+                                    {{ $member->firstname  ?? ' - ' }}
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-2">Agent</div>
+                                <div class="col-md-9">
+                                    {{ $agentInfo->user->firstname  ?? ' - ' }}
+                                </div>
+                            </div>
+
+                            <!--
+                            <div class="row">
+                                <div class="col-md-2">Tutor</div>
+                                <div class="col-md-9">
+
+                                    {{ $tutorInfo->user->japanese_firstname  ?? ' - ' }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">Lesson Class</div>
+                                <div class="col-md-9">
+                                    毎月 {{$memberAttribute->lesson_limit ?? '0'}} 回クラス (あと　残り {{$memberAttribute->lesson_limit ?? '0'}}回)
+                                </div>
+                            </div>
+                            -->
                         </div>
                     </div>
 
-                    <table width="100%" id="agentTableList" class="tablesorter" cellspacing="0" cellpadding="5">
-                        <tbody>
-                            <tr>
-                                <th>Date</th>
-                                <th>Credits</th>
-                                <th>Amount</th>
-                            </tr>
+                    <div class="card-body esi-card-body">
+                        <div class="table-responsive">
+                            <table class="table table esi-table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Credits</th>
+                                        <th>Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                    $total = 0
+                                    @endphp
 
-                            @php 
-                            $total = 0 
-                            @endphp
+                                    @foreach($paymentHistory as $history)
+                                    <tr>
+                                        <td>
+                                           
+                                            {{ date('F d, Y H:i', strtotime($history->created_at)) }}
+                                        </td>
+                                        <td>{{ $history->amount }}</td>
+                                        <td>{{ $history->price }}</td>
 
-                            @foreach($purchaseHistory as $history)
-                            <tr>
-                                <td>{{ $history->created_at }}</td>
-                                <td>{{ $history->credits }}</td>
-                                <td>¥ {{ $history->amount }}</td>
-
-                                @php 
-                                $total = $total + $history->amount 
-                                @endphp
-                            </tr>
-                            @endforeach
+                                        @php
+                                        $total = $total + $history->price
+                                        @endphp
+                                    </tr>
+                                    @endforeach
 
 
-                            <tr>
-                                <td></td>
-                                <td>Total</td>
-                                <td>{{ $total }}</td>
-                            </tr>
-                    
-                        </tbody>
-                    </table>
+                                    <tr>
+                                        <td></td>
+                                        <td>Total</td>
+                                        <td>{{ $total }}</td>
+                                    </tr>
 
-                    
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="float-right">
+                            {{ $paymentHistory->links() ?? "" }}
+                        </div>
+
+                    </div>
                 </div>
+
+
+
             </div>
 
 

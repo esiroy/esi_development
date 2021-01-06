@@ -11,6 +11,19 @@ class Agent extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
+    public function getMemberAgent($memberID) 
+    {
+        //get agent id from mmember
+        $member = Member::where('user_id', $memberID)->first();
+        
+        if (isset($member)) {
+            $agent = User::find( $member->agent_id);
+            return $agent;
+        } else {
+            return null;
+        }
+    }
+
 
     public function setBirthdateAttribute($value)
     {       

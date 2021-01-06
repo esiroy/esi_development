@@ -13,12 +13,6 @@
  */
 
 /*!
- * Name: vue-upload-component
- * Version: 2.8.20
- * Author: LianYue
- */
-
-/*!
  * Sizzle CSS Selector Engine v2.3.5
  * https://sizzlejs.com/
  *
@@ -33,13 +27,6 @@
  * Vue.js v2.6.12
  * (c) 2014-2020 Evan You
  * Released under the MIT License.
- */
-
-/*!
- * clipboard.js v2.0.6
- * https://clipboardjs.com/
- * 
- * Licensed MIT © Zeno Rocha
  */
 
 /*!

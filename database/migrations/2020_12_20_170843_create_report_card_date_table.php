@@ -16,14 +16,14 @@ class CreateReportCardDateTable extends Migration
         Schema::create('report_card_date', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('valid');
-            $table->string('comment')->nullable();
-            $table->string('file_name');
-            $table->string('file_path');
-            $table->string('grade', 30);
-            $table->string('lesson_course');
-            $table->dateTime('lesson_date');
-            $table->string('lesson_material');
-            $table->string('lesson_subject');
+            $table->string('comment', 255)->nullable();
+            $table->string('file_name', 255)->nullable();
+            $table->string('file_path', 255)->nullable();
+            $table->string('grade', 255)->nullable();
+            $table->string('lesson_course', 255)->nullable();
+            $table->dateTime('lesson_date')->nullable();
+            $table->string('lesson_material', 255)->nullable();
+            $table->string('lesson_subject', 255)->nullable();
             $table->unsignedBigInteger('created_by_id')->nullable();            
             $table->unsignedBigInteger('member_id')->nullable();                
             $table->unsignedBigInteger('tutor_id')->nullable();

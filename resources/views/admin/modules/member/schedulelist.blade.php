@@ -46,48 +46,59 @@
                         <div class="row">
                             <div class="col-md-2">Name</div>
                             <div class="col-md-9">
-                                {{ $member->first_name  ?? ' - ' }}
+                                {{ $member->lastname  ?? ' - ' }},
+                                {{ $member->firstname  ?? ' - ' }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-2">Agent</div>
                             <div class="col-md-9">
-                                {{ $agentInfo->name_en  ?? ' - ' }}
+                                {{ $agentInfo->user->firstname  ?? ' - ' }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-2">Tutor</div>
                             <div class="col-md-9">
-                                {{ $tutorInfo->name_en  ?? ' - ' }}
+                         
+                            {{ $tutorInfo->user->japanese_firstname  ?? ' - ' }}
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-2">Lesson Class</div>
-                            <div class="col-md-9" style="color:pink">
-                                毎月 0 回クラス (あと　残り0回)
+                            <div class="col-md-9">
+                                毎月 {{$memberAttribute->lesson_limit ?? '0'}} 回クラス (あと　残り {{$memberAttribute->lesson_limit ?? '0'}}回)
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-body esi-card-body">
+
                     <div class="table-responsive">
-                        <table class="table table esi-table table-bordered table-striped  ">
+                        <table class="table table esi-table table-bordered table-striped">
                             <thead>
                                 <tr>
                                     <th scope="col">Lesson Date</th>
                                     <th scope="col">Lesson Time</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Tutor</th>
+                                    <th scope="col">Memo</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($schedules as $key => $schedule)
                                 <tr>
-                                    <td>{{ $schedule->scheduled_at }}</td>
-                                    <td>{{ $schedule->start_time }} {{ $schedule->end_time }}</td>
-                                    <td>{{ $schedule->status }}</td>
-                                    <td>{{ $schedule->tutor_name }}</td>
+                                    <td>{{  date('F d, Y', strtotime($schedule->lesson_time)) }}</td>
+                                    <td>
+                                        {{ date('H:i',strtotime($schedule->lesson_time)) }}
+                                        -
+                                        {{ date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes")) }}                                        
+                                    </td>
+                                    <td>{{ ucwords(str_replace('_', ' ', strtolower($schedule->schedule_status))) }}</td>
+
+                                    <td>{{ $schedule->firstname }}</td>
+
+                                    <td>{{ $schedule->memo }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
@@ -95,7 +106,9 @@
                     </div>
 
                     <div class="float-right">
-                        {{ $schedules->links() ?? "" }}
+                        @if (isset($schedule->links))
+                            {{ $schedules->links() ?? "" }}
+                        @endif
                     </div>
 
                 </div>

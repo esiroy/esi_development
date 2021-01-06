@@ -10,7 +10,8 @@ use App\Models\ReportCard;
 use App\Models\ReportCardDate;
 use App\Models\Member;
 use App\Models\UserImage;
-
+use App\Models\Agent;
+use App\Models\Tutor;
 
 class ReportCardController extends Controller
 {   
@@ -22,43 +23,83 @@ class ReportCardController extends Controller
     public function index(Request $request) 
     {
         $scheduleitemid = $request->scheduleitemid;
-
         $scheduleItem = ScheduleItem::find($scheduleitemid);
+
+        //get member details        
+        $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first();
+        
+        //get photo
+        if (isset( $memberInfo->user_id)) {
+            $userImage = UserImage::where('user_id', $memberInfo->user_id)->where('valid', 1)->first();
+        } else {
+            $userImage = null;
+        }
+        
+
+        if (isset($memberInfo->tutor_id)) {
+            $tutorInfo = Tutor::where('user_id',  $memberInfo->tutor_id)->first();
+        } else {
+            $tutorInfo = null;
+        }
+        
 
         $reportCard = ReportCard::where('schedule_item_id', $scheduleitemid)->first();
 
-        //get member details        
-        $member = Member::find( $reportCard->member_id);
-
-        //get User image
-        $userImage = UserImage::where('user_id', $member->user_id)->first();
 
 
-        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'member'));
+
+        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'memberInfo', 'tutorInfo'));
     }
 
 
 
-    public function reportcardlist($member_id, Request $request) {
+    public function reportcardlist($memberID, Request $request) 
+    {
 
-        $member = Member::find( $member_id);
+        $memberInfo         = Member::where('user_id',$memberID)->first();
 
-        $reportcards = ReportCard::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
+        if ($memberInfo) {
+            $member             = $memberInfo->user;   
+            //agent  
+            $agentInfo          = Agent::where('user_id', $memberInfo->agent_id)->first();
+            //tutor 
+            $tutorInfo       = Tutor::where('user_id', $memberInfo->tutor_id)->first(); 
 
+            //report cards
+            $reportcards = ReportCard::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
+
+            return view('admin.modules.member.reportcardlist', compact('reportcards', 'agentInfo' ,'tutorInfo', 'member'));
+
+        } else {
+
+            abort(404);
+
+        }
         
 
-        return view('admin.modules.member.reportcardlist', compact('reportcards', 'member'));
+      
     }
 
 
-    public function reportcarddatelist($member_id, Request $request) {
-
+    public function reportcarddatelist($memberID, Request $request) 
+    {
+        $memberInfo         = Member::where('user_id',$memberID)->first();
         
-        $member = Member::find( $member_id);
+        if ($memberInfo) {
+            $member             = $memberInfo->user;   
+            //agent  
+            $agentInfo          = Agent::where('user_id', $memberInfo->agent_id)->first();
+            //tutor 
+            $tutorInfo       = Tutor::where('user_id', $memberInfo->tutor_id)->first(); 
 
-        $reportcards = ReportCardDate::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
+            $reportcards = ReportCardDate::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
 
-        return view('admin.modules.member.reportcarddatelist', compact('reportcards', 'member'));
+            return view('admin.modules.member.reportcarddatelist', compact('reportcards', 'member',  'agentInfo' ,'tutorInfo'));
+        } else {
+
+            abort(404);
+
+        }
     }
 
 

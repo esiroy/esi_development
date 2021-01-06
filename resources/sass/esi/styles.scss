@@ -245,3 +245,34 @@ a.red:hover {
     text-decoration: none;      
 }
 
+//hover displayer for schedules (tutor)
+.toggleHide:hover .hide {
+    background-color:#fff;
+    display: block;    
+}
+
+.toggleHide .hide {
+    display: none;
+    border: 1px solid #d0cbcb;
+    background-color: #fff;
+    position: relative;
+    top: -34px;
+    left: 34px;
+    width: 87px;
+    padding: 3px;
+}
+
+//write report
+.toggleWriteReport:hover .hide {
+    background-color:#fff;
+    display: block;    
+}
+
+.toggleWriteReport .hide {
+    display: none;
+    border: 1px solid #d0cbcb;
+    background-color: #fff;
+    width: 87px;
+    padding: 3px;
+}
+

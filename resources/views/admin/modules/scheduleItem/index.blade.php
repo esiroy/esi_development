@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.adminScheduler')
 
 @section('content')
 <div class="container bg-light">

@@ -16,18 +16,19 @@ class CreateReportCardMonthlyTable extends Migration
         Schema::create('report_card_monthly', function (Blueprint $table) {
             $table->id();
             $table->tinyInteger('valid');
-            $table->text('comment')->nullable();
+            $table->text('comment', 255)->nullable();
             $table->string('grade', 30);
             $table->unsignedBigInteger('member_id')->nullable();
             $table->unsignedBigInteger('tutor_id')->nullable();
-            $table->string('month')->nullable();
+            $table->string('month', 30)->nullable();
             $table->string('year')->nullable();                        
             $table->unsignedBigInteger('created_by_id')->nullable(); 
-            $table->string('grammar_score')->nullable();
-            $table->dateTime('listening_score')->nullable();
-            $table->string('reading_score')->nullable();
-            $table->string('speaking_score')->nullable();
-            $table->string('writing_score')->nullable();
+            
+            $table->double('grammar_score', 8, 2)->nullable();
+            $table->double('listening_score', 8, 2)->nullable();
+            $table->double('reading_score', 8, 2)->nullable();
+            $table->double('speaking_score', 8, 2)->nullable();
+            $table->double('writing_score', 8, 2)->nullable();
             $table->smallInteger('lesson_level')->nullable();            
             $table->timestamps();
         });

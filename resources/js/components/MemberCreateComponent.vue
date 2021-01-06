@@ -95,7 +95,7 @@
                                         @blur='checkIsValid($v.user.attribute, $event)'
                                     >
                                         <option value="">-- Select --</option>
-                                        <option v-for="attribute in this.attributes" :value="attribute" :key="attribute.id">{{ attribute.name }}</option>
+                                        <option v-for="attribute in this.attributes" :value="attribute.name" :key="attribute.id">{{ attribute.name }}</option>
                                     </select>
                                     <div v-if="submitted && !$v.user.attribute.required" class="invalid-feedback">
                                         Member attribute is required
@@ -109,16 +109,16 @@
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
-                                    <label for="username" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Nickname <div class="float-right">:</div></label>
+                                    <label for="nickname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Nickname <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <input type="text" v-model="user.username" id="username" name="username" 
+                                        <input type="text" v-model="user.nickname" id="nickname" name="usnicknameername" 
                                                 class="form-control form-control-sm" 
-                                                :class="{ 'is-invalid': submitted && $v.user.username.$error }" 
-                                                @blur='checkIsValid($v.user.username, $event)'
+                                                :class="{ 'is-invalid': submitted && $v.user.nickname.$error }" 
+                                                @blur='checkIsValid($v.user.nickname, $event)'
                                         />
-                                        <div v-if="submitted && !$v.user.username.required" class="invalid-feedback">
+                                        <div v-if="submitted && !$v.user.nickname.required" class="invalid-feedback">
                                             Nickname is required
                                         </div>
                                     </div>
@@ -329,10 +329,7 @@
                                 <div class="col-8">
                                     <select name="membership" v-model="user.membership" class="form-control form-control-sm">
                                         <option value="">-- Select --</option>
-                                        <option v-for="membership in this.memberships" :value="membership.id" :key="membership.id">{{ membership.name }}</option>
-                                        <!--<option value="Point Balance">Point Balance</option>
-                                        <option value="Monthly">Monthly</option>
-                                        <option value="Both">Both</option>-->
+                                        <option v-for="membership in this.memberships" :value="membership.name" :key="membership.id">{{ membership.name }}</option>                        
                                     </select>
                                 </div>
                             </div>
@@ -359,6 +356,77 @@
                                 </div>
                                 <div class="col-8">
 
+                                    <ul class="checkbox-options">
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
+                                        </li>
+                                        
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="CONVERSATION" v-model="user.preference.purpose.CONVERSATION"  value="CONVERSATION">
+                                            <label>Get conversation(communication) skill</label>
+
+                                            <ul id="goalList" class="checkbox-options" v-if="user.preference.purpose.CONVERSATION">
+                                                <li><input type="radio" name="goal" value="BEGINNER" checked="" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Beginner- easy daily conversation level</li>
+                                                <li><input type="radio" name="goal" value="INTERMEDIATE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Intermediate- Daily conversation level</li>
+                                                <li><input type="radio" name="goal" value="ADVANCE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Advance - Social, Environment, Business English</li>
+                                                <li><input type="radio" name="goal" value="NATIVE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Be native level</li>
+                                            </ul>
+                                            <input type="hidden" name="extraDetails" value="BEGINNER">
+                                        </li>
+
+
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EIKEN" v-model="user.preference.purpose.ANTI_EIKEN"  value="ANTI_EIKEN">
+                                            English certification exam in Japan
+
+                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.ANTI_EIKEN" v-model="user.preference.purposeExtraDetails.ANTI_EIKEN" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                        </li>
+
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EXAM" v-model="user.preference.purpose.ANTI_EXAM"  value="ANTI_EXAM"> 
+                                            Enter school
+                                            <ul id="examLevel" v-if="user.preference.purpose.ANTI_EXAM" style="list-style-type: none;">
+                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="JUNIOR_HIGH"> Junior High</li>
+                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="HIGHSCHOOL"> High school</li>
+                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="UNIVERSITY"> University</li>
+                                            </ul>                                            
+                                        </li>
+
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="TOEFL" v-model="user.preference.purpose.TOEFL" value="TOEFL" > 
+                                            TOEFL(目標スコアー 点)
+                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEFL" v-model="user.preference.purposeExtraDetails.TOEFL" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                        </li>
+
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="TOEIC" v-model="user.preference.purpose.TOEIC" value="TOEIC">  
+                                            TOEIC(目標スコアー 点)
+                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEIC" v-model="user.preference.purposeExtraDetails.TOEIC" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                        </li>
+
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="STUDY_ABROAD" v-model="user.preference.purpose.STUDY_ABROAD" value="STUDY_ABROAD"> Study Abroad
+                                            <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.STUDY_ABROAD" >
+                                                <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> Junior High</li>
+                                                <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> High school</li>
+                                                <li><input type="radio" name="studyAbroadLevel" value="UNIVERSITY" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> University</li>
+                                            </ul>
+                                        </li>
+
+
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="BUSINESS" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
+                                            <input type="hidden" name="extraDetails" v-if="user.preference.purpose.BUSINESS" v-model="user.preference.purposeExtraDetails.BUSINESS">
+                                        </li>
+
+                                        <li>
+                                            <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
+                                            <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
+                                                v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
+                                        </li>
+                                    </ul>
+
+<!--
                                     <ul class="checkbox-options">
                                         <li>
                                             <input type="checkbox" ref="purposes" name="purposes" id="bilingual"  v-model="user.preference.purpose.bilingual"  value="BILINGUAL"> Take part in Bilingual training course                                            
@@ -428,6 +496,7 @@
                                                 v-if="user.preference.purpose.others" v-model="user.preference.purposeExtraDetails.others"></textarea>
                                         </li>
                                     </ul>
+-->                                    
 
                                     <!-- loop all purposes
                                     <div v-if="submitted && !$v.user.purposes.required" class="invalid-feedback" style="display: block">
@@ -535,7 +604,7 @@
                                         :language="ja"
                                         id="member_since" 
                                         name="member_since"
-                                        :format="dateFormatter"
+                                        :format="memberSinceFomattter"
                                         :input-class="[ 'form-control form-control-sm ' /* , { 'is-invalid': submitted && $v.user.member_since.$error }*/]"                                           
                                     ></datepicker>                                    
                                 </div>
@@ -587,7 +656,9 @@
                                     >
                                         <option value="">-- Select --</option>
                                         <!--@todo loop dynamically the teacher of times -->
-                                        <option v-for="mainTutor in mainTutors" :value="mainTutor.id" :key="mainTutor.id">{{ mainTutor.name_en }}</option>
+                                        <option v-for="mainTutor in mainTutors" :value="mainTutor.id" :key="mainTutor.id">
+                                        {{ mainTutor.firstname }} {{ mainTutor.lastname }}
+                                        </option>
                                     </select>
                                     <div v-if="submitted && !$v.user.maintutorid.required" class="invalid-feedback">
                                         Main Tutor is required
@@ -800,6 +871,7 @@ export default {
     },    
     data() {
         return {
+            //instantiate variables for users
             submitted: false,
             //set calendar characters to japanese
             ja: ja, 
@@ -811,11 +883,12 @@ export default {
                 last_name: "",
                 attribute: "",
                 email: "",
-                username: "",
+                nickname: "",
                 gender: "",
                 communication_app: "",
                 communication_app_username: "",
                 birthday: "",
+                ubirthday: "", //unformatted birthday
                 age: "",
                 membership: "",
                 password: "",
@@ -823,12 +896,17 @@ export default {
 
                 //Lesson Details - Section
                 member_since: "",
+                umember_since: "", //unformatted umember_since
                 lessonshiftid: "",                
                 maintutorid: "",
 
                 //Preferred Tutor - Section
                 preference: 
-                {                    
+                {            
+                    purpose: { },
+                    purposeExtraDetails: {},
+
+                    /*        
                     purpose: {
                         bilingual: "",
                         conversation: "",                        
@@ -851,6 +929,7 @@ export default {
                         others: ""
 
                     },
+                    */
 
                     //array list of purpose
                     purposes: [],
@@ -921,7 +1000,7 @@ export default {
             attribute: {
                 required
             },
-            username: {
+            nickname: {
                 required
             },
             gender: {
@@ -943,11 +1022,9 @@ export default {
             lessonshiftid: {
                 required
             },
-
             maintutorid: {
                 required
             }
-
             /*purposes: required */
         }
     },
@@ -973,25 +1050,16 @@ export default {
             .then(response => 
             {
                 console.log(response)
-
-                if (response.data.success === false) {
-
+                if (response.data.success === false) 
+                {
                     alert (response.data.message);
-
-                } else {
-
-                   location.reload();
-
+                } else {                    
+                    location.reload(); //success
                 }
-
-			}).catch(function(error) {
-                // handle error
-                alert("Error " + error);
-                //console.log(error);
-            });
-                        
+			}).catch(function(error) {                
+                alert("Error " + error);                
+            });                        
         },
-
         checkIsValid (val, event) 
         {
             if (val.$anyError) 
@@ -1009,7 +1077,13 @@ export default {
         {       
             let fdate = Moment(date).format('YYYY年 MM月 D日');
             return fdate;
-        },       
+        },               
+        memberSinceFomattter(date) {
+            let fdate                   = this.dateFormatter(date);
+            this.user.umember_since       = date; 
+            this.user.member_since       = fdate; 
+            return fdate;
+        },
         birthDateFormatter(date) 
         {
             //format the date!
@@ -1017,7 +1091,8 @@ export default {
             let age             = this.computeAge(date);
 
             //add the birthday and computed age back to user variable
-            this.user.birthday  = fdate;
+            this.user.ubirthday  = date;
+            this.user.birthday  = fdate;            
             this.user.age       = age; 
 
              //return the formatted date

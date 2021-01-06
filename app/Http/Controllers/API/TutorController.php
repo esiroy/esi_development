@@ -13,12 +13,13 @@ class TutorController extends Controller
 {
     public function getTutors(Request $request, User $user)
     {
-        //$shifts = User::where('shift_id', $request['shift']);
 
-        //@do: get shift id then query on tutors for that id, then loop?
-        //$shift  = Shift::find($request['shift'])->first();
+        $tutors = Tutor::where('lesson_shift_id', $request['shift_id'])
+        ->where('is_terminated', '!=', 1)
+        ->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
+        ->join('users', 'users.id', '=', 'tutors.user_id')
+        ->select('tutors.*','users.firstname', 'users.lastname')->get();                  
 
-        $tutors = Tutor::where('shift_id', $request['shift_id'])->get(); 
         return Response()->json([
             "success" => true,  
             "tutors" => $tutors,            

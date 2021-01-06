@@ -55,9 +55,7 @@
                                 <div class="row py-1">
                                     <div class="col-md-3">Agent : </div>
                                     <div class="col-md-9">
-
-
-                                        {{ $member->agent->name_en ?? " ~ " }}
+                                        {{ $agentInfo->firstname ?? " ~ " }}
                                     </div>
                                 </div>
 

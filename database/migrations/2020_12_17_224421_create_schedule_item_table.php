@@ -15,12 +15,12 @@ class CreateScheduleItemTable extends Migration
     {
         Schema::create('schedule_item', function (Blueprint $table) {
             $table->id();            
-            $table->dateTime('lesson_time');                       
-            $table->unsignedBigInteger('tutor_id');    
+            $table->dateTime('lesson_time')->nullable();                       
+            $table->unsignedBigInteger('tutor_id')->nullable();    
             $table->unsignedBigInteger('member_id')->nullable();        
-            $table->string('schedule_status', 30);
-            $table->integer('duration');            
-            $table->integer('lesson_shift_id');
+            $table->string('schedule_status', 30)->nullable();
+            $table->integer('duration')->nullable();            
+            $table->integer('lesson_shift_id')->nullable();
             $table->text('memo')->nullable();
             $table->tinyInteger('valid');
             $table->string('email_type')->nullable();

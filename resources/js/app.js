@@ -19,9 +19,8 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
 //Vue Tree List
-import VueTreeList from 'vue-tree-list'
-Vue.use(VueTreeList);
-
+//import VueTreeList from 'vue-tree-list'
+//Vue.use(VueTreeList);
 
 /**
  * The following block of code may be used to automatically register your

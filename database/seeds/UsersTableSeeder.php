@@ -11,9 +11,10 @@ class UsersTableSeeder extends Seeder
         $users = [
             [
                 'id'             => 1,
-                'first_name'     => 'Admin',
-                'last_name'      => 'Account',
-                'last_name_jp'      => 'Account',
+                'firstname'     => 'Admin',
+                'lastname'      => 'Account',
+                'japanese_firstname'      => 'Account',
+                'japanese_lastname'      => 'Account',
                 'email'          => 'admin@admin.com',
                 'username'       => 'admin@admin.com',
                 'password'       => '$2y$10$6an7csz5VY5vq/0qw/VJ0.YX4u4bHl6QKeoJT.Cqc.nncudsc70Hi',

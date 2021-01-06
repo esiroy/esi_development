@@ -3,23 +3,19 @@
 namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
-use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\UpdateUserRequest;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
-use App\Models\User;
-use App\Models\Role;
-use App\Models\Tutor;
 use App\Models\Grade;
+use App\Models\Member;
+use App\Models\Role;
 use App\Models\Shift;
-use App\Models\Permission;
+use App\Models\Tutor;
+use App\Models\User;
+use DB;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
-use Auth;
-use Gate;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
 use Validator;
-use Input;
 
 class TutorController extends Controller
 {
@@ -37,36 +33,58 @@ class TutorController extends Controller
     public function index(User $user, Tutor $tutor, Request $request)
     {
 
-        //request variables        
-        $member_id  = $request->member_id;
-        $name       = $request->name;
-        $email      = $request->email;
-        
-        
+        //request variables
+        $member_id = $request->member_id;
+        $name = $request->name;
+        $email = $request->email;
+
         $shifts = Shift::all();
-        $grades = Grade::all();
+        //$grades = Grade::all();
+
+        $grades = createGrades();
+
         $tutors = Tutor::join('users', 'users.id', '=', 'tutors.user_id');
 
         //@[START] USER SEARCH - if user search for a member
-        if(isset($member_id) || isset($name) || isset($email)) {        
-            if (isset($member_id)) {    
+        if (isset($member_id) || isset($name) || isset($email)) {
+            if (isset($member_id)) {
                 $tutors = $tutors->where('tutors.id', $member_id);
             }
-            if (isset($name)) {     
-                $tutors = $tutors->orWhere('tutors.name_en', 'like', '%' .  $name . '%')->orWhere('tutors.name_en', 'like', '%' .  $name . '%'); 
+            if (isset($name)) {
+                $tutors = $tutors->orWhere('tutors.name_en', 'like', '%' . $name . '%')->orWhere('tutors.name_en', 'like', '%' . $name . '%');
             }
 
             if (isset($email)) {
                 $tutors = $tutors->orWhere('users.email', $email);
-           }
+            }
         } //[END] USER SEARCH
-
 
         $tutors = $tutors->get();
         return view('admin.modules.tutor.index', compact('shifts', 'tutors', 'grades'));
     }
 
-    
+    public function maintutor($id)
+    {
+
+        $tutors = Member::join('users', 'users.id', '=', 'members.user_id')
+            ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
+                                            attributes.name as attribute,
+                                            members.id as id,
+                                            agents.id as agent_id,
+                                            agents.name_en as agent_name_en,
+                                            agents.name_jp as agent_name_jp,
+                                            tutors.name_en as main_tutor_name,
+                                            members.credits as credits
+                                        "))
+            ->where('tutors.is_default_main_tutor', 1)
+            ->where('members.main_tutor_id', $id)->get();
+
+        return view('admin.modules.tutor.maintutor', compact('tutors'));
+
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -93,65 +111,79 @@ class TutorController extends Controller
             //'last_name' => ['required', 'string', 'max:255'],
             //'username'      => ['required', 'string', 'max:16', Rule::unique('users')->whereNull('deleted_at')],
             //'password'      => ['required', 'string', 'min:8', 'confirmed'],
-            //'birthdate'      => ['required'],
-            'email'             => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
-            'password'          => ['required', 'string', 'min:8'],            
-            'sort'              => ['required', 'integer'],
-            'salary_rate'       => ['integer'],
-            'grade'             => ['required'],
-            'skype_name'        => ['required'],
-            'skype_id'          => ['required'],
-            'name_en'           => ['required'],
-            'name_jp'           => ['required'],
-            'gender'            => ['required'],
-            'japanese_fluency'  => ['required'],
-            'shift'             => ['required']
-        ]);
+            //'birthday'      => ['required'],
 
+            'name_en' => ['required', 'string', 'max:255'],
+            'name_jp' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'password' => ['required', 'string', 'min:8'],
+            'sort' => ['required', 'integer'],
+            'salary_rate' => ['integer'],
+            'grade' => ['required'],
+            'skype_name' => ['required'],
+            'skype_id' => ['required'],
+            'gender' => ['required'],
+            'japanese_fluency' => ['required'],
+            'shift' => ['required'],
+        ]);
 
         if ($validator->fails()) {
 
-            return redirect()->route('admin.tutor.index')->withErrors($validator)->withInput();       
+            return redirect()->route('admin.tutor.index')->with('error_message', 'Error in adding tutor, please check the form below!')->withErrors($validator)->withInput();            
 
         } else {
 
             $userData =
-            [
-                'email'         => $request['email'],
-                'first_name'    => '',
-                'last_name'     => '',
-                'username'      => $request['email'],
-                'password'      => $request['password'],
-                'api_token'      => Hash('sha256', Str::random(80))
+                [
+                'firstname' => $request['name_en'],
+                'lastname' => '',
+                'japanese_firstname' => $request['name_jp'],
+                'japanese_lastname' => '',
+                'email' => $request['email'],
+                'username' => $request['email'],
+                'password' => $request['password'],
+                'api_token' => Hash('sha256', Str::random(80)),
+                'user_type' => "TUTOR",
+                'valid' => true,
             ];
-            $user = User::create($userData);          
+            $user = User::create($userData);
 
             //Add Role
             $roles[] = Role::where('title', 'Tutor')->first()->id;
-            $user->roles()->sync($roles); 
-             
+            $user->roles()->sync($roles);
+
+            //check if main tutor?
+            $isMainTutor = (boolean) $request['is_default_main_tutor'];
+
+            if ($isMainTutor === true) {
+                $mainTutor = true;
+                $supportTutor = false;
+            } else {
+                $mainTutor = false;
+                $supportTutor = true;
+            }
             $tutorData = [
-                'sort'                  => $request['sort'],
-                'user_id'               => $user->id,
-                'salary_rate'           => $request['salary_rate'],
-                'member_grade_id'       => $request['grade'],
-                'skype_id'              => $request['skype_id'],
-                'skype_name'            => $request['skype_name'],                
-                'name_en'               => $request['name_en'],
-                'name_jp'               => $request['name_jp'],
-                'gender'                => $request['gender'], 
-                'hobby'                 => $request['hobby'],
-                'birthdate'             => $request['birthdate'],
-                'major_in'              => $request['major_in'],
-                'introduction'          => $request['introduction'],
-                'japanese_fluency_id'   => $request['japanese_fluency'],
-                'shift_id'              => $request['shift'],
-                'is_default_main_tutor' => (boolean) $request['is_default_main_tutor'],
-                'is_terminated'         => (boolean) $request['is_terminated']                 
-            ];              
+                'sort' => $request['sort'],
+                'user_id' => $user->id,
+                'salary_rate' => $request['salary_rate'],
+                'grade' => $request['grade'],
+                'skype_id' => $request['skype_id'],
+                'skype_name' => $request['skype_name'],
+                'skype_password' => '',
+                'gender' => $request['gender'],
+                'hobby' => $request['hobby'],
+                'birthday' => date('Y-m-d', strtotime($request['birthdate'])),
+                'major' => $request['major_in'],
+                'introduction' => $request['introduction'],
+                'fluency' => $request['japanese_fluency'],
+                'lesson_shift_id' => $request['shift'],
+                'is_default_main_tutor' => $mainTutor,
+                'is_default_support_tutor' => $supportTutor,
+                'is_terminated' => (boolean) $request['is_terminated']
+            ];
 
             $tutor = Tutor::create($tutorData);
-            $user->tutors()->sync([$tutor->id], false);  
+            $user->tutors()->sync([$tutor->id], false);
 
             return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been added successfully!');
         }
@@ -166,7 +198,7 @@ class TutorController extends Controller
      */
     public function show($id)
     {
-      
+
     }
 
     /**
@@ -184,20 +216,19 @@ class TutorController extends Controller
 
         return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));
     }
-    
-    public function resetPassword($id, Request $request) 
+
+    public function resetPassword($id, Request $request)
     {
         $tutor = Tutor::find($id);
         $userData = [
-            'password' => Hash::make($request->password)
-        ];      
+            'password' => Hash::make($request->password),
+        ];
         $user = User::find($tutor->user_id);
         $user->update($userData);
 
         return redirect()->route('admin.tutor.edit', $id)->with('message', 'Tutor password has been updated successfully!');
     }
 
-    
     /**
      * Update the specified resource in storage.
      *
@@ -207,33 +238,32 @@ class TutorController extends Controller
      */
     public function update(Request $request, Tutor $tutor)
     {
-        $validator = Validator::make($request->all(), 
-        [
-            'email'             => ['required', 'string', 'email', 'max:255', 
-                                    Rule::unique('users')->ignore($tutor->user_id)->whereNull('deleted_at')
-                                   ],
-            'sort'              => ['required', 'integer'],
-            'salary_rate'       => ['integer'],
-            'grade'             => ['required'],
-            'skype_name'        => ['required'],
-            'skype_id'          => ['required'],
-            'name_en'           => ['required'],
-            'name_jp'           => ['required'],
-            'gender'            => ['required'],
-            'japanese_fluency'  => ['required'],
-            'shift'             => ['required']
-        ]);
+        $validator = Validator::make($request->all(),
+            [
+                'email' => ['required', 'string', 'email', 'max:255',
+                    Rule::unique('users')->ignore($tutor->user_id)->whereNull('deleted_at'),
+                ],
+                'sort' => ['required', 'integer'],
+                'salary_rate' => ['integer'],
+                'grade' => ['required'],
+                'skype_name' => ['required'],
+                'skype_id' => ['required'],
+                'name_en' => ['required'],
+                'name_jp' => ['required'],
+                'gender' => ['required'],
+                'japanese_fluency' => ['required'],
+                'shift' => ['required'],
+            ]);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.tutor.index')->withErrors($validator)->withInput();       
+            return redirect()->route('admin.tutor.index')->withErrors($validator)->withInput();
         } else {
 
-
             $userData =
-            [
-                'email'         => $request['email'],
-                'username'      => $request['email'],                
-                'api_token'      => Hash('sha256', Str::random(80))
+                [
+                'email' => $request['email'],
+                'username' => $request['email'],
+                'api_token' => Hash('sha256', Str::random(80)),
             ];
 
             $user = User::find($tutor->user_id);
@@ -241,31 +271,42 @@ class TutorController extends Controller
 
             //Add Role
             $roles[] = Role::where('title', 'Tutor')->first()->id;
-            $user->roles()->sync($roles); 
-             
+            $user->roles()->sync($roles);
+
+            //check if main tutor?
+            $isMainTutor = (boolean) $request['is_default_main_tutor'];
+
+            if ($isMainTutor === true) {
+                $mainTutor = true;
+                $supportTutor = false;
+            } else {
+                $mainTutor = false;
+                $supportTutor = true;
+            }
+
             $tutorData = [
-                'sort'                  => $request['sort'],
-                'user_id'               => $user->id,
-                'salary_rate'           => $request['salary_rate'],
-                'member_grade_id'       => $request['grade'],
-                'skype_id'              => $request['skype_id'],
-                'skype_name'            => $request['skype_name'],                
-                'name_en'               => $request['name_en'],
-                'name_jp'               => $request['name_jp'],
-                'gender'                => $request['gender'], 
-                'hobby'                 => $request['hobby'],
-                'birthdate'             => $request['birthdate'],
-                'major_in'              => $request['major_in'],
-                'introduction'          => $request['introduction'],
-                'japanese_fluency_id'   => $request['japanese_fluency'],
-                'shift_id'              => $request['shift'],
-                'is_default_main_tutor' => (boolean) $request['is_default_main_tutor'],
-                'is_terminated'         => (boolean) $request['is_terminated']                 
-            ];              
+                'sort' => $request['sort'],
+                'user_id' => $user->id,
+                'salary_rate' => $request['salary_rate'],
+                'grade' => $request['grade'],
+                'skype_id' => $request['skype_id'],
+                'skype_name' => $request['skype_name'],
+                'skype_password' => '',
+                'gender' => $request['gender'],
+                'hobby' => $request['hobby'],
+                'birthday' => date('Y-m-d', strtotime($request['birthdate'])),
+                'major' => $request['major_in'],
+                'introduction' => $request['introduction'],
+                'fluency' => $request['japanese_fluency'],
+                'lesson_shift_id' => $request['shift'],
+                'is_default_main_tutor' => $mainTutor,
+                'is_default_support_tutor' => $supportTutor,
+                'is_terminated' => (boolean) $request['is_terminated'],
+            ];
 
             $tutor = Tutor::find($tutor->id);
             $tutor->update($tutorData);
-            //$user->tutors()->sync([$tutor->id], false);  
+            //$user->tutors()->sync([$tutor->id], false);
 
             return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been updated successfully!');
         }
@@ -290,7 +331,6 @@ class TutorController extends Controller
         return back()->with('message', 'Tutor has been deleted successfully!');
     }
 
-
     public function massDestroy(Request $request)
     {
         //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -298,5 +338,4 @@ class TutorController extends Controller
         return response(null, Response::HTTP_NO_CONTENT);
     }
 
- 
 }

@@ -18,7 +18,7 @@ class CreateQuestionnaireTable extends Migration
             $table->unsignedBigInteger('schedule_item_id');
             $table->unsignedBigInteger('tutor_id');
             $table->unsignedBigInteger('member_id');            
-            $table->string('remarks');
+            $table->string('remarks', 255)->nullable();
             $table->tinyInteger('valid');
             $table->timestamps();
         });

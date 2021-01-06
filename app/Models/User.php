@@ -27,6 +27,9 @@ class User extends Authenticatable
         'email_verified_at',
     ];
 
+    protected $guarded = array('created_at', 'updated_at');
+
+    /*
     protected $fillable = [
         'first_name', 
         'last_name', 
@@ -39,7 +42,7 @@ class User extends Authenticatable
         'remember_token',
         'api_token',
         'email_verified_at',
-    ];
+    ];*/
 
     public function getNameAttribute()
     {

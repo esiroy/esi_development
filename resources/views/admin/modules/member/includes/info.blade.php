@@ -1,24 +1,37 @@
 
 
-<div class="details mt-4">
-    <div>Member : {{ $member->user->last_name}}, {{ $member->user->first_name}}</div>
 
-    @if (isset($member->age))
-    <div>Age : {{ $member->age }}</div>
-    @endif
+<div class="member mt-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">Name</div>
+            <div class="col-md-9">
+                {{ $member->lastname  ?? ' - ' }},
+                {{ $member->firstname  ?? ' - ' }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">Agent</div>
+            <div class="col-md-9">
+                {{ $agentInfo->user->firstname  ?? ' - ' }}
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-2">Tutor</div>
+            <div class="col-md-9">
 
-    @if (isset($member->student_year))
-    <div>Student Year : {{ $member->student_year }}</div>
-    @endif
+                {{ $tutorInfo->user->japanese_firstname  ?? ' - ' }}
+            </div>
+        </div>
 
-    <div>Gender : {{ $member->gender }}</div>
-
-    @if (isset( $scheduleItem['lesson_time']))
-    <div>Lesson Date : {{ $scheduleItem['lesson_time'] }}</div>
-    @endif
-
-    @if (isset( $scheduleItem['tutor_id']))
-    <div>Tutor : {{ \App\Models\Tutor::find($scheduleItem['tutor_id'])->name_en }}</div>
-    @endif
-
+        <!--
+        <div class="row">
+            <div class="col-md-2">Lesson Class</div>
+            <div class="col-md-9">
+                毎月 {{$memberAttribute->lesson_limit ?? '0'}} 回クラス (あと　残り {{$memberAttribute->lesson_limit ?? '0'}}回)
+            </div>
+        </div>
+        -->
+    </div>
 </div>

@@ -33,12 +33,6 @@ https://github.com/nodeca/pako/blob/master/LICENSE
  */
 
 /*!
- * Name: vue-upload-component
- * Version: 2.8.20
- * Author: LianYue
- */
-
-/*!
  * Select2 4.0.5
  * https://select2.github.io
  *
@@ -75,13 +69,6 @@ https://github.com/nodeca/pako/blob/master/LICENSE
  * Vue.js v2.6.12
  * (c) 2014-2020 Evan You
  * Released under the MIT License.
- */
-
-/*!
- * clipboard.js v2.0.6
- * https://clipboardjs.com/
- * 
- * Licensed MIT © Zeno Rocha
  */
 
 /*!

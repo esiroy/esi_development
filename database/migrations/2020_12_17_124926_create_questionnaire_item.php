@@ -15,9 +15,9 @@ class CreateQuestionnaireItem extends Migration
     {
         Schema::create('questionnaire_item', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('questionnaire_id');
-            $table->string('question');
-            $table->string('grade');            
+            $table->unsignedBigInteger('questionnaire_id')->nullable();
+            $table->string('question', 30);
+            $table->string('grade', 30);            
             $table->tinyInteger('valid');            
             $table->timestamps();
         });

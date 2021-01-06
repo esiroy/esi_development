@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -9,18 +8,8 @@
     <title>
         {{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(3))->replace('-', ' ') ) ?? '' }} {{ " - " . ucwords( Str::of(Request::segment(2))->replace('-', ' ') ) ?? '' }}
     </title>
-    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-    <link rel="preconnect" href="//fonts.gstatic.com" crossorigin />
-    <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
-    <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin />
-    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
-
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <script src="{{ asset('js/admin.js') }}" defer></script>
-    <script src="{{ asset('js/vfs_fonts.js') }}" defer></script>
-    <noscript>
-        <link rel="stylesheet" type="text/css" href="">
-    </noscript>
 </head>
 
 <body class="bg-gray">
@@ -45,26 +34,17 @@
 
                     <div class="text-right w-100">
                         <a class="blue pr-2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            @if(Auth::user()->first_name != '')
-                              {{ ucfirst(Auth::user()->first_name) }}
-                              {{ '(Administrator)' }}
-
-                            <span class="caret"></span>
-                            @elseif (Auth::user()->tutorInfo->name_en != '')
-                                {{ ucfirst(Auth::user()->tutorInfo->name_en) }} 
+                            {{ ucfirst(Auth::user()->firstname) }}
+                            @if(Auth::user()->user_type == 'ADMINISTRATOR')
+                              {{ '(Administrator)' }}                            
+                            @elseif (Auth::user()->user_type == 'TUTOR')                                
                                 {{ '(Tutor)' }}
-                                <span class="caret"></span>
-
-                            @elseif (Auth::user()->managerInfo->name_en != '')
-                                {{ ucfirst(Auth::user()->managerInfo->name_en) }}
+                            @elseif (Auth::user()->user_type == 'MANAGER')   
                                 {{ '(Manager)' }}
-                                <span class="caret"></span>
-
-                            @elseif (Auth::user()->agentInfo->name_en != '')
-                                {{ ucfirst(Auth::user()->managerInfo->name_en) }}
-                                {{ '(Agent)' }}
-                                <span class="caret"></span>
+                            @elseif (Auth::user()->user_type == 'AGENT')                               
+                                {{ '(Agent)' }}                              
                             @endif
+                            <span class="caret"></span>
                         </a>
                         
                         <!--
@@ -122,6 +102,7 @@
         });
     </script>
     <script type="text/javascript" src="http://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
+    @yield('styles')    
     @yield('scripts')
 </body>
 

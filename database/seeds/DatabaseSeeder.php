@@ -16,16 +16,9 @@ class DatabaseSeeder extends Seeder
             PermissionsTableSeeder::class,
             RolesTableSeeder::class,
             PermissionRoleTableSeeder::class,
-            UsersTableSeeder::class,
-            RoleUserTableSeeder::class,
-            GradesTableSeeder::class,            
-            IndustriesTableSeeder::class,
+           //UsersTableSeeder::class,
+            //RoleUserTableSeeder::class,
             ShiftsTableSeeder::class,
-            AttributeTableSeeder::class,
-            MembershipsTableSeeder::class,            
-            TutorTableSeeder::class,
-            MemberTableSeeder::class,
-            AgentTableSeeder::class,
         ]);
     }
 }
