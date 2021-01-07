@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Traits\AuthenticatesAdminUsers;
 
 use App\Models\User;
-use Hash;
+use Hash, Auth;
 
 class AuthController extends Controller
 {
@@ -57,11 +57,18 @@ class AuthController extends Controller
             $user->password = Hash::make($request->password);
             $user->save();
         }
-
-
+        /*
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
+        }*/
+
+        /** @description - only valid user can login */
+        $credentials = $request->only('username', 'password');
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'valid' => 1])) {
+            // Authentication passed...
+            return redirect()->intended('admin/dashboard');
         }
+        
 
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this

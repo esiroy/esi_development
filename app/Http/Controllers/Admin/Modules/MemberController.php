@@ -447,8 +447,21 @@ class MemberController extends Controller
         MemberDesiredSchedule::where('member_id', $user->id)->delete();
 
         $member->delete();
-        $user->delete();
+        $user->forceDelete();
 
         return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
     }
+
+    public function massDestroy(Request $request)
+    {
+        abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        Tutor::whereIn('user_id', request('ids'))->delete();
+
+        User::whereIn('user_id', request('ids'))->forceDelete();
+
+
+        return response(null, Response::HTTP_NO_CONTENT);
+    }
+
 }

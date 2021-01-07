@@ -78,9 +78,9 @@
                                     <tr data-entry-id="{{ $manager->id }}">
                                         <td class="small text-center">&nbsp;</td>   
                                         <td class="small text-center">{{$manager->id}}</td>
-                                        <td class="small text-center">{{$manager->name_en}}</td>
-                                        <td class="small text-center">{{$manager->user->username}}</td>
-                                        <td class="small text-center">{{$manager->user->email}}</td>            
+                                        <td class="small text-center">{{$manager->firstname ?? "" }} {{$manager->lastname ?? "" }}</td>
+                                        <td class="small text-center">{{$manager->username}}</td>
+                                        <td class="small text-center">{{$manager->email}}</td>            
                                         <td class="small text-center">                                                 
                                             <a href="{{ route('admin.manager.edit', $manager->id) }}" class="btn btn-sm btn-info">Edit</a>  
                                             <form action="{{ route('admin.manager.destroy', $manager->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
@@ -173,7 +173,8 @@
                                     <label for="name_jp" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Name (Japanese)<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" value="{{ old('name_jp') }}" required autocomplete="name_jp">
+                                    <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" 
+                                        value="{{ old('name_jp') }}" required autocomplete="name_jp">
                                     @error('name_jp')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

@@ -149,10 +149,10 @@ class TutorController extends Controller
                 'japanese_lastname' => '',
                 'email' => $request['email'],
                 'username' => $request['email'],
-                'password' => $request['password'],
+                'password' => Hash::make($data['password']),
                 'api_token' => Hash('sha256', Str::random(80)),
                 'user_type' => "TUTOR",
-                'valid' => true,
+                'valid' => ! ((boolean) $request['is_terminated']),
             ];
             $user = User::create($userData);
 
@@ -233,7 +233,8 @@ class TutorController extends Controller
 
     public function resetPassword($id, Request $request)
     {
-
+        abort_if(Gate::denies('tutor_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
         $tutor = Tutor::where('user_id', $id)->first();
 
         $userData = [
@@ -290,7 +291,7 @@ class TutorController extends Controller
                 //'password' => $request['password'],
                 'api_token' => Hash('sha256', Str::random(80)),
                 //'user_type' => "TUTOR",
-                //'valid' => true,
+                'valid' => ! ((boolean) $request['is_terminated']),
             ];
             $user = User::find($id);
             $user->update($userData);
@@ -345,23 +346,29 @@ class TutorController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Tutor $tutor)
+    public function destroy($id, Request $request)
     {
-        //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $user = User::where('user_id', $tutor->user_id)->find();
-        $user->delete();
+        $user   = User::find($id);
+        $tutor  = Tutor::where('user_id', $id)->first();
 
         //delete tutor if there is still added
         $tutor->delete();
+        $user->forceDelete();
 
         return back()->with('message', 'Tutor has been deleted successfully!');
     }
 
     public function massDestroy(Request $request)
     {
-        //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         Tutor::whereIn('user_id', request('ids'))->delete();
+
+        User::whereIn('user_id', request('ids'))->forceDelete();
+
+
         return response(null, Response::HTTP_NO_CONTENT);
     }
 

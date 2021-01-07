@@ -25,9 +25,9 @@ class CreateTutorTable extends Migration
             $table->integer('sort')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->date('birthday')->nullable();
-            $table->string('skype_id');
-            $table->string('skype_name');
-            $table->string('skype_password', 30);
+            $table->string('skype_id')->nullable();
+            $table->string('skype_name')->nullable();
+            $table->string('skype_password', 30)->nullable();
             $table->unsignedBigInteger('lesson_shift_id')->nullable();
             $table->tinyInteger('is_default_main_tutor')->nullable();
             $table->tinyInteger('is_default_support_tutor')->nullable();

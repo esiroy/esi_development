@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
 use App\Models\Role;
@@ -15,12 +16,12 @@ use App\Models\Manager;
 use App\Models\Grade;
 use App\Models\Permission;
 use App\Models\Tutor;
- 
 
 use Auth;
 use Gate;
 use Validator;
 use Input;
+
 
 class ManagerController extends Controller
 {
@@ -31,10 +32,10 @@ class ManagerController extends Controller
      */
     public function index()
     {
-        
-        //$managers = User::whereHas('roles', function($q) { $q->where('title', 'Manager'); })->get(); 
 
-        $managers = Manager::get();
+        abort_if(Gate::denies('manager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
+        $managers = User::where('user_type', 'MANAGER')->get();      
 
         return view('admin.modules.manager.index', compact('managers'));
     }
@@ -73,12 +74,14 @@ class ManagerController extends Controller
             //Add User
             $userData =
             [
-                'email'         => $request['email'],
-                'first_name'    => '',
-                'last_name'     => '',
-                'username'      => $request['email'],
-                'password'      => $request['password'],
-                'api_token'     => Hash('sha256', Str::random(80))                
+                'user_type'             => "MANAGER",
+                'email'                 => $request['email'],
+                'username'              => $request['email'],
+                'firstname'             => $request['name_en'],
+                'japanese_firstname'    => $request['name_jp'],  
+                'password'              => Hash::make($request['password']),
+                'api_token'             => Hash('sha256', Str::random(80)),
+                'valid'                 => 1          
             ];
 
             $user = User::create($userData); 
@@ -87,6 +90,7 @@ class ManagerController extends Controller
             $roles[] = Role::where('title', 'Manager')->first()->id;
             $user->roles()->sync($roles);             
 
+            /*
             //Add Manager Info
             $managerData = [           
                 'user_id'               => $user->id,                           
@@ -96,7 +100,8 @@ class ManagerController extends Controller
             ];
             
             $manager = Manager::create($managerData);
-            $user->managers()->sync([$manager->id], false);      
+            $user->managers()->sync([$manager->id], false);
+            */
             
             return redirect()->route('admin.manager.index')->with('message', 'Manager has been added successfully!');
 
@@ -121,9 +126,18 @@ class ManagerController extends Controller
      * @param  int  $manager
      * @return \Illuminate\Http\Response
      */    
-    public function resetPassword(Manager $manager)
+    public function resetPassword($id, Request $request)
     {
-        echo "reset password";
+        abort_if(Gate::denies('manager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $userData = [
+            'password' => Hash::make($request->password),
+        ];
+
+        $user = User::find($id);
+        $user->update($userData);
+
+        return redirect()->route('admin.manager.edit', $id)->with('message', 'Manager password has been updated successfully!');
     }
 
     /**
@@ -132,8 +146,12 @@ class ManagerController extends Controller
      * @param  object  $manager
      * @return \Illuminate\Http\Response
      */
-    public function edit(Manager $manager)
+    public function edit($id, Request $request)
     {
+        abort_if(Gate::denies('manager_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        $manager = User::find($id);
+        
         return view('admin.modules.manager.edit', compact('manager'));        
     }
 
@@ -165,27 +183,18 @@ class ManagerController extends Controller
             //Update User
             $userData =
             [
-                'email'         => $request['email'],
-                'first_name'    => '',
-                'last_name'     => '',
-                'username'      => $request['email'],
-                'password'      => $request['password'],
-                'api_token'     => Hash('sha256', Str::random(80))                
+                'email'                 => $request['email'],
+                'username'              => $request['email'],
+                'firstname'             => $request['name_en'],
+                'japanese_firstname'    => $request['name_jp'],  
+                'password'              => Hash::make($request['password']),
+                'is_japanese'           => (boolean) $request['is_japanese'],
+                'api_token'             => Hash('sha256', Str::random(80)),
+                'valid'                 => 1         
             ];
 
             $user = User::find($manager->user->id);
-            $user->update($userData);             
-
-            //Update Manager Info
-            $managerData = [           
-                'user_id'               => $user->id,                           
-                'name_en'               => $request['name_en'],
-                'name_jp'               => $request['name_jp'],
-                'is_japanese'           => (boolean) $request['is_japanese']
-            ];
-            
-            $manager = Manager::find($manager->id);
-            $manager->update($managerData);
+            $user->update($userData);        
             
             return redirect()->route('admin.manager.index')->with('message', 'Manager has been updated successfully!');
 
@@ -199,10 +208,12 @@ class ManagerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Manager $manager)
+    public function destroy($id, Request $request)
     {
-        //abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        $manager->delete();
+        abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        $user   = User::find($id);
+        $user->forceDelete();
+
         return back()->with('message', 'Manager has been deleted successfully!');
     }
 }

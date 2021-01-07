@@ -20,23 +20,23 @@ class CreateMemberTable extends Migration
            
             //basic member preference info
             $table->text('hobby')->nullable();
-            $table->string('level')->nullable();
+            $table->string('level', 255)->nullable();
             $table->string('preferred_tutor_character', 30)->nullable();
             $table->string('preferred_tutor_experience', 30)->nullable();
             $table->string('preferred_gender', 30)->nullable();
-            $table->string('purpose')->nullable();
-            $table->string('student_year')->nullable();
-            $table->string('preferred_support_type')->nullable();
-            $table->string('year')->nullable();
+            $table->string('purpose', 255)->nullable();
+            $table->string('student_year', 255)->nullable();
+            $table->string('preferred_support_type', 30)->nullable();
+            $table->string('year', 255)->nullable();
 
             //member attributes
             $table->unsignedBigInteger('tutor_id')->nullable();
             $table->integer('age')->nullable();
-            $table->string('attribute')->nullable();            
+            $table->string('attribute', 255)->nullable();            
             $table->dateTime('birthday')->nullable();
             $table->date('member_since')->nullable(); 
-            $table->string('nickname');    
-            $table->string('gender', 30);
+            $table->string('nickname', 255)->nullable();    
+            $table->string('gender', 30)->nullable();
             
             $table->unsignedBigInteger('agent_id')->nullable();            
             $table->unsignedBigInteger('lesson_shift_id')->nullable();
@@ -55,8 +55,8 @@ class CreateMemberTable extends Migration
             $table->string('membership', 30)->nullable();
 
             $table->string('communication_app', 30)->nullable();
-            $table->string('skype_account')->nullable();
-            $table->string('zoom_account')->nullable();
+            $table->string('skype_account', 255)->nullable();
+            $table->string('zoom_account', 255)->nullable();
             $table->string('point_purchase_type', 30)->nullable();
             $table->integer('no_of_active_reserve')->nullable();
             $table->integer('no_of_active_reserve_left')->nullable();
