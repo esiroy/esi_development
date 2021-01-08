@@ -40,7 +40,7 @@ class TableImporterController extends Controller
         $ctr = 0;
 
         AgentTransaction::where('member_id', $memberID)->delete();
-        
+
         foreach ($items as $item) {
 
             $ctr = $ctr + 1;
@@ -73,7 +73,7 @@ class TableImporterController extends Controller
                 
 
                 $member = AgentTransaction::where('member_id', $memberID)->first();
-                $transaction = $member->update($data);  
+                $transaction = $member->create($data);  
 
                 $member = AgentTransaction::where('member_id', $memberID)->first();
 
