@@ -39,10 +39,12 @@ class TableImporterController extends Controller
 
         $ctr = 0;
 
+        AgentTransaction::where('member_id', $memberID)->delete();
+        
         foreach ($items as $item) {
 
             $ctr = $ctr + 1;
-            
+
             if (AgentTransaction::where('id', $item->id)->exists()) 
             {
 
@@ -67,6 +69,8 @@ class TableImporterController extends Controller
 
                 echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
 
+
+                
 
                 $member = AgentTransaction::where('member_id', $memberID)->first();
                 $transaction = $member->update($data);  
