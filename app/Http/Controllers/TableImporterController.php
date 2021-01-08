@@ -28,7 +28,7 @@ class TableImporterController extends Controller
 
         echo "<BR>";
 
-        $items = DB::connection('mysql_live')->select("select * from agent_transaction $start, $end");
+        $items = DB::connection('mysql_live')->select("select * from agent_transaction limit $start, $end");
 
         foreach ($items as $item) {
 
