@@ -28,11 +28,15 @@ class TableImporterController extends Controller
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        echo "<div>ADDING agent_transcations FROM : " . $start . " - " . $end . "</div>";
 
+
+        echo "<div>ADDING agent_transcations FROM : " . $start . " - " . $end . "</div>";
         echo "<BR>";
 
-        $items = DB::connection('mysql_live')->select("select * from agent_transaction limit $start, $end");
+        //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
+        //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";        
+
+        $items = DB::connection('mysql_live')->select("select * from agent_transaction LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
@@ -41,7 +45,7 @@ class TableImporterController extends Controller
 
         foreach ($items as $item) {
             $ctr = $ctr + 1;
-            
+
             $data = [
                 'id' => $item->id,
                 'created_at' => $item->created_on,
