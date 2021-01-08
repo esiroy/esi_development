@@ -22,7 +22,7 @@ class TableImporterController extends Controller
         set_time_limit(0);
 
         if ($per_item == null) {
-            $per_item = 1000;
+            $per_item = 10000;
         }
 
         $start = ($id - 1) * ($per_item);
@@ -44,6 +44,9 @@ class TableImporterController extends Controller
         $ctr = 0;
 
         foreach ($items as $item) {
+
+            set_time_limit(0);
+
             $ctr = $ctr + 1;
 
             $data = [
