@@ -54,13 +54,11 @@ class TableImporterController extends Controller
                 'credits_expiration' => $item->credits_expiration,
                 'old_credits_expiration' => $item->old_credits_expiration,
             ];
-
-            $agent = AgentTransaction::find($item->id);
-
+         
             if (AgentTransaction::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>EXISTING : " . $item->id . " " . $item->created_on . "</div>";
             } else {
-                $transaction = AgentTransaction::create($data);
+                $transaction = AgentTransaction::updateOrCreate($data);
                 echo "<div style='color:blue'>Added : " . $item->id . " " . $item->created_on . "</div>";
             }
         }
