@@ -62,6 +62,7 @@ Route::resource('customersupport', 'CustomerSupportController');
 //import table
 Route::get('importAgentTranscations', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
 Route::get('importAgentTranscations/{id}', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
+Route::get('importAgentTranscations/{id}/{per_item}', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
 
 
 //export file (public)
