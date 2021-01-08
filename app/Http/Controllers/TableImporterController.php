@@ -29,9 +29,49 @@ class TableImporterController extends Controller
 
             echo "<a href='$url'><small>Transaction Import Page $i</small></a><br>";
         }
+    }
 
+    
+    public function update($memberID) 
+    {
+
+        $items = DB::connection('mysql_live')->select("select * from agent_transaction where member_id = $memberID");
+
+        foreach ($items as $item) {
+
+            if (AgentTransaction::where('id', $item->id)->exists()) 
+            {
+
+                $data = [
+                    //'id' => $item->id,
+                    'created_at' => $item->created_on,
+                    'updated_at' => $item->updated_on,
+                    'valid' => $item->valid,
+                    'amount' => $item->amount,
+                    'remarks' => $item->remarks,
+                    'transaction_type' => $item->transaction_type,
+                    'agent_id' => $item->agent_id,
+                    'created_by_id' => $item->created_by_id,
+                    'member_id' => $item->member_id,
+                    'schedule_item_id' => $item->schedule_item_id,
+                    'price' => $item->price,
+                    'lesson_shift_id' => $item->lesson_shift_id,
+                    'credits_expiration' => $item->credits_expiration,
+                    'old_credits_expiration' => $item->old_credits_expiration,
+                ];
+
+                $member = AgentTransaction::where('member_id', $memberID)->first();
+                $transaction = $member->update($data);                
+            }
+
+            
+        }
+
+        echo "done! updating";
 
     }
+
+
 
     public function importAgentTranscations($id = null, $per_item = null)
     {
@@ -97,7 +137,7 @@ class TableImporterController extends Controller
 
                 } catch (\Exception $e) {
 
-                    echo "<div style='color:red'>$ctr - Exception Error Found (Member Store) : " . $e->getMessage() ." on Line : " . $e->getLine() ."</div>";
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() ." on Line : " . $e->getLine() ."</div>";
                 }
 
             }

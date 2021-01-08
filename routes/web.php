@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('test/{id}', 'TableImporterController@test')->name('test');
 
 //import table
+Route::get('importAgentTranscations/update/{id}', 'TableImporterController@update');
+
 Route::get('importAgentTranscations/index', 'TableImporterController@importAgentTranscationsIndex');
 Route::get('importAgentTranscations/{id}', 'TableImporterController@importAgentTranscations');
 Route::get('importAgentTranscations/{id}/{per_item}', 'TableImporterController@importAgentTranscations');

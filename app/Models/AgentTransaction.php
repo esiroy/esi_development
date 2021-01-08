@@ -158,6 +158,25 @@ class AgentTransaction extends Model
         return $price;
     }
 
+    public function getMemberLatestDateOfPurchase($memberID)
+    {
+
+        $transaction = AgentTransaction::where('member_id', $memberID)->where(function ($q) use ($memberID) {
+            $q->orWhere('transaction_type', 'ADD')
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'FREE_CREDITS')
+                ->orWhere('transaction_type', 'DISTRIBUTE')
+                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+
+        })->orderBy('id', "DESC")->first();
+
+        if (isset($transaction->created_at)) {
+            return $transaction->created_at;
+        } else {
+            return null;
+        }
+    }
+
     public function getAgentFirstDateOfPurchase($agentID)
     {
         $transaction = AgentTransaction::where('agent_id', $agentID)->where('transaction_type', 'ADD')
@@ -192,23 +211,6 @@ class AgentTransaction extends Model
         }
     }
 
-    public function getMemberLatestDateOfPurchase($memberID)
-    {
 
-        $transaction = AgentTransaction::where('member_id', $memberID)->where(function ($q) use ($memberID) {
-            $q->orWhere('transaction_type', 'ADD')
-                ->orWhere('transaction_type', 'MANUAL_ADD')
-                ->orWhere('transaction_type', 'FREE_CREDITS')
-                ->orWhere('transaction_type', 'DISTRIBUTE')
-                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
-
-        })->orderBy('id', "DESC")->first();
-
-        if (isset($transaction->created_at)) {
-            return $transaction->created_at;
-        } else {
-            return null;
-        }
-    }
 
 }
