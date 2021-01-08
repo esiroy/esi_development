@@ -45,41 +45,34 @@ class TableImporterController extends Controller
 
             $ctr = $ctr + 1;
 
+            $data = [
+                'id' => $item->id,
+                'created_at' => $item->created_on,
+                'updated_at' => $item->updated_on,
+                'valid' => $item->valid,
+                'amount' => $item->amount,
+                'remarks' => $item->remarks,
+                'transaction_type' => $item->transaction_type,
+                'agent_id' => $item->agent_id,
+                'created_by_id' => $item->created_by_id,
+                'member_id' => $item->member_id,
+                'schedule_item_id' => $item->schedule_item_id,
+                'price' => $item->price,
+                'lesson_shift_id' => $item->lesson_shift_id,
+                'credits_expiration' => $item->credits_expiration,
+                'old_credits_expiration' => $item->old_credits_expiration,
+            ];
+
+
+
             if (AgentTransaction::where('id', $item->id)->exists()) 
-            {
-
-                $data = [
-                    'id' => $item->id,
-                    'created_at' => $item->created_on,
-                    'updated_at' => $item->updated_on,
-                    'valid' => $item->valid,
-                    'amount' => $item->amount,
-                    'remarks' => $item->remarks,
-                    'transaction_type' => $item->transaction_type,
-                    'agent_id' => $item->agent_id,
-                    'created_by_id' => $item->created_by_id,
-                    'member_id' => $item->member_id,
-                    'schedule_item_id' => $item->schedule_item_id,
-                    'price' => $item->price,
-                    'lesson_shift_id' => $item->lesson_shift_id,
-                    'credits_expiration' => $item->credits_expiration,
-                    'old_credits_expiration' => $item->old_credits_expiration,
-                ];
-
-
-                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
-
-
-                
-
+            { 
                 $member = AgentTransaction::where('member_id', $memberID)->first();
+                $transaction = $member->update($data);  
+                echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
+            } else {                
                 $transaction = $member->create($data);  
-
-                $member = AgentTransaction::where('member_id', $memberID)->first();
-
-                echo "<pre>";
-                print_r ($member);
-                echo "</pre>";
+                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";                
             }
 
             
