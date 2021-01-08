@@ -57,13 +57,12 @@ class TableImporterController extends Controller
 
             $agent = AgentTransaction::find($item->id);
 
-            if(count($agent)){
+            if (AgentTransaction::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>EXISTING : " . $item->id . " " . $item->created_on . "</div>";
             } else {
                 $transaction = AgentTransaction::create($data);
                 echo "<div style='color:blue'>Added : " . $item->id . " " . $item->created_on . "</div>";
             }
-
         }
         
         
