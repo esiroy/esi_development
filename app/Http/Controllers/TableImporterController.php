@@ -11,9 +11,26 @@ class TableImporterController extends Controller
     {
         $start = ($id - 1) * 100000;
         $end = $id * 100000;
+
         echo $start;
         echo "<BR>";
         echo $end;
+    }
+
+    public function importAgentTranscationsIndex() 
+    {        
+        $items = DB::connection('mysql_live')->table('agent_transaction')->count();
+        $per_item = 8000;
+        $total_pages = ($items / $per_item) + 1;
+
+        for($i=1; $i <= $total_pages; $i++)
+         {
+            $url = url("importAgentTranscations/$i");
+
+            echo "<a href='$url'><small>Transaction Import Page $i</small></a><br>";
+        }
+
+
     }
 
     public function importAgentTranscations($id = null, $per_item = null)

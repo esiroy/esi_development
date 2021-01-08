@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('test/{id}', 'TableImporterController@test')->name('test');
 
+//import table
+Route::get('importAgentTranscations/index', 'TableImporterController@importAgentTranscationsIndex');
+Route::get('importAgentTranscations/{id}', 'TableImporterController@importAgentTranscations');
+Route::get('importAgentTranscations/{id}/{per_item}', 'TableImporterController@importAgentTranscations');
+
+
 
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
@@ -59,10 +65,7 @@ Route::resource('download', 'DownloadController');
 Route::resource('customersupport', 'CustomerSupportController');
 
 
-//import table
-Route::get('importAgentTranscations', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
-Route::get('importAgentTranscations/{id}', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
-Route::get('importAgentTranscations/{id}/{per_item}', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
+
 
 
 //export file (public)
