@@ -162,12 +162,14 @@ class ManagerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Manager $manager)
+    public function update($id, Request $request)
     {
+
+        $manager = User::find($id);
 
         $validator = Validator::make($request->all(), [
             'email'             => ['required', 'string', 'email', 'max:255', 
-                                    Rule::unique('users')->ignore($manager->user->id)->whereNull('deleted_at')
+                                    Rule::unique('users')->ignore($manager->id)->whereNull('deleted_at')
                                    ],            
             //'password'      => ['required', 'string', 'min:8'],
             'name_en'       => ['required'],
@@ -176,7 +178,7 @@ class ManagerController extends Controller
 
         if ($validator->fails()) {
 
-            return redirect()->route('admin.manager.edit', $manager)->withErrors($validator)->withInput();       
+            return redirect()->route('admin.manager.edit', $manager->id)->withErrors($validator)->withInput();       
 
         } else {
 
@@ -187,13 +189,13 @@ class ManagerController extends Controller
                 'username'              => $request['email'],
                 'firstname'             => $request['name_en'],
                 'japanese_firstname'    => $request['name_jp'],  
-                'password'              => Hash::make($request['password']),
+                //'password'              => Hash::make($request['password']),
                 'is_japanese'           => (boolean) $request['is_japanese'],
                 'api_token'             => Hash('sha256', Str::random(80)),
                 'valid'                 => 1         
             ];
 
-            $user = User::find($manager->user->id);
+            $user = User::find($manager->id);
             $user->update($userData);        
             
             return redirect()->route('admin.manager.index')->with('message', 'Manager has been updated successfully!');
@@ -211,6 +213,7 @@ class ManagerController extends Controller
     public function destroy($id, Request $request)
     {
         abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
         $user   = User::find($id);
         $user->forceDelete();
 

@@ -7,10 +7,10 @@
     <div class="bg-lightblue2">
         <div class="container px-0">
             <nav class="submenu nav nav-pills flex-column flex-sm-row">
-                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-left border-primary active" href="{{ url('admin/member') }}">Member</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('admin/member') }}">Member</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/tutor') }}">Tutor</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/manager') }}">Manager</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/agent') }}">Agent</a>
+                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-primary active" href="{{ url('admin/agent') }}">Agent</a>
             </nav>
         </div>
     </div>
@@ -50,16 +50,18 @@
                             <div class="row">
                                 <div class="col-md-2">Name</div>
                                 <div class="col-md-9">
-                                    {{ $member->lastname  ?? ' - ' }},
                                     {{ $member->firstname  ?? ' - ' }}
                                 </div>
                             </div>
+
+                            <!--
                             <div class="row">
                                 <div class="col-md-2">Agent</div>
                                 <div class="col-md-9">
                                     {{ $agentInfo->user->firstname  ?? ' - ' }}
                                 </div>
                             </div>
+                            -->
 
                             <!--
                             <div class="row">
@@ -91,24 +93,24 @@
                                 </thead>
                                 <tbody>
                                     @php
-                                    $total = 0
+                                        $total = 0
                                     @endphp
-
+                                    
                                     @foreach($paymentHistory as $history)
                                     <tr>
-                                        <td>
-                                           
+                                        <td>                                           
                                             {{ date('F d, Y H:i', strtotime($history->created_at)) }}
                                         </td>
                                         <td>{{ $history->amount }}</td>
 
-
                                         <td class="text-center">
-                                              <div style="width:80px; margin:auto">
+
+                                            <div style="width:80px; margin:auto">
                                                 <div class="text-right">
                                                     ¥ {{ number_format($history->price, 2) }}
                                                 </div>
                                             </div>
+
                                         </td>
 
                                         @php
@@ -122,11 +124,13 @@
                                         <td></td>
                                         <td>Total</td>
                                         <td class="text-center">
+                                        
                                             <div style="width:80px; margin:auto">
                                                 <div class="text-right">
                                                     ¥ {{ number_format($total, 2) }}
                                                 </div>
                                             </div>
+
                                         </td>
                                     </tr>
 

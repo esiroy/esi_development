@@ -36,51 +36,37 @@
             @endif
 
 
-            <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
-                    Agent List
-                </div>
+            <div class="card mt-4">
+                <div class="card-header">Update Password</div>
                 <div class="card-body">
-                    <div class="row">
-
-                        <!--search-->
-                        <form class="form-inline" style="width:100%" method="GET">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="username" class="small col-4">Username:</label>
-                                    <input id="username" name="username" type="text" class="form-control form-control-sm col-8" value="">
+                    <form method="POST" action="{{ route('admin.agent.resetPassword', $agent->user_id) }}">
+                        @csrf
+                        <div class="row pt-2">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-4 small pr-0">
+                                        <label for="password" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Password<div class="float-right">:</div></label>
+                                    </div>
+                                    <div class="col-6">
+                                        <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required autocomplete="password">
+                                        @error('password')
+                                        <span class="invalid-feedback" role="alert">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                        @enderror
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="name" class="small col-sm-9 col-md-2">Name:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-8 col-md-10" value="">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="email" class="small col-sm-9 col-md-2">Email:</label>
-                                    <input id="searchEmail" name="email" type="text" class="form-control form-control-sm  col-xs-3 col-sm-2 col-md-10" value="">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <input type="submit" class="btn btn-primary btn-sm col-2" value="Go"></button>        
-                            </div>
-                        </form>
-                        <!--[end] search-->
-
-                    </div>
-
-                    <!--start agent list -->
-                    <div class="row">
-                        <div class="col-12 pt-3">
-                             @include('admin.modules.agent.includes.agentlist')     
                         </div>
-                    </div>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary btn-sm ml-2">Reset</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
-            <!--[end] card-->
 
             <div class="card mt-4">
                 <div class="card-header">Agent Form</div>
@@ -96,7 +82,7 @@
                                 <select name="industry_type" class="form-control form-control-sm @error('industry_type') is-invalid @enderror" value="{{ old('industry_type') }}" required>
                                     <option value="">-- Select Type --</option>
                                     @foreach ($industries as $industry)
-                                        <option value="{{$industry['value']}}" @if (old('industry_type')==$industry['value']) {{ 'selected' }} @endif >{{$industry['name'] }}</option>
+                                    <option value="{{$industry['value']}}" @if ( old('industry_type')==$industry['value'] || $agent->industry_type ) {{ 'selected' }} @endif >{{$industry['name'] }}</option>
                                     @endforeach;
                                 </select>
                                 @error('industry_type')
@@ -111,22 +97,8 @@
                                 <span class="text-danger">*</span> Email
                             </div>
                             <div class="col-3">
-                                <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
+                                <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email', isset($agent->user->email ) ? $agent->user->email : '') }}" required autocomplete="email">
                                 @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                                @enderror
-                            </div>
-                        </div>
-
-                        <div class="row pt-2">
-                            <div class="col-2 small">
-                                <span class="text-danger">*</span> Password
-                            </div>
-                            <div class="col-3">
-                                <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required autocomplete="password">
-                                @error('password')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
                                 </span>
@@ -248,56 +220,4 @@
     </div>
 
 </div>
-@endsection
-
-@section('scripts')
-@parent
-<script type="text/javascript">
-    window.addEventListener('load', function() {
-        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-        let _token = "{{ csrf_token() }}"
-        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
-
-        let deleteButton = {
-            text: deleteButtonTrans,
-            url: "{{ route('admin.agent.massDestroy') }}", 
-            className: 'btn-danger',
-            action: function(e, dt, node, config) {
-                var ids = $.map(dt.rows({
-                    selected: true
-                }).nodes(), function(entry) {
-                    return $(entry).data('entry-id')
-                });
-
-                if (ids.length === 0) {
-                    alert('{{ trans('global.datatables.zero_selected ') }}')
-                    return
-                }
-
-                if (confirm('{{ trans('global.areYouSure') }}')) {
-                    $.ajax({
-                        headers: {'x-csrf-token': _token}, 
-                        method: 'POST',
-                        url: config.url,
-                        data: { ids: ids, _method: 'DELETE'}
-                    }).done(function() {
-                        location.reload()
-                    })
-                }
-            }
-        }
-        dtButtons.push(deleteButton);
-        
-        $.extend(true, $.fn.dataTable.defaults, {
-            order: [
-                [1, 'asc']
-            ]
-            , pageLength: 100
-        , });
-        $('#dataTable').DataTable({
-            buttons: dtButtons
-        })
-    });
-
-</script>
 @endsection

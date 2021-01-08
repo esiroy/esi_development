@@ -365,7 +365,6 @@ class TutorController extends Controller
         abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         Tutor::whereIn('user_id', request('ids'))->delete();
-
         User::whereIn('user_id', request('ids'))->forceDelete();
 
 

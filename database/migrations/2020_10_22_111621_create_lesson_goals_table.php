@@ -14,12 +14,13 @@ class CreateLessonGoalsTable extends Migration
     public function up()
     {
         Schema::create('lesson_goals', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('member_id')->nullable();
-            $table->string('purpose')->nullable();
+            $table->id(); 
+            $table->tinyInteger('valid');
+            $table->string('extra_detail', 255)->nullable(); 
             $table->string('goal', 255)->nullable();
+            $table->string('purpose')->nullable();
             $table->string('year_level', 255)->nullable();
-            $table->string('extra_detail', 255)->nullable();            
+            $table->bigInteger('member_id')->nullable();
             $table->timestamps();
         });
     }

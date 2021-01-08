@@ -13,7 +13,7 @@
             </ol>
         </nav>
 
-        <div class="container">
+        <div class="container">        
            <!--Member List -->
 
             <!--[start card] -->
@@ -23,6 +23,7 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
+
                         <form class="form-inline" style="width:100%" method="GET">
                             <div class="col-md-3">
                                 <div class="form-group">
@@ -138,7 +139,7 @@ table.dataTable thead>tr>th.sorting_desc {
                     return
                 }
 
-                if (confirm('{{ trans('global.areYouSure ') }}')) 
+                if (confirm('{{ trans('global.areYouSure') }}')) 
                 {
                     $.ajax({
                         headers: {'x-csrf-token': _token}, method: 'POST', url: config.url, 

@@ -36,7 +36,7 @@
             <div class="card mt-4">
                 <div class="card-header">Update Password</div>
                 <div class="card-body">
-                    <form method="POST" action="{{ route('admin.manager.resetPassword', $manager) }}">
+                    <form method="POST" action="{{ route('admin.manager.resetPassword', $manager->id) }}">
                         @csrf
                         <div class="row pt-2">
                             <div class="col-6">
@@ -45,7 +45,8 @@
                                         <label for="password" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Password<div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6">
-                                        <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" value="{{ old('password') }}" required autocomplete="password">
+                                        <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" 
+                                        value="{{ old('password') }}" required autocomplete="password">
                                         @error('password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -80,7 +81,8 @@
                                         <label for="email" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> E-Mail<div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6">
-                                        <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email', isset($manager->user->email ) ? $manager->user->email : '') }}" required autocomplete="email">
+                                        <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" 
+                                        value="{{ old('email', isset($manager->user->email ) ? $manager->user->email : '') }}" required autocomplete="email">
                                         @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

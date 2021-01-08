@@ -154,11 +154,17 @@
                             <tr>
                                 <td>{{ $transaction->created_at }}</td>
                                 <td>{{ $transaction->transaction_type }}</td>
-                                <td>{{ $transaction->first_name }} {{ $transaction->last_name }}</td>
-                                <td>{{ $transaction->credits }}</td>
-                                <td>{{ $transaction->original_credit_expiration_date }}</td>
-                                <td>{{ $transaction->remarks }}</td>
+                                <td>{{ $transaction->agent_id  }}</td>
+                                <td >
+                                    @if ($transaction->transaction_type == "AGENT_SUBTRACT")
+                                        {{ "-" }}
+                                    @endif
 
+                                    {{ $transaction->amount }}
+                                </td>
+                                <td>{{ $transaction->credits_expiration }}</td>
+                                <td>{{ $transaction->remarks }}</td>
+                                
                             </tr>
                             @endforeach
 
@@ -178,22 +184,22 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Credits</th>
-                                <th>Lesson Time</th>
                                 <th>Amount</th>
                             </tr>
 
                             @foreach($purchaseHistory as $history)
                             <tr>
-                                <td>{{ $history->created_at }}</td>
-                                <td>{{ $history->credits }}</td>
-                                <td>{{ $history->lesson_time_duration }}</td>
-                                <td>¥ {{ $history->amount }}</td>
+                                <td>{{ $history->created_at }}</td>                         
+                                <td>{{ $history->amount }}</td>
+                                <td>¥ {{ $history->price ?? "0" }}</td>                                
                             </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            
         </div>
     </div>
 </div>

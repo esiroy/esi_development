@@ -122,7 +122,7 @@ class MemberController extends Controller
             }
         } //[END] USER SEARCH
 
-        $members = $memberQuery->where('valid', 1)->orderby('users.id', 'ASC')->paginate(30);
+        $members = $memberQuery->orderby('users.id', 'ASC')->paginate(30);
 
         //Tutor Query
         //$tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();
@@ -149,7 +149,8 @@ class MemberController extends Controller
      */
     public function account($memberID)
     {
-        $member = Member::find($memberID);
+        $member = Member::where("user_id", $memberID)->first();
+
         if (!isset($member)) {
             abort(404);
         }
@@ -157,15 +158,19 @@ class MemberController extends Controller
         $user = $member->user;
         $agent = $member->agent;
 
-        //Member Transactions
-        $transactions = MemberCredits::join('users', 'users.id', '=', 'member_credits.user_id')
-            ->where('user_id', $member->user_id)->get();
 
-        $purchaseHistory = MemberPointPurchaseHistory::join('users', 'users.id', '=', 'member_point_purchase_history.user_id')
-            ->where('user_id', $member->user_id)->get();
+        $agentTransaction = new AgentTransaction();
+
+        $transactions  = $agentTransaction->getMemberTransactions($member->user_id);
+        $purchaseHistory = $agentTransaction->getPaymentHistory($member->user_id);   
+
+
 
         return view('admin.modules.member.account', compact('member', 'transactions', 'purchaseHistory'));
     }
+
+
+
 
     public function details($memberID)
     {
@@ -457,7 +462,6 @@ class MemberController extends Controller
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         Tutor::whereIn('user_id', request('ids'))->delete();
-
         User::whereIn('user_id', request('ids'))->forceDelete();
 
 

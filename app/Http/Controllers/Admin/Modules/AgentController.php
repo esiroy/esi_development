@@ -3,26 +3,25 @@
 namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
-use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\UpdateUserRequest;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
-use Illuminate\Support\Str;
+use App\Models\Agent;
+use App\Models\AgentTransaction;
+use App\Models\Role;
+use App\Models\Tutor;
+
+//use App\Models\AgentCredits;
+//use App\Models\AgentPointPurchaseHistory;
 
 use App\Models\User;
-use App\Models\Role;
-use App\Models\Agent;
-use App\Models\Shift;
-use App\Models\AgentCredits;
-use App\Models\AgentPointPurchaseHistory;
-use App\Models\Grade;
-use App\Models\Industry;
-use App\Models\Manager;
-use App\Models\Permission;
+use App\Models\Member;
 
-use Validator;
 use Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
 
+use Illuminate\Support\Facades\Hash;
+use Validator, Gate;
 
 class AgentController extends Controller
 {
@@ -31,12 +30,39 @@ class AgentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(User $user, Agent $agents)
-    {	
+    public function index(User $user, Agent $agents, Request $request)
+    {
         //$agents = User::whereHas('roles', function($q) { $q->where('title', 'Agent'); })->get();
-        $agents = Agent::get();
+        //Industry::all();
+        $industries = createIndustries();
 
-		$industries = Industry::all();
+        //request variables
+        $username = $request->username;
+        $name = $request->name;
+        $email = $request->email;
+
+        $agentQuery = Agent::join('users', 'users.id', '=', 'agents.user_id')
+            ->select('agents.*', 'users.username');
+
+        //@[START] USER SEARCH - if user search for a member
+        if (isset($username) || isset($name) || isset($email)) {
+
+            if (isset($username)) {
+                $agentQuery = $agentQuery->where('users.username', $username);
+            }
+            if (isset($name)) {
+                $agentQuery = $agentQuery->orWhere('users.firstname', 'like', '%' . $name . '%')->orWhere('users.lastname', 'like', '%' . $name . '%');
+            }
+
+            if (isset($email)) {
+                $agentQuery = $agentQuery->orWhere('users.email', $email);
+            }
+        }
+
+        $agents = $agentQuery->orderby('users.firstname', 'ASC')->paginate(30);
+
+
+
         return view('admin.modules.agent.index', compact('agents', 'industries'));
     }
 
@@ -50,6 +76,22 @@ class AgentController extends Controller
         //
     }
 
+    public function memberlist($memberID) 
+    {
+        $members = Member::join('users', 'users.id', '=', 'members.user_id')
+            ->where('agent_id', $memberID)
+            ->select('users.valid', 'users.firstname', 'users.lastname', 'members.*')
+            ->where('valid', 1)->paginate(30);
+
+        if (isset($members)) {
+            return view('admin.modules.agent.memberlist', compact('members'));
+        } else {
+            abort(404);
+        }
+
+        
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -58,76 +100,113 @@ class AgentController extends Controller
      */
     public function store(Request $request)
     {
-		//Validate Agent Form
+        //Validate Agent Form
         $validator = Validator::make($request->all(), [
-			'industry_type'		=> ['required'],
-            'email'             => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
-            'password'          => ['required', 'string', 'min:8'],            
-            'name_en'           => ['required'],
-            'name_jp'           => ['required'],
-            'id'          		=> ['required',  Rule::unique('agents')],
-            'representative'    => ['required'],            
-            'contract_date'     => ['required']
+            'industry_type' => ['required'],
+            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'password' => ['required', 'string', 'min:8'],
+            'name_en' => ['required'],
+            'name_jp' => ['required'],
+            'id' => ['required', Rule::unique('agents')],
+            'representative' => ['required'],
+            'contract_date' => ['required'],
         ]);
 
         if ($validator->fails()) {
 
-            return redirect()->route('admin.agent.index')->withErrors($validator)->withInput();       
+            return redirect()->route('admin.agent.index')->withErrors($validator)->withInput()->with('error_message')->with("Message", 'Error found in form, please check and try again');
 
         } else {
 
             $userData =
-            [
-				'id'            => $request['agent_id'],
-                'first_name'    => '',
-                'last_name'     => '',				
-                'email'         => $request['email'],
-                'username'      => $request['email'],
-				'password'      => $request['password'],
-				'api_token'      => Hash('sha256', Str::random(80))
+                [
+                'valid' => 1,
+                'user_type' => "TUTOR",
+                'id' => $request['agent_id'],
+                'firstname' => $request['name_en'],
+                'lastname' => $request['name_jp'],
+                'email' => $request['email'],
+                'username' => $request['email'],
+                'password' => $request['password'],
+                'api_token' => Hash('sha256', Str::random(80)),
             ];
-            $user = User::create($userData); 
+            $user = User::create($userData);
 
-			//Add Role
-			$roles[] = Role::where('title', 'Agent')->first()->id;
-			$user->roles()->sync($roles); 
+            //Add Role
+            $roles[] = Role::where('title', 'Agent')->first()->id;
+            $user->roles()->sync($roles);
 
-			//Create Agent Information
-            $agentData = [           
-                'industry_type_id'		=> $request['industry_type'],
-                'user_id'               => $user->id,                              
-                'name_en'               => $request['name_en'],
-                'name_jp'               => $request['name_jp'],
-                'representative'        => $request['representative'],
-                'hiragana'              => $request['hiragana'],
-                'address'               => $request['address'],
-                'inclination'           => $request['inclination'],
-                'contract_date'         => $request['contract_date'],
-                'agent_remark'          => $request['agent_remark'],             
-            ];              
+            //Create Agent Information
+            $agentData = [
+                'industry_type' => $request['industry_type'],
+                'user_id' => $user->id,
+                'agent_id' => $request['id'],
+                'representative' => $request['representative'],
+                'hiragana' => $request['hiragana'],
+                'address' => $request['address'],
+                'inclination' => $request['inclination'],
+                'contract_date' => $request['contract_date'],
+                'remark' => $request['agent_remark'],
+            ];
 
-        
             $agent = Agent::create($agentData);
-			$user->agents()->sync([$agent->id], false);
+            $user->agents()->sync([$agent->id], false);
             return redirect()->route('admin.agent.index')->with('message', 'Agent has been added successfully!');
         }
     }
 
-
-    public function account($agentID) 
+    /**
+     * Display a listing of the payment history.
+     * @param $id
+     */
+    public function paymenthistory($agentID)
     {
-        $agent         = Agent::find($agentID);
-        if (!isset($agent)) {
+        $agentInfo = Agent::where('user_id', $agentID)->first();
+
+        if ($agentInfo) {
+
+            $member = $agentInfo->user;
+
+            //agent
+            $agentInfo = Agent::where('user_id', $agentInfo->agent_id)->first();
+
+            //tutor for
+            if (isset($agentInfo->tutor_id)) {
+                $tutorInfo = Tutor::where('user_id', $agentInfo->tutor_id)->first();
+            } else {
+                $tutorInfo = null;
+            }
+
+            $agentTransaction = new AgentTransaction();
+            $paymentHistory = $agentTransaction->getAgentPaymentHistory($agentID);
+
+            return view('admin.modules.agent.agentpaymenthistory', compact('member', 'memberInfo', 'agentInfo', 'tutorInfo', 'paymentHistory'));
+
+        } else {
             abort(404);
         }
-        $user           = $agent->user;
-        //Member Transactions
-        $transactions  = AgentCredits::where('agent_id', $agentID)->get();
+    }
 
-        $purchaseHistory    = AgentPointPurchaseHistory::join('users', 'users.id', '=', 'agent_point_purchase_history.user_id')
-                            ->where('user_id', $agent->user_id)->get();
-                            
-       return view('admin.modules.agent.account', compact('agent', 'transactions', 'purchaseHistory'));
+    public function account($agentID)
+    {
+        $agent = Agent::where('user_id', $agentID)->first();
+
+        if (!isset($agent)) {
+            abort(404);
+        } else {
+
+            $agentTransaction = new AgentTransaction();
+            $credits = $agentTransaction->getAgentCredits($agentID);
+            $latestDateOfPurchase = $agentTransaction->getAgentLatestDateOfPurchase($agentID);    
+
+            //list
+            $transactions  = $agentTransaction->getAgentTransactions($agentID);
+            $purchaseHistory = $agentTransaction->getAgentPaymentHistory($agentID);           
+
+            return view('admin.modules.agent.account', compact('agent', 'credits', 'latestDateOfPurchase', 'transactions', 'purchaseHistory'));
+
+        }
+
     }
 
     /**
@@ -147,10 +226,41 @@ class AgentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Agent $agent)
+    public function edit($id)
     {
-        return view('admin.modules.agent.edit', compact('agent'));
+        $agent = Agent::where('user_id', $id)->first();
+
+        $industries = createIndustries();
+
+        if (isset($agent->id)) {
+            return view('admin.modules.agent.edit', compact('agent', 'industries'));
+        } else {
+            abort(404);
+        }
+        
     }
+
+
+
+
+    public function resetPassword($id, Request $request)
+    {
+        //abort_if(Gate::denies('agent_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
+        $tutor = Agent::where('user_id', $id)->first();
+
+        $userData = [
+            'password' => Hash::make($request->password),
+        ];
+
+        $user = User::find($tutor->user_id);
+        $user->update($userData);
+
+        
+        return redirect()->route('admin.agent.edit', $id)->with('message', 'Tutor password has been updated successfully!');
+    }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -162,74 +272,67 @@ class AgentController extends Controller
     public function update(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
-			'transaction_type'  => ['required'],
-            'amount'            => ['required'],
-            'credits'           => ['required'],
+            'transaction_type' => ['required'],
+            'amount' => ['required'],
+            'credits' => ['required'],
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();       
-        }      
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
 
         //variables
         $expiry_date = null;
 
         //AGENT_SUBTRACT
-        //DISTRIBUTE, CREDITS_EXPIRATION, MANUAL_ADD, FREE_CREDITS 
-        $agent = Agent::find($id);
+        //DISTRIBUTE, CREDITS_EXPIRATION, MANUAL_ADD, FREE_CREDITS
+        $agent = Agent::where('user_id', $id)->first();
 
         if (!isset($agent)) {
             abort(404);
         }
-       
+
         $agentUserId = $agent->user_id;
 
+        /*
         if ($request->transaction_type == 'AGENT_SUBTRACT') 
-        {            
-            $newCredit      = -abs($request->credits);
-            $totalCredits    = $agent->credits - $request->credits;
-            $purchasedAmount = $agent->purchased_amount - $request->amount;
+        {
+            $newCredit = -abs($request->credits);            
+            $totalCredits = $agent->credits - $request->credits;
+            $purchasedAmount = $agent->purchased_amount - $request->amount;            
         } else {
-            $newCredit      = $request->credits;
-            $totalCredits   = $agent->credits + $newCredit;
+            $newCredit = $request->credits;
+            $totalCredits = $agent->credits + $newCredit;
             $purchasedAmount = $agent->purchased_amount + $request->amount;            
         }
+        */
 
+        //update agent expiration to 6 months
         $agent->update([
-            'initial_date_of_purchase' =>  date('Y-m-d G:i:s'),
-            'purchased_amount'      =>  $purchasedAmount,
-            'credits'               => $totalCredits,
-            'credits_expiration'    => date('Y-m-d G:i:s', strtotime('+6 months')), 
-            'latest_purchase_date'  => date('Y-m-d G:i:s')
+            'credits_expiration' => date('Y-m-d G:i:s', strtotime('+6 months'))
         ]);
-       
+
+        //add the expriation to transaction or empty add 6 months
         if (isset($request->expiry_date)) {
-            $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
+            $expiry_date = date('Y-m-d G:i:s', strtotime($request->expiry_date));
+        } else {
+            $expiry_date =  date('Y-m-d G:i:s', strtotime('+6 months'));        
         }
-        
+
         //Update Agent
         $agentCredit = [
-            'transaction_type'                  => $request->transaction_type,
-            'agent_id'                          => $agent->id,
-            'transaction_user_id'               => Auth::user()->id,
-            'amount'                            => $request->amount,
-            'credits'                           => $newCredit,
-            'remarks'                           => $request->remarks,
-            'original_credit_expiration_date'   => $expiry_date
-        ];        
-        AgentCredits::create($agentCredit);
-        //Insert into AgentPointPurchaseHistory
-        $pointHistory = [
-            'user_id'                           => $agentUserId,
-            'transaction_user_id'               => Auth::user()->id,
-            'amount'                            => $request->amount,
-            'credits'                           => $newCredit,	
-            //'lesson_time_duration'              => ""
+            'valid'         => 1,
+            'transaction_type' => $request->transaction_type,
+            'agent_id' => $agent->user_id,
+            'created_by_id' => Auth::user()->id,
+            'amount' => $request->credits,            
+            'price' => $request->amount,
+            'remarks' => $request->remarks,
+            'credits_expiration' => $expiry_date,
         ];
-        AgentPointPurchaseHistory::create($pointHistory);
+        AgentTransaction::create($agentCredit);
 
-
-        return redirect()->route('admin.agent.account', $agent)->with('message', 'Agent transaction has been added successfully!');
+        return redirect()->route('admin.agent.account', $agent->user_id)->with('message', 'Agent transaction has been added successfully!');
     }
 
     /**
@@ -238,16 +341,26 @@ class AgentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Agent $agent)
+    public function destroy($id, Request $request)
     {
+        $user   = User::find($id);
+        $agent  = Agent::where('user_id', $id)->first();
+        
         $agent->delete();
+        $user->forceDelete();
+
         return back()->with('message', 'Agent has been deleted successfully!');
     }
 
     public function massDestroy(Request $request)
     {
         //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        Tutor::whereIn('id', request('ids'))->delete();
+        Tutor::whereIn('user_id', request('ids'))->delete();
+        User::whereIn('user_id', request('ids'))->forceDelete();
+
         return response(null, Response::HTTP_NO_CONTENT);
     }
+
+
+
 }

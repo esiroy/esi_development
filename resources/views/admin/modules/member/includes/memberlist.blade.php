@@ -25,11 +25,11 @@
               
                 <td class="small"></td>
                 <td class="small">{{$member->id}}</td>
-                <td class="small">{{ucfirst($member->lastname)}},<br>  {{ucfirst($member->firstname)}}</td>
-                <td class="small">{{$member->nickname}}</td>
-                <td class="small">{{$member->attribute }}</td>
-                <td class="small">{{$member->firstname }}</td>
-                <td class="small">{{$member->email }}</td>
+                <td class="small">{{ucfirst($member->lastname) ?? "-" }},<br>  {{ucfirst($member->firstname) ?? "-" }}</td>
+                <td class="small">{{$member->user->firstname ?? "-" }}</td>
+                <td class="small">{{$member->attribute ?? "-" }}</td>
+                <td class="small">{{$member->firstname ?? "-" }}</td>
+                <td class="small">{{$member->email ?? "-" }}</td>
                 <td class="small">
                     {{ $member->communication_app }}: <br> 
                     @if (strtolower($member->communication_app) == 'skype') {{ $member->skype_account }} @endif
@@ -61,7 +61,7 @@
                         </a>
                     </div>
                     <!--@done: hide will be hidden on load, and will be displayed once it is hovered -->
-                    @can('tutor_lesson_scheduler_access')                    
+                    @can('tutor_lesson_scheduler_access')                 
                     <div class="hide" style="background-color:#fff">
                         <a href="/admin/reportcarddate/{{$member->id}}" class="small red">Write Grade</a>
                     </div>

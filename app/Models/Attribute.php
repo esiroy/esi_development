@@ -9,4 +9,5 @@ class Attribute extends Model
     //public $table = 'attributes';
 
     protected $guarded = array('created_at', 'updated_at');
+
 }

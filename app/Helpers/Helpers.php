@@ -20,6 +20,8 @@ if (! function_exists('formatGrade')) {
     }
 }
 
+
+
 if (! function_exists('createAttributes')) {
     function createAttributes() {
         $attributes = [
@@ -83,6 +85,34 @@ if (! function_exists('createGrades')) {
     }
 }
 
+
+if (! function_exists('createIndustries')) {
+    function createIndustries() {
+        $industries = [
+            [
+                'id' => 1,
+                'name' => "Private School",
+                'value' => "PRIVATE_SCHOOL"
+            ],
+            [
+                'id' => 2,
+                'name' => "Public School",
+                'value' => "PUBLIC_SCHOOL",
+            ],
+            [
+                'id' => 3,
+                'name' => "Company",
+                'value' => "COMPANY",                
+            ],
+            [
+                'id' => 4,
+                'name' => "Individual",
+                'value' => "INDIVIDUAL",                
+            ],            
+        ];
+        return $industries;
+    }
+}
 
 
 ?>

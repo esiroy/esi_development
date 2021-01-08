@@ -95,6 +95,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/member', 'Modules\MemberController');
         
         Route::get('/member/paymenthistory/{id}', 'Modules\MemberController@paymenthistory')->name('member.paymenthistory');
+
         Route::get('/member/account/{id}', 'Modules\MemberController@account')->name('member.account');
         Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist')->name('member.schedulelist');
         
@@ -109,16 +110,20 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         
 
         Route::delete('/manager/destroy', 'Modules\ManagerController@massDestroy')->name('manager.massDestroy');
-        Route::post('/manager/resetPassword', 'Modules\ManagerController@resetPassword')->name('manager.resetPassword');        
+        Route::post('/manager/resetPassword/{id}', 'Modules\ManagerController@resetPassword')->name('manager.resetPassword');        
         Route::resource('/manager', 'Modules\ManagerController');
 
         //Agent
         Route::get('/agent/account/{id}', 'Modules\AgentController@account')->name('agent.account');
         Route::post('/agent/updateAccount', 'Modules\AgentController@updateAccount')->name('agent.updateAccount');
+        Route::get('/agent/paymenthistory/{id}', 'Modules\AgentController@paymenthistory')->name('agent.paymenthistory');
+        Route::get('/agent/memberlist/{id}', 'Modules\AgentController@memberlist')->name('agent.memberlist');
 
         Route::delete('/agent/destroy', 'Modules\AgentController@massDestroy')->name('agent.massDestroy');
         Route::post('/agent/resetPassword/{id}', 'Modules\AgentController@resetPassword')->name('agent.resetPassword');        
         Route::resource('/agent', 'Modules\AgentController');
+
+        
 
         //Manage
         Route::resource('/questionnaires', 'Modules\QuestionnaireController');

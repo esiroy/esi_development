@@ -12,8 +12,19 @@ class MemberAttribute extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
-
-    public function getMemberAttribute($memberID) {
+    public function getMemberAttribute($memberID)
+    {
         return MemberAttribute::where('member_id', $memberID)->get();
+    }
+
+    public function getLessonLimit($memberID)
+    {
+        $month = strtoupper(date("M"));
+        $year = date('Y');
+
+        return MemberAttribute::where('month', $month)
+                ->where('year', $year)
+                ->where('member_id', $memberID)
+                ->first();
     }
 }

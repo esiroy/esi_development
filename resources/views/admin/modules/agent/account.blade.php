@@ -41,7 +41,7 @@
                     Member Details
                 </div>
                 <div class="card-body esi-card-body">
-                    <form name="add_credit_transaction_form" method="POST" action="{{ route('admin.agent.update',  [$agent->id]) }}">
+                    <form name="add_credit_transaction_form" method="POST" action="{{ route('admin.agent.update',  [$agent->user_id]) }}">
                         @csrf
                         @method('PUT')
 
@@ -49,13 +49,13 @@
                             <div class="col-md-6">
                                 <div class="row py-1">
                                     <div class="col-md-3">Agent : </div>
-                                    <div class="col-md-8"><strong>{{ $agent->name_en }}</strong></div>
+                                    <div class="col-md-8"><strong>{{ $agent->user->firstname }}</strong></div>
                                 </div>
 
                                 <div class="row py-1">
                                     <div class="col-md-3">Transaction : </div>
                                     <div class="col-md-9">
-                                        <select name="transaction_type" id="transaction_type" class="form-control form-control-sm " onchange="checkSelected()">
+                                        <select name="transaction_type" id="transaction_type" class="form-control form-control-sm " onchange="checkSelected()" required>
                                             <option value="">-- Select Transaction Type --</option>
                                             <option value="ADD">ADD</option>
                                             <option value="AGENT_SUBTRACT">Subtract</option>                                            
@@ -67,7 +67,7 @@
                                 <div class="row py-1">
                                     <div class="col-md-3">Credits : </div>
                                     <div class="col-md-9">
-                                        <input type="number" size="4" name="credits" id="credits" class="form-control form-control-sm col-md-3" alt="credits">
+                                        <input type="number" size="4" name="credits" id="credits" class="form-control form-control-sm col-md-3" alt="credits" required>
                                     </div>
                                 </div>
 
@@ -75,7 +75,7 @@
                                 <div class="row py-2">
                                     <div class="col-md-3">Amount : </div>
                                     <div class="col-md-9">
-                                        <input type="number" size="4" name="amount" id="amount" class="form-control form-control-sm col-md-3" alt="amount">
+                                        <input type="number" size="4" name="amount" id="amount" class="form-control form-control-sm col-md-3" alt="amount" required>
                                     </div>
                                 </div>
 
@@ -99,7 +99,7 @@
                             <div class="col-md-6">
                                 <div class="row py-1">
                                     <div class="col-md-4">Credits : </div>
-                                    <div class="col-md-8"><strong>{{ $agent->credits }}</strong></div>
+                                    <div class="col-md-8"><strong>{{ $credits }}</strong></div>
                                 </div>
                                 <div class="row py-1">
                                     <div class="col-md-4">Credits Expiration : </div>
@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="row py-1">
                                     <div class="col-md-4">Latest Purchase Date : </div>
-                                    <div class="col-md-8"><strong>{{ $agent->latest_purchase_date }}</strong></div>
+                                    <div class="col-md-8"><strong>{{ $latestDateOfPurchase }}</strong></div>
                                 </div>
                             </div>
                             <!--[end right column]-->
@@ -146,9 +146,15 @@
                             <tr>
                                 <td>{{ $transaction->created_at }}</td>
                                 <td>{{ $transaction->transaction_type }}</td>
-                                <td>{{ $transaction->name_en }}</td>
-                                <td>{{ $transaction->credits }}</td>
-                                <td>{{ $transaction->original_credit_expiration_date }}</td>
+                                <td>{{ $transaction->agent_id  }}</td>
+                                <td >
+                                    @if ($transaction->transaction_type == "AGENT_SUBTRACT")
+                                        {{ "-" }}
+                                    @endif
+
+                                    {{ $transaction->amount }}
+                                </td>
+                                <td>{{ $transaction->credits_expiration }}</td>
                                 <td>{{ $transaction->remarks }}</td>
                                 
                             </tr>
@@ -176,8 +182,8 @@
                             @foreach($purchaseHistory as $history)
                             <tr>
                                 <td>{{ $history->created_at }}</td>                         
-                                <td>{{ $history->credits }}</td>
-                                <td>¥ {{ $history->amount }}</td>                                
+                                <td>{{ $history->amount }}</td>
+                                <td>¥ {{ $history->price ?? "0" }}</td>                                
                             </tr>
                             @endforeach
                         </tbody>
