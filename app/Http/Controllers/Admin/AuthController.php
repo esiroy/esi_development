@@ -51,14 +51,14 @@ class AuthController extends Controller
 
         // check against old md5 password, if correct, create bcrypted updated pswd
         $user = User::where('username', $request->username)->first();
+        
 
-        if( $user && $user->password == md5($request->password) )
+        if( $user && $user->password == md5($request->password))
         {
-            $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
-
             $user->password = Hash::make($request->password); //update the password to better hasher accordingly
             $user->save();
         }
+
         /*
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
@@ -68,6 +68,8 @@ class AuthController extends Controller
         $credentials = $request->only('username', 'password');
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'valid' => 1])) {
             // Authentication passed...
+            $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
+            $user->save();
             return redirect()->intended('admin/dashboard');
         }
         

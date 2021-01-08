@@ -65,7 +65,6 @@ class LoginController extends Controller
 
         if( $user && $user->password == md5($request->password) )
         {
-            $user->api_token = Hash('sha256', Str::random(80));
             $user->password = Hash::make($request->password);
             $user->save();
         }
@@ -81,6 +80,8 @@ class LoginController extends Controller
         $credentials = $request->only('username', 'password');
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'valid' => 1])) {
             // Authentication passed...
+            $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
+            $user->save();            
             return redirect()->intended('admin/dashboard');
         }
         
