@@ -62,6 +62,14 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+        'mysql_live' => [
+            'driver'    => env('DB_CONNECTION_LIVE'),
+            'host'      => env('DB_HOST_LIVE'),
+            'port'      => env('DB_PORT_LIVE'),
+            'database'  => env('DB_DATABASE_LIVE'),
+            'username'  => env('DB_USERNAME_LIVE'),
+            'password'  => env('DB_PASSWORD_LIVE'),
+        ],
 
         'pgsql' => [
             'driver' => 'pgsql',

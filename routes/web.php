@@ -12,7 +12,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::resource('test', 'dummyController');
+Route::get('test/{id}', 'TableImporterController@test')->name('test');
+
+
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
 //Route::get('/', 'HomeController@index')->name('welcome');
@@ -55,6 +57,11 @@ Route::resource('download', 'DownloadController');
 
 /*Customer Support */
 Route::resource('customersupport', 'CustomerSupportController');
+
+
+//import table
+Route::get('importAgentTranscations', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
+Route::get('importAgentTranscations/{id}', 'TableImporterController@importAgentTranscations')->name('importAgentTranscations');
 
 
 //export file (public)
