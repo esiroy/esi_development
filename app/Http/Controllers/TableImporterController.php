@@ -36,8 +36,12 @@ class TableImporterController extends Controller
 
         DB::beginTransaction();
 
-        foreach ($items as $item) {
 
+        $ctr = 1;
+
+        foreach ($items as $item) {
+            $ctr = $ctr + 1;
+            
             $data = [
                 'id' => $item->id,
                 'created_at' => $item->created_on,
@@ -57,7 +61,7 @@ class TableImporterController extends Controller
             ];
 
             if (AgentTransaction::where('id', $item->id)->exists()) {
-                echo "<div style='color:red'>EXISTING : " . $item->id . " " . $item->created_on . "</div>";
+                echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
             } else {
 
                 try
@@ -65,12 +69,12 @@ class TableImporterController extends Controller
                     $transaction = AgentTransaction::updateOrCreate($data);
 
                     DB::commit();
-                    
-                    echo "<div style='color:blue'>Added : " . $item->id . " " . $item->created_on . "</div>";
+
+                    echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
 
                 } catch (\Exception $e) {
 
-                    echo "<div style='color:red'> Exception Error Found (Member Store) : " . $e->getMessage() ." on Line : " . $e->getLine() ."</div>";
+                    echo "<div style='color:red'>$ctr - Exception Error Found (Member Store) : " . $e->getMessage() ." on Line : " . $e->getLine() ."</div>";
                 }
 
             }
