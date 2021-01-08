@@ -60,12 +60,18 @@ class TableImporterController extends Controller
                     'old_credits_expiration' => $item->old_credits_expiration,
                 ];
 
-                
+
                 echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
 
 
                 $member = AgentTransaction::where('member_id', $memberID)->first();
-                $transaction = $member->update($data);                
+                $transaction = $member->update($data);  
+
+                $member = AgentTransaction::where('member_id', $memberID)->first();
+
+                echo "<pre>";
+                print_r ($member);
+                echo "</pre>";
             }
 
             
