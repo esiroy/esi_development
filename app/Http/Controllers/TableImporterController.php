@@ -23,17 +23,18 @@ class TableImporterController extends Controller
 
         if ($per_item == null) {
             $per_item = 1000;
-        } 
-        
+        }
 
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        echo "<div>ADDING agent_transcations FROM : ". $start ." - ". $end ."</div>";
+        echo "<div>ADDING agent_transcations FROM : " . $start . " - " . $end . "</div>";
 
         echo "<BR>";
 
         $items = DB::connection('mysql_live')->select("select * from agent_transaction limit $start, $end");
+
+        DB::beginTransaction();
 
         foreach ($items as $item) {
 
@@ -54,16 +55,27 @@ class TableImporterController extends Controller
                 'credits_expiration' => $item->credits_expiration,
                 'old_credits_expiration' => $item->old_credits_expiration,
             ];
-         
+
             if (AgentTransaction::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>EXISTING : " . $item->id . " " . $item->created_on . "</div>";
             } else {
-                $transaction = AgentTransaction::updateOrCreate($data);
-                echo "<div style='color:blue'>Added : " . $item->id . " " . $item->created_on . "</div>";
+
+                try
+                {
+                    $transaction = AgentTransaction::updateOrCreate($data);
+
+                    DB::commit();
+                    
+                    echo "<div style='color:blue'>Added : " . $item->id . " " . $item->created_on . "</div>";
+
+                } catch (\Exception $e) {
+
+                    echo "<div style='color:red'> Exception Error Found (Member Store) : " . $e->getMessage() ." on Line : " . $e->getLine() ."</div>";
+                }
+
             }
         }
-        
-        
+
         echo "success!!! data imported";
 
     }
