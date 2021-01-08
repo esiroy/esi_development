@@ -71,7 +71,7 @@ class TableImporterController extends Controller
                 $transaction = $member->update($data);  
                 echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             } else {                
-                $transaction = AgentTransaction::create($data);  
+                $transaction = AgentTransaction::insert($data);  
                 echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";                
             }
 
