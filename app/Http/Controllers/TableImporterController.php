@@ -17,12 +17,17 @@ class TableImporterController extends Controller
         echo $end;
     }
 
-    public function importAgentTranscations($id = null)
+    public function importAgentTranscations($id = null, $per_item = null)
     {
         set_time_limit(0);
 
-        $start = ($id - 1) * 100000;
-        $end = $id * 100000;
+        if ($per_item == null) {
+            $per_item = 1000;
+        } 
+        
+
+        $start = ($id - 1) * ($per_item);
+        $end = $id * ($per_item);
 
         echo "<div>ADDING agent_transcations FROM : ". $start ." - ". $end ."</div>";
 
@@ -60,6 +65,9 @@ class TableImporterController extends Controller
             }
 
         }
+        
+        
+        echo "{{ success!!! data imported }}"
 
     }
 }
