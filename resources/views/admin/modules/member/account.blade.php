@@ -33,7 +33,7 @@
                     Member Details
                 </div>
                 <div class="card-body esi-card-body">
-                    <form name="add_credit_transaction_form" method="POST" action="{{ route('admin.member.update',  [$member->id]) }}">
+                    <form name="add_credit_transaction_form" method="POST" action="{{ route('admin.member.update',  [$member->user_id]) }}">
                         @csrf
                         @method('PUT')
 
@@ -41,7 +41,7 @@
                             <div class="col-md-6">
                                 <div class="row py-1">
                                     <div class="col-md-3">Member : </div>
-                                    <div class="col-md-8"><strong>{{ $member->user->last_name }}, {{ $member->user->first_name }}</strong></div>
+                                    <div class="col-md-8"><strong>{{ $member->user->lastname }}, {{ $member->user->firstname }}</strong></div>
                                 </div>
 
                                 <div class="row py-1">
@@ -107,7 +107,7 @@
                             <div class="col-md-6">
                                 <div class="row py-1">
                                     <div class="col-md-4">Credits : </div>
-                                    <div class="col-md-8"><strong>{{ $member->credits }}</strong></div>
+                                    <div class="col-md-8"><strong>{{ $credits }}</strong></div>
                                 </div>
                                 <div class="row py-1">
                                     <div class="col-md-4">Credits Expiration : </div>
@@ -115,17 +115,13 @@
                                 </div>
                                 <div class="row py-1">
                                     <div class="col-md-4">Latest Purchase Date : </div>
-                                    <div class="col-md-8"><strong>{{ $member->latest_purchase_date }}</strong></div>
+                                    <div class="col-md-8"><strong>{{ $latestDateOfPurchase }}</strong></div>
                                 </div>
                             </div>
                             <!--[end right column]-->
 
-
-
-
                         </div>
                         <!--[end] first row-->
-
 
                     </form>
                 </div>
@@ -152,17 +148,28 @@
 
                             @foreach($transactions as $transaction)
                             <tr>
-                                <td>{{ $transaction->created_at }}</td>
+                                <td>
+                                    {{ date('F d, Y h:i:s a', strtotime($transaction->created_at)) }}
+                                </td>
                                 <td>{{ $transaction->transaction_type }}</td>
-                                <td>{{ $transaction->agent_id  }}</td>
+                                <td>
+                                    <!-- @note: get member name -->
+                                    @php 
+                                        $member = \App\Models\Member::where('user_id', $transaction->member_id)->first();
+                                    @endphp
+                                    {{ $member->user->firstname ?? "-"  }}  {{ $member->user->lastname ?? ""  }}
+                                </td>
                                 <td >
                                     @if ($transaction->transaction_type == "AGENT_SUBTRACT")
                                         {{ "-" }}
                                     @endif
-
                                     {{ $transaction->amount }}
                                 </td>
-                                <td>{{ $transaction->credits_expiration }}</td>
+                                <td>
+                                    @if (isset($transaction->credits_expiration))
+                                    {{ date('F d, Y h:i:s a', strtotime($transaction->credits_expiration)) }}
+                                    @endif
+                                </td>
                                 <td>{{ $transaction->remarks }}</td>
                                 
                             </tr>
@@ -199,7 +206,7 @@
                 </div>
             </div>
 
-            
+
         </div>
     </div>
 </div>

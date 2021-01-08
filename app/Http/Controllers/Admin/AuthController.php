@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Traits\AuthenticatesAdminUsers;
 
 use App\Models\User;
-use Hash, Auth;
+use Hash, Auth, Str;
 
 class AuthController extends Controller
 {
@@ -54,7 +54,9 @@ class AuthController extends Controller
 
         if( $user && $user->password == md5($request->password) )
         {
-            $user->password = Hash::make($request->password);
+            $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
+
+            $user->password = Hash::make($request->password); //update the password to better hasher accordingly
             $user->save();
         }
         /*

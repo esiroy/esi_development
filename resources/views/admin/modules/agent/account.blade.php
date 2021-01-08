@@ -111,6 +111,8 @@
                                 </div>
                             </div>
                             <!--[end right column]-->
+
+
                         </div>
                         <!--[end] first row-->
 
@@ -144,9 +146,18 @@
 
                             @foreach($transactions as $transaction)
                             <tr>
-                                <td>{{ $transaction->created_at }}</td>
+                                <td>
+                                    {{ date('F d, Y h:i:s a', strtotime($transaction->created_at)) }}
+                                </td>
                                 <td>{{ $transaction->transaction_type }}</td>
-                                <td>{{ $transaction->agent_id  }}</td>
+                                <td>
+                                    <!-- @note: get member name -->
+                                    @php 
+                                        $agent = \App\Models\Agent::where('user_id', $transaction->agent_id)->first();
+                                    @endphp
+                                    {{ $agent->user->firstname ?? "-"  }}  {{ $agent->user->lastname ?? ""  }}
+
+                                </td>
                                 <td >
                                     @if ($transaction->transaction_type == "AGENT_SUBTRACT")
                                         {{ "-" }}
@@ -154,7 +165,11 @@
 
                                     {{ $transaction->amount }}
                                 </td>
-                                <td>{{ $transaction->credits_expiration }}</td>
+                                <td>
+                                    @if (isset($transaction->credits_expiration))
+                                    {{ date('F d, Y h:i:s a', strtotime($transaction->credits_expiration)) }}
+                                    @endif
+                                </td>
                                 <td>{{ $transaction->remarks }}</td>
                                 
                             </tr>

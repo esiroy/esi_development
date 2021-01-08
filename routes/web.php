@@ -57,6 +57,10 @@ Route::resource('download', 'DownloadController');
 Route::resource('customersupport', 'CustomerSupportController');
 
 
+//export file (public)
+Route::get('exportCSV', 'ExportController@exportCSV')->name('exportMemberCSV');
+
+
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
@@ -89,6 +93,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/reportcarddate', 'Modules\ReportCardDateController');
         Route::get('/reportcarddatelist/{id}', 'Modules\ReportCardController@reportcarddatelist');
 
+        
 
         //Member
         Route::delete('/member/destroy', 'Modules\MemberController@massDestroy')->name('member.massDestroy');

@@ -7,7 +7,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 use App\Models\User;
-use Hash, Auth;
+use Hash, Auth, Str;
 
 class LoginController extends Controller
 {
@@ -65,6 +65,7 @@ class LoginController extends Controller
 
         if( $user && $user->password == md5($request->password) )
         {
+            $user->api_token = Hash('sha256', Str::random(80));
             $user->password = Hash::make($request->password);
             $user->save();
         }

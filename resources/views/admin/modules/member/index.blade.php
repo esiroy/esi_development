@@ -55,7 +55,11 @@
                     <div class="row">
                         <div class="col-12 pt-3">
                             @can('report_access', Auth::user())
-                            <button type="button" class="btn btn-primary btn-sm">Generate Member List</button>
+
+                            <!--<button type="button" class="btn btn-primary btn-sm" >Generate Member List</button>-->
+
+                            <span data-href="/exportCSV" id="export" class="btn btn-primary btn-sm" onclick="exportTasks(event.target); return false">Generate Member List</span>
+
                             @endcan
                             <button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button>
                             <button type="button" class="btn btn-primary btn-sm">Sort Expired</button>
@@ -115,8 +119,13 @@ table.dataTable thead>tr>th.sorting_desc {
 @section('scripts')
 @parent
 <script type="text/javascript">
+
+    function exportTasks(_this) {
+        let _url = $(_this).data('href');
+        window.location.href = _url;
+    }
+
     window.addEventListener('load', function() {
-        
 
         let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
         let _token = "{{ csrf_token() }}"      
@@ -179,6 +188,10 @@ table.dataTable thead>tr>th.sorting_desc {
         
         })
     });
+
+
+
+
 
 </script>
 @endsection

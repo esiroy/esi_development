@@ -82,6 +82,26 @@ class MemberController extends Controller
 
     }
 
+   /*
+    public function details($memberID)
+    {
+        $member = Member::join('users', 'users.id', '=', 'members.user_id')
+        //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
+                                            attributes.name as attribute,
+                                            members.id as id,
+                                            agents.id as agent_id,
+                                            tutors.name_en as main_tutor_name,
+                                            members.credits as credits
+                                        "))->where('members.id', $memberID)->first();
+
+        return view('admin.modules.member.details', compact('member'));
+    } 
+    */
+
+
     /**
      * (v2)
      * Display a listing of the resource.
@@ -158,36 +178,17 @@ class MemberController extends Controller
         $user = $member->user;
         $agent = $member->agent;
 
-
         $agentTransaction = new AgentTransaction();
+        $credits = $agentTransaction->getCredits($member->user_id);
+        $latestDateOfPurchase = $agentTransaction->getMemberLatestDateOfPurchase($member->user_id);
 
-        $transactions  = $agentTransaction->getMemberTransactions($member->user_id);
-        $purchaseHistory = $agentTransaction->getPaymentHistory($member->user_id);   
+        $transactions = $agentTransaction->getMemberTransactions($member->user_id);
+        $purchaseHistory = $agentTransaction->getAllPaymentHistory($member->user_id);
 
-
-
-        return view('admin.modules.member.account', compact('member', 'transactions', 'purchaseHistory'));
+        return view('admin.modules.member.account', compact('member', 'credits', 'transactions', 'purchaseHistory', 'latestDateOfPurchase'));
     }
 
 
-
-
-    public function details($memberID)
-    {
-        $member = Member::join('users', 'users.id', '=', 'members.user_id')
-        //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-                                            attributes.name as attribute,
-                                            members.id as id,
-                                            agents.id as agent_id,
-                                            tutors.name_en as main_tutor_name,
-                                            members.credits as credits
-                                        "))->where('members.id', $memberID)->first();
-
-        return view('admin.modules.member.details', compact('member'));
-    }
 
     /**
      * Display a listing of the payment history.
@@ -362,7 +363,7 @@ class MemberController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id, Request $request)
     {
         $validator = Validator::make($request->all(), [
             'transaction_type' => ['required'],
@@ -379,7 +380,7 @@ class MemberController extends Controller
 
         //AGENT_SUBTRACT
         //DISTRIBUTE, CREDITS_EXPIRATION, MANUAL_ADD, FREE_CREDITS
-        $member = Member::find($id);
+        $member = Member::where("user_id", $id)->first();
 
         if (!isset($member)) {
             abort(404);
@@ -387,18 +388,17 @@ class MemberController extends Controller
 
         $memberUserId = $member->user_id;
 
+        /*
         if ($request->transaction_type == 'AGENT_SUBTRACT') {
-            $newCredit = -abs($request->credits);
-            $totalCredits = $member->credits - $request->credits;
+        $newCredit = -abs($request->credits);
+        $totalCredits = $member->credits - $request->credits;
         } else {
-            $newCredit = $request->credits;
-            $totalCredits = $member->credits + $newCredit;
-        }
+        $newCredit = $request->credits;
+        $totalCredits = $member->credits + $newCredit;
+        }*/
 
         $member->update([
-            'credits' => $totalCredits,
             'credits_expiration' => date('Y-m-d G:i:s', strtotime('+6 months')),
-            'latest_purchase_date' => date('Y-m-d G:i:s'),
         ]);
 
         if (isset($request->expiry_date)) {
@@ -407,30 +407,19 @@ class MemberController extends Controller
             $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));
         }
 
-        //Update Member
-        $MemberCredit = [
+        //Update Agent Transaction Table
+        $agentCredit = [
+            'valid'         => 1,
             'transaction_type' => $request->transaction_type,
-            'user_id' => $memberUserId,
-            'transaction_user_id' => Auth::user()->id,
-            'amount' => $request->amount,
-            'credits' => $newCredit,
+            'agent_id' => null,
+            'member_id' => $member->user_id, 
+            'created_by_id' => Auth::user()->id,
+            'amount' => $request->credits,            
+            'price' => $request->amount,
             'remarks' => $request->remarks,
-            'original_credit_expiration_date' => $expiry_date,
+            'credits_expiration' => $expiry_date,
         ];
-        MemberCredits::create($MemberCredit);
-
-        //@Get time duration of member
-        $duration = Shift::find($member->lesson_time_id)->value;
-
-        //Insert into MemberPointPurchaseHistory
-        $pointHistory = [
-            'user_id' => $memberUserId,
-            'transaction_user_id' => Auth::user()->id,
-            'amount' => $request->amount,
-            'credits' => $newCredit,
-            'lesson_time_duration' => $duration,
-        ];
-        MemberPointPurchaseHistory::create($pointHistory);
+        AgentTransaction::create($agentCredit);
 
         return redirect()->route('admin.member.account', $id)->with('message', 'Member transaction has been added successfully!');
 
@@ -463,7 +452,6 @@ class MemberController extends Controller
 
         Tutor::whereIn('user_id', request('ids'))->delete();
         User::whereIn('user_id', request('ids'))->forceDelete();
-
 
         return response(null, Response::HTTP_NO_CONTENT);
     }

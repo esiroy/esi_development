@@ -269,7 +269,7 @@ class AgentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update($id, Request $request)
     {
         $validator = Validator::make($request->all(), [
             'transaction_type' => ['required'],
@@ -312,14 +312,14 @@ class AgentController extends Controller
             'credits_expiration' => date('Y-m-d G:i:s', strtotime('+6 months'))
         ]);
 
-        //add the expriation to transaction or empty add 6 months
+        //add the expiration to transaction or empty add 6 months
         if (isset($request->expiry_date)) {
             $expiry_date = date('Y-m-d G:i:s', strtotime($request->expiry_date));
         } else {
             $expiry_date =  date('Y-m-d G:i:s', strtotime('+6 months'));        
         }
 
-        //Update Agent
+        //Update Agent Transaction Table
         $agentCredit = [
             'valid'         => 1,
             'transaction_type' => $request->transaction_type,
