@@ -41,7 +41,7 @@ class TableImporterController extends Controller
         DB::beginTransaction();
 
 
-        $ctr = 1;
+        $ctr = 0;
 
         foreach ($items as $item) {
             $ctr = $ctr + 1;
