@@ -37,8 +37,12 @@ class TableImporterController extends Controller
 
         $items = DB::connection('mysql_live')->select("select * from agent_transaction where member_id = $memberID");
 
+        $ctr = 0;
+
         foreach ($items as $item) {
 
+            $ctr = $ctr + 1;
+            
             if (AgentTransaction::where('id', $item->id)->exists()) 
             {
 
