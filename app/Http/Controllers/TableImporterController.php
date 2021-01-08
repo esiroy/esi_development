@@ -67,7 +67,7 @@ class TableImporterController extends Controller
         }
         
         
-        echo "{{ success!!! data imported }}"
+        echo "success!!! data imported";
 
     }
 }
