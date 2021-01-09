@@ -53,7 +53,7 @@ class TutorController extends Controller
         //@[START] USER SEARCH - if user search for a member
         if (isset($tutor_id) || isset($name) || isset($email)) {
             if (isset($tutor_id)) {
-                $tutors = $tutors->where('tutors.id', $tutor_id);
+                $tutors = $tutors->where('tutors.user_id', $tutor_id);
             }
             if (isset($name)) {
                 $tutors = $tutors->orWhere('tutors.name_en', 'like', '%' . $name . '%')->orWhere('tutors.name_en', 'like', '%' . $name . '%');
