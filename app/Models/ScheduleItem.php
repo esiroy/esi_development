@@ -141,9 +141,9 @@ class ScheduleItem extends Model
                     'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
                     */
 
-                    'startTime'         =>  date("H:i", strtotime($lessonItem->lesson_time ."-1 hour")),
-                    'endTime'           =>  date("H:i",  strtotime($lessonItem->lesson_time)),
-                    'scheduled_at'      =>  date('Y/m/d', strtotime($lessonItem->lesson_time ."-1 hour")),
+                    'startTime'         =>  date("H:i", strtotime($item->lesson_time ."-1 hour")),
+                    'endTime'           =>  date("H:i",  strtotime($item->lesson_time)),
+                    'scheduled_at'      =>  date('Y/m/d', strtotime($item->lesson_time ."-1 hour")),
 
                     'email_type'        => $item->email_type,              
                     'duration'          => $item->duration,                    
