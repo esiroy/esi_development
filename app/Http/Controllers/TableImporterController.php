@@ -17,18 +17,19 @@ class TableImporterController extends Controller
         echo $end;
     }
 
-
-    public function compare() {
+    public function compare()
+    {
         $items = DB::connection('mysql_live')->table('agent_transaction')->count();
 
         echo "Live Item count : $items";
 
         echo "<br>";
 
-        echo "Our Current Item Count : ". AgentTransaction::count();
+        echo "Our Current Item Count : " . AgentTransaction::count();
     }
 
-    public function getNewTransactions() {
+    public function getNewTransactions()
+    {
 
         $itemLiveArray = null;
         $itemLocalArray = null;
@@ -37,22 +38,23 @@ class TableImporterController extends Controller
         foreach ($items as $item) {
             $itemLiveArray[$item->id] = $item->id;
         }
-        
-        
-        $localItems =  AgentTransaction::select('id')->orderBy('id', 'desc')->limit(20000)->get();
+
+        $localItems = AgentTransaction::select('id')->orderBy('id', 'desc')->limit(20000)->get();
         foreach ($localItems as $item) {
             $itemLocalArray[$item->id] = $item->id;
         }
-        
+
         $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
 
-        foreach ($itemDifferences as $item) 
-        {
+        foreach ($itemDifferences as $item) {
             $itemID = $item;
 
             $liveItems = DB::connection('mysql_live')->select("select * from agent_transaction where id = $itemID");
 
+            $ctr = 0;
+
             foreach ($liveItems as $liveItem) {
+                $ctr = $ctr + 1;
                 $data = [
                     'id' => $liveItem->id,
                     'created_at' => $liveItem->created_on,
@@ -70,33 +72,30 @@ class TableImporterController extends Controller
                     'credits_expiration' => $liveItem->credits_expiration,
                     'old_credits_expiration' => $liveItem->old_credits_expiration,
                 ];
-    
-                $transaction = AgentTransaction::insert($data);  
-                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";    
+
+                $transaction = AgentTransaction::insert($data);
+                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
 
             }
-           
+
         }
 
     }
 
-
-    public function importAgentTranscationsIndex() 
-    {        
+    public function importAgentTranscationsIndex()
+    {
         $items = DB::connection('mysql_live')->table('agent_transaction')->count();
         $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
 
-        for($i=1; $i <= $total_pages; $i++)
-         {
+        for ($i = 1; $i <= $total_pages; $i++) {
             $url = url("importAgentTranscations/$i");
 
             echo "<a href='$url'><small>Transaction Import Page $i</small></a><br>";
         }
     }
 
-    
-    public function update($memberID) 
+    public function update($memberID)
     {
 
         $items = DB::connection('mysql_live')->select("select * from agent_transaction where member_id = $memberID");
@@ -127,26 +126,20 @@ class TableImporterController extends Controller
                 'old_credits_expiration' => $item->old_credits_expiration,
             ];
 
-            
-
-            if (AgentTransaction::where('id', $item->id)->exists()) 
-            {                 
+            if (AgentTransaction::where('id', $item->id)->exists()) {
                 $member = AgentTransaction::where('member_id', $memberID)->first();
-                $transaction = $member->update($data);  
+                $transaction = $member->update($data);
                 echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
-            } else {                
-                $transaction = AgentTransaction::insert($data);  
-                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";                
+            } else {
+                $transaction = AgentTransaction::insert($data);
+                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             }
 
-            
         }
 
         echo "done! updating";
 
     }
-
-
 
     public function importAgentTranscations($id = null, $per_item = null)
     {
@@ -159,18 +152,15 @@ class TableImporterController extends Controller
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-
-
         echo "<div>ADDING agent_transcations FROM : " . $start . " - " . $end . "</div>";
         echo "<BR>";
 
         //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
-        //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";        
+        //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 
         $items = DB::connection('mysql_live')->select("select * from agent_transaction LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
-
 
         $ctr = 0;
 
@@ -201,7 +191,6 @@ class TableImporterController extends Controller
             if (AgentTransaction::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
-
                 try
                 {
                     $transaction = AgentTransaction::update($data);
@@ -212,7 +201,7 @@ class TableImporterController extends Controller
 
                 } catch (\Exception $e) {
 
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() ." on Line : " . $e->getLine() ." On update </div>";
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On update </div>";
                 }
 
             } else {
@@ -227,7 +216,7 @@ class TableImporterController extends Controller
 
                 } catch (\Exception $e) {
 
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() ." on Line : " . $e->getLine() ." On Insert</div>";
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
                 }
 
             }
