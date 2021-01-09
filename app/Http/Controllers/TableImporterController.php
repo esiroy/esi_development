@@ -46,6 +46,11 @@ class TableImporterController extends Controller
 
         $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
 
+        $differenceCount = count($itemDifferences);
+
+        echo $differenceCount . " are missing in your agent_transaction table<BR>";
+
+
         foreach ($itemDifferences as $item) {
             $itemID = $item;
 
