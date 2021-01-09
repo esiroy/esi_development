@@ -198,7 +198,8 @@ class TableImporterController extends Controller
 
                 try
                 {
-                    $transaction = AgentTransaction::update($data);
+                    $agentTransactionObject = AgentTransaction::where('id', $item->id);
+                    $transaction = $agentTransactionObject->update($data);
 
                     DB::commit();
 
