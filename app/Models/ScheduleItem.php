@@ -109,7 +109,7 @@ class ScheduleItem extends Model
     
         foreach ($tutors as $tutor) 
         {                 
-            $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)->where('tutor_id', $tutor->id)->get();
+            $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)->where('tutor_id', $tutor->user_id)->get();
             
             foreach ($scheduleItems as $item) 
             {

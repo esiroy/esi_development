@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('test/{id}', 'TableImporterController@test')->name('test');
-
+Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 
 Route::get('importAgentTranscations/compare', 'TableImporterController@compare');
 Route::get('importAgentTranscations/getnew', 'TableImporterController@getNewTransactions');
