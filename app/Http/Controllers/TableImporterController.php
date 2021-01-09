@@ -33,21 +33,13 @@ class TableImporterController extends Controller
         $localItemArray = null;
         $liveItemsArray = null;
 
-        $items = DB::connection('mysql_live')->table('agent_transaction')->select('id')->orderBy('id', 'desc')->limit(5000)->get();
-        foreach($items as $item)
-        {
-            $liveItemsArray[] = $item->toArray();
-        }
-
-        $localItems =  AgentTransaction::select('id')->orderBy('id', 'desc')->limit(5000)->get();
-        foreach($localItems as $item)
-        {
-            $localItemArray[] = $item->toArray();
-        }
-
+        $items = DB::connection('mysql_live')->table('agent_transaction')->select('id')->orderBy('id', 'desc')->limit(5000)->get()->toArray();
+      
+        $localItems =  AgentTransaction::select('id')->orderBy('id', 'desc')->limit(5000)->get()->toArray();
+     
 
         echo "<pre>";
-        print_r( array_diff($liveItemsArray, $localItemArray) );
+        print_r( array_diff($items, $localItems) );
 
     }
 
