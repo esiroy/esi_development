@@ -52,7 +52,7 @@
                     @endif                    
                 </td>
                 <td class="small text-center">
-                    {{ number_format($agentTransaction->getAgentPurcaseAmount($agent->user_id), 2) }} 
+                    {{ number_format($agentTransaction->getAgentPurchasedAmount($agent->user_id), 2) }} 
                 </td>
 
                 <td class="small text-center">

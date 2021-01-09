@@ -140,7 +140,11 @@
                                 <th>Transaction</th>
                                 <th>Name</th>
                                 <th>Points</th>
+
+                                <!--
                                 <th>Original Credit Expiration Date</th>
+                                -->
+
                                 <th>Remarks</th>
                             </tr>
 
@@ -153,23 +157,25 @@
                                 <td>
                                     <!-- @note: get member name -->
                                     @php 
-                                        $agent = \App\Models\Agent::where('user_id', $transaction->agent_id)->first();
+                                        $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
                                     @endphp
-                                    {{ $agent->user->firstname ?? "-"  }}  {{ $agent->user->lastname ?? ""  }}
+                                    {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
 
                                 </td>
                                 <td >
-                                    @if ($transaction->transaction_type == "AGENT_SUBTRACT")
-                                        {{ "-" }}
-                                    @endif
-
-                                    {{ $transaction->amount }}
+                                    
+                                    {{ number_format($transaction->amount, 0, '.', ',') }}
+                                
                                 </td>
+                                
+                                <!--
                                 <td>
                                     @if (isset($transaction->credits_expiration))
                                     {{ date('F d, Y h:i:s a', strtotime($transaction->credits_expiration)) }}
                                     @endif
-                                </td>
+                                </td>-->
+
+
                                 <td>{{ $transaction->remarks }}</td>
                                 
                             </tr>
@@ -196,13 +202,44 @@
 
                             @foreach($purchaseHistory as $history)
                             <tr>
-                                <td>{{ $history->created_at }}</td>                         
-                                <td>{{ $history->amount }}</td>
-                                <td>¥ {{ $history->price ?? "0" }}</td>                                
+                                <td>
+                                    {{ date('F d, Y h:i:s a', strtotime($history->created_at)) }}
+                                </td>                         
+                                <td>
+                                    @if ($history->transaction_type == "AGENT_SUBTRACT" || $history->transaction_type == "SUBTRACT")
+                                        {{ "-" }}
+                                    @else 
+                                        {{ "+"}}
+                                    @endif     
+                                    {{ $history->amount }}
+                                </td>
+                                <td>
+                                    ¥ {{ number_format($history->price, 1, '.', ',') }}
+                                </td>
                             </tr>
                             @endforeach
+
+                            <tr>
+                                <td></td>
+                                <td>Total:</td>
+                                <td>
+
+                                    
+                                
+                                   @php 
+                                        $agent = new \App\Models\AgentTransaction();
+                                        $total = $agent->getAgentPurchasedAmount($history->agent_id);
+                                    @endphp
+
+                                    ¥ {{ number_format($total, 1, '.', ',') }}
+
+                                </td>
+                            </tr>
+                    
                         </tbody>
                     </table>
+
+                    
                 </div>
             </div>
 

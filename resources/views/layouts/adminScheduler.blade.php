@@ -26,10 +26,9 @@
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
 
-                    </ul>
+                    <!-- Left Side Of Navbar -->
+                    <ul class="navbar-nav mr-auto"></ul>
 
 
                     <div class="text-right w-100">
@@ -47,12 +46,12 @@
                             <span class="caret"></span>
                         </a>
                         
-                        <!--
+                       
                         <span class="divide">|</span>
                         <a class="blue pl-2 pr-2" href="{{ route('admin.settings') }}">
                             {{ __('Settings') }}
                         </a>
-                        -->
+                      
 
                         <span class="divide">|</span>
                         

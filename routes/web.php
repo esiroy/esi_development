@@ -23,7 +23,9 @@ Route::get('importAgentTranscations/compare', 'TableImporterController@compare')
 Route::get('importAgentTranscations/getnew', 'TableImporterController@getNewTransactions');
 
 //import table
-Route::get('importAgentTranscations/update/{id}', 'TableImporterController@update');
+Route::get('importAgentTranscations/updateMember/{id}', 'TableImporterController@updateMember');
+
+Route::get('importAgentTranscations/updateAgent/{id}', 'TableImporterController@updateAgent');
 
 //page chunk links
 Route::get('importAgentTranscations/index', 'TableImporterController@importAgentTranscationsIndex');

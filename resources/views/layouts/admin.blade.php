@@ -40,8 +40,10 @@
                     <ul class="navbar-nav mr-auto"></ul>
 
                     <div class="text-right w-100">
+                    
                         <a class="blue pr-2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             {{ ucfirst(Auth::user()->firstname) }}
+
                             @if(Auth::user()->user_type == 'ADMINISTRATOR')
                               {{ '(Administrator)' }}                            
                             @elseif (Auth::user()->user_type == 'TUTOR')                                
@@ -51,6 +53,7 @@
                             @elseif (Auth::user()->user_type == 'AGENT')                               
                                 {{ '(Agent)' }}                              
                             @endif
+
                             <span class="caret"></span>
                         </a>
                       

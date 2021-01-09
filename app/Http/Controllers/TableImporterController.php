@@ -100,7 +100,7 @@ class TableImporterController extends Controller
         }
     }
 
-    public function update($memberID)
+    public function updateMember($memberID)
     {
 
         $items = DB::connection('mysql_live')->select("select * from agent_transaction where member_id = $memberID");
@@ -145,6 +145,58 @@ class TableImporterController extends Controller
         echo "done! updating";
 
     }
+
+
+    public function updateAgent($agentID)
+    {
+
+        $items = DB::connection('mysql_live')->select("select * from agent_transaction where agent_id = $agentID");
+
+        $ctr = 0;
+
+        AgentTransaction::where('agent_id', $agentID)->delete();
+
+        foreach ($items as $item) {
+
+            $ctr = $ctr + 1;
+
+            $data = [
+                'id' => $item->id,
+                'created_at' => $item->created_on,
+                'updated_at' => $item->updated_on,
+                'valid' => $item->valid,
+                'amount' => $item->amount,
+                'remarks' => $item->remarks,
+                'transaction_type' => $item->transaction_type,
+                
+                'created_by_id' => $item->created_by_id,
+
+                'member_id' => null, //this will not be owned by any member
+                'agent_id' => $item->agent_id,
+
+                'schedule_item_id' => $item->schedule_item_id,
+                'price' => $item->price,
+                'lesson_shift_id' => $item->lesson_shift_id,
+                'credits_expiration' => $item->credits_expiration,
+                'old_credits_expiration' => $item->old_credits_expiration,
+            ];
+
+            if (AgentTransaction::where('id', $item->id)->exists()) {
+                $agent = AgentTransaction::where('agent_id', $agentID)->first();
+                $transaction = $agent->update($data);
+
+                echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
+            } else {
+                
+                $transaction = AgentTransaction::insert($data);
+                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
+            }
+
+        }
+
+        echo "done! updating";
+
+    }    
 
     public function importAgentTranscations($id = null, $per_item = null)
     {
