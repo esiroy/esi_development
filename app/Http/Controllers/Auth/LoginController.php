@@ -31,7 +31,6 @@ class LoginController extends Controller
      */
     protected $redirectTo = RouteServiceProvider::HOME;
 
-
     /**
      * Create a new controller instance.
      *
@@ -41,6 +40,7 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
 
     /**
      * Overwrite default login method to in order to allow user to use old MD5 Hash passwords
@@ -60,29 +60,27 @@ class LoginController extends Controller
         }
 
         // check against old md5 password, if correct, create bcrypted updated pswd
-        
         $user = User::where('username', $request->username)->first();
+        
 
-        if( $user && $user->password == md5($request->password) )
+        if( $user && $user->password == md5($request->password))
         {
-            $user->password = Hash::make($request->password);
+            $user->password = Hash::make($request->password); //update the password to better hasher accordingly
             $user->save();
         }
 
-
-        /* 
+        /*
         if ($this->attemptLogin($request)) {
             return $this->sendLoginResponse($request);
-        }
-        */
+        }*/
 
         /** @description - only valid user can login */
         $credentials = $request->only('username', 'password');
         if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'valid' => 1])) {
             // Authentication passed...
             $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
-            $user->save();            
-            return redirect()->intended('home');
+            $user->save();
+            return redirect()->intended('admin/dashboard');
         }
         
 
@@ -92,5 +90,7 @@ class LoginController extends Controller
         $this->incrementLoginAttempts($request);
 
         return $this->sendFailedLoginResponse($request);
-    }    
+    }
+    
+    
 }
