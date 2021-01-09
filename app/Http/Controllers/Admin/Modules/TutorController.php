@@ -39,7 +39,7 @@ class TutorController extends Controller
         abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         //request variables
-        $member_id = $request->member_id;
+        $tutor_id = $request->tutor_id;
         $name = $request->name;
         $email = $request->email;
 
@@ -51,9 +51,9 @@ class TutorController extends Controller
         $tutors = Tutor::join('users', 'users.id', '=', 'tutors.user_id');
 
         //@[START] USER SEARCH - if user search for a member
-        if (isset($member_id) || isset($name) || isset($email)) {
-            if (isset($member_id)) {
-                $tutors = $tutors->where('tutors.id', $member_id);
+        if (isset($tutor_id) || isset($name) || isset($email)) {
+            if (isset($tutor_id)) {
+                $tutors = $tutors->where('tutors.id', $tutor_id);
             }
             if (isset($name)) {
                 $tutors = $tutors->orWhere('tutors.name_en', 'like', '%' . $name . '%')->orWhere('tutors.name_en', 'like', '%' . $name . '%');

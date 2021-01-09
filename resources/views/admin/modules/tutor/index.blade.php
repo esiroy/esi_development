@@ -43,46 +43,13 @@
                 </div>
                 <div class="card-body">
 
-                    <!-- [tutor search]
-                    <div class="row">
-                        <form class="form-inline" style="width:100%">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="username" class="small col-4">Username:</label>
-                                    <input id="username" name="username" type="text" class="form-control form-control-sm col-8" value="">
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="Name" class="small col-4">Name:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-8" value="">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="searchEmail" class="small col-2">Email:</label>
-                                    <input id="searchEmail" name="searchEmail" type="text" class="form-control form-control-sm col-4" value="">
-
-                                    <select id="filterLessonShift" name="filterLessonShift" class="form-control form-control-sm col-3 ml-1">
-                                        <option value="">-- Select --</option>
-                                        @foreach ($shifts as $shift)
-                                        <option value="{{$shift->id}}">{{$shift->name}}</option>
-                                        @endforeach
-                                    </select>
-                                    <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
-
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                    -->
-
                         <div class="row">
                             <form class="form-inline" style="width:100%" method="GET">
                                 <div class="col-md-3">
                                     <div class="form-group">
-                                        <label for="member_id" class="small col-4">ID:</label>
-                                        <input name="member_id" type="text" class="form-control form-control-sm col-8" value="{{ request()->has('member_id') ? request()->get('member_id') : '' }}">
+                                        <label for="tutor_id" class="small col-4">ID:</label>
+                                        <input name="tutor_id" type="text" class="form-control form-control-sm col-8" 
+                                        value="{{ request()->has('tutor_id') ? request()->get('tutor_id') : '' }}">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
