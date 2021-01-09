@@ -56,7 +56,7 @@ class MemberDashboard extends Controller
     
             $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
 
-            return view('modules/member/index', compact('member', 'data', 'schedules', 'reserves', 'latestReportCard'));
+            return view('modules/member/index', compact('member', 'data', 'reserves', 'latestReportCard'));
 
         } else {
            
