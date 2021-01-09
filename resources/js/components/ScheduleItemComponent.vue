@@ -739,9 +739,15 @@ export default {
     }
 
     .client a {
-        font-size: 11px; 
+        font-size: 12px;
+        line-height: 10px;
         text-decoration: none;
-        color: #c60000;        
+        color: #c60000;
+        text-align:center;   
+    }
+
+    .client a:hover {
+        color: #6e0000;
     }
 
     .btn-container {
