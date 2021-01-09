@@ -1,13 +1,14 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+use App\Http\Controllers\Controller;
 use App\Models\User;
-use Hash, Auth, Str;
+use Auth;
+use Hash;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Str;
 
 class LoginController extends Controller
 {
@@ -20,7 +21,7 @@ class LoginController extends Controller
     | redirecting them to your home screen. The controller uses a trait
     | to conveniently provide its functionality to your applications.
     |
-    */
+     */
 
     use AuthenticatesUsers;
 
@@ -29,7 +30,9 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = RouteServiceProvider::HOME;
+    //protected $redirectTo = RouteServiceProvider::HOME;
+
+    protected $redirectTo = '/home';
 
     /**
      * Create a new controller instance.
@@ -40,7 +43,6 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
-
 
     /**
      * Overwrite default login method to in order to allow user to use old MD5 Hash passwords
@@ -61,17 +63,15 @@ class LoginController extends Controller
 
         // check against old md5 password, if correct, create bcrypted updated pswd
         $user = User::where('username', $request->username)->first();
-        
 
-        if( $user && $user->password == md5($request->password))
-        {
+        if ($user && $user->password == md5($request->password)) {
             $user->password = Hash::make($request->password); //update the password to better hasher accordingly
             $user->save();
         }
 
         /*
         if ($this->attemptLogin($request)) {
-            return $this->sendLoginResponse($request);
+        return $this->sendLoginResponse($request);
         }*/
 
         /** @description - only valid user can login */
@@ -80,9 +80,8 @@ class LoginController extends Controller
             // Authentication passed...
             $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
             $user->save();
-            return redirect()->intended('admin/dashboard');
+            return redirect()->intended('home');
         }
-        
 
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
@@ -91,6 +90,5 @@ class LoginController extends Controller
 
         return $this->sendFailedLoginResponse($request);
     }
-    
-    
+
 }
