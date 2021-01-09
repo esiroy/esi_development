@@ -75,8 +75,8 @@ class ScheduleItem extends Model
                 //'scheduled_at'      => $lessonItem->scheduled_at,
 
                 'startTime'         =>  date("H:i", strtotime($lessonItem->lesson_time ."-1 hour")),
-                'endTime'           =>  date("H:i",  strtotime($lessonItem->lesson_time ."+1 hour")),
-                'scheduled_at'      =>  date('Y/m/d', strtotime($lessonItem->lesson_time)),
+                'endTime'           =>  date("H:i",  strtotime($lessonItem->lesson_time)),
+                'scheduled_at'      =>  date('Y/m/d', strtotime($lessonItem->lesson_time ."-1 hour")),
 
                 'email_type'        => $lessonItem->email_type,                
                 'duration'          => $lessonItem->duration,
@@ -135,9 +135,16 @@ class ScheduleItem extends Model
                 $schedules[$tutor->id][] = [
                     'id'                => $item->id,
                     'status'            => $item->schedule_status,
+                    /*
                     'startTime'         =>  date("H:i", strtotime($item->lesson_time)),
                     'endTime'           =>  date("H:i",  strtotime($item->lesson_time ."+1 hour")),
                     'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
+                    */
+
+                    'startTime'         =>  date("H:i", strtotime($lessonItem->lesson_time ."-1 hour")),
+                    'endTime'           =>  date("H:i",  strtotime($lessonItem->lesson_time)),
+                    'scheduled_at'      =>  date('Y/m/d', strtotime($lessonItem->lesson_time ."-1 hour")),
+
                     'email_type'        => $item->email_type,              
                     'duration'          => $item->duration,                    
                     'member_id'         => $item->member_id,   
