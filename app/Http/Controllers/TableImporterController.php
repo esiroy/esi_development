@@ -64,7 +64,7 @@ class TableImporterController extends Controller
                     'agent_id' => $liveItem->agent_id,
                     'created_by_id' => $liveItem->created_by_id,
                     'member_id' => $liveItem->member_id,
-                    'schedule_Liveitem_id' => $liveItem->schedule_Liveitem_id,
+                    'schedule_Liveitem_id' => $liveItem->schedule_item_id,
                     'price' => $liveItem->price,
                     'lesson_shift_id' => $liveItem->lesson_shift_id,
                     'credits_expiration' => $liveItem->credits_expiration,
