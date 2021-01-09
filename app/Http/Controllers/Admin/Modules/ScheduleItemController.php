@@ -122,8 +122,9 @@ class ScheduleItemController extends Controller
                         ->join('users', 'users.id', '=', 'tutors.user_id')
                         //->orderBy('firstname', 'ASC')
                         ->orderBy('sort', 'ASC')
-                        ->select('tutors.*',
-                                'users.firstname', 'users.lastname')->get();
+                        ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
+                        ->where('valid', 1)
+                        ->get();
 
   
             
