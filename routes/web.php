@@ -20,7 +20,8 @@ Route::get('importAgentTranscations/update/{id}', 'TableImporterController@updat
 Route::get('importAgentTranscations/index', 'TableImporterController@importAgentTranscationsIndex');
 Route::get('importAgentTranscations/{id}', 'TableImporterController@importAgentTranscations');
 Route::get('importAgentTranscations/{id}/{per_item}', 'TableImporterController@importAgentTranscations');
-
+Route::get('importAgentTranscations/compare', 'TableImporterController@compare');
+Route::get('importAgentTranscations/getnew', 'TableImporterController@getNewTransactions');
 
 
 Route::get('/home', 'MemberDashboard@index')->name('home');
