@@ -44,9 +44,9 @@ class TableImporterController extends Controller
             $itemLocalArray[$item->id] = $item->id;
         }
         
-        $result = array_diff($itemLiveArray, $itemLocalArray);
+        $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
 
-        foreach ($results as $item) 
+        foreach ($itemDifferences as $item) 
         {
             $items = DB::connection('mysql_live')->select("select * from agent_transaction where member_id = $memberID");
 
