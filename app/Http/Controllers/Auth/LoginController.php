@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Providers\RouteServiceProvider;
-//use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
-use App\Traits\AuthenticatesAdminUsers;
-
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use App\Models\User;
 use Hash, Auth, Str;
 
@@ -26,7 +23,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesAdminUsers;
+    use AuthenticatesUsers;
 
     /**
      * Where to redirect users after login.
