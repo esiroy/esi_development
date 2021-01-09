@@ -49,10 +49,6 @@ class TableImporterController extends Controller
         foreach ($itemDifferences as $item) 
         {
             $itemID = $item;
-
-            echo $itemID . "<BR>";
-
-            /*
             
             $items = DB::connection('mysql_live')->select("select * from agent_transaction where id = $itemID");
 
@@ -77,7 +73,7 @@ class TableImporterController extends Controller
             $transaction = AgentTransaction::insert($data);  
             echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";    
 
-            */
+           
         }
 
     }
