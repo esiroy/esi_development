@@ -17,6 +17,29 @@ class TableImporterController extends Controller
         echo $end;
     }
 
+
+    public function compare() {
+        $items = DB::connection('mysql_live')->table('agent_transaction')->count();
+
+        echo "Live Item count : $items";
+
+        echo "<br>";
+
+        echo "Our Current Item Count : ". AgentTransaction::count();
+    }
+
+    public function getNewTransactions() {
+
+        $items = DB::connection('mysql_live')->table('agent_transaction')->select('id')->get();
+
+        $localItems =  AgentTransaction::select('id')->get();
+
+        echo "<pre>";
+        print_r( array_diff($items, $localItems) );
+        
+    }
+
+
     public function importAgentTranscationsIndex() 
     {        
         $items = DB::connection('mysql_live')->table('agent_transaction')->count();
@@ -136,11 +159,26 @@ class TableImporterController extends Controller
 
             if (AgentTransaction::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
+
+
+                try
+                {
+                    $transaction = AgentTransaction::update($data);
+
+                    DB::commit();
+
+                    echo "<div style='color:blue'>$ctr - update : " . $item->id . " " . $item->created_on . "</div>";
+
+                } catch (\Exception $e) {
+
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() ." on Line : " . $e->getLine() ." On update </div>";
+                }
+
             } else {
 
                 try
                 {
-                    $transaction = AgentTransaction::updateOrCreate($data);
+                    $transaction = AgentTransaction::insert($data);
 
                     DB::commit();
 
@@ -148,7 +186,7 @@ class TableImporterController extends Controller
 
                 } catch (\Exception $e) {
 
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() ." on Line : " . $e->getLine() ."</div>";
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() ." on Line : " . $e->getLine() ." On Insert</div>";
                 }
 
             }
