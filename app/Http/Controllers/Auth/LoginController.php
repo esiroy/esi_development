@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+//use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\Traits\AuthenticatesMembers;
 use App\Models\User;
 use Hash, Auth, Str;
 
@@ -23,7 +24,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesMembers;
 
     /**
      * Where to redirect users after login.
@@ -42,6 +43,13 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+
+    public function username()
+    {
+        return 'password';
+    }
+
+    
     /**
      * Overwrite default login method to in order to allow user to use old MD5 Hash passwords
      * and migrate it without asking him any change
