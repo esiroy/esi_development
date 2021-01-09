@@ -119,17 +119,25 @@ class ScheduleItem extends Model
                 //$user       = User::find($member->user_id);
 
                 //@todo: v2 - check member
-                //$member     = Member::where('user_id', $item->member_id)->first();
+                $member     = Member::where('user_id', $item->member_id)->first();
                 $user       = User::find($item->member_id);
                 
                 
                 //@done: user may be empty if not reserved
+                /*
                 if (isset($user['first_name'])) {
                     $memberNameEN = $user['firstname'] . " " .  $user['lastname'];
                     $memberNameJP = $user['japanese_firstname'] . " " . $user['japanese_lastname'];
+                    $nickname = $member->nickname;
                 } else {
                     $memberNameEN = "";
                     $memberNameJP = "";
+                }*/
+
+                $nickname = null;
+
+                if (isset($member->nickname)) {
+                    $nickname = $member->nickname;
                 }
                
                 $schedules[$tutor->id][] = [
@@ -149,10 +157,12 @@ class ScheduleItem extends Model
                     'duration'          => $item->duration,                    
                     'member_id'         => $item->member_id,   
                     'tutor_id'          => $item->tutor_id,
-                    'tutor_name_en'     => "tutor name ? : " . $tutor->name_en,
-                    'tutor_name_jp'     => $tutor->name_jp,                               
-                    'member_name_en'    => $memberNameEN,
-                    'member_name_jp'    => $memberNameJP,
+
+                    'tutor_name_en'     => $tutor->name_en,
+                    'tutor_name_jp'     => $tutor->name_jp,   
+
+                    'member_name_en'    => $nickname,
+                    'member_name_jp'    => $nickname,
                 ];                
             } 
                        
