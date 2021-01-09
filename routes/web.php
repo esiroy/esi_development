@@ -14,14 +14,20 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('test/{id}', 'TableImporterController@test')->name('test');
 
+
+Route::get('importAgentTranscations/compare', 'TableImporterController@compare');
+Route::get('importAgentTranscations/getnew', 'TableImporterController@getNewTransactions');
+
 //import table
 Route::get('importAgentTranscations/update/{id}', 'TableImporterController@update');
 
+//page chunk links
 Route::get('importAgentTranscations/index', 'TableImporterController@importAgentTranscationsIndex');
-Route::get('importAgentTranscations/{id}', 'TableImporterController@importAgentTranscations');
-Route::get('importAgentTranscations/{id}/{per_item}', 'TableImporterController@importAgentTranscations');
-Route::get('importAgentTranscations/compare', 'TableImporterController@compare');
-Route::get('importAgentTranscations/getnew', 'TableImporterController@getNewTransactions');
+
+//@param id - page id number for the chunk
+Route::get('importAgentTranscations/import/{id}', 'TableImporterController@importAgentTranscations');
+Route::get('importAgentTranscations/import/{id}/{per_item}', 'TableImporterController@importAgentTranscations');
+
 
 
 Route::get('/home', 'MemberDashboard@index')->name('home');
