@@ -735,7 +735,8 @@ export default {
     }
 
     .client {
-        height: 12px;
+        text-align: center;
+        height: 13px;
     }
 
     .client a {
@@ -743,7 +744,8 @@ export default {
         line-height: 10px;
         text-decoration: none;
         color: #c60000;
-        text-align:center;   
+        text-align:center;
+        vertical-align: text-bottom;
     }
 
     .client a:hover {
