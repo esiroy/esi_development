@@ -41,14 +41,16 @@ class TableImporterController extends Controller
         
         $localItems =  AgentTransaction::select('id')->orderBy('id', 'desc')->limit(20000)->get();
         foreach ($localItems as $item) {
-            $itemLocalArray[$item->id] = $item->id;
+            $itemLocalArray['id'] = $item->id;
         }
         
         $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
 
         foreach ($itemDifferences as $item) 
         {
-            $items = DB::connection('mysql_live')->select("select * from agent_transaction where member_id = $memberID");
+            $itemID = $item['id'];
+
+            $items = DB::connection('mysql_live')->select("select * from agent_transaction where id = $itemID");
 
             $data = [
                 'id' => $item->id,
