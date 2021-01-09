@@ -41,15 +41,19 @@ class TableImporterController extends Controller
         
         $localItems =  AgentTransaction::select('id')->orderBy('id', 'desc')->limit(20000)->get();
         foreach ($localItems as $item) {
-            $itemLocalArray['id'] = $item->id;
+            $itemLocalArray[$item->id] = $item->id;
         }
         
         $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
 
         foreach ($itemDifferences as $item) 
         {
-            $itemID = $item['id'];
+            $itemID = $item;
 
+            echo $itemID . "<BR>";
+
+            /*
+            
             $items = DB::connection('mysql_live')->select("select * from agent_transaction where id = $itemID");
 
             $data = [
@@ -72,6 +76,8 @@ class TableImporterController extends Controller
 
             $transaction = AgentTransaction::insert($data);  
             echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";    
+
+            */
         }
 
     }
