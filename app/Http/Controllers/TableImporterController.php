@@ -49,30 +49,32 @@ class TableImporterController extends Controller
         foreach ($itemDifferences as $item) 
         {
             $itemID = $item;
-            
-            $items = DB::connection('mysql_live')->select("select * from agent_transaction where id = $itemID");
 
-            $data = [
-                'id' => $item->id,
-                'created_at' => $item->created_on,
-                'updated_at' => $item->updated_on,
-                'valid' => $item->valid,
-                'amount' => $item->amount,
-                'remarks' => $item->remarks,
-                'transaction_type' => $item->transaction_type,
-                'agent_id' => $item->agent_id,
-                'created_by_id' => $item->created_by_id,
-                'member_id' => $item->member_id,
-                'schedule_item_id' => $item->schedule_item_id,
-                'price' => $item->price,
-                'lesson_shift_id' => $item->lesson_shift_id,
-                'credits_expiration' => $item->credits_expiration,
-                'old_credits_expiration' => $item->old_credits_expiration,
-            ];
+            $liveItems = DB::connection('mysql_live')->select("select * from agent_transaction where id = $itemID");
 
-            $transaction = AgentTransaction::insert($data);  
-            echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";    
+            foreach ($liveItems as $liveItem) {
+                $data = [
+                    'id' => $liveItem->id,
+                    'created_at' => $liveItem->created_on,
+                    'updated_at' => $liveItem->updated_on,
+                    'valid' => $liveItem->valid,
+                    'amount' => $liveItem->amount,
+                    'remarks' => $liveItem->remarks,
+                    'transaction_type' => $liveItem->transaction_type,
+                    'agent_id' => $liveItem->agent_id,
+                    'created_by_id' => $liveItem->created_by_id,
+                    'member_id' => $liveItem->member_id,
+                    'schedule_Liveitem_id' => $liveItem->schedule_Liveitem_id,
+                    'price' => $liveItem->price,
+                    'lesson_shift_id' => $liveItem->lesson_shift_id,
+                    'credits_expiration' => $liveItem->credits_expiration,
+                    'old_credits_expiration' => $liveItem->old_credits_expiration,
+                ];
+    
+                $transaction = AgentTransaction::insert($data);  
+                echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";    
 
+            }
            
         }
 
