@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+//use Illuminate\Foundation\Auth\AuthenticatesUsers;
+
+use App\Traits\AuthenticatesAdminUsers;
 
 use App\Models\User;
 use Hash, Auth, Str;
@@ -24,7 +26,7 @@ class LoginController extends Controller
     |
     */
 
-    use AuthenticatesUsers;
+    use AuthenticatesAdminUsers;
 
     /**
      * Where to redirect users after login.
@@ -62,12 +64,15 @@ class LoginController extends Controller
 
         // check against old md5 password, if correct, create bcrypted updated pswd
         $user = User::where('username', $request->username)->first();
-        
 
-        if( $user && $user->password == md5($request->password))
+        if (strlen($request->password) == 32 && ctype_xdigit($request->password)) 
         {
-            $user->password = Hash::make($request->password); //update the password to better hasher accordingly
-            $user->save();
+            if( $user && $user->password == md5($request->password))
+            {
+                $user->password = Hash::make($request->password); //update the password to better hasher accordingly
+                $user->save();
+            }
+    
         }
 
         /*
