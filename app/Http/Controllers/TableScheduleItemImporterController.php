@@ -192,11 +192,14 @@ class TableScheduleItemImporterController extends Controller
 
                 try
                 {
-                    $transaction = ScheduleItem::update($data);
+
+                    $scheduleObj = ScheduleItem::where('id', $item->id);
+
+                    $transaction = $scheduleObj->update($data);
 
                     DB::commit();
 
-                    echo "<div style='color:blue'>$ctr - update : " . $item->id . " " . $item->created_on . "</div>";
+                    echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
 
                 } catch (\Exception $e) {
 
