@@ -39,7 +39,9 @@ class TableImporterController extends Controller
      
 
         echo "<pre>";
-        print_r( array_diff($items, $localItems) );
+        $result = array_diff($items, $localItems);
+
+        print_r ($result);
 
     }
 
