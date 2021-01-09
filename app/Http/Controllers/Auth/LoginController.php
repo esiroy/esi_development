@@ -82,7 +82,7 @@ class LoginController extends Controller
             // Authentication passed...
             $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
             $user->save();            
-            return redirect()->intended('admin/dashboard');
+            return redirect()->intended('home');
         }
         
 
