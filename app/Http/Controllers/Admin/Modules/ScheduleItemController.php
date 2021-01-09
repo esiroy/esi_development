@@ -117,8 +117,8 @@ class ScheduleItemController extends Controller
             $shift  = Shift::where("value", $shiftDuration)->first();   
 
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
-                        ->where('is_terminated', '!=', 1)
-                        ->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
+                        ->where('is_terminated', 0)
+                        //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
                         ->join('users', 'users.id', '=', 'tutors.user_id')
                         //->orderBy('firstname', 'ASC')
                         ->orderBy('sort', 'ASC')
