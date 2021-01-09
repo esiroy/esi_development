@@ -134,7 +134,7 @@ class ScheduleItem extends Model
                     $memberNameJP = "";
                 }*/
 
-                $nickname = null;
+                $nickname = "";
 
                 if (isset($member->nickname)) {
                     $nickname = $member->nickname;
