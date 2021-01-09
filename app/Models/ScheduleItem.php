@@ -43,18 +43,20 @@ class ScheduleItem extends Model
 
         foreach ($lessonItems as $lessonItem) 
         {
-            //$member     = Member::where('user_id', $lessonItem->member_id)->find();
+            $member     = Member::where('user_id', $lessonItem->member_id)->find();
 
-            $user       = User::find($lessonItem->member_id);
+            $user       = User::find($$member->user_id);
 
             //@done: user my be empty if not reserved
-            if (isset($user->firstname)) {
+            if (isset($user->nickname)) {
                 $fname = $user->firstname;
                 $lname = $user->lastname;
+                $nickname = $member->nickname;
                 $fname_jp = $user->japanese_firstname;
             } else {
                 $fname = "";
                 $lname = "";
+                $nickname = "";
                 $fname_jp = "";
             }
 
@@ -72,7 +74,7 @@ class ScheduleItem extends Model
                 //'endTime'           => $lessonItem->end_time,
                 //'scheduled_at'      => $lessonItem->scheduled_at,
 
-                'startTime'         =>  date("H:i", strtotime($lessonItem->lesson_time)),
+                'startTime'         =>  date("H:i", strtotime($lessonItem->lesson_time ."-1 hour")),
                 'endTime'           =>  date("H:i",  strtotime($lessonItem->lesson_time ."+1 hour")),
                 'scheduled_at'      =>  date('Y/m/d', strtotime($lessonItem->lesson_time)),
 
@@ -83,7 +85,7 @@ class ScheduleItem extends Model
                 'tutor_name_jp'     => $tutor->name_jp,
                 'creator_id'        => $lessonItem->creator_id,
                 'member_id'         => $lessonItem->member_id,                    
-                'member_name_en'    => $fname . " ". $lname,
+                'member_name_en'    => $nickname,
                 'member_name_jp'    => $fname_jp,
                 'status'            => $lessonItem->schedule_status,
                
