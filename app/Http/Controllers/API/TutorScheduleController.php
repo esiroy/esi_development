@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Member;
+use App\Models\Tutor;
 use App\Models\ScheduleItem;
 use Auth;
 
@@ -155,7 +156,7 @@ class TutorScheduleController extends Controller
     }
 
     /**
-     * Store a newly created schedulee.
+     * Store a newly created schedule.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -191,17 +192,23 @@ class TutorScheduleController extends Controller
             'status'        => $request['status']
             ];*/
 
+            
+
             if (isset($member['id'])) {
                 $memberID = $member['id'];
             } else {
                 $memberID = null;
             }
 
+            //v2 - change id to user_id
+            $memberInfo = Member::find($member['id']);
+            $tutorInfo =  Tutor::find($tutor['tutorID']);
+
             $lessonData = [
-                'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'])),
+                'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." + 1 hour")), //save the japanese time
                 'duration' => $request['shiftDuration'],
                 'email_type' => $emailType,
-                'tutor_id' => $tutor['tutorID'],
+                'tutor_id' => $tutorInfo->user_id,
                 'member_id' => $member['id'],
                 'schedule_status' => str_replace(' ', '_', $request['status']),
                 'duration' => $request['shiftDuration'],
