@@ -120,7 +120,8 @@ class ScheduleItemController extends Controller
                         ->where('is_terminated', '!=', 1)
                         ->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
                         ->join('users', 'users.id', '=', 'tutors.user_id')
-                        ->orderBy('firstname', 'ASC')
+                        //->orderBy('firstname', 'ASC')
+                        ->orderBy('sort', 'ASC')
                         ->select('tutors.*',
                                 'users.firstname', 'users.lastname')->get();
 
