@@ -13,7 +13,7 @@
          </div>
          <div class="col-md-12">
              <div class="text-dark">
-                 {{ $latestReportCard->lesson_level }}
+                 {{ $latestReportCard->lesson_level ?? "" }}
              </div>
          </div>
         
@@ -23,7 +23,7 @@
          </div>
          <div class="col-md-12">
              <div class="text-dark">
-                {{ $latestReportCard->lesson_course }}
+                {{ $latestReportCard->lesson_course ?? "" }}
              </div>
          </div>
 
@@ -32,7 +32,7 @@
          </div>
          <div class="col-md-12">
              <div class="text-dark">
-                {{ $latestReportCard->lesson_material }}
+                {{ $latestReportCard->lesson_material ?? ""}}
 
              </div>
          </div>
@@ -41,7 +41,7 @@
          </div>
          <div class="col-md-12">
              <div class="text-dark">
-                {{ $latestReportCard->lesson_subject }}                
+                {{ $latestReportCard->lesson_subject ?? "" }}                
             </div>
          </div>
      </div>
