@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AgentTransaction;
+use App\Models\ScheduleItem;
 use DB;
 
-class TableImporterController extends Controller
+class TableScheduleItemImporterController extends Controller
 {
     public function test($id = null)
     {
@@ -19,13 +19,13 @@ class TableImporterController extends Controller
 
     public function compare()
     {
-        $items = DB::connection('mysql_live')->table('agent_transaction')->count();
+        $items = DB::connection('mysql_live')->table('schedule_item')->count();
 
         echo "Live Item count : $items";
 
         echo "<br>";
 
-        echo "Our Current Item Count : " . AgentTransaction::count();
+        echo "Our Current Item Count : " . ScheduleItem::count();
     }
 
     public function getNewTransactions()
@@ -34,12 +34,12 @@ class TableImporterController extends Controller
         $itemLiveArray = null;
         $itemLocalArray = null;
 
-        $items = DB::connection('mysql_live')->table('agent_transaction')->select('id')->orderBy('id', 'desc')->limit(20000)->get();
+        $items = DB::connection('mysql_live')->table('schedule_item')->select('id')->orderBy('id', 'desc')->limit(20000)->get();
         foreach ($items as $item) {
             $itemLiveArray[$item->id] = $item->id;
         }
 
-        $localItems = AgentTransaction::select('id')->orderBy('id', 'desc')->limit(20000)->get();
+        $localItems = ScheduleItem::select('id')->orderBy('id', 'desc')->limit(20000)->get();
         foreach ($localItems as $item) {
             $itemLocalArray[$item->id] = $item->id;
         }
@@ -48,37 +48,35 @@ class TableImporterController extends Controller
 
         $differenceCount = count($itemDifferences);
 
-        echo $differenceCount . " are missing in your agent_transaction table<BR>";
+        echo $differenceCount . " are missing in your schedule items table<BR>";
 
 
         foreach ($itemDifferences as $item) {
             $itemID = $item;
 
-            $liveItems = DB::connection('mysql_live')->select("select * from agent_transaction where id = $itemID");
+            $liveItems = DB::connection('mysql_live')->select("select * from schedule_item where id = $itemID");
 
             $ctr = 0;
 
             foreach ($liveItems as $liveItem) {
                 $ctr = $ctr + 1;
+
                 $data = [
                     'id' => $liveItem->id,
                     'created_at' => $liveItem->created_on,
                     'updated_at' => $liveItem->updated_on,
                     'valid' => $liveItem->valid,
-                    'amount' => $liveItem->amount,
-                    'remarks' => $liveItem->remarks,
-                    'transaction_type' => $liveItem->transaction_type,
-                    'agent_id' => $liveItem->agent_id,
-                    'created_by_id' => $liveItem->created_by_id,
+                    'lesson_time' => $liveItem->lesson_time,
+                    'tutor_id' => $liveItem->tutor_id,
                     'member_id' => $liveItem->member_id,
-                    'schedule_item_id' => $liveItem->schedule_item_id,
-                    'price' => $liveItem->price,
+                    'schedule_status' => $liveItem->schedule_status,
+                    'duration' => $liveItem->duration,
                     'lesson_shift_id' => $liveItem->lesson_shift_id,
-                    'credits_expiration' => $liveItem->credits_expiration,
-                    'old_credits_expiration' => $liveItem->old_credits_expiration,
+                    'memo' => $liveItem->memo,                    
+                    //'email_type' => $liveItem->email_type,                 
                 ];
 
-                $transaction = AgentTransaction::insert($data);
+                $transaction = ScheduleItem::insert($data);
                 echo "<div style='color:blue'>$ctr - Added : " . $liveItem->id . " " . $liveItem->created_on . "</div>";
 
             }
@@ -87,27 +85,27 @@ class TableImporterController extends Controller
 
     }
 
-    public function importAgentTranscationsIndex()
+    public function importSchedulesIndex()
     {
-        $items = DB::connection('mysql_live')->table('agent_transaction')->count();
+        $items = DB::connection('mysql_live')->table('schedule_item')->count();
         $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
 
         for ($i = 1; $i <= $total_pages; $i++) {
-            $url = url("importAgentTranscations/import/$i");
+            $url = url("importSchedules/import/$i");
 
             echo "<a href='$url'><small>Transaction Import Page $i</small></a><br>";
         }
     }
 
-    public function update($memberID)
+    public function update($id)
     {
 
-        $items = DB::connection('mysql_live')->select("select * from agent_transaction where member_id = $memberID");
+        $items = DB::connection('mysql_live')->select("select * from schedule_item where id = $id");
 
         $ctr = 0;
 
-        AgentTransaction::where('member_id', $memberID)->delete();
+        //ScheduleItem::where('id', $id)->delete();
 
         foreach ($items as $item) {
 
@@ -118,25 +116,24 @@ class TableImporterController extends Controller
                 'created_at' => $item->created_on,
                 'updated_at' => $item->updated_on,
                 'valid' => $item->valid,
-                'amount' => $item->amount,
-                'remarks' => $item->remarks,
-                'transaction_type' => $item->transaction_type,
-                'agent_id' => $item->agent_id,
-                'created_by_id' => $item->created_by_id,
+                'lesson_time' => $item->lesson_time,
+                'tutor_id' => $item->tutor_id,
                 'member_id' => $item->member_id,
-                'schedule_item_id' => $item->schedule_item_id,
-                'price' => $item->price,
+                'schedule_status' => $item->schedule_status,
+                'duration' => $item->duration,
                 'lesson_shift_id' => $item->lesson_shift_id,
-                'credits_expiration' => $item->credits_expiration,
-                'old_credits_expiration' => $item->old_credits_expiration,
+                'memo' => $item->memo,                    
+                //'email_type' => $liveItem->email_type,                 
             ];
 
-            if (AgentTransaction::where('id', $item->id)->exists()) {
-                $member = AgentTransaction::where('member_id', $memberID)->first();
-                $transaction = $member->update($data);
+            if (ScheduleItem::where('id', $item->id)->exists()) 
+            {
+                $scheduleItem = ScheduleItem::where('id', $id)->first();
+                $transaction = $scheduleItem->update($data);
+                
                 echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             } else {
-                $transaction = AgentTransaction::insert($data);
+                $transaction = ScheduleItem::insert($data);
                 echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             }
 
@@ -146,7 +143,7 @@ class TableImporterController extends Controller
 
     }
 
-    public function importAgentTranscations($id = null, $per_item = null)
+    public function importSchedules($id = null, $per_item = null)
     {
         set_time_limit(0);
 
@@ -157,13 +154,13 @@ class TableImporterController extends Controller
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        echo "<div>ADDING agent_transcations FROM : " . $start . " - " . $end . "</div>";
+        echo "<div>ADDING schedule_item FROM : " . $start . " - " . $end . "</div>";
         echo "<BR>";
 
         //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
         //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 
-        $items = DB::connection('mysql_live')->select("select * from agent_transaction LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from schedule_item LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
@@ -180,25 +177,22 @@ class TableImporterController extends Controller
                 'created_at' => $item->created_on,
                 'updated_at' => $item->updated_on,
                 'valid' => $item->valid,
-                'amount' => $item->amount,
-                'remarks' => $item->remarks,
-                'transaction_type' => $item->transaction_type,
-                'agent_id' => $item->agent_id,
-                'created_by_id' => $item->created_by_id,
+                'lesson_time' => $item->lesson_time,
+                'tutor_id' => $item->tutor_id,
                 'member_id' => $item->member_id,
-                'schedule_item_id' => $item->schedule_item_id,
-                'price' => $item->price,
+                'schedule_status' => $item->schedule_status,
+                'duration' => $item->duration,
                 'lesson_shift_id' => $item->lesson_shift_id,
-                'credits_expiration' => $item->credits_expiration,
-                'old_credits_expiration' => $item->old_credits_expiration,
+                'memo' => $item->memo,                    
+                //'email_type' => $liveItem->email_type,                 
             ];
 
-            if (AgentTransaction::where('id', $item->id)->exists()) {
+            if (ScheduleItem::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
                 try
                 {
-                    $transaction = AgentTransaction::update($data);
+                    $transaction = ScheduleItem::update($data);
 
                     DB::commit();
 
@@ -213,7 +207,7 @@ class TableImporterController extends Controller
 
                 try
                 {
-                    $transaction = AgentTransaction::insert($data);
+                    $transaction = ScheduleItem::insert($data);
 
                     DB::commit();
 

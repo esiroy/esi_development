@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 Route::get('test/{id}', 'TableImporterController@test')->name('test');
 Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 
+
+/*************** 
+ * AGENT IMPORTER
+ ****************/
 Route::get('importAgentTranscations/compare', 'TableImporterController@compare');
 Route::get('importAgentTranscations/getnew', 'TableImporterController@getNewTransactions');
 
@@ -27,6 +31,24 @@ Route::get('importAgentTranscations/index', 'TableImporterController@importAgent
 //@param id - page id number for the chunk
 Route::get('importAgentTranscations/import/{id}', 'TableImporterController@importAgentTranscations');
 Route::get('importAgentTranscations/import/{id}/{per_item}', 'TableImporterController@importAgentTranscations');
+
+
+/*************** 
+ * SCHEDULES IMPORTER
+ ****************/
+Route::get('importSchedules/compare', 'TableScheduleItemImporterController@compare');
+Route::get('importSchedules/getnew', 'TableScheduleItemImporterController@getNewTransactions');
+
+//import table
+Route::get('importSchedules/update/{id}', 'TableScheduleItemImporterController@update');
+
+//page chunk links
+Route::get('importSchedules/index', 'TableScheduleItemImporterController@importSchedulesIndex');
+
+//@param id - page id number for the chunk
+Route::get('importSchedules/import/{id}', 'TableScheduleItemImporterController@importSchedules');
+Route::get('importSchedules/import/{id}/{per_item}', 'TableScheduleItemImporterController@importSchedules');
+
 
 
 
