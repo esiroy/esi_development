@@ -1,9 +1,5 @@
 @extends('layouts.esi-app')
-
-
 @section('content')
-
-
 <div class="container bg-light">
 
     <div class="esi-box">
@@ -62,86 +58,13 @@
                                 <!--[start] Tutor Information-->
                                 <td>
                                     <div style="width:125px">
-                                        <small>{{ $tutor->name_en }}</small>
+                                        <small>{{ $tutor->user->firstname }}</small>
                                     </div>
                                 </td>
 
                                 @foreach($lessonSlots as $lessonSlot)
                                 <td>
-                                    @php
-                                    $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
-                                    @endphp
-
-                                    @foreach ($schedules as $schedule)
-                                    @if($schedule->tutor_id == $tutor->id)
-                                    @if ( $startTimePH == date("H:i", strtotime($schedule->lesson_time)))
-
-                                    @if (strtolower($schedule->schedule_status) == 'completed')
-                                    <a href="javascript:void(0)">completed</a>
-                                    @elseif(strtolower($schedule->schedule_status) == 'tutor_scheduled')
-                                    <!--@todo: open popup if pressed.
-                                                        @question: 予約してもいいですか？
-                                                        @yes: はい
-                                                        @no: いいえ
-                                                    -->
-                                    
-
-                                    <div class="button_{{$schedule->id}}">
-                                        <a class="book" onclick="book('{{$schedule->id}}')" href="javascript:void(0)">予約</a>
-                                        <div class="cancel" style="padding:15px; display:none">
-                                            <div id="{{ $schedule->id }}" style="float:right">
-                                                <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
-                                            </div>
-                                            <br />
-                                            <a href="javascript:void(0)">済</a>
-                                        </div>
-                                    </div>
-
-                                    @elseif(strtolower($schedule->schedule_status) == 'client_reserved' || strtolower($schedule->schedule_status) == 'client_reserved_b')
-                                    <!--@todo: 
-                                                            @cancelMsgBox: このレッスンをキャンセルしてもいいですか？
-                                                   
-                                    <div style="padding:15px">
-                                        <div id="{{ $schedule->id }}" style="float:right">
-                                            <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
-                                        </div>
-                                        <br />
-                                        <a href="javascript:void(0)">済</a>
-                                    </div> -->
-                                    @php
-                                        $member = \App\Models\Member::where('user_id', Auth::user()->id)->first()
-                                    @endphp
-                                    
-                       
-                              
-                                    
-                                    <div class="cancel_button_{{$schedule->id}}">
-                                        <a class="book" onclick="book('{{$schedule->id}}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>
-
-                                        @if ( $member->id == $schedule->member_id)
-                                        <div class="cancel" >
-                                            <div id="{{ $schedule->id }}" style="float:right">
-                                                <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
-                                            </div>
-                                            <br />
-                                            <a href="javascript:void(0)">済</a>
-                                        </div>
-                                        @endif
-
-                                    </div>
-                                    
-
-
-                                    @elseif(strtolower($schedule->schedule_status) == 'suppressed_schedule' )
-                                    {{'済他'}}
-                                    @elseif(strtolower($schedule->schedule_status) == 'client_not_available')
-                                    {{'欠席'}}
-                                    @elseif(strtolower($schedule->schedule_status) == 'tutor_cancelled')
-                                    {{ "予約" }}
-                                    @endif
-                                    @endif
-                                    @endif
-                                    @endforeach
+                                   {{ $lessonSlot->start}}
                                 </td>
                                 @endforeach
 
@@ -167,11 +90,15 @@
 
     function book(id) {
         $.ajax({
-            type: 'POST', url: 'api/book?api_token=' + api_token, data: {
+            type: 'POST'
+            , url: 'api/book?api_token=' + api_token
+            , data: {
                 id: id
-            }, headers: {
+            }
+            , headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }, success: function(data) {
+            }
+            , success: function(data) {
                 $("#msg").html(data.msg);
                 $('.button_' + id + ' .book').hide();
                 $('.button_' + id + ' .cancel').show();
@@ -182,16 +109,18 @@
 
     function cancel(id) {
         $.ajax({
-            type: 'POST', 
-            url: 'api/cancelSchedule?api_token=' + api_token,
-            data: {
+            type: 'POST'
+            , url: 'api/cancelSchedule?api_token=' + api_token
+            , data: {
                 id: id
-            }, headers: {
+            }
+            , headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }, success: function(data) {
+            }
+            , success: function(data) {
                 $("#msg").html(data.msg);
                 $('.cancel_button_' + id + ' .book').show();
-                $('.cancel_button_' + id + ' .cancel').hide();                
+                $('.cancel_button_' + id + ' .cancel').hide();
             }
         });
     }

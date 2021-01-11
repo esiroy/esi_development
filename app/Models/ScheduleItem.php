@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Carbon\Carbon;
 
+use DB;
+
 class ScheduleItem extends Model
 {
     public $table = 'schedule_item';
@@ -21,10 +23,23 @@ class ScheduleItem extends Model
     * @return lessons
 
     */
-    public function getReservations($dateFrom) 
+    public function getReservations($date, $lesson_shift_id) 
     {   
-        $scheduleItems = ScheduleItem::whereDate('lesson_time', $dateFrom)->get();   
-        return $scheduleItems;
+        echo $date;
+
+        $lessons = [];
+
+        $lessonItems = ScheduleItem::whereDate('lesson_time', $date)->where('lesson_shift_id', $lesson_shift_id)->get();   
+
+        foreach ($lessonItems as $lessonItem) 
+        {
+
+            $lessons[$lessonItem->tutor_id][$lessonItem->lesson_time][] = $lessonItem;
+        }
+
+        
+
+        return $lessons;
     }    
 
     
@@ -36,47 +51,34 @@ class ScheduleItem extends Model
         $lessons = [];        
         $tutor = Tutor::find($tutorID);
 
-        $lessonItems = ScheduleItem::where('tutor_id', $tutorID)
+        $lessonItems = ScheduleItem::where('tutor_id', $tutor->user_id)
                                 ->where('lesson_time', '>=', $dateFrom)
                                 ->where('lesson_time', '<=', $dateTo)
                                 ->get();
 
         foreach ($lessonItems as $lessonItem) 
-        {
-            $member     = Member::where('user_id', $lessonItem->member_id)->find();
+        {   
+            //find nickname
+            $nickname = "";     
 
-            $user       = User::find($$member->user_id);
-
-            //@done: user my be empty if not reserved
-            if (isset($user->nickname)) {
-                $fname = $user->firstname;
-                $lname = $user->lastname;
-                $nickname = $member->nickname;
-                $fname_jp = $user->japanese_firstname;
-            } else {
-                $fname = "";
-                $lname = "";
-                $nickname = "";
-                $fname_jp = "";
+            if (isset($lessonItem->member_id)) {
+                $member     = Member::where('user_id', $lessonItem->member_id)->first();
+                if (isset($member->nickname)) {
+                    $nickname = $member->nickname;                    
+                }                 
             }
-
-            /*
-            echo "<pre>";
-            print_r ($lessonItem);
-            echo "</pre>";
-            */
 
             $dateKey = date('m/d/Y', strtotime($lessonItem->lesson_time));
 
-            $lessons[$dateKey][date("H:i", strtotime($lessonItem->lesson_time))] = [
+            $lessons[$dateKey][date("H:i", strtotime($lessonItem->lesson_time ." -1 hour"))] = [
                 'id'                => $lessonItem->id,
                 //'startTime'         => $lessonItem->start_time,
                 //'endTime'           => $lessonItem->end_time,
                 //'scheduled_at'      => $lessonItem->scheduled_at,
 
-                'startTime'         =>  date("H:i", strtotime($lessonItem->lesson_time ."-1 hour")),
+                'startTime'         =>  date("H:i", strtotime($lessonItem->lesson_time ." -1 hour")),
                 'endTime'           =>  date("H:i",  strtotime($lessonItem->lesson_time)),
-                'scheduled_at'      =>  date('Y/m/d', strtotime($lessonItem->lesson_time ."-1 hour")),
+                'scheduled_at'      =>  date('Y/m/d', strtotime($lessonItem->lesson_time ." -1 hour")),
 
                 'email_type'        => $lessonItem->email_type,                
                 'duration'          => $lessonItem->duration,
@@ -86,7 +88,7 @@ class ScheduleItem extends Model
                 'creator_id'        => $lessonItem->creator_id,
                 'member_id'         => $lessonItem->member_id,                    
                 'member_name_en'    => $nickname,
-                'member_name_jp'    => $fname_jp,
+                'member_name_jp'    => $nickname,
                 'status'            => $lessonItem->schedule_status,
                
             ];            

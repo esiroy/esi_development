@@ -560,6 +560,9 @@
                                         </div>                                        
                                     </div>
 
+
+                                    
+
                                     <!--[start] enumaration of all added timeslot -->
                                     <div class="row py-2 bg-lightgray border-bottom" v-for="(lessonClass, index) in user.preference.lessonClasses" :key="lessonClass.id" >
                                         <div class="col-3 col-md-3 text-center">

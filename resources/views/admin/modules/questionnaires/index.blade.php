@@ -89,10 +89,10 @@
                                         <td class="small text-center">{{ $questionnaire->created_at }}</td>
                                         <td class="small text-center">
                                             @php 
-                                                $memberUser = \App\Models\User::where('id', $questionnaire->member_id)->first() 
+                                                $user = \App\Models\User::where('id', $questionnaire->member_id)->first() 
                                             @endphp
 
-                                            {{ $memberUser['first_name'] . ", " . $memberUser['last_name'] }}
+                                            {{ $user['firstname'] . ", " . $user['lastname'] }}
                                             </td>
                                         <td class="small text-center">{{ $questionnaire->tutor_id  }}</td>
 

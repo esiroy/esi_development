@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Auth;
+
 class Member extends Model
 {
     public $table = 'members';
@@ -41,4 +43,29 @@ class Member extends Model
         }
     }
 
+
+    public function getTutorName() {
+        $user = Auth::user();
+        $memberInfo = Member::where('user_id', $user->id)->first();       
+        if (isset($memberInfo->id)) 
+        {
+            $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
+            return $tutorInfo->user->firstname;            
+        } else {
+            return null;
+        }
+    }
+
+
+    public function getSkype() {
+        $user = Auth::user();
+        $memberInfo = Member::where('user_id', $user->id)->first();       
+        return $memberInfo->skype_account;
+    }
+
+    public function getZoom() {
+        $user = Auth::user();
+        $memberInfo = Member::where('user_id', $user->id)->first();       
+        return $memberInfo->zoom_account;   
+    }
 }

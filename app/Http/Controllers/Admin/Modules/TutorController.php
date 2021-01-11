@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Models\UserImage;
 use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -222,11 +223,17 @@ class TutorController extends Controller
 
         $tutor = Tutor::join('users', 'users.id', '=', 'tutors.user_id')->where('user_id', $id)->first();
 
+        //get photo
+        $userImageObj = new UserImage();
+        $userImage = $userImageObj->getMemberPhoto($tutor);
+
+       
+
         if (isset($tutor)) {
             $shifts = Shift::all();
             $grades = createGrades();
 
-            return view('admin.modules.tutor.edit', compact('tutor', 'shifts', 'grades'));
+            return view('admin.modules.tutor.edit', compact('tutor', 'userImage', 'shifts', 'grades'));
         }
 
     }

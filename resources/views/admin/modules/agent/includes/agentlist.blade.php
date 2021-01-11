@@ -56,8 +56,8 @@
                 </td>
 
                 <td class="small text-center">
-                    <a href="{{ route('admin.agent.account', $agent->user_id) }}" class="btn btn-sm btn-info">Account</a>|
-                    <a href="{{ route('admin.agent.edit', $agent->user_id) }}" class="btn btn-sm btn-info">Edit</a> |
+                    <a href="{{ route('admin.agent.account', $agent->user_id) }}" class="btn btn-sm btn-info">Account</a> &nbsp; 
+                    <a href="{{ route('admin.agent.edit', $agent->user_id) }}" class="btn btn-sm btn-info">Edit</a> &nbsp; 
                     <form action="{{ route('admin.agent.destroy', $agent->user_id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');" style="display: inline-block;">
                         <input type="hidden" name="_method" value="DELETE">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">

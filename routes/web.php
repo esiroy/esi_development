@@ -52,9 +52,18 @@ Route::get('importSchedules/import/{id}', 'TableScheduleItemImporterController@i
 Route::get('importSchedules/import/{id}/{per_item}', 'TableScheduleItemImporterController@importSchedules');
 
 
-
-
+/*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
+
+Route::resource('/settings', 'Members\MemberSettingController');
+Route::put('settings', 'Members\MemberSettingController@updatePassword')->name('settings.updatePassword');
+Route::resource('image-upload', 'Admin\imageUploadController');
+
+
+//User Reservation
+Route::resource('/reservation', 'Members\ReservationController');
+Route::get('/memberschedule', 'Members\ReservationController@create');
+
 
 //Route::get('/', 'HomeController@index')->name('welcome');
 //Route::get('/home', 'FolderCreatorController@index')->name('home');
@@ -69,12 +78,11 @@ Route::get('/userreportcarddate/{id}', 'LessonRecordController@userreportcarddat
 
 
 //lesson materials
-
 Route::get('/lessonmaterials', 'MaterialsController@index')->name('materials');
 
-//User Reservation
-Route::resource('/reservation', 'Members\ReservationController');
-Route::get('/memberschedule', 'Members\ReservationController@create');
+
+
+
 
 
 /* Public Folder View */
@@ -97,12 +105,9 @@ Route::resource('download', 'DownloadController');
 /*Customer Support */
 Route::resource('customersupport', 'CustomerSupportController');
 
-
-
-
-
 //export file (public)
 Route::get('exportCSV', 'ExportController@exportCSV')->name('exportMemberCSV');
+
 
 
 /* Admin Panel */
@@ -114,10 +119,16 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::post('logout', 'AuthController@logout')->name('AdminLogout');
 
     //settings
-    Route::get('settings', 'SettingsController@index')->name('settings');
+    Route::resource('settings', 'SettingsController');
+    Route::put('settings', 'SettingsController@updatePassword')->name('settings.updatePassword');
+    //Route::get('settings', 'SettingsController@index')->name('settings');
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
+
+        //upload photo
+        Route::resource('image-upload', 'imageUploadController');
+
         //ADMIN HOME
         Route::resource('/', 'Modules\ScheduleItemController');
         Route::resource('/dashboard', 'Modules\ScheduleItemController');

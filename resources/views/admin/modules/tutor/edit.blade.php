@@ -19,19 +19,19 @@
         <div class="row">
             <div class="col-12 pt-4">
                 @if (session('message'))
-                    <div class="alert alert-success">
-                        {{ session('message') }}
-                    </div>
+                <div class="alert alert-success">
+                    {{ session('message') }}
+                </div>
                 @elseif (session('error_message'))
-                    <div class="alert alert-danger">
-                        {{ session('error_message') }}
-                    </div>
+                <div class="alert alert-danger">
+                    {{ session('error_message') }}
+                </div>
                 @endif
             </div>
         </div>
 
-        <div class="card mt-2">
-            <div class="card-header">Reset Password</div>
+        <div class="card esi-card mt-2">
+            <div class="card-header esi-card-header">Reset Password</div>
             <div class="card-body">
                 <form action="{{ route("admin.tutor.resetPassword", $tutor->user_id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
@@ -60,12 +60,60 @@
         <!--[end] reset password card-->
     </div>
     <!--[end] reset password containter-->
-   
+
     <div class="container">
         <!--[start] create member form -->
-        <div class="card mt-4">
-            <div class="card-header">Update Tutor Information</div>
+        <div class="card esi-card mt-4">
+            <div class="card-header esi-card-header">Update Tutor Information</div>
             <div class="card-body">
+
+
+                <div id="uploaded_image" class="mt-4 mb-4">
+                    @if ($userImage == null)
+                    <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="250">
+                    @else
+                    <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo" width="250">
+                    @endif
+                </div>
+
+                <div class="container">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="panel-heading">Select Profile Image</div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="panel-body" align="center">
+                                <input type="file" name="upload_image" id="upload_image" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="uploadimageModal" class="modal" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Upload & Crop Image</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-12 text-center">
+                                        <div id="image_demo">
+                                            test
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12 text-center">
+                                        <button class="btn btn-success btn-sm crop_image">Crop & Upload Image</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <form method="POST" action="{{ route('admin.tutor.update', $tutor->user_id) }}">
                     @csrf
@@ -77,8 +125,7 @@
                         </label>
                         <div class="col-md-3">
 
-                            <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" 
-                            name="email" value="{{ old('email', isset($tutor->user->email ) ? $tutor->user->email : '') }}" required autocomplete="email">
+                            <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" value="{{ old('email', isset($tutor->user->email ) ? $tutor->user->email : '') }}" required autocomplete="email">
 
                             @error('email')
                             <span class="invalid-feedback" role="alert">
@@ -93,8 +140,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="sort" type="number" class="form-control form-control-sm @error('sort') is-invalid @enderror" 
-                                name="sort" value="{{ old('sort', isset($tutor->sort) ? $tutor->sort : '') }}" required autocomplete="sort">
+                            <input id="sort" type="number" class="form-control form-control-sm @error('sort') is-invalid @enderror" name="sort" value="{{ old('sort', isset($tutor->sort) ? $tutor->sort : '') }}" required autocomplete="sort">
 
                             @error('sort')
                             <span class="invalid-feedback" role="alert">
@@ -132,7 +178,7 @@
                         </label>
                         <div class="col-md-3">
                             @foreach($grades as $grade)
-                             <input type="radio" name="grade" required value="{{ $grade['name'] }}" @if( old('grade') ===  $grade['name'] ||  $grade['name'] === $tutor->grade )? {{ "checked" }} @endif> {{ $grade['name'] }}
+                            <input type="radio" name="grade" required value="{{ $grade['name'] }}" @if( old('grade')===$grade['name'] || $grade['name']===$tutor->grade )? {{ "checked" }} @endif> {{ $grade['name'] }}
                             @endforeach
                         </div>
                     </div>
@@ -143,8 +189,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="skype_name" type="skype_name"
-                             class="form-control form-control-sm @error('skype_name') is-invalid @enderror" name="skype_name" value="{{ old('skype_name', isset($tutor->skype_name ) ? $tutor->skype_name : '') }}" required autocomplete="skype_name">
+                            <input id="skype_name" type="skype_name" class="form-control form-control-sm @error('skype_name') is-invalid @enderror" name="skype_name" value="{{ old('skype_name', isset($tutor->skype_name ) ? $tutor->skype_name : '') }}" required autocomplete="skype_name">
 
                             @error('skype_name')
                             <span class="invalid-feedback" role="alert">
@@ -160,8 +205,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="skype_id" type="skype_id" required class="form-control form-control-sm @error('skype_id') is-invalid @enderror" 
-                            name="skype_id" value="{{ old('skype_id', isset($tutor->skype_id ) ? $tutor->skype_id : '') }}" required autocomplete="skype_id">
+                            <input id="skype_id" type="skype_id" required class="form-control form-control-sm @error('skype_id') is-invalid @enderror" name="skype_id" value="{{ old('skype_id', isset($tutor->skype_id ) ? $tutor->skype_id : '') }}" required autocomplete="skype_id">
 
                             @error('skype_id')
                             <span class="invalid-feedback" role="alert">
@@ -177,8 +221,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" 
-                            name="name_en" value="{{ old('name_en', isset($tutor->user->firstname ) ? $tutor->user->firstname : '') }}" required autocomplete="name_en">
+                            <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" name="name_en" value="{{ old('name_en', isset($tutor->user->firstname ) ? $tutor->user->firstname : '') }}" required autocomplete="name_en">
 
                             @error('name_en')
                             <span class="invalid-feedback" role="alert">
@@ -194,8 +237,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" 
-                                name="name_jp" value="{{ old('name_jp', isset($tutor->user->japanese_firstname ) ? $tutor->user->japanese_firstname : '') }}" required autocomplete="name_jp">
+                            <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" value="{{ old('name_jp', isset($tutor->user->japanese_firstname ) ? $tutor->user->japanese_firstname : '') }}" required autocomplete="name_jp">
 
                             @error('name_jp')
                             <span class="invalid-feedback" role="alert">
@@ -211,8 +253,7 @@
                         </label>
                         <div class="col-md-3">
                             <input type="radio" name="gender" value="MALE" checked="" class="@error('gender') is-invalid @enderror" name="gender" value="{{ old('gender') }}" required autocomplete="gender"> 男 (Male)
-                            <input type="radio" name="gender" value="FEMALE" class="@error('gender') is-invalid @enderror" name="gender" 
-                                value="{{ old('gender', isset($tutor->gender ) ? $tutor->gender : '') }}" required autocomplete="gender"> 女 (Female)
+                            <input type="radio" name="gender" value="FEMALE" class="@error('gender') is-invalid @enderror" name="gender" value="{{ old('gender', isset($tutor->gender ) ? $tutor->gender : '') }}" required autocomplete="gender"> 女 (Female)
                             @error('gender')
                             <span class="invalid-feedback" role="alert">
                                 <strong>{{ $message }}</strong>
@@ -238,8 +279,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror" 
-                            value="{{ old('birthdate', isset($tutor->birthday ) ? $tutor->birthday : '') }}">
+                            <input type="date" name="birthdate" class="datepicker form-control form-control-sm @error('birthdate') is-invalid @enderror" value="{{ old('birthdate', isset($tutor->birthday ) ? $tutor->birthday : '') }}">
                         </div>
                     </div>
 
@@ -272,7 +312,7 @@
 
                             <select name="japanese_fluency" class="form-control form-control-sm @error('japanese_fluency') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
-                                <option value="FLUENTLY" @if(old('japanese_fluency') =='FLUENTLY' || $tutor->fluency =='FLUENTLY' ) {{"selected"}} @endif>流暢に話す (Fluently)</option>
+                                <option value="FLUENTLY" @if(old('japanese_fluency')=='FLUENTLY' || $tutor->fluency =='FLUENTLY' ) {{"selected"}} @endif>流暢に話す (Fluently)</option>
                                 <option value="DAILY_CONVERSATION" @if(old('japanese_fluency')=='DAILY_CONVERSATION' || $tutor->fluency =='DAILY_CONVERSATION') {{"selected"}} @endif>日常会話程度 (Daily Conversation)</option>
                                 <option value="LITTLE" @if(old('japanese_fluency')=='LITTLE' || $tutor->fluency =='FLUENTLY') {{"LITTLE"}} @endif>少し話せる (Little)</option>
                                 <option value="CANT_SPEAK" @if(old('japanese_fluency')=='CANT_SPEAK' || $tutor->fluency =='CANT_SPEAK') {{"selected"}} @endif>話せない (Can't Speak)</option>
@@ -296,7 +336,7 @@
                             <select name="shift" class="form-control form-control-sm @error('shift') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 @foreach ($shifts as $shift)
-                                <option value="{{$shift->id}}" @if(old('shift') == $shift->id || $tutor->lesson_shift_id == $shift->id) {{"selected"}} @endif>{{$shift->name}}</option>
+                                <option value="{{$shift->id}}" @if(old('shift')==$shift->id || $tutor->lesson_shift_id == $shift->id) {{"selected"}} @endif>{{$shift->name}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -356,4 +396,79 @@
 
 </div>
 
+@endsection
+
+
+@section('scripts')
+@parent
+
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js' type='text/javascript'></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />
+
+<script>
+    (function($) {
+        "use strict";
+
+        $(document).ready(function() {
+
+            var $image_crop = $('#image_demo').croppie({
+                enableExif: true, viewport: {
+                    width: 200, height: 200,
+                    type: 'square' //circle
+                }, boundary: {
+                    width: 300, height: 300
+                }
+            });
+
+            $('#upload_image').on('change', function() {
+                var reader = new FileReader();
+                reader.onload = function(event) {
+                    $image_crop.croppie('bind', {
+                        url: event.target.result
+                    }).then(function() {
+                        console.log('jQuery bind complete');
+                    });
+                }
+                reader.readAsDataURL(this.files[0]);
+                $('#uploadimageModal').modal('show');
+            }); //[end] #upload_image
+
+
+            $('.crop_image').click(function(event) {
+                $image_crop.croppie('result', {
+                    type: 'canvas'
+                    , size: 'viewport'
+                }).then(function(response) {
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                        },
+                        url: "{{ url('admin/image-upload') }}",
+                        type: "POST",
+                        data: {
+                            _token: "{{csrf_token()}}",
+                            "id": "{{ $tutor->user_id }}",
+                            "user_type": "tutors", //plural
+                            "image": response
+                        }, success: function(data) {
+                            $('#uploadimageModal').modal('hide');
+                            $('#uploaded_image').html(data);
+                        }
+                    });
+                })
+            });
+
+
+        }); //[end] $(document)
+
+    })(jQuery);
+
+</script>
 @endsection

@@ -58,7 +58,7 @@
                         </a>
                       
                         <span class="divide">|</span>
-                        <a class="blue pl-2 pr-2" href="{{ route('admin.settings') }}">
+                        <a class="blue pl-2 pr-2" href="{{ route('admin.settings.index') }}">
                             {{ __('Settings') }}
                         </a>
 

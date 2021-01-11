@@ -134,19 +134,20 @@
                                         <td>{{ $schedule->lesson_shift_id }}</td>
                                         <td>
                                             @php
-                                                $member = \App\Models\Member::find($schedule->member_id);
-                                                if (isset($member->agent_id)) {
-                                                    $agent = \App\Models\Tutor::find($member->agent_id);                                                    
-                                                }                                                
+                                                $agent = new \App\Models\Agent();
+                                                $agentInfo = $agent->getMemberAgent($schedule->member_id);
                                             @endphp                                            
 
-                                            {{ $agent['name_en'] ?? ''}}
+                                      
+                                            {{ $agentInfo->firstname ?? ''}}
+
+                                          
                                         </td>
                                         <td>
                                             @php                                                
                                                 $tutor = \App\Models\Tutor::find($schedule->tutor_id)
                                             @endphp
-                                            {{  $tutor->name_en }}
+                                            {{  $tutor->user->firstname ?? "-" }}
                                         </td>
                                         <td>
                                             
@@ -157,7 +158,7 @@
                                                 }
                                             @endphp
                                            
-                                            {{ $use->first_name ?? '' }}  {{ $user->last_name ?? '' }}
+                                            {{ $user->firstname ?? '' }}  {{ $user->lastname ?? '' }}
                                             
                                         </td>
                                     </tr>

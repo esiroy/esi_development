@@ -35,28 +35,26 @@ class MemberDashboard extends Controller
     {    
         
         $user = Auth::user();
-        $member = Member::where('user_id', $user->id)->first();
+        $memberInfo = Member::where('user_id', $user->id)->first();
 
-        if (isset($member)) 
+       
+        if (isset($memberInfo)) 
         {
-            $memberData = Member::find($member->id);
-            $skypeID    = $memberData->communication_app_username; 
-            $tutorData = Tutor::find($member->main_tutor_id);
+            //$memberInfo = Member::find($member->id);
 
-            $lecturer   = (isset($tutorData->name_en))? $tutorData->name_en : '';
+            $skypeID    = $memberInfo->communication_app_username; 
 
-            $data = [
-                'lecturer'  => $lecturer,
-                'skypeID'   => $skypeID,            
-            ];  
 
+        
            // $schedules = ScheduleItem::where('member_id', Auth::user()->id)->get();
 
-            $reserves =  ScheduleItem::where('member_id', $member->id)->get();
+            $reserves =  ScheduleItem::where('member_id', Auth::user()->id)->get();
     
             $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
 
-            return view('modules/member/index', compact('member', 'data', 'reserves', 'latestReportCard'));
+            
+
+            return view('modules/member/index', compact('memberInfo', 'data', 'reserves', 'latestReportCard'));
 
         } else {
            

@@ -33,8 +33,8 @@
             </div>
             @endif
 
-            <div class="card mt-4">
-                <div class="card-header">Update Password</div>
+            <div class="card esi-card mt-4">
+                <div class="card-header esi-card-header">Update Password</div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('admin.manager.resetPassword', $manager->id) }}">
                         @csrf
@@ -66,12 +66,12 @@
                 </div>
             </div>
 
-            <div class="card mt-4">
+            <div class="card esi-card mt-4">
                 <form method="POST" action="{{ route('admin.manager.update', $manager) }}">
                     @csrf
                     @method('put')
 
-                    <div class="card-header">Edit Manager Form</div>
+                    <div class="card-header esi-card-header">Edit Manager Form</div>
                     <div class="card-body">
 
                         <div class="row pt-2">
@@ -82,7 +82,7 @@
                                     </div>
                                     <div class="col-6">
                                         <input id="email" type="email" class="form-control form-control-sm @error('email') is-invalid @enderror" name="email" 
-                                        value="{{ old('email', isset($manager->user->email ) ? $manager->user->email : '') }}" required autocomplete="email">
+                                        value="{{ old('email', isset($manager->email ) ? $manager->email : '') }}" required autocomplete="email">
                                         @error('email')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -101,7 +101,7 @@
                                     </div>
                                     <div class="col-6">
                                         <input id="name_en" type="name_en" class="form-control form-control-sm @error('name_en') is-invalid @enderror" name="name_en" 
-                                        value="{{ old('name_en', isset($manager->name_en) ? $manager->name_en : '') }}" required autocomplete="name_en">
+                                        value="{{ old('name_en', isset($manager->firstname ) ? $manager->firstname  : '') }}" required autocomplete="name_en">
                                         @error('name_en')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
@@ -120,7 +120,8 @@
                                         <label for="name_jp" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Name (Japanese)<div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6">
-                                        <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" value="{{ old('name_jp ', isset($manager->name_jp ) ? $manager->name_jp  : '') }}" required autocomplete="name_jp">
+                                        <input id="name_jp" type="name_jp" class="form-control form-control-sm @error('name_jp') is-invalid @enderror" name="name_jp" 
+                                            value="{{ old('name_jp ', isset($manager->japanese_firstname ) ? $manager->japanese_firstname  : '') }}" required autocomplete="name_jp">
                                         @error('name_jp')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

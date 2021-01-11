@@ -50,6 +50,7 @@ mix.js(
             "resources/js/jszip/jszip.js",
             "resources/js/select2/select2.full.js",
             "resources/js/datatables/dataTables.fixedColumns.js",
+            "resources/js/croppie/croppie.js",
             "resources/js/app.js"
         ],
         "public/js/admin.js"
@@ -60,6 +61,7 @@ mix.js(
         true
     )
     .copy("resources/images/*.*", "public/images/")
+    .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .sass("resources/sass/app.scss", "public/css/app.css")
     .sass("resources/sass/admin.scss", "public/css/admin.css")
     .version()

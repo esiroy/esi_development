@@ -19,7 +19,10 @@
             <td class="small text-center">{{ $tutor->user_id}}</td>
             <td class="small text-center">{{ $tutor->user->firstname?? "" }} {{ $tutor->user->lastname ?? "" }}</td>
             <td class="small text-center"><a href="{{ url('admin/maintutor/'. $tutor->user_id) }}"><img src="/images/iMemberMain.gif"></a></td>
-            <td class="small text-center"><a href="{{ url('admin/supporttutor/'. $tutor->user_id) }}"><img src="/images/iMemberSupport.gif"></a></td>
+            <td class="small text-center">
+                <!--<a href="{{ url('admin/supporttutor/'. $tutor->user_id) }}"><img src="/images/iMemberSupport.gif"></a>-->
+                <a href="#"><img src="/images/iMemberSupport.gif"></a>
+            </td>
             <td class="small text-center">
                 @can('tutor_delete')
                 <a href="{{ route('admin.tutor.edit', $tutor->user_id) }}" class="btn btn-sm btn-info">Edit</a>

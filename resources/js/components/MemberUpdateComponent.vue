@@ -1,651 +1,192 @@
 <template>
-    <div id="updateMemberContainer" class="card mt-4">
+    <div id="updateMemberForm">
+        <form name="updateMemberForm" @submit.prevent="handleSubmit">
+            <!-- [start] member information section-->
+            <div id="information-section" class="section">
 
-        <div class="card-header">Update Member Form</div>
-
-        <div class="card-body">
-            <form name="updateMemberForm" @submit.prevent="handleSubmit">
-                <!-- [start] member information section-->
-                <div id="information-section" class="section">
-
-                    <div class="card-title bg-gray p-1">
-                        <div class="pl-2 font-weight-bold small">Personal Information</div>
-                    </div>
-
-                    <div id="agent-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="agent" class="px-0 pl-2 col-md-12 col-form-label"><span>&nbsp;</span>Agent <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="agent" class="form-control form-control-sm" v-model="user.agent_name_en">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="row">
-                                
-                                <div class="col-4 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label">Agent ID<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="agent_id" v-model="user.agent_id" class="form-control  form-control-sm">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="lastname-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Last Name <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text"                                                
-                                            v-model="user.last_name"                                                 
-                                            id="last_name" 
-                                            name="last_name" 
-                                            class="form-control form-control-sm"
-                                            :class="{ 'is-invalid' : submitted && $v.user.last_name.$error }"
-                                            @blur='checkIsValid($v.user.last_name, $event)' 
-                                    />
-                                    <div v-if="submitted && !$v.user.last_name.required" class="invalid-feedback">
-                                        Last Name is required
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="first_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> First Name<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">                                       
-                                    <div class="form-group">
-                                        <input type="text" 
-                                                v-model="user.first_name"                                                    
-                                                id="first_name" 
-                                                name="first_name" 
-                                                class="form-control form-control-sm" 
-                                                :class="{ 'is-invalid' : submitted && $v.user.first_name.$error}"
-                                                @blur='checkIsValid($v.user.first_name, $event)'
-                                        />
-                                        <div v-if="submitted && !$v.user.first_name.required" class="invalid-feedback">
-                                            First Name is required
-                                        </div>                                 
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="member-attribute-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Attribute <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <select id="attribute" name="attribute"
-                                        v-model="user.attribute"
-                                        class="form-control form-control-sm" 
-                                        :class="{ 'is-invalid' : submitted && $v.user.attribute.$error}"
-                                        @blur='checkIsValid($v.user.attribute, $event)'
-                                    >
-                                        <option value="">-- Select --</option>
-                                        <option v-for="attribute in this.attributes" :value="attribute.value" :key="attribute.id">
-											{{ attribute.name }}
-										</option>
-                                    </select>
-                                    <div v-if="submitted && !$v.user.attribute.required" class="invalid-feedback">
-                                        Member attribute is required
-                                    </div>                                          
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="nickname-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="nickname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Nickname <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">
-                                        <input type="text" v-model="user.nickname" id="nickname" name="nickname" 
-                                                class="form-control form-control-sm" 
-                                                :class="{ 'is-invalid': submitted && $v.user.nickname.$error }" 
-                                                @blur='checkIsValid($v.user.nickname, $event)'
-                                        />
-                                        <div v-if="submitted && !$v.user.nickname.required" class="invalid-feedback">
-                                            Nickname is required
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="gender-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Gender <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group my-0 pt-2">
-                                        <div class="form-group">                                           
-                                            <input type="radio" name="gender" :checked="memberinfo.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
-                                            <label for="gender" class="small col-2 px-0">Male</label>
-
-                                            <input type="radio" name="gender" :checked="memberinfo.gender === 'FEMALE'" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
-                                            <label for="gender" class="small col-2 px-0">Female</label>
-
-                                            <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
-                                                Gender is required
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="communication-app-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="communication_app" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Communication App <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-8">
-                                    <div class="row my-0">
-                                        <div class="col-5">
-                                            <select id="communication_app" name="communication_app"                                                
-                                                class="form-control form-control-sm" 
-												v-model="user.communication_app"
-                                                :class="{ 'is-invalid': submitted && $v.user.communication_app.$error }"
-                                                @blur='checkIsValid($v.user.communication_app, $event)'
-                                            >
-                                                <option value="">-- Select --</option>
-                                                <option value="Skype" :selected="this.memberinfo.communication_app === 'Skype'">Skype</option>
-                                                <option value="Zoom" :selected="this.memberinfo.communication_app === 'Zoom'">Zoom</option>
-                                            </select>
-                                            <div v-if="submitted && !$v.user.communication_app.required" class="invalid-feedback">
-                                                Communication App is required, Please select from choices
-                                            </div>                                            
-                                        </div>
-                                        <div class="col-6 px-0">                                          
-                                            <div class="form-group">                                               
-                                                <input type="text" v-model="user.communication_app_username" id="communication_app_username" name="communication_app_username" 
-                                                    class="form-control form-control-sm" 
-                                                    :class="{ 'is-invalid': submitted && $v.user.communication_app_username.$error }"
-                                                    @blur='checkIsValid($v.user.communication_app_username, $event)'
-                                                />
-                                                <div v-if="submitted && !$v.user.communication_app_username.required" class="invalid-feedback">
-                                                    Communication App Username is required
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="member-id-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="id" class="px-0 col-md-12 col-form-label"><span>&nbsp;</span> Member ID <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" name="id" class="form-control form-control-sm bg-white" 
-									:value="this.memberinfo.user_id" readonly>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="member-email-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="email" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> E-Mail Adress (Username) <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <div class="form-group">                                       
-                                        <input type="text" v-model="user.email" id="email" name="email" value="" placeholder="E-mail Address"
-                                        class="form-control form-control-sm" 
-                                        :class="{ 'is-invalid': submitted && $v.user.email.$error }" 
-                                        @blur='checkIsValid($v.user.email, $event)'
-                                        />
-                                        <div v-if="submitted && !$v.user.email.required" class="invalid-feedback">
-                                            E-Mail is required
-                                        </div>
-                                        <div v-if="submitted && !$v.user.email.email" class="invalid-feedback">
-                                            Please input a valid e-mail address
-                                        </div>                                        
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="birthday-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="birthday" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Birthday <div class="float-right">:</div>
-                                    </label>
-                                </div>
-                                <div class="col-4">
-                                    <div class="form-group">
-                                        <datepicker 
-                                            :language="ja"
-                                            id="birthday" 
-                                            name="birthday"
-											v-model="this.memberinfo.birthday"
-											:value="this.memberinfo.birthday"
-                                            :format="birthDateFormatter"
-                                            :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
-                                        ></datepicker>
-                                        <div v-if="submitted && !$v.user.birthday.required" class="invalid-feedback" style="display: block">
-                                            Birthday is required
-                                        </div>                                          
-                                    </div>                                                              
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="age" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="age" class="px-0 col-md-12 col-form-label"><span class="text-danger"> &nbsp;</span> Age <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-2">
-                                    <input type="text" v-model="user.age" name="age" class="form-control form-control-sm" placeholder="">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="membship-row" class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="membership" class="px-0 col-md-12 col-form-label"><span class="text-danger"> &nbsp;</span> Membership <div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-8">
-                                    <!-- MEMBERSHIP-->
-                                    <select name="membership" v-model="user.membership" class="form-control form-control-sm">
-                                        <option value="">-- Select --</option>
-                                        <option v-for="membership in this.memberships" :value="membership.name" :key="membership.id">{{ membership.name }}</option>                                     
-                                    </select>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
+                <div class="card-title bg-gray p-1">
+                    <div class="pl-2 font-weight-bold small">Personal Information</div>
                 </div>
-                <!--[end] member information section-->
 
-                <!--[start] Preferences -->
-                <div id="preferred-tutor-section" class="section">
-                    <div class="card-title bg-gray p-1 mt-4">
-                        <div class="pl-2 font-weight-bold small">Preferred Tutor</div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-12">
-
-                            <!-- Purpose -->
-                            <div class="row">
-                                <div class="col-2 small pr-0">
-                                    <label for="purpose" class="p-0 col-md-12 col-form-label">
-                                        <!--<span class="text-danger">*</span>-->
-                                        Purpose <div class="float-right">:</div>
-                                    </label>
-                                </div>
-                                <div class="col-8">
-
-                                    <ul class="checkbox-options">
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
-                                        </li>
-                                        
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="CONVERSATION" v-model="user.preference.purpose.CONVERSATION"  value="CONVERSATION">
-                                            <label>Get conversation(communication) skill</label>
-
-                                            <ul id="goalList" class="checkbox-options" v-if="user.preference.purpose.CONVERSATION">
-                                                <li><input type="radio" name="goal" value="BEGINNER" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Beginner- easy daily conversation level</li>
-                                                <li><input type="radio" name="goal" value="INTERMEDIATE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Intermediate- Daily conversation level</li>
-                                                <li><input type="radio" name="goal" value="ADVANCE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Advance - Social, Environment, Business English</li>
-                                                <li><input type="radio" name="goal" value="NATIVE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Be native level</li>
-                                            </ul>
-                                            <input type="hidden" name="extraDetails" value="BEGINNER">
-                                        </li>
-
-
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EIKEN" v-model="user.preference.purpose.ANTI_EIKEN"  value="ANTI_EIKEN">
-                                            English certification exam in Japan
-
-                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.ANTI_EIKEN" v-model="user.preference.purposeExtraDetails.ANTI_EIKEN" class="col-3 pl-1 form-control form-control-sm d-inline-block">
-                                        </li>
-
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EXAM" v-model="user.preference.purpose.ANTI_EXAM"  value="ANTI_EXAM"> 
-                                            Enter school
-                                            <ul id="examLevel" v-if="user.preference.purpose.ANTI_EXAM" style="list-style-type: none;">
-                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="JUNIOR_HIGH"> Junior High</li>
-                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="HIGHSCHOOL"> High school</li>
-                                                <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="UNIVERSITY"> University</li>
-                                            </ul>                                            
-                                        </li>
-
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="TOEFL" v-model="user.preference.purpose.TOEFL" value="TOEFL" > 
-                                            TOEFL(目標スコアー 点)
-                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEFL" v-model="user.preference.purposeExtraDetails.TOEFL" class="col-3 pl-1 form-control form-control-sm d-inline-block">
-                                        </li>
-
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="TOEIC" v-model="user.preference.purpose.TOEIC" value="TOEIC">  
-                                            TOEIC(目標スコアー 点)
-                                            <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEIC" v-model="user.preference.purposeExtraDetails.TOEIC" class="col-3 pl-1 form-control form-control-sm d-inline-block">
-                                        </li>
-
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="STUDY_ABROAD" v-model="user.preference.purpose.STUDY_ABROAD" value="STUDY_ABROAD"> Study Abroad
-                                            <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.STUDY_ABROAD" >
-                                                <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> Junior High</li>
-                                                <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> High school</li>
-                                                <li><input type="radio" name="studyAbroadLevel" value="UNIVERSITY" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> University</li>
-                                            </ul>
-                                        </li>
-
-
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="business" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
-                                            <input type="hidden" name="extraDetails" v-if="user.preference.purpose.BUSINESS" v-model="user.preference.purposeExtraDetails.BUSINESS">
-                                        </li>
-
-                                        <li>
-                                            <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
-                                            <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
-                                                v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
-                                        </li>
-                                    </ul>
-
-                                    <!-- loop all purposes
-                                    <div v-if="submitted && !$v.user.purposes.required" class="invalid-feedback" style="display: block">
-                                        Member Purpose is required, Please check at least one of the choices
-                                    </div>
-                                    -->
-
-                                </div>
-
+                <div id="agent-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="agent" class="px-0 pl-2 col-md-12 col-form-label"><span>&nbsp;</span>Agent <div class="float-right">:</div></label>
                             </div>
-
-
-                            <!--[start] lesson class row -->
-                            <div id="lesson-class-row" class="row pt-2">
-                                <div class="col-2">
-                                     <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span>
-                                    Lesson Class<div class="float-right">:</div></label>                                    
-                                </div>
-                                
-                                <div  class="col-6">
-
-                                    <div class="row bg-lightgray border-bottom">
-                                        <div class="col-3 col-md-3 text-center bold">
-                                            <label for="year">Year</label>
-                                        </div>
-                                        <div class="col-3 col-md-3 text-center bold">                                            
-                                            <label for="month">Month</label>
-                                        </div>
-                                        <div class="col-3 col-md-3 text-center bold">
-                                            <label for="grade">Grade</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="row py-2 bg-lightgray border-bottom">
-                                        <div class="col-3 col-md-3 pr-0">
-                                            <select id="lessonClassYear" name="lessonClassYear" v-model="user.preference.lesson.class.year" class="form-control form-control-sm pl-0" >
-                                                <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
-                                            </select>                                              
-                                        </div>
-                                        <div class="col-3 col-md-3 pr-0">
-                                            <select id="lessonClassMonth" name="lessonClassMonth" v-model="user.preference.lesson.class.month" class="form-control form-control-sm pl-0">
-                                                <option value="JAN" class="mx-0 px-0">January</option>
-                                                <option value="FEB">Febuary</option>
-                                                <option value="MAR">March</option>
-                                                <option value="APR">April</option>
-                                                <option value="MAY">May</option>
-                                                <option value="JUN">June</option>
-                                                <option value="JUL">July</option>
-                                                <option value="AUG">August</option>
-                                                <option value="SEP">September</option>
-                                                <option value="OCT">October</option>
-                                                <option value="NOV">November</option>
-                                                <option value="DEC">December</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-3 col-md-3">                                            
-                                            <input id="lessonClassGrade" name="lessonClassGrade" type="text" v-model="user.preference.lesson.class.grade" class="form-control form-control-sm" />
-                                        </div>                                        
-                                        <div class="col-3 col-md-3 text-center">     
-                                            <button class="btn btn-success btn-sm col-12" @click.prevent="addLessonClass()">Add</button>
-                                        </div>                                        
-                                    </div>
-
-                                    <!--[start] enumaration of all added timeslot -->
-                                    <div class="row py-2 bg-lightgray border-bottom" v-for="(lessonClass, index) in user.preference.lessonClasses" :key="lessonClass.id" >
-                                        <div class="col-3 col-md-3 text-center">
-                                             {{ lessonClass.attribute }}                                     
-                                        </div>
-                                        <div year="col-3 col-md-3 text-center">{{ lessonClass.year }} {{ lessonClass.month }}</div>                                        
-                                        <div class="col-3 col-md-3 text-center">     
-                                            <input type="text" :value="lessonClass.lesson_limit" class="form-control form-control-sm d-inline-block" />
-                                        </div> 
-                                        <div class="col-3 col-md-3 text-center">
-											<button class="btn btn-danger btn-sm col-4" @click.prevent="removeLessonClass(index)">X</button>                                            
-                                        </div>
-                                    </div>
-
-                                </div><!--[end] lesson class row -->
-
+                            <div class="col-6">
+                                <input type="text" name="agent" class="form-control form-control-sm" v-model="user.agent_name_en">
                             </div>
-
                         </div>
                     </div>
-
+                    <div class="col-6">
+                        <div class="row">
+                            
+                            <div class="col-4 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">Agent ID<div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <input type="text" name="agent_id" v-model="user.agent_id" class="form-control  form-control-sm">
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!--[end] Member Preferences -->
 
-
-                <!--[start] Lesson Details -->
-                <div id="lesson-details-section" class="section">
-                    <div class="card-title bg-gray p-1 mt-4">
-                        <div class="pl-2 font-weight-bold small">Lesson Details</div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> 
-                                    Member Since<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">                                    
-                                    <datepicker                        
-                                        id="member_since" 
-                                        name="member_since"
-										:value="memberinfo.member_since"
-                                        :format="memberSinceFomattter"
-                                        :input-class="[ 'form-control form-control-sm ' /* , { 'is-invalid': submitted && $v.user.member_since.$error }*/]"
-										:language="ja"
-                                    ></datepicker>                                    
-                                </div>
+                <div id="lastname-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Last Name <div class="float-right">:</div></label>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span>
-                                    Lesson Time<div class="float-right">:</div></label>
-                                </div>
-
-                                <div class="col-6">
-                                    <select id="lessonshiftid" name="lessonshiftid"
-                                        v-model="user.lessonshiftid"
-                                        class="form-control form-control-sm" 
-                                        :class="{ 'is-invalid': submitted && $v.user.lessonshiftid.$error }"
-                                        @blur='checkIsValid($v.user.lessonshiftid, $event)'
-                                        @change="propagateMainTutorOptions"   
-                                    >
-                                        <option value="">-- Select --</option>
-                                        <option v-for="shift in shifts" :value="shift.id" :key="shift.id">{{ shift.name }}</option>
-
-                                    </select>
-                                    <div v-if="submitted && !$v.user.lessonshiftid.required" class="invalid-feedback">
-                                        Lesson Time is required
-                                    </div>                                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row pt-2">
-                        <div class="col-6">
-                            <div class="row">
-                                <div class="col-4 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> 
-                                    Main Tutor<div class="float-right">:</div></label>
-                                </div>
-                                <div class="col-6">
-                                    <select id="maintutor" name="maintutor" 
-                                        v-model="user.maintutorid"
+                            <div class="col-6">
+                                <input type="text"                                                
+                                        v-model="user.last_name"                                                 
+                                        id="last_name" 
+                                        name="last_name" 
                                         class="form-control form-control-sm"
-                                        :class="{ 'is-invalid': submitted && $v.user.maintutorid.$error }"
-                                        @blur='checkIsValid($v.user.maintutorid, $event)'                                                                            
-                                    >
-                                        <option value="">-- Select --</option>
-                                        <!--@todo loop dynamically the teacher of times -->
-                                        <option v-for="mainTutor in mainTutors" :value="mainTutor.user_id" :key="mainTutor.user_id">{{ mainTutor.firstname }} {{ mainTutor.lastname }}</option>
-                                    </select>
-                                    <div v-if="submitted && !$v.user.maintutorid.required" class="invalid-feedback">
-                                        Main Tutor is required
-                                    </div>                                       
+                                        :class="{ 'is-invalid' : submitted && $v.user.last_name.$error }"
+                                        @blur='checkIsValid($v.user.last_name, $event)' 
+                                />
+                                <div v-if="submitted && !$v.user.last_name.required" class="invalid-feedback">
+                                    Last Name is required
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                </div>
-                <!--[end] Lesson Details -->
-
-                <!--Report Requirement-->
-                <div id="member-report-requirement" class="section">
-                    <div class="card-title bg-gray p-1 mt-4">
-                        <div class="pl-2 font-weight-bold small">Report Requirement</div>
-                    </div>
-
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 pt-4 col-form-label">                                    
-                                        Report Card <div class="float-right">:</div>
-                                    </label>
-                                </div>
-                                <div class="col-10">
-                                    <div class="row">
-                                        <div class="col-2 pr-0">
-                                            <div class="text-center">Member</div>
-                                            <select name="memberReportCard" class="form-control form-control-sm" v-model="user.reportCard.member">
-                                                <option value="">-- Select --</option>
-                                                <option value="Yes">Yes</option>
-                                                <option value="No">No</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-2 pr-0">
-                                            <div class="text-center">Agent</div>
-                                            <select name="agentReportCard" class="form-control form-control-sm" v-model="user.reportCard.agent">
-                                                <option value="">-- Select --</option>
-                                                <option value="Yes">Yes</option>
-                                                <option value="No">No</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="first_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> First Name<div class="float-right">:</div></label>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label">                                        
-                                        Monthly Report <div class="float-right">:</div>
-                                    </label>
-                                </div>
-                                <div class="col-10">
-                                    <div class="row">
-                                        <div class="col-2 pr-0">
-                                            <select name="year" class="form-control form-control-sm" v-model="user.monthlyReport.member">
-                                                <option value="">-- Select --</option>
-                                                <option value="Yes">Yes</option>
-                                                <option value="No">No</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-2 pr-0">
-                                            <select id="month" name="month" class="form-control form-control-sm" v-model="user.monthlyReport.agent">
-                                                <option value="">-- Select --</option>
-                                                <option value="Yes">Yes</option>
-                                                <option value="No">No</option>
-                                            </select>
-                                        </div>
-                                    </div>
+                            <div class="col-6">                                       
+                                <div class="form-group">
+                                    <input type="text" 
+                                            v-model="user.first_name"                                                    
+                                            id="first_name" 
+                                            name="first_name" 
+                                            class="form-control form-control-sm" 
+                                            :class="{ 'is-invalid' : submitted && $v.user.first_name.$error}"
+                                            @blur='checkIsValid($v.user.first_name, $event)'
+                                    />
+                                    <div v-if="submitted && !$v.user.first_name.required" class="invalid-feedback">
+                                        First Name is required
+                                    </div>                                 
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
-                <div id="member-point-purchase-type" class="section">
-                    <div class="card-title bg-gray p-1 mt-4">
-                        <div class="pl-2 font-weight-bold small">Point Purchase Type</div>
+                <div id="member-attribute-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Attribute <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <select id="attribute" name="attribute"
+                                    v-model="user.attribute"
+                                    class="form-control form-control-sm" 
+                                    :class="{ 'is-invalid' : submitted && $v.user.attribute.$error}"
+                                    @blur='checkIsValid($v.user.attribute, $event)'
+                                >
+                                    <option value="">-- Select --</option>
+                                    <option v-for="attribute in this.attributes" :value="attribute.value" :key="attribute.id">
+                                        {{ attribute.name }}
+                                    </option>
+                                </select>
+                                <div v-if="submitted && !$v.user.attribute.required" class="invalid-feedback">
+                                    Member attribute is required
+                                </div>                                          
+                            </div>
+                        </div>
                     </div>
+                </div>
 
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 small pr-0">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Point Purchase<div class="float-right">:</div></label>
+                <div id="nickname-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="nickname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Nickname <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <input type="text" v-model="user.nickname" id="nickname" name="nickname" 
+                                            class="form-control form-control-sm" 
+                                            :class="{ 'is-invalid': submitted && $v.user.nickname.$error }" 
+                                            @blur='checkIsValid($v.user.nickname, $event)'
+                                    />
+                                    <div v-if="submitted && !$v.user.nickname.required" class="invalid-feedback">
+                                        Nickname is required
+                                    </div>
                                 </div>
-                                <div class="col-10">
-                                    <div class="row">
-                                        <div class="col-2 pr-0">
-                                            <select id="pointpurchase" name="pointpurchase" class="form-control form-control-sm" v-model="user.pointPurchase">
-                                                <option value="">-- Select --</option>
-                                                <option value="AGENT">Agent</option>
-                                                <option value="DIRECT">Direct</option>
-                                            </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="gender-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Gender <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group my-0 pt-2">
+                                    <div class="form-group">                                           
+                                        <input type="radio" name="gender" :checked="memberinfo.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
+                                        <label for="gender" class="small col-2 px-0">Male</label>
+
+                                        <input type="radio" name="gender" :checked="memberinfo.gender === 'FEMALE'" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
+                                        <label for="gender" class="small col-2 px-0">Female</label>
+
+                                        <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
+                                            Gender is required
                                         </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="communication-app-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="communication_app" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Communication App <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-8">
+                                <div class="row my-0">
+                                    <div class="col-5">
+                                        <select id="communication_app" name="communication_app"                                                
+                                            class="form-control form-control-sm" 
+                                            v-model="user.communication_app"
+                                            :class="{ 'is-invalid': submitted && $v.user.communication_app.$error }"
+                                            @blur='checkIsValid($v.user.communication_app, $event)'
+                                        >
+                                            <option value="">-- Select --</option>
+                                            <option value="Skype" :selected="this.memberinfo.communication_app === 'Skype'">Skype</option>
+                                            <option value="Zoom" :selected="this.memberinfo.communication_app === 'Zoom'">Zoom</option>
+                                        </select>
+                                        <div v-if="submitted && !$v.user.communication_app.required" class="invalid-feedback">
+                                            Communication App is required, Please select from choices
+                                        </div>                                            
+                                    </div>
+                                    <div class="col-6 px-0">                                          
+                                        <div class="form-group">                                               
+                                            <input type="text" v-model="user.communication_app_username" id="communication_app_username" name="communication_app_username" 
+                                                class="form-control form-control-sm" 
+                                                :class="{ 'is-invalid': submitted && $v.user.communication_app_username.$error }"
+                                                @blur='checkIsValid($v.user.communication_app_username, $event)'
+                                            />
+                                            <div v-if="submitted && !$v.user.communication_app_username.required" class="invalid-feedback">
+                                                Communication App Username is required
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
                             </div>
@@ -653,74 +194,525 @@
                     </div>
                 </div>
 
-                <div id="member-desired-schedule" class="section">
-                    <div class="card-title bg-gray p-1 mt-4">
-                        <div class="pl-2 font-weight-bold small">Desired Schedule </div>
+                <div id="member-id-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="id" class="px-0 col-md-12 col-form-label"><span>&nbsp;</span> Member ID <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <input type="text" name="id" class="form-control form-control-sm bg-white" 
+                                :value="this.memberinfo.user_id" readonly>
+                            </div>
+                        </div>
                     </div>
-                    <div class="row pt-2">
-                        <div class="col-12">
-                            <div class="row">
-                                <div class="col-2 small pr-0">
+                </div>
+
+                <div id="member-email-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="email" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> E-Mail Adress (Username) <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">                                       
+                                    <input type="text" v-model="user.email" id="email" name="email" value="" placeholder="E-mail Address"
+                                    class="form-control form-control-sm" 
+                                    :class="{ 'is-invalid': submitted && $v.user.email.$error }" 
+                                    @blur='checkIsValid($v.user.email, $event)'
+                                    />
+                                    <div v-if="submitted && !$v.user.email.required" class="invalid-feedback">
+                                        E-Mail is required
+                                    </div>
+                                    <div v-if="submitted && !$v.user.email.email" class="invalid-feedback">
+                                        Please input a valid e-mail address
+                                    </div>                                        
                                 </div>
-                                <div class="col-10">
-                                    <div class="row">
-                                        <div class="col-2 pr-0">
-                                            <select id="selectDay" name="desiredDay"  v-model="user.desiredSchedule.day" class="form-control form-control-sm d-inline-block">
-                                                <option value="">-- Select --</option>
-                                                <option value="MONDAY">Monday</option>
-                                                <option value="TUESDAY">Tuesday</option>
-                                                <option value="WEDNESDAY">Wednesday</option>
-                                                <option value="THURSDAY">Thursday</option>
-                                                <option value="FRIDAY">Friday</option>
-                                                <option value="SATURDAY">Saturday</option>
-                                                <option value="SUNDAY">Sunday</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-3">                                                                                        
-                                            <b-form-timepicker id="timepicker-sm" size="sm" v-model="user.desiredSchedule.time" local="en" class="mb-4"></b-form-timepicker>
-                                        </div>
-                                        <div class="col-3">
-                                            <button class="btn btn-success btn-sm d-inline-block"  @click.prevent="addDesiredSchedule()">Add</button>
-                                        </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="birthday-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="birthday" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Birthday <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <datepicker 
+                                        :language="ja"
+                                        id="birthday" 
+                                        name="birthday"
+                                        v-model="this.memberinfo.birthday"
+                                        :value="this.memberinfo.birthday"
+                                        :format="birthDateFormatter"
+                                        :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
+                                    ></datepicker>
+                                    <div v-if="submitted && !$v.user.birthday.required" class="invalid-feedback" style="display: block">
+                                        Birthday is required
+                                    </div>                                          
+                                </div>                                                              
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="age" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="age" class="px-0 col-md-12 col-form-label"><span class="text-danger"> &nbsp;</span> Age <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-2">
+                                <input type="text" v-model="user.age" name="age" class="form-control form-control-sm" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="membship-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="membership" class="px-0 col-md-12 col-form-label"><span class="text-danger"> &nbsp;</span> Membership <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-8">
+                                <!-- MEMBERSHIP-->
+                                <select name="membership" v-model="user.membership" class="form-control form-control-sm">
+                                    <option value="">-- Select --</option>
+                                    <option v-for="membership in this.memberships" :value="membership.name" :key="membership.id">{{ membership.name }}</option>                                     
+                                </select>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!--[end] member information section-->
+
+            <!--[start] Preferences -->
+            <div id="preferred-tutor-section" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Preferred Tutor</div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+
+                        <!-- Purpose -->
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="purpose" class="p-0 col-md-12 col-form-label">
+                                    <!--<span class="text-danger">*</span>-->
+                                    Purpose <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-8">
+
+                                <ul class="checkbox-options">
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
+                                    </li>
+                                    
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="CONVERSATION" v-model="user.preference.purpose.CONVERSATION"  value="CONVERSATION">
+                                        <label>Get conversation(communication) skill</label>
+
+                                        <ul id="goalList" class="checkbox-options" v-if="user.preference.purpose.CONVERSATION">
+                                            <li><input type="radio" name="goal" value="BEGINNER" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Beginner- easy daily conversation level</li>
+                                            <li><input type="radio" name="goal" value="INTERMEDIATE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Intermediate- Daily conversation level</li>
+                                            <li><input type="radio" name="goal" value="ADVANCE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Advance - Social, Environment, Business English</li>
+                                            <li><input type="radio" name="goal" value="NATIVE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Be native level</li>
+                                        </ul>
+                                        <input type="hidden" name="extraDetails" value="BEGINNER">
+                                    </li>
+
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EIKEN" v-model="user.preference.purpose.ANTI_EIKEN"  value="ANTI_EIKEN">
+                                        English certification exam in Japan
+
+                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.ANTI_EIKEN" v-model="user.preference.purposeExtraDetails.ANTI_EIKEN" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EXAM" v-model="user.preference.purpose.ANTI_EXAM"  value="ANTI_EXAM"> 
+                                        Enter school
+                                        <ul id="examLevel" v-if="user.preference.purpose.ANTI_EXAM" style="list-style-type: none;">
+                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="JUNIOR_HIGH"> Junior High</li>
+                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="HIGHSCHOOL"> High school</li>
+                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="UNIVERSITY"> University</li>
+                                        </ul>                                            
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="TOEFL" v-model="user.preference.purpose.TOEFL" value="TOEFL" > 
+                                        TOEFL(目標スコアー 点)
+                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEFL" v-model="user.preference.purposeExtraDetails.TOEFL" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="TOEIC" v-model="user.preference.purpose.TOEIC" value="TOEIC">  
+                                        TOEIC(目標スコアー 点)
+                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEIC" v-model="user.preference.purposeExtraDetails.TOEIC" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="STUDY_ABROAD" v-model="user.preference.purpose.STUDY_ABROAD" value="STUDY_ABROAD"> Study Abroad
+                                        <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.STUDY_ABROAD" >
+                                            <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> Junior High</li>
+                                            <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> High school</li>
+                                            <li><input type="radio" name="studyAbroadLevel" value="UNIVERSITY" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> University</li>
+                                        </ul>
+                                    </li>
+
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="business" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
+                                        <input type="hidden" name="extraDetails" v-if="user.preference.purpose.BUSINESS" v-model="user.preference.purposeExtraDetails.BUSINESS">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
+                                        <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
+                                            v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
+                                    </li>
+                                </ul>
+
+                                <!-- loop all purposes
+                                <div v-if="submitted && !$v.user.purposes.required" class="invalid-feedback" style="display: block">
+                                    Member Purpose is required, Please check at least one of the choices
+                                </div>
+                                -->
+
+                            </div>
+
+                        </div>
+
+
+                        <!--[start] lesson class row -->
+                        <div id="lesson-class-row" class="row pt-2">
+                            <div class="col-2">
+                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span>
+                                Lesson Class<div class="float-right">:</div></label>                                    
+                            </div>
+                            
+                            <div  class="col-6">
+
+                                <div class="row bg-lightgray border-bottom">
+                                    <div class="col-3 col-md-3 text-center bold">
+                                        <label for="year">Year</label>
+                                    </div>
+                                    <div class="col-3 col-md-3 text-center bold">                                            
+                                        <label for="month">Month</label>
+                                    </div>
+                                    <div class="col-3 col-md-3 text-center bold">
+                                        <label for="grade">Grade</label>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 offset-md-2">
-                                    <!--[start] enumaration of all TOEIC timeslot */-->
-                                    <div class="row py-2 bg-lightgray border-bottom" v-for="(schedule, index) in user.desiredScheduleList" :key="schedule.id" >
-                                        <div id="scheduleDayr" class="col-3 col-md-3 text-center">
-                                            {{ schedule.day }}
-                                        </div>
-                                        <div id="scheduleMo" class="col-3 col-md-3 text-center">                                            
-                                            {{ schedule.desired_time }}
-                                        </div>        
-										<div class="col-3 col-md-3 text-center">
-											<button class="btn btn-danger btn-sm col-4" @click.prevent="removeDesiredSchedule(index)">X</button>                                            
-										</div>																				                                 
+
+                                <div class="row py-2 bg-lightgray border-bottom">
+                                    <div class="col-3 col-md-3 pr-0">
+                                        <select id="lessonClassYear" name="lessonClassYear" v-model="user.preference.lesson.class.year" class="form-control form-control-sm pl-0" >
+                                            <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
+                                        </select>                                              
+                                    </div>
+                                    <div class="col-3 col-md-3 pr-0">
+                                        <select id="lessonClassMonth" name="lessonClassMonth" v-model="user.preference.lesson.class.month" class="form-control form-control-sm pl-0">
+                                            <option value="JAN" class="mx-0 px-0">January</option>
+                                            <option value="FEB">Febuary</option>
+                                            <option value="MAR">March</option>
+                                            <option value="APR">April</option>
+                                            <option value="MAY">May</option>
+                                            <option value="JUN">June</option>
+                                            <option value="JUL">July</option>
+                                            <option value="AUG">August</option>
+                                            <option value="SEP">September</option>
+                                            <option value="OCT">October</option>
+                                            <option value="NOV">November</option>
+                                            <option value="DEC">December</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3 col-md-3">                                            
+                                        <input id="lessonClassGrade" name="lessonClassGrade" type="text" v-model="user.preference.lesson.class.lesson_limit" class="form-control form-control-sm" />
+                                    </div>                                        
+                                    <div class="col-3 col-md-3 text-center">     
+                                        <button class="btn btn-success btn-sm col-12" @click.prevent="addLessonClass()">Add</button>
+                                    </div>                                        
+                                </div>
+
+                                <!--[start] enumaration of all added timeslot -->
+                                <div class="row py-2 bg-lightgray border-bottom" v-for="(lessonClass, index) in user.preference.lessonClasses" :key="lessonClass.id" >
+                                    <div class="col-3 col-md-3 text-center">
+                                            {{ lessonClass.attribute }}                                     
+                                    </div>
+                                    <div year="col-3 col-md-3 text-center">{{ lessonClass.year }} {{ lessonClass.month }}</div>                                        
+                                    <div class="col-3 col-md-3 text-center">     
+                                        <input type="text" :value="lessonClass.lesson_limit" class="form-control form-control-sm d-inline-block" />
                                     </div> 
-									
+                                    <div class="col-3 col-md-3 text-center">
+                                        <button class="btn btn-danger btn-sm col-4" @click.prevent="removeLessonClass(index)">X</button>                                            
+                                    </div>
                                 </div>
-                            </div>
 
+                            </div><!--[end] lesson class row -->
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <!--[end] Member Preferences -->
+
+
+            <!--[start] Lesson Details -->
+            <div id="lesson-details-section" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Lesson Details</div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> 
+                                Member Since<div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">                                    
+                                <datepicker                        
+                                    id="member_since" 
+                                    name="member_since"
+                                    :value="memberinfo.member_since"
+                                    :format="memberSinceFomattter"
+                                    :input-class="[ 'form-control form-control-sm ' /* , { 'is-invalid': submitted && $v.user.member_since.$error }*/]"
+                                    :language="ja"
+                                ></datepicker>                                    
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="submit-button" class="section row py-4">
-                    <div class="col-2"></div>
-                    <div class="col-3 text-left">
-                        <button class="btn btn-primary btn-sm">Save</button>
-                        <input type="reset" value="Cancel" class="btn btn-primary btn-sm">
-                        
+                <div class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span>
+                                Lesson Time<div class="float-right">:</div></label>
+                            </div>
+
+                            <div class="col-6">
+                                <select id="lessonshiftid" name="lessonshiftid"
+                                    v-model="user.lessonshiftid"
+                                    class="form-control form-control-sm" 
+                                    :class="{ 'is-invalid': submitted && $v.user.lessonshiftid.$error }"
+                                    @blur='checkIsValid($v.user.lessonshiftid, $event)'
+                                    @change="propagateMainTutorOptions"   
+                                >
+                                    <option value="">-- Select --</option>
+                                    <option v-for="shift in shifts" :value="shift.id" :key="shift.id">{{ shift.name }}</option>
+
+                                </select>
+                                <div v-if="submitted && !$v.user.lessonshiftid.required" class="invalid-feedback">
+                                    Lesson Time is required
+                                </div>                                    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> 
+                                Main Tutor<div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <select id="maintutor" name="maintutor" 
+                                    v-model="user.maintutorid"
+                                    class="form-control form-control-sm"
+                                    :class="{ 'is-invalid': submitted && $v.user.maintutorid.$error }"
+                                    @blur='checkIsValid($v.user.maintutorid, $event)'                                                                            
+                                >
+                                    <option value="">-- Select --</option>
+                                    <!--@todo loop dynamically the teacher of times -->
+                                    <option v-for="mainTutor in mainTutors" :value="mainTutor.user_id" :key="mainTutor.user_id">{{ mainTutor.firstname }} {{ mainTutor.lastname }}</option>
+                                </select>
+                                <div v-if="submitted && !$v.user.maintutorid.required" class="invalid-feedback">
+                                    Main Tutor is required
+                                </div>                                       
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-            </form>
+            </div>
+            <!--[end] Lesson Details -->
 
-        </div>
-        <!--[end] card body -->
-        
+            <!--Report Requirement-->
+            <div id="member-report-requirement" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Report Requirement</div>
+                </div>
+
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 pt-4 col-form-label">                                    
+                                    Report Card <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-2 pr-0">
+                                        <div class="text-center">Member</div>
+                                        <select name="memberReportCard" class="form-control form-control-sm" v-model="user.reportCard.member">
+                                            <option value="">-- Select --</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-2 pr-0">
+                                        <div class="text-center">Agent</div>
+                                        <select name="agentReportCard" class="form-control form-control-sm" v-model="user.reportCard.agent">
+                                            <option value="">-- Select --</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">                                        
+                                    Monthly Report <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-2 pr-0">
+                                        <select name="year" class="form-control form-control-sm" v-model="user.monthlyReport.member">
+                                            <option value="">-- Select --</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-2 pr-0">
+                                        <select id="month" name="month" class="form-control form-control-sm" v-model="user.monthlyReport.agent">
+                                            <option value="">-- Select --</option>
+                                            <option value="Yes">Yes</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="member-point-purchase-type" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Point Purchase Type</div>
+                </div>
+
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span> Point Purchase<div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-2 pr-0">
+                                        <select id="pointpurchase" name="pointpurchase" class="form-control form-control-sm" v-model="user.pointPurchase">
+                                            <option value="">-- Select --</option>
+                                            <option value="AGENT">Agent</option>
+                                            <option value="DIRECT">Direct</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="member-desired-schedule" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Desired Schedule </div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-2 pr-0">
+                                        <select id="selectDay" name="desiredDay"  v-model="user.desiredSchedule.day" class="form-control form-control-sm d-inline-block">
+                                            <option value="">-- Select --</option>
+                                            <option value="MONDAY">Monday</option>
+                                            <option value="TUESDAY">Tuesday</option>
+                                            <option value="WEDNESDAY">Wednesday</option>
+                                            <option value="THURSDAY">Thursday</option>
+                                            <option value="FRIDAY">Friday</option>
+                                            <option value="SATURDAY">Saturday</option>
+                                            <option value="SUNDAY">Sunday</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-3">                                                                                        
+                                        <b-form-timepicker id="timepicker-sm" size="sm" v-model="user.desiredSchedule.desired_time" local="en" class="mb-4"></b-form-timepicker>
+                                    </div>
+                                    <div class="col-3">
+                                        <button class="btn btn-success btn-sm d-inline-block"  @click.prevent="addDesiredSchedule()">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 offset-md-2">
+                                <!--[start] enumaration of all TOEIC timeslot */-->
+                                <div class="row py-2 bg-lightgray border-bottom" v-for="(schedule, index) in user.desiredScheduleList" :key="schedule.id" >
+                                    <div id="scheduleDayr" class="col-3 col-md-3 text-center">
+                                        {{ schedule.day }}
+                                    </div>
+                                    <div id="scheduleMo" class="col-3 col-md-3 text-center">                                            
+                                        {{ schedule.desired_time }}
+                                    </div>        
+                                    <div class="col-3 col-md-3 text-center">
+                                        <button class="btn btn-danger btn-sm col-4" @click.prevent="removeDesiredSchedule(index)">X</button>                                            
+                                    </div>																				                                 
+                                </div> 
+                                
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="submit-button" class="section row py-4">
+                <div class="col-2"></div>
+                <div class="col-3 text-left">
+                    <button class="btn btn-primary btn-sm">Save</button>
+                    <input type="reset" value="Cancel" class="btn btn-primary btn-sm">
+                    
+                </div>
+            </div>
+
+        </form>
     </div>
 </template>
 
@@ -842,7 +834,7 @@ export default {
                         class: {
                             month:  "",
                             year:   "",
-                            grade:  ""
+                            lesson_limit:  ""
                         }
                     },
 
@@ -882,7 +874,7 @@ export default {
                 //desired schedule list
                 desiredSchedule: {
                     day: "",
-                    time: ""
+                    desired_time: ""
                 },
 
                 desiredScheduleList: [],                
@@ -1127,9 +1119,12 @@ export default {
                 
                 let year =  this.user.preference.lesson.class.year;
                 let month = this.user.preference.lesson.class.month;
-                let grade =  this.user.preference.lesson.class.grade;
+                let lesson_limit =  this.user.preference.lesson.class.lesson_limit;
 
-                if (year && month && grade) {
+                alert (year + " , " + month + ", " + lesson_limit);
+                
+
+                if (year && month && lesson_limit) {
                     const result =  this.user.preference.lessonClasses.find(item => item.year === year && item.month === month);
                     if (result) {
                         alert ("Selected item is already in the list");
@@ -1139,7 +1134,7 @@ export default {
                             attribute: this.user.attribute,
                             year:  this.user.preference.lesson.class.year,
                             month: this.user.preference.lesson.class.month,
-                            grade:  this.user.preference.lesson.class.grade
+                            lesson_limit:  this.user.preference.lesson.class.lesson_limit
                         });
                     }
                 } else {
@@ -1207,9 +1202,9 @@ export default {
         {
         
             let day     = this.user.desiredSchedule.day;
-            let time    = this.user.desiredSchedule.time;
+            let desired_time    = this.user.desiredSchedule.desired_time;
 
-            if (day && time) {
+            if (day && desired_time) {
                 
                 let result =  this.user.desiredScheduleList.find(item => item.day === day && item.time === time);
 
@@ -1219,7 +1214,7 @@ export default {
                 } else {
                     this.user.desiredScheduleList.push({                                      
                         day:  day,
-                        time: time 
+                        desired_time: desired_time 
                     });
                 }
             } else {

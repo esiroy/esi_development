@@ -1,4 +1,3 @@
-
 @extends('layouts.admin')
 
 @section('content')
@@ -14,19 +13,25 @@
 
         <!--[start] container -->
         <div class="container">
-            <!--[start] asi-car -->
+            @include('includes.session.message')
+            <!--[start] asi-card-->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
                     User Settings
                 </div>
                 <div class="card-body">
-
-                  
+                    <!--[start] change password-->
+                    @include('admin.modules.settings.includes.formPassword')
+                    <!--[end] change password-->
+                    
+                    <!--[start] change user details-->
+                    @include('admin.modules.settings.includes.changeUserDetails')
+                    <!--[end] change user details-->
                 </div>
             </div>
             <!--[end] card-->
         </div>
-        <!--[end] container -->
+        <!--[end] container-->
 
     </div>
 </div>

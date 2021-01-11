@@ -8,7 +8,6 @@ use App\Models\AgentTransaction;
 use App\Models\LessonGoals;
 use App\Models\Member;
 use App\Models\MemberAttribute;
-use App\Models\MemberCredits;
 use App\Models\MemberDesiredSchedule;
 use App\Models\ReportCard;
 use App\Models\ReportCardDate;
@@ -16,13 +15,15 @@ use App\Models\ScheduleItem;
 use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Models\UserImage;
 use Auth;
+use Carbon\Carbon;
 use DB;
-use Gate;
 
 //use App\Models\MemberPointPurchaseHistory;
 //use App\Models\Membership;
 
+use Gate;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Validator;
@@ -32,7 +33,18 @@ class MemberController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        //$this->middleware('auth');
+
+        $this->middleware(function ($request, $next) {
+            //authenticated by has no "admin_access" in his role attached
+            //@do: redirect to home (authenticated member will be his view)
+            if (Gate::denies('admin_access')) {
+                return redirect(route('home'));
+            }
+            return $next($request);           
+        });
+
+        
     }
 
     /**
@@ -82,25 +94,24 @@ class MemberController extends Controller
 
     }
 
-   /*
+    /*
     public function details($memberID)
     {
-        $member = Member::join('users', 'users.id', '=', 'members.user_id')
-        //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-            ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-            ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-                                            attributes.name as attribute,
-                                            members.id as id,
-                                            agents.id as agent_id,
-                                            tutors.name_en as main_tutor_name,
-                                            members.credits as credits
-                                        "))->where('members.id', $memberID)->first();
+    $member = Member::join('users', 'users.id', '=', 'members.user_id')
+    //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
+    attributes.name as attribute,
+    members.id as id,
+    agents.id as agent_id,
+    tutors.name_en as main_tutor_name,
+    members.credits as credits
+    "))->where('members.id', $memberID)->first();
 
-        return view('admin.modules.member.details', compact('member'));
-    } 
-    */
-
+    return view('admin.modules.member.details', compact('member'));
+    }
+     */
 
     /**
      * (v2)
@@ -124,23 +135,41 @@ class MemberController extends Controller
             ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
             ->leftJoin('tutors', 'tutors.id', '=', 'members.tutor_id')
             ->select("*", DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name,
-                                            users.id as id,
-                                            agents.id as agent_id
-                                        "));
+                                        users.id as id,
+                                        agents.id as agent_id
+                                    "));
 
-        //@[START] USER SEARCH - if user search for a member
-        if (isset($member_id) || isset($name) || isset($email)) {
-            if (isset($member_id)) {
-                $memberQuery = $memberQuery->where('members.user_id', $member_id);
-            }
-            if (isset($name)) {
-                $memberQuery = $memberQuery->orWhere('users.firstname', 'like', '%' . $name . '%')->orWhere('users.lastname', 'like', '%' . $name . '%');
-            }
+        if ($request->expired) {
 
-            if (isset($email)) {
-                $memberQuery = $memberQuery->orWhere('users.email', $email);
-            }
-        } //[END] USER SEARCH
+            $now = Carbon::now();
+            $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());
+        
+        } else if ($request->toexpire) {
+
+                
+
+            $now = Carbon::now()->subDays(30);
+
+       
+            $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());                
+
+        } else {
+
+            //@[START] USER SEARCH - if user search for a member
+            if (isset($member_id) || isset($name) || isset($email)) {
+                if (isset($member_id)) {
+                    $memberQuery = $memberQuery->where('members.user_id', $member_id);
+                }
+                if (isset($name)) {
+                    $memberQuery = $memberQuery->orWhere('users.firstname', 'like', '%' . $name . '%')->orWhere('users.lastname', 'like', '%' . $name . '%');
+                }
+
+                if (isset($email)) {
+                    $memberQuery = $memberQuery->orWhere('users.email', $email);
+                }
+            } //[END] USER SEARCH
+
+        }
 
         $members = $memberQuery->orderby('users.id', 'ASC')->paginate(30);
 
@@ -187,8 +216,6 @@ class MemberController extends Controller
 
         return view('admin.modules.member.account', compact('member', 'credits', 'transactions', 'purchaseHistory', 'latestDateOfPurchase'));
     }
-
-
 
     /**
      * Display a listing of the payment history.
@@ -287,36 +314,11 @@ class MemberController extends Controller
      */
     public function edit($memberID)
     {
-
-        //Member Information
-        /*
-        $memberInfo = Member::join('users', 'users.id', '=', 'members.user_id')
-        ->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-        ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-        ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-        ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-        attributes.name as attribute,
-        members.id as id,
-        tutors.name_en as main_tutor_name
-        "))->where('members.id', $member->id)->first();
-         */
-
-        //LessonClasses
-        //$lessonClasses = MemberLesson::where('user_id', $member->user_id)->get();
-
-        /*
-        $desiredSchedule = MemberDesiredSchedule::where('user_id', $member->user_id)->get();
-
-        foreach ($desiredSchedule as $item) {
-        echo $item->day . " " . $item->time . "<BR>";
-        }
-
-        //Purpose List
-        $purposes = Purpose::where('user_id', $member->user_id)->get();
-         */
-        //[DROPDOWN OPTIONS] - attributes, membership, Shifts
-        //member info
         $memberInfo = Member::where('user_id', $memberID)->first();
+
+        //get photo
+        $userImageObj = new UserImage();
+        $userImage = $userImageObj->getMemberPhoto($memberInfo);
 
         //user Info
         $userInfo = User::where('id', $memberID)->select('id', 'firstname', 'lastname', 'email',
@@ -335,13 +337,6 @@ class MemberController extends Controller
         $goals = new LessonGoals();
         $lessonGoals = $goals->getLessonGoals($memberID);
 
-        /*
-        echo $memberID;
-        echo "<pre>";
-        print_r ($lessonGoals);
-        exit();
-         */
-
         //MemberAttribute - (lessonClasses)
         $memberAttribute = new MemberAttribute();
         $lessonClasses = $memberAttribute->getMemberAttribute($memberID);
@@ -351,7 +346,7 @@ class MemberController extends Controller
 
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
-            'userInfo', 'memberInfo',
+            'userInfo', 'memberInfo', 'userImage',
             'lessonGoals', 'lessonClasses', 'desiredSchedule'));
 
     }
@@ -409,12 +404,12 @@ class MemberController extends Controller
 
         //Update Agent Transaction Table
         $agentCredit = [
-            'valid'         => 1,
+            'valid' => 1,
             'transaction_type' => $request->transaction_type,
             'agent_id' => null,
-            'member_id' => $member->user_id, 
+            'member_id' => $member->user_id,
             'created_by_id' => Auth::user()->id,
-            'amount' => $request->credits,            
+            'amount' => $request->credits,
             'price' => $request->amount,
             'remarks' => $request->remarks,
             'credits_expiration' => $expiry_date,

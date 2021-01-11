@@ -30,12 +30,39 @@ class ManagerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
 
         abort_if(Gate::denies('manager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         
-        $managers = User::where('user_type', 'MANAGER')->get();      
+
+        //request variables
+        $username = $request->username;
+        $name = $request->name;
+        $email = $request->email;
+
+        $managerQuery = new User(); 
+        
+        
+        //@[START] USER SEARCH - if user search for a member
+        if (isset($username) || isset($name) || isset($email)) {
+
+            if (isset($username)) {
+                $managerQuery = $managerQuery->where('username', $username);
+            }
+            if (isset($name)) {
+
+                
+                $managerQuery = $managerQuery->orWhere('firstname', 'like', '%' . $name . '%')->orWhere('users.lastname', 'like', '%' . $name . '%');
+            }
+
+            if (isset($email)) {
+                $managerQuery = $managerQuery->orWhere('email', $email);
+            }
+        }
+
+        $managers = $managerQuery->where('user_type', 'MANAGER')->get();
+
 
         return view('admin.modules.manager.index', compact('managers'));
     }

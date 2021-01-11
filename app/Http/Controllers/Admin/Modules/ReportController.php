@@ -17,7 +17,9 @@ class ReportController extends Controller
     public function index(Request $request)
     {
 
-        $per_page = 15;
+        $per_page = 50;
+
+        
         $from   = date("Y年 m月 j日");
         $to   = null;
 

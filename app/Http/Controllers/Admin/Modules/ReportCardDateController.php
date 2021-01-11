@@ -37,6 +37,7 @@ class ReportCardDateController extends Controller
 
     public function store(Request $request) 
     {
+    
         if ($files = $request->file('file')) {
 
             //file path
@@ -50,7 +51,8 @@ class ReportCardDateController extends Controller
             if ($request->file('file')->getSize() > 0) {
                 //save in storage -> storage/public/uploads/
                 $path = $request->file('file')->storeAs(
-                    'public/uploads/', $newFilename
+                    //file path
+                        $storagePath, $newFilename
                 );
                 //create public path -> public/storage/uploads/{folder_id}
                 $public_file_path = $storagePath . $newFilename;                

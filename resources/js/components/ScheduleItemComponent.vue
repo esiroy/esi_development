@@ -108,7 +108,8 @@
                     <tr v-for="tutor in tutors" :key="tutor.id">
                         <td class="">
                             <div style="width:125px">
-                                <!--{{ tutor.id }} -->
+                                {{ tutor.id }} |
+                                {{ tutor.user_id }}  |
                                 {{ tutor.firstname }}
                             </div>
                         </td>
@@ -682,13 +683,6 @@ export default {
     .table td {
         font-size: 11px;
     }
-
-    .esi-table a, .b-table a {
-        text-decoration: none;
-        color: #c60000;
-                    
-    }    
-
 
     .table-schedules td.schedTime {
         background: #d0e8f7;

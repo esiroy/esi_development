@@ -184,6 +184,7 @@ class ScheduleItemController extends Controller
 
             //@todo: ajax load lessons and members (NOT CHECKED)
             $scheduleItem =  new ScheduleItem();
+            
             $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
           
             return view('admin.modules.tutor.lessons', compact('dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));

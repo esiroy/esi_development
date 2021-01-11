@@ -61,8 +61,8 @@
                             <span data-href="/exportCSV" id="export" class="btn btn-primary btn-sm" onclick="exportTasks(event.target); return false">Generate Member List</span>
 
                             @endcan
-                            <button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button>
-                            <button type="button" class="btn btn-primary btn-sm">Sort Expired</button>
+                            <a href="{{ url('admin/member?toexpire=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button></a>
+                            <a href="{{ url('admin/member?expired=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Expired</button></a>
                         </div>
                     </div>
 
@@ -128,64 +128,21 @@ table.dataTable thead>tr>th.sorting_desc {
     window.addEventListener('load', function() {
 
         let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
-        let _token = "{{ csrf_token() }}"      
-
-        @can('member_delete')
-        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
-        let deleteButton = { 
-            text: deleteButtonTrans, 
-            url: "{{ route('admin.tutor.massDestroy') }}",
-            className: 'btn-danger',
-            action: function(e, dt, node, config) {
-                var ids = $.map(dt.rows({
-                    selected: true
-                }).nodes(), function(entry) {
-                    return $(entry).data('entry-id')
-                });
-
-                if (ids.length === 0) {
-                    alert('{{ trans('global.datatables.zero_selected') }}')
-                    return
-                }
-
-                if (confirm('{{ trans('global.areYouSure') }}')) 
-                {
-                    $.ajax({
-                        headers: {'x-csrf-token': _token}, method: 'POST', url: config.url, 
-                        data: {
-                            ids: ids,
-                            _method: 'DELETE'
-                        }
-                    }).done(function() {
-                        location.reload()
-                    })
-                }
-            }
-        }
-        dtButtons.push(deleteButton)
-        @endcan
-      
-        @can('member_delete')
-            $.extend(true, $.fn.dataTable.defaults, {
-                    order: [[1, 'DES']],
-                    pageLength: 100
-            });
-        @else 
-            $.extend(true, $.fn.dataTable.defaults, {
-                order: [[0, 'DES']],
-                pageLength: 100,
-                "columnDefs": [{
-                    "targets": [ 0 ],
-                    "visible": false,
-                    "searchable": false
-                }]
-            });
-        @endcan
-
+        let _token = "{{ csrf_token() }}"  
+        
+        $.extend(true, $.fn.dataTable.defaults, {
+            order: [[0, 'DES']],
+            pageLength: 100,
+            "columnDefs": [{
+                "targets": [ 0 ],
+                "visible": false,
+                "searchable": false
+            }]
+        });
+   
         $('#dataTable').DataTable({
             "buttons": dtButtons,
             "paging":   false
-        
         })
     });
 

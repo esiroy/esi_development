@@ -37,11 +37,11 @@
             @endif
 
             <!--[start] tutor list-->
-            <div class="card">
-                <div class="card-header">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
                     Tutor List
                 </div>
-                <div class="card-body">
+                <div class="card-body esi-card-body">
 
                         <div class="row">
                             <form class="form-inline" style="width:100%" method="GET">
@@ -84,8 +84,8 @@
             </div><!--[end] tutor list card-->
 
             <!--[start] create member form -->
-            <div class="card mt-4">
-                <div class="card-header">Tutor Form</div>
+            <div class="card esi-card mt-4">
+                <div class="card-header esi-card-header">Tutor Form</div>
                 <div class="card-body">
 
                     <form method="POST" action="{{ route('admin.tutor.store') }}">
@@ -391,45 +391,19 @@
         let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
         let _token = "{{ csrf_token() }}"
 
-        /*@can('tutor_delete')*/
+        $.extend(true, $.fn.dataTable.defaults, {
+            order: [[0, 'DES']],
+            pageLength: 25,
+            "columnDefs": [{
+                "targets": [ 0 ],
+                "visible": false,
+                "searchable": false
+            }]
+        });
 
-        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
-        let deleteButton = { 
-            text: deleteButtonTrans, 
-            url: "{{ route('admin.tutor.massDestroy') }}",
-            className: 'btn-danger',
-            action: function(e, dt, node, config) {
-                var ids = $.map(dt.rows({
-                    selected: true
-                }).nodes(), function(entry) {
-                    return $(entry).data('entry-id')
-                });
-
-                if (ids.length === 0) {
-                    alert('{{ trans('global.datatables.zero_selected') }}')
-                    return
-                }
-
-                if (confirm('{{ trans('global.areYouSure ') }}')) 
-                {
-                    $.ajax({
-                        headers: {'x-csrf-token': _token}, method: 'POST', url: config.url, 
-                        data: {
-                            ids: ids,
-                            _method: 'DELETE'
-                        }
-                    }).done(function() {
-                        location.reload()
-                    })
-                }
-            }
-        }
-        dtButtons.push(deleteButton)
-        /* @endcan */
-
-        $.extend(true, $.fn.dataTable.defaults, {order: [ [1, 'desc']], pageLength: 100,});
         $('#dataTable').DataTable({
-            buttons: dtButtons
+            buttons: dtButtons,
+            "paging":   true         
         })
     });
 

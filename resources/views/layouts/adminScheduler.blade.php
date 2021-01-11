@@ -32,6 +32,7 @@
 
 
                     <div class="text-right w-100">
+                    
                         <a class="blue pr-2" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             {{ ucfirst(Auth::user()->firstname) }}
                             @if(Auth::user()->user_type == 'ADMINISTRATOR')
@@ -48,7 +49,7 @@
                         
                        
                         <span class="divide">|</span>
-                        <a class="blue pl-2 pr-2" href="{{ route('admin.settings') }}">
+                        <a class="blue pl-2 pr-2" href="{{ route('admin.settings.index') }}">
                             {{ __('Settings') }}
                         </a>
                       

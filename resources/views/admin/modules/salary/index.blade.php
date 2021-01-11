@@ -38,13 +38,11 @@
                         <div class="row">
                             <div class="col-lg-2 col-md-3 col-sm-12 pt-2">
                                 <label for="inputDate">From:</label>
-                                <input id="date_from" name="date_from" type="date" class="inputDate hasDatepicker form-control form-control-sm  d-inline-block col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12" 
-                                value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">                                
+                                <input id="date_from" name="date_from" type="date" class="inputDate hasDatepicker form-control form-control-sm  d-inline-block col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12" value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">
                             </div>
                             <div class="col-lg-2 col-md-4 col-sm-12 pt-2">
                                 <label for="inputDate">To:</label>
-                                <input id="date_to" name="date_to" type="date" class="inputDate hasDatepicker form-control form-control-sm col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12  d-inline-block" 
-                                 value="{{ request()->has('date_to') ? request()->get('date_to') : '' }}">
+                                <input id="date_to" name="date_to" type="date" class="inputDate hasDatepicker form-control form-control-sm col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12  d-inline-block" value="{{ request()->has('date_to') ? request()->get('date_to') : '' }}">
                             </div>
                             <!--
                         <div class="col-lg-2 col-md-3 col-sm-12 pt-2">
@@ -87,8 +85,8 @@
                     </div>
                     <div class="card-body p-0 m-0 b-0">
                         <div class="table-responsive">
-                            
-                                <table class="table esi-table table-bordered table-striped  ">
+
+                            <table class="table esi-table table-bordered table-striped  ">
                                 <thead>
                                     <td>I.D.</td>
                                     <td>Tutor</td>
@@ -105,43 +103,56 @@
                                     <td>{{ $schedule->id }}</td>
                                     <td>
                                         @php
-                                        $tutor = \App\Models\Tutor::find($schedule->tutor_id)
+                                            $tutor = \App\Models\Tutor::find($schedule->tutor_id)
                                         @endphp
-                                        {{ $tutor->name_en }}
+                                        {{ $tutor->user->firstname ?? "" }}
                                     </td>
-                                    <td>{{ $schedule->lesson_shift_id }}</td>
+                                    <td>
+                                        {{ $schedule->lesson_shift_id }}
+                                    </td>
                                     <td>{{ date("Y-d-m", strtotime($schedule->lesson_time ." + 1 hour")) }}</td>
                                     <td>{{ date("H:i", strtotime($schedule->lesson_time ." + 1 hour")) }}</td>
-                                    <td>{{ $schedule->schedule_status }}</td>
-                                    <td>                                        
-                                        @php
-                                        $member = \App\Models\Tutor::where('id', $schedule->tutor_id)->first();                                        
-                                        @endphp
-                                      
-                                        {{ number_format($member->salary_rate, 2) }}
-                                    </td>
-
+                                    <td>{{ ucwords(str_replace("_", " ", strtolower($schedule->schedule_status))) }}</td>
                                     <td>
+                                        @php
+                                            $tutor = \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();                                      
+                                        @endphp
+                                        {{ $tutor->salary_rate ?? "" }}
+                                    </td>
+                                    <td>
+
                                         @if ($schedule->schedule_status == "COMPLETED")
-                                            {{ number_format($member->salary_rate, 2) }}
+                                            {{ number_format($tutor->salary_rate, 2) }}
                                           
                                         @elseif($schedule->schedule_status == "TUTOR_CANCELLED" || $schedule->schedule_status == "CLIENT NOT AVAILABLE")
                                             @php                                                
-                                                $newSalary = $member->salary_rate / 2;
+                                                $newSalary = $tutor->salary_rate / 2;
                                             @endphp
                                             {{ number_format($newSalary, 2) }}
                                         @else 
                                             {{ number_format(0, 2) }}
                                            
                                         @endif
+
                                     </td>
                                 </tr>
                                 @endforeach
 
                             </table>
+
                         </div>
                     </div>
                 </div>
+
+
+                <div class="float-right mt-4">
+                    <ul class="pagination pagination-sm">
+                        <small class="mr-4 pt-2">
+                            Page :</small>
+                        {{ $schedules->appends(request()->query())->links() }}
+                    </ul>
+                </div>
+
 
             </div>
         </div>

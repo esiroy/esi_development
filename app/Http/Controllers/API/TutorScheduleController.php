@@ -67,15 +67,24 @@ class TutorScheduleController extends Controller
 
         try {
             DB::beginTransaction();
+
+
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
+
+
+            $tutorInfo =  Tutor::find($tutor['tutorID']);
+
+
+       
+                        
 
             if ($request['status'] == 'TUTOR_CANCELLED') {
                 $emailType = $request['cancelationType'];
                 $lessonData = [
                     'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'])),
                     'duration' => $request['shiftDuration'],
-                    'tutor_id' => $tutor['tutorID'],
+                    'tutor_id' => $tutorInfo->user_id,
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
@@ -84,13 +93,17 @@ class TutorScheduleController extends Controller
                 $emailType = $request['reservationType'];
 
                 if (isset($member['id'])) {
-                    $memberID = $member['id'];
+
+                    //$memberID = $member['id'];
+
+                    //v2 - change id to user_id
+                    $memberInfo = Member::find($member['id']);
 
                     $lessonData = [
-                        'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'])),
+                        'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
                         'duration' => $request['shiftDuration'],
-                        'tutor_id' => $tutor['tutorID'],
-                        'member_id' => $memberID,
+                        'tutor_id' => $tutorInfo->user_id,
+                        'member_id' => $memberInfo->user_id,
                         'schedule_status' => $request['status'],
                         'email_type' => $emailType,
                         'valid' => 1,
@@ -98,9 +111,9 @@ class TutorScheduleController extends Controller
                 } else {
 
                     $lessonData = [
-                        'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'])),
+                        'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
                         'duration' => $request['shiftDuration'],
-                        'tutor_id' => $tutor['tutorID'],
+                        'tutor_id' => $tutorInfo->user_id,
                         'schedule_status' => $request['status'],
                         'email_type' => $emailType,
                         'valid' => 1,
@@ -110,9 +123,9 @@ class TutorScheduleController extends Controller
             } else {
                 $emailType = null;
                 $lessonData = [
-                    'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'])),
+                    'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour" )),
                     'duration' => $request['shiftDuration'],
-                    'tutor_id' => $tutor['tutorID'],
+                    'tutor_id' => $tutorInfo->user_id,
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
@@ -120,8 +133,9 @@ class TutorScheduleController extends Controller
             }
 
             //change to schedule item for max compatibility of data export and import of old system
-            $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime']));
-            $scheduleItem = ScheduleItem::where('tutor_id', $tutor['tutorID'])
+            $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." +1 hour"));
+
+            $scheduleItem = ScheduleItem::where('tutor_id', $tutorInfo->user_id)
                 ->where('duration', $request['shiftDuration'])
                 ->where('lesson_time', $lessonTime)->first();
 
@@ -133,12 +147,13 @@ class TutorScheduleController extends Controller
             $scheduleItem = new ScheduleItem();
             $scheduled_at = $request['scheduled_at'];
             $duration = $request['shiftDuration'];
+
             $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
 
             return Response()->json([
                 "success" => true,
                 "message" => "Lesson has been updated",
-                "tutorData" => $request['tutorData'],
+                "tutorData" => $tutorInfo->user_id,
                 "memberData" => $request['memberData'],
                 'tutorLessonsData' => $tutorLessonsData,
             ]);
@@ -147,7 +162,7 @@ class TutorScheduleController extends Controller
 
             return Response()->json([
                 "success" => false,
-                "message" => "Exception Error Found in (Update Tutor Schedule) : " . $e->getMessage(),
+                "message" => "Exception Error Found in (Update Tutor Schedule) : " . $e->getMessage() ." on Line " . $e->getLine(),
             ]);
 
             DB::rollback();
@@ -260,9 +275,11 @@ class TutorScheduleController extends Controller
         $duration = $request['shiftDuration'];
 
         //change to schedule item for max compatibility
-        $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $startTime));
+        $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $startTime . " + 1 hour"));
 
-        $deleted = ScheduleItem::where('tutor_id', $tutorID)
+        $tutor = Tutor::find($tutorID);
+
+        $deleted = ScheduleItem::where('tutor_id', $tutor->user_id)
             ->where('duration', $duration)
             ->where('lesson_time', $lessonTime)->delete();
 
@@ -279,7 +296,7 @@ class TutorScheduleController extends Controller
         } else {
             return Response()->json([
                 "success" => false,
-                "message" => "lesson has been alreay deleted",
+                "message" => "lesson has been already deleted",
             ]);
         }
     }

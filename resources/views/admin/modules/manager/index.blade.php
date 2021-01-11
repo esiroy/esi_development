@@ -35,28 +35,38 @@
 
 
             <!--[start card] -->
-            <div class="card">
-                <div class="card-header">
+            <div class="card esi-card">
+                <div class="card-header esi-card-header">
                     Manager List
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <form class="form-inline" style="width:100%">
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="nickname" class="small col-4">Username:</label>
-                                    <input id="nickname" name="nickname" type="text" class="form-control form-control-sm col-8" value="">
-                                </div>
+
+                    <!--search-->
+                    <form class="form-inline" style="width:100%" method="GET">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="username" class="small col-4">Username:</label>
+                                <input id="username" name="username" type="text" class="form-control form-control-sm col-8" value="">
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="nickname" class="small col-4">Name:</label>
-                                    <input id="name" name="name" type="text" class="form-control form-control-sm col-5" value="">
-                                    <button type="button" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
-                                </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="name" class="small col-sm-9 col-md-2">Name:</label>
+                                <input id="name" name="name" type="text" class="form-control form-control-sm col-8 col-md-10" value="">
                             </div>
-                        </form>
-                    </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="email" class="small col-sm-9 col-md-2">Email:</label>
+                                <input id="searchEmail" name="email" type="text" class="form-control form-control-sm  col-xs-3 col-sm-2 col-md-10" value="">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="submit" class="btn btn-primary btn-sm col-2" value="Go"></button>        
+                        </div>
+                    </form>
+                    <!--[end] search-->
+                    
 
                     <div class="row">
                         <div class="col-12 pt-3">
@@ -228,48 +238,23 @@
     window.addEventListener('load', function() {
         let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
         let _token = "{{ csrf_token() }}"
+        
+        $.extend(true, $.fn.dataTable.defaults, {
+            order: [[0, 'DES']],
+            pageLength: 25,
+            "columnDefs": [{
+                "targets": [ 0 ],
+                "visible": false,
+                "searchable": false
+            }]
+        });
 
-        /*@can('manager_delete')*/
-
-        let deleteButtonTrans = '{{ trans('global.datatables.delete') }}';
-        let deleteButton = { 
-            text: deleteButtonTrans, 
-            url: "{{ route('admin.manager.massDestroy') }}",
-            className: 'btn-danger',
-            action: function(e, dt, node, config) {
-                var ids = $.map(dt.rows({
-                    selected: true
-                }).nodes(), function(entry) {
-                    return $(entry).data('entry-id')
-                });
-
-                if (ids.length === 0) {
-                    alert('{{ trans('global.datatables.zero_selected') }}')
-                    return
-                }
-
-                if (confirm('{{ trans('global.areYouSure ') }}')) 
-                {
-                    $.ajax({
-                        headers: {'x-csrf-token': _token}, method: 'POST', url: config.url, 
-                        data: {
-                            ids: ids,
-                            _method: 'DELETE'
-                        }
-                    }).done(function() {
-                        location.reload()
-                    })
-                }
-            }
-        }
-        dtButtons.push(deleteButton)
-        /* @endcan */
-
-        $.extend(true, $.fn.dataTable.defaults, {order: [ [1, 'desc']], pageLength: 100,});
         $('#dataTable').DataTable({
-            buttons: dtButtons
+            buttons: dtButtons,
+            "paging":   true         
         })
-    });
+    });  
+
 
 </script>
 @endsection

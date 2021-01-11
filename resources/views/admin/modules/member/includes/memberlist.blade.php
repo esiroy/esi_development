@@ -98,15 +98,13 @@
                     @endcan
 
                     @can('member_delete')
-                    <div class="action">
-                        <a href="admin/member/{{$member->id}}" class="red" onclick="event.preventDefault();document.getElementById('delete_member_{{$member->id}}').submit();">Delete</a>
-                        <span class="separator">|</span>
-                    </div>
+            
+                        <form id="delete_member_{{$member->id}}" action="member/{{$member->id}}" method="POST" onsubmit="return confirm('are you sure you want to delete?');">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                            <input type="submit" style="border:none; color: #c60000; background-color: transparent; font: normal 12px Arial" value="{{ trans('global.delete') }}">
+                        </form>
 
-                    <form id="delete_member_{{$member->id}}" action="member/{{$member->id}}" method="POST" onsubmit="return confirm('are you sure you want to delete?');">
-                        <input type="hidden" name="_method" value="delete" />
-                        @csrf
-                    </form>
                     @endcan
                 </td>
             </tr>

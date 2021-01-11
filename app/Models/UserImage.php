@@ -14,7 +14,6 @@ class UserImage extends Model
      * @param member - object of member 
      */
     public function getMemberPhoto($member) {
-
         if (isset( $member->user_id)) {
             $userImage = UserImage::where('user_id', $member->user_id)->where('valid', 1)->first();
         } else {

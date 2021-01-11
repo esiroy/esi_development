@@ -7,6 +7,8 @@ use App\Models\Agent;
 use App\Models\AgentTransaction;
 use App\Models\Role;
 use App\Models\Tutor;
+use App\Models\UserImage;
+
 
 //use App\Models\AgentCredits;
 //use App\Models\AgentPointPurchaseHistory;
@@ -42,7 +44,7 @@ class AgentController extends Controller
         $email = $request->email;
 
         $agentQuery = Agent::join('users', 'users.id', '=', 'agents.user_id')
-            ->select('agents.*', 'users.username');
+            ->select('agents.*', 'users.username', 'users.firstname', 'users.lastname');
 
         //@[START] USER SEARCH - if user search for a member
         if (isset($username) || isset($name) || isset($email)) {
@@ -59,7 +61,7 @@ class AgentController extends Controller
             }
         }
 
-        $agents = $agentQuery->orderby('users.firstname', 'ASC')->paginate(30);
+        $agents = $agentQuery->orderby('users.firstname', 'ASC')->get();
 
 
 
@@ -230,10 +232,14 @@ class AgentController extends Controller
     {
         $agent = Agent::where('user_id', $id)->first();
 
+        //get photo
+        $userImageObj = new UserImage();
+        $userImage = $userImageObj->getMemberPhoto($agent);        
+
         $industries = createIndustries();
 
         if (isset($agent->id)) {
-            return view('admin.modules.agent.edit', compact('agent', 'industries'));
+            return view('admin.modules.agent.edit', compact('agent', 'industries', 'userImage'));
         } else {
             abort(404);
         }

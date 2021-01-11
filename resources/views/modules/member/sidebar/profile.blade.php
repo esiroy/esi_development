@@ -3,9 +3,25 @@
         <div class="col-md-12 bg-primary text-white pt-1 pb-1">
             マイページ
         </div>
+        
         <div class="profile-image text-center mt-2">
-            <img src="/images/samplePictureNoImage.jpg" width="145" height="145">
+            @php                
+                //get photo
+                $member = new \App\Models\Member;
+                $memberInfo = $member->where('user_id', Auth::user()->id)->first();
+
+                $userImageObj = new \App\Models\UserImage;
+                $userImage = $userImageObj->getMemberPhoto($memberInfo); 
+            @endphp
+
+            @if ($userImage == null)
+                <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" >
+            @else 
+                <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
+            @endif
         </div>
+
+
         <div class="profile_settings text-center">
             <a href="{{ url('settings') }}" class="small">[click here]</a>
         </div>
@@ -15,9 +31,8 @@
                 <div class="text-secondary">Name:</div>
             </div>
             <div class="col-md-12">
-                <div class="text-dark">
-                    {{ Auth::user()->id }}
-                    {{ ucfirst(Auth::user()->first_name) }}, {{ ucfirst(Auth::user()->last_name) }}
+                <div class="text-dark">                    
+                    {{ ucfirst(Auth::user()->firstname ) }}, {{ ucfirst(Auth::user()->lastname) }}
                 </div>
             </div>
 
@@ -27,9 +42,10 @@
             </div>
             <div class="col-md-12">
                 <div class="text-dark">
-                    @if (isset(Auth::user()->memberInfo->credits))
-                    {{ ucfirst(Auth::user()->memberInfo->credits) }}
-                    @endif
+                    @php                        
+                        $transaction = new \App\Models\AgentTransaction();      
+                        echo $transaction->getCredits(Auth::user()->id);
+                    @endphp
                 </div>
             </div>
 
@@ -38,10 +54,10 @@
             </div>
             <div class="col-md-12">
                 <div class="text-dark">
-                    @if (isset($data['lecturer']))
-                    担任講師は {{ $data['lecturer'] }} 先生です
-                    @endif
-
+                    @php                        
+                        $member = new \App\Models\Member();      
+                        echo "担任講師は " . $member->getTutorName() ." 先生です ";
+                    @endphp
                 </div>
             </div>
             <div class="col-md-12">
@@ -49,9 +65,9 @@
             </div>
             <div class="col-md-12">
                 <div class="text-dark">
-                    @if (isset($data['skypeID']))
-                    スカイプ名 {{ $data['skypeID'] }}
-                    @endif
+                    @php
+                        echo "スカイプ名 ". $member->getSkype();    
+                    @endphp 
                 </div>
             </div>
         </div>

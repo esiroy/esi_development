@@ -1,10 +1,10 @@
 {
-    "/js/admin.js": "/js/admin.js?id=d840b5620a5d02d39d1a",
-    "/js/admin.js.map": "/js/admin.js.map?id=9f769dd192149583aa5d",
-    "/js/app.js": "/js/app.js?id=591c4b0697dec7bb020b",
+    "/js/admin.js": "/js/admin.js?id=f492d9b551beb3347542",
+    "/js/admin.js.map": "/js/admin.js.map?id=b20bce8e8d1a27968095",
+    "/js/app.js": "/js/app.js?id=bc79c2ea93eb10c5cd8a",
     "/css/app.css": "/css/app.css?id=7e8d963ac883e2dd4991",
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
-    "/js/app.js.map": "/js/app.js.map?id=faf2c037651b4ef5c9c3",
+    "/js/app.js.map": "/js/app.js.map?id=7a2470bb546f9d59d3d6",
     "/css/app.css.map": "/css/app.css.map?id=8c33f6c50d63cd3072da",
     "/css/admin.css.map": "/css/admin.css.map?id=dacdfa13b7c55cd6ebf0",
     "/js/vfs_fonts.js": "/js/vfs_fonts.js?id=be13d860967f745fb499",
@@ -51,5 +51,6 @@
     "/images/skype_image.jpg": "/images/skype_image.jpg?id=b9b5aa511bcaff98c258",
     "/images/skype.jpg": "/images/skype.jpg?id=d96bcb98abe44470182f",
     "/images/title_full.png": "/images/title_full.png?id=d6518bdcdc5bafc08384",
-    "/images/zoom_logo.jpg": "/images/zoom_logo.jpg?id=978f688247ff5519b05f"
+    "/images/zoom_logo.jpg": "/images/zoom_logo.jpg?id=978f688247ff5519b05f",
+    "/css/croppie.css": "/css/croppie.css?id=003640684de38fc71013"
 }

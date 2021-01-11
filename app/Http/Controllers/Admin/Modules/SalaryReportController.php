@@ -19,30 +19,30 @@ class SalaryReportController extends Controller
     public function index(Request $request)
     {      
 
-        $per_page = 15;
+        $per_page = 50;
         $from   = date("Y年 m月 j日");
         $to   = null;
 
-       
+        $query = new ScheduleItem();
+
         if (isset($request->date_from) && isset($request->date_to)) 
         {
             $from = date($request->date_from);
             $to = date($request->date_to);    
-            $query = ScheduleItem::whereBetween('created_at', [$from, $to])->where('valid', 1);                   
+            $query = $query->whereBetween('created_at', [$from, $to]);                   
             
-        } else {
-            $query = ScheduleItem::where('valid', 1);
-        }
+        } 
 
+        
         if (isset($request->status)) 
         {            
             $status = str_replace(" ", "_", strtoupper($request->status));
-            $query->where('schedule_status', $status )->orderBy('created_at', 'DESC');
+            $query->where('schedule_status', $status);
         }
         
       
-                       
-        $schedules = $query->get();
+        
+        $schedules = $query->where('valid', 1)->orderBy('created_at', 'DESC')->paginate($per_page);
        
         return view('admin.modules.salary.index', compact('schedules', 'date', 'from', 'to'));        
         
