@@ -115,6 +115,7 @@
                         </td>
 
                         <td class="" v-for="time in timeList" :key="time.id">
+                          
                             <!--{{ time.startTime  }} - {{ time.endTime}}-->
                             <input v-show="checkButton({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })" type="button" value="" class="btnAdd" v-b-modal.addScheduleModal 
                                 @click="openSchedule({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"/>
@@ -365,10 +366,12 @@ export default {
         getMember(scheduleData) {
             let member = null;
             let memberID = null;
+            let lessonID = null;
 
             if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
                 memberID = null;
                 member  = null;
+                lessonID = null;
             } else {
                 let lessons = this.lessonsData[scheduleData.tutorID];
                 lessons.forEach(function (lesson, index) 
@@ -377,10 +380,11 @@ export default {
                     {
                         memberID = lesson.member_id;
                         member = lesson.member_name_en;
+                        lessonID = lesson.id;
                     }
                 });
             }
-            return "<a href='/admin/member/"+ memberID +"'>"+ member + "</a>";
+            return "<a href='/admin/member/"+ memberID +"'>"+ member + " | " + lessonID + "</a>";
          },
         //check button if it has schedule then we will hide it, and if not we need to show it
         checkButton(data) {
