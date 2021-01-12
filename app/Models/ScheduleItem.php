@@ -25,20 +25,14 @@ class ScheduleItem extends Model
     */
     public function getReservations($date, $lesson_shift_id) 
     {   
-        echo $date;
-
         $lessons = [];
-
         $lessonItems = ScheduleItem::whereDate('lesson_time', $date)->where('lesson_shift_id', $lesson_shift_id)->get();   
 
         foreach ($lessonItems as $lessonItem) 
         {
-
-            $lessons[$lessonItem->tutor_id][$lessonItem->lesson_time][] = $lessonItem;
+            $lessons[$lessonItem->tutor_id][$lessonItem->lesson_time]= $lessonItem;
         }
-
         
-
         return $lessons;
     }    
 
@@ -54,6 +48,7 @@ class ScheduleItem extends Model
         $lessonItems = ScheduleItem::where('tutor_id', $tutor->user_id)
                                 ->where('lesson_time', '>=', $dateFrom)
                                 ->where('lesson_time', '<=', $dateTo)
+                                ->where('valid', 1)
                                 ->get();
 
         foreach ($lessonItems as $lessonItem) 
@@ -113,7 +108,10 @@ class ScheduleItem extends Model
     
         foreach ($tutors as $tutor) 
         {                 
-            $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)->where('tutor_id', $tutor->user_id)->get();
+            $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)
+                                ->where('tutor_id', $tutor->user_id)
+                                ->where('valid', 1)
+                                ->get();
             
             foreach ($scheduleItems as $item) 
             {

@@ -52,6 +52,13 @@ Route::get('importSchedules/import/{id}', 'TableScheduleItemImporterController@i
 Route::get('importSchedules/import/{id}/{per_item}', 'TableScheduleItemImporterController@importSchedules');
 
 
+/*************** 
+ * SCHEDULES IMPORTER
+ ****************/
+Route::resource('importUsers', 'TableUserImporterController');
+Route::resource('importMembers', 'TableMemberImporterController');
+
+
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 

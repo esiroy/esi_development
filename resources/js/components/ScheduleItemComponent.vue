@@ -106,10 +106,8 @@
                     </tr>
 
                     <tr v-for="tutor in tutors" :key="tutor.id">
-                        <td class="">
-                            <div style="width:125px">
-                                {{ tutor.id }} |
-                                {{ tutor.user_id }}  |
+                        <td :class="tutor.id">
+                            <div :id="tutor.user_id" style="width:90px">                                
                                 {{ tutor.firstname }}
                             </div>
                         </td>
@@ -120,7 +118,7 @@
                             <input v-show="checkButton({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })" type="button" value="" class="btnAdd" v-b-modal.addScheduleModal 
                                 @click="openSchedule({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"/>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'TUTOR_SCHEDULED' })" class="tutor_scheduled">                              
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'TUTOR_SCHEDULED' })" class="tutor_scheduled">                              
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>                                   
                                 </div>                                
@@ -130,7 +128,7 @@
                                 </div>                                
                             </div>
                             
-                            <div v-show="checkStatus({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_RESERVED' })" class="client_reserved">
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_RESERVED' })" class="client_reserved">
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>                                   
                                 </div>
@@ -140,7 +138,7 @@
                                 </div>
                             </div> 
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_RESERVED_B' })" class="client_reserved_b">
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_RESERVED_B' })" class="client_reserved_b">
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
                                 </div>
@@ -150,7 +148,7 @@
                                 </div>
                             </div>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'TUTOR_CANCELLED' })" class="tutor_cancelled">
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'TUTOR_CANCELLED' })" class="tutor_cancelled">
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
                                 </div>                            
@@ -160,7 +158,7 @@
                                 </div>
                             </div>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'NOTHING' })" class="nothing">
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'NOTHING' })" class="nothing">
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
                                 </div>                            
@@ -170,7 +168,7 @@
                                 </div>
                             </div>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_NOT_AVAILABLE' })" class="client_not_available">
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_NOT_AVAILABLE' })" class="client_not_available">
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
                                 </div>                            
@@ -180,7 +178,7 @@
                                 </div>
                             </div> 
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'SUPPRESSED_SCHEDULE' })" class="suppressed_schedule">
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'SUPPRESSED_SCHEDULE' })" class="suppressed_schedule">
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
                                 </div>                                
@@ -190,7 +188,7 @@
                                 </div>
                             </div> 
 
-                            <div v-show="checkStatus({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime, status: 'COMPLETED' })" class="completed">
+                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'COMPLETED' })" class="completed">
                                 <div class="client">
                                     <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
                                 </div>                            
@@ -314,20 +312,21 @@ export default {
     async beforeMount() {
        
         this.setMemberListLock(); //disabler of additoinal options        
+
+        //this data is from the laravel controller
         this.lessonsData = this.schedule_items;
         
-        console.log("Lessons Mounted : ", this.schedules);
+        //console.log("Lessons Mounted : ", this.schedules);
 
         this.shiftDuration  = this.duration;
 
         //@todo: ajax load schedules (DONE)
-        this.schedules = this.getSchedules(this.scheduled_at, this.shiftDuration); 
+        this.getSchedules(this.scheduled_at, this.shiftDuration); 
 
-        this.memberList = this.getMemberList();
+        this.getMemberList();
                
     },
     async mounted() {
-
         /* transferred to before mount 
         this.setMemberListLock(); //disabler of additoinal options        
         this.lessonsData = this.schedule_items;
@@ -343,7 +342,6 @@ export default {
         });
         this.memberOptionList = options;
         */
-
 
     },
     methods: {
@@ -364,13 +362,13 @@ export default {
             return data;      
         },
         getMember(scheduleData) {
-            let member = null;
+            let memberName = null;
             let memberID = null;
             let lessonID = null;
 
             if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
                 memberID = null;
-                member  = null;
+                memberName = null;
                 lessonID = null;
             } else {
                 let lessons = this.lessonsData[scheduleData.tutorID];
@@ -379,16 +377,19 @@ export default {
                     if (lesson.startTime === scheduleData.startTime && lesson.endTime === scheduleData.endTime) 
                     {
                         memberID = lesson.member_id;
-                        member = lesson.member_name_en;
+                        memberName = lesson.member_name_en;
                         lessonID = lesson.id;
                     }
                 });
             }
-            return "<a href='/admin/member/"+ memberID +"'>"+ member + " | " + lessonID + "</a>";
+            return "<a id='"+lessonID+"' href='/admin/member/"+ memberID +"'>"+ memberName+"</a>";
          },
         //check button if it has schedule then we will hide it, and if not we need to show it
         checkButton(data) {
             let show = true;
+           
+            this.lessonsData[data.tutorID]
+
             $.each(this.lessonsData[data.tutorID], function(key, value) 
             {
                 if (
@@ -406,22 +407,42 @@ export default {
         },
         //check reservation status and show if available
         checkStatus(data) 
-        { 
+        {  
             let isFound = false;
-            $.each(this.lessonsData[data.tutorID], function(key, value) 
-            {
-                //console.log({value}, {data});
-                if (
-                   // value.tutor_id === data.tutorID &&
-                    value.status === data.status && 
-                    value.startTime === data.startTime && 
-                    value.endTime === data.endTime &&
-                    value.scheduled_at === this.scheduled_at
-                )
-                {
-                    isFound = true;                   
+            
+            if (this.lessonsData[data.tutorID] === undefined || this.lessonsData[data.tutorID] === 'undefined') {
+
+                return false; 
+
+            } else {            
+
+                let lessons = this.lessonsData[data.tutorID];
+
+                /* debug schedule
+                if (data.tutorID === 56 && data.startTime === "19:00") {
+                    console.log(data.tutorID)
+                    $.each(lessons, function(key, lesson) 
+                    {
+                        console.log(lesson.id + " - " + lesson.startTime + " " + lesson.status);
+                    });                
                 }
-            });
+                */                
+
+                $.each(lessons, function(key, lesson) 
+                {
+                    if (lesson.tutor_id == data.tutorUserID &&
+                        lesson.status == data.status && 
+                        lesson.startTime == data.startTime && 
+                        lesson.endTime == data.endTime &&
+                        lesson.scheduled_at == this.scheduled_at
+                    ){
+                        isFound = true;
+                        return isFound;                                   
+                        //console.log(value.id + " " + value.status + " " + data.status + " " + value.startTime)
+                    }
+                });             
+            }
+            
             return isFound;                    
         },
         openSchedule(tutorData) 
