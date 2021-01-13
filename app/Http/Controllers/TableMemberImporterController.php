@@ -39,7 +39,7 @@ class TableMemberImporterController extends Controller
         echo "<BR>";
 
         
-        $items = DB::connection('mysql_live')->select("select * from users_member ORDER BY id DESC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from users_member ORDER BY user_id DESC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
