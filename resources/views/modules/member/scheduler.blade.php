@@ -66,7 +66,18 @@
 
                                 @foreach($lessonSlots as $lessonSlot)
                                 <td>
-                                   <!--{{ $lessonSlot['startTime'] }}-->
+                                
+                                    @php
+                                    $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
+                                    @endphp
+
+
+                                   @if ($schedules[$tutor->user_id][])
+                                    @if ( $startTimePH == date("H:i", strtotime($schedule->lesson_time)))
+                                        @foreach($schedules[$tutor->user_id]) {
+
+                                        @endif
+                                   @endif
                                 </td>
                                 @endforeach
 

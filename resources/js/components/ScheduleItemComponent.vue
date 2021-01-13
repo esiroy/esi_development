@@ -224,10 +224,13 @@ export default {
 
         //date for schedules
         schedule_items: { type: Object },
-
+        
         //dateToday
         scheduled_at: { type: String },
         duration: { type: Number },
+
+        //next day
+        next_day: { type: String },
 
         //entities
         tutors: {type: Array },
@@ -304,8 +307,8 @@ export default {
                 {id:25 ,startTime: '22:00', endTime: '23:00'},
                 {id:26 ,startTime: '22:30', endTime: '23:30'},
 
-                {id:27 ,startTime: '23:00', endTime: '24:00'},
-                {id:28 ,startTime: '23:30', endTime: '24:30'},
+                {id:27 ,startTime: '23:00', endTime: '00:00'},
+                {id:28 ,startTime: '23:30', endTime: '00:30'},
             ] 
         };
     },
@@ -439,7 +442,16 @@ export default {
                         isFound = true;
                         return isFound;                                   
                         //console.log(value.id + " " + value.status + " " + data.status + " " + value.startTime)
+                    } else if(lesson.tutor_id == data.tutorUserID &&
+                        lesson.status == data.status && 
+                        lesson.startTime == data.startTime && 
+                        lesson.endTime == data.endTime &&
+                        lesson.scheduled_at == this.next_day)
+                    {
+                        isFound = true;
                     }
+
+
                 });             
             }
             

@@ -77,10 +77,15 @@ class ScheduleItemController extends Controller
             ['id'=> 22, 'startTime'=> '20:30', 'endTime'=> '21:30'],
             ['id'=> 23, 'startTime'=> '21:00', 'endTime'=> '22:00'],
             ['id'=> 24, 'startTime'=> '21:30', 'endTime'=> '22:30'],
+
             ['id'=> 25 , 'startTime'=> '22:00', 'endTime'=> '23:00'],
             ['id'=> 26 , 'startTime'=> '22:30', 'endTime'=> '23:30'],
-            ['id'=> 27 , 'startTime'=> '23:00', 'endTime'=> '24:00'],
-            ['id'=> 28 , 'startTime'=> '23:30', 'endTime'=> '24:30']
+
+            ['id'=> 27 , 'startTime'=> '23:00', 'endTime'=> '00:00'],
+            ['id'=> 28 , 'startTime'=> '23:30', 'endTime'=> '00:30'],
+
+            ['id'=> 29 , 'startTime'=> '00:00', 'endTime'=> '01:00'],
+            ['id'=> 30 , 'startTime'=> '00:30', 'endTime'=> '01:30']            
         );                 
     }
 
@@ -94,6 +99,8 @@ class ScheduleItemController extends Controller
     {
         if(Gate::allows('admin_lesson_scheduler_access')) 
         {              
+            $nextDay      = date('Y-m-d', strtotime($request['inputDate'] ." + 1 day"));  
+
             //default on load without any parameters
             if (isset($request['inputDate'])) {
                 $dateToday      = date('Y-m-d', strtotime($request['inputDate']));                
@@ -149,7 +156,7 @@ class ScheduleItemController extends Controller
                 //$scheduleItems = (object) ['0' => null];                
            // }            
     
-            return view('admin.modules.scheduleItem.index', compact('dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
+            return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
 
         } 
         else if (Gate::allows('tutor_lesson_scheduler_access'))

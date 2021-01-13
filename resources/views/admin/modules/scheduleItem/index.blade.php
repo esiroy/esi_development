@@ -74,6 +74,7 @@
                     <schedule-item-component
                         ref="scheduleItemComponent"
                         :scheduled_at="'{{ $dateToday }}'"
+                        :next_day="'{{ $nextDay }}'"
                         :year="{{ $year}}" 
                         :month="{{ $month }}" 
                         :day="{{ $day}}"

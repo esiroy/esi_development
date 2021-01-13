@@ -48,7 +48,6 @@ class ScheduleItem extends Model
         $lessonItems = ScheduleItem::where('tutor_id', $tutor->user_id)
                                 ->where('lesson_time', '>=', $dateFrom)
                                 ->where('lesson_time', '<=', $dateTo)
-                                ->where('valid', 1)
                                 ->get();
 
         foreach ($lessonItems as $lessonItem) 
@@ -108,10 +107,20 @@ class ScheduleItem extends Model
     
         foreach ($tutors as $tutor) 
         {                 
+
+            $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
+
+            $scheduleItems = ScheduleItem::whereBetween('lesson_time', [$date, $nextDay])
+                    ->where('tutor_id', $tutor->user_id)
+                    ->where('valid', 1)
+                    ->get();
+
+                /*
             $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)
-                                ->where('tutor_id', $tutor->user_id)
-                                ->where('valid', 1)
-                                ->get();
+                            ->where('tutor_id', $tutor->user_id)
+                            ->where('valid', 1)
+                            ->get();
+                            */
             
             foreach ($scheduleItems as $item) 
             {
@@ -141,6 +150,8 @@ class ScheduleItem extends Model
                 }
                
                 $schedules[$tutor->id][] = [
+                    'nextDay'           => $nextDay,
+                    
                     'id'                => $item->id,
                     'status'            => $item->schedule_status,
                     /*
@@ -151,7 +162,7 @@ class ScheduleItem extends Model
 
                     'startTime'         =>  date("H:i", strtotime($item->lesson_time ."-1 hour")),
                     'endTime'           =>  date("H:i",  strtotime($item->lesson_time)),
-                    'scheduled_at'      =>  date('Y/m/d', strtotime($item->lesson_time ."-1 hour")),
+                    'scheduled_at'      =>  date('Y/m/d', strtotime($item->lesson_time )),
 
                     'email_type'        => $item->email_type,              
                     'duration'          => $item->duration,                    
