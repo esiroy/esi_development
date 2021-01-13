@@ -97,7 +97,7 @@ class TableMemberImporterController extends Controller
 
                 try
                 {
-                    $UserObj = Member::where('id', $item->id);
+                    $UserObj = Member::where('user_id', $item->id);
 
                     $user = $UserObj->update($data);
 
