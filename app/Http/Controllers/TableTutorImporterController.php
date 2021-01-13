@@ -6,17 +6,17 @@ use App\Models\Agent;
 
 use DB;
 
-class TableAgentImporterController extends Controller
+class TableTutorImporterController extends Controller
 {
   
     public function index()
     {
-        $items = DB::connection('mysql_live')->table('users_agent')->count();
+        $items = DB::connection('mysql_live')->table('users_tutor')->count();
         $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
 
         for ($i = 1; $i <= $total_pages; $i++) {
-            $url = url("importAgents/$i");
+            $url = url("importTutors/$i");
 
             echo "<a href='$url'><small>Agent Page $i</small></a><br>";
         }
@@ -37,7 +37,7 @@ class TableAgentImporterController extends Controller
         echo "<BR>";
 
         
-        $items = DB::connection('mysql_live')->select("select * from users_agent ORDER BY user_id DESC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from users_tutor ORDER BY user_id DESC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
@@ -51,32 +51,36 @@ class TableAgentImporterController extends Controller
 
             $data = [
                 //'id' => $item->id,
-                'agent_id' => $item->agent_id,
-                'contract_date' => $item->contract_date,
+                'fluency' => $item->fluency,
+                'gender' => $item->gender,
+                'grade' => $item->grade,
+                'hobby' => $item->hobby,                
+                'introduction' => $item->introduction,                
+                'salary_rate' => $item->salary_rate,
+                'sort' => $item->sort,
                 'user_id' => $item->user_id,
-                'industry_type' => $item->industry_type,
-                'management_expense' => $item->management_expense,
-                'registration_fee' => $item->registration_fee ,
-                'remark' => $item->remark ,
-                'representative' => $item->representative,
-                'hiragana' => $item->hiragana ,
-                'inclination' => $item->inclination ,
-                'credits_expiration' => $item->credits_expiration ,
-                    
+                'birthday' => $item->birthday,
+                'skype_id' => $item->skype_id,
+                'skype_name' => $item->skype_name,
+                'skype_password' => $item->skype_password,
+                'lesson_shift_id' => $item->lesson_shift_id,
+                'is_default_main_tutor' => $item->is_default_main_tutor,
+                'is_default_support_tutor' => $item->is_default_support_tutor,
+                'is_terminated' => $item->is_terminated,
             ];
 
-            if (Agent::where('user_id', $item->user_id)->exists()) {
+            if (Tutor::where('user_id', $item->user_id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
                 try
                 {
-                    $UserObj = Agent::where('user_id', $item->user_id);
+                    $tutorObj = Tutor::where('user_id', $item->user_id);
 
-                    $user = $UserObj->update($data);
+                    $tutor = $tutorObj->update($data);
 
                     DB::commit();
 
-                    echo "<div style='color:green'>$ctr - updated : " . $item->user_id . " " . $item->created_on . "</div>";
+                    echo "<div style='color:green'>$ctr - updated : " . $item->user_id  . "</div>";
 
                 } catch (\Exception $e) {
 
@@ -87,13 +91,13 @@ class TableAgentImporterController extends Controller
 
                 try
                 {
-                    $agent = Agent::insert($data);
+                    $tutor = Tutor::insert($data);
 
-                    $agent->agents()->sync([$agent->id], false);  
+                    $tutor->tutors()->sync([$tutor->user_id], false);  
 
                     DB::commit();
 
-                    echo "<div style='color:blue'>$ctr - added : " . $item->id . " " . $item->firstname . " " . $item->created_on . "</div>";
+                    echo "<div style='color:blue'>$ctr - added : " . $item->user_id  . "</div>";
 
                 } catch (\Exception $e) {
 

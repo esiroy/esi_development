@@ -59,14 +59,14 @@
                                 <td>
                                     <div style="width:125px">
                                         @if (isset($tutor->user->firstname))
-                                        <small>{{ $tutor->user->firstname }}</small>
-                                        @endif;
+                                            <small>{{ $tutor->user->firstname }}</small>
+                                        @endif
                                     </div>
                                 </td>
 
                                 @foreach($lessonSlots as $lessonSlot)
                                 <td>
-                                   {{ $lessonSlot->start}}
+                                   <!--{{ $lessonSlot['startTime'] }}-->
                                 </td>
                                 @endforeach
 

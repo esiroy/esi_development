@@ -177,8 +177,9 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
+                        
                             @foreach($grades as $grade)
-                            <input type="radio" name="grade" required value="{{ $grade['name'] }}" @if( old('grade')===$grade['name'] || $grade['name']===$tutor->grade )? {{ "checked" }} @endif> {{ $grade['name'] }}
+                            <input type="radio" name="grade" required value="{{ strtoupper($grade['name']) }}" @if( old('grade')===$grade['name'] || strtolower($grade['name']) === strtolower($tutor->grade) )? {{ "checked" }} @endif> {{ $grade['name'] }}
                             @endforeach
                         </div>
                     </div>
