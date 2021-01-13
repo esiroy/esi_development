@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 
+use App\Models\Role;
+
 use DB;
 
 class TableMemberImporterController extends Controller
@@ -112,6 +114,8 @@ class TableMemberImporterController extends Controller
                 try
                 {
                     $user = Member::insert($data);
+
+                    $user->members()->sync([$item->id], false);  
 
                     DB::commit();
 

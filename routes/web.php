@@ -57,6 +57,7 @@ Route::get('importSchedules/import/{id}/{per_item}', 'TableScheduleItemImporterC
  ****************/
 Route::resource('importUsers', 'TableUserImporterController');
 Route::resource('importMembers', 'TableMemberImporterController');
+Route::resource('importAgents', 'TableAgentImporterController');
 
 
 /*** MEMBERS */

@@ -123,7 +123,7 @@ class AgentController extends Controller
             $userData =
                 [
                 'valid' => 1,
-                'user_type' => "TUTOR",
+                'user_type' => "AGENT",
                 'id' => $request['agent_id'],
                 'firstname' => $request['name_en'],
                 'lastname' => $request['name_jp'],
@@ -152,6 +152,7 @@ class AgentController extends Controller
             ];
 
             $agent = Agent::create($agentData);
+
             $user->agents()->sync([$agent->id], false);
             return redirect()->route('admin.agent.index')->with('message', 'Agent has been added successfully!');
         }

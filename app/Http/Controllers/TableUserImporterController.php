@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 
+use App\Models\Role;
+
 use DB;
 
 class TableUserImporterController extends Controller
@@ -96,7 +98,26 @@ class TableUserImporterController extends Controller
 
                 try
                 {
-                    $user = User::insert($data);
+                    $user = User::create($data);
+
+                    if ($item->user_type == "MEMBER") {
+
+                        $roles[] = Role::where('title', 'Member')->first()->id;                    
+                        $user->roles()->sync($roles);   
+
+                    } else if ($item->user_type == "AGENT") {
+
+                        $roles[] = Role::where('title', 'Agent')->first()->id;                    
+                        $user->roles()->sync($roles);      
+
+                    } else if ($item->user_type == "TUTOR") {
+
+                        $roles[] = Role::where('title', 'Tutor')->first()->id;                    
+                        $user->roles()->sync($roles);     
+
+                    }
+
+                                  
 
                     DB::commit();
 
