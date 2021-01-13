@@ -52,7 +52,7 @@ class TableMemberImporterController extends Controller
             $ctr = $ctr + 1;
 
             $data = [
-                'id' => $item->id,
+                //'id' => $item->id,
                 'created_at' => $item->created_on,
                 'updated_at' => $item->updated_on,
                 'valid' => $item->valid,
