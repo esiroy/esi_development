@@ -92,7 +92,7 @@ class TableMemberImporterController extends Controller
                 'no_of_active_reserve_left' => $item->no_of_active_reserve_left                
             ];
 
-            if (Member::where('id', $item->id)->exists()) {
+            if (Member::where('id', $item->user_id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
                 try
@@ -116,7 +116,7 @@ class TableMemberImporterController extends Controller
                 {
                     $member = Member::create($data);
 
-                    $member->members()->sync([$member->user_id], false);  
+                    $member->members()->sync([$member->id], false);  
 
                     DB::commit();
 
