@@ -53,8 +53,8 @@ class TableMemberImporterController extends Controller
 
             $data = [
                 //'id' => $item->id,
-                'created_at' => $item->created_on,
-                'updated_at' => $item->updated_on,
+                //'created_at' => $item->created_on,
+                //'updated_at' => $item->updated_on,
                 'valid' => $item->valid,
                 'hobby' => $item->hobby,
                 'level' => $item->level,
