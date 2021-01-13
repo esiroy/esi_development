@@ -55,7 +55,8 @@ class TableMemberImporterController extends Controller
                 //'id' => $item->id,
                 //'created_at' => $item->created_on,
                 //'updated_at' => $item->updated_on,
-                'valid' => $item->valid,
+                //'valid' => $item->valid,
+                'user_id' => $item->user_id,
                 'hobby' => $item->hobby,
                 'level' => $item->level,
                 'preferred_tutor_character' => $item->preferred_tutor_character ,
@@ -113,9 +114,9 @@ class TableMemberImporterController extends Controller
 
                 try
                 {
-                    $member = Member::insert($data);
+                    $member = Member::create($data);
 
-                    $member->members()->sync([$item->id], false);  
+                    $member->members()->sync([$member->id], false);  
 
                     DB::commit();
 
