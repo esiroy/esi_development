@@ -58,7 +58,9 @@
                                 <!--[start] Tutor Information-->
                                 <td>
                                     <div style="width:125px">
+                                        @if (isset($tutor->user->firstname))
                                         <small>{{ $tutor->user->firstname }}</small>
+                                        @endif;
                                     </div>
                                 </td>
 

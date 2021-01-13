@@ -131,20 +131,21 @@ class ReservationController extends Controller
             $schedules = $scheduleItem->getReservations($dateToday, $shift->id);
 
             $ctr = 0;
-
-            foreach ($schedules as $key => $schedule) {
-                $ctr ++;
-                echo "counter $ctr => Key : $key";
-                echo "<pre>";
-
-                print_r ($schedule);
-
-                echo "<pre>";
-
-                echo "=======================";
-            }
-
-          
+            
+            /*
+            [id] => 858218
+            [lesson_time] => 2021-01-13 16:00:00
+            [tutor_id] => 12289
+            [member_id] => 
+            [schedule_status] => TUTOR_SCHEDULED
+            [duration] => 25
+            [lesson_shift_id] => 4
+            [memo] => 
+            [valid] => 1
+            [email_type] => 
+            [created_at] => 2021-01-02 18:17:06
+            [updated_at] => 2021-01-02 18:17:06
+            */
 
    
 

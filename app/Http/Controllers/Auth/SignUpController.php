@@ -22,6 +22,7 @@ use Input;
 use Auth;
 use DB;
 use Session;
+use Hash;
 
 
 class SignUpController extends Controller
@@ -41,12 +42,11 @@ class SignUpController extends Controller
     {
         $validator = Validator::make(
             [
-                'first_name'                     => $request->first_name,
+                'first_name'                    => $request->first_name,
                 'last_name'                     => $request->last_name,
                 'first_name_jp'                 => $request->first_name_jp,
                 'last_name_jp'                  => $request->last_name_jp,
                 'email'                         => $request->email,
-
                 'password'                      => $request->password,              
                 'confirm_password'              => $request->confirm_password,
                 'communication_app_username'    => $request->communication_app_username
@@ -90,14 +90,16 @@ class SignUpController extends Controller
         try { 
             $userData =
             [                
-                'first_name'        => $request['first_name'],
-                'last_name'         => $request['last_name'],
-                'first_name_jp'     => $request['first_name_jp'],
-                'last_name_jp'      => $request['last_name_jp'],
+                'user_type'         => "MEMBER",
+                'firstname'        => $request['first_name'],
+                'lastname'         => $request['last_name'],
+                'japanese_firstname'     => $request['first_name_jp'],
+                'japanese_lastname'      => $request['last_name_jp'],
                 'username'          => $request['email'],
                 'email'             => $request['email'],                
-                'password'          => $request['password'],
-                'api_token'         => Hash('sha256', Str::random(80))
+                'password'          => Hash::make($request['password']),
+                'api_token'         => Hash('sha256', Str::random(80)),
+                'valid'             => 1
             ];
             $user = User::create($userData);
         
@@ -108,25 +110,12 @@ class SignUpController extends Controller
                 
             $memberInformation =
             [
-                'user_id'                   =>  $user->id,
-                'member_attribute_id'       =>  null,
-                'nickname'                  =>  $request['nickname'],
-                'agent_id'                  =>  null,
-                'gender'                    =>  null,
-                'birthdate'                 =>  null, //date('Y-m-d', strtotime($request['birthday'])),
-                'age'                       =>  null,
-                'communication_app_name'    =>  $request['commApp'],
-                'communication_app_username' => $request['communication_app_username'],
-                'membership_id'             =>  1,                    
-                'exam_record_id'            =>  1, //@todo: remove exam or nullify
-                'member_since'              => date('Y-m-d'),
-                'lesson_time_id'            => 1,
-                'main_tutor_id'             => null,
-                'agent_report_card'         => false,
-                'agent_monthly_report'      => false,
-                'member_report_card'        => false,
-                'member_monthly_report'     => false,    
-                'point_purchase'            =>  null,
+                'user_id'                   =>  $user->id,                
+                'nickname'                  =>  $request['nickname'],                
+                'communication_app'         =>  $request['commApp'],
+                'skype_account'             =>  $request['communication_app_username'],
+                'membership'                =>  "Point Balance",  
+                'member_since'              => date('Y-m-d')
                 
             ];
             $member = Member::create($memberInformation);

@@ -50,7 +50,13 @@ class Member extends Model
         if (isset($memberInfo->id)) 
         {
             $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
-            return $tutorInfo->user->firstname;            
+
+            if (isset($tutorInfo->user->firstname)) {
+                return $tutorInfo->user->firstname;            
+            } else {
+                return null;
+            }
+            
         } else {
             return null;
         }
@@ -59,13 +65,23 @@ class Member extends Model
 
     public function getSkype() {
         $user = Auth::user();
-        $memberInfo = Member::where('user_id', $user->id)->first();       
-        return $memberInfo->skype_account;
+        $memberInfo = Member::where('user_id', $user->id)->first();
+
+        if (isset($tutorInfo->skype_account)) {
+            return $memberInfo->skype_account;
+        } else {
+            return null;
+        }
     }
 
     public function getZoom() {
         $user = Auth::user();
         $memberInfo = Member::where('user_id', $user->id)->first();       
-        return $memberInfo->zoom_account;   
+
+        if (isset($tutorInfo->skype_account)) {
+            return $memberInfo->skype_account;   
+        } else {
+            return null;
+        }
     }
 }
