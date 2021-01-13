@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-
+use App\Models\Member;
 use App\Models\Role;
 
 use DB;
