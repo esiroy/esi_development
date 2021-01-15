@@ -205,10 +205,9 @@ class TutorScheduleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $lessonData = null;
+    public function store(Request $request, ScheduleItem $scheduleItem) {
 
+        $lessonData = null;
         $scheduled_at = $request['scheduled_at'];
         $duration = $request['shiftDuration'];        
 
@@ -267,10 +266,8 @@ class TutorScheduleController extends Controller
                         ->exists();
             
             if ($isLessonExists) 
-            {
-                $scheduleItem = new ScheduleItem();
+            {               
                 $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
-
 
                 return Response()->json([
                     "success" => false,
@@ -296,10 +293,8 @@ class TutorScheduleController extends Controller
                 $transactionObj = new AgentTransaction();
                 $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
             }
-
-
-            $scheduleItem = new ScheduleItem();
-            $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+            
+            //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
 
             //@todo: email user
             return Response()->json([
@@ -307,7 +302,8 @@ class TutorScheduleController extends Controller
                 "message" => "Lesson has been added",
                 "tutorData" => $request['tutorData'],
                 "memberData" => $request['memberData'],
-                'tutorLessonsData' => $tutorLessonsData,
+
+                //'tutorLessonsData' => $tutorLessonsData, //@todo: replace this MEMOMY HUGGER WITH ID JS
             ]);
 
         } catch (\Exception $e) {

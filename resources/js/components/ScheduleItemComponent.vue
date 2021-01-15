@@ -127,11 +127,15 @@
                             <td v-for="time in timeList" :key="time.id">                        
 
 
-                                <div class="addSchedule SCHEDULE_ITEM" v-show="checkButton({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })">
+                                <div :id="'btnAdd-' + tutor.id + '-' + time.startTime"
+                                    class="addSchedule SCHEDULE_ITEM" 
+                                    v-show="checkButton({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })">
                                     <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal @click="openSchedule({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"/>
                                 </div>
 
-                                <div v-show="checkStatus({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })" :class="getStatus({'tutorID':tutor.id , 'startTime':  time.startTime, 'endTime': time.endTime }) + ' SCHEDULE_ITEM' ">
+                                <div :id="tutor.id + '-' + time.startTime"
+                                    v-show="checkStatus({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })" 
+                                    :class="getStatus({'tutorID':tutor.id , 'startTime':  time.startTime, 'endTime': time.endTime }) + ' SCHEDULE_ITEM' ">
                                     <div class="client">
                                         <div v-html="getMember({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
                                     </div>
@@ -423,6 +427,9 @@ export default {
         },
         hideModal() {
             console.log("hide modal");
+
+            //update the schedules when you hide it?
+            //this.getSchedules(this.scheduled_at, this.shiftDuration);
         },
         resetModal() {
             console.log("reset modal"); //this will reset every time it closes.
@@ -492,19 +499,47 @@ export default {
             {
                 //hide schedule
                 this.$bvModal.hide("schedulesModal");
+
                 if (response.data.success === true) 
                 {
+                    
+                    this.$nextTick(function()
+                    {
+                        console.log(response.data.tutorData.tutorID);
+                        console.log(response.data.tutorData.startTime);
+                        
+                        let tutorID = response.data.tutorData.tutorID;
+                        let startTime = response.data.tutorData.startTime;
+
+                        this.lessonsData[tutorID][this.scheduled_at][startTime];
+
+                        //set the schedule to display
+                        let schedule = document.getElementById(tutorID + "-" + startTime);
+                        schedule.style.display = "block";
+                        schedule.classList.add(this.status);
+
+                        //hide the add button
+                        let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
+                        addButton.style.display = "none";
+
+                        this.getSchedules(this.scheduled_at, this.shiftDuration);
+
+                        this.$forceUpdate();
+                    });
+
+                    /* this will be transfered to when schedule modal is closed
                     this.$nextTick(function()
                     {  
                         this.lessonsData = response.data.tutorLessonsData;
                         this.$forceUpdate(); 
                     });
+                    */
                 } 
                 else {                    
                     alert (response.data.message);    
                 }
 
-                //@note: auto refresh...
+                //@note: auto refresh... (this is only used when there is duplicate)
                 if (response.data.refresh === true) 
                 {
                     this.$nextTick(function()
@@ -596,10 +631,8 @@ export default {
                 alert("Error " + error);                
 			});               
         },
-        getSchedules(scheduled_at, shiftDuration) {
-
-            //getSchedules(this.scheduled_at, this.shiftDuration)
-
+        getSchedules(scheduled_at, shiftDuration) 
+        {
             axios.post("/api/get_schedules?api_token=" + this.api_token, 
             {
                 method              : "POST",
