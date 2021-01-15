@@ -211,7 +211,7 @@ class ScheduleItem extends Model
                 $japanese_firstname = "";
 
                 if (isset($member->nickname)) {
-                    $nickname = $member->nickname . " " . $item->member_id . " | " . $item->id;
+                    $nickname = $member->nickname;
                 }
 
                 if (isset($member->user->firstname)) {
