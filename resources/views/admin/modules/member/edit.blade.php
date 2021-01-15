@@ -66,7 +66,7 @@
 
 
                     <member-update-component :memberships="{{ json_encode($memberships) }}" 
-                        attributes="{{ json_encode($attributes) }}" 
+                        :attributes="{{ json_encode($attributes) }}" 
                         :shifts="{{ json_encode($shifts) }}" 
                         :agentinfo="{{ json_encode($agentInfo) }}" 
                         :userinfo="{{ json_encode($userInfo)  }}" 

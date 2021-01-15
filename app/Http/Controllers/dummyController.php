@@ -11,14 +11,17 @@ use App\Models\Shift;
 use App\Models\Tutor;
 
 use Gate;
+use DB;
 use Auth;
+
+use App\Models\ScheduleItem;
 
 class dummyController extends Controller
 {
 
     public function __construct()
     {
-       $this->middleware('auth')->except(['index']);
+       //$this->middleware('auth')->except(['index']);
     }
 
     /**
@@ -28,7 +31,38 @@ class dummyController extends Controller
      */
     public function index()
     {
-        $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)->where('tutor_id', $tutor->id)->get();
+
+        $date = '2021-01-13';
+        $duration = 25;
+        $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
+
+        /*
+        $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))->get();
+
+        foreach ($scheduleItems as $items) {
+            echo $items->id . " - ". $items->lesson_time . " " . $items->schedule_status . "<BR>";
+        }
+        */
+
+        $schedules = new ScheduleItem();
+
+        $items = $schedules->getSchedules($date, $duration);
+
+        echo "<pre>";
+        print_r ($items);
+        echo "</pre>";
+        echo "==========";
+
+        /*
+        $scheduleItems = ScheduleItem::where('tutor_id', 20041)
+        ->whereDate('lesson_time', '>=', $date)
+        ->whereDate('lesson_time', '<=', $nextDay)
+        ->where('valid', 1)
+        ->get();
+        */
+        //echo "<pre>";
+        //print_r ($scheduleItems);
+
     }
 
     /**

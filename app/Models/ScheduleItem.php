@@ -98,29 +98,31 @@ class ScheduleItem extends Model
      *@param date
      *@param duration
     */
-    public function getSchedules($date, $duration) 
+    public function getSchedulesv1($date, $duration) 
     {
 
-        $tutors = Tutor::all();
+        $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
+
+        $tutors = Tutor::where('is_terminated', 0)->get();
         //get the lessons
         $schedules = [];        
     
         foreach ($tutors as $tutor) 
         {                 
 
-            $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
-
-            $scheduleItems = ScheduleItem::whereBetween('lesson_time', [$date, $nextDay])
-                    ->where('tutor_id', $tutor->user_id)
+          /*
+            $scheduleItems = ScheduleItem::where('tutor_id', $tutor->user_id)
+                    ->whereDate('lesson_time', '>=', $date)
+                    ->whereDate('lesson_time', '<=', $nextDay)
                     ->where('valid', 1)
                     ->get();
+                    */
 
-                /*
-            $scheduleItems = ScheduleItem::whereDate('lesson_time', $date)
-                            ->where('tutor_id', $tutor->user_id)
-                            ->where('valid', 1)
-                            ->get();
-                            */
+        $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
+                        ->where('tutor_id', $tutor->user_id)
+                        ->where('valid', 1)
+                        ->get();
+                
             
             foreach ($scheduleItems as $item) 
             {
@@ -130,18 +132,6 @@ class ScheduleItem extends Model
                 //@todo: v2 - check member
                 $member     = Member::where('user_id', $item->member_id)->first();
                 $user       = User::find($item->member_id);
-                
-                
-                //@done: user may be empty if not reserved
-                /*
-                if (isset($user['first_name'])) {
-                    $memberNameEN = $user['firstname'] . " " .  $user['lastname'];
-                    $memberNameJP = $user['japanese_firstname'] . " " . $user['japanese_lastname'];
-                    $nickname = $member->nickname;
-                } else {
-                    $memberNameEN = "";
-                    $memberNameJP = "";
-                }*/
 
                 $nickname = "";
 
@@ -160,9 +150,9 @@ class ScheduleItem extends Model
                     'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
                     */
 
-                    'startTime'         =>  date("H:i", strtotime($item->lesson_time ."-1 hour")),
+                    'startTime'         =>  date("H:i", strtotime($item->lesson_time ." -1 hour")),
                     'endTime'           =>  date("H:i",  strtotime($item->lesson_time)),
-                    'scheduled_at'      =>  date('Y/m/d', strtotime($item->lesson_time )),
+                    'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
 
                     'email_type'        => $item->email_type,              
                     'duration'          => $item->duration,                    
@@ -174,6 +164,83 @@ class ScheduleItem extends Model
 
                     'member_name_en'    => $nickname,
                     'member_name_jp'    => $nickname,
+                ];                
+            } 
+                       
+        }
+        return $schedules;        
+    }
+
+
+    
+    /** 
+    * ADMIN PANEL - FROM PLOTTING USER SCHEDULES
+     *@param date
+     *@param duration
+    */
+    public function getSchedules($date, $duration) 
+    {
+
+        $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
+
+        $tutors = Tutor::where('is_terminated', 0)->get();
+        //get the lessons
+        $schedules = [];        
+    
+        foreach ($tutors as $tutor) 
+        {      
+
+            $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
+                        ->where('tutor_id', $tutor->user_id)
+                        ->where('valid', 1)
+                        ->get();
+                
+            
+            foreach ($scheduleItems as $item) 
+            {
+                //$member     = Member::find($item->member_id);
+                //$user       = User::find($member->user_id);
+
+                //@todo: v2 - check member
+                $member     = Member::where('user_id', $item->member_id)->first();
+                
+                $user       = User::find($item->member_id);
+
+                $nickname = "";
+                $firstname = "";
+                $japanese_firstname = "";
+
+                if (isset($member->nickname)) {
+                    $nickname = $member->nickname . " " . $item->member_id . " | " . $item->id;
+                }
+
+                if (isset($member->user->firstname)) {
+                    $firstname = $member->user->firstname;
+                }
+               
+                if (isset($member->user->japanses_firstname)) {
+                    $japanese_firstname = $member->user->japanses_firstname;
+                }
+
+                //tutorid , scheduled_at, startTime
+
+                $schedules[$tutor->id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time ." -1 hour"))] = [
+                    'id'                => $item->id,
+                    'status'            => $item->schedule_status,
+                    'startTime'         =>  date("H:i", strtotime($item->lesson_time ." -1 hour")),
+                    'endTime'           =>  date("H:i",  strtotime($item->lesson_time)),
+                    'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
+                    'email_type'        => $item->email_type,              
+                    'duration'          => $item->duration,                    
+                    //tutor info
+                    'tutor_id'          => $item->tutor_id,
+                    'tutor_name_en'     => $tutor->name_en,
+                    'tutor_name_jp'     => $tutor->name_jp,   
+                    //member info
+                    'member_id'             => $item->member_id,   
+                    'nickname'              => $firstname,
+                    'firstname'             => $firstname,
+                    'japanese_firstname'    => $japanese_firstname,
                 ];                
             } 
                        

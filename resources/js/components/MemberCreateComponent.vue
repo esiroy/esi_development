@@ -95,7 +95,7 @@
                                         @blur='checkIsValid($v.user.attribute, $event)'
                                     >
                                         <option value="">-- Select --</option>
-                                        <option v-for="attribute in this.attributes" :value="attribute.name" :key="attribute.id">{{ attribute.name }}</option>
+                                        <option v-for="attribute in this.attributes" :value="attribute.value" :key="attribute.id">{{ attribute.name }}</option>
                                     </select>
                                     <div v-if="submitted && !$v.user.attribute.required" class="invalid-feedback">
                                         Member attribute is required

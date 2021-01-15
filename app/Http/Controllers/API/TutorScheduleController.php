@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\Tutor;
 use App\Models\ScheduleItem;
+use App\Models\AgentTransaction;
+use App\Models\Shift;
 use Auth;
 
 //use App\Models\Lesson;
@@ -68,64 +70,67 @@ class TutorScheduleController extends Controller
         try {
             DB::beginTransaction();
 
+            $scheduledItemData = $request['scheduledItemData'];
 
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
-
-
             $tutorInfo =  Tutor::find($tutor['tutorID']);
 
-
-       
-                        
+            if (isset($member['id'])) {
+                $memberID = $member['id'];
+            } else {
+                $memberID = null;
+            }            
 
             if ($request['status'] == 'TUTOR_CANCELLED') {
+
                 $emailType = $request['cancelationType'];
+
                 $lessonData = [
-                    'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'])),
-                    'duration' => $request['shiftDuration'],
-                    'tutor_id' => $tutorInfo->user_id,
+                    //'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
+                    //'duration' => $request['shiftDuration'],
+                    //'tutor_id' => $tutorInfo->user_id,                    
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
                 ];
+
+
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
+
+
                 $emailType = $request['reservationType'];
 
-                if (isset($member['id'])) {
-
-                    //$memberID = $member['id'];
-
-                    //v2 - change id to user_id
-                    $memberInfo = Member::find($member['id']);
-
-                    $lessonData = [
-                        'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
-                        'duration' => $request['shiftDuration'],
-                        'tutor_id' => $tutorInfo->user_id,
-                        'member_id' => $memberInfo->user_id,
-                        'schedule_status' => $request['status'],
-                        'email_type' => $emailType,
-                        'valid' => 1,
-                    ];
+                /*
+                if (isset($member['id'])) {                    
+                    $memberInfo = Member::where("user_id", $member['id'])->first();
+                    if (isset($memberInfo->user_id)) {
+                        $member_id = null;
+                    } else {
+                        $member_id = $memberInfo->user_id;
+                    }
                 } else {
-
-                    $lessonData = [
-                        'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
-                        'duration' => $request['shiftDuration'],
-                        'tutor_id' => $tutorInfo->user_id,
-                        'schedule_status' => $request['status'],
-                        'email_type' => $emailType,
-                        'valid' => 1,
-                    ];
+                    $member_id = null;
                 }
+                */
+
+                $lessonData = [
+                    //'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
+                    //'duration' => $request['shiftDuration'],
+                    //'tutor_id' => $tutorInfo->user_id,
+                    'member_id' => $memberID,
+                    'schedule_status' => $request['status'],
+                    'email_type' => $emailType,
+                    'valid' => 1,
+                ];
+               
 
             } else {
                 $emailType = null;
                 $lessonData = [
-                    'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour" )),
-                    'duration' => $request['shiftDuration'],
-                    'tutor_id' => $tutorInfo->user_id,
+                    //'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour" )),
+                    //'duration' => $request['shiftDuration'],
+                    //'tutor_id' => $tutorInfo->user_id,
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
@@ -133,15 +138,36 @@ class TutorScheduleController extends Controller
             }
 
             //change to schedule item for max compatibility of data export and import of old system
+            /*
             $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." +1 hour"));
-
             $scheduleItem = ScheduleItem::where('tutor_id', $tutorInfo->user_id)
                 ->where('duration', $request['shiftDuration'])
                 ->where('lesson_time', $lessonTime)->first();
+            */
 
+
+            $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
+
+            //@todo: update only when exists?
             $scheduleItem->update($lessonData);
 
             DB::commit();
+
+
+
+            //** ADD MEMBER TRANSACTION */
+            /**@todo: add transaction only when it exits? */
+            if ($memberID != null) {                
+                $memberTransactionData = [
+                    //'scheduleItem'      => $scheduleItem,
+                    'memberID'          => $memberID,
+                    'shiftDuration'      => $request['shiftDuration'],
+                    'status'            => $request['status']
+                ];
+                $transactionObj = new AgentTransaction();
+                $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+            }
+
 
             //get lessons
             $scheduleItem = new ScheduleItem();
@@ -152,6 +178,9 @@ class TutorScheduleController extends Controller
 
             return Response()->json([
                 "success" => true,
+                "memberID" => $memberID,
+                "id"        => $scheduledItemData['id'],
+                //"updateSQL"   => $lessonData,
                 "message" => "Lesson has been updated",
                 "tutorData" => $tutorInfo->user_id,
                 "memberData" => $request['memberData'],
@@ -180,34 +209,13 @@ class TutorScheduleController extends Controller
     {
         $lessonData = null;
 
+        $scheduled_at = $request['scheduled_at'];
+        $duration = $request['shiftDuration'];        
+
         try {
             DB::beginTransaction();
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
-
-            if ($request['status'] == 'TUTOR_CANCELLED') {
-                $emailType = $request['cancelationType'];
-            } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
-                $emailType = $request['reservationType'];
-
-            } else {
-                $emailType = null;
-            }
-
-            /*
-            $lessonData = [
-            'scheduled_at'  => $request['scheduled_at'],
-            'duration'      => $request['shiftDuration'],
-            'email_type'    => $emailType,
-            'creator_id'    => (isset(Auth::user()->id)) ? Auth::user()->id : null,
-            'tutor_id'      => $tutor['tutorID'],
-            'start_time'     => $tutor['startTime'],
-            'end_time'       => $tutor['endTime'],
-            'member_id'     => $member['id'],
-            'status'        => $request['status']
-            ];*/
-
-            
 
             if (isset($member['id'])) {
                 $memberID = $member['id'];
@@ -215,33 +223,82 @@ class TutorScheduleController extends Controller
                 $memberID = null;
             }
 
+            if ($request['status'] == 'TUTOR_CANCELLED') 
+            {
+                $emailType = $request['cancelationType'];
+
+            } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
+                $emailType = $request['reservationType'];
+            } else {
+                $emailType = null;
+            }
+
+
             //v2 - change id to user_id
             $memberInfo = Member::find($member['id']);
             $tutorInfo =  Tutor::find($tutor['tutorID']);
+            $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." + 1 hour"));
+            $schedule_status = str_replace(' ', '_', $request['status']);
 
+            $shift = Shift::where('value', $request['shiftDuration'])->first();
+
+            //STORE TO scheduleItem TABLE
             $lessonData = [
-                'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." + 1 hour")), //save the japanese time
+                'lesson_time' => $lessonTime, //save the japanese time
                 'duration' => $request['shiftDuration'],
                 'email_type' => $emailType,
                 'tutor_id' => $tutorInfo->user_id,
                 'member_id' => $member['id'],
-                'schedule_status' => str_replace(' ', '_', $request['status']),
+                'schedule_status' => $schedule_status,
                 'duration' => $request['shiftDuration'],
-                'lesson_shift_id' => 1, //25 minutes
+                'lesson_shift_id' => $shift->id, 
                 'valid' => 1,
                 'memo' => "",
             ];
 
+            //@todo: check if not exits?
+            $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
+                        ->where('tutor_id',$tutorInfo->user_id)
+                        //->where('member_id', $member['id'])
+                        //->where('schedule_status', $schedule_status)
+                        //->where('duration', $request['shiftDuration'])
+                        //->where('lesson_shift_id', $shift->id)
+                        ->where('valid', 1)
+                        ->exists();
+            
+            if ($isLessonExists) 
+            {
+                $scheduleItem = new ScheduleItem();
+                $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+
+
+                return Response()->json([
+                    "success" => false,
+                    "refresh"  => true,
+                    'tutorLessonsData' => $tutorLessonsData,
+                    "message" => "The Schedule $lessonTime is already booked, press okay to refresh schedules.",
+                ]);
+            } 
+
             $scheduleItem = ScheduleItem::create($lessonData);
             DB::commit();
 
-            //SCHEDULES ARE NEW!
-            //GET LESSON AND RENEW THE LESSON THAT HAS BEEN ADDED FOR TUTOR
+            //** ADD MEMBER TRANSACTION */
+            if ($memberID != null) {
+
+                $memberTransactionData = [
+                    //'scheduleItem'      => $scheduleItem,
+                    'memberID'          => $memberID,
+                    'shiftDuration'     => $request['shiftDuration'],
+                    'status'            => $request['status']
+                ];   
+
+                $transactionObj = new AgentTransaction();
+                $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+            }
+
 
             $scheduleItem = new ScheduleItem();
-            $scheduled_at = $request['scheduled_at'];
-            $duration = $request['shiftDuration'];
-
             $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
 
             //@todo: email user
@@ -257,7 +314,7 @@ class TutorScheduleController extends Controller
 
             return Response()->json([
                 "success" => false,
-                "message" => "Exception Error Found (Create Tutor Schedule) : " . $e->getMessage(),
+                "message" => "Exception Error Found (Create Tutor Schedule) : " . $e->getMessage() ." on Line " . $e->getLine(),
             ]);
 
             DB::rollback();
@@ -279,9 +336,9 @@ class TutorScheduleController extends Controller
 
         $tutor = Tutor::find($tutorID);
 
-        $deleted = ScheduleItem::where('tutor_id', $tutor->user_id)
-            ->where('duration', $duration)
-            ->where('lesson_time', $lessonTime)->delete();
+        $deleted = ScheduleItem::where('tutor_id', $tutor->user_id)->where('duration', $duration)->where('lesson_time', $lessonTime)->delete();
+
+
 
         if ($deleted) {
             $scheduleItem = new ScheduleItem();
@@ -293,6 +350,8 @@ class TutorScheduleController extends Controller
                 "tutorData" => $data,
                 "tutorLessonsData" => $tutorLessonsData,
             ]);
+
+
         } else {
             return Response()->json([
                 "success" => false,

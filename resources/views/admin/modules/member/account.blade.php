@@ -160,8 +160,10 @@
                                     {{ $member->user->firstname ?? "-"  }}  {{ $member->user->lastname ?? ""  }}
                                 </td>
                                 <td >
-                                    @if ($transaction->transaction_type == "AGENT_SUBTRACT")
+                                    @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON")
                                         {{ "-" }}
+                                    @else 
+                                        {{ "+" }}
                                     @endif
                                     {{ $transaction->amount }}
                                 </td>
@@ -191,6 +193,7 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Credits</th>
+                                <th>Lesson Time</th>
                                 <th>Amount</th>
                             </tr>
 
@@ -198,6 +201,13 @@
                             <tr>
                                 <td>{{ $history->created_at }}</td>                         
                                 <td>{{ $history->amount }}</td>
+                                <th>
+                                    @php 
+                                        $shift = \App\Models\Shift::where('id', $history->lesson_shift_id)->first();
+                                    @endphp
+
+                                    {{ $shift->name ?? "-"}}
+                                </th>
                                 <td>¥ {{ $history->price ?? "0" }}</td>                                
                             </tr>
                             @endforeach

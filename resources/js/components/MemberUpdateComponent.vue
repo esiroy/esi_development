@@ -84,6 +84,7 @@
                                 <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Attribute <div class="float-right">:</div></label>
                             </div>
                             <div class="col-6">
+
                                 <select id="attribute" name="attribute"
                                     v-model="user.attribute"
                                     class="form-control form-control-sm" 
@@ -91,10 +92,9 @@
                                     @blur='checkIsValid($v.user.attribute, $event)'
                                 >
                                     <option value="">-- Select --</option>
-                                    <option v-for="attribute in this.attributes" :value="attribute.value" :key="attribute.id">
-                                        {{ attribute.name }}
-                                    </option>
+                                    <option v-for="attribute in this.attributes" :value="attribute.value" :key="attribute.id">{{ attribute.name }}</option>
                                 </select>
+
                                 <div v-if="submitted && !$v.user.attribute.required" class="invalid-feedback">
                                     Member attribute is required
                                 </div>                                          
@@ -888,6 +888,8 @@ export default {
 	{
         console.log("mount v2 test");
 
+        console.log(this.attributes);
+
         //try if member has an agent
         try {
             this.user.agent_id	= this.agentinfo.id;  
@@ -917,11 +919,21 @@ export default {
 		this.user.communication_app             = this.memberinfo.communication_app;
 
         if ( this.user.communication_app === 'Skype') {
-            this.user.communication_app_username    = this.memberinfo.skype_account;    
+            this.user.communication_app_username    = this.memberinfo.skype_account; 
+
         } else if ( this.user.communication_app === 'Zoom') {
+
             this.user.communication_app_username    = this.memberinfo.zoom_account;
+
         } else {
-            this.user.communication_app_username    = "";
+
+            if (this.memberinfo.skype_account) {
+                this.user.communication_app_username    = this.memberinfo.skype_account;
+            } else {
+                this.user.communication_app_username    = this.memberinfo.zoom_account;
+            }
+            
+            
         }
 		
 		this.user.birthday						= this.memberinfo.birthday;
@@ -935,12 +947,30 @@ export default {
 		this.user.maintutorid 		= this.memberinfo.tutor_id;
 
 		//report cards
-		if (this.memberinfo.is_report_card_visible === 1) this.user.reportCard.member = "Yes"; 
-		if (this.memberinfo.is_report_card_visible_to_agent === 1)  this.user.reportCard.agent = "Yes";
+		if (this.memberinfo.is_report_card_visible === 1) {
+            this.user.reportCard.member = "Yes"; 
+        } else {
+            this.user.reportCard.member = "No"; 
+        }
+
+		if (this.memberinfo.is_report_card_visible_to_agent === 1)  {
+            this.user.reportCard.agent = "Yes";
+        } else {
+            this.user.reportCard.agent = "No";
+        }
 
 		//monthly reports
-		if (this.memberinfo.is_monthly_report_card_visible === 1) this.user.monthlyReport.member  = "Yes"; 
-		if (this.memberinfo.is_monthly_report_card_visible_to_agent === 1)  this.user.monthlyReport.agent = "Yes"; 
+		if (this.memberinfo.is_monthly_report_card_visible === 1) {
+            this.user.monthlyReport.member  = "Yes"; 
+        } else {
+            this.user.monthlyReport.member  = "No"; 
+        }
+
+		if (this.memberinfo.is_monthly_report_card_visible_to_agent === 1)  {
+            this.user.monthlyReport.agent = "Yes"; 
+        } else {
+            this.user.monthlyReport.agent = "No"; 
+        }
 
 
 		//Lesson Goals (purpose)

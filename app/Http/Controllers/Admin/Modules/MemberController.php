@@ -400,7 +400,9 @@ class MemberController extends Controller
             $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
         } else {
             $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));
-        }
+        }       
+
+        //lesson_shift_id 
 
         //Update Agent Transaction Table
         $agentCredit = [
@@ -408,6 +410,7 @@ class MemberController extends Controller
             'transaction_type' => $request->transaction_type,
             'agent_id' => null,
             'member_id' => $member->user_id,
+            'lesson_shift_id' => $member->lesson_shift_id,
             'created_by_id' => Auth::user()->id,
             'amount' => $request->credits,
             'price' => $request->amount,

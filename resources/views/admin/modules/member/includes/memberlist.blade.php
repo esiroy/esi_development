@@ -25,8 +25,10 @@
               
                 <td class="small"></td>
                 <td class="small">{{$member->id}}</td>
+
                 <td class="small">{{ucfirst($member->lastname) ?? "-" }},<br>  {{ucfirst($member->firstname) ?? "-" }}</td>
-                <td class="small">{{$member->user->firstname ?? "-" }}</td>
+                <td class="small">{{$member->nickname ?? "-" }}</td>
+
                 <td class="small">{{$member->attribute ?? "-" }}</td>
                 <td class="small">{{$member->firstname ?? "-" }}</td>
                 <td class="small">{{$member->email ?? "-" }}</td>

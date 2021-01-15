@@ -101,6 +101,7 @@ class ScheduleItemController extends Controller
         {              
             $nextDay      = date('Y-m-d', strtotime($request['inputDate'] ." + 1 day"));  
 
+ 
             //default on load without any parameters
             if (isset($request['inputDate'])) {
                 $dateToday      = date('Y-m-d', strtotime($request['inputDate']));                
@@ -145,16 +146,23 @@ class ScheduleItemController extends Controller
                         ->limit(1)
                         ->get();
             */
-            //$scheduleItems = $scheduleItem->getSchedules($dateToday, $shiftDuration);  
+
+            $schedulesObj = new ScheduleItem();
+            $scheduleItems = $schedulesObj->getSchedules($dateToday, $shiftDuration);  
+
+
 
             //@todo: load via ajax!     (set member, and schedules to null                                
             $members = new Member();
-            $scheduleItems = (object) ['0' => null];
-
+            
+            //$scheduleItems = (object) ['0' => null];
             //if (count($scheduleItems) == 0) {
                 //$scheduleItems = new ScheduleItem();
                 //$scheduleItems = (object) ['0' => null];                
            // }            
+
+
+       
     
             return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
 

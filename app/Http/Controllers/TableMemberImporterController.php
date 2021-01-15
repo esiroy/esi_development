@@ -98,13 +98,13 @@ class TableMemberImporterController extends Controller
 
                 try
                 {
-                    $UserObj = Member::where('user_id', $item->id);
+                    $UserObj = Member::where('user_id', $item->user_id)->first();
 
                     $user = $UserObj->update($data);
 
                     DB::commit();
 
-                    echo "<div style='color:green'>$ctr - updated : " . $item->id . "</div>";
+                    echo "<div style='color:green'>$ctr - updated : " . $item->user_id . "</div>";
 
                 } catch (\Exception $e) {
 
@@ -125,7 +125,8 @@ class TableMemberImporterController extends Controller
 
                 } catch (\Exception $e) {
 
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
+                    
+                    echo "<div style='color:red'> . $item->user_id . " -".$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert <BR></div> <br>";
                 }
 
             }

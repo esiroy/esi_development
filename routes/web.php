@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('dump', 'dummyController@index');
+
 Route::get('test/{id}', 'TableImporterController@test')->name('test');
 Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 

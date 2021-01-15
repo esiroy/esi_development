@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\Shift;
+use Auth;
+
 class AgentTransaction extends Model
 {
     public $table = 'agent_transaction';
@@ -12,6 +15,59 @@ class AgentTransaction extends Model
 
     private $limit = 50;
 
+
+    public function addMemberTransactions($memberTransactionData) 
+    {
+        $shift = Shift::where('value', $memberTransactionData['shiftDuration'])->first();
+
+        if ($memberTransactionData['status'] == 'TUTOR_CANCELLED') 
+        {
+            $transaction = [            
+                'member_id'         => $memberTransactionData['memberID'], 
+                'lesson_shift_id'   => $shift->id,
+                'created_by_id'     => Auth::user()->id,
+                'transaction_type'  => "CANCEL_LESSON",
+                'amount'            => 1,
+                'valid'             => true,
+            ];   
+            
+            AgentTransaction::create($transaction);     
+
+        } else if ($memberTransactionData['status'] == 'CLIENT_RESERVED_B') {
+
+            $transaction = [            
+                'member_id'         => $memberTransactionData['memberID'], 
+                'lesson_shift_id'   => $shift->id,                
+                'created_by_id'     => Auth::user()->id,
+                'transaction_type'  => "LESSON",
+                'amount'            => 1,
+                'valid'             => true,
+            ];   
+
+            AgentTransaction::create($transaction);     
+
+        }
+        else if ($memberTransactionData['status'] == 'CLIENT_RESERVED')  
+        {
+
+            $transaction = [            
+                'member_id'         => $memberTransactionData['memberID'], 
+                'lesson_shift_id'   => $shift->id,                
+                'created_by_id'     => Auth::user()->id,
+                'transaction_type'  => "LESSON",
+                'amount'            => 1,
+                'valid'             => true,
+            ];  
+           
+            AgentTransaction::create($transaction);     
+
+        } else {
+         
+        }
+
+     
+
+    }
 
 
     //List ALL specific AGENT || Point Purchase History (AGENT LISTINGS)
@@ -46,7 +102,6 @@ class AgentTransaction extends Model
                 ->orWhere('transaction_type', 'FREE_CREDITS')
                 ->orWhere('transaction_type', 'DISTRIBUTE')
                 ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
-
         })->orderBy('created_at', 'DESC')->get();
         return $transactions;
     }

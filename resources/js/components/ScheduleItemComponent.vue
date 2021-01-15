@@ -60,11 +60,9 @@
                 <div class="col-md-9">
                     <!--@todo: show only if client is cancelling -->
                     <select name="cancelationType" id="cancelationType" class="form-control form-control-sm hidden" ref="cancelationType" v-model="cancelationType">
-                        <!--<option value="">-- Sect Email Type --</option>-->
-                        <option value="Regular Cancel">Regular Cancel</option>
-                        <option value="Cancel with replacement"
-                            >Cancel with replacement</option
-                        >
+                      
+                        <option value="Regular Cancel" selected>Regular Cancel</option>
+                        <option value="Cancel with replacement">Cancel with replacement</option>
                     </select>
                 </div>
             </div> 
@@ -74,8 +72,8 @@
                 <div class="col-md-3">Email Type:</div>
                 <div class="col-md-9">                 
                     <select name="reservationType" id="reservationType" class="form-control form-control-sm hidden" ref="reservationType" v-model="reservationType">                            
-                        <!--<option value="">-- Sect Email Type --</option>-->
-                        <option value="Regular reservation">Regular reservation</option>
+                      
+                        <option value="Regular reservation" selected>Regular reservation</option>
                         <option value="For replacement">For replacement</option>
                     </select>
                 </div>
@@ -89,116 +87,63 @@
                 {{ year }} 年 {{ month }}月 {{ day}}日
             </div>
 
-            <div class="card-body scrollable-x p-0">
+            <div class="card-body scrollable-x p-0"  style="height:680px">
                 <table class="table table-bordered table-schedules">
-                    <tr>
-                        <td class="schedTime"></td>
-                        <td class="schedTime" v-for="time in timeList" :key="time.id">
-                            <div class="class-schedule-container">
-                                <span class="flag-ph"></span>
-                                <span class="class-schedule class-schedule-start">{{time.startTime}}</span>
-                            </div>
-                            <div class="class-schedule-container">
-                                <span class="flag-jp"></span>
-                                <span class="class-schedule class-schedule-end">{{time.endTime}}</span>
-                            </div>
-                        </td>
-                    </tr>
 
-                    <tr v-for="tutor in tutors" :key="tutor.id">
-                        <td :class="tutor.id">
-                            <div :id="tutor.user_id" style="width:90px">                                
-                                {{ tutor.firstname }}
-                            </div>
-                        </td>
+                    <thead>
+                        <tr>
+                            <th class="schedTime static">
+                                <div class="bordered">
+                                    <div class="class-schedule-container"></div>
+                                </div>
+                            </th>
+                            <td class="schedTime" v-for="time in timeList" :key="time.id">
+                                <div class="bordered">
+                                    <div class="class-schedule-container">
+                                        <span class="flag-ph"></span>
+                                        <span class="class-schedule class-schedule-start">{{time.startTime}}</span>
+                                    </div>
+                                    <div class="class-schedule-container">
+                                        <span class="flag-jp"></span>
+                                        <span class="class-schedule class-schedule-end">{{time.endTime}}</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </thead>
 
-                        <td class="" v-for="time in timeList" :key="time.id">
-                          
-                            <!--{{ time.startTime  }} - {{ time.endTime}}-->
-                            <input v-show="checkButton({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })" type="button" value="" class="btnAdd" v-b-modal.addScheduleModal 
-                                @click="openSchedule({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"/>
+                    <tbody>
+                        <tr v-for="tutor in tutors" :key="tutor.id">
+                            <th>
+                                <div :id="tutor.user_id" class="hbordered">  
+                                  <!-- 
+                                    <div class="tutor-id">{{ tutor.id }}</div>
+                                    <div class="tutor-user-id">{{ tutor.user_id }}</div>
+                                    -->
+                                    <div class="tutor-name">{{ tutor.firstname }}</div>
+                                </div>
+                            </th>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'TUTOR_SCHEDULED' })" class="tutor_scheduled">                              
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>                                   
-                                </div>                                
-                                <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'TUTOR_SCHEDULED'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'TUTOR_SCHEDULED'})"><img src="/images/iDelete.gif"></a></div>
-                                </div>                                
-                            </div>
-                            
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_RESERVED' })" class="client_reserved">
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>                                   
-                                </div>
-                                <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'CLIENT_RESERVED'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'CLIENT_RESERVED'})"><img src="/images/iDelete.gif"></a></div>
-                                </div>
-                            </div> 
+                            <td v-for="time in timeList" :key="time.id">                        
 
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_RESERVED_B' })" class="client_reserved_b">
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
-                                </div>
-                                <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'CLIENT_RESERVED_B'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'CLIENT_RESERVED_B'})"><img src="/images/iDelete.gif"></a></div>  
-                                </div>
-                            </div>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'TUTOR_CANCELLED' })" class="tutor_cancelled">
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
-                                </div>                            
-                                <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'TUTOR_CANCELLED'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'TUTOR_CANCELLED'})"><img src="/images/iDelete.gif"></a></div>  
+                                <div class="addSchedule SCHEDULE_ITEM" v-show="checkButton({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })">
+                                    <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal @click="openSchedule({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"/>
                                 </div>
-                            </div>
 
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'NOTHING' })" class="nothing">
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
-                                </div>                            
-                                <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'NOTHING'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'NOTHING'})"><img src="/images/iDelete.gif"></a></div>  
-                                </div>
-                            </div>
+                                <div v-show="checkStatus({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })" :class="getStatus({'tutorID':tutor.id , 'startTime':  time.startTime, 'endTime': time.endTime }) + ' SCHEDULE_ITEM' ">
+                                    <div class="client">
+                                        <div v-html="getMember({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
+                                    </div>
+                                    <div class="btn-container">
+                                        <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
+                                        <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
+                                    </div>
+                                </div> 
 
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'CLIENT_NOT_AVAILABLE' })" class="client_not_available">
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
-                                </div>                            
-                               <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'CLIENT_NOT_AVAILABLE'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'CLIENT_NOT_AVAILABLE'})"><img src="/images/iDelete.gif"></a></div>  
-                                </div>
-                            </div> 
-
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'SUPPRESSED_SCHEDULE' })" class="suppressed_schedule">
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
-                                </div>                                
-                                <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'SUPPRESSED_SCHEDULE'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'SUPPRESSED_SCHEDULE'})"><img src="/images/iDelete.gif"></a></div>  
-                                </div>
-                            </div> 
-
-                            <div v-show="checkStatus({tutorID: tutor.id, tutorUserID: tutor.user_id, startTime: time.startTime, endTime: time.endTime, status: 'COMPLETED' })" class="completed">
-                                <div class="client">
-                                    <div v-html="getMember({ tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"></div>
-                                </div>                            
-                                <div class="btn-container">
-                                    <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'COMPLETED'})"><img src="/images/iEdit.gif"></a></div>
-                                    <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime, status: 'COMPLETED'})"><img src="/images/iDelete.gif"></a></div>  
-                                </div>
-                            </div>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    </tbody>
 
                 </table>
             </div>
@@ -223,14 +168,15 @@ export default {
         day: { type: Number },
 
         //date for schedules
-        schedule_items: { type: Object },
-        
+        schedule_items: { type: Object },       
+
+
         //dateToday
         scheduled_at: { type: String },
         duration: { type: Number },
 
         //next day
-        next_day: { type: String },
+        schedule_next_day: { type: String },
 
         //entities
         tutors: {type: Array },
@@ -243,6 +189,12 @@ export default {
     },
     data() {
         return {
+
+            isFound : false,
+
+            fromDay : this.scheduled_at,
+            nextDay : "",
+
             memberOptionList: [],
             modalType: null,
 
@@ -252,6 +204,9 @@ export default {
             status: "",
             memberSelectedID: "",
             memberList: [],
+
+            //Schedule Data [edit]
+            currentScheduledData: [],
             
             //emailType
             cancelationType: "Regular Cancel",
@@ -307,8 +262,9 @@ export default {
                 {id:25 ,startTime: '22:00', endTime: '23:00'},
                 {id:26 ,startTime: '22:30', endTime: '23:30'},
 
-                {id:27 ,startTime: '23:00', endTime: '00:00'},
-                {id:28 ,startTime: '23:30', endTime: '00:30'},
+                {id:27 ,startTime: '23:00', endTime: '24:00'},
+                {id:28 ,startTime: '23:30', endTime: '24:30'},
+
             ] 
         };
     },
@@ -316,20 +272,26 @@ export default {
        
         this.setMemberListLock(); //disabler of additoinal options        
 
-        //this data is from the laravel controller
-        this.lessonsData = this.schedule_items;
+   
         
         //console.log("Lessons Mounted : ", this.schedules);
 
         this.shiftDuration  = this.duration;
 
         //@todo: ajax load schedules (DONE)
-        this.getSchedules(this.scheduled_at, this.shiftDuration); 
+        //this.getSchedules(this.scheduled_at, this.shiftDuration); 
 
         this.getMemberList();
+
+       
+
+        this.nextDay  = this.schedule_next_day;
+        this.fromDay = this.scheduled_at;        
                
     },
-    async mounted() {
+    mounted() {
+
+
         /* transferred to before mount 
         this.setMemberListLock(); //disabler of additoinal options        
         this.lessonsData = this.schedule_items;
@@ -346,117 +308,112 @@ export default {
         this.memberOptionList = options;
         */
 
+        this.nextDay  = this.schedule_next_day;
+        this.fromDay = this.scheduled_at;
+
+        console.log(this.fromDay);
+
+        //this data is from the laravel controller
+        this.lessonsData = this.schedule_items;
+
+        console.log(this.lessonsData);
+
+     
+        //get member array
+
+
+
     },
     methods: {
-        getMemberData(scheduleData) {
-            let data = null;
-            if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
-                data = null;       
-            } else {
-                let lessons = this.lessonsData[scheduleData.tutorID];
-                lessons.forEach(function (lesson, index) 
-                {
-                    if (lesson.startTime === scheduleData.startTime && lesson.endTime === scheduleData.endTime) 
-                    {
-                        data = lesson;                        
-                    }
-                });
+        getScheduleData(data) {
+           try {
+                //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
+                //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];                   
+                     return lessonData;
+                } else {
+                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];
+                    return lessonData;
+                }                
             }
-            return data;      
+            catch(err) { return ""; }
         },
-        getMember(scheduleData) {
-            let memberName = null;
-            let memberID = null;
-            let lessonID = null;
+        getMember(data) 
+        {          
+            try {
+                //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
+                //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];
+                    //return lessonData.status_checker;
+                    return "<a id='"+lessonData.id+"' href='/admin/member/"+ lessonData.member_id +"' target='_blank'>"+ lessonData.nickname +"</a>";
 
-            if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
-                memberID = null;
-                memberName = null;
-                lessonID = null;
-            } else {
-                let lessons = this.lessonsData[scheduleData.tutorID];
-                lessons.forEach(function (lesson, index) 
-                {
-                    if (lesson.startTime === scheduleData.startTime && lesson.endTime === scheduleData.endTime) 
-                    {
-                        memberID = lesson.member_id;
-                        memberName = lesson.member_name_en;
-                        lessonID = lesson.id;
-                    }
-                });
+                } else {
+                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];
+                    return "<a id='"+lessonData.id+"' href='/admin/member/"+ lessonData.member_id +"' target='_blank'>"+ lessonData.nickname +"</a>";
+                }
+                //console.log(this.lessonsData[data.tutorID][this.scheduled_at][data.startTime])
             }
-            return "<a id='"+lessonID+"' href='/admin/member/"+ memberID +"'>"+ memberName+"</a>";
+            catch(err) { return ""; }               
          },
         //check button if it has schedule then we will hide it, and if not we need to show it
         checkButton(data) {
-            let show = true;
-           
-            this.lessonsData[data.tutorID]
-
-            $.each(this.lessonsData[data.tutorID], function(key, value) 
-            {
-                if (
-                    //value.tutor_id === data.tutorID &&                   
-                    value.startTime === data.startTime && 
-                    value.endTime === data.endTime &&
-                    value.scheduled_at === this.scheduled_at
-                )
-                {
-                    //it has been found in the lesson data array, we will hide the add schedule button
-                    show = false;
+            let isFound = false;
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];       
+                    isFound = lessonData.status;
+                } else {
+                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];       
+                    isFound = lessonData.status;
                 }
-            });
-            return show; 
+            }
+            catch(err) {
+               isFound =false
+            } 
+            return !isFound;
         },
         //check reservation status and show if available
-        checkStatus(data) 
-        {  
+        checkStatus(data) {
+            //console.log(data.tutorID)
             let isFound = false;
-            
-            if (this.lessonsData[data.tutorID] === undefined || this.lessonsData[data.tutorID] === 'undefined') {
-
-                return false; 
-
-            } else {            
-
-                let lessons = this.lessonsData[data.tutorID];
-
-                /* debug schedule
-                if (data.tutorID === 56 && data.startTime === "19:00") {
-                    console.log(data.tutorID)
-                    $.each(lessons, function(key, lesson) 
-                    {
-                        console.log(lesson.id + " - " + lesson.startTime + " " + lesson.status);
-                    });                
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];       
+                    isFound = lessonData.status;
+                } else {
+                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];       
+                    isFound = lessonData.status;
                 }
-                */                
-
-                $.each(lessons, function(key, lesson) 
-                {
-                    if (lesson.tutor_id == data.tutorUserID &&
-                        lesson.status == data.status && 
-                        lesson.startTime == data.startTime && 
-                        lesson.endTime == data.endTime &&
-                        lesson.scheduled_at == this.scheduled_at
-                    ){
-                        isFound = true;
-                        return isFound;                                   
-                        //console.log(value.id + " " + value.status + " " + data.status + " " + value.startTime)
-                    } else if(lesson.tutor_id == data.tutorUserID &&
-                        lesson.status == data.status && 
-                        lesson.startTime == data.startTime && 
-                        lesson.endTime == data.endTime &&
-                        lesson.scheduled_at == this.next_day)
-                    {
-                        isFound = true;
-                    }
-
-
-                });             
             }
-            
-            return isFound;                    
+            catch(err) {
+               isFound = false
+            } 
+            return isFound;
         },
+        getStatus(data) 
+        {            
+            try {
+                //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
+                //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+
+                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];
+                    return lessonData.status;
+
+                } else {
+                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];
+                    return lessonData.status;
+                }
+                //console.log(this.lessonsData[data.tutorID][this.scheduled_at][data.startTime])
+            }
+            catch(err) { return ""; }                
+        },
+        scheduleExists(scheduleData) 
+        {
+            return this.checkStatus();
+        },        
         openSchedule(tutorData) 
         {
             this.modalType = "save";
@@ -464,24 +421,6 @@ export default {
             this.$bvModal.show("schedulesModal");
             this.tutorData = tutorData;
         },
-        editSchedule(scheduleData) {
-            //set tutor
-            this.tutorData = scheduleData;
-
-            this.modalType = "edit";
-            let member = this.getMemberData(scheduleData); 
-            this.$bvModal.show("schedulesModal");            
-            this.status = scheduleData.status;
-
-            console.log(member);
-
-            this.memberSelectedID = [{ id: member.member_id , 'name': member.member_name_en }];
-
-            //this.isStatusDisabled = false;
-            this.cancelationType = member.email_type;
-            this.reservationType = member.email_type;
-            this.setMemberListLock();
-        },         
         hideModal() {
             console.log("hide modal");
         },
@@ -493,10 +432,8 @@ export default {
         },
         handleOk(bvModalEvt) 
         {
-            if (this.status === "NOTHING")
-            {
-                this.confirmDelete(this.tutorData);
-            } else {            
+            if (this.status === "NOTHING") this.confirmDelete(this.tutorData);
+            else {
                 if (this.modalType === 'save') {
                     console.log ("saving...")            
                     this.setTutorSchedule();
@@ -505,24 +442,125 @@ export default {
                 }
             }
             bvModalEvt.preventDefault();
-        },
-        scheduleExists(scheduleData) 
+        },        
+        editSchedule(scheduleData) 
         {
-            let scheduleGate = false;
-            if (this.lessonsData[scheduleData.tutorID] === undefined || this.lessonsData[scheduleData.tutorID] == 'undefined') {
-                scheduleGate  = false;
-            } else {
-                let lessons = this.lessonsData[scheduleData.tutorID];
-                lessons.forEach(function (lesson, index) 
+            //show the modal first and update the values below             
+            this.$bvModal.show("schedulesModal");
+
+            //update the modal values
+            this.modalType = "edit";
+            this.currentScheduledData = this.getScheduleData(scheduleData);
+            this.tutorData = scheduleData;
+            this.status = this.currentScheduledData.status;
+            
+            this.memberSelectedID = [{ id: this.currentScheduledData.member_id , 'name': this.currentScheduledData.firstname }];
+            
+            //this.isStatusDisabled = false;
+            /** The reservationType - the live does not have this, so it will be blank; **/
+            //this.cancelationType = member.email_type;
+            //this.reservationType = member.email_type;
+
+            this.setMemberListLock();
+        },  
+
+        setTutorSchedule() 
+        {
+            //get the selected id
+            let memberData = {
+                id: this.memberSelectedID
+            };           
+            
+            if (this.scheduleExists(this.tutorData)) 
+            {                
+                alert ("this schedule is already booked");
+                return false;
+            } 
+
+            axios.post("/api/create_tutor_schedule?api_token=" + this.api_token, 
+            {
+                method              : "POST",               
+                memberData          : memberData.id,
+                scheduled_at        : this.scheduled_at,
+                shiftDuration       : this.shiftDuration,
+                tutorData           : this.tutorData,
+                status              : this.status,
+                reservationType     : this.reservationType,
+                cancelationType     : this.cancelationType,
+            })
+            .then(response => 
+            {
+                //hide schedule
+                this.$bvModal.hide("schedulesModal");
+                if (response.data.success === true) 
                 {
-                    if (lesson.startTime === scheduleData.startTime && lesson.endTime === scheduleData.endTime) 
-                    {
-                        scheduleGate = true;
-                    }
-                });
-            }
-            return scheduleGate;
+                    this.$nextTick(function()
+                    {  
+                        this.lessonsData = response.data.tutorLessonsData;
+                        this.$forceUpdate(); 
+                    });
+                } 
+                else {                    
+                    alert (response.data.message);    
+                }
+
+                //@note: auto refresh...
+                if (response.data.refresh === true) 
+                {
+                    this.$nextTick(function()
+                    {  
+                        this.lessonsData = response.data.tutorLessonsData;
+                        this.$forceUpdate(); 
+                    });
+                }
+                
+			}).catch(function(error) {
+                alert("Error " + error);                
+			});
+        },        
+        updateTutorSchedule() {
+            //get the selected id
+
+           
+            let memberData = {
+                'id': this.currentScheduledData.member_id,
+                'name': this.currentScheduledData.firstname //@optionial?
+            };
+
+                           
+
+            axios.post("/api/update_tutor_schedule?api_token=" + this.api_token, 
+            {
+                method              : "POST",               
+                memberData          : memberData,
+                scheduledItemData   : this.currentScheduledData,
+                scheduled_at        : this.scheduled_at,
+                shiftDuration       : this.shiftDuration,
+                tutorData           : this.tutorData,
+                status              : this.status,
+                reservationType     : this.reservationType,
+                cancelationType     : this.cancelationType,
+            })
+            .then(response => 
+            {
+                //hide schedule
+                this.$bvModal.hide("schedulesModal");
+                if (response.data.success === true) 
+                {
+                    this.$nextTick(function()
+                    {  
+                        this.lessonsData = response.data.tutorLessonsData;
+                        this.$forceUpdate(); 
+                    });
+                } 
+                else {                    
+                    alert (response.data.message);                   
+                }
+			}).catch(function(error) {
+                alert("Error " + error);                
+			});            
         },
+
         getMemberList() {
             
             axios.post("/api/get_members?api_token=" + this.api_token, 
@@ -574,6 +612,9 @@ export default {
                     this.$nextTick(function()
                     {  
                         this.lessonsData = response.data.tutorLessonsData;
+
+                        console.log( this.lessonsData);
+
                         this.$forceUpdate(); 
                     });
                 } 
@@ -584,85 +625,6 @@ export default {
                 alert("Error " + error);                
 			});            
 
-        },
-        updateTutorSchedule() {
-            //get the selected id
-            let memberData = {
-                id: this.memberSelectedID
-            };
-
-            axios.post("/api/update_tutor_schedule?api_token=" + this.api_token, 
-            {
-                method              : "POST",               
-                memberData          : memberData.id,
-                scheduled_at        : this.scheduled_at,
-                shiftDuration       : this.shiftDuration,
-                tutorData           : this.tutorData,
-                status              : this.status,
-                reservationType     : this.reservationType,
-                cancelationType     : this.cancelationType,
-            })
-            .then(response => 
-            {
-                //hide schedule
-                this.$bvModal.hide("schedulesModal");
-                if (response.data.success === true) 
-                {
-                    this.$nextTick(function()
-                    {  
-                        this.lessonsData = response.data.tutorLessonsData;
-                        this.$forceUpdate(); 
-                    });
-                } 
-                else {                    
-                    alert (response.data.message);                   
-                }
-			}).catch(function(error) {
-                alert("Error " + error);                
-			});            
-        },
-        setTutorSchedule() 
-        {
-            //get the selected id
-            let memberData = {
-                id: this.memberSelectedID
-            };           
-            
-            if (this.scheduleExists(this.tutorData)) 
-            {                
-                alert ("this schedule is already booked");
-                return false;
-            } 
-
-            axios.post("/api/create_tutor_schedule?api_token=" + this.api_token, 
-            {
-                method              : "POST",               
-                memberData          : memberData.id,
-                scheduled_at        : this.scheduled_at,
-                shiftDuration       : this.shiftDuration,
-                tutorData           : this.tutorData,
-                status              : this.status,
-                reservationType     : this.reservationType,
-                cancelationType     : this.cancelationType,
-            })
-            .then(response => 
-            {
-                //hide schedule
-                this.$bvModal.hide("schedulesModal");
-                if (response.data.success === true) 
-                {
-                    this.$nextTick(function()
-                    {  
-                        this.lessonsData = response.data.tutorLessonsData;
-                        this.$forceUpdate(); 
-                    });
-                } 
-                else {                    
-                    alert (response.data.message);                   
-                }
-			}).catch(function(error) {
-                alert("Error " + error);                
-			});
         },
         confirmDelete(scheduleData) 
         {
@@ -725,13 +687,75 @@ export default {
         background: #d0e8f7;
         text-align: center;
         font: bold 12px Arial;
-        border: 1px solid #d0e8f7;
-        border-bottom: 3px solid #72add2;
-         border-right: 1px solid #ffffff;
         vertical-align: top;
-        width: 80px;
-        height: 29px;
+        width: 70px;
+        height: 30px;
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        top: -1px;
+        padding-top:0px;
+        padding-left:0px;
+        padding-right:0px;
+        padding-bottom:0px;
+        z-index: 99;
     }
+
+    .table-schedules th.schedTime .bordered{
+        background: #d0e8f7;
+        height: 40px;
+        padding: 0px;
+        border-bottom: 3px solid #72add2;
+        border-right: 3px solid #72add2;        
+    }
+    
+
+    .table-schedules td .bordered {
+        border-top: 0px;
+        border-left: 0px;
+        border-bottom: 3px solid #72add2;
+        border-right: 1px solid #fff;
+        width: 100%;
+        padding-top: 5px;
+        padding-bottom: 5px; 
+        height: 40px;
+
+    }
+
+     .table-schedules thead th {
+        height: 40px;
+        /*border-bottom: 3px solid #72add2;*/
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        background-color: #fff;
+        z-index: 999;
+        top: -1px;
+        padding:0px;
+     }
+
+    .table-schedules tbody th, .static {
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        left: -1px;
+        background-color: #fff;
+        border: 0px;
+        padding: 0px;
+        margin: 0px;
+        height: 60px;        
+        z-index: 100;
+    }
+
+    .table-schedules tbody th .hbordered {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 3px solid #72add2;
+        border-bottom: 1px solid #72add2;
+        width: 100%;
+        height: 100%;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+
 
     .table-schedules td {
         vertical-align: top;
@@ -751,7 +775,6 @@ export default {
     
 
     .btnAdd {
-        margin: 2px 2px 0 80px;
         padding: 1px 2px 1px 12px;
         color: #000000;
         background: url(/images/btnAdd.png) 4px 3px no-repeat #d0d0d0;
@@ -796,93 +819,90 @@ export default {
         background: #ececec;
         text-align: center;      
     }
-    
-    .nothing {
+
+    /** STATUS **/
+    .SCHEDULE_ITEM {
+        width: 85px;
+    }
+
+    .nothing, .NOTHING {
         background: #ffffff;
         border: 1px solid #c3c3c3;
         padding: 2px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;     
     }    
 
-    .tutor_scheduled {
+    .tutor_scheduled, .TUTOR_SCHEDULED {
         background: #aae966;
         border-bottom: 1px solid #ffffff;
         padding: 2px;
         font-size: 12px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;        
     }
 
-    .client_reserved {
+    .client_reserved, .CLIENT_RESERVED {
         background: #f9e15f;
         border-bottom: 1px solid #ffffff;
         padding: 2px;
         font-size: 12px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;
 
     }
 
-    .client_reserved_b {
+    .client_reserved_b, .CLIENT_RESERVED_B {
         background: #f9e15f;
         border-bottom: 1px solid #ffffff;
         padding: 2px;
         font-size: 12px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;
     }
 
-    .tutor_cancelled {
+    .tutor_cancelled, .TUTOR_CANCELLED {
         background: #b0b0b0;
         border-bottom: 1px solid #ffffff;
         padding: 2px;
         font-size: 12px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;             
     }
  
-    .client_not_available {
+    .client_not_available, .CLIENT_NOT_AVAILABLE {
 
         background: #f25757;
         border-bottom: 1px solid #ffffff;
         padding: 2px;
         font-size: 12px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;              
     }
 
-    .suppressed_schedule {
+    .suppressed_schedule, .SUPPRESSED_SCHEDULE {
         background: #55c7f0;
         border-bottom: 1px solid #ffffff;
         padding: 2px;
         font-size: 12px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;         
     }
 
-    .completed {
+    .completed, .COMPLETED {
         background: #f6b05d;
         border-bottom: 1px solid #ffffff;
         padding: 2px;
         font-size: 12px;
         line-height: 10px;
-        color: #000000;
-        width: 110px;
+        color: #000000;        
         margin: 2px;           
     }
 
