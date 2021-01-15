@@ -126,7 +126,7 @@ class TableMemberImporterController extends Controller
                 } catch (\Exception $e) {
 
                     
-                    echo "<div style='color:red'> . $item->user_id . " -".$ctr - Exception Error Found : (Member Insert) " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert <BR></div> <br>";
+                    echo "<div style='color:red'>" . $item->user_id . " -".$ctr  ." - Exception Error Found : (Member Insert) " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert <BR></div> <br>";
                 }
 
             }
