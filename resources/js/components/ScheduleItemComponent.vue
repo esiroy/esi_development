@@ -460,6 +460,8 @@ export default {
             this.currentScheduledData = this.getScheduleData(scheduleData);
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
+
+            console.log(this.currentScheduledData);
             
             this.memberSelectedID = [{ id: this.currentScheduledData.member_id , 'name': this.currentScheduledData.firstname }];
             
@@ -507,10 +509,20 @@ export default {
                     {
                         console.log(response.data.tutorData.tutorID);
                         console.log(response.data.tutorData.startTime);
+                        console.log(this.scheduled_at)
                         
                         let tutorID = response.data.tutorData.tutorID;
                         let startTime = response.data.tutorData.startTime;
-                      
+
+                        this.lessonsData[tutorID][this.scheduled_at][startTime] = {
+                            'id': response.data.scheduleItemID,
+                            "status": this.status,                      
+                            //member info
+                            'member_id': response.data.memberData.id,
+                            'firstname': response.data.memberData.firstname,
+                            'nickname': response.data.memberData.nickname
+                        }
+
                         //set the schedule to display
                         let schedule = document.getElementById(tutorID + "-" + startTime);
                         schedule.style.display = "block";
@@ -520,7 +532,7 @@ export default {
                         let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
                         addButton.style.display = "none";
 
-                        this.getSchedules(this.scheduled_at, this.shiftDuration);
+                        //this.getSchedules(this.scheduled_at, this.shiftDuration);
 
                         this.$forceUpdate();
                     });

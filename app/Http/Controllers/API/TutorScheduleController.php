@@ -234,7 +234,23 @@ class TutorScheduleController extends Controller
 
 
             //v2 - change id to user_id
-            $memberInfo = Member::find($member['id']);
+            $memberInfo = Member::where('user_id', $member['id'])->first();
+
+            if ($memberInfo) {
+                $memberData = [
+                    'id'        => $memberInfo->user_id,
+                    'nickname'  => $memberInfo->nickname,
+                    'firstname' => $memberInfo->user->firstname,
+                ];
+            } else {
+                $memberData = [
+                    'id'        => "",
+                    'nickname'  => "",
+                    'firstname' => "",
+                ];          
+            }
+
+
             $tutorInfo =  Tutor::find($tutor['tutorID']);
             $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." + 1 hour"));
             $schedule_status = str_replace(' ', '_', $request['status']);
@@ -295,14 +311,13 @@ class TutorScheduleController extends Controller
             }
             
             //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
-
             //@todo: email user
             return Response()->json([
                 "success" => true,
                 "message" => "Lesson has been added",
+                "scheduleItemID"  => $scheduleItem->id,
                 "tutorData" => $request['tutorData'],
-                "memberData" => $request['memberData'],
-
+                "memberData" => $memberData,                
                 //'tutorLessonsData' => $tutorLessonsData, //@todo: replace this MEMOMY HUGGER WITH ID JS
             ]);
 
