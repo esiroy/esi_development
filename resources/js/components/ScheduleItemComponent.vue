@@ -510,9 +510,7 @@ export default {
                         
                         let tutorID = response.data.tutorData.tutorID;
                         let startTime = response.data.tutorData.startTime;
-
-                        this.lessonsData[tutorID][this.scheduled_at][startTime];
-
+                      
                         //set the schedule to display
                         let schedule = document.getElementById(tutorID + "-" + startTime);
                         schedule.style.display = "block";
