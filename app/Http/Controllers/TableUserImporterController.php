@@ -11,14 +11,20 @@ use DB;
 class TableUserImporterController extends Controller
 {
   
-    public function index()
+    public function index($per_item = null)
     {
         $items = DB::connection('mysql_live')->table('users')->count();
-        $per_item = 8000;
+
+        if ($per_item == null) {
+            $per_item = 8000;
+        }
+       
         $total_pages = ($items / $per_item) + 1;
 
         for ($i = 1; $i <= $total_pages; $i++) {
-            $url = url("importUsers/$i");
+
+            
+            $url = url("importUsers/$i/$per_item");
 
             echo "<a href='$url'><small>User Page $i</small></a><br>";
         }

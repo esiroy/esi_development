@@ -11,14 +11,18 @@ use DB;
 class TableMemberImporterController extends Controller
 {
   
-    public function index()
+    public function index($per_item = null)
     {
         $items = DB::connection('mysql_live')->table('users_member')->count();
-        $per_item = 8000;
+
+        if ($per_item == null) {
+            $per_item = 8000;
+        }
+
         $total_pages = ($items / $per_item) + 1;
 
         for ($i = 1; $i <= $total_pages; $i++) {
-            $url = url("importMembers/$i");
+            $url = url("importMembers/$i/$per_item");
 
             echo "<a href='$url'><small>Member Page $i</small></a><br>";
         }

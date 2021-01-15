@@ -55,13 +55,20 @@ Route::get('importSchedules/import/{id}/{per_item}', 'TableScheduleItemImporterC
 
 
 /*************** 
- * SCHEDULES IMPORTER
- ****************/
+ * USER IMPORTER
+ ***************/
 Route::resource('importUsers', 'TableUserImporterController');
+Route::get('importUsers/index/{per_item}', 'TableUserImporterController@index');
 Route::get('importUsers/{id}/{per_item}', 'TableUserImporterController@show');
 
 
+/*************** 
+ * MEMBER IMPORTER
+ ***************/
 Route::resource('importMembers', 'TableMemberImporterController');
+Route::get('importMembers/index/{per_item}', 'TableMemberImporterController@index');
+Route::get('importMembers/{id}/{per_item}', 'TableMemberImporterController@show');
+
 Route::resource('importAgents', 'TableAgentImporterController');
 
 
