@@ -88,7 +88,7 @@ class TableUserImporterController extends Controller
                 try
                 {
 
-                    $UserObj = User::where('id', $item->id);
+                    $UserObj = User::where('id', $item->id)->first();
 
                     $user = $UserObj->update($data);
 
