@@ -121,7 +121,10 @@ class TableMemberImporterController extends Controller
                 {
                     $member = Member::create($data);
 
-                    //$member->members()->sync([$member->id], false);  
+                    $user = User::find($item->user_id);
+                    $user->members()->sync([$member->id], false);  
+
+                    
 
                     DB::commit();
 

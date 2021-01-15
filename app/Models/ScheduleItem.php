@@ -238,7 +238,7 @@ class ScheduleItem extends Model
                     'tutor_name_jp'     => $tutor->name_jp,   
                     //member info
                     'member_id'             => $item->member_id,   
-                    'nickname'              => $firstname,
+                    'nickname'              => $nickname,
                     'firstname'             => $firstname,
                     'japanese_firstname'    => $japanese_firstname,
                 ];                
