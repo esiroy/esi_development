@@ -81,9 +81,10 @@
                                         </td>
                                         <td style="text-align: center;" colspan="2">                                            
                                             @php
-                                                $tutor = \App\Models\Tutor::find($reserve->tutor_id);
+                                                $tutor = \App\Models\Tutor::where('user_id', $reserve->tutor_id)->first();
                                             @endphp
-                                            {{ $tutor['name_en'] }}
+                                            <div id="{{ $tutor->user_id }}" class="tutor_name">{{ $tutor->user->firstname ?? " - " }} {{ $tutor->user->lastname ?? "" }}</div>
+
                                         </td>
                                         <td style="text-align: center;">
                                             <a href="javascript:void()" onclick="memoForm('{{$reserve->id}}')"><img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡</a>

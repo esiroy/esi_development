@@ -46,6 +46,9 @@
                         placeholder="-- Select A Member --"
                         track-by="id"
                         label="name"
+                        @input="onChange"
+                        @close="onTouch"
+                        @select="onSelect"                        
                     >
                         <template slot="singleLabel" slot-scope="{ option }">
                             <strong style='color:#000; font-size:12px'>{{ option.name }}</strong>
@@ -448,7 +451,22 @@ export default {
                 }
             }
             bvModalEvt.preventDefault();
-        },        
+        }, 
+        onChange (value) {
+
+            /*
+            this.memberSelectedID = [{ id: value.id , 'name': value.name }];
+            console.log("change ?? "  + value.id);
+            console.log(this.memberSelectedID)
+            */
+
+        },
+        onSelect (option) {
+            //console.log ("option + " + option)
+        },
+        onTouch () {
+           // console.log("touched")
+        },
         editSchedule(scheduleData) 
         {
             //show the modal first and update the values below             
@@ -457,12 +475,31 @@ export default {
             //update the modal values
             this.modalType = "edit";
             this.currentScheduledData = this.getScheduleData(scheduleData);
+
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
 
-            console.log(this.currentScheduledData);
-            
-            this.memberSelectedID = [{ id: this.currentScheduledData.member_id , 'name': this.currentScheduledData.firstname }];
+            //console.log ("editing");
+            //console.log(this.currentScheduledData);
+
+            if (typeof this.currentScheduledData.lastname === 'undefined' || typeof this.currentScheduledData.lastname === '') {
+                memberIDFullName = "";
+            }    
+
+            let memberIDFullName = this.currentScheduledData.member_id + " " + this.currentScheduledData.firstname  + " " +  this.currentScheduledData.lastname;
+
+            if (this.currentScheduledData.firstname === '' && this.currentScheduledData.firstname === '') {
+
+                memberIDFullName = "";
+
+            } else if (typeof this.currentScheduledData.firstname === '' && typeof this.currentScheduledData.firstname === '') {
+
+            }
+
+            this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };
+
+            console.log("current selected")
+            console.log(this.memberSelectedID)
             
             //this.isStatusDisabled = false;
             /** The reservationType - the live does not have this, so it will be blank; **/
@@ -478,6 +515,8 @@ export default {
             let memberData = {
                 id: this.memberSelectedID
             };           
+            
+            console.log("save ?? "  + this.memberSelectedID.id);
             
             if (this.scheduleExists(this.tutorData)) 
             {                
@@ -512,17 +551,26 @@ export default {
                         
                         let tutorID = response.data.tutorData.tutorID;
                         let startTime = response.data.tutorData.startTime;
+                        let scheduled_at = this.scheduled_at;
 
-
-                        if (typeof this.lessonsData[tutorID] !== 'undefined') {
-                        // your code here
-                        } else {
-                            this.lessonsData[tutorID] = {}  
-                            this.lessonsData[tutorID][this.scheduled_at] = {}
+                        //@todo: next day detect
+                        if (startTime == '23:00' || startTime == '23:30') {
+                             scheduled_at = this.nextDay;
                         }
-                        
 
-                        this.lessonsData[tutorID][this.scheduled_at][startTime] = {
+                        console.log("?? -->>>" + scheduled_at)
+
+                        if (typeof this.lessonsData[tutorID] === 'undefined') {
+                            this.lessonsData[tutorID] = {}  
+                        }
+
+                        if (typeof this.lessonsData[tutorID][scheduled_at] === 'undefined') {
+                            this.lessonsData[tutorID][scheduled_at] = {}
+                        }
+
+                                                
+
+                        this.lessonsData[tutorID][scheduled_at][startTime] = {
                             'id': response.data.scheduleItemID,
                             "status": this.status,                      
                             //member info
@@ -540,7 +588,9 @@ export default {
                         let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
                         addButton.style.display = "none";
 
-                        //this.getSchedules(this.scheduled_at, this.shiftDuration);
+                        
+                        //this is repitive but this will allow the user to see updated from other admin??
+                        this.getSchedules(this.scheduled_at, this.shiftDuration);
 
                         this.$forceUpdate();
                     });
@@ -573,16 +623,24 @@ export default {
         },        
         updateTutorSchedule() {
 
-            //get the selected id           
+            //get the selected id
+            /* current
             let memberData = {
                 'id': this.currentScheduledData.member_id,
                 'name': this.currentScheduledData.firstname //@optionial?
-            };                           
+            };
+            */      
+
+            //get the selected id
+            let memberData = {
+                id: this.memberSelectedID
+            }; 
+
 
             axios.post("/api/update_tutor_schedule?api_token=" + this.api_token, 
             {
                 method              : "POST",               
-                memberData          : memberData,
+                memberData          : memberData.id,
                 scheduledItemData   : this.currentScheduledData,
                 scheduled_at        : this.scheduled_at,
                 shiftDuration       : this.shiftDuration,
@@ -595,13 +653,19 @@ export default {
             {
                 //hide schedule
                 this.$bvModal.hide("schedulesModal");
+
                 if (response.data.success === true) 
                 {
+
+                    /*
                     this.$nextTick(function()
                     {  
                         this.lessonsData = response.data.tutorLessonsData;
                         this.$forceUpdate(); 
                     });
+                    */
+
+                    this.getSchedules(this.scheduled_at, this.shiftDuration);
                 } 
                 else {                    
                     alert (response.data.message);                   

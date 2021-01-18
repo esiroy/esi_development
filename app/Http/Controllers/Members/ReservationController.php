@@ -172,7 +172,7 @@ class ReservationController extends Controller
 
             $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->limit(1)->first();
 
-            return view('/modules/member/scheduler', compact('schedules', 'dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'schedules', 'lessonSlots', 'latestReportCard'));
+            //return view('/modules/member/scheduler', compact('schedules', 'dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'schedules', 'lessonSlots', 'latestReportCard'));
 
         } else {
 

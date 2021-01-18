@@ -32,35 +32,27 @@ class MemberDashboard extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {    
-        
+    {            
         $user = Auth::user();
-        $memberInfo = Member::where('user_id', $user->id)->first();
-
-       
+        $memberInfo = Member::where('user_id', $user->id)->first();       
         if (isset($memberInfo)) 
         {
-            //$memberInfo = Member::find($member->id);
-
             $skypeID    = $memberInfo->communication_app_username; 
 
+            $reserves =  ScheduleItem::where('member_id', $user->id)
+                                        ->where('schedule_status', 'CLIENT_RESERVED')
+                                        ->where('schedule_status', 'CLIENT_RESERVED_B')
+                                        ->get();    
 
-        
-           // $schedules = ScheduleItem::where('member_id', Auth::user()->id)->get();
-
-            $reserves =  ScheduleItem::where('member_id', Auth::user()->id)->get();
-    
             $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
-
             
 
             return view('modules/member/index', compact('memberInfo', 'reserves', 'latestReportCard'));
 
         } else {
-           
-            //abort (404, "Member Not Found");
 
             $roles = Auth::user()->roles;
+
             if (!$roles->contains('title', 'Member')) {
                 return redirect(route('admin.dashboard.index'));
             } else {                

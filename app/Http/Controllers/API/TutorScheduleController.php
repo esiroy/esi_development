@@ -174,7 +174,8 @@ class TutorScheduleController extends Controller
             $scheduled_at = $request['scheduled_at'];
             $duration = $request['shiftDuration'];
 
-            $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+            //get all schedules (this is now ommited since it wil be fetch from ajax on the component)
+            //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
 
             return Response()->json([
                 "success" => true,
@@ -184,7 +185,7 @@ class TutorScheduleController extends Controller
                 "message" => "Lesson has been updated",
                 "tutorData" => $tutorInfo->user_id,
                 "memberData" => $request['memberData'],
-                'tutorLessonsData' => $tutorLessonsData,
+                //'tutorLessonsData' => $tutorLessonsData,
             ]);
 
         } catch (\Exception $e) {

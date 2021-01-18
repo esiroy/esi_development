@@ -92,86 +92,6 @@ class ScheduleItem extends Model
         
     }
 
-
-    /** 
-    * ADMIN PANEL - FROM PLOTTING USER SCHEDULES
-     *@param date
-     *@param duration
-    */
-    public function getSchedulesv1($date, $duration) 
-    {
-
-        $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
-
-        $tutors = Tutor::where('is_terminated', 0)->get();
-        //get the lessons
-        $schedules = [];        
-    
-        foreach ($tutors as $tutor) 
-        {                 
-
-          /*
-            $scheduleItems = ScheduleItem::where('tutor_id', $tutor->user_id)
-                    ->whereDate('lesson_time', '>=', $date)
-                    ->whereDate('lesson_time', '<=', $nextDay)
-                    ->where('valid', 1)
-                    ->get();
-                    */
-
-        $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
-                        ->where('tutor_id', $tutor->user_id)
-                        ->where('valid', 1)
-                        ->get();
-                
-            
-            foreach ($scheduleItems as $item) 
-            {
-                //$member     = Member::find($item->member_id);
-                //$user       = User::find($member->user_id);
-
-                //@todo: v2 - check member
-                $member     = Member::where('user_id', $item->member_id)->first();
-                $user       = User::find($item->member_id);
-
-                $nickname = "";
-
-                if (isset($member->nickname)) {
-                    $nickname = $member->nickname;
-                }
-               
-                $schedules[$tutor->id][] = [
-                    'nextDay'           => $nextDay,
-                    
-                    'id'                => $item->id,
-                    'status'            => $item->schedule_status,
-                    /*
-                    'startTime'         =>  date("H:i", strtotime($item->lesson_time)),
-                    'endTime'           =>  date("H:i",  strtotime($item->lesson_time ."+1 hour")),
-                    'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
-                    */
-
-                    'startTime'         =>  date("H:i", strtotime($item->lesson_time ." -1 hour")),
-                    'endTime'           =>  date("H:i",  strtotime($item->lesson_time)),
-                    'scheduled_at'      =>  date('Y-m-d', strtotime($item->lesson_time)),
-
-                    'email_type'        => $item->email_type,              
-                    'duration'          => $item->duration,                    
-                    'member_id'         => $item->member_id,   
-                    'tutor_id'          => $item->tutor_id,
-
-                    'tutor_name_en'     => $tutor->name_en,
-                    'tutor_name_jp'     => $tutor->name_jp,   
-
-                    'member_name_en'    => $nickname,
-                    'member_name_jp'    => $nickname,
-                ];                
-            } 
-                       
-        }
-        return $schedules;        
-    }
-
-
     
     /** 
     * ADMIN PANEL - FROM PLOTTING USER SCHEDULES
@@ -208,6 +128,7 @@ class ScheduleItem extends Model
 
                 $nickname = "";
                 $firstname = "";
+                $lastname = "";
                 $japanese_firstname = "";
 
                 if (isset($member->nickname)) {
@@ -217,6 +138,11 @@ class ScheduleItem extends Model
                 if (isset($member->user->firstname)) {
                     $firstname = $member->user->firstname;
                 }
+
+
+                if (isset($member->user->lastname)) {
+                    $lastname = $member->user->lastname;
+                }                
                
                 if (isset($member->user->japanses_firstname)) {
                     $japanese_firstname = $member->user->japanses_firstname;
@@ -240,7 +166,9 @@ class ScheduleItem extends Model
                     'member_id'             => $item->member_id,   
                     'nickname'              => $nickname,
 
-                    //'firstname'             => $firstname,
+                    'firstname'             => preg_replace('/[^A-Za-z0-9]/', ' ', $firstname),
+                    'lastname'             => preg_replace('/[^A-Za-z0-9]/', ' ', $lastname),
+
                     //'cleaned_firstname'     => preg_replace('/[^A-Za-z0-9]/', ' ', $firstname),
                     //'japanese_firstname'    => $japanese_firstname
                 ];                
