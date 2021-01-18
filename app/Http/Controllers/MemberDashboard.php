@@ -54,7 +54,7 @@ class MemberDashboard extends Controller
 
             
 
-            return view('modules/member/index', compact('memberInfo', 'data', 'reserves', 'latestReportCard'));
+            return view('modules/member/index', compact('memberInfo', 'reserves', 'latestReportCard'));
 
         } else {
            
