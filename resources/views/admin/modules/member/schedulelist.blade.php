@@ -52,7 +52,7 @@
                         </div>
                         <div class="row">
                             <div class="col-md-2">Agent</div>
-                            <div class="col-md-9">
+                            <div class="col-md-9" id="agent-{{ $agentInfo->user_id ?? '' }}">
                                 {{ $agentInfo->user->firstname  ?? ' - ' }}
                             </div>
                         </div>
