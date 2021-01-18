@@ -286,6 +286,7 @@ export default {
         this.shiftDuration  = this.duration;
 
         //@todo: ajax load schedules (DONE)
+
         //this.getSchedules(this.scheduled_at, this.shiftDuration); 
 
         this.getMemberList();
@@ -321,13 +322,12 @@ export default {
         console.log(this.fromDay);
 
         //this data is from the laravel controller
-        this.lessonsData = this.schedule_items;
 
+        //this.lessonsData = this.schedule_items;
         console.log(this.lessonsData);
 
-     
-        //get member array
-
+        this.getSchedules(this.scheduled_at, this.shiftDuration); 
+        
 
 
     },

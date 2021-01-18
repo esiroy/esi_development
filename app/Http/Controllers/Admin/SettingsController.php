@@ -45,11 +45,11 @@ class SettingsController extends Controller
 
     public function update(request $request)
     {
-        echo "update!";
-
         $user = Auth::user();
 
         $validator = Validator::make($request->all(), [
+            'firstname' => ['required', 'string'],
+            'lastname' => ['required', 'string'],            
             'japanese_firstname' => ['required', 'string'],
             'japanese_lastname' => ['required', 'string'],
             'email' => ['required', 'string', 'email', 'max:255',
@@ -60,13 +60,18 @@ class SettingsController extends Controller
         if ($validator->fails()) {
             return redirect()->route('admin.settings.index')->withErrors($validator)->withInput();
         } else {
+
             $currentPassword = Hash::make($request->currentPassword);
+
             $userData = [
+                'firstname' => $request->firstname,
+                'lastname' => $request->lastname,                
                 'japanese_firstname' => $request->japanese_firstname,
                 'japanese_lastname' => $request->japanese_lastname,
                 'email' => $request->email,
                 'items_per_page' => $request->itemsPerPage
             ];
+
             $user = $user->update($userData);
             return redirect()->route('admin.settings.index')->with('message', 'User Information has been updated successfully');
         }

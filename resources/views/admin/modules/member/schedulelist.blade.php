@@ -105,10 +105,10 @@
                         </table>
                     </div>
 
+                   
+
                     <div class="float-right">
-                        @if (isset($schedule->links))
-                            {{ $schedules->links() ?? "" }}
-                        @endif
+                         {{ $schedules->links() ?? "" }}
                     </div>
 
                 </div>

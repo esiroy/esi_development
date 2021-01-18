@@ -145,12 +145,7 @@ class MemberController extends Controller
             $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());
         
         } else if ($request->toexpire) {
-
-                
-
             $now = Carbon::now()->subDays(30);
-
-       
             $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());                
 
         } else {
@@ -160,13 +155,15 @@ class MemberController extends Controller
                 if (isset($member_id)) {
                     $memberQuery = $memberQuery->where('members.user_id', $member_id);
                 }
+
                 if (isset($name)) {
-                    $memberQuery = $memberQuery->orWhere('users.firstname', 'like', '%' . $name . '%')->orWhere('users.lastname', 'like', '%' . $name . '%');
-                }
+                    $memberQuery = $memberQuery->orWhereRaw("CONCAT(users.firstname,' ',users.lastname) like '%" . $name . "%'")->orWhereRaw("CONCAT(users.lastname,' ',users.firstname) like '%" . $name . "%'");                
+                }                
 
                 if (isset($email)) {
                     $memberQuery = $memberQuery->orWhere('users.email', $email);
                 }
+                
             } //[END] USER SEARCH
 
         }
@@ -270,15 +267,10 @@ class MemberController extends Controller
                 ->where('month', $thisYear)
                 ->first();
 
-            if ($agentInfo) {
-                $agent = $agentInfo->user;
-            } else {
-                $agent = null;
-            }
 
             $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
 
-            return view('admin.modules.member.schedulelist', compact('schedules', 'member', 'memberInfo', 'agent', 'agentInfo', 'tutorInfo', 'memberAttribute'));
+            return view('admin.modules.member.schedulelist', compact('schedules', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
         } else {
             abort(404);
         }

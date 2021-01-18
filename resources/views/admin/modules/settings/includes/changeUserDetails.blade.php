@@ -16,6 +16,45 @@
                     @csrf
                     @method('put')
 
+
+                    <div class="row">
+                        <div class="col-2 small pr-0"><label for="firstname" class="px-0 col-md-12 col-form-label">
+                                <span class="text-danger">*</span> First Name <div class="float-right">:</div></label>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" id="firstname" name="firstname" class="form-control form-control-sm @error('firstname') is-invalid @enderror"
+                                value="{{ old('firstname', isset($user->firstname ) ? $user->firstname : '') }}">
+
+                            @error('firstname')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-2 small pr-0">
+                            <label for="lastname" class="px-0 col-md-12 col-form-label">
+                                <span class="text-danger">*</span> Last Name<div class="float-right">:</div>
+                            </label>
+                        </div>
+                        <div class="col-6">
+                            <input type="text" id="lastname" name="lastname" class="form-control form-control-sm @error('lastname') is-invalid @enderror"
+                                value="{{ old('lastname', isset($user->lastname ) ? $user->lastname : '') }}">
+
+                            @error('lastname')
+                            <span class="invalid-feedback" role="alert">
+                                <strong>{{ $message }}</strong>
+                            </span>
+                            @enderror
+
+                        </div>
+                    </div>
+
+
                     <div class="row">
                         <div class="col-2 small pr-0"><label for="japanese_firstname" class="px-0 col-md-12 col-form-label">
                                 <span class="text-danger">*</span>Japanese First Name <div class="float-right">:</div></label>

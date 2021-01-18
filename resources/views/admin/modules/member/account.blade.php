@@ -151,13 +151,13 @@
                                 <td>
                                     {{ date('F d, Y h:i:s a', strtotime($transaction->created_at)) }}
                                 </td>
-                                <td>{{ $transaction->transaction_type }}</td>
+                                <td>{{ str_replace("_", " ", ucwords(strtolower($transaction->transaction_type))) }}</td>
                                 <td>
                                     <!-- @note: get member name -->
                                     @php 
-                                        $member = \App\Models\Member::where('user_id', $transaction->member_id)->first();
+                                        $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
                                     @endphp
-                                    {{ $member->user->firstname ?? "-"  }}  {{ $member->user->lastname ?? ""  }}
+                                    {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
                                 </td>
                                 <td >
                                     @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON")

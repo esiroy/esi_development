@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 use Carbon\Carbon;
 
-use DB;
+use DB, Auth;
 
 class ScheduleItem extends Model
 {
@@ -181,15 +181,14 @@ class ScheduleItem extends Model
 
     //List ALL specific Member schedules
     public function getMemberScheduledLesson($memberID) 
-    {
-        $member = Member::find($memberID);  
-        
+    {   
         $lessons = ScheduleItem::select('schedule_item.*', 'users.firstname', 'users.lastname')
                     ->join('tutors', 'tutors.user_id', '=',  'schedule_item.tutor_id')
                     ->join('users', 'users.id', '=',  'schedule_item.tutor_id')
-                    ->where('member_id', $member['id'])
-                    ->orderBy('schedule_item.id', 'DESC')
-                    ->paginate($this->limit);
+                    ->where('member_id', $memberID)
+                    ->orderBy('lesson_time', 'desc')                    
+                    ->paginate(Auth::user()->items_per_page);
+
                     
         return $lessons;
     }
