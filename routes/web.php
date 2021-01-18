@@ -69,6 +69,10 @@ Route::resource('importMembers', 'TableMemberImporterController');
 Route::get('importMembers/index/{per_item}', 'TableMemberImporterController@index');
 Route::get('importMembers/{id}/{per_item}', 'TableMemberImporterController@show');
 
+/*************** 
+ * AGENT IMPORTER
+ ***************/
+
 Route::resource('importAgents', 'TableAgentImporterController');
 
 

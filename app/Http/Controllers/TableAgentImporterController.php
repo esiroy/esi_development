@@ -66,7 +66,8 @@ class TableAgentImporterController extends Controller
             ];
 
             if (Agent::where('user_id', $item->user_id)->exists()) {
-                echo "<div style='color:red'>$ctr - EXISTING : " . $item->user_id . " " . $item->created_on . "</div>";
+
+                echo "<div style='color:red'>$ctr - EXISTING : " . $item->user_id . " " . $item->agent_id . "</div>";
 
                 try
                 {
@@ -74,9 +75,9 @@ class TableAgentImporterController extends Controller
 
                     $user = $UserObj->update($data);
 
-                    DB::commit();
+                    DB::commit();                    
 
-                    echo "<div style='color:green'>$ctr - updated : " . $item->user_id . " " . $item->created_on . "</div>";
+                    echo "<div style='color:green'>$ctr - updated : user id : " . $item->user_id . "   ". $item->agent_id ."</div>";
 
                 } catch (\Exception $e) {
 
@@ -93,7 +94,7 @@ class TableAgentImporterController extends Controller
 
                     DB::commit();
 
-                    echo "<div style='color:blue'>$ctr - added : " . $item->user_id . " " . $item->firstname . " " . $item->created_on . "</div>";
+                    echo "<div style='color:blue'>$ctr - added : user id : " . $item->user_id . "   ". $item->agent_id ."</div>";
 
                 } catch (\Exception $e) {
 
