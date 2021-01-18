@@ -150,6 +150,8 @@ class ScheduleItemController extends Controller
             $schedulesObj = new ScheduleItem();
             $scheduleItems = $schedulesObj->getSchedules($dateToday, $shiftDuration);  
 
+       
+
 
 
             //@todo: load via ajax!     (set member, and schedules to null                                
@@ -160,9 +162,8 @@ class ScheduleItemController extends Controller
                 //$scheduleItems = new ScheduleItem();
                 //$scheduleItems = (object) ['0' => null];                
            // }            
-
-
-       
+        
+        
     
             return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
 

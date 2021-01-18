@@ -32,7 +32,7 @@ class dummyController extends Controller
     public function index()
     {
 
-        $date = '2021-01-13';
+        $date = '2021-01-02';
         $duration = 25;
         $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
 

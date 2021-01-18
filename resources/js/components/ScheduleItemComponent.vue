@@ -426,13 +426,12 @@ export default {
             this.tutorData = tutorData;
         },
         hideModal() {
-            console.log("hide modal");
-
+            //console.log("hide modal");
             //update the schedules when you hide it?
             //this.getSchedules(this.scheduled_at, this.shiftDuration);
         },
         resetModal() {
-            console.log("reset modal"); //this will reset every time it closes.
+            //console.log("reset modal"); //this will reset every time it closes.
             this.memberSelectedID = "";
             this.status = "";
             this.isStatusDisabled = true; 
@@ -507,12 +506,21 @@ export default {
                     
                     this.$nextTick(function()
                     {
-                        console.log(response.data.tutorData.tutorID);
-                        console.log(response.data.tutorData.startTime);
-                        console.log(this.scheduled_at)
+                        //console.log(response.data.tutorData.tutorID);
+                        //console.log(response.data.tutorData.startTime);
+                        //console.log(this.scheduled_at)
                         
                         let tutorID = response.data.tutorData.tutorID;
                         let startTime = response.data.tutorData.startTime;
+
+
+                        if (typeof this.lessonsData[tutorID] !== 'undefined') {
+                        // your code here
+                        } else {
+                            this.lessonsData[tutorID] = {}  
+                            this.lessonsData[tutorID][this.scheduled_at] = {}
+                        }
+                        
 
                         this.lessonsData[tutorID][this.scheduled_at][startTime] = {
                             'id': response.data.scheduleItemID,
@@ -564,15 +572,12 @@ export default {
 			});
         },        
         updateTutorSchedule() {
-            //get the selected id
 
-           
+            //get the selected id           
             let memberData = {
                 'id': this.currentScheduledData.member_id,
                 'name': this.currentScheduledData.firstname //@optionial?
-            };
-
-                           
+            };                           
 
             axios.post("/api/update_tutor_schedule?api_token=" + this.api_token, 
             {
@@ -655,9 +660,7 @@ export default {
                     this.$nextTick(function()
                     {  
                         this.lessonsData = response.data.tutorLessonsData;
-
-                        console.log( this.lessonsData);
-
+                        //console.log( this.lessonsData);
                         this.$forceUpdate(); 
                     });
                 } 

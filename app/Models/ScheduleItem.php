@@ -239,8 +239,10 @@ class ScheduleItem extends Model
                     //member info
                     'member_id'             => $item->member_id,   
                     'nickname'              => $nickname,
-                    'firstname'             => $firstname,
-                    'japanese_firstname'    => $japanese_firstname,
+
+                    //'firstname'             => $firstname,
+                    //'cleaned_firstname'     => preg_replace('/[^A-Za-z0-9]/', ' ', $firstname),
+                    //'japanese_firstname'    => $japanese_firstname
                 ];                
             } 
                        
