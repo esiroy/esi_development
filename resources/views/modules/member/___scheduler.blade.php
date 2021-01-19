@@ -73,25 +73,23 @@
                                             @if ( $startTimePH == date("H:i", strtotime($schedule->lesson_time)))
 
                                         @if (strtolower($schedule->schedule_status) == 'completed')
-                                        <a href="javascript:void(0)">completed</a>
+                                            <a href="javascript:void(0)">completed</a>
                                         @elseif(strtolower($schedule->schedule_status) == 'tutor_scheduled')
-                                        <!--@todo: open popup if pressed.
+                                                <!--@todo: open popup if pressed.
                                                             @question: 予約してもいいですか？
                                                             @yes: はい
                                                             @no: いいえ
-                                                        -->
-
-
-                                    <div class="button_{{$schedule->id}}">
-                                        <a class="book" onclick="book('{{$schedule->id}}')" href="javascript:void(0)">予約</a>
-                                        <div class="cancel" style="padding:15px; display:none">
-                                            <div id="{{ $schedule->id }}" style="float:right">
-                                                <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
-                                            </div>
-                                            <br />
-                                            <a href="javascript:void(0)">済</a>
-                                        </div>
-                                    </div>
+                                                    -->
+                                                <div class="button_{{$schedule->id}}">
+                                                    <a class="book" onclick="book('{{$schedule->id}}')" href="javascript:void(0)">予約</a>
+                                                    <div class="cancel" style="padding:15px; display:none">
+                                                        <div id="{{ $schedule->id }}" style="float:right">
+                                                            <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                                        </div>
+                                                        <br />
+                                                        <a href="javascript:void(0)">済</a>
+                                                    </div>
+                                                </div>
 
                                     @elseif(strtolower($schedule->schedule_status) == 'client_reserved' || strtolower($schedule->schedule_status) == 'client_reserved_b')
                                     <!--@todo: 
@@ -115,13 +113,14 @@
                                         <a class="book" onclick="book('{{$schedule->id}}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>
 
                                         @if ( $member->id == $schedule->member_id)
-                                        <div class="cancel">
-                                            <div id="{{ $schedule->id }}" style="float:right">
-                                                <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                            
+                                            <div class="cancel">
+                                                <div id="{{ $schedule->id }}" style="float:right">
+                                                    <a href="javascript:void(0)" onClick="cancel('{{$schedule->id}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                                </div>
+                                                <br />
+                                                <a href="javascript:void(0)">済</a>
                                             </div>
-                                            <br />
-                                            <a href="javascript:void(0)">済</a>
-                                        </div>
                                         @endif
 
                                     </div>

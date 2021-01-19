@@ -103,18 +103,23 @@ class ScheduleItem extends Model
 
         $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
 
-        $tutors = Tutor::where('is_terminated', 0)->get();
+        $tutors = Tutor::select('tutors.id','tutors.user_id', 'tutors.is_terminated', 'users.firstname', 'users.lastname', 'users.valid')                
+                ->join('users', 'users.id', '=', 'tutors.user_id')
+                ->where('users.valid', 1)
+                ->where('tutors.is_terminated', 0)
+                ->orderBy('sort', 'ASC')->get();
+
         //get the lessons
-        $schedules = [];        
-    
+        $schedules = [];
+        
+        $schedules['tutors'] = $tutors;
+
         foreach ($tutors as $tutor) 
         {      
-
             $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
                         ->where('tutor_id', $tutor->user_id)
                         ->where('valid', 1)
-                        ->get();
-                
+                        ->get();                
             
             foreach ($scheduleItems as $item) 
             {
@@ -122,8 +127,7 @@ class ScheduleItem extends Model
                 //$user       = User::find($member->user_id);
 
                 //@todo: v2 - check member
-                $member     = Member::where('user_id', $item->member_id)->first();
-                
+                $member     = Member::where('user_id', $item->member_id)->first();                
                 $user       = User::find($item->member_id);
 
                 $nickname = "";
@@ -149,6 +153,7 @@ class ScheduleItem extends Model
                 }
 
                 //tutorid , scheduled_at, startTime
+
 
                 $schedules[$tutor->id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time ." -1 hour"))] = [
                     'id'                => $item->id,
@@ -188,8 +193,6 @@ class ScheduleItem extends Model
                     ->where('member_id', $memberID)
                     ->orderBy('lesson_time', 'desc')                    
                     ->paginate(Auth::user()->items_per_page);
-
-                    
         return $lessons;
     }
     

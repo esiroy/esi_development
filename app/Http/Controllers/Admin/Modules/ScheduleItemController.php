@@ -124,6 +124,7 @@ class ScheduleItemController extends Controller
             //get tutors for this shift id
             $shift  = Shift::where("value", $shiftDuration)->first();   
 
+            
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
                         ->where('is_terminated', 0)
                         //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
@@ -133,7 +134,7 @@ class ScheduleItemController extends Controller
                         ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
                         ->where('valid', 1)
                         ->get();
-
+            
   
             
             

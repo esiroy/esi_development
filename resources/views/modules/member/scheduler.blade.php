@@ -56,28 +56,87 @@
                             @foreach($tutors as $tutor)
                             <tr>
                                 <!--[start] Tutor Information-->
-                                <td>
-                                    <div style="width:125px">
+                                <td id="{{ $tutor->id }}">
+                                    <div id="{{ $tutor->user_id }}" style="width:125px">
                                         @if (isset($tutor->user->firstname))
-                                            <small>{{ $tutor->user->firstname }}</small>
+                                            {!! $tutor->user->firstname !!}
                                         @endif
                                     </div>
                                 </td>
 
                                 @foreach($lessonSlots as $lessonSlot)
                                 <td>
-                                
                                     @php
-                                    $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
+                                        $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
+
+                                        if ($lessonSlot['startTime'] == '23:00' || $lessonSlot['startTime'] == '23:30') {
+                                            $date = $nextDay;
+                                        } else {
+                                            $date = $dateToday;
+                                        }
                                     @endphp
 
 
-                                   @if ($schedules[$tutor->user_id][])
-                                    @if ( $startTimePH == date("H:i", strtotime($schedule->lesson_time)))
-                                        @foreach($schedules[$tutor->user_id]) {
+                                    @if (isset($schedules[$tutor->id][$date][$startTimePH]))
+
+                                        @php
+                                            $scheduleID = $schedules[$tutor->id][$date][$startTimePH]['id'];
+                                            $scheduleMemberID =  $schedules[$tutor->id][$date][$startTimePH]['member_id'];
+                                            $status = $schedules[$tutor->id][$date][$startTimePH]['status'];  
+                                        @endphp
+
+                                      
+                                        @if ($status == "TUTOR_SCHEDULED")
+
+                                            <div class="button_{{ $scheduleID }}">
+
+                                                <a class="bookTutorSchedule" onclick="book('{{ $scheduleID }}', '{{ Auth::user()->id }}')" href="javascript:void(0)">予約</a>
+
+                                                <div class="cancel" style="padding:15px; display:none">
+                                                    <div id="{{ $scheduleID }}" style="float:right">
+                                                        <a href="javascript:void(0)" onClick="cancel('{{ $scheduleID }}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                                    </div>
+                                                    <br />
+                                                    <a href="javascript:void(0)">済</a>
+                                                </div>
+                                            </div>
+
+                                        @elseif($status == 'CLIENT_RESERVED' || $status == 'CLIENT_RESERVED_B')                                            
+
+                                            <div class="button_{{$scheduleID}}">
+
+                                                <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>
+
+                                               
+
+                                                @if ($member->user_id == $scheduleMemberID)
+                                                    <div class="cancel">
+                                                        <div id="{{ $scheduleID }}" style="float:right">
+                                                            <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
+                                                        </div>
+                                                        <br />
+                                                        <a href="javascript:void(0)">済</a>
+                                                    </div>
+                                                @endif
+
+                                            </div>
+
+                                        @elseif($status == 'SUPRESSED_SCHEDULE' )
+                                            <div id="scheduleID_{{$scheduleID}}">{{'済他'}}</div>
+
+                                        @elseif($status == 'CLIENT_NOT_AVAILABLE')
+                                            <div id="scheduleID_{{$scheduleID}}">{{'欠席'}}</div>
+
+                                        @elseif($status == 'TUTOR_CANCELLED')
+                                            <div id="scheduleID_{{$scheduleID}}">{{ "予約" }}</div>
+
+                                        @elseif ($status == "COMPLETED")                                         
+                                            <a id="scheduleID_{{$scheduleID}}" href="javascript:void(0)">completed</a>
 
                                         @endif
-                                   @endif
+                                    @endif
+
+
                                 </td>
                                 @endforeach
 
@@ -101,63 +160,74 @@
 <script type="text/javascript">
     var api_token = "{{ Auth::user()->api_token }}";
 
-    function book(id) {
-        $.ajax({
-            type: 'POST'
-            , url: 'api/book?api_token=' + api_token
-            , data: {
-                id: id
-            }
-            , headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-            , success: function(data) {
-                $("#msg").html(data.msg);
-                $('.button_' + id + ' .book').hide();
-                $('.button_' + id + ' .cancel').show();
-            }
-        });
+    function disablePreviousDates() {
+        var input = document.getElementById("dateToday");
+        var today = new Date();
+        var day = today.getDate();
+
+        // Set month to string to add leading 0
+        var mon = new String(today.getMonth()+1); //January is 0!
+        var yr = today.getFullYear();
+        if(mon.length < 2) { 
+            mon = "0" + mon;
+        }
+        var date = new String( yr + '-' + mon + '-' + day );
+        input.disabled = false; 
+        input.setAttribute('min', date);
+    }
+
+
+
+    function book(scheduleID, memberID) {      
+        if (confirm('予約してもいいですか？')) {
+            $.ajax({
+                type: 'POST',
+                url: 'api/book?api_token=' + api_token,
+                data: {
+                    scheduleID: scheduleID,
+                    memberID: memberID
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {
+                    //$("#msg").html(data.msg);
+
+                    console.log(scheduleID);
+
+                    $('.button_' + scheduleID + ' .bookTutorSchedule').hide();
+                    $('.button_' + scheduleID + ' .cancel').show();
+                }
+            });
+        } else {
+
+            return false;
+            // Do nothing!
+            //console.log('Thing was not saved to the database.');
+        }
     }
 
 
     function cancel(id) {
         $.ajax({
-            type: 'POST'
-            , url: 'api/cancelSchedule?api_token=' + api_token
-            , data: {
+            type: 'POST',
+            url: 'api/cancelSchedule?api_token=' + api_token,
+            data: {
                 id: id
-            }
-            , headers: {
+            },
+            headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-            , success: function(data) {
-                $("#msg").html(data.msg);
-                $('.cancel_button_' + id + ' .book').show();
-                $('.cancel_button_' + id + ' .cancel').hide();
+            },
+            success: function(data) {
+                //$("#msg").html(data.msg);
+                $('.button_' + id + ' .bookTutorSchedule').show();
+                $('.button_' + id + ' .cancel').hide();
             }
         });
     }
 
     window.addEventListener('load', function() {
-
-        console.log('loaded')
-
-        $('.book').on('click', function() {
-            /*
-                @todo: open popup if pressed.
-                @question: 予約してもいいですか？
-                @yes: はい
-                @no: いいえ
-            */
-
-            if (confirm('予約してもいいですか？')) {
-                // Save it!
-                console.log('Thing was saved to the database.');
-            } else {
-                // Do nothing!
-                //console.log('Thing was not saved to the database.');
-            }
-        })
+        disablePreviousDates();
     });
 
 </script>

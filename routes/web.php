@@ -72,8 +72,22 @@ Route::get('importMembers/{id}/{per_item}', 'TableMemberImporterController@show'
 /*************** 
  * AGENT IMPORTER
  ***************/
-
 Route::resource('importAgents', 'TableAgentImporterController');
+
+/*************** 
+ * REPORTCARD IMPORTER
+ ***************/
+Route::resource('importReportCards', 'TableReportCardImporterController');
+Route::get('importReportCards/index/{per_item}', 'TableReportCardImporterController@index');
+Route::get('importReportCards/{id}/{per_item}', 'TableReportCardImporterController@show');
+
+/*************** 
+ * REPORTCARD DATE IMPORTER
+ ***************/
+Route::resource('importReportCardsDate', 'TableReportCardDateImporterController');
+Route::get('importReportCardsDate/index/{per_item}', 'TableReportCardDateImporterController@index');
+Route::get('importReportCardsDate/{id}/{per_item}', 'TableReportCardDateImporterController@show');
+
 
 
 /*** MEMBERS */

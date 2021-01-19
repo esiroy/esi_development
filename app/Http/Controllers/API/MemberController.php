@@ -34,14 +34,18 @@ class MemberController extends Controller
     */
     public function bookSchedule(Request $request) 
     {
-       $id = $request->id;
+       $scheduleID = $request->scheduleID;
+       $memberID = $request->memberID;
        //@todo: check if the schedule is unique
 
        //@todo: check if 3 hours and have attribute
 
        //@todo: save to database       
-       $schedule = ScheduleItem::find($id);
-       $data = ['schedule_status'=> 'CLIENT_RESERVED'];
+       $schedule = ScheduleItem::find($scheduleID);
+       $data = [
+           'member_id'      => $memberID,
+           'schedule_status'=> 'CLIENT_RESERVED'
+        ];
        $schedule->update($data);
        
 

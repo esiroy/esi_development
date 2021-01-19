@@ -11,6 +11,7 @@ use App\Models\Tutor;
 use App\Models\User;
 use Auth;
 use Gate;
+use DateTime;
 use Illuminate\Http\Request;
 
 class ReservationController extends Controller
@@ -99,9 +100,13 @@ class ReservationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create(ScheduleItem $scheduleItem, Request $request)
-    {
+    {        
+        if (Gate::allows('member_lesson_scheduler_access')) 
+        {
+            //LATES REPORT CARD
+            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->limit(1)->first();
 
-        if (Gate::allows('member_lesson_scheduler_access')) {
+            $nextDay      = date('Y-m-d', strtotime($request['dateToday'] ." + 1 day"));  
 
             //default on load without any parameters
             if (isset($request['dateToday'])) {
@@ -116,63 +121,40 @@ class ReservationController extends Controller
                 $month = date('m');
                 $day = date('d');
             }
+         
+            $date_now = date("Y-m-d"); // this format is string comparable
+            if ($date_now <= $dateToday) {
+               //
+            }else{
+                header( "refresh:3;url=". url('/memberschedule') );             
+                echo "date is not current or a future date, redirecting you to reservation page in 3 seconds";
+                exit();
+            }
 
             if (isset($request['shift_duration'])) {
                 $shiftDuration = $request['shift_duration'];
             } else {
                 $shiftDuration = 25;
-            }
-
+            }                  
             //search the ID
-            $shift = Shift::where("value", $shiftDuration)->first();
+            //$shift = Shift::where("value", $shiftDuration)->first();
+
+                                     
+            $member = Member::where('user_id', Auth::user()->id)->first();
+        
 
 
             //GET LESSONS FROM DATE TODAY ONLY
-            $schedules = $scheduleItem->getReservations($dateToday, $shift->id);
+            $schedules = $scheduleItem->getSchedules($dateToday, $shiftDuration);
+            $tutors =  $schedules['tutors'];
 
-            $ctr = 0;
-            
-            /*
-            [id] => 858218
-            [lesson_time] => 2021-01-13 16:00:00
-            [tutor_id] => 12289
-            [member_id] => 
-            [schedule_status] => TUTOR_SCHEDULED
-            [duration] => 25
-            [lesson_shift_id] => 4
-            [memo] => 
-            [valid] => 1
-            [email_type] => 
-            [created_at] => 2021-01-02 18:17:06
-            [updated_at] => 2021-01-02 18:17:06
-            */
-
-   
-
-            //get tutors for this shift id
-            $tutors = Tutor::where('lesson_shift_id', $shift->id)->where('is_terminated', false)->get();
-            //$member = Member::where('user_id', Auth::user()->id)->first();
+           
 
             //LESSON SLOTS
             $lessonSlots = $this->lessonSlots;
 
-      
-
-            /*
-            foreach($lessonSlots as $lessonSlot) {
-
-            $startTimePH = date('h:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
-            foreach ($schedules as $schedule) {
-
-            if(isset($schedule[$startTimePH])) {
-                echo "scheduler link";
-            }
-            }
-            }*/
-
-            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->limit(1)->first();
-
-            //return view('/modules/member/scheduler', compact('schedules', 'dateToday', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'schedules', 'lessonSlots', 'latestReportCard'));
+            return view('/modules/member/scheduler', compact('member', 'schedules', 'nextDay', 'dateToday', 'year', 'month', 'day',
+                                                             'shiftDuration', 'tutors', 'members', 'schedules', 'lessonSlots', 'latestReportCard'));
 
         } else {
 
