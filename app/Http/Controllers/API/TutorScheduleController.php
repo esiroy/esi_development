@@ -82,6 +82,28 @@ class TutorScheduleController extends Controller
                 $memberID = null;
             }            
 
+
+            //v2 - change id to user_id
+            $memberInfo = Member::where('user_id', $member['id'])->first();
+
+            if ($memberInfo) {
+                $memberData = [
+                    'id'        => $memberInfo->user_id,
+                    'nickname'  => $memberInfo->nickname,
+                    'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->firstname),
+                    'lastname'  => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->lastname),                    
+                ];
+            } else {
+                $memberData = [
+                    'id'        => "",
+                    'nickname'  => "",
+                    'firstname' => "",
+                    'lastname'  => ""
+                ];          
+            }
+            
+            
+
             if ($request['status'] == 'TUTOR_CANCELLED') {
 
                 $emailType = $request['cancelationType'];
@@ -183,8 +205,10 @@ class TutorScheduleController extends Controller
                 "id"        => $scheduledItemData['id'],
                 //"updateSQL"   => $lessonData,
                 "message" => "Lesson has been updated",
-                "tutorData" => $tutorInfo->user_id,
-                "memberData" => $request['memberData'],
+                //"tutorData" => $tutorInfo->user_id,
+
+                "tutorData" => $tutor,
+                "memberData" => $memberData,
                 //'tutorLessonsData' => $tutorLessonsData,
             ]);
 
@@ -241,16 +265,17 @@ class TutorScheduleController extends Controller
                 $memberData = [
                     'id'        => $memberInfo->user_id,
                     'nickname'  => $memberInfo->nickname,
-                    'firstname' => $memberInfo->user->firstname,
+                    'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->firstname),
+                    'lastname'  => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->lastname),    
                 ];
             } else {
                 $memberData = [
                     'id'        => "",
                     'nickname'  => "",
                     'firstname' => "",
+                    'lastname'  => ""
                 ];          
             }
-
 
             $tutorInfo =  Tutor::find($tutor['tutorID']);
             $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." + 1 hour"));
@@ -349,8 +374,6 @@ class TutorScheduleController extends Controller
         $tutor = Tutor::find($tutorID);
 
         $deleted = ScheduleItem::where('tutor_id', $tutor->user_id)->where('duration', $duration)->where('lesson_time', $lessonTime)->delete();
-
-
 
         if ($deleted) {
             $scheduleItem = new ScheduleItem();

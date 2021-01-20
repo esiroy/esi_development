@@ -576,6 +576,7 @@ export default {
                             //member info
                             'member_id': response.data.memberData.id,
                             'firstname': response.data.memberData.firstname,
+                            'lastname': response.data.memberData.lastname,
                             'nickname': response.data.memberData.nickname
                         }
 
@@ -590,7 +591,7 @@ export default {
 
                         
                         //this is repitive but this will allow the user to see updated from other admin??
-                        this.getSchedules(this.scheduled_at, this.shiftDuration);
+                        //this.getSchedules(this.scheduled_at, this.shiftDuration);
 
                         this.$forceUpdate();
                     });
@@ -657,15 +658,49 @@ export default {
                 if (response.data.success === true) 
                 {
 
-                    /*
-                    this.$nextTick(function()
-                    {  
-                        this.lessonsData = response.data.tutorLessonsData;
-                        this.$forceUpdate(); 
-                    });
-                    */
+                    let tutorID = response.data.tutorData.tutorID;
+                    let startTime = response.data.tutorData.startTime;
+                    let scheduled_at = this.scheduled_at;
 
-                    this.getSchedules(this.scheduled_at, this.shiftDuration);
+                    //@todo: next day detect
+                    if (startTime == '23:00' || startTime == '23:30') {
+                            scheduled_at = this.nextDay;
+                    }
+
+                 
+                    if (typeof this.lessonsData[tutorID] === 'undefined') {
+                        this.lessonsData[tutorID] = {}  
+                    }
+
+                    if (typeof this.lessonsData[tutorID][scheduled_at] === 'undefined') {
+                        this.lessonsData[tutorID][scheduled_at] = {}
+                    }
+
+                    this.lessonsData[tutorID][scheduled_at][startTime] = {
+                        'id': response.data.scheduleItemID,
+                        "status": this.status,                      
+                        //member info
+                        'member_id': response.data.memberData.id,
+                        'firstname': response.data.memberData.firstname,
+                        'lastname': response.data.memberData.lastname,
+                        'nickname': response.data.memberData.nickname
+                    }
+
+
+                    //set the schedule to display
+                    let schedule = document.getElementById(tutorID + "-" + startTime);
+                    schedule.style.display = "block";
+                    schedule.classList.add(this.status);
+
+                    //hide the add button
+                    let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
+                    addButton.style.display = "none";
+
+
+                    //this.getSchedules(this.scheduled_at, this.shiftDuration);
+
+
+                    this.$forceUpdate();                    
                 } 
                 else {                    
                     alert (response.data.message);                   
