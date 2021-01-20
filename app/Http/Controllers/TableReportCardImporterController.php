@@ -25,6 +25,30 @@ class TableReportCardImporterController extends Controller
         }
     }
 
+    public function compare()
+    {
+        $items = DB::connection('mysql_live')->table('report_card')->get();
+
+        foreach ($items as $item) {
+            $itemLiveArray[$item->id] = $item->id;
+        }
+
+        $localItems = ReportCard::select('id')->get();      
+        foreach ($localItems as $item) {
+            $itemLocalArray[$item->id] = $item->id;
+        }
+
+        $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
+
+        foreach($itemDifferences as $diff) {
+
+            if (ReportCard::where('id', $diff)->exists()) {
+                echo "<div>this does not exists in our table";
+            }
+            //$items = DB::connection('mysql_live')->select("select * from report_card where id = $diff");            
+        }
+    }
+
     public function show($id = null, $per_item = null)
     {
         set_time_limit(0);
@@ -70,7 +94,6 @@ class TableReportCardImporterController extends Controller
             ];
 
             if (ReportCard::where('id', $item->id)->exists()) {
-                echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " - " . $item->created_on . "</div>";
 
                 try
                 {
@@ -81,7 +104,7 @@ class TableReportCardImporterController extends Controller
 
                     DB::commit();
 
-                    echo "<div style='color:green'>$ctr - updated : " . $item->id . $item->created_on . "</div>";
+                    echo "<div style='color:green'>$ctr - updated : " . $item->id . "  </div>";
 
                 } catch (\Exception $e) {
 

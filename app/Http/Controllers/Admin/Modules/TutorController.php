@@ -44,7 +44,7 @@ class TutorController extends Controller
 
         $grades = createGrades();
 
-        $tutors = Tutor::join('users', 'users.id', '=', 'tutors.user_id');
+        $tutors = Tutor::join('users', 'users.id', '=', 'tutors.user_id')->select('tutors.*', 'users.firstname', 'users.lastname', 'users.email', 'users.valid');
 
         //@[START] USER SEARCH - if user search for a member
         if (isset($tutor_id) || isset($name) || isset($email)) {
@@ -52,7 +52,10 @@ class TutorController extends Controller
                 $tutors = $tutors->where('tutors.user_id', $tutor_id);
             }
             if (isset($name)) {
-                $tutors = $tutors->orWhere('tutors.name_en', 'like', '%' . $name . '%')->orWhere('tutors.name_en', 'like', '%' . $name . '%');
+                //$tutors = $tutors->orWhere('tutors.name_en', 'like', '%' . $name . '%')->orWhere('tutors.name_en', 'like', '%' . $name . '%');
+
+                $tutors = $tutors->orWhereRaw("CONCAT(users.firstname,' ',users.lastname) like '%" . $name . "%'")->orWhereRaw("CONCAT(users.lastname,' ',users.firstname) like '%" . $name . "%'");                
+
             }
 
             if (isset($email)) {
@@ -246,6 +249,7 @@ class TutorController extends Controller
         ];
 
         $user = User::find($tutor->user_id);
+        
         $user->update($userData);
 
         return redirect()->route('admin.tutor.edit', $id)->with('message', 'Tutor password has been updated successfully!');

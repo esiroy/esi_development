@@ -71,6 +71,11 @@
                     <div class="row">
                         <div class="col-12 pt-3">
                             <div class="table-responsive">
+
+                                <div class="float-right">
+                                    <ul class="pagination pagination-sm">{{ $managers->appends(request()->query())->links() }}</ul>
+                                </div>
+
                                 <table id="dataTable" class="table esi-table table-bordered table-striped table-hover datatable dataTable no-footer">
                                 <thead>
                                     <tr>
@@ -105,6 +110,11 @@
                                 @endif
                                 </tbody>
                                 </table>
+
+                                <div class="float-right">
+                                    <ul class="pagination pagination-sm">{{ $managers->appends(request()->query())->links() }}</ul>
+                                </div>
+
                             </div>
                                                         
                         </div>
@@ -232,16 +242,32 @@
 </div>
 @endsection
 
+
+
+
+@section('styles')
+@parent
+<style>
+.dataTables_filter {
+    display: none;
+    float: left !important;
+    padding-left: 20px;
+}
+</style>
+@endsection
+
 @section('scripts')
 @parent
 <script type="text/javascript">
     window.addEventListener('load', function() {
-        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        ///let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+
+        let dtButtons = $.extend(true, [], [])
         let _token = "{{ csrf_token() }}"
-        
+
         $.extend(true, $.fn.dataTable.defaults, {
             order: [[0, 'DES']],
-            pageLength: 25,
+            pageLength: 1000,
             "columnDefs": [{
                 "targets": [ 0 ],
                 "visible": false,
@@ -249,12 +275,12 @@
             }]
         });
 
+
         $('#dataTable').DataTable({
             buttons: dtButtons,
-            "paging":   true         
+            "paging":   false,
         })
-    });  
-
+    });
 
 </script>
 @endsection

@@ -116,8 +116,19 @@ table.dataTable thead>tr>th.sorting_desc {
     padding-right: 0px;
 }
 </style>
-
 @endsection
+
+@section('styles')
+@parent
+<style>
+.dataTables_filter {
+    display: none;
+    float: left !important;
+    padding-left: 20px;
+}
+</style>
+@endsection
+
 
 @section('scripts')
 @parent
@@ -130,7 +141,8 @@ table.dataTable thead>tr>th.sorting_desc {
 
     window.addEventListener('load', function() {
 
-        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        //let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        let dtButtons = $.extend(true, [], [])
         let _token = "{{ csrf_token() }}"  
         
         $.extend(true, $.fn.dataTable.defaults, {
@@ -149,12 +161,5 @@ table.dataTable thead>tr>th.sorting_desc {
         })
     });
 
-
-
-
-
 </script>
 @endsection
-
-          
-          

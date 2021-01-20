@@ -250,11 +250,24 @@
 </div>
 @endsection
 
+@section('styles')
+@parent
+<style>
+.dataTables_filter {
+    display: none;
+    float: left !important;
+    padding-left: 20px;
+}
+</style>
+@endsection
+
 @section('scripts')
 @parent
 <script type="text/javascript">
     window.addEventListener('load', function() {
-        let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+        //let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
+
+        let dtButtons = $.extend(true, [], [])
         let _token = "{{ csrf_token() }}"
         
         $.extend(true, $.fn.dataTable.defaults, {
@@ -269,7 +282,7 @@
 
         $('#dataTable').DataTable({
             buttons: dtButtons,
-            "paging":   true         
+            "paging":   false         
         })
     });
 

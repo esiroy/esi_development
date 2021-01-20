@@ -77,6 +77,7 @@ Route::resource('importAgents', 'TableAgentImporterController');
 /*************** 
  * REPORTCARD IMPORTER
  ***************/
+Route::get('importReportCards/compare', 'TableReportCardImporterController@compare');
 Route::resource('importReportCards', 'TableReportCardImporterController');
 Route::get('importReportCards/index/{per_item}', 'TableReportCardImporterController@index');
 Route::get('importReportCards/{id}/{per_item}', 'TableReportCardImporterController@show');

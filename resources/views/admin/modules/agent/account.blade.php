@@ -58,7 +58,7 @@
                                         <select name="transaction_type" id="transaction_type" class="form-control form-control-sm " onchange="checkSelected()" required>
                                             <option value="">-- Select Transaction Type --</option>
                                             <option value="ADD">ADD</option>
-                                            <option value="AGENT_SUBTRACT">Subtract</option>                                            
+                                            <option value="AGENT_SUBTRACT">Subtract</option>
                                             <option value="MANUAL_ADD">Manual Add</option>
                                         </select>
                                     </div>
@@ -93,6 +93,14 @@
                                     </div>
                                 </div>
 
+                                <div class="row py-2">
+                                    <div class="col-md-3">Remarks : </div>
+                                    <div class="col-md-9">
+                                        <input type="submit" class="btn btn-primary btn-sm" value="Add Transaction">
+                                    </div>
+                                </div>
+
+
                             </div>
 
                             <!--[start right column]-->
@@ -115,12 +123,6 @@
 
                         </div>
                         <!--[end] first row-->
-
-                        <div class="row">
-                            <div class="col-md-12">
-                                <input type="submit" class="btn btn-primary btn-sm" value="Add Transaction">
-                            </div>
-                        </div>
                     </form>
                 </div>
                 <!--[end] card body-->
@@ -156,18 +158,18 @@
                                 <td>{{ $transaction->transaction_type }}</td>
                                 <td>
                                     <!-- @note: get member name -->
-                                    @php 
-                                        $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
+                                    @php
+                                    $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
                                     @endphp
-                                    {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
+                                    {{ $user->firstname ?? "-"  }} {{ $user->lastname ?? ""  }}
 
                                 </td>
-                                <td >
-                                    
+                                <td>
+
                                     {{ number_format($transaction->amount, 0, '.', ',') }}
-                                
+
                                 </td>
-                                
+
                                 <!--
                                 <td>
                                     @if (isset($transaction->credits_expiration))
@@ -177,7 +179,7 @@
 
 
                                 <td>{{ $transaction->remarks }}</td>
-                                
+
                             </tr>
                             @endforeach
 
@@ -204,13 +206,13 @@
                             <tr>
                                 <td>
                                     {{ date('F d, Y h:i:s a', strtotime($history->created_at)) }}
-                                </td>                         
+                                </td>
                                 <td>
                                     @if ($history->transaction_type == "AGENT_SUBTRACT" || $history->transaction_type == "SUBTRACT")
-                                        {{ "-" }}
-                                    @else 
-                                        {{ "+"}}
-                                    @endif     
+                                    {{ "-" }}
+                                    @else
+                                    {{ "+"}}
+                                    @endif
                                     {{ $history->amount }}
                                 </td>
                                 <td>
@@ -223,18 +225,18 @@
                                 <td></td>
                                 <td>Total:</td>
                                 <td>
-                                   @php 
-                                        $agentObj = new \App\Models\AgentTransaction();
-                                        $total = $agentObj->getAgentPurchasedAmount($agent->user_id);
+                                    @php
+                                    $agentObj = new \App\Models\AgentTransaction();
+                                    $total = $agentObj->getAgentPurchasedAmount($agent->user_id);
                                     @endphp
                                     ¥ {{ number_format($total, 1, '.', ',') }}
                                 </td>
                             </tr>
-                    
+
                         </tbody>
                     </table>
 
-                    
+
                 </div>
             </div>
 

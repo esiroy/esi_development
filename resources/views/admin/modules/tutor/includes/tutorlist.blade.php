@@ -1,3 +1,7 @@
+<div class="float-right">
+    <ul class="pagination pagination-sm">{{ $tutors->appends(request()->query())->links() }}</ul>
+</div>
+
 <table id="dataTable" class="table esi-table table-bordered table-striped table-hover datatable">
     <thead>
         <tr>
@@ -41,3 +45,7 @@
         @endif
     </tbody>
 </table>
+
+<div class="float-right">
+    <ul class="pagination pagination-sm">{{ $tutors->appends(request()->query())->links() }}</ul>
+</div>

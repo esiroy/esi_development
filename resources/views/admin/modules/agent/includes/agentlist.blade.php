@@ -1,4 +1,9 @@
 <div class="table-responsive">
+
+    <div class="float-right">
+        <ul class="pagination pagination-sm">{{ $agents->appends(request()->query())->links() }}</ul>
+    </div>
+
     <table id="dataTable" class="table esi-table table-bordered table-striped table-hover datatable dataTable no-footer">
         <thead>
             <tr>
@@ -69,4 +74,10 @@
             @endif
         </tbody>
     </table>
+
+    <div class="float-right">
+        <ul class="pagination pagination-sm">{{ $agents->appends(request()->query())->links() }}</ul>
+    </div>
+    
+        
 </div>

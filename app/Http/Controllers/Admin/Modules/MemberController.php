@@ -42,76 +42,9 @@ class MemberController extends Controller
                 return redirect(route('home'));
             }
             return $next($request);           
-        });
-
-        
+        });        
     }
 
-    /**
-     * (v2)
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($memberID)
-    {
-        $agent = new Agent();
-        $agentInfo = $agent->getMemberAgent($memberID);
-        $memberInfo = Member::where('user_id', $memberID)->first();
-
-        if (isset($memberInfo)) {
-            if (isset($memberInfo->tutor_id)) {
-                $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
-            } else {
-                $tutorInfo = null;
-            }
-
-            if (isset($memberInfo->lesson_shift_id)) {
-                $shift = new Shift();
-                $duration = $shift->getDuration($memberInfo->lesson_shift_id);
-            } else {
-                $duration = null;
-            }
-
-            //get Lesson goals
-            $goals = new LessonGoals();
-            $lessonGoals = $goals->getLessonGoals($memberID);
-
-            //report cards
-            $reportCard = new ReportCard();
-            $latestReportCard = $reportCard->getLatest($memberID);
-
-            //writing report cards
-            $reportCardDate = new ReportCardDate();
-            $latestWritingReport = $reportCardDate->getLatest($memberID);
-
-            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport'));
-        } else {
-
-            abort(404, "Member Not Found");
-        }
-
-    }
-
-    /*
-    public function details($memberID)
-    {
-    $member = Member::join('users', 'users.id', '=', 'members.user_id')
-    //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-    attributes.name as attribute,
-    members.id as id,
-    agents.id as agent_id,
-    tutors.name_en as main_tutor_name,
-    members.credits as credits
-    "))->where('members.id', $memberID)->first();
-
-    return view('admin.modules.member.details', compact('member'));
-    }
-     */
 
     /**
      * (v2)
@@ -186,7 +119,75 @@ class MemberController extends Controller
         return view('admin.modules.member.index', compact('memberships', 'shifts', 'attributes', 'tutors', 'members',
             'can_member_access', 'can_member_create', 'can_member_edit',
             'can_member_view', 'can_member_delete'));
+    }    
+
+    /**
+     * (v2)
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($memberID)
+    {
+        $agent = new Agent();
+        $agentInfo = $agent->getMemberAgent($memberID);
+        $memberInfo = Member::where('user_id', $memberID)->first();
+
+        if (isset($memberInfo)) {
+            if (isset($memberInfo->tutor_id)) {
+                $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
+            } else {
+                $tutorInfo = null;
+            }
+
+            if (isset($memberInfo->lesson_shift_id)) {
+                $shift = new Shift();
+                $duration = $shift->getDuration($memberInfo->lesson_shift_id);
+            } else {
+                $duration = null;
+            }
+
+            //get Lesson goals
+            $goals = new LessonGoals();
+            $lessonGoals = $goals->getLessonGoals($memberID);
+
+            //report cards
+            $reportCard = new ReportCard();
+            $latestReportCard = $reportCard->getLatest($memberID);
+
+            //writing report cards
+            $reportCardDate = new ReportCardDate();
+            $latestWritingReport = $reportCardDate->getLatest($memberID);
+
+            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport'));
+        } else {
+
+            abort(404, "Member Not Found");
+        }
+
     }
+
+    /*
+    public function details($memberID)
+    {
+    $member = Member::join('users', 'users.id', '=', 'members.user_id')
+    //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
+    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
+    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
+    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
+    attributes.name as attribute,
+    members.id as id,
+    agents.id as agent_id,
+    tutors.name_en as main_tutor_name,
+    members.credits as credits
+    "))->where('members.id', $memberID)->first();
+
+    return view('admin.modules.member.details', compact('member'));
+    }
+     */
+
+
 
     /**
      * Display a listing of the resource.

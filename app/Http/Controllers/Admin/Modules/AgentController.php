@@ -61,7 +61,7 @@ class AgentController extends Controller
             }
         }
 
-        $agents = $agentQuery->orderby('users.firstname', 'ASC')->get();
+        $agents = $agentQuery->orderby('users.firstname', 'ASC')->paginate(Auth::user()->items_per_page);
 
 
 
@@ -83,7 +83,7 @@ class AgentController extends Controller
         $members = Member::join('users', 'users.id', '=', 'members.user_id')
             ->where('agent_id', $memberID)
             ->select('users.valid', 'users.firstname', 'users.lastname', 'members.*')
-            ->where('valid', 1)->paginate(30);
+            ->where('valid', 1)->paginate(Auth::user()->items_per_page);
 
         if (isset($members)) {
             return view('admin.modules.agent.memberlist', compact('members'));

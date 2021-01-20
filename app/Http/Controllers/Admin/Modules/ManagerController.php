@@ -26,15 +26,13 @@ use Input;
 class ManagerController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of  managers.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-
-        abort_if(Gate::denies('manager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        
+        abort_if(Gate::denies('manager_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');        
 
         //request variables
         $username = $request->username;
@@ -50,9 +48,7 @@ class ManagerController extends Controller
             if (isset($username)) {
                 $managerQuery = $managerQuery->where('username', $username);
             }
-            if (isset($name)) {
-
-                
+            if (isset($name)) {                
                 $managerQuery = $managerQuery->orWhere('firstname', 'like', '%' . $name . '%')->orWhere('users.lastname', 'like', '%' . $name . '%');
             }
 
@@ -61,9 +57,7 @@ class ManagerController extends Controller
             }
         }
 
-        $managers = $managerQuery->where('user_type', 'MANAGER')->get();
-
-
+        $managers = $managerQuery->where('user_type', 'MANAGER')->paginate(Auth::user()->items_per_page);
         return view('admin.modules.manager.index', compact('managers'));
     }
 
