@@ -36,7 +36,7 @@ class TableScheduleItemImporterController extends Controller
         //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
         //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 
-        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY id DESC LIMIT 10000");
+        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY created_on DESC LIMIT 10000");
 
         DB::beginTransaction();
 
