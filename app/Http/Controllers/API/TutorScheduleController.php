@@ -202,11 +202,8 @@ class TutorScheduleController extends Controller
             return Response()->json([
                 "success" => true,
                 "memberID" => $memberID,
-                "id"        => $scheduledItemData['id'],
-                //"updateSQL"   => $lessonData,
                 "message" => "Lesson has been updated",
-                //"tutorData" => $tutorInfo->user_id,
-
+                "scheduleItemID"        => $scheduledItemData['id'],
                 "tutorData" => $tutor,
                 "memberData" => $memberData,
                 //'tutorLessonsData' => $tutorLessonsData,
