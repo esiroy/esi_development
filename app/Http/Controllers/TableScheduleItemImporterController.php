@@ -30,88 +30,65 @@ class TableScheduleItemImporterController extends Controller
 
     public function getNewTransactions()
     {
-        set_time_limit(0);
 
+        $itemLiveArray = null;
+        $itemLocalArray = null;
 
-        //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
-        //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
-
-        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY created_on DESC LIMIT 10000");
-
-        DB::beginTransaction();
-
-        $ctr = 0;
-
+        $items = DB::connection('mysql_live')->table('schedule_item')->select('id')->orderBy('id', 'desc')->limit(20000)->get();
         foreach ($items as $item) {
-
-            set_time_limit(0);
-
-            $ctr = $ctr + 1;
-
-            $data = [
-                'id' => $item->id,
-                'created_at' => $item->created_on,
-                'updated_at' => $item->updated_on,
-                'valid' => $item->valid,
-                'lesson_time' => $item->lesson_time,
-                'tutor_id' => $item->tutor_id,
-                'member_id' => $item->member_id,
-                'schedule_status' => $item->schedule_status,
-                'duration' => $item->duration,
-                'lesson_shift_id' => $item->lesson_shift_id,
-                'memo' => $item->memo,                    
-                //'email_type' => $liveItem->email_type,                 
-            ];
-
-            if (ScheduleItem::where('id', $item->id)->exists()) {
-                echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
-
-                try
-                {
-
-                    $scheduleObj = ScheduleItem::where('id', $item->id);
-
-                    $transaction = $scheduleObj->update($data);
-
-                    DB::commit();
-
-                    echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
-
-                } catch (\Exception $e) {
-
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On update </div>";
-                }
-
-            } else {
-
-                try
-                {
-                    $transaction = ScheduleItem::insert($data);
-
-                    DB::commit();
-
-                    echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
-
-                } catch (\Exception $e) {
-
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
-                }
-
-            }
+            $itemLiveArray[$item->id] = $item->id;
         }
 
-        echo "success!!! data imported";
+        $localItems = ScheduleItem::select('id')->orderBy('id', 'desc')->limit(20000)->get();
+        foreach ($localItems as $item) {
+            $itemLocalArray[$item->id] = $item->id;
+        }
+
+        $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
+
+        $differenceCount = count($itemDifferences);
+
+        echo $differenceCount . " are missing in your schedule items table<BR>";
+
+
+        foreach ($itemDifferences as $item) {
+            $itemID = $item;
+
+            $liveItems = DB::connection('mysql_live')->select("select * from schedule_item where id = $itemID");
+
+            $ctr = 0;
+
+            foreach ($liveItems as $liveItem) {
+                $ctr = $ctr + 1;
+
+                $data = [
+                    'id' => $liveItem->id,
+                    'created_at' => $liveItem->created_on,
+                    'updated_at' => $liveItem->updated_on,
+                    'valid' => $liveItem->valid,
+                    'lesson_time' => $liveItem->lesson_time,
+                    'tutor_id' => $liveItem->tutor_id,
+                    'member_id' => $liveItem->member_id,
+                    'schedule_status' => $liveItem->schedule_status,
+                    'duration' => $liveItem->duration,
+                    'lesson_shift_id' => $liveItem->lesson_shift_id,
+                    'memo' => $liveItem->memo,                    
+                    //'email_type' => $liveItem->email_type,                 
+                ];
+
+                $transaction = ScheduleItem::insert($data);
+                echo "<div style='color:blue'>$ctr - Added : " . $liveItem->id . " " . $liveItem->created_on . "</div>";
+
+            }
+
+        }
 
     }
 
-    public function index($per_item = null)
+    public function importSchedulesIndex()
     {
         $items = DB::connection('mysql_live')->table('schedule_item')->count();
-
-        if ($per_item == null) {
-            $per_item = 5000;
-        }
-
+        $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
 
         for ($i = 1; $i <= $total_pages; $i++) {
@@ -171,7 +148,7 @@ class TableScheduleItemImporterController extends Controller
         set_time_limit(0);
 
         if ($per_item == null) {
-            $per_item = 5000;
+            $per_item = 8000;
         }
 
         $start = ($id - 1) * ($per_item);
@@ -183,7 +160,7 @@ class TableScheduleItemImporterController extends Controller
         //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
         //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 
-        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY id ASC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY id DESC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
