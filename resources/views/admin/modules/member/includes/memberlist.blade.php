@@ -1,4 +1,5 @@
 <div class="table-responsive">
+
     <table id="dataTable" class="table esi-table table-bordered table-striped table-hover datatable dataTable no-footer">
         <thead>
             <tr>

@@ -40,7 +40,7 @@ class TableReportCardDateImporterController extends Controller
         echo "<BR>";
 
         
-        $items = DB::connection('mysql_live')->select("select * from report_card_date ORDER BY id DESC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from report_card_date ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 

@@ -393,7 +393,7 @@
 
         $.extend(true, $.fn.dataTable.defaults, {
             order: [[0, 'DES']],
-            pageLength: 25,
+            pageLength: 1000,
             "columnDefs": [{
                 "targets": [ 0 ],
                 "visible": false,

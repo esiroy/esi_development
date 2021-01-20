@@ -223,16 +223,11 @@
                                 <td></td>
                                 <td>Total:</td>
                                 <td>
-
-                                    
-                                
                                    @php 
-                                        $agent = new \App\Models\AgentTransaction();
-                                        $total = $agent->getAgentPurchasedAmount($history->agent_id);
+                                        $agentObj = new \App\Models\AgentTransaction();
+                                        $total = $agentObj->getAgentPurchasedAmount($agent->user_id);
                                     @endphp
-
                                     ¥ {{ number_format($total, 1, '.', ',') }}
-
                                 </td>
                             </tr>
                     

@@ -168,7 +168,7 @@ class MemberController extends Controller
 
         }
 
-        $members = $memberQuery->orderby('users.id', 'ASC')->paginate(30);
+        $members = $memberQuery->orderby('users.id', 'ASC')->paginate(Auth::user()->items_per_page);
 
         //Tutor Query
         //$tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();

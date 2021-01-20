@@ -9,24 +9,19 @@ use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
 use App\Models\UserImage;
-use Gate;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
-use Validator;
+
+use Gate, Auth, Validator;
 
 class TutorController extends Controller
 {
-
-    public $items_per_page;
-
     public function __construct()
     {
-        $this->middleware('auth');
-
-        $this->items_per_page = 30;
+        $this->middleware('auth');        
     }
 
     /**
@@ -65,7 +60,9 @@ class TutorController extends Controller
             }
         } //[END] USER SEARCH
 
-        $tutors = $tutors->get();
+        $tutors = $tutors->paginate(Auth::user()->items_per_page);
+
+
         return view('admin.modules.tutor.index', compact('shifts', 'tutors', 'grades'));
     }
 
@@ -77,7 +74,7 @@ class TutorController extends Controller
             ->where('members.tutor_id', $id)
             ->where('users.valid', 1)
         //->where('tutors.is_default_main_tutor', 1)
-            ->paginate($this->items_per_page);
+            ->paginate(Auth::user()->items_per_page);
 
         return view('admin.modules.tutor.maintutor', compact('members'));
     }
@@ -90,7 +87,7 @@ class TutorController extends Controller
             ->where('members.tutor_id', $id)
             ->where('users.valid', 1)
             ->where('tutors.is_default_support_tutor', 1)
-            ->paginate($this->items_per_page);
+            ->paginate(Auth::user()->items_per_page);
 
         return view('admin.modules.tutor.supporttutor', compact('members'));
     }

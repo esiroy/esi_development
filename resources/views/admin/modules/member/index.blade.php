@@ -51,18 +51,21 @@
                         </form>
                     </div>
 
-                    <!--@todo: get member list csv -->
+                    
                     <div class="row">
-                        <div class="col-12 pt-3">
+                        <div class="col-5 pt-3">
                             @can('report_access', Auth::user())
-
-                            <!--<button type="button" class="btn btn-primary btn-sm" >Generate Member List</button>-->
-
-                            <span data-href="/exportCSV" id="export" class="btn btn-primary btn-sm" onclick="exportTasks(event.target); return false">Generate Member List</span>
-
+                                <span data-href="/exportCSV" id="export" class="btn btn-primary btn-sm" onclick="exportTasks(event.target); return false">Generate Member List</span>
                             @endcan
                             <a href="{{ url('admin/member?toexpire=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button></a>
                             <a href="{{ url('admin/member?expired=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Expired</button></a>
+                        </div>
+                          <div class="col-7">   
+                            <div class="float-right mt-3">
+                                <ul class="pagination pagination-sm">
+                                    {{ $members->appends(request()->query())->links() }}           
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
@@ -132,7 +135,7 @@ table.dataTable thead>tr>th.sorting_desc {
         
         $.extend(true, $.fn.dataTable.defaults, {
             order: [[0, 'DES']],
-            pageLength: 100,
+            pageLength: 1000,
             "columnDefs": [{
                 "targets": [ 0 ],
                 "visible": false,

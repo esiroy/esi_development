@@ -204,7 +204,7 @@ class AgentController extends Controller
 
             //list
             $transactions  = $agentTransaction->getAgentTransactions($agentID);
-            $purchaseHistory = $agentTransaction->getAgentPaymentHistory($agentID);           
+            $purchaseHistory = $agentTransaction->getAgentAllPaymentHistory($agentID);           
 
             return view('admin.modules.agent.account', compact('agent', 'credits', 'latestDateOfPurchase', 'transactions', 'purchaseHistory'));
 
@@ -278,7 +278,7 @@ class AgentController extends Controller
      */
     public function update($id, Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [           
             'transaction_type' => ['required'],
             'amount' => ['required'],
             'credits' => ['required'],

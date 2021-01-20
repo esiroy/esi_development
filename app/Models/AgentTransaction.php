@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
 use App\Models\Shift;
 use Auth;
+use Illuminate\Database\Eloquent\Model;
 
 class AgentTransaction extends Model
 {
@@ -13,84 +12,54 @@ class AgentTransaction extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
-    private $limit = 50;
-
-
-    public function addMemberTransactions($memberTransactionData) 
+    public function addMemberTransactions($memberTransactionData)
     {
         $shift = Shift::where('value', $memberTransactionData['shiftDuration'])->first();
 
-        if ($memberTransactionData['status'] == 'TUTOR_CANCELLED') 
-        {
-            $transaction = [            
-                'member_id'         => $memberTransactionData['memberID'], 
-                'lesson_shift_id'   => $shift->id,
-                'created_by_id'     => Auth::user()->id,
-                'transaction_type'  => "CANCEL_LESSON",
-                'amount'            => 1,
-                'valid'             => true,
-            ];   
-            
-            AgentTransaction::create($transaction);     
+        if ($memberTransactionData['status'] == 'TUTOR_CANCELLED') {
+            $transaction = [
+                'member_id' => $memberTransactionData['memberID'],
+                'lesson_shift_id' => $shift->id,
+                'created_by_id' => Auth::user()->id,
+                'transaction_type' => "CANCEL_LESSON",
+                'amount' => 1,
+                'valid' => true,
+            ];
+
+            AgentTransaction::create($transaction);
 
         } else if ($memberTransactionData['status'] == 'CLIENT_RESERVED_B') {
 
-            $transaction = [            
-                'member_id'         => $memberTransactionData['memberID'], 
-                'lesson_shift_id'   => $shift->id,                
-                'created_by_id'     => Auth::user()->id,
-                'transaction_type'  => "LESSON",
-                'amount'            => 1,
-                'valid'             => true,
-            ];   
+            $transaction = [
+                'member_id' => $memberTransactionData['memberID'],
+                'lesson_shift_id' => $shift->id,
+                'created_by_id' => Auth::user()->id,
+                'transaction_type' => "LESSON",
+                'amount' => 1,
+                'valid' => true,
+            ];
 
-            AgentTransaction::create($transaction);     
+            AgentTransaction::create($transaction);
 
-        }
-        else if ($memberTransactionData['status'] == 'CLIENT_RESERVED')  
-        {
+        } else if ($memberTransactionData['status'] == 'CLIENT_RESERVED') {
 
-            $transaction = [            
-                'member_id'         => $memberTransactionData['memberID'], 
-                'lesson_shift_id'   => $shift->id,                
-                'created_by_id'     => Auth::user()->id,
-                'transaction_type'  => "LESSON",
-                'amount'            => 1,
-                'valid'             => true,
-            ];  
-           
-            AgentTransaction::create($transaction);     
+            $transaction = [
+                'member_id' => $memberTransactionData['memberID'],
+                'lesson_shift_id' => $shift->id,
+                'created_by_id' => Auth::user()->id,
+                'transaction_type' => "LESSON",
+                'amount' => 1,
+                'valid' => true,
+            ];
+
+            AgentTransaction::create($transaction);
 
         } else {
-         
+
         }
 
-     
-
     }
 
-
-    //List ALL specific AGENT || Point Purchase History (AGENT LISTINGS)
-    public function getAgentPaymentHistory($agentID)
-    {
-        $paymentHistory = new AgentTransaction();
-        $transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->where(function ($q) use ($agentID) 
-        {
-            $q->orWhere('transaction_type', 'ADD')
-                ->orWhere('transaction_type', 'MANUAL_ADD')
-                ->orWhere('transaction_type', 'SUBTRACT');
-
-            /*
-                ->orWhere('transaction_type', 'MANUAL_ADD')
-                ->orWhere('transaction_type', 'FREE_CREDITS')
-                ->orWhere('transaction_type', 'DISTRIBUTE')
-                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
-            */
-            
-        })->orderby('created_at', 'DESC')->paginate($this->limit);
-
-        return $transactions;
-    }
 
     //List ALL specific Member Payment History (Not Paginated)
     public function getAllPaymentHistory($memberID)
@@ -106,7 +75,6 @@ class AgentTransaction extends Model
         return $transactions;
     }
 
-
     //List ALL specific Member Payment History (Paginated)
     public function getPaymentHistory($memberID)
     {
@@ -118,10 +86,10 @@ class AgentTransaction extends Model
                 ->orWhere('transaction_type', 'DISTRIBUTE')
                 ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
 
-        })->orderBy('created_at', 'DESC')->paginate($this->limit);
+        })->orderBy('created_at', 'DESC')->paginate(Auth::user()->items_per_page);
         return $transactions;
     }
-    
+
     public function getMemberPurcaseAmount($memberID)
     {
         $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->where(function ($q) use ($agentID) {
@@ -140,7 +108,6 @@ class AgentTransaction extends Model
 
         return $price;
     }
-
 
     //Get Credits or Point Balance Member
     public function getCredits($memberID)
@@ -168,17 +135,16 @@ class AgentTransaction extends Model
     }
 
     public function getAgentCredits($agentID)
-    {       
+    {
         $transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->orderBy('created_at', 'ASC')->get();
         $credits = 0;
         foreach ($transactions as $transaction) {
             if ($transaction->transaction_type == 'ADD' ||
-                $transaction->transaction_type == 'MANUAL_ADD' 
-                //||
-                //$transaction->transaction_type == 'FREE_CREDITS' ||
-                //$transaction->transaction_type == 'DISTRIBUTE' ||
-                //$transaction->transaction_type == 'CANCEL_LESSON' ||
-                //$transaction->transaction_type == 'CREDITS_EXPIRATION'
+                $transaction->transaction_type == 'MANUAL_ADD' ||
+                $transaction->transaction_type == 'FREE_CREDITS' ||
+                $transaction->transaction_type == 'DISTRIBUTE' ||
+                $transaction->transaction_type == 'CANCEL_LESSON' ||
+                $transaction->transaction_type == 'CREDITS_EXPIRATION'
 
             ) {
                 $credits = $credits + $transaction->amount;
@@ -188,8 +154,7 @@ class AgentTransaction extends Model
             }
         }
         return $credits;
-        
-        
+
     }
 
     public function getMemberTransactions($memberID)
@@ -216,29 +181,76 @@ class AgentTransaction extends Model
             return null;
         }
     }
-    
+
+
+
 
     
     
+
     public function getAgentTransactions($agentID)
     {
         $transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
         return $transactions;
     }
 
+
+
+
+    //List ALL specific AGENT || Point Purchase History (AGENT LISTINGS)
+    public function getAgentPaymentHistory($agentID)
+    {
+        $paymentHistory = new AgentTransaction();
+        $transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->where(function ($q) use ($agentID) {
+            $q->orWhere('transaction_type', 'ADD')
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'SUBTRACT');
+                /*@checked: add, subtract are only viewing in agent transactions */
+                /*
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'FREE_CREDITS')
+                ->orWhere('transaction_type', 'DISTRIBUTE')
+                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+                */
+
+        })->orderby('created_at', 'DESC')->paginate(Auth::user()->items_per_page);
+
+        return $transactions;
+    }
+
+    //List ALL specific AGENT || Point Purchase History (AGENT LISTINGS)
+    public function getAgentAllPaymentHistory($agentID)
+    {
+        $paymentHistory = new AgentTransaction();
+        $transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->where(function ($q) use ($agentID) {
+            $q->orWhere('transaction_type', 'ADD')
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'SUBTRACT');
+                /*@checked: add, subtract are only viewing in agent transactions */
+                /*
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'FREE_CREDITS')
+                ->orWhere('transaction_type', 'DISTRIBUTE')
+                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+                */
+
+        })->orderby('created_at', 'DESC')->get();
+
+        return $transactions;
+    }    
+        
     public function getAgentPurchasedAmount($agentID)
     {
         $transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->where(function ($q) use ($agentID) {
             $q->orWhere('transaction_type', 'ADD')
-                ->orWhere('transaction_type', 'SUBTRACT')
-                ->orWhere('transaction_type', 'MANUAL_ADD');
-            
-            /*@checked: add, subtract are only viewing in agent transactions?? */
-            /*            
-            ->orWhere('transaction_type', 'FREE_CREDITS')
-            ->orWhere('transaction_type', 'DISTRIBUTE')
-            ->orWhere('transaction_type', 'CREDITS_EXPIRATION');            
-            */
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'SUBTRACT');
+                /*@checked: add, subtract are only viewing in agent transactions */
+                /*
+                ->orWhere('transaction_type', 'FREE_CREDITS')
+                ->orWhere('transaction_type', 'DISTRIBUTE')
+                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+                */
         })->get();
 
         $price = 0;
@@ -247,15 +259,11 @@ class AgentTransaction extends Model
                 $price = $price - $transaction->price;
             } else {
                 $price = $price + $transaction->price;
-            }            
+            }
         }
 
         return $price;
     }
-
-
-
-
 
     public function getAgentFirstDateOfPurchase($agentID)
     {
@@ -290,7 +298,5 @@ class AgentTransaction extends Model
             return null;
         }
     }
-
-
 
 }
