@@ -60,7 +60,7 @@ class TableReportCardImporterController extends Controller
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        echo "<div>ADDING report cards  FROM : " . $start . " - " . $end . "</div>";
+        echo "<div>ADDING report cards  FROM : " . ($start + 1) . " - " . $end . "</div>";
         echo "<BR>";
 
         
