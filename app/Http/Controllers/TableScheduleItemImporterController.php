@@ -30,58 +30,77 @@ class TableScheduleItemImporterController extends Controller
 
     public function getNewTransactions()
     {
+        set_time_limit(0);
 
-        $itemLiveArray = null;
-        $itemLocalArray = null;
 
-        $items = DB::connection('mysql_live')->table('schedule_item')->select('id')->orderBy('id', 'desc')->limit(20000)->get();
+        //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
+        //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
+
+        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY id DESC LIMIT 10000");
+
+        DB::beginTransaction();
+
+        $ctr = 0;
+
         foreach ($items as $item) {
-            $itemLiveArray[$item->id] = $item->id;
-        }
 
-        $localItems = ScheduleItem::select('id')->orderBy('id', 'desc')->limit(20000)->get();
-        foreach ($localItems as $item) {
-            $itemLocalArray[$item->id] = $item->id;
-        }
+            set_time_limit(0);
 
-        $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
+            $ctr = $ctr + 1;
 
-        $differenceCount = count($itemDifferences);
+            $data = [
+                'id' => $item->id,
+                'created_at' => $item->created_on,
+                'updated_at' => $item->updated_on,
+                'valid' => $item->valid,
+                'lesson_time' => $item->lesson_time,
+                'tutor_id' => $item->tutor_id,
+                'member_id' => $item->member_id,
+                'schedule_status' => $item->schedule_status,
+                'duration' => $item->duration,
+                'lesson_shift_id' => $item->lesson_shift_id,
+                'memo' => $item->memo,                    
+                //'email_type' => $liveItem->email_type,                 
+            ];
 
-        echo $differenceCount . " are missing in your schedule items table<BR>";
+            if (ScheduleItem::where('id', $item->id)->exists()) {
+                echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
+                try
+                {
 
-        foreach ($itemDifferences as $item) {
-            $itemID = $item;
+                    $scheduleObj = ScheduleItem::where('id', $item->id);
 
-            $liveItems = DB::connection('mysql_live')->select("select * from schedule_item where id = $itemID");
+                    $transaction = $scheduleObj->update($data);
 
-            $ctr = 0;
+                    DB::commit();
 
-            foreach ($liveItems as $liveItem) {
-                $ctr = $ctr + 1;
+                    echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
 
-                $data = [
-                    'id' => $liveItem->id,
-                    'created_at' => $liveItem->created_on,
-                    'updated_at' => $liveItem->updated_on,
-                    'valid' => $liveItem->valid,
-                    'lesson_time' => $liveItem->lesson_time,
-                    'tutor_id' => $liveItem->tutor_id,
-                    'member_id' => $liveItem->member_id,
-                    'schedule_status' => $liveItem->schedule_status,
-                    'duration' => $liveItem->duration,
-                    'lesson_shift_id' => $liveItem->lesson_shift_id,
-                    'memo' => $liveItem->memo,                    
-                    //'email_type' => $liveItem->email_type,                 
-                ];
+                } catch (\Exception $e) {
 
-                $transaction = ScheduleItem::insert($data);
-                echo "<div style='color:blue'>$ctr - Added : " . $liveItem->id . " " . $liveItem->created_on . "</div>";
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On update </div>";
+                }
+
+            } else {
+
+                try
+                {
+                    $transaction = ScheduleItem::insert($data);
+
+                    DB::commit();
+
+                    echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
+
+                } catch (\Exception $e) {
+
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
+                }
 
             }
-
         }
+
+        echo "success!!! data imported";
 
     }
 
