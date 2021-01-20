@@ -87,15 +87,10 @@ class TableScheduleItemImporterController extends Controller
 
     public function index()
     {
-        $items = DB::connection('mysql_live')->table('schedule_item')->count();
-        $per_item = 8000;
-        $total_pages = ($items / $per_item) + 1;
+        $items = DB::connection('mysql_live')->table('schedule_item')->paginate($per_item)->withQueryString();
 
-        for ($i = 1; $i <= $total_pages; $i++) {
-            $url = url("importSchedules/import/$i");
+        echo $items->links();
 
-            echo "<a href='$url'><small>Transaction Import Page $i</small></a><br>";
-        }
     }
 
     public function update($id)
@@ -160,7 +155,7 @@ class TableScheduleItemImporterController extends Controller
         //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
         //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 
-        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY id DESC LIMIT $per_item OFFSET $end");
+        $items = DB::connection('mysql_live')->select("select * from schedule_item ORDER BY id DESC")->paginate($per_item)->withQueryString();
 
         DB::beginTransaction();
 

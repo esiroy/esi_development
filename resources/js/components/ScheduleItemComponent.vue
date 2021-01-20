@@ -591,7 +591,7 @@ export default {
 
                         
                         //this is repitive but this will allow the user to see updated from other admin??
-                        //this.getSchedules(this.scheduled_at, this.shiftDuration);
+                        this.getSchedules(this.scheduled_at, this.shiftDuration);
 
                         this.$forceUpdate();
                     });
@@ -697,7 +697,7 @@ export default {
                     addButton.style.display = "none";
 
 
-                    //this.getSchedules(this.scheduled_at, this.shiftDuration);
+                    this.getSchedules(this.scheduled_at, this.shiftDuration);
 
 
                     this.$forceUpdate();                    
