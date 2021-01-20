@@ -85,7 +85,7 @@ class TableScheduleItemImporterController extends Controller
 
     }
 
-    public function importSchedulesIndex()
+    public function index()
     {
         $items = DB::connection('mysql_live')->table('schedule_item')->count();
         $per_item = 8000;
