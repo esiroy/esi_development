@@ -11,7 +11,11 @@ class TableReportCardImporterController extends Controller
     {
         $items = DB::connection('mysql_live')->table('report_card')->count();
 
-        echo "<div>there are ". $items ." reports</div>";
+        $items_local = DB::connection('mysql')->table('report_card')->count();
+
+
+        echo "<div>there are ". $items ." reports on live </div>";
+        echo "<div>there are ". $items_local ." reports on local </div>";
 
         if ($per_item == null) {
             $per_item = 8000;
@@ -88,11 +92,6 @@ class TableReportCardImporterController extends Controller
         $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
 
         foreach($itemDifferences as $diff) {
-
-
-
-
-
 
             if (ReportCard::where('id', $diff)->exists()) {
                 echo "<div>this does not exists in our table";
