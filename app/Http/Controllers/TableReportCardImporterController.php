@@ -19,6 +19,8 @@ class TableReportCardImporterController extends Controller
        
         $total_pages = ($items / $per_item) + 1;
 
+        $counter = 0;
+
         for ($i = 1; $i <= $total_pages; $i++) {
 
             $start = ($i - 1) * ($per_item);
@@ -27,11 +29,13 @@ class TableReportCardImporterController extends Controller
             $items_live_count = DB::connection('mysql_live')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
             $items_local_count = DB::connection('mysql')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
 
+            $counter =  $counter + count( $items_local_count->toArray() );
+
             if ($items_local_count < $items_live_count) 
             {
                 echo "<p>===========================$i================================================</p>";
 
-                echo  "<p> Live Count: ". count( $items_live_count->toArray() ) . " | Local Count "  .count( $items_local_count->toArray() ) ."</p>";
+                echo  "<p> Live Count: ". count( $items_live_count->toArray() ) . " | Local Count "  . count( $items_local_count->toArray() ) ."</p>";
 
                 $live_count = count( $items_live_count->toArray() );
                 $local_count = count( $items_local_count->toArray() );
@@ -52,27 +56,20 @@ class TableReportCardImporterController extends Controller
                 */
 
                 $url = url("importReportCards/$i/$per_item");
-
-                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end <br> Missing : $total_missing <br>";
+                echo "<div><a href='$url' style='color:red'><small>User Page $i</small></a>  Start : $start - $end  Missing : $total_missing </div>";
                 
 
             } else {
                 echo "<p>===========================$i>================================================</p>";
 
-                $url = url("importReportCards/$i/$per_item");             
-                
-                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end  | Live Count : " .  count( $items_live_count->toArray() ) . " | Local Count "  .count( $items_local_count->toArray() ) ." <br>";
-
-                
+                $url = url("importReportCards/$i/$per_item");
+                echo "<div><a href='$url'><small>User Page $i</small></a>  Start : $start - $end  | Live Count : " .  count( $items_live_count->toArray() ) . " | Local Count "  .count( $items_local_count->toArray() ) ." </div>";                
 
             }
-
-
-
-            
-            
             
         }
+
+        echo $counter ." local items | live items : ". $items;
     }
 
     public function compare()
