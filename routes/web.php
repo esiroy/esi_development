@@ -21,20 +21,20 @@ Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 /*************** 
  * AGENT IMPORTER
  ****************/
-Route::get('importAgentTranscations/compare', 'TableImporterController@compare');
-Route::get('importAgentTranscations/getnew', 'TableImporterController@getNewTransactions');
+Route::get('importAgentTranscations/compare', 'TableImportAgentTransactionsController@compare');
+Route::get('importAgentTranscations/getnew', 'TableImportAgentTransactionsController@getNewTransactions');
 
 //import table
-Route::get('importAgentTranscations/updateMember/{id}', 'TableImporterController@updateMember');
+Route::get('importAgentTranscations/updateMember/{id}', 'TableImportAgentTransactionsController@updateMember');
 
-Route::get('importAgentTranscations/updateAgent/{id}', 'TableImporterController@updateAgent');
+Route::get('importAgentTranscations/updateAgent/{id}', 'TableImportAgentTransactionsController@updateAgent');
 
 //page chunk links
-Route::get('importAgentTranscations/index', 'TableImporterController@importAgentTranscationsIndex');
+Route::get('importAgentTranscations/index', 'TableImportAgentTransactionsController@index');
 
 //@param id - page id number for the chunk
-Route::get('importAgentTranscations/import/{id}', 'TableImporterController@importAgentTranscations');
-Route::get('importAgentTranscations/import/{id}/{per_item}', 'TableImporterController@importAgentTranscations');
+Route::get('importAgentTranscations/import/{id}', 'TableImportAgentTransactionsController@importAgentTranscations');
+Route::get('importAgentTranscations/import/{id}/{per_item}', 'TableImportAgentTransactionsController@importAgentTranscations');
 
 
 /*************** 

@@ -11,6 +11,8 @@ class TableReportCardImporterController extends Controller
     {
         $items = DB::connection('mysql_live')->table('report_card')->count();
 
+        echo "<div>there are ". $items ." reports</div>";
+
         if ($per_item == null) {
             $per_item = 8000;
         }
@@ -19,9 +21,12 @@ class TableReportCardImporterController extends Controller
 
         for ($i = 1; $i <= $total_pages; $i++) {
             
+            $start = ($i - 1) * ($per_item);
+            $end = $i * ($per_item);
+
             $url = url("importReportCards/$i/$per_item");
 
-            echo "<a href='$url'><small>User Page $i</small></a><br>";
+            echo "<a href='$url'><small>User Page $i</small></a> Start : $start - $end <br>";
         }
     }
 

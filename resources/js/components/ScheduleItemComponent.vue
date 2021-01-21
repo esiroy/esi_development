@@ -558,8 +558,7 @@ export default {
                              scheduled_at = this.nextDay;
                         }
 
-                        console.log("?? -->>>" + scheduled_at)
-
+                       
                         if (typeof this.lessonsData[tutorID] === 'undefined') {
                             this.lessonsData[tutorID] = {}  
                         }

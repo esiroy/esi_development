@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AgentTransaction;
 use DB;
 
-class TableImporterController extends Controller
+class TableImportAgentTransactionsController extends Controller
 {
     public function test($id = null)
     {
@@ -87,9 +87,12 @@ class TableImporterController extends Controller
 
     }
 
-    public function importAgentTranscationsIndex()
+    public function index()
     {
         $items = DB::connection('mysql_live')->table('agent_transaction')->count();
+
+        echo $items . " on agent transactions<BR>";
+
         $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
 

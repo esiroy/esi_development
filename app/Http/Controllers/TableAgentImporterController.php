@@ -12,6 +12,9 @@ class TableAgentImporterController extends Controller
     public function index()
     {
         $items = DB::connection('mysql_live')->table('users_agent')->count();
+
+        echo "<div>there are ". $items ." reports</div>";
+                
         $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
 
