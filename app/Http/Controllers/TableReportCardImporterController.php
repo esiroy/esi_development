@@ -20,13 +20,30 @@ class TableReportCardImporterController extends Controller
         $total_pages = ($items / $per_item) + 1;
 
         for ($i = 1; $i <= $total_pages; $i++) {
-            
+
             $start = ($i - 1) * ($per_item);
-            $end = $i * ($per_item);
+            $end = $i * ($per_item);            
+            
+            $items_live = DB::connection('mysql_live')->table('report_card')->select('id')->take($per_item)->skip($start)->pluck('id');
+            $items_local = DB::connection('mysql')->table('report_card')->select('id')->take($per_item)->skip($start)->get()->pluck('id');
+
+            $live = $items_live->toArray();
+            $local = $items_local->toArray();
+
+            $result = array_diff($live, $local);
+
+            $diff = implode(", ", $result);           
+
 
             $url = url("importReportCards/$i/$per_item");
 
-            echo "<a href='$url'><small>User Page $i</small></a> Start : $start - $end <br>";
+            echo "<p>===========================<B>$i</B>================================================</p>";
+
+            echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end | $diff <br>";
+
+           
+
+            
         }
     }
 
@@ -46,6 +63,11 @@ class TableReportCardImporterController extends Controller
         $itemDifferences = array_diff($itemLiveArray, $itemLocalArray);
 
         foreach($itemDifferences as $diff) {
+
+
+
+
+
 
             if (ReportCard::where('id', $diff)->exists()) {
                 echo "<div>this does not exists in our table";
