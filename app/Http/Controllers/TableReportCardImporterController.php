@@ -53,7 +53,7 @@ class TableReportCardImporterController extends Controller
 
                 $url = url("importReportCards/$i/$per_item");
 
-                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end <br> Missing <br>| $total_missing <br>";
+                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end <br> Missing : $total_missing <br>";
                 
 
             } else {
@@ -61,7 +61,7 @@ class TableReportCardImporterController extends Controller
 
                 $url = url("importReportCards/$i/$per_item");             
                 
-                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end <br>";
+                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end  | Live Count : " .  count( $items_live_count->toArray() ) . " | Local Count "  .count( $items_local_count->toArray() ) ." <br>";
 
                 
 
