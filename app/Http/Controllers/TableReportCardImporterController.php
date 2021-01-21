@@ -24,25 +24,42 @@ class TableReportCardImporterController extends Controller
             $start = ($i - 1) * ($per_item);
             $end = $i * ($per_item);            
             
-            $items_live = DB::connection('mysql_live')->table('report_card')->select('id')->take($per_item)->skip($start)->pluck('id');
-            $items_local = DB::connection('mysql')->table('report_card')->select('id')->take($per_item)->skip($start)->get()->pluck('id');
+            $items_live_count = DB::connection('mysql_live')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->count();
+            $items_local_count = DB::connection('mysql')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get()->count();
 
-            $live = $items_live->toArray();
-            $local = $items_local->toArray();
-
-            $result = array_diff($live, $local);
-
-            $diff = implode(", ", $result);           
+            echo  "<p> Live Count: ". $items_live_count . " | Local Count " . $items_local_count ."</p>";
 
 
-            $url = url("importReportCards/$i/$per_item");
+            if ($items_live_count < $items_local_count) 
+            {
+                $items_live = DB::connection('mysql_live')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->pluck('id');
+                $items_local = DB::connection('mysql')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get()->pluck('id');
+    
+                $live = $items_live->toArray();
+                $local = $items_local->toArray();
+    
+                $result = array_diff($live, $local);
+    
+                $diff = implode(", ", $result);   
 
-            echo "<p>===========================<B>$i</B>================================================</p>";
+                $url = url("importReportCards/$i/$per_item");
 
-            echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end | $diff <br>";
+                echo "<p>===========================<B>$i</B>================================================</p>";
+                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end <br> Missing <br>| $diff <br>";
 
-           
+            } else {
 
+                $url = url("importReportCards/$i/$per_item");
+
+                echo "<p>===========================<B>$i</B>================================================</p>";
+                echo "<br><a href='$url'><small>User Page $i</small></a> Start : $start - $end <br>";
+
+            }
+
+
+
+            
+            
             
         }
     }
