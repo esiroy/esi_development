@@ -23,7 +23,7 @@ use Validator;
 class MemberController extends Controller
 {
 
-    public function getAgent(Request $request)
+    public function getAgentName(Request $request)
     {
 
         $agentInfo = Agent::where('agent_id', $request['agent_id'])->first();
@@ -44,6 +44,7 @@ class MemberController extends Controller
         }
 
     }
+
     /*
     Book a schedule
      */

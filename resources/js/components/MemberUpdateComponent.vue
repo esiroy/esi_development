@@ -1086,7 +1086,7 @@ export default {
                         
         },
         getAgentName() {
-            axios.post("/api/get_agent?api_token=" + this.api_token, 
+            axios.post("/api/get_agent_name?api_token=" + this.api_token, 
             {
                 method          : "POST",
                 agent_id        : this.user.agent_id,

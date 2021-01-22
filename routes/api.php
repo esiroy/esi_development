@@ -29,7 +29,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::middleware('auth:api')->post('/create_member', 'API\MemberController@store')->name('APICreateMember');
 Route::middleware('auth:api')->post('/update_member', 'API\MemberController@update')->name('APIUpdateMember');
-Route::middleware('auth:api')->post('/get_agent', 'API\MemberController@getAgent')->name('APIGetAgent');
+Route::middleware('auth:api')->post('/get_agent_name', 'API\MemberController@getAgentName')->name('APIGetAgentName');
 
 
 //[start] File Manager
