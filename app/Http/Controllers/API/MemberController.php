@@ -25,6 +25,7 @@ class MemberController extends Controller
 
     public function getAgent(Request $request)
     {
+
         $agentInfo = Agent::where('agent_id', $request['agent_id'])->first();
 
         if ($agentInfo) {
