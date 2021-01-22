@@ -28,8 +28,7 @@ class TableReportCardImporterController extends Controller
         for ($i = 1; $i <= $total_pages; $i++) {
 
             $start = ($i - 1) * ($per_item);
-            $end = $i * ($per_item);            
-            
+            $end = $i * ($per_item);
             $items_live_count = DB::connection('mysql_live')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
             $items_local_count = DB::connection('mysql')->table('report_card')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
 
