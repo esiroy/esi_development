@@ -47,7 +47,8 @@ Route::get('importSchedules/getnew', 'TableScheduleItemImporterController@getNew
 Route::get('importSchedules/update/{id}', 'TableScheduleItemImporterController@update');
 
 //page chunk links
-Route::get('importSchedules/index', 'TableScheduleItemImporterController@index');
+Route::get('importSchedules/index/{id}', 'TableScheduleItemImporterController@index');
+Route::get('importSchedules/index/', 'TableScheduleItemImporterController@index');
 
 //@param id - page id number for the chunk
 Route::get('importSchedules/import/{id}', 'TableScheduleItemImporterController@importSchedules');

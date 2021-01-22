@@ -87,9 +87,46 @@ class TableScheduleItemImporterController extends Controller
 
     public function index()
     {
-        $items = DB::connection('mysql_live')->table('schedule_item')->paginate($per_item)->withQueryString();
 
-        echo $items->links();
+        $items = DB::connection('mysql_live')->table('schedule_item')->count();
+
+        echo "<div>there are ". $items ." schedule item</div>";
+                
+        $per_item = 8000;
+        $total_pages = ($items / $per_item) + 1;
+
+        $counter = 0;
+
+        for ($i = 1; $i <= $total_pages; $i++) {
+
+
+            $start = ($i - 1) * ($per_item);
+            $end = $i * ($per_item);
+            $items_live_count = DB::connection('mysql_live')->table('schedule_item')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
+            $items_local_count = DB::connection('mysql')->table('schedule_item')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
+
+            $counter =  $counter + count( $items_local_count->toArray() );
+            
+            if ($items_local_count < $items_live_count) 
+            {
+
+                $live_count = count( $items_live_count->toArray() );
+                $local_count = count( $items_local_count->toArray() );
+
+                $total_missing = $live_count - $local_count;
+
+                $url = url("importSchedules/import/$i");
+                echo "<a href='$url'><small>schedule Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";               
+
+            } else {
+
+
+                $url = url("importSchedules/import/$i");
+                echo "<a href='$url'><small>schedule Page $i</small> </a><br>";                
+            }
+        }        
+
+        echo $counter ." local items | live items : ". $items;
 
     }
 
