@@ -1,20 +1,23 @@
 @extends('layouts.adminpublic')
 @section('content')
+
 <div id="login" class="pt-4">
     <div class="mt-5">
         <div class="container">
+
             <div class="bg-admin-login">
                 <div class="row">
                     <div class="col-8 col-lg-7 col-md-6 col-sm-6 col-xs-6">
                         <div class="row">
                             <div class="offset-2 offset-lg-4 offset-md-5 offset-sm-2 offset-xs-2">
+
                                 <div id="logo" class="mr-5">
-                                    <img src="{{ url("images/mytutor_logo.png") }}"  alt="Login" class="img-fluid">
+                                    <a href="{{ url('/') }}"><img src="{{ url("images/mytutor_logo.png") }}"  alt="Login" class="img-fluid"></a>
                                 </div>
 
                                 <div class="login-box">
 
-                                    <h2 class="heading"> Member Login </h2>
+                                    <h2 class="heading"> {{ __('Manager / Tutor / Agent Login') }}</h2>
 
                                     <form method="POST" action="{{ route('admin.AdminLogin') }}">
                                         @csrf

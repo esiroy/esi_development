@@ -199,9 +199,11 @@ export default {
             lessonsData: [],           
             tutorData: null,
             status: "",
+            currentStatus: "",
             memberSelectedID: "",
             memberList: [],
             //Schedule Data [edit]
+            currentSelectedID: "",
             currentScheduledData: [],            
             //emailType
             cancelationType: "Regular Cancel",
@@ -376,6 +378,7 @@ export default {
             //console.log("hide modal");
             //update the schedules when you hide it?
             //this.getSchedules(this.scheduled_at, this.shiftDuration);
+            this.currentStatus = "";
         },
         resetModal() {
             //console.log("reset modal"); //this will reset every time it closes.
@@ -398,25 +401,44 @@ export default {
         }, 
         onChange (value) {
             //changing modal selection
+            //console.log(value.id);
+
+            try {                
+                this.currentSelectedID = value.id;
+            }   
+            catch(err) { 
+                console.log("no value");
+                this.currentSelectedID = null; 
+            }            
         },
         onSelect (option) {
-            //console.log ("option + " + option)
+            console.log (option)
+            
         },
         onTouch () {
            // console.log("touched")
         },
         checkSelectedSchedulStatus() 
         {
-            if (this.status === "") {
+            if (this.modalType == "edit") {
+                //edit schedule
+                //console.log("modal is ? " + this.modalType  + " , status : " + this.currentStatus);
+
+                if (this.currentStatus === "") {
+                    return true;
+                }
+
+                if (this.currentStatus === 'CLIENT_RESERVED' || this.currentStatus === 'CLIENT_RESERVED_B') 
+                {                   
+                    return false;
+                } else {                
+                    return true;
+                }  
+            } else {
+                //modal is create new schedule
                 return true;
             }
-
-            if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
-            {                   
-                return false;
-            } else {                
-                return true;
-            }           
+         
         },
         editSchedule(scheduleData) 
         {
@@ -430,6 +452,12 @@ export default {
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
 
+            this.currentSelectedID = this.currentScheduledData.member_id;
+
+            console.log(this.currentScheduledData);
+
+            this.currentStatus = this.currentScheduledData.status;
+
             if (typeof this.currentScheduledData.lastname === 'undefined' || typeof this.currentScheduledData.lastname === '') {
                 memberIDFullName = "";
             }    
@@ -442,6 +470,8 @@ export default {
                 memberIDFullName = "";
             }
 
+      
+            
             this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };
             
             //this.isStatusDisabled = false;
@@ -458,7 +488,15 @@ export default {
                 id: this.memberSelectedID
             };           
             
-            console.log("save ?? "  + this.memberSelectedID.id);
+            //console.log("save ?? "  + this.memberSelectedID.id);
+            if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
+            {                
+
+                if (this.memberSelectedID === "" || this.memberSelectedID === null) {
+                    alert ("Please select Member");
+                    return false;                
+                }
+            }            
             
             if (this.scheduleExists(this.tutorData)) 
             {                
@@ -479,6 +517,7 @@ export default {
             })
             .then(response => 
             {
+                
                 //hide schedule
                 this.$bvModal.hide("schedulesModal");
 
@@ -553,7 +592,18 @@ export default {
                 alert("Error " + error);                
 			});
         },        
-        updateTutorSchedule() {
+        updateTutorSchedule() 
+        {
+            console.log("check selected " + this.currentSelectedID);
+
+            if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
+            { 
+
+                if (this.currentSelectedID === "" || this.currentSelectedID === null) {
+                    alert ("Please select Member");
+                    return false;                
+                }
+            }
 
             //get the selected member id
             let memberData = {
@@ -905,7 +955,7 @@ export default {
 
     /** STATUS **/
     .SCHEDULE_ITEM {
-        width: 85px;
+        width: 110px;
     }
 
     .nothing, .NOTHING {
