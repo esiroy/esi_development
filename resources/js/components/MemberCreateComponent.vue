@@ -19,7 +19,7 @@
                                     <label for="agent" class="px-0 pl-2 col-md-12 col-form-label"><span>&nbsp;</span>Agent <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" name="agent" class="form-control  form-control-sm">
+                                    <input type="text" name="agent" class="form-control form-control-sm bg-white" v-model="user.agent_name_en" readonly>
                                 </div>
                             </div>
                         </div>
@@ -30,11 +30,13 @@
                                     <label for="agent" class="px-0 col-md-12 col-form-label">Agent ID<div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
-                                    <input type="text" name="agent_id" v-model="user.agent_id" class="form-control  form-control-sm">
+                                    <input type="text" name="agent_id" v-model="user.agent_id" v-on:keyup="getAgentName()"  class="form-control form-control-sm">
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
 
                     <div id="lastname-row" class="row pt-2">
                         <div class="col-6">
@@ -881,6 +883,8 @@ export default {
             //list of main tutors
             mainTutors: [],
             user: {
+                agent_name_en : "",
+
                 agent_id: "",
                 first_name: "",
                 last_name: "",
@@ -1063,6 +1067,27 @@ export default {
                 alert("Error " + error);                
             });                        
         },
+        getAgentName() {
+            axios.post("/api/get_agent?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                agent_id        : this.user.agent_id,
+            })
+            .then(response => 
+            {              
+                if (response.data.success === false) {
+                    //alert (response.data.message);
+                     this.user.agent_name_en = "";
+                } else {
+                    this.user.agent_name_en = response.data.firstname + " " + response.data.lastname;
+                }
+
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                //console.log(error);
+            });            
+        },        
         checkIsValid (val, event) 
         {
             if (val.$anyError) 

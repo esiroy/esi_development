@@ -13,13 +13,14 @@ class Agent extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
-    public function getMemberAgent($memberID) 
+    public function getMemberAgent($agentID) 
     {
         //get agent id from mmember
-        $member = Member::where('user_id', $memberID)->first();
+        $agent = Agent::join('users', 'users.id', '=', 'agents.user_id')
+                ->select('agents.*', 'users.firstname', 'users.lastname')
+                ->where('user_id', $agentID)->first();
         
-        if (isset($member)) {
-            $agent = User::find( $member->agent_id);
+        if (isset($agent)) {
             return $agent;
         } else {
             return null;

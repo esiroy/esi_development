@@ -15,7 +15,7 @@
                                 <label for="agent" class="px-0 pl-2 col-md-12 col-form-label"><span>&nbsp;</span>Agent <div class="float-right">:</div></label>
                             </div>
                             <div class="col-6">
-                                <input type="text" name="agent" class="form-control form-control-sm" v-model="user.agent_name_en">
+                                <input type="text" name="agent" class="form-control form-control-sm bg-white" v-model="user.agent_name_en" readonly>
                             </div>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                                 <label for="agent" class="px-0 col-md-12 col-form-label">Agent ID<div class="float-right">:</div></label>
                             </div>
                             <div class="col-6">
-                                <input type="text" name="agent_id" v-model="user.agent_id" class="form-control  form-control-sm">
+                                <input type="text" name="agent_id" v-model="user.agent_id" v-on:keyup="getAgentName()" class="form-control form-control-sm">
                             </div>
                         </div>
                     </div>
@@ -888,11 +888,11 @@ export default {
 	{
         console.log("mount v2 test");
 
-        console.log(this.attributes);
+        console.log(this.agentinfo);
 
         //try if member has an agent
         try {
-            this.user.agent_id	= this.agentinfo.id;  
+            this.user.agent_id	= this.agentinfo.agent_id;  
         }catch(err) {
             this.user.agent_id	= "";
             //console.log( err.message);
@@ -1072,12 +1072,10 @@ export default {
             })
             .then(response => 
             {
-               // console.log(response)
-
                 if (response.data.success === false) {
                     alert (response.data.message);
                 } else {
-                    alert ("success");
+                    location.reload(); //success
                 }
 
 			}).catch(function(error) {
@@ -1086,6 +1084,27 @@ export default {
                 //console.log(error);
             });
                         
+        },
+        getAgentName() {
+            axios.post("/api/get_agent?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                agent_id        : this.user.agent_id,
+            })
+            .then(response => 
+            {              
+                if (response.data.success === false) {
+                    //alert (response.data.message);
+                     this.user.agent_name_en = "";
+                } else {
+                    this.user.agent_name_en = response.data.firstname + " " + response.data.lastname;
+                }
+
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                //console.log(error);
+            });            
         },
         checkIsValid (val, event) 
         {
@@ -1277,8 +1296,8 @@ export default {
             this.user.eikenList.push(["40-1"]);
         }
 
-
     },
+
     computed : {
         years () {
             const year = new Date().getFullYear()

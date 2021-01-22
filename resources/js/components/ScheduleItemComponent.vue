@@ -5,7 +5,6 @@
 -->
 <template>
     <div id="scheduleItemModal">
-
         <b-modal  id="schedulesModal" 
             title="Schedule Lesson"
             button-size="sm"
@@ -21,14 +20,14 @@
                 <div class="col-md-9">
                     <select name="status" ref="status" v-model="status" @change="setMemberListLock()"  class="form-control form-control-sm">
                         <option value="">Please Select A Status</option>
-                        <option value="TUTOR_SCHEDULED">Tutor Scheduled</option>
-                        <option value="CLIENT_RESERVED">Client Reserved</option>
-                        <option value="CLIENT_RESERVED_B">Client Reserved B</option>
-                        <option value="TUTOR_CANCELLED">Tutor Cancelled</option>
-                        <option value="NOTHING">Nothing</option>
+                        <option value="TUTOR_SCHEDULED" v-show="checkSelectedSchedulStatus()">Tutor Scheduled</option>
+                        <option value="CLIENT_RESERVED" v-show="checkSelectedSchedulStatus()">Client Reserved</option>
+                        <option value="CLIENT_RESERVED_B" v-show="checkSelectedSchedulStatus()">Client Reserved B</option>
+                        <option value="SUPPRESSED_SCHEDULE" v-show="checkSelectedSchedulStatus()">Suppressed Schedule</option>
                         <option value="CLIENT_NOT_AVAILABLE">Client Not Available</option>
-                        <option value="SUPPRESSED_SCHEDULE">Suppressed Schedule</option>
+                        <option value="TUTOR_CANCELLED">Tutor Cancelled</option>
                         <option value="COMPLETED">Completed</option>
+                        <option value="NOTHING">Nothing</option>
                     </select>
                 </div>
             </div>
@@ -62,8 +61,7 @@
                 <div class="col-md-3">Email Type:</div>
                 <div class="col-md-9">
                     <!--@todo: show only if client is cancelling -->
-                    <select name="cancelationType" id="cancelationType" class="form-control form-control-sm hidden" ref="cancelationType" v-model="cancelationType">
-                      
+                    <select name="cancelationType" id="cancelationType" class="form-control form-control-sm hidden" ref="cancelationType" v-model="cancelationType">                      
                         <option value="Regular Cancel" selected>Regular Cancel</option>
                         <option value="Cancel with replacement">Cancel with replacement</option>
                     </select>
@@ -81,8 +79,6 @@
                     </select>
                 </div>
             </div>
-
-
         </b-modal>
 
         <div class="card">
@@ -90,9 +86,18 @@
                 {{ year }} 年 {{ month }}月 {{ day}}日
             </div>
 
-            <div class="card-body scrollable-x p-0"  style="height:680px">
-                <table class="table table-bordered table-schedules">
+            <div class="card-body scrollable-x p-0 text-center"  style="height:680px">
 
+                <div id="preloader" class="text-center">                    
+                    <div class="spinner-border text-primary" role="preloader-status">                  
+                        <span class="visually-hidden"></span>
+                    </div>
+                    <div role="preloader-text">
+                        <span id="preloader-text" class="small">loading schedules please wait.</span>
+                    </div>
+                </div>
+
+                <table id="tableSchedules" class="table table-bordered table-schedules">
                     <thead>
                         <tr>
                             <th class="schedTime static">
@@ -114,22 +119,15 @@
                             </td>
                         </tr>
                     </thead>
-
                     <tbody>
                         <tr v-for="tutor in tutors" :key="tutor.id">
                             <th>
-                                <div :id="tutor.user_id" class="hbordered">  
-                                  <!-- 
-                                    <div class="tutor-id">{{ tutor.id }}</div>
-                                    <div class="tutor-user-id">{{ tutor.user_id }}</div>
-                                    -->
+                                <div :id="tutor.user_id" class="hbordered"> 
                                     <div class="tutor-name">{{ tutor.firstname }}</div>
                                 </div>
                             </th>
 
-                            <td v-for="time in timeList" :key="time.id">                        
-
-
+                            <td v-for="time in timeList" :key="time.id"> 
                                 <div :id="'btnAdd-' + tutor.id + '-' + time.startTime"
                                     class="addSchedule SCHEDULE_ITEM" 
                                     v-show="checkButton({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })">
@@ -146,14 +144,16 @@
                                         <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
                                         <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
                                     </div>
-                                </div> 
-
+                                </div>
                             </td>
                         </tr>
                     </tbody>
-
                 </table>
+                
             </div>
+
+ 
+
         </div>
     </div>
 </template>
@@ -173,165 +173,109 @@ export default {
         year: { type: Number },
         month: { type: Number },
         day: { type: Number },
-
         //date for schedules
-        schedule_items: { type: Object },       
-
-
+        schedule_items: { type: Object },
         //dateToday
         scheduled_at: { type: String },
         duration: { type: Number },
-
         //next day
         schedule_next_day: { type: String },
-
         //entities
         tutors: {type: Array },
         members: { type: Array },
-
-
         //api tokens
         csrf_token: {type: String },
         api_token: { type: String },
     },
     data() {
         return {
-
             isFound : false,
-
             fromDay : this.scheduled_at,
             nextDay : "",
-
+            //Member Option list
             memberOptionList: [],
             modalType: null,
-
             //Data
             lessonsData: [],           
             tutorData: null,
             status: "",
             memberSelectedID: "",
             memberList: [],
-
             //Schedule Data [edit]
-            currentScheduledData: [],
-            
+            currentScheduledData: [],            
             //emailType
             cancelationType: "Regular Cancel",
             reservationType: "Regular reservation",
             memberListLock: "disabled",
             isStatusDisabled: true,
-
             scheduledDate: null,
             shiftDuration: null,
-
             //List
             membersList: [],            
-            schedules: [],     
-
+            schedules: [],
             //time 
             timeList: [
                 {id:1, startTime: '10:00', endTime: '11:00'},
                 {id:2, startTime: '10:30', endTime: '11:30'},
-
                 {id:3, startTime: '11:00', endTime: '12:00'},
                 {id:4, startTime: '11:30', endTime: '12:30'},
-
                 {id:5, startTime: '12:00', endTime: '13:00'},
                 {id:6, startTime: '12:30', endTime: '13:30'},
-
                 {id:7, startTime: '13:00', endTime: '14:00'},
                 {id:8, startTime: '13:30', endTime: '14:30'},
-
                 {id:9, startTime: '14:00', endTime: '15:00'},
                 {id:10,startTime: '14:30', endTime: '15:30'},
-
                 {id:11, startTime: '15:00', endTime: '16:00'},
                 {id:12, startTime: '15:30', endTime: '16:30'},
-
                 {id:13, startTime: '16:00', endTime: '17:00'},
                 {id:14, startTime: '16:30', endTime: '17:30'},
-
                 {id:15, startTime: '17:00', endTime: '18:00'},
                 {id:16, startTime: '17:30', endTime: '18:30'},
-
                 {id:17, startTime: '18:00', endTime: '19:00'},
                 {id:18, startTime: '18:30', endTime: '19:30'},
-
                 {id:19, startTime: '19:00', endTime: '20:00'},
                 {id:20, startTime: '19:30', endTime: '20:30'},
-
                 {id:21, startTime: '20:00', endTime: '21:00'},
                 {id:22, startTime: '20:30', endTime: '21:30'},
-
                 {id:23, startTime: '21:00', endTime: '22:00'},
                 {id:24, startTime: '21:30', endTime: '22:30'},
-
                 {id:25 ,startTime: '22:00', endTime: '23:00'},
                 {id:26 ,startTime: '22:30', endTime: '23:30'},
-
                 {id:27 ,startTime: '23:00', endTime: '24:00'},
                 {id:28 ,startTime: '23:30', endTime: '24:30'},
-
             ] 
         };
     },
     async beforeMount() {
-       
-        this.setMemberListLock(); //disabler of additoinal options        
-
-   
-        
-        //console.log("Lessons Mounted : ", this.schedules);
 
         this.shiftDuration  = this.duration;
-
-        //@todo: ajax load schedules (DONE)
-
-        //this.getSchedules(this.scheduled_at, this.shiftDuration); 
-
-        this.getMemberList();
-
-       
-
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;        
+        this.setMemberListLock(); //disabler of additoinal options          
+        this.getMemberList();        
                
     },
     mounted() {
-
-
-        /* transferred to before mount 
-        this.setMemberListLock(); //disabler of additoinal options        
-        this.lessonsData = this.schedule_items;
-        
-        console.log("Lessons Mounted : ", this.schedules);
-        this.shiftDuration  = this.duration;
-
-        //optionLists of Members
-        var options = [];
-        this.members.forEach(function (member, index) 
-        {   
-            options.push({'id': member.id, 'name': member.user_id + " " + member.first_name + " "+ member.last_name  });        
-        });
-        this.memberOptionList = options;
-        */
-
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;
-
-        console.log(this.fromDay);
-
-        //this data is from the laravel controller
-
-        //this.lessonsData = this.schedule_items;
-        console.log(this.lessonsData);
-
         this.getSchedules(this.scheduled_at, this.shiftDuration); 
+        //@hide table 
+
+        let tableSchedules = document.getElementById("tableSchedules");
+        tableSchedules.style.display = "none";
+
+        //preloader
+        let preloader = document.getElementById("preloader");
+        preloader.style.display  = "block";              
         
-
-
     },
     methods: {
+        openMemberTab(memberID) {
+            console.log("test open member")
+            window.location.href="http://wwww.xx.com/testpage2.aspx";
+            return false;
+
+        },
         getScheduleData(data) {
            try {
                 //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
@@ -354,11 +298,11 @@ export default {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];
                     //return lessonData.status_checker;
-                    return "<a id='"+lessonData.id+"' href='/admin/member/"+ lessonData.member_id +"' target='_blank'>"+ lessonData.nickname +"</a>";
+                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
 
                 } else {
                     let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];
-                    return "<a id='"+lessonData.id+"' href='/admin/member/"+ lessonData.member_id +"' target='_blank'>"+ lessonData.nickname +"</a>";
+                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
                 }
                 //console.log(this.lessonsData[data.tutorID][this.scheduled_at][data.startTime])
             }
@@ -453,19 +397,26 @@ export default {
             bvModalEvt.preventDefault();
         }, 
         onChange (value) {
-
-            /*
-            this.memberSelectedID = [{ id: value.id , 'name': value.name }];
-            console.log("change ?? "  + value.id);
-            console.log(this.memberSelectedID)
-            */
-
+            //changing modal selection
         },
         onSelect (option) {
             //console.log ("option + " + option)
         },
         onTouch () {
            // console.log("touched")
+        },
+        checkSelectedSchedulStatus() 
+        {
+            if (this.status === "") {
+                return true;
+            }
+
+            if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
+            {                   
+                return false;
+            } else {                
+                return true;
+            }           
         },
         editSchedule(scheduleData) 
         {
@@ -479,9 +430,6 @@ export default {
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
 
-            //console.log ("editing");
-            //console.log(this.currentScheduledData);
-
             if (typeof this.currentScheduledData.lastname === 'undefined' || typeof this.currentScheduledData.lastname === '') {
                 memberIDFullName = "";
             }    
@@ -489,17 +437,12 @@ export default {
             let memberIDFullName = this.currentScheduledData.member_id + " " + this.currentScheduledData.firstname  + " " +  this.currentScheduledData.lastname;
 
             if (this.currentScheduledData.firstname === '' && this.currentScheduledData.firstname === '') {
-
                 memberIDFullName = "";
-
             } else if (typeof this.currentScheduledData.firstname === '' && typeof this.currentScheduledData.firstname === '') {
-
+                memberIDFullName = "";
             }
 
             this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };
-
-            console.log("current selected")
-            console.log(this.memberSelectedID)
             
             //this.isStatusDisabled = false;
             /** The reservationType - the live does not have this, so it will be blank; **/
@@ -507,8 +450,7 @@ export default {
             //this.reservationType = member.email_type;
 
             this.setMemberListLock();
-        },  
-
+        },
         setTutorSchedule() 
         {
             //get the selected id
@@ -545,10 +487,6 @@ export default {
                     
                     this.$nextTick(function()
                     {
-                        //console.log(response.data.tutorData.tutorID);
-                        //console.log(response.data.tutorData.startTime);
-                        //console.log(this.scheduled_at)
-                        
                         let tutorID = response.data.tutorData.tutorID;
                         let startTime = response.data.tutorData.startTime;
                         let scheduled_at = this.scheduled_at;
@@ -557,7 +495,6 @@ export default {
                         if (startTime == '23:00' || startTime == '23:30') {
                              scheduled_at = this.nextDay;
                         }
-
                        
                         if (typeof this.lessonsData[tutorID] === 'undefined') {
                             this.lessonsData[tutorID] = {}  
@@ -565,9 +502,7 @@ export default {
 
                         if (typeof this.lessonsData[tutorID][scheduled_at] === 'undefined') {
                             this.lessonsData[tutorID][scheduled_at] = {}
-                        }
-
-                                                
+                        }                                                
 
                         this.lessonsData[tutorID][scheduled_at][startTime] = {
                             'id': response.data.scheduleItemID,
@@ -587,23 +522,20 @@ export default {
                         //hide the add button
                         let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
                         addButton.style.display = "none";
-
                         
+                        //preloader
+                        let preloader = document.getElementById("preloader");                    
+                        let preloaderText = document.getElementById("preloader-text");
+                        preloader.style.display  = "none";                      
+                        preloaderText.textContent  = "refreshing schedules"; 
+
                         //this is repitive but this will allow the user to see updated from other admin??
                         this.getSchedules(this.scheduled_at, this.shiftDuration);
 
                         this.$forceUpdate();
                     });
-
-                    /* this will be transfered to when schedule modal is closed
-                    this.$nextTick(function()
-                    {  
-                        this.lessonsData = response.data.tutorLessonsData;
-                        this.$forceUpdate(); 
-                    });
-                    */
-                } 
-                else {                    
+      
+                } else {                    
                     alert (response.data.message);    
                 }
 
@@ -623,19 +555,10 @@ export default {
         },        
         updateTutorSchedule() {
 
-            //get the selected id
-            /* current
-            let memberData = {
-                'id': this.currentScheduledData.member_id,
-                'name': this.currentScheduledData.firstname //@optionial?
-            };
-            */      
-
-            //get the selected id
+            //get the selected member id
             let memberData = {
                 id: this.memberSelectedID
             }; 
-
 
             axios.post("/api/update_tutor_schedule?api_token=" + this.api_token, 
             {
@@ -685,7 +608,6 @@ export default {
                         'nickname': response.data.memberData.nickname
                     }
 
-
                     //set the schedule to display
                     let schedule = document.getElementById(tutorID + "-" + startTime);
                     schedule.style.display = "block";
@@ -695,10 +617,13 @@ export default {
                     let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
                     addButton.style.display = "none";
 
+                    //preloader
+                    let preloader = document.getElementById("preloader");                    
+                    let preloaderText = document.getElementById("preloader-text");
+                    preloader.style.display  = "none";                      
+                    preloaderText.textContent  = "refreshing schedules";                    
 
                     this.getSchedules(this.scheduled_at, this.shiftDuration);
-
-
                     this.$forceUpdate();                    
                 } 
                 else {                    
@@ -708,7 +633,6 @@ export default {
                 alert("Error " + error);                
 			});            
         },
-
         getMemberList() {
             
             axios.post("/api/get_members?api_token=" + this.api_token, 
@@ -746,6 +670,9 @@ export default {
         },
         getSchedules(scheduled_at, shiftDuration) 
         {
+            let tableSchedules = document.getElementById("tableSchedules");
+            let preloader = document.getElementById("preloader");  
+
             axios.post("/api/get_schedules?api_token=" + this.api_token, 
             {
                 method              : "POST",
@@ -756,9 +683,11 @@ export default {
                 if (response.data.success === true) 
                 {
                     this.$nextTick(function()
-                    {  
+                    {                          
+                        tableSchedules.style.display = "block";
+                        preloader.style.display = "none";
+
                         this.lessonsData = response.data.tutorLessonsData;
-                        //console.log( this.lessonsData);
                         this.$forceUpdate(); 
                     });
                 } 
@@ -823,6 +752,18 @@ export default {
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style>
+
+    #preloader {
+        position: absolute;
+        top: 224px;
+        z-index: 99999;
+        margin-left: auto;
+        text-align: center;
+        width: 100%;
+    }
+
+
+
     .table td {
         font-size: 11px;
     }
@@ -898,8 +839,6 @@ export default {
         padding-left: 5px;
         padding-right: 5px;
     }
-
-
 
     .table-schedules td {
         vertical-align: top;

@@ -25,20 +25,24 @@
 
                     <form name="dateForm" method="GET">
                     <div class="row">
-                            <div class="col-3">
+                            <div class="col-6">
                                 <label for="inputDate" class="pr-3">Date:</label>
-                                <input type="date" id="inputDate" name="inputDate" value="{{ $dateToday }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-8">                            
+                                <input type="date" id="inputDate" name="inputDate" value="{{ $dateToday }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-3"> 
+                                <input type="submit" class="btn btn-primary btn-sm d-inline col-1" value="Go">
+
                             </div>
+                            <div class="col-2">
+                              
+                            </div>
+
+                            <!--
                             <div class="col-2">
                                 <select name="shift_duration" id="shift_duration" class="form-control form-control-sm">
                                     <option value="25" @if (Request::input('shift_duration') == '25') {{'selected'}} @endif>25 mins</option>
-                                    <!--<option value="40" @if (Request::input('shift_duration') == '40') {{'selected'}} @endif>40 mins</option>-->
+                                    <option value="40" @if (Request::input('shift_duration') == '40') {{'selected'}} @endif>40 mins</option>
                                 </select>
                             </div>
-                            <div class="col-2">
-                                <input type="submit" class="btn btn-primary btn-sm" value="Go">
-                            </div>
-                        
+                            -->
                     </div>
                     </form>
 
@@ -97,4 +101,14 @@
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+@parent
+<script>
+    let url = "{{ url('/admin/member/') }}";
+    function openMemberTab(id) {       
+       window.open(url + "/" + id,'memberTab');
+    }
+</script>
 @endsection

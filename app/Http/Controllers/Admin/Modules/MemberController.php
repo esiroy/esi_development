@@ -64,13 +64,18 @@ class MemberController extends Controller
 
         $shifts = Shift::all();
 
+        /*
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')
             ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
             ->leftJoin('tutors', 'tutors.id', '=', 'members.tutor_id')
-            ->select("*", DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name,
+            ->select("us*", DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name,
                                         users.id as id,
                                         agents.id as agent_id
                                     "));
+        */
+        
+        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')                            
+                            ->select("members.*", "users.id", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name"));
 
         if ($request->expired) {
 
@@ -324,7 +329,7 @@ class MemberController extends Controller
 
         //agent info
         $agent = new Agent();
-        $agentInfo = $agent->getMemberAgent($memberID);
+        $agentInfo = $agent->getMemberAgent($memberInfo->agent_id);
 
         //get Lessongoals (purpose)
         $goals = new LessonGoals();
