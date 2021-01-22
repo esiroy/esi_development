@@ -278,5 +278,5 @@ Route::post('/createMember','Auth\SignUpController@store')->name('createMember')
 Route::get('/saveuser','Auth\SignUpController@step3')->name('step3');
 
 Auth::routes();
-Route::post('login', 'Auth\LoginController@login')->name('login');
-Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+//Route::post('login', 'Auth\LoginController@login')->name('login');
+//Route::post('logout', 'Auth\LoginController@logout')->name('logout');
