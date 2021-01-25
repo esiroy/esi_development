@@ -1170,9 +1170,6 @@ export default {
                 let month = this.user.preference.lesson.class.month;
                 let lesson_limit =  this.user.preference.lesson.class.lesson_limit;
 
-                alert (year + " , " + month + ", " + lesson_limit);
-                
-
                 if (year && month && lesson_limit) {
                     const result =  this.user.preference.lessonClasses.find(item => item.year === year && item.month === month);
                     if (result) {
@@ -1200,9 +1197,7 @@ export default {
             let year =  this.user.examRecord.toeic.year;
             let month = this.user.examRecord.toeic.month;
             let grade =  this.user.examRecord.toeic.grade;
-
-            //console.log(year + " " + month, grade);
-
+        
             if (year && month && grade) {
                 let result =  this.user.toeicList.find(item => item.year === year && item.month === month);
                 if (result) {
@@ -1225,8 +1220,6 @@ export default {
             let year =  this.user.examRecord.eiken.year;
             let month = this.user.examRecord.eiken.month;
             let grade =  this.user.examRecord.eiken.grade;
-
-            //console.log(year + " " + month, grade);
 
             if (year && month && grade) {     
                 let result =  this.user.eikenList.find(item => item.year === year && item.month === month);

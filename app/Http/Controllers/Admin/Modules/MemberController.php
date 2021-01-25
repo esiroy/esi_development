@@ -267,16 +267,21 @@ class MemberController extends Controller
             $thisMonth = strtoupper(date("M"));
             $thisYear = date("Y");
 
+       
             //lesson limit (attribute)
             $memberAttribute = MemberAttribute::where('member_id', $memberID)
                 ->where('month', $thisMonth)
-                ->where('month', $thisYear)
+                ->where('year', $thisYear)
                 ->first();
 
 
             $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
 
-            return view('admin.modules.member.schedulelist', compact('schedules', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
+            
+            $totalReserved = $scheduleItem->getMemberTotalReserved($memberID);
+
+
+            return view('admin.modules.member.schedulelist', compact('schedules', 'totalReserved', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
         } else {
             abort(404);
         }

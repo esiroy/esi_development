@@ -195,6 +195,24 @@ class ScheduleItem extends Model
                     ->paginate(Auth::user()->items_per_page);
         return $lessons;
     }
+
+
+    public function getMemberTotalReserved($memberID, $month = null, $year = null) {
+
+        if ($month == null) {
+            $month = strtoupper(date("m"));
+        }
+
+        if ($year == null) {
+            $year = date("Y");
+        }        
+
+        $lessonItems = ScheduleItem::where('member_id', $memberID)
+                                ->whereMonth('lesson_time','=', $month)
+                                ->whereYear('lesson_time', '=', $year);
+
+        return $lessonItems->count();
+    }
     
 
 

@@ -88,12 +88,14 @@
 
             <div class="card-body scrollable-x p-0 text-center"  style="height:680px">
 
-                <div id="preloader" class="text-center">                    
-                    <div class="spinner-border text-primary" role="preloader-status">                  
-                        <span class="visually-hidden"></span>
-                    </div>
-                    <div role="preloader-text">
-                        <span id="preloader-text" class="small">loading schedules please wait.</span>
+                <div id="preloader" class="text-center">
+                    <div class="preloader-bg">                
+                        <div class="spinner-border text-primary" role="preloader-status">                  
+                            <span class="visually-hidden"></span>
+                        </div>
+                        <div role="preloader-text">
+                            <span id="preloader-text" class="small">loading schedules please wait.</span>
+                        </div>
                     </div>
                 </div>
 
@@ -263,12 +265,14 @@ export default {
         this.getSchedules(this.scheduled_at, this.shiftDuration); 
         //@hide table 
 
-        let tableSchedules = document.getElementById("tableSchedules");
-        tableSchedules.style.display = "none";
+        //let tableSchedules = document.getElementById("tableSchedules");
+        //tableSchedules.style.display = "none";
 
         //preloader
         let preloader = document.getElementById("preloader");
         preloader.style.display  = "block";              
+
+        
         
     },
     methods: {
@@ -734,7 +738,7 @@ export default {
                 {
                     this.$nextTick(function()
                     {                          
-                        tableSchedules.style.display = "block";
+                        //tableSchedules.style.display = "block";
                         preloader.style.display = "none";
 
                         this.lessonsData = response.data.tutorLessonsData;
@@ -812,6 +816,16 @@ export default {
         width: 100%;
     }
 
+    .preloader-bg {
+        background-color: white;
+        border: 1px solid #0076be;
+        padding: 15px;
+        width: 200px;
+        height: 85px;
+        margin: auto;
+        border-radius: 25px;
+        color: #0076be;        
+    }
 
 
     .table td {

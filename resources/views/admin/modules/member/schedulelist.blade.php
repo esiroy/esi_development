@@ -66,7 +66,7 @@
                         <div class="row">
                             <div class="col-md-2">Lesson Class</div>
                             <div class="col-md-9">
-                                毎月 {{$memberAttribute->lesson_limit ?? '0'}} 回クラス (あと　残り {{$memberAttribute->lesson_limit ?? '0'}}回)
+                                毎月 {{$memberAttribute->lesson_limit ?? '0'}} 回クラス (あと　残り {{$totalReserved ?? '0'}} 回)
                             </div>
                         </div>
                     </div>

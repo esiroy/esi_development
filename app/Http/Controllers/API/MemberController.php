@@ -156,7 +156,13 @@ class MemberController extends Controller
 
                 $tutorInfo = Tutor::find($data->maintutorid);
 
+                //Agent
                 $agent = Agent::where('agent_id', $data->agent_id)->first();
+                if (isset($agent->user_id)) {
+                    $agentID = $agent->user_id;    
+                } else {
+                    $agentID = null;
+                }                
 
                 $memberInformation =
                     [
@@ -168,7 +174,7 @@ class MemberController extends Controller
                     'member_since' => (isset($data->umember_since)) ? date('Y-m-d', strtotime($data->umember_since)) : date('Y-m-d'),
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,
-                    'agent_id' => $agent->user_id,
+                    'agent_id' => $agentID,
                     'lesson_shift_id' => $data->lessonshiftid,
                     //course_category_id        => null,
                     //course_item_id            => null,
@@ -350,22 +356,34 @@ class MemberController extends Controller
                  * $user->roles()->sync($roles);
                  */
 
-                $tutorInfo = Tutor::where('user_id', $data->maintutorid)->first();
+                //Tutor
+                $tutorInfo = Tutor::where('user_id', $data->maintutorid)->first();  
+                if (isset($tutorInfo->user_id)) {
+                    $tutorID = $tutorInfo->user_id;    
+                } else {
+                    $tutorID = null;
+                }                                
 
-                
+                //Agent
                 $agent = Agent::where('agent_id', $data->agent_id)->first();
+                if (isset($agent->user_id)) {
+                    $agentID = $agent->user_id;    
+                } else {
+                    $agentID = null;
+                }
+                
 
                 $memberInformation =
                     [
                     //'user_id'                 =>  $data->user_id,
-                    'tutor_id' => $tutorInfo->user_id,
+                    'tutor_id' => $tutorID,
                     'age' => $data->age,
                     'attribute' => strtoupper($data->attribute),
                     'birthday' => date('Y-m-d', strtotime($data->ubirthday)),
                     'member_since' => (isset($data->umember_since)) ? date('Y-m-d', strtotime($data->umember_since)) : date('Y-m-d'),
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,
-                    'agent_id' => $agent->user_id,
+                    'agent_id' => $agentID,
                     'lesson_shift_id' => $data->lessonshiftid,
                     //course_category_id        => null,
                     //course_item_id            => null,

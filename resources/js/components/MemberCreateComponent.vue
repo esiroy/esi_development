@@ -1181,7 +1181,7 @@ export default {
             let month = this.user.examRecord.toeic.month;
             let grade =  this.user.examRecord.toeic.grade;
 
-            console.log(year + " " + month, grade);
+            //console.log(year + " " + month, grade);
 
             if (year && month && grade) {
                 let result =  this.user.toeicList.find(item => item.year === year && item.month === month);
@@ -1206,7 +1206,7 @@ export default {
             let month = this.user.examRecord.eiken.month;
             let grade =  this.user.examRecord.eiken.grade;
 
-            console.log(year + " " + month, grade);
+            //console.log(year + " " + month, grade);
 
             if (year && month && grade) {     
                 let result =  this.user.eikenList.find(item => item.year === year && item.month === month);
