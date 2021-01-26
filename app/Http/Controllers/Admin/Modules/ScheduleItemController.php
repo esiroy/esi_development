@@ -95,11 +95,11 @@ class ScheduleItemController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
-    {
-        $nextDay      = date('Y-m-d', strtotime($request['inputDate'] ." + 1 day"));  
-
+    {   
         if(Gate::allows('admin_lesson_scheduler_access')) 
         {
+            $nextDay      = date('Y-m-d', strtotime($request['inputDate'] ." + 1 day"));  
+
             //default on load without any parameters
             if (isset($request['inputDate'])) {
                 $dateToday      = date('Y-m-d', strtotime($request['inputDate']));                
@@ -120,7 +120,7 @@ class ScheduleItemController extends Controller
             }
 
             //get tutors for this shift id
-            $shift  = Shift::where("value", $shiftDuration)->first();   
+            //$shift  = Shift::where("value", $shiftDuration)->first();   
 
             
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
@@ -132,26 +132,9 @@ class ScheduleItemController extends Controller
                         ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
                         ->where('valid', 1)
                         ->get();
-            
-  
-            
-            
-            //@todo: make this faster?
-            //get members
-            /*
-            $members = Member::join('users', 'users.id', '=', 'members.user_id')
-                        ->select('members.*','users.firstname', 'users.lastname', 'users.valid')
-                        ->where('valid', "=", 1)
-                        ->limit(1)
-                        ->get();
-            */
 
             $schedulesObj = new ScheduleItem();
-            $scheduleItems = $schedulesObj->getSchedules($dateToday, $shiftDuration);  
-
-       
-
-
+            $scheduleItems = $schedulesObj->getSchedules($dateToday, $shiftDuration); 
 
             //@todo: load via ajax!     (set member, and schedules to null                                
             $members = new Member();
@@ -160,10 +143,8 @@ class ScheduleItemController extends Controller
             //if (count($scheduleItems) == 0) {
                 //$scheduleItems = new ScheduleItem();
                 //$scheduleItems = (object) ['0' => null];                
-           // }            
-        
-        
-    
+           // }          
+
             return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
 
         } 

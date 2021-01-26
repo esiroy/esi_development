@@ -46,11 +46,10 @@ class ScheduleItem extends Model
         ->where('lesson_time', '<=', $dateTo)
         ->get();
          */
-
-        $lessonItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($dateFrom, $dateTo))
-            ->where('tutor_id', $tutor->user_id)
-            ->where('valid', 1)
-            ->get();
+        
+        $dateToExtended = date('Y-m-d', strtotime($dateTo ." + 1 day"));   
+        
+        $lessonItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($dateFrom, $dateToExtended))->where('tutor_id', $tutor->user_id)->where('valid', 1)->get();
 
         foreach ($lessonItems as $item) {
             //find nickname
