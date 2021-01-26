@@ -87,6 +87,7 @@ class TableScheduleItemImporterController extends Controller
 
     public function index()
     {
+        set_time_limit(0);
 
         $items = DB::connection('mysql_live')->table('schedule_item')->count();
 
@@ -99,7 +100,8 @@ class TableScheduleItemImporterController extends Controller
 
         for ($i = 1; $i <= $total_pages; $i++) {
 
-
+            set_time_limit(0);
+            
             $start = ($i - 1) * ($per_item);
             $end = $i * ($per_item);
             $items_live_count = DB::connection('mysql_live')->table('schedule_item')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();

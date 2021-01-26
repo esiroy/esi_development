@@ -96,7 +96,16 @@
                                         </div>
                                         <div class="class-schedule-container">
                                             <span class="flag-jp"></span>
-                                            <span class="class-schedule class-schedule-end">{{ date('H:i', strtotime($timeSlot['startTime']) + 60*60) }}</span>
+                                            <span class="class-schedule class-schedule-end">
+                                                @php 
+                                                    $hour = date('H', strtotime($timeSlot['startTime']) + 60*60);
+                                                    $minute = date('i', strtotime($timeSlot['startTime']) + 60*60);
+                                                    if ($hour == '00' || $hour == '0')  {
+                                                        $hour = "24";
+                                                    }
+                                                @endphp                                              
+                                                {{ $hour .":" . $minute }}
+                                            </span>
                                         </div>
                                     </div>
                                 </td>
@@ -106,8 +115,14 @@
                                     <!--@PLOTTER
                                     {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
                                     -->
-                                    @php                                       
-                                        $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
+                                    @php
+                                        if ($timeSlot['startTime'] == "23:00" || $timeSlot['startTime'] == "23:30") {
+                                            //next day view
+                                            $nextDayCtr = $ctr + 1;
+                                            $dateView = date('m/d/Y', strtotime($dateFrom ." + $nextDayCtr day"));
+                                        } else {
+                                            $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
+                                        }
                                     @endphp                              
 
                                     @if(isset($lessons[$dateView][$timeSlot['startTime']]['status']))
@@ -118,39 +133,24 @@
 
                                             <div class="client text-center text-white">
 
-                                                <!--@todo: link to lesson report card, status is client reserved, complete
-                                                <small>
-                                                    {{ $timeSlot['startTime'] }}
-                                                    @if (isset($lessons[$dateView][$timeSlot['startTime']]['member_name_en']))                                             
-                                                        {{$lessons[$dateView][$timeSlot['startTime']]['status']}}
-                                                        {{$lessons[$dateView][$timeSlot['startTime']]['member_name_en']}}
-                                                    @endif
-                                                </small>
-                                                -->
-
-                                                <!--@done: check if client_reserved, completed, if so then add a report card -->
-
-                                                <!--
-                                                    @todo(Grade) hover link -->
-                                                <!--@todo: reportcard.do page -->                                            
-
                                                 @php 
-                                                $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
-                                                $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
+                                                    $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
+                                                    $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
                                                 @endphp
 
                                                 @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                     
 
                                                     @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id'] ))
                                                     <div class="text-dark">
+                                                        {{ $dateView }}    
                                                         <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
-                                                            {{$lessons[$dateView][$timeSlot['startTime']]['member_name_en']}}
+                                                            {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
                                                         </a>
                                                     </div>
                                                     @endif
 
                                                     <!--@todo: get member name -->
-                                                    <div class="hide">                                                    
+                                                    <div class="hide">                                                                                                       
                                                         <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
                                                     </div>
                                                 @endif

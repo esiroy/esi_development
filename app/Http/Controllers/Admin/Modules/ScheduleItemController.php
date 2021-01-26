@@ -81,11 +81,10 @@ class ScheduleItemController extends Controller
             ['id'=> 25 , 'startTime'=> '22:00', 'endTime'=> '23:00'],
             ['id'=> 26 , 'startTime'=> '22:30', 'endTime'=> '23:30'],
 
-            ['id'=> 27 , 'startTime'=> '23:00', 'endTime'=> '00:00'],
-            ['id'=> 28 , 'startTime'=> '23:30', 'endTime'=> '00:30'],
+            ['id'=> 27 , 'startTime'=> '23:00', 'endTime'=> '24:00'],
+            ['id'=> 28 , 'startTime'=> '23:30', 'endTime'=> '24:30'],
 
-            ['id'=> 29 , 'startTime'=> '00:00', 'endTime'=> '01:00'],
-            ['id'=> 30 , 'startTime'=> '00:30', 'endTime'=> '01:30']            
+           
         );                 
     }
 
@@ -97,11 +96,10 @@ class ScheduleItemController extends Controller
      */
     public function index(Request $request)
     {
-        if(Gate::allows('admin_lesson_scheduler_access')) 
-        {              
-            $nextDay      = date('Y-m-d', strtotime($request['inputDate'] ." + 1 day"));  
+        $nextDay      = date('Y-m-d', strtotime($request['inputDate'] ." + 1 day"));  
 
- 
+        if(Gate::allows('admin_lesson_scheduler_access')) 
+        {
             //default on load without any parameters
             if (isset($request['inputDate'])) {
                 $dateToday      = date('Y-m-d', strtotime($request['inputDate']));                
@@ -204,9 +202,7 @@ class ScheduleItemController extends Controller
             
             $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
           
-            return view('admin.modules.tutor.lessons', compact('dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));
-
-            
+            return view('admin.modules.tutor.lessons', compact('dateFrom', 'nextDay', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));            
             
         } else {
             //echo "admin_lesson_scheduler_access or tutor_lesson_scheduler_access is disallowed..";
