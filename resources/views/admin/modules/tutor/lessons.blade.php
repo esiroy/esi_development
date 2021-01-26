@@ -111,11 +111,8 @@
                                 </td>
 
                                 @for($ctr=0; $ctr <= $lessonDays; $ctr++) 
-                                <td class>
-                                
-                                    <!--@PLOTTER
-                                    {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
-                                    -->
+                                <td class>                               
+                  
                                     @php
                                         if ($timeSlot['startTime'] == "23:00" || $timeSlot['startTime'] == "23:30") {
                                             //next day view
@@ -126,7 +123,10 @@
                                         }
                                     @endphp                              
 
-                                    {{  $dateView  }}
+                                    <!--@PLOTTER
+                                        {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
+                                        {{  $dateView  }}
+                                    --> 
 
                                     @if(isset($lessons[$dateView][$timeSlot['startTime']]['status']))
 
