@@ -129,11 +129,13 @@
 
                                     <div class="toggleHide">
 
+                                        {{ $dateView }}
+
                                         <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%; padding:5px">
 
                                             <div class="client text-center text-white">
-                                                {{ $dateView }}
                                                 
+
                                                 @php 
                                                     $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
                                                     $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
