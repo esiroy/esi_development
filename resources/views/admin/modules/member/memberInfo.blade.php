@@ -34,7 +34,7 @@
                                         <td width="200px">Agent</td>
                                         <td>:</td>
                                         <td>
-                                            {{ $agentInfo->firstname ?? " - " }}
+                                            {{ $agentInfo->user->firstname ?? " - " }}
                                         </td>
                                     </tr>
 
