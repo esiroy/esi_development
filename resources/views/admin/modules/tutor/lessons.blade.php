@@ -135,29 +135,26 @@
                                       
                                         <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%; padding:5px">
 
-                                            <div class="client text-center text-white">
-                                                
+                                            <div class="client text-center text-white">                                                
 
                                                 @php 
                                                     $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
                                                     $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
                                                 @endphp
 
-                                                @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id'] ))
-                                                    <div class="text-dark">
-                                                       
-
-                                                         <!--@note: get member profile link / name -->
+                                                <!--@note: get member profile link / name -->
+                                                @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id']))
+                                                    <div class="text-dark">                                                         
                                                         <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
                                                             {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
                                                         </a>
                                                     </div>
-                                                @endif
 
-                                               
-                                                <div class="hide">                                                                                                       
-                                                    <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
-                                                </div>
+                                                    <div class="hide">                                                                                                       
+                                                        <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
+                                                    </div>
+                                                @endif                                               
+
     
                                                 <!-- @todo: schedules status for 3 schedules are only view for grading (to be approved)
                                                 @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                                                                                                                                
