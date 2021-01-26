@@ -145,7 +145,7 @@ class ScheduleItemController extends Controller
                 //$scheduleItems = (object) ['0' => null];                
            // }          
 
-            return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
+            return view('admin.modules.scheduleItem.index', compact('dateToday','year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
 
         } 
         else if (Gate::allows('tutor_lesson_scheduler_access'))
