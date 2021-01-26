@@ -101,11 +101,18 @@ class ReportCardController extends Controller
         $scheduleItem = ScheduleItem::find($request->scheduleitemid);
 
         $reportCard = ReportCard::where('schedule_item_id', $scheduleItem['id'])->first();
-
+        
         if (isset($reportCard->schedule_item_id)) 
         {
-            //update
 
+            //update schedule status
+            $scheduleData = [
+                    'schedule_status' => 'COMPLETED'
+            ];
+            $scheduleItem->update($scheduleData);  
+
+            
+            //update report card
             $reportData = [
                 'valid'                 => 1,
                 'comment'               => $request->comment,
@@ -123,6 +130,12 @@ class ReportCardController extends Controller
 
         } else {
 
+
+            $scheduleData = [
+                'schedule_status' => 'COMPLETED'
+            ];
+            $scheduleItem->update($scheduleData);  
+
             $reportData = [
                 'valid'                 => 1,
                 'comment'               => $request->comment,
@@ -136,6 +149,7 @@ class ReportCardController extends Controller
                 'member_id'             => $scheduleItem['member_id'],
                 'lesson_level'          => $request->lessonLevel,                        
             ];
+
             ReportCard::create($reportData);
         }
 
