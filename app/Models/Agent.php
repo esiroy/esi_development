@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Member;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Agent extends Model
@@ -13,18 +15,31 @@ class Agent extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
-    public function getMemberAgent($agentID) 
+    public function getAgentInfo($agentID) 
+    {
+        return Agent::where('user_id', $agentID)->first();
+    }
+
+
+    public function getMemberAgent($memberID) 
     {
         //get agent id from mmember
-        $agent = Agent::join('users', 'users.id', '=', 'agents.user_id')
-                ->select('agents.*', 'users.firstname', 'users.lastname')
-                ->where('user_id', $agentID)->first();
+        $member = Member::where('user_id', $memberID)->first();
+
+        if ($member) {
+
+            $agent = Agent::where('user_id', $memberID)->first();
         
-        if (isset($agent)) {
-            return $agent;
+            if (isset($agent)) {
+                return $agent;
+            } else {
+                return null;
+            }
+            
         } else {
             return null;
         }
+
     }
 
 

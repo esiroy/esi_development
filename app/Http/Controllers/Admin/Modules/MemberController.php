@@ -135,11 +135,13 @@ class MemberController extends Controller
      */
     public function show($memberID)
     {
-        $agent = new Agent();
-        $agentInfo = $agent->getMemberAgent($memberID);
         $memberInfo = Member::where('user_id', $memberID)->first();
 
-        if (isset($memberInfo)) {
+        $agent = new Agent();   
+        $agentInfo = $agent->getAgentInfo($memberInfo->agent_id);
+
+        if (isset($memberInfo)) 
+        {
             if (isset($memberInfo->tutor_id)) {
                 $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
             } else {
