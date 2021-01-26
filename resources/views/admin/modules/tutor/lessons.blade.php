@@ -132,7 +132,8 @@
                                         <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%; padding:5px">
 
                                             <div class="client text-center text-white">
-
+                                                {{ $dateView }}
+                                                
                                                 @php 
                                                     $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
                                                     $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
@@ -140,7 +141,7 @@
 
                                                 @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id'] ))
                                                     <div class="text-dark">
-                                                        {{ $dateView }}
+                                                       
 
                                                          <!--@note: get member profile link / name -->
                                                         <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
@@ -153,19 +154,15 @@
                                                 <div class="hide">                                                                                                       
                                                     <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
                                                 </div>
-
-                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                                                                         
-                                                        <!-- @todo: schedules status for 3 schedules are only view for grading (to be approved)
-                                                        -->
+    
+                                                <!-- @todo: schedules status for 3 schedules are only view for grading (to be approved)
+                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                                                                                                                                
+                                                    
                                                 @endif
+                                                -->
+
                                             </div>
 
-                                            <!--
-                                            <div class="btn-container">
-                                                div class="iEdit"><a href="javascript:void(0);"><img src="/images/iEdit.gif"></a></div>
-                                                &nbsp;
-                                            </div>
-                                            -->
                                         </div>
                                     </div>
 
