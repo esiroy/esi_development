@@ -86,12 +86,14 @@ class LessonRecordController extends Controller
         
 
         $user = Auth::user();
+        
         $member = Member::where('user_id', $user->id)->first();
 
         if (isset($member)) 
         {
             $memberData = Member::find($member->id);
             $skypeID    = $memberData->communication_app_username; 
+
             $tutorData = Tutor::find($member->main_tutor_id);
 
             $lecturer   = (isset($tutorData->name_en))? $tutorData->name_en : '';

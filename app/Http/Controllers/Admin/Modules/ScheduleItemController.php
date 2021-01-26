@@ -120,7 +120,7 @@ class ScheduleItemController extends Controller
             }
 
             //get tutors for this shift id
-            //$shift  = Shift::where("value", $shiftDuration)->first();   
+            $shift  = Shift::where("value", $shiftDuration)->first();   
 
             
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
