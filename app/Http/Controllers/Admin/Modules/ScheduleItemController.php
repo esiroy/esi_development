@@ -145,7 +145,7 @@ class ScheduleItemController extends Controller
                 //$scheduleItems = (object) ['0' => null];                
            // }          
 
-            return view('admin.modules.scheduleItem.index', compact('dateToday','year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
+            return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
 
         } 
         else if (Gate::allows('tutor_lesson_scheduler_access'))
@@ -183,7 +183,7 @@ class ScheduleItemController extends Controller
             
             $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
           
-            return view('admin.modules.tutor.lessons', compact('dateFrom', 'nextDay', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));            
+            return view('admin.modules.tutor.lessons', compact('dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));            
             
         } else {
             //echo "admin_lesson_scheduler_access or tutor_lesson_scheduler_access is disallowed..";
