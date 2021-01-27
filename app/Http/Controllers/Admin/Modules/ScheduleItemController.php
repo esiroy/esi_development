@@ -111,18 +111,19 @@ class ScheduleItemController extends Controller
                 $year           = date('Y');
                 $month           = date('m');
                 $day           = date('d');               
-            } 
+            }           
 
+                     
             if (isset($request['shift_duration'])) {
                 $shiftDuration  = $request['shift_duration'];
             } else {
                 $shiftDuration  = 25;
             }
 
+              
             //get tutors for this shift id
             $shift  = Shift::where("value", $shiftDuration)->first();   
 
-            
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
                         ->where('is_terminated', 0)
                         //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
@@ -132,20 +133,26 @@ class ScheduleItemController extends Controller
                         ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
                         ->where('valid', 1)
                         ->get();
+                      
 
-            $schedulesObj = new ScheduleItem();
-            $scheduleItems = $schedulesObj->getSchedules($dateToday, $shiftDuration); 
-
+            
+            //$schedulesObj = new ScheduleItem();
+            //$scheduleItems = $schedulesObj->getSchedules($dateToday, $shiftDuration);
+            //$tutors =  new Tutor();
+            $scheduleItems = (object) ['0' => null];
+            
             //@todo: load via ajax!     (set member, and schedules to null                                
             $members = new Member();
             
-            //$scheduleItems = (object) ['0' => null];
+            
             //if (count($scheduleItems) == 0) {
                 //$scheduleItems = new ScheduleItem();
                 //$scheduleItems = (object) ['0' => null];                
            // }          
 
-            return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members', 'scheduleItems'));
+            //return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members' , 'scheduleItems'));
+
+            return view('admin.modules.scheduleItem.index', compact('dateToday', 'nextDay', 'year', 'month', 'day', 'shiftDuration', 'tutors', 'members' , 'scheduleItems'));
 
         } 
         else if (Gate::allows('tutor_lesson_scheduler_access'))

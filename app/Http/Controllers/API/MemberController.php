@@ -50,6 +50,8 @@ class MemberController extends Controller
      */
     public function bookSchedule(Request $request)
     {
+
+        
         $scheduleID = $request->scheduleID;
         $memberID = $request->memberID;
         //@todo: check if the schedule is unique
@@ -86,7 +88,7 @@ class MemberController extends Controller
         $schedule = ScheduleItem::find($id);
         $data = [
             'member_id' => null,
-            'schedule_status' => 'CLIENT_NOT_AVAILABLE',
+            'schedule_status' => 'TUTOR_SCHEDULED',
         ];
         $schedule->update($data);
 

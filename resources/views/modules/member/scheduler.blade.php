@@ -52,11 +52,11 @@
                                 @endforeach
                             </tr>
 
-
                             @foreach($tutors as $tutor)
                             <tr>
                                 <!--[start] Tutor Information-->
                                 <td id="{{ $tutor->id }}">
+
                                     <div id="{{ $tutor->user_id }}" style="width:125px">
                                         @if (isset($tutor->user->firstname))
                                             {!! $tutor->user->firstname !!}
@@ -77,14 +77,13 @@
                                     @endphp
 
 
-                                    @if (isset($schedules[$tutor->id][$date][$startTimePH]))
+                                    @if (isset($schedules[$tutor->user_id][$date][$startTimePH]))
 
                                         @php
-                                            $scheduleID = $schedules[$tutor->id][$date][$startTimePH]['id'];
-                                            $scheduleMemberID =  $schedules[$tutor->id][$date][$startTimePH]['member_id'];
-                                            $status = $schedules[$tutor->id][$date][$startTimePH]['status'];  
+                                            $scheduleID = $schedules[$tutor->user_id][$date][$startTimePH]['id'];
+                                            $scheduleMemberID =  $schedules[$tutor->user_id][$date][$startTimePH]['member_id'];
+                                            $status = $schedules[$tutor->user_id][$date][$startTimePH]['status'];  
                                         @endphp
-
                                       
                                         @if ($status == "TUTOR_SCHEDULED")
 
@@ -106,7 +105,6 @@
                                             <div class="button_{{$scheduleID}}">
 
                                                 <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>
-
                                                
 
                                                 @if ($member->user_id == $scheduleMemberID)
@@ -150,6 +148,8 @@
         </div>
 
     </div>
+
+   
 
 </div>
 @endsection

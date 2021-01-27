@@ -111,7 +111,7 @@ class ScheduleItem extends Model
      *@param date
      *@param duration
      */
-    public function getSchedules($date, $duration)
+    public function getSchedulesOld($date, $duration)
     {
 
         $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
@@ -127,7 +127,8 @@ class ScheduleItem extends Model
 
         $schedules['tutors'] = $tutors;
 
-        foreach ($tutors as $tutor) {
+        foreach ($tutors as $tutor) 
+        {
             $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
                 ->where('tutor_id', $tutor->user_id)
                 ->where('valid', 1)
@@ -139,7 +140,7 @@ class ScheduleItem extends Model
 
                 //@todo: v2 - check member
                 $member = Member::where('user_id', $item->member_id)->first();
-                $user = User::find($item->member_id);
+                //$user = User::find($item->member_id);
 
                 $nickname = "";
                 $firstname = "";
@@ -159,7 +160,7 @@ class ScheduleItem extends Model
                 }
 
                 if (isset($member->user->japanses_firstname)) {
-                    $japanese_firstname = $member->user->japanses_firstname;
+                    $japanese_firstname = $member->user->japanese_firstname;
                 }
 
                 //tutorid , scheduled_at, startTime
@@ -189,6 +190,41 @@ class ScheduleItem extends Model
             }
 
         }
+        return $schedules;
+    }
+
+    public function getSchedules($date, $duration)
+    {
+        $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
+
+        $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
+        //->where('tutor_id', $tutor->user_id)
+        ->where('valid', 1)
+        ->get();
+
+        /*
+        $scheduleItems = ScheduleItem::join('tutors', 'schedule_item.tutor_id', '=', 'tutors.user_id')
+            ->select('schedule_item.*', 'tutors.id as tutorID')
+            ->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
+            //->where('tutor_id', $tutor->user_id)
+            ->where('valid', 1)
+            ->get();
+        */
+
+        foreach ($scheduleItems as $item) {
+            $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
+                'id' => $item->id,
+                'status' => $item->schedule_status,
+                'startTime' => date("H:i", strtotime($item->lesson_time . " -1 hour")),
+                'endTime' => date("H:i", strtotime($item->lesson_time)),
+                'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
+                'email_type' => $item->email_type,
+                'duration' => $item->duration,
+                
+                'member_id' => $item->member_id,
+            ];
+        }
+
         return $schedules;
     }
 

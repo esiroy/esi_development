@@ -32,7 +32,7 @@ class dummyController extends Controller
     public function index()
     {
 
-        $date = '2021-01-02';
+        $date = '2021-01-14';
         $duration = 25;
         $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
 
@@ -46,7 +46,7 @@ class dummyController extends Controller
 
         $schedules = new ScheduleItem();
 
-        $items = $schedules->getSchedules($date, $duration);
+        $items = $schedules->getTestSchedules($date, $duration);
 
         echo "<pre>";
         print_r ($items);

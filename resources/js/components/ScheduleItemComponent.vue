@@ -130,21 +130,21 @@
                             </th>
 
                             <td v-for="time in timeList" :key="time.id"> 
-                                <div :id="'btnAdd-' + tutor.id + '-' + time.startTime"
+                                <div :id="'btnAdd-' + tutor.user_id + '-' + time.startTime"
                                     class="addSchedule SCHEDULE_ITEM" 
-                                    v-show="checkButton({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })">
-                                    <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal @click="openSchedule({tutorID: tutor.id, startTime: time.startTime, endTime: time.endTime })"/>
+                                    v-show="checkButton({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })">
+                                    <input type="button" value="" class="btnAdd" v-b-modal.addScheduleModal @click="openSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime })"/>
                                 </div>
 
-                                <div :id="tutor.id + '-' + time.startTime"
-                                    v-show="checkStatus({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })" 
-                                    :class="getStatus({'tutorID':tutor.id , 'startTime':  time.startTime, 'endTime': time.endTime }) + ' SCHEDULE_ITEM' ">
+                                <div :id="tutor.user_id + '-' + time.startTime"
+                                    v-show="checkStatus({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })" 
+                                    :class="getStatus({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':  time.startTime, 'endTime': time.endTime }) + ' SCHEDULE_ITEM' ">
                                     <div class="client">
-                                        <div v-html="getMember({'tutorID':tutor.id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
+                                        <div v-html="getMember({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
                                     </div>
                                     <div class="btn-container">
-                                        <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
-                                        <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({tutorID: tutor.id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
+                                        <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
+                                        <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
                                     </div>
                                 </div>
                             </td>
@@ -191,6 +191,7 @@ export default {
     },
     data() {
         return {
+            memberDataList: [],
             isFound : false,
             fromDay : this.scheduled_at,
             nextDay : "",
@@ -198,6 +199,7 @@ export default {
             memberOptionList: [],
             modalType: null,
             //Data
+            tutorList: [],
             lessonsData: [],           
             tutorData: null,
             status: "",
@@ -254,43 +256,37 @@ export default {
 
         this.shiftDuration  = this.duration;
         this.nextDay  = this.schedule_next_day;
-        this.fromDay = this.scheduled_at;        
+        this.fromDay = this.scheduled_at;    
         this.setMemberListLock(); //disabler of additoinal options          
-        this.getMemberList();        
+
                
     },
-    mounted() {
+    async mounted() {
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;
-        this.getSchedules(this.scheduled_at, this.shiftDuration); 
+       
         //@hide table 
 
         //let tableSchedules = document.getElementById("tableSchedules");
         //tableSchedules.style.display = "none";
 
-        //preloader
+        this.getSchedules(this.scheduled_at, this.shiftDuration); 
+        this.getMemberList();        
+          //preloader
         let preloader = document.getElementById("preloader");
-        preloader.style.display  = "block";              
-
-        
-        
+        preloader.style.display  = "block"; 
+                
     },
     methods: {
-        openMemberTab(memberID) {
-            console.log("test open member")
-            window.location.href="http://wwww.xx.com/testpage2.aspx";
-            return false;
-
-        },
-        getScheduleData(data) {
+        getScheduleData(data) {            
            try {
                 //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
                 //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
-                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];                   
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                   
                      return lessonData;
                 } else {
-                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
                     return lessonData;
                 }                
             }
@@ -302,15 +298,24 @@ export default {
                 //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
                 //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
-                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
                     //return lessonData.status_checker;
-                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
+
+                    let nickname = this.memberDataList[lessonData.member_id].nickname;
+                  
+                    //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
+
+                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
 
                 } else {
-                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];
-                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
+                    let nickname = this.memberDataList[lessonData.member_id].nickname;
+
+                    //return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ lessonData.nickname +"</a>";
+
+                    return "<a id='"+lessonData.id+"' href='#' onclick='openMemberTab("+lessonData.member_id+")'>"+ nickname +"</a>";
                 }
-                //console.log(this.lessonsData[data.tutorID][this.scheduled_at][data.startTime])
+                //console.log(this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime])
             }
             catch(err) { return ""; }               
          },
@@ -319,10 +324,10 @@ export default {
             let isFound = false;
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
-                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];       
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];       
                     isFound = lessonData.status;
                 } else {
-                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];       
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];       
                     isFound = lessonData.status;
                 }
             }
@@ -337,10 +342,10 @@ export default {
             let isFound = false;
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
-                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];       
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];       
                     isFound = lessonData.status;
                 } else {
-                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];       
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];       
                     isFound = lessonData.status;
                 }
             }
@@ -356,14 +361,14 @@ export default {
                 //23:30 - will be 1 hour advance in japan (00:30) is the time will midnight and a half :D
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
 
-                    let lessonData = this.lessonsData[data.tutorID][this.nextDay][data.startTime];
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];
                     return lessonData.status;
 
                 } else {
-                    let lessonData = this.lessonsData[data.tutorID][this.scheduled_at][data.startTime];
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
                     return lessonData.status;
                 }
-                //console.log(this.lessonsData[data.tutorID][this.scheduled_at][data.startTime])
+                //console.log(this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime])
             }
             catch(err) { return ""; }                
         },
@@ -374,7 +379,10 @@ export default {
         openSchedule(tutorData) 
         {
             this.modalType = "save";
-            console.log(tutorData);
+            //console.log(tutorData);
+            
+            console.log("open schedule");
+
             this.$bvModal.show("schedulesModal");
             this.tutorData = tutorData;
         },
@@ -447,36 +455,37 @@ export default {
         editSchedule(scheduleData) 
         {
             //show the modal first and update the values below             
-            this.$bvModal.show("schedulesModal");
-
-            //update the modal values
+            this.$bvModal.show("schedulesModal");            
             this.modalType = "edit";
+
+            //get current schedule data
             this.currentScheduledData = this.getScheduleData(scheduleData);
 
             this.tutorData = scheduleData;
             this.status = this.currentScheduledData.status;
 
-            this.currentSelectedID = this.currentScheduledData.member_id;
-
-            console.log(this.currentScheduledData);
-
+            this.currentSelectedID = this.currentScheduledData.member_id;            
             this.currentStatus = this.currentScheduledData.status;
 
-            if (typeof this.currentScheduledData.lastname === 'undefined' || typeof this.currentScheduledData.lastname === '') {
-                memberIDFullName = "";
-            }    
-
-            let memberIDFullName = this.currentScheduledData.member_id + " " + this.currentScheduledData.firstname  + " " +  this.currentScheduledData.lastname;
-
-            if (this.currentScheduledData.firstname === '' && this.currentScheduledData.firstname === '') {
-                memberIDFullName = "";
-            } else if (typeof this.currentScheduledData.firstname === '' && typeof this.currentScheduledData.firstname === '') {
-                memberIDFullName = "";
-            }
-
-      
+            let memberData = this.memberDataList[this.currentScheduledData.member_id];
             
-            this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };
+            let memberIDFullName = "";
+
+            console.log(this.modalType);
+            console.log(this.currentScheduledData.member_id);
+
+            if (this.currentScheduledData.member_id !== null && this.currentScheduledData.member_id !== '') {                            
+                let nickname = memberData.nickname;
+                let firstname = memberData.firstname;
+                let lastname = memberData.lastname;  
+
+                memberIDFullName =  this.currentScheduledData.member_id + " " + firstname  + " " + lastname;  
+                this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };                    
+            } else {
+                 this.memberSelectedID = { id: "" , 'name': "-- Select A Member --" };
+            }
+            
+           
             
             //this.isStatusDisabled = false;
             /** The reservationType - the live does not have this, so it will be blank; **/
@@ -495,12 +504,13 @@ export default {
             //console.log("save ?? "  + this.memberSelectedID.id);
             if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
             {                
-
                 if (this.memberSelectedID === "" || this.memberSelectedID === null) {
                     alert ("Please select Member");
                     return false;                
                 }
-            }            
+            }    
+
+
             
             if (this.scheduleExists(this.tutorData)) 
             {                
@@ -530,7 +540,7 @@ export default {
                     
                     this.$nextTick(function()
                     {
-                        let tutorID = response.data.tutorData.tutorID;
+                        let tutorUserID = response.data.tutorData.tutorUserID;
                         let startTime = response.data.tutorData.startTime;
                         let scheduled_at = this.scheduled_at;
 
@@ -539,31 +549,47 @@ export default {
                              scheduled_at = this.nextDay;
                         }
                        
-                        if (typeof this.lessonsData[tutorID] === 'undefined') {
-                            this.lessonsData[tutorID] = {}  
+                        if (typeof this.lessonsData[tutorUserID] === 'undefined') {
+                            this.lessonsData[tutorUserID] = {}  
                         }
 
-                        if (typeof this.lessonsData[tutorID][scheduled_at] === 'undefined') {
-                            this.lessonsData[tutorID][scheduled_at] = {}
-                        }                                                
+                        if (typeof this.lessonsData[tutorUserID][scheduled_at] === 'undefined') {
+                            this.lessonsData[tutorUserID][scheduled_at] = {}
+                        }             
 
-                        this.lessonsData[tutorID][scheduled_at][startTime] = {
+                        //[updated] get memberdata
+                        let firstname  = "";
+                        let lastname = "";
+                        let nickname = "";
+
+                        let memberData = this.memberDataList[response.data.memberData.id];
+
+                        console.log(response.data.memberData.id);
+
+                        if (response.data.memberData.id !== '') {                            
+                            nickname = memberData.nickname;
+                            firstname = memberData.firstname;
+                            lastname = memberData.lastname;                            
+                        }         
+
+                        this.lessonsData[tutorUserID][scheduled_at][startTime] = {
                             'id': response.data.scheduleItemID,
                             "status": this.status,                      
                             //member info
                             'member_id': response.data.memberData.id,
-                            'firstname': response.data.memberData.firstname,
-                            'lastname': response.data.memberData.lastname,
-                            'nickname': response.data.memberData.nickname
+
+                            'firstname': firstname,
+                            'lastname':  lastname,
+                            'nickname':  nickname
                         }
 
                         //set the schedule to display
-                        let schedule = document.getElementById(tutorID + "-" + startTime);
+                        let schedule = document.getElementById(tutorUserID + "-" + startTime);
                         schedule.style.display = "block";
                         schedule.classList.add(this.status);
 
                         //hide the add button
-                        let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
+                        let addButton = document.getElementById("btnAdd-" + tutorUserID + "-" + startTime);
                         addButton.style.display = "none";
                         
                         //preloader
@@ -574,7 +600,6 @@ export default {
 
                         //this is repitive but this will allow the user to see updated from other admin??
                         this.getSchedules(this.scheduled_at, this.shiftDuration);
-
                         this.$forceUpdate();
                     });
       
@@ -593,7 +618,7 @@ export default {
                 }
                 
 			}).catch(function(error) {
-                alert("Error " + error);                
+                alert("Error: setTutorSchedule - " + error);                
 			});
         },        
         updateTutorSchedule() 
@@ -634,25 +659,25 @@ export default {
                 if (response.data.success === true) 
                 {
 
+                    let tutorUserID =  response.data.tutorData.tutorUserID;
                     let tutorID = response.data.tutorData.tutorID;
                     let startTime = response.data.tutorData.startTime;
                     let scheduled_at = this.scheduled_at;
 
                     //@todo: next day detect
                     if (startTime == '23:00' || startTime == '23:30') {
-                            scheduled_at = this.nextDay;
+                        scheduled_at = this.nextDay;
                     }
-
                  
-                    if (typeof this.lessonsData[tutorID] === 'undefined') {
-                        this.lessonsData[tutorID] = {}  
+                    if (typeof this.lessonsData[tutorUserID] === 'undefined') {
+                        this.lessonsData[tutorUserID] = {}  
                     }
 
-                    if (typeof this.lessonsData[tutorID][scheduled_at] === 'undefined') {
-                        this.lessonsData[tutorID][scheduled_at] = {}
+                    if (typeof this.lessonsData[tutorUserID][scheduled_at] === 'undefined') {
+                        this.lessonsData[tutorUserID][scheduled_at] = {}
                     }
 
-                    this.lessonsData[tutorID][scheduled_at][startTime] = {
+                    this.lessonsData[tutorUserID][scheduled_at][startTime] = {
                         'id': response.data.scheduleItemID,
                         "status": this.status,                      
                         //member info
@@ -663,12 +688,12 @@ export default {
                     }
 
                     //set the schedule to display
-                    let schedule = document.getElementById(tutorID + "-" + startTime);
+                    let schedule = document.getElementById(tutorUserID + "-" + startTime);
                     schedule.style.display = "block";
                     schedule.classList.add(this.status);
 
                     //hide the add button
-                    let addButton = document.getElementById("btnAdd-" + tutorID + "-" + startTime);
+                    let addButton = document.getElementById("btnAdd-" + tutorUserID + "-" + startTime);
                     addButton.style.display = "none";
 
                     //preloader
@@ -684,7 +709,7 @@ export default {
                     alert (response.data.message);                   
                 }
 			}).catch(function(error) {
-                alert("Error " + error);                
+                alert("Error : updateTutorSchedule - " + error);                
 			});            
         },
         getMemberList() {
@@ -701,16 +726,30 @@ export default {
                     this.$nextTick(function()
                     {  
                         this.memberList = response.data.members;
-                        
+                     
                         //@todo: ajax load members         
                         //optionLists of Members
+                        let memberData = [];
                         var options = [];
+
                         this.memberList.forEach(function (member, index) 
                         {   
+                            memberData[member.user_id] = {
+                                                            'id': member.user_id, 
+                                                            'firstname': member.firstname,
+                                                            'lastname': member.lastname,
+                                                            'name': member.user_id + " " + member.firstname + " "+ member.lastname, 
+                                                            'nickname': member.nickname 
+                                                        } ;
+
                             options.push({'id': member.user_id, 'name': member.user_id + " " + member.firstname + " "+ member.lastname  });        
                         });
                         this.memberOptionList = options;
-                          
+
+                        this.memberDataList = memberData;
+
+                        console.log(this.memberDataList[197])
+
 
                         this.$forceUpdate(); 
                     });
@@ -719,7 +758,7 @@ export default {
                     alert (response.data.message);                   
                 }
 			}).catch(function(error) {
-                alert("Error " + error);                
+                alert("Error: Get Member List - " + error);                
 			});               
         },
         getSchedules(scheduled_at, shiftDuration) 
@@ -740,8 +779,8 @@ export default {
                     {                          
                         //tableSchedules.style.display = "block";
                         preloader.style.display = "none";
-
                         this.lessonsData = response.data.tutorLessonsData;
+                        //this.tutorList = response.data.tutorLessonsData.tutors;
                         this.$forceUpdate(); 
                     });
                 } 

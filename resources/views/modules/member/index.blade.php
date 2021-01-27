@@ -13,7 +13,6 @@
         </nav>
 
         <div class="container pb-5">
-
             <div class="row">
                 <!--sidebar-->
                 <div class="col-md-3">
@@ -44,7 +43,6 @@
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');"><button type="button" class="btn btn-success">添削くん</button></a>
                         </div>
                     </div>
-
 
                     <div class="grayBackgroundBox mt-4 pt-3 px-2">
                         <p>今日のレッスンはいかがでしたか？ 今後の円滑な運営と質の高いレッスン のご提供のため、何かお気づきの点がありましたら アンケートにお答え下さい！</p>
@@ -87,7 +85,12 @@
 
                                         </td>
                                         <td style="text-align: center;">
-                                            <a href="javascript:void()" onclick="memoForm('{{$reserve->id}}')"><img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡</a>
+
+
+                                            <a href="javascript:void()" onclick="memoForm('{{$reserve->id}}')" data-toggle="modal" data-target="#exampleModal" data-id="{{ $reserve->id }}"><img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡</a>
+
+                                            <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-id="{{ $reserve->id }}">Open modal for @mdo</button>-->
+
                                         </td>
                                         <td style="text-align: center;">
                                             
@@ -99,22 +102,48 @@
 
                                 </tbody>
                             </table>
+                        </div><!--[end] card body-->
 
-                        </div>
+                    </div><!--[end] card -->
 
-                    </div>
-
-                </div>
-
-
-            </div>
-
-
-        </div>
-
-
-    </div>
+                </div><!--[end] column-->
+            </div><!--[end] row -->
+        </div><!--[end] container -->
+    </div> <!--[end] esi-box -->
 </div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Memo</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+
+        <!--
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Schedule Item ID:</label>
+            <input type="text" class="form-control" id="scheduleItem-id" readonly>
+          </div>-->
+
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea class="form-control" id="message-text"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Send message</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @endsection
 
 
@@ -141,6 +170,21 @@
             });
         }
     }
+
+    window.addEventListener('load', function () {
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget) // Button that triggered the modal
+            var id = button.data('id') // Extract info from data-* attributes
+            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+            var modal = $(this)
+            //modal.find('.modal-title').text('New message to ' + id)
+
+            modal.find('#scheduleItem-id').val(id)
+
+            //modal.find('.modal-body input').val(id)
+        })
+    });
 
 </script>
 @endsection

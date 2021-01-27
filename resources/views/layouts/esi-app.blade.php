@@ -9,6 +9,7 @@
     <title>
     {{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(3))->replace('-', ' ') ) ?? '' }} {{ " - " . ucwords( Str::of(Request::segment(2))->replace('-', ' ') ) ?? '' }}
     </title>
+
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
@@ -16,8 +17,19 @@
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <script src="{{ asset('js/admin.js') }}" defer></script>
-    <script src="{{ asset('js/vfs_fonts.js') }}" defer></script>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+    <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
+    <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
+    
+    <!-- Styles -->
+    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @yield('styles')
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>

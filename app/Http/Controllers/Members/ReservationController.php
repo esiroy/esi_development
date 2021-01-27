@@ -137,8 +137,17 @@ class ReservationController extends Controller
                 $shiftDuration = 25;
             }                  
             //search the ID
-            //$shift = Shift::where("value", $shiftDuration)->first();
+            $shift = Shift::where("value", $shiftDuration)->first();
 
+            $tutors = Tutor::where('lesson_shift_id', $shift->id)
+                        ->where('is_terminated', 0)
+                        //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
+                        ->join('users', 'users.id', '=', 'tutors.user_id')
+                        //->orderBy('firstname', 'ASC')
+                        ->orderBy('sort', 'ASC')
+                        ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
+                        ->where('valid', 1)
+                        ->get();
                                      
             $member = Member::where('user_id', Auth::user()->id)->first();
         
@@ -146,7 +155,8 @@ class ReservationController extends Controller
 
             //GET LESSONS FROM DATE TODAY ONLY
             $schedules = $scheduleItem->getSchedules($dateToday, $shiftDuration);
-            $tutors =  $schedules['tutors'];
+
+
 
            
 
@@ -154,7 +164,7 @@ class ReservationController extends Controller
             $lessonSlots = $this->lessonSlots;
 
             return view('/modules/member/scheduler', compact('member', 'schedules', 'nextDay', 'dateToday', 'year', 'month', 'day',
-                                                             'shiftDuration', 'tutors', 'members', 'schedules', 'lessonSlots', 'latestReportCard'));
+                                                             'shiftDuration', 'tutors',  'schedules', 'lessonSlots', 'latestReportCard'));
 
         } else {
 
