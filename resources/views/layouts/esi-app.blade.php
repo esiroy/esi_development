@@ -108,7 +108,10 @@
                                 <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>
                                 <span class="px-2 text-success">|</span>
 
-                                <span><a class="red" href="{{ route('logout_member') }}">ログアウト</a></span>
+                                <span>
+                                    <a class="red" href="{{ route('logout_member') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    ログアウト</a>
+                                </span>
 
                                 <form id="logout-form" action="{{ route('logout_member') }}"
                                     method="POST" style="display: none;">
