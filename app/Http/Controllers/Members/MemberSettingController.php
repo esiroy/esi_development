@@ -45,7 +45,7 @@ class MemberSettingController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('modules.member.settings.index')->withErrors($validator)->withInput();
+            return redirect()->route('settings.index')->withErrors($validator)->withInput();
         } else {
             $currentPassword = Hash::make($request->currentPassword);
             if (Auth::attempt(['username' => $user->username, 'password' => $request->currentPassword, 'valid' => 1])) {
@@ -71,11 +71,8 @@ class MemberSettingController extends Controller
             ],
         ]);
 
-        if ($validator->fails()) {
-            echo "1";
-            exit();
-
-            //return redirect()->route('member.settings.index')->withErrors($validator)->withInput();
+        if ($validator->fails()) {           
+            return redirect()->route('settings.index')->withErrors($validator)->withInput();
         } else {
 
             $currentPassword = Hash::make($request->currentPassword);
