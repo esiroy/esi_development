@@ -65,7 +65,7 @@
                                         @if (count($lessonMaterials) >= 1)
                                             @foreach($lessonMaterials as $material)
                                                 <div id="{{ $material->id }}" class="my-2">   
-                                                    <a href="{{ url('download/'. basename($material->path) ) }}" class="text-danger">
+                                                    <a href="#" download="{{ url('download/'. basename($material->path) ) }}" class="text-danger">
                                                         <img src="{{ url('images/pdf.gif') }}" alt="{{ basename($material->filename) }}" title="{{ basename($material->filename) }}npm">
                                                         {{ basename($material->filename) }}
                                                     </a>
