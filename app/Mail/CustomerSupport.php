@@ -40,13 +40,20 @@ class CustomerSupport extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.customersupport_to_admin')
-                ->to(Config::get('mail.from.address'))
-                ->subject('Customer Support Request from ' . $this->data['nickname'])
-                ->attach($this->data['attachment']->getRealPath(),
-                [
-                    'as' => $this->data['attachment']->getClientOriginalName(),
-                    'mime' => $this->data['attachment']->getClientMimeType(),
-                ]); 
+        if (isset($this->data['attachment'])) {
+            return $this->view('emails.customersupport_to_admin')
+            ->to(Config::get('mail.from.address'))
+            ->subject('Customer Support Request from ' . $this->data['nickname'])
+            ->attach($this->data['attachment']->getRealPath(),
+            [
+                'as' => $this->data['attachment']->getClientOriginalName(),
+                'mime' => $this->data['attachment']->getClientMimeType(),
+            ]); 
+        } else {
+            return $this->view('emails.customersupport_to_admin')
+            ->to(Config::get('mail.from.address'))
+            ->subject('Customer Support Request from ' . $this->data['nickname'])
+        }
+
     }
 }
