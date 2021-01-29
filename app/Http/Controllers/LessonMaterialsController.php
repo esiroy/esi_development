@@ -68,7 +68,7 @@ class LessonMaterialsController extends Controller
 
                 $lessonMaterials = $lessonMaterial->getLessonMaterial($id);
 
-                return view('modules/lessonmaterials/materials', compact('member', 'latestReportCard', 'lessonMaterials', 'course',  'courseMaterials'));
+                return view('modules/lessonmaterials/materials', compact('member', 'latestReportCard', 'lessonMaterials', 'course'));
 
             } else {
 
