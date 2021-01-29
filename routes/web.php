@@ -94,7 +94,7 @@ Route::get('/home', 'MemberDashboard@index')->name('home');
 Route::get('/faq', 'MemberDashboard@faq')->name('user');
 
 /*STATIC PAGES */
-Route::get('/stagelevel', 'PageController@stageLevel')->name('user');
+Route::get('/stagelevel', 'PageController@stageLevel')->name('stagelevel');
 Route::get('/user', 'PageController@index')->name('user');
 
 
