@@ -52,7 +52,7 @@ class CustomerSupport extends Mailable
         } else {
             return $this->view('emails.customersupport_to_admin')
             ->to(Config::get('mail.from.address'))
-            ->subject('Customer Support Request from ' . $this->data['nickname'])
+            ->subject('Customer Support Request from ' . $this->data['nickname']);
         }
 
     }
