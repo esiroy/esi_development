@@ -45,7 +45,7 @@ class MemberSettingController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('settings.index')->withErrors($validator)->withInput();
+            return redirect()->route('settings.index')->withErrors($validator)->withInput()->with('error_message', 'Sorry, your credentials was invalid, please try to supply your current password correctly');
         } else {
             $currentPassword = Hash::make($request->currentPassword);
             if (Auth::attempt(['username' => $user->username, 'password' => $request->currentPassword, 'valid' => 1])) {
