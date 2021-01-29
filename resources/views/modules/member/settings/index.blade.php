@@ -17,7 +17,7 @@
             <!--[start] asi-card-->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
-                    User Settings
+                   ユーザーの設定
                 </div>
                 <div class="card-body">
 
@@ -41,12 +41,9 @@
                     </div>
 
                     <div class="container">
-                        <div class="row mb-4">
-                            <div class="col-md-4">
-                                <div class="panel-heading">Select Profile Image</div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel-body" align="center">
+                        <div class="row mb-4">                            
+                            <div class="col-md-12">
+                                <div class="panel-body">
                                     <input type="file" name="upload_image" id="upload_image" />
                                 </div>
                             </div>

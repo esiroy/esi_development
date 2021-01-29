@@ -9,7 +9,11 @@
      <div id="userDetails" class="row mx-2">
 
          <div class="col-md-12">
-             <div class="text-secondary">Level:</div>
+             <div class="text-secondary">Level: 
+                <a href="javascript:void(0);" class="text-danger" onclick="window.open('stagelevel','popup','width=650,height=500,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,status=no,location=no,directories=no')">
+                    <i>(１０段階レベル表)</i>
+                </a>
+             </div>
          </div>
          <div class="col-md-12">
              <div class="text-dark">

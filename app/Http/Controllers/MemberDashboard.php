@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Member;
 use App\Models\ReportCard;
+use App\Models\MemberDesiredSchedule;
 use App\Models\ScheduleItem;
 use App\Models\User;
 use Auth;
@@ -20,36 +20,27 @@ class MemberDashboard extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ScheduleItem $scheduleItem, ReportCard $reportcard, MemberDesiredSchedule $memberDesiredSchedules )
     {
-        $user = Auth::user();
-        $memberInfo = Member::where('user_id', $user->id)->first();
+        $member = Member::where('user_id', Auth::user()->id)->first();
 
-        if (isset($memberInfo)) {
-            $skypeID = $memberInfo->communication_app_username;
+        if (isset($member)) {
 
-            $reserves = ScheduleItem::where('member_id', $user->id)->where('valid', 1)->where(function ($q) use ($user) {$q->orWhere('schedule_status', 'CLIENT_RESERVED')->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+            $reserves = $scheduleItem->getMemberLessons($member);
 
-            })->orderby('created_at', 'DESC')->get();
+            $latestReportCard = $reportcard->getLatest($member->user_id);
 
-            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
+            $desiredSchedules = $memberDesiredSchedules->getMemberDesiredSchedule($member->user_id);            
 
-            return view('modules/member/index', compact('memberInfo', 'reserves', 'latestReportCard'));
+            return view('modules/member/index', compact('member', 'reserves', 'latestReportCard',  'desiredSchedules'));
 
         } else {
-
-            $roles = Auth::user()->roles;
-
-            if (!$roles->contains('title', 'Member')) {
+            
+            if (Auth::user()->roles->contains('title', 'Admin')) {
                 return redirect(route('admin.dashboard.index'));
-            } else {
-                /**
-                 * @todo: make a proper message here to your users that
-                 * @todo: other roles tried to view this page, abort the page.
-                 */
+            } else {            
                 abort(403, 'Unauthorized action, you are not allowed to view this page');
             }
         }
     }
-
 }

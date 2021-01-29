@@ -8,7 +8,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">User</li>
+                <li class="breadcrumb-item active" aria-current="page">Lesson Record</li>
             </ol>
         </nav>
 
@@ -40,18 +40,18 @@
                                     <tr>
                                         <th class="small text-center bg-light text-dark font-weight-bold">Date</th>
                                         <th class="small text-center bg-light text-dark font-weight-bold">Tutor</th>
-                                        <th class="small text-center bg-light text-dark font-weight-bold"></th>
+                                        <th class="small text-center bg-light text-dark font-weight-bold">View</th>
                                     </tr>
                                     @foreach ($reportcards as $reportcard)
                                     <tr>
-                                        <td>{{ \App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'] }}</td>
-                                        <td>
+                                        <td class="text-center">{{ \App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'] }}</td>
+                                        <td class="text-center">
                                             @php
-                                            $member = \App\Models\Member::find($reportcard->member_id);
+                                            $member = \App\Models\Member::where('user_id', $reportcard->member_id)->first();
                                             @endphp
-                                            {{ $member->user->first_name }} {{ $member->user->last_name }}
+                                            {{ $member->user->firstname ?? '' }} {{ $member->user->lastname ?? '' }}
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             <a href="reportcard/{{$reportcard->id}}">» 評価</a>
                                         </td>
                                     </tr>
@@ -62,8 +62,7 @@
 
                             <div class="float-right mt-4">
                                 <ul class="pagination pagination-sm">
-                                    <small class="mr-4 pt-2">
-                                        Page :</small>{{ $reportcards->appends(request()->query())->links() }}
+                                    {{ $reportcards->appends(request()->query())->links() }}
                                 </ul>
                             </div>
 
@@ -86,14 +85,14 @@
                                 <tbody id="reportCardBody">
                                     @foreach ($datereportcards as $datereportcard)
                                     <tr>
-                                        <td>{{ $datereportcard->lesson_date }}</td>
-                                        <td>
+                                        <td class="text-center">{{ $datereportcard->lesson_date }}</td>
+                                        <td class="text-center">
                                             @php
-                                            $member = \App\Models\Member::find($datereportcard->member_id);
+                                            $member = \App\Models\Member::where('user_id', $datereportcard->member_id)->first();
                                             @endphp
-                                            {{ $member->user->first_name }} {{ $member->user->last_name }}
+                                            {{ $member->user->firstname ?? '' }} {{ $member->user->lastname ?? '' }}
                                         </td>
-                                        <td><a href="userreportcarddate/{{$datereportcard->id}}">» 評価</a></td>
+                                        <td class="text-center"><a href="userreportcarddate/{{$datereportcard->id}}">» 評価</a></td>
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -102,8 +101,7 @@
 
                             <div class="float-right mt-4">
                                 <ul class="pagination pagination-sm">
-                                    <small class="mr-4 pt-2">
-                                        Page :</small>{{ $datereportcards->appends(request()->query())->links() }}
+                                    {{ $datereportcards->appends(request()->query())->links() }}
                                 </ul>
                             </div>
 

@@ -15,12 +15,24 @@ class ScheduleItem extends Model
     private $limit = 30;
 
     /**
-     * PLOT RESERVATIONS FOR USERS
+     * PLOT RESERVATIONS FOR MEMBERS
      * @param  $dateFrom
      * @return lessons
 
      */
-    public function getReservations($date, $lesson_shift_id)
+    public function getMemberLessons($member) 
+    {
+        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->orderby('created_at', 'DESC')->get();
+
+        return $reserves;
+    }
+
+
+    /*
+    public function getReservationsold($date, $lesson_shift_id)
     {
         $lessons = [];
         $lessonItems = ScheduleItem::whereDate('lesson_time', $date)->where('lesson_shift_id', $lesson_shift_id)->get();
@@ -30,7 +42,7 @@ class ScheduleItem extends Model
         }
 
         return $lessons;
-    }
+    }*/
 
     /** @v2
      * @param tutorID - ID FROM tutor admin panel
@@ -53,16 +65,14 @@ class ScheduleItem extends Model
 
         foreach ($lessonItems as $item) {
             //find nickname
-            $nickname = "";
+            $nickname = "";            
+            $firstname = "";
+            $lastname = "";
+            $japanese_firstname = "";
 
             if (isset($item->member_id)) {
                 $member = Member::where('user_id', $item->member_id)->first();
                 //$user       = User::find($item->member_id);
-
-                $nickname = "";
-                $firstname = "";
-                $lastname = "";
-                $japanese_firstname = "";
 
                 if (isset($member->nickname)) {
                     $nickname = $member->nickname;
@@ -77,7 +87,7 @@ class ScheduleItem extends Model
                 }
 
                 if (isset($member->user->japanses_firstname)) {
-                    $japanese_firstname = $member->user->japanses_firstname;
+                    $japanese_firstname = $member->user->japanese_firstname;
                 }
             }
 

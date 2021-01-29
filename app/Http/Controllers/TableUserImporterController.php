@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 
+use App\Models\UserImporter;
+
 use App\Models\Role;
 
 use DB;
@@ -46,7 +48,7 @@ class TableUserImporterController extends Controller
         echo "<BR>";
 
         
-        $items = DB::connection('mysql_live')->select("select * from users ORDER BY id DESC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from users ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
@@ -68,7 +70,7 @@ class TableUserImporterController extends Controller
                 'firstname' => $item->firstname,
                 'is_activated' => $item->is_activated,
                 'last_login' => $item->last_login,
-                'lastname' => $item->lastname,
+                'lastname' => "TEST 111". $item->lastname,
                 'password' => $item->password,
                 'user_type' => $item->user_type,
                 'username' => $item->username,
@@ -82,15 +84,26 @@ class TableUserImporterController extends Controller
                 'is_japanese' => $item->is_japanese,
             ];
 
+            
+
             if (User::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
+
+                echo "<pre>";
+                print_r ($data);
+            
 
                 try
                 {
 
-                    $UserObj = User::where('id', $item->id)->first();
+                    $UserObj = UserImporter::where('id', $item->id)->first();
 
                     $user = $UserObj->update($data);
+
+                
+
+                    print_r ($UserObj);
+                    echo "</pre>";
 
                     DB::commit();
 

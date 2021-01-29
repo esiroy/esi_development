@@ -23,7 +23,7 @@
 
 
         <div class="profile_settings text-center">
-            <a href="{{ url('settings') }}" class="small">[click here]</a>
+            <a href="{{ url('settings') }}" class="small text-danger">[click here]</a>
         </div>
 
         <div id="userDetails" class="row mx-2">
@@ -53,21 +53,16 @@
                 <div class="text-secondary">Lecturer</div>
             </div>
             <div class="col-md-12">
-                <div class="text-dark">
-                    @php                        
-                        $member = new \App\Models\Member();      
-                        echo "担任講師は " . $member->getTutorName() ." 先生です ";
-                    @endphp
+                <div class="text-dark">                 
+                    {{ "担任講師は " . $member->getTutorName() ." 先生です " }}               
                 </div>
             </div>
             <div class="col-md-12">
                 <div class="text-secondary">Skype ID:</div>
             </div>
             <div class="col-md-12">
-                <div class="text-dark">
-                    @php
-                        echo "スカイプ名 ". $member->getSkype();    
-                    @endphp 
+                <div class="text-dark">                 
+                    {{ "スカイプ名 ". $member->getSkype() }}                     
                 </div>
             </div>
         </div>

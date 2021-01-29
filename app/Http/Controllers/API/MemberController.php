@@ -49,9 +49,7 @@ class MemberController extends Controller
     Book a schedule
      */
     public function bookSchedule(Request $request)
-    {
-
-        
+    {  
         $scheduleID = $request->scheduleID;
         $memberID = $request->memberID;
         //@todo: check if the schedule is unique
@@ -71,7 +69,44 @@ class MemberController extends Controller
             "message" => "Member has been scheduled",
             "userData" => $request['user'],
         ]);
+    }
 
+
+    public function getMemo(Request $request) 
+    {
+        $scheduleID = $request->scheduleID;
+        $schedule = ScheduleItem::find($scheduleID);
+
+        if ($schedule) {
+            return Response()->json([
+                "success" => true,
+                "memo"  => $schedule->memo,
+                "message" => "Memo has been found"
+            ]);
+        } else {
+            return Response()->json([
+                "success" => false,                
+                "message" => "Error: Memo is not found."
+            ]);            
+        }
+    }
+
+
+    public function sendMemo(Request $request) {
+        $scheduleID = $request->scheduleID;
+        $message = $request->message;
+                
+        $data = [
+            'memo' => $message,
+        ];
+        $schedule = ScheduleItem::find($scheduleID);       
+        $schedule->update($data);
+
+        return Response()->json([
+            "success" => true,
+            "memo"  => $message,
+            "message" => "Memo has been saved"
+        ]);
     }
 
     public function cancelSchedule(Request $request)

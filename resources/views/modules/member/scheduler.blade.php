@@ -2,7 +2,8 @@
 @section('content')
 <div class="container bg-light">
 
-    <div class="esi-box">
+    <div class="esi-box mb-5 pb-4">
+
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -11,7 +12,7 @@
         </nav>
 
 
-        <div class="container">
+        <div class="container mb-4">
             <!--[start card] -->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">講師スケジュール </div>
@@ -38,31 +39,53 @@
                         {{ date('Y', strtotime($dateToday)) }} 年 {{ date('m', strtotime($dateToday)) }}月 {{ date('d', strtotime($dateToday)) }}日
                     </div>
 
-                    <div class="card-body scrollable-x p-0">
+                    <!--[start] card-body -->
+                    <div class="card-body scrollable-x p-0 text-center" style="height:720px">
                         <table class="table table-bordered table-schedules">
-                            <tr>
-                                <td class="schedTime"></td>
-                                @foreach($lessonSlots as $lessonSlot)
-                                <td class="schedTime">
-                                    <div>
-                                        <div class="text-small">{{ $lessonSlot['startTime'] }}</div>
-                                        <div class="text-small">{{ $lessonSlot['endTime'] }}</div>
-                                    </div>
-                                </td>
-                                @endforeach
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th class="schedTime static">
+                                        <div class="bordered">
+                                            <div class="class-schedule-container">
+                                                <span class="flag-jp" style="vertical-align: bottom;"></span>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    @foreach($lessonSlots as $lessonSlot)
+                                    <td class="schedTime">
+                                        <div class="bordered">
+                                            <div class="gen-small">{{ $lessonSlot['startTime'] }}</div>
+                                            <div class="gen-small">{{ $lessonSlot['endTime'] }}</div>
+                                        </div>
+                                    </td>
+                                    @endforeach
+                                </tr>
+                            </thead>
 
+                            <tbody>
                             @foreach($tutors as $tutor)
                             <tr>
                                 <!--[start] Tutor Information-->
-                                <td id="{{ $tutor->id }}">
+                                <th id="{{ $tutor->id }}">
+                                    <div id="{{ $tutor->user_id }}" style="width:110px"  class="hbordered">
 
-                                    <div id="{{ $tutor->user_id }}" style="width:125px">
-                                        @if (isset($tutor->user->firstname))
-                                            {!! $tutor->user->firstname !!}
-                                        @endif
+                                        <div class="photo pt-1">
+                                            @if ($tutor->filename == null)
+                                                <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="60px">
+                                            @else 
+                                                <img src="{{ Storage::url("$tutor->original") }}" class="img-fluid border" alt="profile photo" width="60px">
+                                            @endif
+                                        </div>
+
+                                        <div class="tutor-name">
+                                            <a href="javascript:void(0);" onclick="window.open('viewtutor/{{ $tutor->user_id }}','家庭教師の詳細')" class="text-danger font-weight-normal">
+                                                @if (isset($tutor->user->japanese_firstname)) {!! $tutor->user->japanese_firstname !!}@endif <br/>
+                                                @if (isset($tutor->user->firstname)) {!! "(" . $tutor->user->firstname . ")" !!} @endif
+                                            </a>
+                                        </div>
+
                                     </div>
-                                </td>
+                                </th>
 
                                 @foreach($lessonSlots as $lessonSlot)
                                 <td>
@@ -91,7 +114,7 @@
 
                                                 <a class="bookTutorSchedule" onclick="book('{{ $scheduleID }}', '{{ Auth::user()->id }}')" href="javascript:void(0)">予約</a>
 
-                                                <div class="cancel" style="padding:15px; display:none">
+                                                <div class="cancel" style="display:none">
                                                     <div id="{{ $scheduleID }}" style="float:right">
                                                         <a href="javascript:void(0)" onClick="cancel('{{ $scheduleID }}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
                                                     </div>
@@ -104,8 +127,7 @@
 
                                             <div class="button_{{$scheduleID}}">
 
-                                                <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>
-                                               
+                                                <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>                                               
 
                                                 @if ($member->user_id == $scheduleMemberID)
                                                     <div class="cancel">
@@ -113,23 +135,25 @@
                                                             <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
                                                         </div>
                                                         <br />
-                                                        <a href="javascript:void(0)">済</a>
+                                                        <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')">済</a>
                                                     </div>
+                                                @else 
+                                                    <div id="scheduleID_{{$scheduleID}}" class="gen-med">済他</div>
                                                 @endif
 
                                             </div>
 
                                         @elseif($status == 'SUPRESSED_SCHEDULE' )
-                                            <div id="scheduleID_{{$scheduleID}}">{{'済他'}}</div>
+                                            <div id="scheduleID_{{$scheduleID}}" class="gen-med">{{'済他'}}</div>
 
                                         @elseif($status == 'CLIENT_NOT_AVAILABLE')
-                                            <div id="scheduleID_{{$scheduleID}}">{{'欠席'}}</div>
+                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{'欠席'}}</div>
 
                                         @elseif($status == 'TUTOR_CANCELLED')
-                                            <div id="scheduleID_{{$scheduleID}}">{{ "予約" }}</div>
+                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{ "予約" }}</div>
 
                                         @elseif ($status == "COMPLETED")                                         
-                                            <a id="scheduleID_{{$scheduleID}}" href="javascript:void(0)">completed</a>
+                                            <a id="scheduleID_{{$scheduleID}}" href="javascript:void(0)"  class="gen-med">completed</a>
 
                                         @endif
                                     @endif
@@ -140,6 +164,7 @@
 
                             </tr>
                             @endforeach
+                            </tbody>
 
                         </table>
                     </div>
@@ -200,30 +225,33 @@
                 }
             });
         } else {
-
-            return false;
-            // Do nothing!
-            //console.log('Thing was not saved to the database.');
+            return false;                        
         }
     }
 
 
     function cancel(id) {
-        $.ajax({
-            type: 'POST',
-            url: 'api/cancelSchedule?api_token=' + api_token,
-            data: {
-                id: id
-            },
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(data) {
-                //$("#msg").html(data.msg);
-                $('.button_' + id + ' .bookTutorSchedule').show();
-                $('.button_' + id + ' .cancel').hide();
-            }
-        });
+
+        if (confirm('このレッスンをキャンセルしてもいいですか？')) {
+
+            $.ajax({
+                type: 'POST',
+                url: 'api/cancelSchedule?api_token=' + api_token,
+                data: {
+                    id: id
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {
+                    //$("#msg").html(data.msg);
+                    $('.button_' + id + ' .bookTutorSchedule').show();
+                    $('.button_' + id + ' .cancel').hide();
+                }
+            });
+        } else {
+            return false;
+        }
     }
 
     window.addEventListener('load', function() {
@@ -232,3 +260,108 @@
 
 </script>
 @endsection
+
+@section('styles')
+@parent
+    <style>
+        .table-schedules td a,  .table-schedules td a:hover {
+            color: #c60000;
+            font: 14px Arial;
+            text-align: center;            
+        }
+
+        .table-schedules td {
+            min-width: 44px;
+            padding: 0px;
+            width: 44px;
+            padding-top:38px;
+        }
+
+        .table-schedules td .gen-small {
+            font: bold 11px Arial;
+        }
+
+
+        .table-schedules td.schedTime {
+            background: #d0e8f7;
+            text-align: center;
+            font: bold 12px Arial;
+            vertical-align: top;
+            width: 37px;
+            height: 30px;
+            position: -webkit-sticky; /* for Safari */
+            position: sticky;
+            top: -1px;
+            padding-top:0px;
+            padding-left:0px;
+            padding-right:0px;
+            padding-bottom:0px;
+            z-index: 99;
+        }
+
+        .table-schedules th.schedTime .bordered {
+            background: #d0e8f7;
+            height: 40px;
+            padding: 0px;
+            border-bottom: 3px solid #72add2;
+            border-right: 3px solid #72add2;        
+        }
+        
+
+        .table-schedules td .bordered {
+            border-top: 0px;
+            border-left: 0px;
+            border-bottom: 3px solid #72add2;
+            border-right: 1px solid #fff;
+            width: 100%;
+            padding-top: 5px;
+            padding-bottom: 5px; 
+            height: 40px;
+
+        }
+
+        .table-schedules thead th {
+            height: 40px;
+            /*border-bottom: 3px solid #72add2;*/
+            position: -webkit-sticky; /* for Safari */
+            position: sticky;
+            background-color: #fff;
+            z-index: 999;
+            top: -1px;
+            padding:0px;
+        }
+
+        .table-schedules tbody th, .static {
+            position: -webkit-sticky; /* for Safari */
+            position: sticky;
+            left: -1px;
+            background-color: #fff;
+            border: 0px;
+            padding: 0px;
+            margin: 0px;
+            height: 60px;        
+            z-index: 100;
+        }
+
+        .table-schedules tbody th .hbordered {
+            border-top: 0px;
+            border-left: 0px;
+            border-right: 3px solid #72add2;
+            border-bottom: 1px solid #72add2;
+            width: 100%;
+            height: 100%;
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
+        .table-schedules td , .table-schedules td div.gen-med {
+            vertical-align: top;
+            height: 39px;
+            width: 37px;
+            font: 14px Arial;
+            text-align: center;
+        }
+
+
+    </style>
+@endsection    

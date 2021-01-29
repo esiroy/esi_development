@@ -36,6 +36,7 @@
 </head>
 
 <body class="bg-gray">
+
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
@@ -71,6 +72,8 @@
                             @endif
                             -->
                         @else
+
+                        <!--
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
@@ -88,6 +91,30 @@
                                     </form>
                                 </div>
                             </li>
+                            -->
+
+                            
+                                @php 
+                                    $member = App\Models\Member::where('user_id', Auth::user()->id )->first();
+                                    $agentTransaction = new App\Models\AgentTransaction();
+                                    $credits = $agentTransaction->getCredits($member->user_id)
+                                @endphp
+                            
+                                <span><a class="blue" href="{{ url('/user/?id='. Auth::user()->id)}}"><strong>ユーザ名 {{ $member->nickname }}</strong></a></span>                                
+
+                                <span class="text-success">({{ number_format($credits, 2) }})</span>
+                                <span class="px-2 text-success">|</span>
+
+                                <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>
+                                <span class="px-2 text-success">|</span>
+
+                                <span><a class="red" href="{{ route('logout_member') }}">ログアウト</a></span>
+
+                                <form id="logout-form" action="{{ route('logout_member') }}"
+                                    method="POST" style="display: none;">
+                                    @csrf
+                                </form>
+
                         @endguest
                     </ul>
                 </div>
@@ -109,24 +136,11 @@
         </div>
 
 
-        <main class="main-container">
-            @yield('content')
-        </main>
-
-        <!--
-        <footer class="container py-4 px-0 bg-light">
-            <div class="container border-top">
-                <div class="row">
-                    <div class="col-12 text-center py-3">
-                        <a class="navbar-brand" href="{{ url( route('admin.dashboard.index') ) }}">
-                            {{ config('app.name', 'My Tutor') }}
-                        </a>
-                    </div>
-                </div>
+        <main class="main-container mb-4">
+            <div class="container bg-light pb-5 rounded-bottom" style="border-bottom-right-radius: 0.50rem !important; border-bottom-left-radius: 0.50rem !important;">
+                @yield('content')
             </div>
-        </footer>
-        -->
-
+        </main>
 
     </div>
 

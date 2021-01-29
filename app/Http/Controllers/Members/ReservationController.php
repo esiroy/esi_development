@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Members;
 use App\Http\Controllers\Controller;
 use App\Models\Member;
 use App\Models\ReportCard;
+use App\Models\MemberDesiredSchedule;
 use App\Models\ScheduleItem;
+
 use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
@@ -59,43 +61,29 @@ class ReservationController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(ReportCard $reportcard,  MemberDesiredSchedule $memberDesiredSchedules)
     {
-        $user = Auth::user();
-        $member = Member::where('user_id', $user->id)->first();
+        $member = Member::where('user_id', Auth::user()->id)->first();
 
         if (isset($member)) {
-            $memberData = Member::find($member->id);
-            $skypeID = $memberData->communication_app_username;
 
-            $tutorData = Tutor::find($member->main_tutor_id);
-            $lecturer = (isset($tutorData->name_en)) ? $tutorData->name_en : '';
+            $latestReportCard = $reportcard->getLatest($member->user_id);
 
-            $data = [
-                'lecturer' => $lecturer,
-                'skypeID' => $skypeID,
-            ];
+            $desiredSchedules = $memberDesiredSchedules->getMemberDesiredSchedule($member->user_id);
 
-            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
-
-            return view('modules/member/reservations', compact('member', 'data', 'latestReportCard'));
+            return view('modules/member/reservations', compact('member', 'data', 'latestReportCard', 'desiredSchedules'));
         } else {
-
-            $roles = Auth::user()->roles;
-            if (!$roles->contains('title', 'Member')) {
+            
+            if (Auth::user()->roles->contains('title', 'Admin')) {
                 return redirect(route('admin.dashboard.index'));
-            } else {
-                /**
-                 * @todo: make a proper message here to your users that
-                 * @todo: other roles tried to view this page, abort the page.
-                 */
+            } else {            
                 abort(403, 'Unauthorized action, you are not allowed to view this page');
             }
         }
     }
 
     /**
-     * Member SEARCH FOR RESERVATIONS Reservations.
+     * Member Scheduled Reservations.
      *
      * @return \Illuminate\Http\Response
      */
@@ -140,12 +128,14 @@ class ReservationController extends Controller
             $shift = Shift::where("value", $shiftDuration)->first();
 
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
+
                         ->where('is_terminated', 0)
                         //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
-                        ->join('users', 'users.id', '=', 'tutors.user_id')
+                        //->join('users', 'users.id', '=', 'tutors.user_id')
+                        ->join('user_image', 'user_image.user_id', '=', 'tutors.user_id')
                         //->orderBy('firstname', 'ASC')
                         ->orderBy('sort', 'ASC')
-                        ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
+                        //->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
                         ->where('valid', 1)
                         ->get();
                                      

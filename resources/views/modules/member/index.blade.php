@@ -39,7 +39,7 @@
                     <div class="row">
                         <div class="col-md-12 mt-3">
                             <a href="{{ url('lessonrecord') }}"><button type="button" class="btn btn-warning text-white">受講履歴/添削履歴</button></a>
-                            <a href="reservation"><button type="button" class="btn btn-primary">レッスンの予約</button></a>
+                            <a href="{{ url('memberschedule') }}"><button type="button" class="btn btn-primary">レッスンの予約</button></a>
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');"><button type="button" class="btn btn-success">添削くん</button></a>
                         </div>
                     </div>
@@ -53,6 +53,49 @@
                         </p>
                     </div>
 
+                    <div id="member-lesson-schedules" class="card esi-card mt-3">
+                        <div class="card-header esi-card-header text-center">                            
+                            レッスンの予約
+                        </div>
+
+                        <div class="card-body">
+                            <div class="reservationTable">
+                                <!--[start reservation table -->
+                                <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="2" class="heading">担任講師による固定レッスン</th>
+                                        </tr>
+                                        <tr>
+                                            <th>Day</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        @foreach($desiredSchedules as $schedule)
+                                        <tr class="border-bottom">
+                                            <td class="text-center font-weight-normal">{{ $schedule->day ?? '' }}</td>
+                                            <td class="text-center font-weight-normal">{{ $schedule->desired_time ?? '' }}</td>
+                                        </tr>
+                                        @endforeach
+                                </table>
+                            </div>
+                            <!--[end reservation table] -->
+
+                            <div id="member-scheduler" class="mt-3">
+                                <p>
+                                    固定レッスン以外はこちらから予約して下さい
+                                    <img src="images/btnHand.jpg">
+                                    <a href="memberschedule"><img src="images/btnRed4.gif"></a>
+                                </p>
+                                <p>30 分前まで予約可能です</p>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!--[start] lesson lists-->
                     <div class="card  mt-4" style="">
                         <div class="card-header esi-card-header text-center">
                             予約表
@@ -62,7 +105,7 @@
                         <div class="card-body px-3">
                             初めての講師の場合、講師からSkype(ZOOM)コンタクトリクエストがあります。 レッスン時間の15分前にSkype(ZOOM)を立ち上げ承認してコールをお待ちください。
 
-                            <table cellspacing="0" cellpadding="9" align="center" class="tblRegister mt-3" width="100%">
+                            <table cellspacing="0" cellpadding="9" class="tblRegister mt-3" width="100%">
                                 <tbody>
                                     <tr>
                                         <th style="text-align: center;">Date</th>
@@ -85,9 +128,9 @@
 
                                         </td>
                                         <td style="text-align: center;">
-
-
-                                            <a href="javascript:void()" onclick="memoForm('{{$reserve->id}}')" data-toggle="modal" data-target="#exampleModal" data-id="{{ $reserve->id }}"><img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡</a>
+                                            <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">
+                                                <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
+                                            </a>
 
                                             <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-id="{{ $reserve->id }}">Open modal for @mdo</button>-->
 
@@ -111,38 +154,33 @@
         </div><!--[end] container -->
     </div> <!--[end] esi-box -->
 </div>
+<div class="modal fade" id="tutorMemoModal" tabindex="-1" role="dialog" aria-labelledby="tutorMemoLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="tutorMemoLabel">Memo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+           
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="messsage" class="col-form-label">Message:</label>
+                        <textarea class="form-control" id="message" name="message" ></textarea>
+                    </div>
 
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Memo</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form>
-
-        <!--
-          <div class="form-group">
-            <label for="recipient-name" class="col-form-label">Schedule Item ID:</label>
-            <input type="text" class="form-control" id="scheduleItem-id" readonly>
-          </div>-->
-
-          <div class="form-group">
-            <label for="message-text" class="col-form-label">Message:</label>
-            <textarea class="form-control" id="message-text"></textarea>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Send message</button>
-      </div>
+                </div>
+                <div class="modal-footer">
+                    <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+                    <button id="saveTutorMemo" type="submit" class="btn btn-light">Send</button>
+                </div>
+            </form>
+        </div>
     </div>
-  </div>
 </div>
+
+
 
 @endsection
 
@@ -171,19 +209,69 @@
         }
     }
 
-    window.addEventListener('load', function () {
-        $('#exampleModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget) // Button that triggered the modal
-            var id = button.data('id') // Extract info from data-* attributes
-            // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-            // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-            var modal = $(this)
-            //modal.find('.modal-title').text('New message to ' + id)
+    function getMemo(scheduleID) {
+        $.ajax({
+            type: 'POST', 
+            url: 'api/getMemo?api_token=' + api_token,
+            data: {
+                'scheduleID': scheduleID,
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found getting memo: " + error);
+            },            
+            success: function(data) {            
+                console.log("memo received....")            
+                $('#message').val(data.memo)
+            },
+        });
+    }
 
-            modal.find('#scheduleItem-id').val(id)
+    function sendMemo(scheduleID, message) {
+        $.ajax({
+            type: 'POST', 
+            url: 'api/sendMemo?api_token=' + api_token,
+            data: {
+                'scheduleID': scheduleID,
+                'message': message
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found getting memo: " + error);    
+            },
+            success: function(data) {
+            
+                console.log("memo sent....");
 
-            //modal.find('.modal-body input').val(id)
-        })
+                $('#tutorMemoModal').modal('hide')      
+            }
+        });
+    }
+
+    window.addEventListener('load', function () 
+    {
+        var button;
+        var id;
+        var modal;
+
+        $('#tutorMemoModal').on('show.bs.modal', function (event) 
+        {
+            button = $(event.relatedTarget) // Button that triggered the modal
+            id = button.data('id') // Extract info from data-* attributes            
+            modal = $(this); 
+            getMemo(id)
+        });
+
+        $('#saveTutorMemo').on('click', function() 
+        {           
+            let scheduleID = id;
+            let message = $('#message').val();
+            console.log(message);
+            sendMemo(scheduleID, message);
+        });
+
     });
 
 </script>

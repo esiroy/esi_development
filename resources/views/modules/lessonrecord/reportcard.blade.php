@@ -8,7 +8,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">User</li>
+                <li class="breadcrumb-item active" aria-current="page">Report Card</li>
             </ol>
         </nav>
 
@@ -34,19 +34,20 @@
 
                         <div class="card-body">
 
-                            <table border="0" cellspacing="5" cellpadding="0">
+                            <table  cellspacing="5" cellpadding="3">
 
                                 <tbody>
                                     <tr>
-                                        <td width="100">Member Name</td>
-                                        <td>:</td>
+                                        <td width="150">Member Name</td>
+                                        <td>: </td>
                                         <td><strong>
                                             @php
-                                                $member = \App\Models\Member::find($reportcard->member_id);                                                
+                                                $member = \App\Models\Member::where('user_id', $reportcard->member_id)->first(); 
                                             @endphp
-                                            {{ $member->user->first_name }}
+
+                                            {{ $member->user->firstname ?? '' }}
                                             {{ " " }}
-                                            {{ $member->user->last_name }}
+                                            {{ $member->user->lastname ?? '' }}
                                             
                                         </strong></td>
                                     </tr>
@@ -57,9 +58,9 @@
                                         <td>
                                             @php
                                                 $schedule = \App\Models\ScheduleItem::find($reportcard->schedule_item_id); 
-                                                $tutor = \App\Models\Tutor::find($schedule->tutor_id);                                                
+                                                $tutor = \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();  
                                             @endphp
-                                            {{ $tutor->name_en }}                                            
+                                            {{ $tutor->user->firstname ?? ' - ' }}                                            
                                         </td>
                                     </tr>
 
@@ -75,32 +76,32 @@
                                                 $schedule = \App\Models\ScheduleItem::find($reportcard->schedule_item_id);                                                
                                             @endphp
 
-                                            <strong>{{ $schedule->lesson_time }}</strong>
+                                            {{ $schedule->lesson_time }}
                                         </td>
                                     </tr>
 
                                     <tr>
                                         <td>Lesson Course</td>
                                         <td>:</td>
-                                        <td><strong>{{ $reportcard->lesson_course }}</strong></td>
+                                        <td>{{ $reportcard->lesson_course }}</td>
                                     </tr>
 
                                     <tr>
                                         <td>Lesson Material</td>
                                         <td>:</td>
-                                        <td><strong>{{ $reportcard->lesson_material }}</strong></td>
+                                        <td>{{ $reportcard->lesson_material }}</td>
                                     </tr>
 
                                     <tr valign="top">
                                         <td>Lesson Subject (Exercises)</td>
                                         <td>:</td>
-                                        <td><strong>{{ $reportcard->lesson_subject }}</strong></td>
+                                        <td>{{ $reportcard->lesson_subject }}</td>
                                     </tr>
 
                                     <tr>
                                         <td>Lesson Level</td>
                                         <td>:</td>
-                                        <td><strong>{{ $reportcard->lesson_level }}</strong></td>
+                                        <td>{{ $reportcard->lesson_level }}</td>
                                     </tr>
 
                                     <tr>

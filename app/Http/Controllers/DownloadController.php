@@ -3,57 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
-use App\Http\Requests, Response, Storage;
+use Response, Storage;
 
 class DownloadController extends Controller
 {
-    function index(Request $request) {
-
-        if (is_object($request)) 
-        {
-            try 
+    public function index(Request $request)
+    {
+        if (is_object($request)) {
+            try
             {
-
                 $name = $request->filename;
                 $folder_id = $request->folder_id;
-                
-
-                //$file = public_path() . "/". $name;
-
-              
-                //  Download folder
-                $file = public_path(). "/storage/uploads/". $folder_id ."/". $name;
-
-               
-
-                $content_type = $this->mime_content_type($file);        
-
-                $headers = array(
-                          'Content-Type: '. $content_type .'',
-                         
-                        );
-
-                return Response::download($file, $name);  
+                $file = public_path() . "/storage/uploads/" . $folder_id . "/" . $name;
+                $content_type = $this->mime_content_type($file);
+                $headers = array('Content-Type: ' . $content_type . '');
+                return Response::download($file, $name);
+            } catch (\Exception $e) {
+                echo $e->getMessage();
             }
-            catch (\Exception $e) 
-            {                
-                echo  $e->getMessage();
 
-                //return redirect()->back()->with('error_message', $e->getMessage());
-            }
-            
         } else {
 
             abort(403, 'Unauthorized action.');
 
         }
- 	
     }
 
+    public function downloadLessonMaterial($filename)
+    {
 
-	public function mime_content_type($filename) 
-	{
+        try
+        {
+            
+            $file = public_path() . "/storage/uploads/lesson_materials/" . $filename;
+
+
+            $name = basename($filename);
+
+            $content_type = $this->mime_content_type($file);
+            $headers = array('Content-Type: ' . $content_type . '');
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+
+        return Response::download($file, $name);
+
+    }
+
+    public function mime_content_type($filename)
+    {
         $mime_types = array(
 
             'txt' => 'text/plain',
@@ -111,24 +109,20 @@ class DownloadController extends Controller
             'ods' => 'application/vnd.oasis.opendocument.spreadsheet',
         );
 
-		$temp_filename = explode('.',$filename);
+        $temp_filename = explode('.', $filename);
 
         $ext = strtolower(array_pop($temp_filename));
 
         if (array_key_exists($ext, $mime_types)) {
             return $mime_types[$ext];
-        }
-        elseif (function_exists('finfo_open')) {
+        } elseif (function_exists('finfo_open')) {
             $finfo = finfo_open(FILEINFO_MIME);
             $mimetype = finfo_file($finfo, $filename);
             finfo_close($finfo);
             return $mimetype;
-        }
-        else {
+        } else {
             return 'application/octet-stream';
         }
     }
-
-
 
 }

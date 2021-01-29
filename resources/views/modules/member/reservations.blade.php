@@ -34,11 +34,10 @@
                         </div>
 
                         <div class="card-body">
-
                             <div class="reservationTable">
                                 <!--[start reservation table -->
                                 <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center">
-                                    <tbody>
+                                    <thead>
                                         <tr>
                                             <th colspan="2" class="heading">担任講師による固定レッスン</th>
                                         </tr>
@@ -46,10 +45,8 @@
                                             <th>Day</th>
                                             <th>Time</th>
                                         </tr>
-                                    </tbody>
+                                    </thead>
                                 </table>
-
-
                             </div>
                             <!--[end reservation table] -->
 

@@ -18,7 +18,7 @@
 
                     <div class="row">
                         <div class="col-2 small pr-0"><label for="currentPassword" class="px-0 col-md-12 col-form-label">
-                                <span class="text-danger">*</span> Current Password <div class="float-right">:</div></label>
+                                <span class="text-danger">*</span> 現在のパスワード	 <div class="float-right">:</div></label>
                         </div>
                         <div class="col-6">
                             <input type="password" id="currentPassword" name="currentPassword" class="form-control form-control-sm @error('currentPassword') is-invalid @enderror" >
@@ -36,7 +36,7 @@
                     <div class="row">
                         <div class="col-2 small pr-0">
                             <label for="newPassword" class="px-0 col-md-12 col-form-label">
-                                <span class="text-danger">*</span> New Password <div class="float-right">:</div>
+                                <span class="text-danger">*</span> 新しいパスワード <div class="float-right">:</div>
                             </label>
                         </div>
                         <div class="col-6">
@@ -55,7 +55,7 @@
                     <div class="row">
                         <div class="col-2 small pr-0">
                             <label for="confirmPassword" class="px-0 col-md-12 col-form-label">
-                                <span class="text-danger">*</span> Retype Password <div class="float-right">:</div>
+                                <span class="text-danger">*</span> 新しいパスワード を再びタイプしなさい	:	 <div class="float-right">:</div>
                             </label>
                         </div>
                         <div class="col-6">
@@ -75,7 +75,7 @@
 
                         </div>
                         <div class="col-6">
-                            <button type="submit" class="btn btn-primary btn-sm">Change Password</button>
+                            <button type="submit" class="btn btn-primary btn-sm btn-pink  col-md-4">変更パスワード</button>
 
                         </div>
                     </div>

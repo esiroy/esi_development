@@ -7,12 +7,18 @@ use Illuminate\Http\Request;
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\User;
+use App\Models\Member;
 use App\Models\Shift;
 use App\Models\Tutor;
 
 use Gate;
 use DB;
 use Auth;
+use Config;
+
+use Mail;
+use App\Mail\CustomerSupport as CustomerSupportMail;
+
 
 use App\Models\ScheduleItem;
 
@@ -32,6 +38,38 @@ class dummyController extends Controller
     public function index()
     {
 
+        //$user = User::findOrFail(Auth::user()->id);
+
+
+        /*
+        Mail::send('emails.reminder', ['user' => $user], function ($m) use ($user) 
+        {
+            $m->from($user->email, 'This is my first mail from laravel localhost Application! Roy');
+
+            $m->to('esi.roy.dev@gmail.com', $user->firstname)->subject('Your Test Roy Reminder!');
+        });
+        */
+        
+        $user = User::where('username', 'abellana@gmail.com')->first();
+
+        $member = Member::where('user_id', $user->id)->first();
+
+        $data =  ['inquiry' => "this is a test inquiry"];
+
+        $mail = Mail::send(new CustomerSupportMail($member, $data));
+
+        echo $mail;
+
+    }
+
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
         $date = '2021-01-14';
         $duration = 25;
         $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
@@ -62,17 +100,6 @@ class dummyController extends Controller
         */
         //echo "<pre>";
         //print_r ($scheduleItems);
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -94,7 +121,15 @@ class dummyController extends Controller
      */
     public function show($id)
     {
-        //
+        $user = User::where('username', 'abellana@gmail.com')->first();
+
+        $member = Member::where('user_id', $user->id)->first();
+
+        $data =  ['inquiry' => "this is a test inquiry"];
+        
+        
+        return view('emails.customersupport_to_admin', compact('member', 'data'));
+        
     }
 
     /**

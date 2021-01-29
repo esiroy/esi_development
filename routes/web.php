@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('dump', 'dummyController@index');
+Route::resource('dump', 'dummyController');
 //Route::get('test/{id}', 'TableImporterController@test')->name('test');
 //Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 
@@ -89,13 +89,23 @@ Route::resource('importReportCardsDate', 'TableReportCardDateImporterController'
 Route::get('importReportCardsDate/index/{per_item}', 'TableReportCardDateImporterController@index');
 Route::get('importReportCardsDate/{id}/{per_item}', 'TableReportCardDateImporterController@show');
 
-
-
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
+Route::get('/faq', 'MemberDashboard@faq')->name('user');
 
+/*STATIC PAGES */
+Route::get('/stagelevel', 'PageController@stageLevel')->name('user');
+Route::get('/user', 'PageController@index')->name('user');
+
+
+/** TUTOR */
+Route::resource('viewtutor', 'TutorProfileController');
+
+//Settings
 Route::resource('/settings', 'Members\MemberSettingController');
 Route::put('settings', 'Members\MemberSettingController@updatePassword')->name('settings.updatePassword');
+
+//Image upload
 Route::resource('image-upload', 'Admin\imageUploadController');
 
 
@@ -116,8 +126,7 @@ Route::get('/reportcard/{id}', 'LessonRecordController@reportcard')->name('repor
 Route::get('/userreportcarddate/{id}', 'LessonRecordController@userreportcarddate')->name('reportcarddate');
 
 
-//lesson materials
-Route::get('/lessonmaterials', 'MaterialsController@index')->name('materials');
+
 
 /* Public Folder View */
 Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
@@ -133,11 +142,17 @@ Route::resource('uploader', 'FolderCreatorController');
 Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
 /* Download Controller*/
-Route::resource('download', 'DownloadController');
+//Route::resource('download', 'DownloadController');
+Route::get('download/{path}', 'DownloadController@downloadLessonMaterial');
 
 
 /*Customer Support */
 Route::resource('customersupport', 'CustomerSupportController');
+Route::resource('faq', 'FAQController');
+
+/*Lesson Support */
+Route::resource('lessonmaterials', 'LessonMaterialsController');
+
 
 //export file (public)
 Route::get('exportCSV', 'ExportController@exportCSV')->name('exportMemberCSV');
