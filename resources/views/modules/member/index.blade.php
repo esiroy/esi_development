@@ -35,10 +35,8 @@
 
                     <h1 class="callout">お知らせ</h1>
 
-                    <div class="blueBrokenLineBox">
-                      
-
-                        {{ html_entity_decode($announcement->body) ?? '' }}
+                    <div class="blueBrokenLineBox">                    
+                        {!! html_entity_decode($announcement->body) ?? '' !!}
                     </div>
 
                     <div class="row">
