@@ -55,7 +55,7 @@ class ReportController extends Controller
         }
 
        
-        return view('admin.modules.report.index', compact('schedules', 'date', 'from', 'to'));
+        return view('admin.modules.report.index', compact('schedules', 'from', 'to'));
     }
 
 
