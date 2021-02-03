@@ -1008,6 +1008,13 @@ export default {
     },
     validations: 
     {
+        //instantiate variables for users
+        submitted: false,
+        //set calendar characters to japanese
+        ja: ja, 
+        //list of main tutors
+        mainTutors: [],
+
         user: 
         {           
             

@@ -345,13 +345,13 @@ class MemberController extends Controller
         //disallow duplicate email and username
         $validator = Validator::make(
             [
-                'first_name' => $data->first_name,
-                'last_name' => $data->last_name,
+                'firstname' => $data->first_name,
+                'lastname' => $data->last_name,
                 'email' => $data->email,
             ],
             [
-                'first_name' => ['required', 'max:255'],
-                'last_name' => ['required', 'max:255'],
+                'firstname' => ['required', 'max:255'],
+                'lastname' => ['required', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255',
                     Rule::unique('users')->ignore($data->user_id)->whereNull('deleted_at'),
                 ],
@@ -370,9 +370,6 @@ class MemberController extends Controller
 
             try {
 
-                /******
-                 * UPDATE USER INFORMATION
-                 */
                 $userData =
                     [
                     'user_type' => 'MEMBER',
@@ -425,7 +422,7 @@ class MemberController extends Controller
                     //course_category_id        => null,
                     //course_item_id            => null,
                     //english_level             => null,
-                    'communication_app' => ucfirst(strtolower($data->communication_app)),
+                    'communication_app' => ucfirst($data->communication_app),
                     'skype_account' => ($data->communication_app == 'skype') ? $data->communication_app_username : null,
                     'zoom_account' => ($data->communication_app == 'zoom') ? $data->communication_app_username : null,
                     'membership' => $data->membership,

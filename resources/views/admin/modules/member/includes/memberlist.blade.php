@@ -43,8 +43,8 @@
 
                 <td class="small">{{$member->user->email ?? "-" }}</td>
 
+                <!--communcation app-->
                 <td class="small">
-
                     @if (isset($member->communication_app))
                         {{ $member->communication_app }} : {!! "<BR>" !!}
                     @endif
@@ -52,6 +52,7 @@
                     @if (strtolower($member->communication_app) == 'skype') {{ $member->skype_account }} @endif
                     @if (strtolower($member->communication_app) == 'zoom') {{ $member->zoom_account }} @endif
                 </td>
+                
                 <td class="small">                
                     @php 
                         $agentTransaction = new App\Models\AgentTransaction();
@@ -63,7 +64,18 @@
                     <a href="/admin/member/schedulelist/{{$member->user_id}}"><img src="{{ url('images/iClass.jpg')}}"></a>
                 </td>
 
-                <td class="small">該当なし</td>
+                <td class="small">
+                    <!-- Main Tutor-->
+                    @php 
+                        $tutorObj = new App\Models\Tutor();
+                        $tutorInfo = $tutorObj->where('user_id', $member->tutor_id)->first();                     
+                    @endphp                    
+
+                   {{ $tutorInfo->user->firstname  ?? ' - ' }}
+
+                </td>
+
+
                 <td class="small text-center">
                     <a href="/admin/member/paymenthistory/{{$member->user_id}}"><img src="{{ url('images/iHistory.jpg')}}"></a>
                 </td>
