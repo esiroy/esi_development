@@ -138,7 +138,10 @@
                                             @php
                                                 $tutor = \App\Models\Tutor::where('user_id', $reserve->tutor_id)->first();
                                             @endphp
-                                            <div id="{{ $tutor->user_id }}" class="tutor_name">{{ $tutor->user->firstname ?? " - " }} {{ $tutor->user->lastname ?? "" }}</div>
+
+                                            @if (isset($tutor->user_id))
+                                                <div id="{{ $tutor->user_id }}" class="tutor_name">{{ $tutor->user->firstname ?? " - " }} {{ $tutor->user->lastname ?? "" }}</div>
+                                            @endif
 
                                         </td>
                                         <td style="text-align: center;">
