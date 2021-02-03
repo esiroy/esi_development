@@ -14,11 +14,17 @@
 
         <div class="container pb-5">
             <div class="row">
+
                 <!--sidebar-->
                 <div class="col-md-3">
                     <div>
                         @include('modules.member.sidebar.profile')
                     </div>
+
+                    <div class="mt-3 mb-4">
+                        @include('modules.member.sidebar.customersupport')
+                    </div>
+
                     <div class="mt-3 mb-4">
                         @include('modules.member.sidebar.reports')
                     </div>
@@ -26,21 +32,26 @@
                 <!--[end sidebar]-->
 
                 <div class="col-md-9">
+
+                    <h1 class="callout">お知らせ</h1>
+
                     <div class="blueBrokenLineBox">
-                        <div class="text-center">
-                            <p>只今、4月26日(日)まで講師スケジュールが公開されております。</p>
-                            <p>講師スケジュールの更新は毎週月曜日を予定しております。</p>
-                            <p>＜講師臨時休講のご案内＞</p>
-                            <p>&nbsp;</p>
-                            <span style="font-size: medium;"><a href="https://www.mytutor-jpn.com/info/2020/0317152413.html">一時的　在宅勤務講師のご案内　</a></span>
-                        </div>
+                        {!! $announcement->body ?? '' !!}
                     </div>
 
                     <div class="row">
                         <div class="col-md-12 mt-3">
                             <a href="{{ url('lessonrecord') }}"><button type="button" class="btn btn-warning text-white">受講履歴/添削履歴</button></a>
                             <a href="{{ url('memberschedule') }}"><button type="button" class="btn btn-primary">レッスンの予約</button></a>
-                            <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');"><button type="button" class="btn btn-success">添削くん</button></a>
+
+
+                            <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
+                                <button type="button" class="btn btn-success">
+                                    添削くん
+                                </button></a>
+
+                       
+
                         </div>
                     </div>
 
@@ -53,36 +64,41 @@
                         </p>
                     </div>
 
-                    <div id="member-lesson-schedules" class="card esi-card mt-3">
-                        <div class="card-header esi-card-header text-center">                            
-                            レッスンの予約
+
+
+                    <div class="reservationTable mt-4">
+                            <!--[start reservation table -->
+                            <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2" class="heading">担任講師による固定レッスン</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach($desiredSchedules as $schedule)
+                                    <tr class="border-bottom">
+                                        <td class="text-center font-weight-normal">{{ $schedule->day ?? '' }}</td>
+                                        <td class="text-center font-weight-normal">{{ $schedule->desired_time ?? '' }}</td>
+                                    </tr>
+                                    @endforeach
+                            </table>
                         </div>
 
-                        <div class="card-body">
-                            <div class="reservationTable">
-                                <!--[start reservation table -->
-                                <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center">
-                                    <thead>
-                                        <tr>
-                                            <th colspan="2" class="heading">担任講師による固定レッスン</th>
-                                        </tr>
-                                        <tr>
-                                            <th>Day</th>
-                                            <th>Time</th>
-                                        </tr>
-                                    </thead>
 
-                                    <tbody>
-                                        @foreach($desiredSchedules as $schedule)
-                                        <tr class="border-bottom">
-                                            <td class="text-center font-weight-normal">{{ $schedule->day ?? '' }}</td>
-                                            <td class="text-center font-weight-normal">{{ $schedule->desired_time ?? '' }}</td>
-                                        </tr>
-                                        @endforeach
-                                </table>
-                            </div>
-                            <!--[end reservation table] -->
-
+                    <!--
+                    <div id="member-lesson-schedules" class="card esi-card mt-3">                        
+                        <div class="card-header esi-card-header text-center">                            
+                                レッスンの予約
+                        </div>
+                        
+                       
+                        <div class="card-body">                          
+                       
                             <div id="member-scheduler" class="mt-3">
                                 <p>
                                     固定レッスン以外はこちらから予約して下さい
@@ -91,12 +107,14 @@
                                 </p>
                                 <p>30 分前まで予約可能です</p>
                             </div>
+                       
 
                         </div>
                     </div>
+                    -->
 
                     <!--[start] lesson lists-->
-                    <div class="card  mt-4" style="">
+                    <div class="card mt-4" style="">
                         <div class="card-header esi-card-header text-center">
                             予約表
                             <small style="font-size:11px; color:#333">予約記録は最大５件まで表示されます</small>
@@ -154,32 +172,11 @@
         </div><!--[end] container -->
     </div> <!--[end] esi-box -->
 </div>
-<div class="modal fade" id="tutorMemoModal" tabindex="-1" role="dialog" aria-labelledby="tutorMemoLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="tutorMemoLabel">Memo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-           
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="messsage" class="col-form-label">Message:</label>
-                        <textarea class="form-control" id="message" name="message" ></textarea>
-                    </div>
 
-                </div>
-                <div class="modal-footer">
-                    <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
-                    <button id="saveTutorMemo" type="submit" class="btn btn-light">Send</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
+
+ @include('modules.member.popup.content')
+ @include('modules.member.popup.memo')
 
 
 @endsection
@@ -250,6 +247,15 @@
         });
     }
 
+    function closePopUp(url) {
+        $('#writingServiceModal').modal('hide');    
+
+        window.open(url,'popUpWindow','height=600,width=720,left=50,top=50,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes')
+
+        return false;
+
+    }
+
     window.addEventListener('load', function () 
     {
         var button;
@@ -271,6 +277,8 @@
             console.log(message);
             sendMemo(scheduleID, message);
         });
+
+
 
     });
 

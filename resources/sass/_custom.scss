@@ -1,3 +1,28 @@
+a, a:hover {
+    text-decoration: none;
+}
+
+.callout {
+    background: url(../images/bgCallout.gif) no-repeat;
+    margin: -20px 0 0 0;
+    padding: 3px 0 0 12px;
+    height: 40px;
+    width: auto;
+    font: normal 18px Arial;
+    color: #fff;
+}
+
+.custom-button {
+    font-size: 1em;
+    padding: 10px;
+    border: 2px solid #06D85F;
+    border-radius: 20px/50px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+}
+
+
 .ck-editor__editable,
 textarea {
     min-height: 150px;

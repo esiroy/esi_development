@@ -28,14 +28,14 @@
                                             <td>Lesson Course</td>
                                             <td colspan="6">
                                                 <input required type="text" name="lessonCourse" id="lessonCourse*" class="form-control form-control-sm"
-                                                value="@if (isset($reportCard->lesson_course)) {{ $reportCard->lesson_course }}  @endif" size="50">
+                                                value="@if (isset($reportCard->lesson_course)) {{ $reportCard->lesson_course }}  @else {{  $latestReportCard->lesson_course }} @endif" size="50">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Lesson Material</td>
                                             <td colspan="6">
                                                 <input required type="text" name="lessonMaterial" id="lessonMaterial*" class="form-control form-control-sm"
-                                                value="@if (isset($reportCard->lesson_material)) {{ $reportCard->lesson_material }}  @endif" size="50">
+                                                value="@if (isset($reportCard->lesson_material)) {{ $reportCard->lesson_material }}   @else {{  $latestReportCard->lesson_material }} @endif" size="50">
                                             </td>
                                         </tr>
                                         <tr>
@@ -44,7 +44,7 @@
                                             </td>
                                             <td colspan="6">
                                                 <input required type="text" name="lessonSubject" id="lessonSubject*" class="form-control form-control-sm"
-                                                value="@if (isset($reportCard->lesson_subject)) {{ $reportCard->lesson_subject }}  @endif" size="50">
+                                                value="@if (isset($reportCard->lesson_subject)) {{ $reportCard->lesson_subject }}   @else {{  $latestReportCard->lesson_subject }} @endif" size="50">
                                             </td>
                                         </tr>
                                         <tr>
@@ -52,17 +52,25 @@
                                                 Lesson Level
                                             </td>
                                             <td colspan="6">
+                                                @php 
+                                                    if (isset($reportCard->lesson_level)){
+                                                        $lesson_level = $reportCard->lesson_level;
+                                                    } elseif(isset($latestReportCard->lesson_level)) {
+                                                        $lesson_level = $latestReportCard->lesson_level;
+                                                    }
+                                                @endphp
+
                                                 <select name="lessonLevel" class="form-control form-control-sm col-md-3">
-                                                    <option value="1" @if (isset($reportCard->lesson_level) && ($reportCard->lesson_level == '1')) {{ 'selected' }}  @endif>1</option>
-                                                    <option value="2" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '2')) {{ 'selected' }}  @endif>2</option>
-                                                    <option value="3" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '3')) {{ 'selected' }}  @endif>3</option>
-                                                    <option value="4" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '4')) {{ 'selected' }}  @endif>4</option>
-                                                    <option value="5" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '5')) {{ 'selected' }}  @endif>5</option>
-                                                    <option value="6" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '6')) {{ 'selected' }}  @endif>6</option>
-                                                    <option value="7" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '7')) {{ 'selected' }}  @endif>7</option>
-                                                    <option value="8" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '8')) {{ 'selected' }}  @endif>8</option>
-                                                    <option value="9" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '9')) {{ 'selected' }}  @endif>9</option>
-                                                    <option value="10" @if (isset($reportCard->lesson_level) &&($reportCard->lesson_level == '10')) {{ 'selected' }}  @endif>10</option>
+                                                    <option value="1" @if ($lesson_level == '1')) {{ 'selected' }}  @endif>1</option>
+                                                    <option value="2" @if ($lesson_level == '2')) {{ 'selected' }}  @endif>2</option>
+                                                    <option value="3" @if ($lesson_level == '3')) {{ 'selected' }}  @endif>3</option>
+                                                    <option value="4" @if ($lesson_level == '4')) {{ 'selected' }}  @endif>4</option>
+                                                    <option value="5" @if ($lesson_level == '5')) {{ 'selected' }}  @endif>5</option>
+                                                    <option value="6" @if ($lesson_level == '6')) {{ 'selected' }}  @endif>6</option>
+                                                    <option value="7" @if ($lesson_level == '7')) {{ 'selected' }}  @endif>7</option>
+                                                    <option value="8" @if ($lesson_level == '8')) {{ 'selected' }}  @endif>8</option>
+                                                    <option value="9" @if ($lesson_level == '9')) {{ 'selected' }}  @endif>9</option>
+                                                    <option value="10" @if ($lesson_level == '10')) {{ 'selected' }}  @endif>10</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -110,7 +118,7 @@
                                         <tr>
                                             <td colspan="7">
                                                 Tutor Comment <br>
-                                                <textarea name="comment" rows="5" cols="70" class="form-control form-control-sm"> @if(isset($reportCard->comment)) {{ $reportCard->comment }}  @endif</textarea>
+                                                <textarea name="comment" rows="5" cols="70" class="form-control form-control-sm">@if(isset($reportCard->comment)) {{ $reportCard->comment }}@endif</textarea>
                                             </td>
                                         </tr>
                                         <tr>

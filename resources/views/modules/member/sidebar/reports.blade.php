@@ -1,12 +1,12 @@
 <!--latest report cards-->
 
- <div class="profile blueBox pt-0 px-0">
-    <div class="col-md-12 bg-success text-white pt-1 pb-1">
+ <div class="profile bg-lightgreen pt-0 pb-4 px-0">
+    <div class="col-md-12 bg-green text-white pt-1 pb-1">
        メンバー
     </div>
 
 
-     <div id="userDetails" class="row mx-2">
+     <div id="userDetails" class="row mx-0 pt-2">
 
          <div class="col-md-12">
              <div class="text-secondary">Level: 

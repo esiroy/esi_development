@@ -62,6 +62,7 @@ mix.js(
     )
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
+    .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .sass("resources/sass/app.scss", "public/css/app.css")
     .sass("resources/sass/admin.scss", "public/css/admin.css")
     .version()

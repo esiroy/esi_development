@@ -74,6 +74,7 @@ class MemberController extends Controller
                                     "));
         */
         
+        
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')                            
                             ->select("members.*", "users.id", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name"));
 
@@ -102,11 +103,22 @@ class MemberController extends Controller
                     $memberQuery = $memberQuery->orWhere('users.email', $email);
                 }
                 
+            } else {
+
+                //user did not search, check user if tutor, if user tutor then show only members that is he/she is tutoring... 
+                if (strtolower(Auth::user()->user_type) == "tutor") 
+                {
+                    $memberQuery = $memberQuery->where('tutor_id', Auth::user()->id);
+                }                
             } //[END] USER SEARCH
 
         }
 
+
+
         $members = $memberQuery->orderby('users.id', 'ASC')->paginate(Auth::user()->items_per_page);
+        
+        
 
         //Tutor Query
         //$tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();

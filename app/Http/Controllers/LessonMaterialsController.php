@@ -59,16 +59,21 @@ class LessonMaterialsController extends Controller
 
             $courseParents = $courseCategory->getCourses($id);
 
-
-
-            if (count($courseParents) == 0) {
-
+            if (count($courseParents) == 0) 
+            {
                 $course = $courseCategory->getCourseInfo($id);
 
+                //get course siblings ()
+                if (isset($course->parent_course_category)) {
+                    $courseSiblings = $courseCategory->getSiblings($id);
+                } else {
+                  
+                    $courseSiblings = array();
+                }         
 
                 $lessonMaterials = $lessonMaterial->getLessonMaterial($id);
 
-                return view('modules/lessonmaterials/materials', compact('member', 'latestReportCard', 'lessonMaterials', 'course'));
+                return view('modules/lessonmaterials/materials', compact('member', 'latestReportCard', 'lessonMaterials', 'course', 'courseSiblings'));
 
             } else {
 

@@ -6,6 +6,7 @@ use App\Models\ReportCard;
 use App\Models\MemberDesiredSchedule;
 use App\Models\ScheduleItem;
 use App\Models\User;
+use App\Models\Announcement;
 use Auth;
 
 class MemberDashboard extends Controller
@@ -20,19 +21,28 @@ class MemberDashboard extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(ScheduleItem $scheduleItem, ReportCard $reportcard, MemberDesiredSchedule $memberDesiredSchedules )
+    public function index(ScheduleItem $scheduleItems, ReportCard $reportcards, MemberDesiredSchedule $memberDesiredSchedules,  Announcement $announcements) 
     {
         $member = Member::where('user_id', Auth::user()->id)->first();
 
         if (isset($member)) {
 
-            $reserves = $scheduleItem->getMemberLessons($member);
+            $reserves = $scheduleItems->getMemberLessons($member);
 
-            $latestReportCard = $reportcard->getLatest($member->user_id);
+            $latestReportCard = $reportcards->getLatest($member->user_id);
 
             $desiredSchedules = $memberDesiredSchedules->getMemberDesiredSchedule($member->user_id);            
 
-            return view('modules/member/index', compact('member', 'reserves', 'latestReportCard',  'desiredSchedules'));
+            $today = date('Y-m-d');
+
+            $announcement = $announcements->where('valid', true)
+                            ->where('is_hidden', false)
+                            ->orderBy('created_at', 'DESC')
+                            ->whereDate('date_from','<=', $today)
+                            ->whereDate('date_to','>=', $today)
+                            ->first();
+
+            return view('modules/member/index', compact('member', 'reserves', 'latestReportCard',  'desiredSchedules', 'announcement'));
 
         } else {
             

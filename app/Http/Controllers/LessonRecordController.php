@@ -46,16 +46,13 @@ class LessonRecordController extends Controller
                 'skypeID'   => $skypeID,            
             ];  
             
-            $reportcards = ReportCard::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');          
+            $reportcards = ReportCard::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
             
-      
-            
-            $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');
-            
+            $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');            
     
-            
-    
-            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
+            $latestReportCard = ReportCard::where('member_id', $member->user_id)->OrderBy('created_at', 'DESC')->first();
+
+
             
             return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
 

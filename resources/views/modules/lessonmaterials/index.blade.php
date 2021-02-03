@@ -40,7 +40,7 @@
                                 @if (isset( $courseParent->name ))
                                 <div style="border-bottom:1px dashed #d4d4d4">
                                     <div class="text-left px-5 ml-4 py-4">                                        
-                                        <div class="font-weight-bold" style="margin-left:150px">{{ $courseParent->name ?? '' }}</div>
+                                        <div class="font-weight-bold" style="margin-left:160px">{{ $courseParent->name ?? '' }}</div>
                                         <p id="parent-category-description" class="text-secondary">{!! $courseParent->description ?? '' !!}</p>
                                     </div>
                                 </div>
@@ -49,24 +49,22 @@
                                 @foreach($courseParents as $item)
                                 <div style="border-bottom:1px dashed #d4d4d4">
                                     <div class="text-left px-5 ml-4 py-4">
-
                                         <table>
                                             <tr>
-                                                <td style="width:150px">
+                                                <td class="w-25 align-top">
                                                     @if (isset($item->path))
                                                     <img src="{{ Storage::url($item->path) }}">
                                                     @endif
                                                 </td>
-                                                <td>
+                                                <td class="align-top">
                                                     <a id="parent-category-name" href="{{ url('lessonmaterials/'.$item->id )}}" class="text-danger font-weight-bold">{{ $item->name }}</a>
                                                     <p id="parent-category-description" class="text-secondary">{!! $item->description !!}</p>
                                                 </td>
                                         </table>
-
                                     </div>
-
                                 </div>
                                 @endforeach
+
                             </div>
 
                         </div>

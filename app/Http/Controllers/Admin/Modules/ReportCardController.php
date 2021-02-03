@@ -21,12 +21,16 @@ class ReportCardController extends Controller
     */
     public function index(Request $request) 
     {
-        $scheduleitemid = $request->scheduleitemid;
-        $scheduleItem = ScheduleItem::find($scheduleitemid);
+       
 
-        //get member details        
-        $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first();
+        $scheduleitemid = $request->scheduleitemid;
+
+        $scheduleItem = ScheduleItem::find($scheduleitemid);
         
+        //get member details        
+        $memberInfo = Member::where('user_id',$scheduleItem->member_id)->first();       
+        
+
         //get photo
         $userImageObj = new UserImage();
         $userImage = $userImageObj->getMemberPhoto($memberInfo);
@@ -40,7 +44,17 @@ class ReportCardController extends Controller
 
         $reportCard = ReportCard::where('schedule_item_id', $scheduleitemid)->first();
 
-        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'memberInfo', 'tutorInfo'));
+
+        //get latest report cards for faster input (requested by manager)
+        $latestReportCard = null;
+                
+        if ($scheduleItem->member_id) {
+            $latestReportCard = ReportCard::where('member_id', $scheduleItem->member_id)->orderBy('created_at', 'DESC')->first();            
+        }
+
+
+
+        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo'));
     }
 
 

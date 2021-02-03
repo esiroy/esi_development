@@ -1,6 +1,6 @@
 
     <div class="profile blueBox pt-0 px-0">
-        <div class="col-md-12 bg-primary text-white pt-1 pb-1">
+        <div class="col-md-12 bg-blue text-white pt-1 pb-1">
             マイページ
         </div>
         

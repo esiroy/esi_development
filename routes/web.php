@@ -91,11 +91,12 @@ Route::get('importReportCardsDate/{id}/{per_item}', 'TableReportCardDateImporter
 
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
-Route::get('/faq', 'MemberDashboard@faq')->name('user');
 
 /*STATIC PAGES */
 Route::get('/stagelevel', 'PageController@stageLevel')->name('stagelevel');
-Route::get('/user', 'PageController@index')->name('user');
+Route::get('/user', 'MemberDashboard@index')->name('user');
+Route::get('/faq', 'MemberDashboard@faq')->name('faq');
+
 
 
 /** TUTOR */

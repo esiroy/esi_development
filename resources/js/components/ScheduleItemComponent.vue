@@ -758,7 +758,7 @@ export default {
                     alert (response.data.message);                   
                 }
 			}).catch(function(error) {
-                alert("Error: Get Member List - " + error);                
+                console.log("Error: Get Member List - " + error);                
 			});               
         },
         getSchedules(scheduled_at, shiftDuration) 
@@ -788,7 +788,7 @@ export default {
                     alert (response.data.message);                   
                 }
 			}).catch(function(error) {
-                alert("Error " + error);                
+                console.log("Error " + error);                
 			});            
 
         },

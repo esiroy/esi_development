@@ -57,8 +57,11 @@
                             @can('report_access', Auth::user())
                                 <span data-href="/exportCSV" id="export" class="btn btn-primary btn-sm" onclick="exportTasks(event.target); return false">Generate Member List</span>
                             @endcan
+
+                            @if (strtolower(Auth::user()->user_type) == 'admin' || strtolower(Auth::user()->user_type) == 'administrator')
                             <a href="{{ url('admin/member?toexpire=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button></a>
                             <a href="{{ url('admin/member?expired=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Expired</button></a>
+                            @endif
                         </div>
                           <div class="col-7">   
                             <div class="float-right mt-3">

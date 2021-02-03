@@ -40,11 +40,11 @@
                             <div id="category" class="pb-5">                                
                                 <div style="border-bottom:1px dashed #d4d4d4">
 
-                                    <div class="text-left px-5 ml-4 py-4">
+                                    <div class="text-left px-3 ml-4 py-3">
 
                                         <table>
                                             <tr>
-                                                <td style="width:150px">
+                                                <td class="w-25 align-top">
                                                     @if(isset($course->path))
                                                         <img src="{{ Storage::url($course->path) }}">
                                                     @endif
@@ -59,10 +59,9 @@
                                     </div>
 
 
-                                    <div id="course-materials" class="pb-5">
-                                        <strong>Download File</Strong>
-
+                                    <div id="course-materials" class="pb-2" style="border-bottom:1px dashed #d4d4d4">
                                         @if (count($lessonMaterials) >= 1)
+                                           <strong>Download File</Strong>
                                             @foreach($lessonMaterials as $material)
                                                 <div id="{{ $material->id }}" class="my-2">   
                                                     <a href="{{ url('download/'. basename($material->path) ) }}" download class="text-danger">
@@ -72,12 +71,35 @@
                                                 </div>
                                             @endforeach
                                         @else 
+                                            <!--
                                             <div>
                                                 <small>No File Uploaded</small>
                                             </div>
+                                            -->
                                         @endif
                                     
                                     </div>
+
+                                    @if (count($courseSiblings) > 0) 
+                                        @foreach($courseSiblings as $item)
+                                        <div style="border-bottom:1px dashed #d4d4d4">
+                                            <div class="text-left px-5 ml-4 py-4">
+                                                <table>
+                                                    <tr>
+                                                        <td style="width:150px">
+                                                            @if (isset($item->path))
+                                                            <img src="{{ Storage::url($item->path) }}">
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            <a id="parent-category-name" href="{{ url('lessonmaterials/'.$item->id )}}" class="text-danger font-weight-bold">{{ $item->name }}</a>
+                                                            <p id="parent-category-description" class="text-secondary">{!! $item->description !!}</p>
+                                                        </td>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        @endforeach                                    
+                                    @endif
 
 
 

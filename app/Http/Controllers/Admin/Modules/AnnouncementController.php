@@ -49,6 +49,7 @@ class AnnouncementController extends Controller
      */
     public function store(Request $request)
     {
+
         $data = [            
             'date_from'         => date('Y-m-d H:i:s', strtotime($request->dateFrom)),
             'date_to'           => date('Y-m-d H:i:s', strtotime($request->dateTo)),
@@ -107,8 +108,38 @@ class AnnouncementController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        //
+    {     
+
+        $data = [            
+            'date_from'         => date('Y-m-d H:i:s', strtotime($request->dateFrom)),
+            'date_to'           => date('Y-m-d H:i:s', strtotime($request->dateTo)),
+            'body'              => $request->body,
+            'updatedby_user_id' => Auth::user()->id,
+            'valid'             => true,
+            'is_hidden'         => ($request->isHidden == "on")? 1 : 0
+        ];
+
+        $announcement = Announcement::find($id);
+        $item = $announcement->update($data);
+
+        //announcement user type
+        AnnouncementUserType::where('announcement_id', $id)->delete();
+
+        if (is_array($request->usertypes)) {
+            foreach ($request->usertypes as $type) 
+            {
+                $type = [            
+                    'announcement_id'    => $id,
+                    'element'            => $type
+                ];                
+                AnnouncementUserType::create($type);
+            }
+    
+        }
+
+        return redirect()->route('admin.announcement.index')->with('message', 'Announcement updated successfully!');
+
+
     }
 
     /**

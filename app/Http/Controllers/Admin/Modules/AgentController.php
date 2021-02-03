@@ -34,6 +34,10 @@ class AgentController extends Controller
      */
     public function index(User $user, Agent $agents, Request $request)
     {
+
+        abort_if(Gate::denies('agent_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         //$agents = User::whereHas('roles', function($q) { $q->where('title', 'Agent'); })->get();
         //Industry::all();
         $industries = createIndustries();
