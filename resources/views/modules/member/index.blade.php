@@ -35,7 +35,7 @@
 
                     <h1 class="callout">お知らせ</h1>
 
-                    <div class="blueBrokenLineBox">                    
+                    <div class="blueBrokenLineBox text-center announcements px-4 py-4">                    
                         {!! html_entity_decode($announcement->body) ?? '' !!}
                     </div>
 
