@@ -36,22 +36,20 @@
                     <h1 class="callout">お知らせ</h1>
 
                     <div class="blueBrokenLineBox">
-                        {!! $announcement->body ?? '' !!}
+                      
+
+                        {{ html_entity_decode($announcement->body) ?? '' }}
                     </div>
 
                     <div class="row">
                         <div class="col-md-12 mt-3">
                             <a href="{{ url('lessonrecord') }}"><button type="button" class="btn btn-warning text-white">受講履歴/添削履歴</button></a>
                             <a href="{{ url('memberschedule') }}"><button type="button" class="btn btn-primary">レッスンの予約</button></a>
-
-
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
                                 <button type="button" class="btn btn-success">
                                     添削くん
-                                </button></a>
-
-                       
-
+                                </button>
+                            </a>                      
                         </div>
                     </div>
 
