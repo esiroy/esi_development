@@ -7,6 +7,26 @@ a:hover {
     color: #6e0000;
 }
 
+button:focus {
+    outline: none;
+}
+
+.btn-rounded {
+    padding: 3px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    margin: 4px 2px;
+    border-radius: 8px;
+    outline: none;    
+}
+
+.btn-rounded:focus {
+    outline: none;
+}
+
+
 .callout {
     background: url(../images/bgCallout.gif) no-repeat;
     margin: -20px 0 0 0;

@@ -21,6 +21,11 @@
     background-color: #ee9b35;
 }
 
+
+.bg-yellow {
+    background-color: #fcbf1b;
+}
+
 .bg-lightorange {
     background-color: #ffe9d1;
 }
@@ -31,4 +36,11 @@
 
 .bg-lightgreen {
     background-color: #d7f4c5;
+}
+
+/* button gradients */
+
+.btn-yellow {
+    border: 1px solid #fcbf1b;
+    background-image: linear-gradient(#fbdd64, #fcbf1b);
 }

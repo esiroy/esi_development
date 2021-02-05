@@ -84,7 +84,7 @@ class LoginController extends Controller
 
         /** @description - only valid user can login */
         $credentials = $request->only('username', 'password');
-        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'valid' => 1, 'user_type' => "MEMBER"])) {
+        if (Auth::attempt(['username' => $request->username, 'password' => $request->password, 'valid' => 1, 'is_activated' => 1, 'user_type' => "MEMBER"])) {
             // Authentication passed...
             $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
             $user->save();

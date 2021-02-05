@@ -41,12 +41,20 @@
 
                     <div class="row">
                         <div class="col-md-12 mt-3">
-                            <a href="{{ url('lessonrecord') }}"><button type="button" class="btn btn-warning text-white">受講履歴/添削履歴</button></a>
-                            <a href="{{ url('memberschedule') }}"><button type="button" class="btn btn-primary">レッスンの予約</button></a>
+
+                            <a href="{{ url('lessonrecord') }}">
+                                <!--<button type="button" class="btn btn-warning text-dark rounded" style="background-color:#fcc120">受講履歴/添削履歴</button>-->
+                                <button class="btn-rounded btn-yellow text-dark">受講履歴/添削履歴</button>
+                            </a>
+
+                            <a href="{{ url('memberschedule') }}">
+                                <!--<button type="button" class="btn btn-primary  text-dark ">レッスンの予約</button>-->
+                                <img src="{{ url('images/btnBlue.gif') }}">
+                            </a>
+
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
-                                <button type="button" class="btn btn-success">
-                                    添削くん
-                                </button>
+                                <!--<button type="button" class="btn btn-success  text-dark ">添削くん</button>-->
+                                <img src="{{ url('images/newBtn3.png') }}">
                             </a>                      
                         </div>
                     </div>
@@ -131,8 +139,9 @@
                                     @foreach ($reserves as $reserve)
                                     <tr class="row_reserve_{{$reserve->id}}">
                                         <td style="text-align: center;">
-                                            {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time." + 1 hour ")) }}
-                                            {{  date('H:i', strtotime($reserve->lesson_time." + 85 minutes ")) }}
+                                            {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }}
+                                            
+                                            {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
                                         </td>
                                         <td style="text-align: center;" colspan="2">                                            
                                             @php

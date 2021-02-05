@@ -70,7 +70,7 @@ class TableUserImporterController extends Controller
                 'firstname' => $item->firstname,
                 'is_activated' => $item->is_activated,
                 'last_login' => $item->last_login,
-                'lastname' => "TEST 111". $item->lastname,
+                'lastname' => $item->lastname,
                 'password' => $item->password,
                 'user_type' => $item->user_type,
                 'username' => $item->username,

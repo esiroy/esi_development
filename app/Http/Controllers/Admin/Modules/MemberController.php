@@ -333,6 +333,11 @@ class MemberController extends Controller
     {
         $memberInfo = Member::where('user_id', $memberID)->first();
 
+        if (!$memberInfo) {
+            //member is not found in member table
+            abort(404);
+        }
+
         //get photo
         $userImageObj = new UserImage();
         $userImage = $userImageObj->getMemberPhoto($memberInfo);
@@ -345,10 +350,19 @@ class MemberController extends Controller
         $attributes = createAttributes();
         $memberships = createMembership();
         $shifts = Shift::all();
+        
 
-        //agent info
-        $agent = new Agent();
-        $agentInfo = $agent->getMemberAgent($memberInfo->agent_id);
+        if (isset($memberInfo->agent_id))
+        {
+            $agentInfo = Agent::where("user_id", $memberInfo->agent_id)->first();
+            $agentArrayInfo = $agentInfo->toArray();
+            $agentUserArrayInfo = $agentInfo->user->toArray();      
+            $agentInfo = array_merge($agentArrayInfo, $agentUserArrayInfo);
+        } else {
+            $agentInfo = (object) [];
+        }
+      
+        //$agentInfo = User::where('id', $memberInfo->agent_id)->first();
 
         //get Lessongoals (purpose)
         $goals = new LessonGoals();
@@ -362,7 +376,7 @@ class MemberController extends Controller
         $desiredSchedule = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
 
         //View all the stufff
-        return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
+        return view('admin.modules.member.edit', compact('agentInfo', 'agentUserInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage',
             'lessonGoals', 'lessonClasses', 'desiredSchedule'));
 

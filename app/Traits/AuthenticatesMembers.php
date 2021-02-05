@@ -159,7 +159,7 @@ trait AuthenticatesMembers
 
         $request->session()->invalidate();
 
-        return $this->loggedOut($request) ?: redirect('/admin');
+        return $this->loggedOut($request) ?: redirect('/');
     }
 
     /**

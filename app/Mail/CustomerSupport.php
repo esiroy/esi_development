@@ -15,10 +15,8 @@ use Config;
 class CustomerSupport extends Mailable
 {
     use Queueable, SerializesModels;
-
-
-    public $member;
     
+    public $member;    
     public $data;
 
     /**

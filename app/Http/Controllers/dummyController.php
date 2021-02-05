@@ -40,6 +40,11 @@ class dummyController extends Controller
 
         //$user = User::findOrFail(Auth::user()->id);
 
+        $thisMonth = date('M');
+        $month = date('M',strtotime('first day of +1 month'));
+
+        echo $thisMonth . " "  . $month;
+
 
         /*
         Mail::send('emails.reminder', ['user' => $user], function ($m) use ($user) 
@@ -48,7 +53,7 @@ class dummyController extends Controller
 
             $m->to('esi.roy.dev@gmail.com', $user->firstname)->subject('Your Test Roy Reminder!');
         });
-        */
+       
         
         $user = User::where('username', 'abellana@gmail.com')->first();
 
@@ -59,6 +64,7 @@ class dummyController extends Controller
         $mail = Mail::send(new CustomerSupportMail($member, $data));
 
         echo $mail;
+         */
 
     }
 

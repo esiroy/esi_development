@@ -128,15 +128,14 @@ class ReservationController extends Controller
             $shift = Shift::where("value", $shiftDuration)->first();
 
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
-
                         ->where('is_terminated', 0)
                         //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
-                        //->join('users', 'users.id', '=', 'tutors.user_id')
-                        ->join('user_image', 'user_image.user_id', '=', 'tutors.user_id')
+                        ->join('users', 'users.id', '=', 'tutors.user_id')
+                        ->leftjoin('user_image', 'user_image.user_id', '=', 'tutors.user_id')
                         //->orderBy('firstname', 'ASC')
                         ->orderBy('sort', 'ASC')
-                        //->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
-                        ->where('valid', 1)
+                        ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid', 'user_image.filename', 'user_image.original')
+                        ->where('users.valid', 1)
                         ->get();
                                      
             $member = Member::where('user_id', Auth::user()->id)->first();

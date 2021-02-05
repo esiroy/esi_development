@@ -886,25 +886,17 @@ export default {
     },      
     mounted: function () 
 	{
-        console.log("mount v2 test");
-
-        console.log(this.agentinfo);
-
-        //try if member has an agent
+ 
         try {
             this.user.agent_id	= this.agentinfo.agent_id;  
-        }catch(err) {
+        } catch(err) {
             this.user.agent_id	= "";
-            //console.log( err.message);
-        }
-        
+        }        
 
         try {
             this.user.agent_name_en	 = this.agentinfo.firstname;  
-        }
-        catch(err) {
+        } catch(err) {
            this.user.agent_name_en = "";
-           //console.log( err.message);
         }  
 
         //get user
@@ -912,7 +904,6 @@ export default {
 		this.user.first_name					= this.userinfo.firstname;
 		this.user.last_name						= this.userinfo.lastname;
         this.user.email							= this.userinfo.email;
-
 		this.user.attribute						= this.memberinfo.attribute;		
 		this.user.nickname						= this.memberinfo.nickname;
 		this.user.gender						= this.memberinfo.gender;		
@@ -1008,13 +999,6 @@ export default {
     },
     validations: 
     {
-        //instantiate variables for users
-        submitted: false,
-        //set calendar characters to japanese
-        ja: ja, 
-        //list of main tutors
-        mainTutors: [],
-
         user: 
         {           
             
@@ -1255,7 +1239,7 @@ export default {
 
             if (day && desired_time) {
                 
-                let result =  this.user.desiredScheduleList.find(item => item.day === day && item.time === time);
+                let result =  this.user.desiredScheduleList.find(item => item.day === day && item.desired_time === desired_time);
 
                 if (result) {
                     alert ("Selected schedule is already added in the list");

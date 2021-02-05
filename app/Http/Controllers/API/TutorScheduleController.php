@@ -24,7 +24,8 @@ class TutorScheduleController extends Controller
             
             $members = Member::join('users', 'users.id', '=', 'members.user_id')
                 ->select('members.id', 'members.user_id', 'members.nickname', 'users.firstname', 'users.lastname', 'users.valid')
-                ->where('users.valid', 1)->get();        
+                ->where('users.valid', 1)
+                ->get();        
 
             return Response()->json([
                 "success" => true,
@@ -294,7 +295,7 @@ class TutorScheduleController extends Controller
                 'memo' => "",
             ];
 
-            //@todo: check if not exits?
+            //@todo: check if not exists?
             $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
                         ->where('tutor_id',$tutorInfo->user_id)
                         //->where('member_id', $member['id'])
@@ -315,6 +316,39 @@ class TutorScheduleController extends Controller
                     "message" => "The Schedule $lessonTime is already booked, press okay to refresh schedules.",
                 ]);
             } 
+
+
+            //@todo: check if member has other booked schedule on this time slot?
+            //@todo: check if not exists?
+            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
+            {
+
+                $isTutorReserved = ScheduleItem::where('lesson_time', $lessonTime)
+                            //->where('tutor_id',$tutorInfo->user_id)
+                            ->where('member_id', $member['id'])
+                            ->where('schedule_status', $request['status'])
+                            ->where('valid', 1)
+                            ->exists();
+
+                $isTutorReserved_b = ScheduleItem::where('lesson_time', $lessonTime)
+                            //->where('tutor_id',$tutorInfo->user_id)
+                            ->where('member_id', $member['id'])
+                            ->where('schedule_status', $request['status'])
+                            ->where('valid', 1)
+                            ->exists();                            
+
+                if ($isTutorReserved || $isTutorReserved_b) 
+                {   
+                    return Response()->json([
+                        "success" => false,
+                        "refresh"  => false,                        
+                        "message" => "Member already have a booked schedule for this  $lessonTime  time slot, try booking other time slot for this member.",
+                    ]);
+                } 
+                
+
+            }
+
 
             $scheduleItem = ScheduleItem::create($lessonData);
             DB::commit();
