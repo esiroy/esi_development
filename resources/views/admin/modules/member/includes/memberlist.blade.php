@@ -18,7 +18,7 @@
                 <th class="small text-center">History</th>
                 <th class="small text-center">Report<br>Card</th>
                 <th class="small text-center">Writing<br>Report</th>
-                <th class="small text-center" style="width:90px">Action</th>
+                <th class="small text-center">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -28,7 +28,11 @@
                 <td class="small"></td>
                 <td class="small">{{$member->user_id}}</td>
 
-                <td class="small">{{ucfirst($member->lastname) ?? "-" }},<br>  {{ucfirst($member->firstname) ?? "-" }}</td>
+                <td class="small" id="member-fullname" style="width:30px">
+                    
+                    {{ucfirst($member->lastname) ?? "-" }},<br>  {{ucfirst($member->firstname) ?? "-" }}
+                </td>
+
                 <td class="small">{{$member->nickname ?? "-" }}</td>
 
                 <td class="small">{{$member->attribute ?? "-" }}</td>
@@ -41,7 +45,9 @@
                     {{ $agentInfo->user->firstname ?? "" }} {{ $agentInfo->user->lastname ?? "" }}
                 </td>
 
-                <td class="small">{{$member->user->email ?? "-" }}</td>
+                <td id="member-emailaddress" class="small" style="width:60px">
+                    {{$member->user->email ?? "-" }}
+                </td>
 
                 <!--communcation app-->
                 <td class="small">

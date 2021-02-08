@@ -80,12 +80,31 @@ class MemberController extends Controller
 
         if ($request->expired) {
 
-            $now = Carbon::now();
-            $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());
+            $today =   Carbon::now();
+            $dateFrom = Carbon::now()->subDays(30); //expired for 30 days
+
+            //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());  // all expired
+
+            $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $today));
+
         
-        } else if ($request->toexpire) {
-            $now = Carbon::now()->subDays(30);
-            $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());                
+        }
+        else if ($request->toexpire) 
+        {
+
+            //get expired members
+            $dateTo =   Carbon::now();
+            $dateFrom = Carbon::now()->subDays(15); //expiring  15 days
+            $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+
+            //Only Point Balance
+            $memberQuery = $memberQuery->where('membership', "Point balance");
+
+            //agent transaction points.
+            $memberQuery = $memberQuery->leftJoin('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
+            $memberQuery = $memberQuery->where(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+
+         
 
         } else {
 

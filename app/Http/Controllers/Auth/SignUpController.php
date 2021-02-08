@@ -163,13 +163,25 @@ class SignUpController extends Controller
 
             $lessonShift = Shift::where('value', 25)->first();
             
+            //communication app
+            $commApp = ucfirst($request['commApp']);
+
+            $skype_account = null;
+            $zoom_account = null;
+
+            if ($commApp == "Zoom") {
+                $zoom_account = $request['communication_app_username'];
+            } else if ($commApp == "Skype") {    
+                $skype_account = $request['communication_app_username'];
+            }            
 
             $memberInformation =
                 [
                 'user_id' => $user->id,
                 'nickname' => $request['nickname'],
-                'communication_app' => $request['commApp'],
-                'skype_account' => $request['communication_app_username'],
+                'communication_app' => ucfirst($request['commApp']),
+                'skype_account' => $skype_account,
+                'zoom_account' => $zoom_account,
                 'membership' => "Point Balance",
                 'member_since' => date('Y-m-d'),
 
@@ -177,6 +189,8 @@ class SignUpController extends Controller
                 'attribute' => 'TRIAL',
                 'lesson_shift_id' => $lessonShift->id,
             ];
+
+
             $member = Member::create($memberInformation);
             $user->members()->sync([$member->id], false);
 

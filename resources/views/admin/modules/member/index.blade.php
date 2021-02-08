@@ -151,16 +151,32 @@ table.dataTable thead>tr>th.sorting_desc {
         $.extend(true, $.fn.dataTable.defaults, {
             order: [[0, 'DES']],
             pageLength: 1000,
-            "columnDefs": [{
-                "targets": [ 0 ],
-                "visible": false,
-                "searchable": false
-            }]
+            "columnDefs": [
+                {
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false      
+                },
+                {
+                    "targets": [ 1 ],
+                    "width": "5%"
+                },              
+                {
+                    "targets": [ 2 ],
+                    "width": "5%"
+                },                         
+                {
+                    "targets": [ 6 ],
+                    "width": "10"
+                },                
+            ] 
         });
-   
+
+        
         $('#dataTable').DataTable({
             "buttons": dtButtons,
-            "paging":   false
+            "paging":   false,
+            fixedColumns: true
         })
     });
 
