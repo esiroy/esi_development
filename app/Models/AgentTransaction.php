@@ -69,9 +69,9 @@ class AgentTransaction extends Model
             $q->orWhere('transaction_type', 'ADD')
                 ->orWhere('transaction_type', 'MANUAL_ADD')
                 ->orWhere('transaction_type', 'FREE_CREDITS')
-                ->orWhere('transaction_type', 'DISTRIBUTE')
-                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
-        })->orderBy('created_at', 'DESC')->get();
+                ->orWhere('transaction_type', 'DISTRIBUTE');
+                //->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+            })->orderBy('created_at', 'DESC')->get();
         return $transactions;
     }
 
@@ -82,7 +82,7 @@ class AgentTransaction extends Model
         $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->where(function ($q) use ($memberID) {
             $q->orWhere('transaction_type', 'ADD')
                 ->orWhere('transaction_type', 'MANUAL_ADD')
-                ->orWhere('transaction_type', 'FREE_CREDITS')
+                //->orWhere('transaction_type', 'FREE_CREDITS')
                 ->orWhere('transaction_type', 'DISTRIBUTE')
                 ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
 
@@ -159,7 +159,18 @@ class AgentTransaction extends Model
 
     public function getMemberTransactions($memberID)
     {
-        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
+        //$transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
+        
+        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->where(function ($q) use ($memberID) {
+            $q->orWhere('transaction_type', 'ADD')
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'FREE_CREDITS')
+                ->orWhere('transaction_type', 'DISTRIBUTE')
+                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+
+        })->get();
+       
+
         return $transactions;
     }
 

@@ -7,6 +7,7 @@ use App\Models\Member;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Agent;
+use App\Models\Shift;
 use App\Models\AgentTransaction;
 use App\Models\MemberAttribute;
 use Auth;
@@ -160,6 +161,9 @@ class SignUpController extends Controller
             $roles[] = Role::where('title', 'Member')->first()->id;
             $user->roles()->sync($roles);
 
+            $lessonShift = Shift::where('value', 25)->first();
+            
+
             $memberInformation =
                 [
                 'user_id' => $user->id,
@@ -169,6 +173,9 @@ class SignUpController extends Controller
                 'membership' => "Point Balance",
                 'member_since' => date('Y-m-d'),
 
+                //attribute (auto filled)
+                'attribute' => 'TRIAL',
+                'lesson_shift_id' => $lessonShift->id,
             ];
             $member = Member::create($memberInformation);
             $user->members()->sync([$member->id], false);

@@ -40,10 +40,15 @@ class dummyController extends Controller
 
         //$user = User::findOrFail(Auth::user()->id);
 
-        $thisMonth = date('M');
-        $month = date('M',strtotime('first day of +1 month'));
+        $date = date("Y-m-d");
 
-        echo $thisMonth . " "  . $month;
+        echo $date ." - ";
+
+        $expirydate = date("Y-m-d", strtotime($date ." + 1 month"));
+
+        echo $expirydate;
+
+
 
 
         /*

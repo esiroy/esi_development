@@ -229,6 +229,7 @@ class MemberController extends Controller
         $latestDateOfPurchase = $agentTransaction->getMemberLatestDateOfPurchase($member->user_id);
 
         $transactions = $agentTransaction->getMemberTransactions($member->user_id);
+
         $purchaseHistory = $agentTransaction->getAllPaymentHistory($member->user_id);
 
         return view('admin.modules.member.account', compact('member', 'credits', 'transactions', 'purchaseHistory', 'latestDateOfPurchase'));
@@ -391,14 +392,21 @@ class MemberController extends Controller
      */
     public function update($id, Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'transaction_type' => ['required'],
-            'amount' => ['required'],
-            'credits' => ['required'],
-        ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+
+        if ($request->transaction_type !== 'CREDITS_EXPIRATION') {
+
+            $validator = Validator::make($request->all(), [
+                'transaction_type' => ['required'],
+                'amount' => ['required'],
+                'credits' => ['required'],
+            ]);
+
+            if ($validator->fails()) {
+                //return redirect()->back()->withErrors($validator)->withInput();
+                return redirect()->back()->withErrors($validator)->withInput()->with('error_message', 'Transaction amount and credits is required ');
+            }
+
         }
 
         //variables
@@ -414,41 +422,74 @@ class MemberController extends Controller
 
         $memberUserId = $member->user_id;
 
-        /*
-        if ($request->transaction_type == 'AGENT_SUBTRACT') {
-        $newCredit = -abs($request->credits);
-        $totalCredits = $member->credits - $request->credits;
-        } else {
-        $newCredit = $request->credits;
-        $totalCredits = $member->credits + $newCredit;
-        }*/
-
-        $member->update([
-            'credits_expiration' => date('Y-m-d G:i:s', strtotime('+6 months')),
-        ]);
-
-        if (isset($request->expiry_date)) {
-            $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
-        } else {
-            $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));
-        }       
+   
 
         //lesson_shift_id 
 
-        //Update Agent Transaction Table
-        $agentCredit = [
-            'valid' => 1,
-            'transaction_type' => $request->transaction_type,
-            'agent_id' => null,
-            'member_id' => $member->user_id,
-            'lesson_shift_id' => $member->lesson_shift_id,
-            'created_by_id' => Auth::user()->id,
-            'amount' => $request->credits,
-            'price' => $request->amount,
-            'remarks' => $request->remarks,
-            'credits_expiration' => $expiry_date,
-        ];
-        AgentTransaction::create($agentCredit);
+        if ($request->transaction_type == 'CREDITS_EXPIRATION') {
+            //Update expiry  member
+
+            $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
+            $old_credits_expiration = date('Y-m-d G:i:s', strtotime($member->credits_expiration));
+
+            //agent transaction
+            $member->update([
+                'credits_expiration' => $expiry_date ,
+            ]);
+            
+            //create Agent Transaction
+            $agentCredit = [
+                'valid' => 1,
+                'transaction_type' => $request->transaction_type,
+                'agent_id' => null,
+                'member_id' => $member->user_id,
+                'lesson_shift_id' => $member->lesson_shift_id,
+                'created_by_id' => Auth::user()->id,
+                'amount' => 0, //amount is zero
+                'price' => 0, //amount is zero
+                'remarks' => $request->remarks,
+                'credits_expiration' => $expiry_date,
+                'old_credits_expiration' => $old_credits_expiration,
+            ];
+            AgentTransaction::create($agentCredit);
+
+
+        } else {
+
+            //generate agent transaction expiration date
+            $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));
+            $old_credits_expiration = date('Y-m-d G:i:s', strtotime($member->credits_expiration));
+
+           
+            //check the last member expiration if not greater than expiry date generated.
+            if ($old_credits_expiration >= $expiry_date) {
+               // $expiry_date = $old_credits_expiration;
+            }
+
+            //add member expiration
+            $member->update([
+                'credits_expiration' => $expiry_date,
+            ]);            
+
+            //create Agent Transaction
+            $agentCredit = [
+                'valid' => 1,
+                'transaction_type' => $request->transaction_type,
+                'agent_id' => null,
+                'member_id' => $member->user_id,
+                'lesson_shift_id' => $member->lesson_shift_id,
+                'created_by_id' => Auth::user()->id,
+                'amount' => $request->credits,
+                'price' => $request->amount,
+                'remarks' => $request->remarks,
+                'credits_expiration' => $expiry_date,
+                'old_credits_expiration' => $old_credits_expiration,
+            ];
+            AgentTransaction::create($agentCredit);
+        }
+
+
+
 
         return redirect()->route('admin.member.account', $id)->with('message', 'Member transaction has been added successfully!');
 

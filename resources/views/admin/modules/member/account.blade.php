@@ -83,7 +83,7 @@
                                 <div class="row py-2">
                                     <div class="col-md-3">Expiry Date : </div>
                                     <div class="col-md-9">
-                                        <input type="date" name="expiry_date" id="expiry_date" class="form-control form-control-sm col-md-5" alt="expiry_date">
+                                        <input type="date" name="expiry_date" id="expiry_date" value="{{  date("Y-m-d") }}" class="form-control form-control-sm col-md-5" alt="expiry_date">
                                     </div>
                                 </div>
 
@@ -105,17 +105,27 @@
 
                             <!--[start right column]-->
                             <div class="col-md-6">
+
+                                <!-- INFO AREA -->
                                 <div class="row py-1">
                                     <div class="col-md-4">Credits : </div>
                                     <div class="col-md-8"><strong>{{ $credits }}</strong></div>
                                 </div>
                                 <div class="row py-1">
                                     <div class="col-md-4">Credits Expiration : </div>
-                                    <div class="col-md-8"><strong>{{ $member->credits_expiration }}</strong></div>
+                                    <div class="col-md-8">
+                                        <strong>
+                                            {{ date('m/d/y h:i:s a', strtotime($member->credits_expiration)) }}
+                                        </strong>
+                                    </div>
                                 </div>
                                 <div class="row py-1">
                                     <div class="col-md-4">Latest Purchase Date : </div>
-                                    <div class="col-md-8"><strong>{{ $latestDateOfPurchase }}</strong></div>
+                                    <div class="col-md-8">
+                                        <strong>                                            
+                                            {{ date('m/d/y h:i:s a', strtotime($latestDateOfPurchase)) }}
+                                        </strong>
+                                    </div>
                                 </div>
                             </div>
                             <!--[end right column]-->
@@ -152,6 +162,7 @@
                                     {{ date('F d, Y h:i:s a', strtotime($transaction->created_at)) }}
                                 </td>
                                 <td>{{ str_replace("_", " ", ucwords(strtolower($transaction->transaction_type))) }}</td>
+
                                 <td>
                                     <!-- @note: get member name -->
                                     @php 
@@ -159,7 +170,10 @@
                                     @endphp
                                     {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
                                 </td>
-                                <td >
+
+
+                                <td>
+                                    <!-- points -->
                                     @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON")
                                         {{ "-" }}
                                     @else 
@@ -167,11 +181,17 @@
                                     @endif
                                     {{ $transaction->amount }}
                                 </td>
+
+
                                 <td>
+                                    <!-- original credit expiration -->
                                     @if (isset($transaction->credits_expiration))
-                                    {{ date('F d, Y h:i:s a', strtotime($transaction->credits_expiration)) }}
+                                        <!--{{ date('F d, Y h:i:s a', strtotime($transaction->old_credits_expiration)) }}-->
+                                        {{ date('m/d/y h:i:s a', strtotime($transaction->old_credits_expiration)) }}
                                     @endif
                                 </td>
+
+
                                 <td>{{ $transaction->remarks }}</td>
                                 
                             </tr>
@@ -199,7 +219,9 @@
 
                             @foreach($purchaseHistory as $history)
                             <tr>
-                                <td>{{ $history->created_at }}</td>                         
+                                <td>
+                                    {{ date('F d, Y h:i:s a', strtotime($history->created_at)) }}
+                                </td>                         
                                 <td>{{ $history->amount }}</td>
                                 <th>
                                     @php 
@@ -233,8 +255,16 @@
 
         if (type !== 'CREDITS_EXPIRATION' || type == null) {
             $('#expiry_date').prop('disabled', true);
+            $('#credits').prop('disabled', false);
+            $('#amount').prop('disabled', false);
+
         } else {
+
+            $('#credits').prop('disabled', true);
+            $('#amount').prop('disabled', true);
             $('#expiry_date').prop('disabled', false);
+
+
         }
     }
 
