@@ -98,11 +98,11 @@ class MemberController extends Controller
             $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
 
             //Only Point Balance
-            $memberQuery = $memberQuery->where('membership', "Point balance");
+            $memberQuery = $memberQuery->where('membership', "Point Balance");
 
             //agent transaction points.
-            $memberQuery = $memberQuery->leftJoin('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
-            $memberQuery = $memberQuery->where(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+            //$memberQuery = $memberQuery->leftJoin('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
+            //$memberQuery = $memberQuery->where(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
 
          
 

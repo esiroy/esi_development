@@ -220,6 +220,7 @@ class ScheduleItem extends Model
             ->where('valid', 1)
             ->get();
         */
+        $schedules = [];
 
         foreach ($scheduleItems as $item) {
             $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
