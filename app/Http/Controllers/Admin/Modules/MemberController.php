@@ -386,7 +386,7 @@ class MemberController extends Controller
         $desiredSchedule = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
 
         //View all the stufff
-        return view('admin.modules.member.edit', compact('agentInfo', 'agentUserInfo', 'memberships', 'shifts', 'attributes',
+        return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage',
             'lessonGoals', 'lessonClasses', 'desiredSchedule'));
 
