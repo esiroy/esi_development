@@ -83,9 +83,15 @@ class MemberController extends Controller
         {
 
             //get expired members
+            /*
             $dateFrom =   Carbon::now();
             $dateTo     = Carbon::now()->addDays(15); //expiring  15 days
             $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+            */
+
+            $today =   Carbon::now();
+            $memberQuery = $memberQuery->whereDate('members.credits_expiration', '>', $today->toDateString());  // all expired
+
 
             //Only Point Balance
             $memberQuery = $memberQuery->where('membership', "Point Balance");
