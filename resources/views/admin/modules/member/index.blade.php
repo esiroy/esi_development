@@ -117,7 +117,7 @@
                                         @can('report_access', Auth::user())
                                             <tr>
                                                 <td colspan="5">                                 
-                                                    <a href="{{ url('/exportSoonToExpireXLS') }}" id="download" download class="btn btn-primary btn-sm">  Generate Sorted Member List </a>
+                                                    <a href="{{ url('/exportExpiredXLS') }}" id="download" download class="btn btn-primary btn-sm">  Generate Sorted Expired Member List </a>
                                                 </td>
                                             </tr>
                                          @endcan

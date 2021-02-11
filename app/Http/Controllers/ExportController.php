@@ -25,7 +25,7 @@ class ExportController extends Controller
     }
     
 
-    public function exportExpired(Request $request) 
+    public function exportExpiredXLS(Request $request) 
     {
         //Date Today
         $dateToday = date("m/d/Y");
@@ -42,7 +42,7 @@ class ExportController extends Controller
         $sheet = $spreadsheet->getActiveSheet(); 
 
         //Set Header Text
-        $sheet->setCellValue('B1', "Sorted Member List as of $dateToday");     
+        $sheet->setCellValue('B1', "Sorted Expired Member List as of $dateToday");     
        
         //Secondary Field Headers (h2)
         $sheet->setCellValue('B2', "I.D");
@@ -58,6 +58,7 @@ class ExportController extends Controller
         $spreadsheet->getActiveSheet()->getStyle('B2:G2')->getAlignment()->setHorizontal('center');
 
         //get to expired members        
+        $today =   Carbon::now();
         $dateFrom = $request->get('from');
         $dateTo =   $request->get('to');       
 
@@ -112,9 +113,6 @@ class ExportController extends Controller
             http_response_code(404);
 	        die();
         }
-        
-        
-    
     }
 
 

@@ -157,7 +157,10 @@ Route::resource('lessonmaterials', 'LessonMaterialsController');
 
 //export file (public)
 Route::get('exportCSV', 'ExportController@exportCSV')->name('exportMemberCSV');
+Route::get('exportExpiredXLS', 'ExportController@exportExpiredXLS')->name('exportExpiredXLS');
 Route::get('exportSoonToExpireXLS', 'ExportController@exportSoonToExpireXLS')->name('exportSoonToExpireXLS');
+
+
 
 
 
