@@ -155,6 +155,7 @@ class ExportController extends Controller
         $spreadsheet->getActiveSheet()->getStyle('B2:G2')->getAlignment()->setHorizontal('center');
 
         //get to expired members        
+        $today =   Carbon::now();
         $dateFrom = $request->get('from');
         $dateTo =   $request->get('to');       
 
@@ -162,10 +163,9 @@ class ExportController extends Controller
         $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
         $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
 
-        $memberQuery = $memberQuery->whereDate('members.credits_expiration', '>', $today->toDateString());  //not expired
+        //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '>', $today->toDateString());  //not expired
 
         $memberQuery = $memberQuery->where('membership', "Point Balance");
-
         $members = $memberQuery->orderby('members.credits_expiration', 'DESC')->get();
 
         //Agent Credits Initialize

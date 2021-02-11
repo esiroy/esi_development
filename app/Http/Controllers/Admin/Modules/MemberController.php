@@ -76,7 +76,7 @@ class MemberController extends Controller
 
             $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  // all expired
 
-
+            $memberQuery = $memberQuery->orderby('members.credits_expiration', 'DESC');
         
         }
         else if ($request->toexpire) 
@@ -100,6 +100,8 @@ class MemberController extends Controller
             //$memberQuery = $memberQuery->leftJoin('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
             //$memberQuery = $memberQuery->where(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
 
+
+            $memberQuery = $memberQuery->orderby('members.credits_expiration', 'DESC');
          
 
         } else {
@@ -127,13 +129,15 @@ class MemberController extends Controller
                 }                
             } //[END] USER SEARCH
 
+            $memberQuery = $memberQuery->orderby('users.id', 'ASC'); 
+
         }
 
 
 
-        $members = $memberQuery->orderby('users.id', 'ASC')->paginate(Auth::user()->items_per_page);
+       
         
-        
+        $members = $memberQuery->paginate(Auth::user()->items_per_page);
 
         //Tutor Query
         //$tutorQuery = User::whereHas('roles', function($q) { $q->where('title', 'Tutor'); })->get();
