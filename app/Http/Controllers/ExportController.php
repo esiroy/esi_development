@@ -161,6 +161,9 @@ class ExportController extends Controller
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id');
         $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
         $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+
+        $memberQuery = $memberQuery->whereDate('members.credits_expiration', '>', $today->toDateString());  //not expired
+
         $memberQuery = $memberQuery->where('membership', "Point Balance");
 
         $members = $memberQuery->orderby('members.credits_expiration', 'DESC')->get();
