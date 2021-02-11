@@ -166,7 +166,9 @@ class ExportController extends Controller
         //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '>', $today->toDateString());  //not expired
 
         $memberQuery = $memberQuery->where('membership', "Point Balance");
-        $members = $memberQuery->orderby('members.credits_expiration', 'DESC')->get();
+
+        //ORDERING
+        $members = $memberQuery->orderby('members.credits_expiration', 'ASC')->get();
 
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
