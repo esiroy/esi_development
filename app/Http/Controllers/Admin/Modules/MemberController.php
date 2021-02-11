@@ -16,6 +16,8 @@ use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
 use App\Models\UserImage;
+
+
 use Auth;
 use Carbon\Carbon;
 use DB;
@@ -55,7 +57,7 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         //request variables
-        $member_id = $request->member_id;
+        $member_id = request()->member_id;
         $name = $request->name;
         $email = $request->email;
 
@@ -64,17 +66,6 @@ class MemberController extends Controller
 
         $shifts = Shift::all();
 
-        /*
-        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')
-            ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-            ->leftJoin('tutors', 'tutors.id', '=', 'members.tutor_id')
-            ->select("us*", DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name,
-                                        users.id as id,
-                                        agents.id as agent_id
-                                    "));
-        */
-        
-        
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')                            
                             ->select("members.*", "users.id", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name"));
 
@@ -83,9 +74,8 @@ class MemberController extends Controller
             $today =   Carbon::now();
             $dateFrom = Carbon::now()->subDays(30); //expired for 30 days
 
-            //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $now->toDateString());  // all expired
+            $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  // all expired
 
-            $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $today));
 
         
         }
@@ -93,8 +83,8 @@ class MemberController extends Controller
         {
 
             //get expired members
-            $dateTo =   Carbon::now();
-            $dateFrom = Carbon::now()->subDays(15); //expiring  15 days
+            $dateFrom =   Carbon::now();
+            $dateTo     = Carbon::now()->addDays(15); //expiring  15 days
             $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
 
             //Only Point Balance

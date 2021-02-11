@@ -53,17 +53,89 @@
 
                     
                     <div class="row">
-                        <div class="col-5 pt-3">
-                            @can('report_access', Auth::user())
-                                <span data-href="/exportCSV" id="export" class="btn btn-primary btn-sm" onclick="exportTasks(event.target); return false">Generate Member List</span>
-                            @endcan
 
-                            @if (strtolower(Auth::user()->user_type) == 'admin' || strtolower(Auth::user()->user_type) == 'administrator')
-                            <a href="{{ url('admin/member?toexpire=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button></a>
-                            <a href="{{ url('admin/member?expired=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Expired</button></a>
-                            @endif
+                        <div class="col-7 pt-3">
+                                @if (request()->get('toexpire'))
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                From : 
+                                            </td>
+                                            <td>
+                                               <input type="date" id="dateFrom" name="dateFrom" value="" class="form-control form-control-sm">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                 To: 
+                                            </td>                                        
+                                            <td>
+                                               <input type="date" id="dateTo" name="dateTo" value="" class="form-control form-control-sm">
+                                            </td>
+                                            <td>
+                                                @if (strtolower(Auth::user()->user_type) == 'admin' || strtolower(Auth::user()->user_type) == 'administrator')                                                
+                                                    <a href="{{ url('admin/member?toexpire=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button></a>                                
+                                                    <a href="{{ url('admin/member?expired=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Expired</button></a>                                                
+                                                @endif
+                                            </td>
+                                        </tr>
+
+                                        @can('report_access', Auth::user())
+                                            <tr>
+                                                <td colspan="5">                                 
+                                                    <a href="{{ url('/exportSoonToExpireXLS') }}" id="download" download class="btn btn-primary btn-sm">  Generate Sorted Member List </a>
+                                                </td>
+                                            </tr>
+                                         @endcan
+
+                                    </table>
+                                @elseif (request()->get('expired'))
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                From : 
+                                            </td>
+                                            <td>
+                                               <input type="date" id="dateFrom" name="dateFrom" value="" class="form-control form-control-sm">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                 To: 
+                                            </td>                                        
+                                            <td>
+                                               <input type="date" id="dateTo" name="dateTo" value="" class="form-control form-control-sm">
+                                            </td>
+                                            <td>
+                                                @if (strtolower(Auth::user()->user_type) == 'admin' || strtolower(Auth::user()->user_type) == 'administrator')                                                
+                                                    <a href="{{ url('admin/member?toexpire=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button></a>                                
+                                                    <a href="{{ url('admin/member?expired=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Expired</button></a>                                                
+                                                @endif
+                                            </td>
+                                        </tr>
+
+                                        @can('report_access', Auth::user())
+                                            <tr>
+                                                <td colspan="5">                                 
+                                                    <a href="{{ url('/exportSoonToExpireXLS') }}" id="download" download class="btn btn-primary btn-sm">  Generate Sorted Member List </a>
+                                                </td>
+                                            </tr>
+                                         @endcan
+
+                                    </table>
+                                @else 
+                                    @can('report_access', Auth::user())
+                                    <span data-href="/exportCSV" id="export" class="btn btn-primary btn-sm" onclick="exportTasks(event.target); return false">Generate Member List</span>
+                                    @endcan
+
+                                    <a href="{{ url('admin/member?toexpire=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Soon to Expire</button></a>                                
+                                    <a href="{{ url('admin/member?expired=true') }}"><button type="button" class="btn btn-primary btn-sm">Sort Expired</button></a>
+                                @endif
+                           
+                             
+
                         </div>
-                          <div class="col-7">   
+                        <div class="col-5">   
                             <div class="float-right mt-3">
                                 <ul class="pagination pagination-sm">
                                     {{ $members->appends(request()->query())->links() }}           
@@ -106,7 +178,6 @@
     </div>
 </div>
 @endsection
-
 @section('styles')
 @parent
 <style>
@@ -120,7 +191,6 @@ table.dataTable thead>tr>th.sorting_desc {
 }
 </style>
 @endsection
-
 @section('styles')
 @parent
 <style>
@@ -131,8 +201,6 @@ table.dataTable thead>tr>th.sorting_desc {
 }
 </style>
 @endsection
-
-
 @section('scripts')
 @parent
 <script type="text/javascript">
@@ -142,7 +210,43 @@ table.dataTable thead>tr>th.sorting_desc {
         window.location.href = _url;
     }
 
-    window.addEventListener('load', function() {
+
+    function exportSoonToExpireCSV(_this) {
+        let _url = $(_this).data('href');
+        let dateFrom = $('#dateFrom').val();
+        let dateTo = $('#dateTo').val();
+
+        if (dateFrom && dateTo) {
+            let exportURL = _url + "?from=" + dateFrom + "&to=" + dateTo +"";
+            window.location.href = exportURL;
+        } else {
+            alert ("Please select date from and date To");
+            return false;
+        }        
+    }
+
+
+    window.addEventListener('load', function() 
+    {
+        $('#download').on('click', function(event) 
+        {
+            // Do whatever you want
+            let _url = $(this).attr('href');
+            let baseURL = _url.split('?')[0];
+            let dateFrom = $('#dateFrom').val();
+            let dateTo = $('#dateTo').val();
+            let exportURL = baseURL + "?from=" + dateFrom + "&to=" + dateTo +"";            
+
+            if (dateFrom && dateTo) 
+            {                
+                $(this).attr('href', exportURL);
+                return true;
+            } else {
+                alert ("Please select date from and date To");
+                event.preventDefault();
+            }
+        });
+
 
         //let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
         let dtButtons = $.extend(true, [], [])
