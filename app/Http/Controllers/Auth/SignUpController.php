@@ -202,6 +202,8 @@ class SignUpController extends Controller
                 'zoom_account' => $zoom_account,
                 'membership' => "Point Balance",
                 'member_since' => date('Y-m-d'),
+                "gender" => "null",
+                //"birthday" => "null",
 
                 //default agent (auto filled)
                 'agent_id' => $defaultAgent->user_id,
