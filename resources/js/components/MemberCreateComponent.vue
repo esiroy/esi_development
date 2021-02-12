@@ -1039,16 +1039,27 @@ export default {
 
         handleSubmit(e) 
         {
+         
+
             this.submitted = true;
             // stop here if form is invalid
             this.$v.$touch();
+
+            console.log(JSON.stringify(this.user));
+
+
             if (this.$v.$invalid) {
                 alert ("Errors found, please check the form for errors");
+
+                console.log (this.submitted, this.$v.$invalid);
+
+
                 return;
             }
-            console.log (this.submitted, this.$v.$invalid);
+           
+
             //alert("SUCCESS!! :-)\n\n" + JSON.stringify(this.user));
-            console.log(JSON.stringify(this.user));
+         
             axios.post("/api/create_member?api_token=" + this.api_token, 
             {
                 method          : "POST",

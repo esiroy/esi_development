@@ -84,38 +84,6 @@ class dummyController extends Controller
         }
 
 
-        //$user = User::findOrFail(Auth::user()->id);
-
-        /*
-        $date = date("Y-m-d");
-
-        echo $date ." - ";
-
-        $expirydate = date("Y-m-d", strtotime($date ." + 1 month"));
-
-        echo $expirydate;
-        */
-
-        /*
-        Mail::send('emails.reminder', ['user' => $user], function ($m) use ($user) 
-        {
-            $m->from($user->email, 'This is my first mail from laravel localhost Application! Roy');
-
-            $m->to('esi.roy.dev@gmail.com', $user->firstname)->subject('Your Test Roy Reminder!');
-        });
-       
-        
-        $user = User::where('username', 'abellana@gmail.com')->first();
-
-        $member = Member::where('user_id', $user->id)->first();
-
-        $data =  ['inquiry' => "this is a test inquiry"];
-
-        $mail = Mail::send(new CustomerSupportMail($member, $data));
-
-        echo $mail;
-         */
-
     }
 
 
@@ -126,36 +94,7 @@ class dummyController extends Controller
      */
     public function create()
     {
-        $date = '2021-01-14';
-        $duration = 25;
-        $nextDay = date("Y-m-d", strtotime($date ." + 1 day"));
-
-        /*
-        $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))->get();
-
-        foreach ($scheduleItems as $items) {
-            echo $items->id . " - ". $items->lesson_time . " " . $items->schedule_status . "<BR>";
-        }
-        */
-
-        $schedules = new ScheduleItem();
-
-        $items = $schedules->getTestSchedules($date, $duration);
-
-        echo "<pre>";
-        print_r ($items);
-        echo "</pre>";
-        echo "==========";
-
-        /*
-        $scheduleItems = ScheduleItem::where('tutor_id', 20041)
-        ->whereDate('lesson_time', '>=', $date)
-        ->whereDate('lesson_time', '<=', $nextDay)
-        ->where('valid', 1)
-        ->get();
-        */
-        //echo "<pre>";
-        //print_r ($scheduleItems);
+        echo "test";
     }
 
     /**
@@ -177,14 +116,7 @@ class dummyController extends Controller
      */
     public function show($id)
     {
-        $user = User::where('username', 'abellana@gmail.com')->first();
 
-        $member = Member::where('user_id', $user->id)->first();
-
-        $data =  ['inquiry' => "this is a test inquiry"];
-        
-        
-        return view('emails.customersupport_to_admin', compact('member', 'data'));
         
     }
 

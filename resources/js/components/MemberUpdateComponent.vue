@@ -134,11 +134,12 @@
                             </div>
                             <div class="col-6">
                                 <div class="form-group my-0 pt-2">
+                                
                                     <div class="form-group">                                           
-                                        <input type="radio" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'MALE'" value="MALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                         <label for="gender" class="small col-2 px-0">Male</label>
 
-                                        <input type="radio" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
+                                        <input type="radio" v-model="user.gender" name="gender" :checked="user.gender === 'FEMALE'" value="FEMALE" class="" :class="{ 'is-invalid': submitted && $v.user.gender.$error }" />
                                         <label for="gender" class="small col-2 px-0">Female</label>
 
                                         <div v-if="submitted && !$v.user.gender.required" class="invalid-feedback">
@@ -247,8 +248,7 @@
                                         :language="ja"
                                         id="birthday" 
                                         name="birthday"
-                                        v-model="this.memberinfo.birthday"
-                                        :value="this.memberinfo.birthday"
+                                        v-model="memberinfo.birthday"
                                         :format="birthDateFormatter"
                                         :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
                                     ></datepicker>
@@ -899,6 +899,9 @@ export default {
            this.user.agent_name_en = "";
         }  
 
+        console.log(this.memberinfo.gender);
+
+
         //get user
         this.user.user_id                       = this.userinfo.id;
 		this.user.first_name					= this.userinfo.firstname;
@@ -909,24 +912,29 @@ export default {
 		this.user.gender						= this.memberinfo.gender;		
 		this.user.communication_app             = this.memberinfo.communication_app;
 
-        if ( this.user.communication_app === 'Skype') {
+    
+
+        if ( this.user.communication_app === 'Skype' || this.user.communication_app === 'skype') {
             this.user.communication_app_username    = this.memberinfo.skype_account; 
 
-        } else if ( this.user.communication_app === 'Zoom') {
+        } else if ( this.user.communication_app === 'Zoom' || this.user.communication_app === 'zoom') {
 
             this.user.communication_app_username    = this.memberinfo.zoom_account;
 
         } else {
 
             if (this.memberinfo.skype_account) {
+
+                //he is adding skype so lets set comm app to skyp
+                this.user.communication_app = "Skype";
                 this.user.communication_app_username    = this.memberinfo.skype_account;
             } else {
+
+                //he is adding zoom account so let make it zoom
+                this.user.communication_app = "Zoom";
                 this.user.communication_app_username    = this.memberinfo.zoom_account;
             }
-            
-            
         }
-		
 		this.user.birthday						= this.memberinfo.birthday;
 		this.user.age							= this.memberinfo.age;
 		this.user.membership					= this.memberinfo.membership;
@@ -1066,7 +1074,11 @@ export default {
                 if (response.data.success === false) {
                     alert (response.data.message);
                 } else {
-                    location.reload(); //success
+
+                    this.$nextTick(function()
+                    {                    
+                        location.reload(); //success
+                    });
                 }
 
 			}).catch(function(error) {

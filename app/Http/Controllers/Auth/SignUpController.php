@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\SendUserSignUpConfirmation as SendUserSignUpConfirmationMail;
+use App\Models\Tutor;
 use App\Models\Agent;
 use App\Models\AgentTransaction;
 use App\Models\Member;
@@ -176,10 +177,7 @@ class SignUpController extends Controller
             //lesson shift
             $lessonShift = Shift::where('value', 25)->first();
 
-            //@todo: mt100 - default tutor for new users
-            $defaultAgent = Agent::where('agent_id', 'mt100')->first();
 
-            //@todo: 127 - default tutor id
 
             //communication app
             $commApp = ucfirst($request['commApp']);
@@ -193,6 +191,14 @@ class SignUpController extends Controller
                 $skype_account = $request['communication_app_username'];
             }
 
+            /** defaults */
+            //@todo: mt100 - default tutor for new users
+            $defaultAgent = Agent::where('agent_id', 'mt100')->first();
+
+            //@todo: 127 - default tutor id
+            $defaultTutor = Tutor::where('user_id', 127)->first();
+            
+            
             $memberInformation =
                 [
                 'user_id' => $user->id,
@@ -235,19 +241,11 @@ class SignUpController extends Controller
             //redirect to step 3
             $name = $request['first_name'] . " " . $request['last_name'];
 
-            $message = "<p>登録ありがとうございます。 $name </p>
-            <br/>
-                        <p>アカウントを有効にするには、メールを確認してください。</p>";
+            $message = "<p>登録ありがとうございます。 $name </p><br/><p>アカウントを有効にするには、メールを確認してください。</p>";
 
             return redirect()->route('step3')->with('message', $message);
 
         } catch (\Exception $e) {
-            /*
-            return Response()->json([
-            "success"   => false,
-            "message"   => "Exception Error Found (Member) : " . $e->getMessage()
-            ]);
-             */
 
             return redirect()->route('signup')->with('message', $e->getMessage());
 

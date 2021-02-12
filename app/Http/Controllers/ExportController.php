@@ -69,8 +69,7 @@ class ExportController extends Controller
         //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  //expired
 
         $memberQuery = $memberQuery->where('membership', "Point Balance");
-
-        $members = $memberQuery->orderby('members.credits_expiration', 'ASC')->get();
+        $memberQuery = $memberQuery->orderby('members.credits_expiration', 'ASC')->get();
 
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
@@ -89,8 +88,6 @@ class ExportController extends Controller
                 $sheet->setCellValue('F'.$ctr, $credits);
                 $sheet->setCellValue('G'.$ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)) );
                 $ctr = $ctr + 1;
-
-                
             }
         }
 

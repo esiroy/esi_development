@@ -217,8 +217,8 @@ class MemberController extends Controller
                     //course_item_id            => null,
                     //english_level             => null,
                     'communication_app' => ucfirst(strtolower($data->communication_app)),
-                    'skype_account' => ($data->communication_app == 'skype') ? $data->communication_app_username : null,
-                    'zoom_account' => ($data->communication_app == 'zoom') ? $data->communication_app_username : null,
+                    'skype_account' => (strtolower($data->communication_app) == 'skype') ? $data->communication_app_username : null,
+                    'zoom_account' => (strtolower($data->communication_app) == 'zoom') ? $data->communication_app_username : null,
                     'membership' => $data->membership,
 
                     'is_report_card_visible_to_agent' => (boolean) $data->reportCard->agent,
@@ -331,17 +331,6 @@ class MemberController extends Controller
 
         $data = json_decode($request['user']);
 
-        /*
-        foreach($data->preference->purpose as $key => $purpose)
-        {
-        echo $key ." <BR> ";
-        }
-
-        echo "<pre>";
-        print_r ($data);
-        exit();
-         */
-
         //disallow duplicate email and username
         $validator = Validator::make(
             [
@@ -371,44 +360,39 @@ class MemberController extends Controller
             try {
 
                 $userData =
-                    [
-                    'user_type' => 'MEMBER',
-                    "valid" => true,
+                [
+                    //'user_type' => 'MEMBER',
+                   // "valid" => true,
                     'firstname' => $data->first_name,
                     'lastname' => $data->last_name,
                     'email' => $data->email,
                     'username' => $data->email,
                     //'password'      => $data->password,
                     //'api_token'     => Hash('sha256', Str::random(80)),
-
                 ];
                 $user = User::where('id', $data->user_id)->update($userData);
 
-                /**
-                 * NO ROLE WILL BE ADDED SINCE THIS IS UPDATE
-                 * $roles[] = Role::where('title', 'Member')->first()->id;
-                 * $user->roles()->sync($roles);
-                 */
+                //Tutor (required)
+                $tutorID = null;
+                if (isset($data->maintutorid)) {
+                    $tutorInfo = Tutor::where('user_id', $data->maintutorid)->first();  
+                    if (isset($tutorInfo->user_id)) {
+                        $tutorID = $tutorInfo->user_id;    
+                    }
+                }                            
 
-                //Tutor
-                $tutorInfo = Tutor::where('user_id', $data->maintutorid)->first();  
-                if (isset($tutorInfo->user_id)) {
-                    $tutorID = $tutorInfo->user_id;    
-                } else {
-                    $tutorID = null;
-                }                                
-
-                //Agent
-                $agent = Agent::where('agent_id', $data->agent_id)->first();
-                if (isset($agent->user_id)) {
-                    $agentID = $agent->user_id;    
-                } else {
-                    $agentID = null;
+                //Agent (optional)
+                $agentID = null;
+                if (isset($data->agent_id)) 
+                {
+                    $agent = Agent::where('agent_id', $data->agent_id)->first();
+                    if (isset($agent->user_id)) {
+                        $agentID = $agent->user_id;    
+                    }
                 }
                 
 
-                $memberInformation =
-                    [
+                $memberInformation = [
                     //'user_id'                 =>  $data->user_id,
                     'tutor_id' => $tutorID,
                     'age' => $data->age,
@@ -423,8 +407,8 @@ class MemberController extends Controller
                     //course_item_id            => null,
                     //english_level             => null,
                     'communication_app' => ucfirst($data->communication_app),
-                    'skype_account' => ($data->communication_app == 'skype') ? $data->communication_app_username : null,
-                    'zoom_account' => ($data->communication_app == 'zoom') ? $data->communication_app_username : null,
+                    'skype_account' => (strtolower($data->communication_app) == 'skype') ? $data->communication_app_username : null,
+                    'zoom_account' => (strtolower($data->communication_app) == 'zoom') ? $data->communication_app_username : null,
                     'membership' => $data->membership,
 
                     'is_report_card_visible_to_agent' => (boolean) $data->reportCard->agent,
@@ -439,7 +423,7 @@ class MemberController extends Controller
                     //'credits_expiration'                =>  date('Y-m-d G:i:s', strtotime('+6 months'))
 
                 ];
-                $member = Member::where('id', $data->user_id)->update($memberInformation);
+                $member = Member::where('user_id', $data->user_id)->update($memberInformation);
 
                 /** MEMBER_USER PIVOT WILL NOT SYNC SINCE IT IS ALREADY ADDED ON CREATION ONLY
                  *
@@ -485,8 +469,6 @@ class MemberController extends Controller
                 $purpose = LessonGoals::insert($lessonGoals);
 
                 /*
-                print_r($data->preference->lessonClasses);
-
                 //data sample
                 [id] => 123153
                 [valid] => 1
@@ -507,7 +489,7 @@ class MemberController extends Controller
                         "attribute" => $class->attribute,
                         "month" => $class->month,
                         "year" => $class->year,
-                        "lesson_limit" => $class->lesson_limit, //@todo: change to lesson limit
+                        "lesson_limit" => $class->lesson_limit,
                         "valid" => true,
                     ]);
                 }
@@ -517,7 +499,7 @@ class MemberController extends Controller
 
                 /****************************
                 Desired Schedules
-                 *****************************/
+                *****************************/
                 $desiredSchedules = [];
                 $ctr = 0;
                 foreach ($data->desiredScheduleList as $schedule) {
@@ -537,7 +519,7 @@ class MemberController extends Controller
 
                 return Response()->json([
                     "success" => true,
-                    "message" => "Member has been added",
+                    "message" => "Member ". $data->first_name ." ". $data->last_name ." has been updated",
                     "userData" => $request['user'],
                 ]);
             } catch (\Exception $e) {
