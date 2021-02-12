@@ -3,24 +3,23 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Member;
-use App\Models\Role;
-use App\Models\User;
+use App\Mail\SendUserSignUpConfirmation as SendUserSignUpConfirmationMail;
 use App\Models\Agent;
-use App\Models\Shift;
 use App\Models\AgentTransaction;
+use App\Models\Member;
 use App\Models\MemberAttribute;
+use App\Models\Role;
+use App\Models\Shift;
+use App\Models\User;
 use Auth;
 use DB;
 use Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
-use App\Mail\SendUserSignUpConfirmation as SendUserSignUpConfirmationMail;
-
+use Mail;
 use Session;
 use Validator;
-use Mail;
 
 class SignUpController extends Controller
 {
@@ -34,58 +33,71 @@ class SignUpController extends Controller
         return view('auth.signup');
     }
 
-    public function activation($activation_code) 
+    public function activation($activation_code)
     {
 
-        $user = User::where('activation_code', $activation_code)->first();        
-        if ($user) 
-        {          
-            $user->update([
-                'activation_code' => "",
-                'valid' => 1,                
-                'is_activated' => 1
-            ]);
+        $user = User::where('activation_code', $activation_code)->first();
 
-            //@todo: add attribute (2 months) from current month and (2 lesson)
-            $memberAttribute = new MemberAttribute();
+        if ($user) {
 
-            $dataThisMonth = [
-                "valid" => true,
-                'attribute'     => "TRIAL",
-                'lesson_limit'  => 2,
-                'member_id' => $user->id,
-                'month' => strtoupper(date('M')),
-                'year'  => strtoupper(date('Y'))
-            ];            
-            $memberAttribute->create($dataThisMonth);
-            
+            if ($user->is_activated == true) {
 
-            $dataNextMonth = [
-                "valid" => true,
-                'attribute'     => "TRIAL",
-                'lesson_limit'  => 2,
-                'member_id' => $user->id,
-                'month' => strtoupper(date('M', strtotime('first day of +1 month'))),
-                'year'  => strtoupper(date('Y', strtotime('first day of +1 month')))
-            ];
-            $memberAttribute->create($dataNextMonth);
-            
-            //@todo: add 2 points
-             $dataAgentTransaction = [
-                'member_id' => $user->id,
-                'lesson_shift_id' => null,
-                'created_by_id' => null,
-                'transaction_type' => "FREE_CREDITS",
-                'amount' => 2,
-                'valid' => true,
-            ];
+                //already activated 
+                //@todo: show activated
 
-            AgentTransaction::create($dataAgentTransaction);             
+                return view('auth.activation_is_activated', compact('user'));
 
-            return view('auth.activation', compact('message', 'user'));
+            } else {
+                //activate user
+
+                $user->update([
+                    //'activation_code' => "",
+                    'valid' => 1,
+                    'is_activated' => 1,
+                ]);
+
+                //@todo: add attribute (2 months) from current month and (2 lesson)
+                $memberAttribute = new MemberAttribute();
+
+                $dataThisMonth = [
+                    "valid" => true,
+                    'attribute' => "TRIAL",
+                    'lesson_limit' => 2,
+                    'member_id' => $user->id,
+                    'month' => strtoupper(date('M')),
+                    'year' => strtoupper(date('Y')),
+                ];
+                $memberAttribute->create($dataThisMonth);
+
+                $dataNextMonth = [
+                    "valid" => true,
+                    'attribute' => "TRIAL",
+                    'lesson_limit' => 2,
+                    'member_id' => $user->id,
+                    'month' => strtoupper(date('M', strtotime('first day of +1 month'))),
+                    'year' => strtoupper(date('Y', strtotime('first day of +1 month'))),
+                ];
+                $memberAttribute->create($dataNextMonth);
+
+                //@todo: add 2 points
+                $dataAgentTransaction = [
+                    'member_id' => $user->id,
+                    'lesson_shift_id' => null,
+                    'created_by_id' => null,
+                    'transaction_type' => "FREE_CREDITS",
+                    'amount' => 2,
+                    'valid' => true,
+                ];
+
+                AgentTransaction::create($dataAgentTransaction);
+
+                return view('auth.activation', compact('user'));
+            }
 
         } else {
-            abort(404);
+
+            //activation code invalid or not found
+            return view('auth.activation_not_found', compact('user'));           
         }
     }
 
@@ -161,8 +173,14 @@ class SignUpController extends Controller
             $roles[] = Role::where('title', 'Member')->first()->id;
             $user->roles()->sync($roles);
 
+            //lesson shift
             $lessonShift = Shift::where('value', 25)->first();
-            
+
+            //@todo: mt100 - default tutor for new users
+            $defaultAgent = Agent::where('agent_id', 'mt100')->first();
+
+            //@todo: 127 - default tutor id
+
             //communication app
             $commApp = ucfirst($request['commApp']);
 
@@ -171,9 +189,9 @@ class SignUpController extends Controller
 
             if ($commApp == "Zoom") {
                 $zoom_account = $request['communication_app_username'];
-            } else if ($commApp == "Skype") {    
+            } else if ($commApp == "Skype") {
                 $skype_account = $request['communication_app_username'];
-            }            
+            }
 
             $memberInformation =
                 [
@@ -185,11 +203,14 @@ class SignUpController extends Controller
                 'membership' => "Point Balance",
                 'member_since' => date('Y-m-d'),
 
+                //default agent (auto filled)
+                'agent_id' => $defaultAgent->user_id,
+                //default tutor (auto filled)
+                'tutor_id' => $defaultTutor->user_id,
                 //attribute (auto filled)
                 'attribute' => 'TRIAL',
                 'lesson_shift_id' => $lessonShift->id,
             ];
-
 
             $member = Member::create($memberInformation);
             $user->members()->sync([$member->id], false);
@@ -200,19 +221,17 @@ class SignUpController extends Controller
 
             $mailData = [
                 'firstname' => $request['first_name'],
-                'lastname' => $request['last_name'],                
-                'name' =>  $request['first_name'] . " " . $request['last_name'],
-                'nickname' =>$request['nickname'],
-                'email' =>  $request['email'],
+                'lastname' => $request['last_name'],
+                'name' => $request['first_name'] . " " . $request['last_name'],
+                'nickname' => $request['nickname'],
+                'email' => $request['email'],
                 'activation_code' => $activation_code,
             ];
 
-         
             Mail::send(new SendUserSignUpConfirmationMail($mailData));
 
             //redirect to step 3
             $name = $request['first_name'] . " " . $request['last_name'];
-
 
             $message = "<p>登録ありがとうございます。 $name </p>
             <br/>
