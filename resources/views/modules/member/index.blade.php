@@ -44,7 +44,7 @@
 
                             <a href="{{ url('lessonrecord') }}">
                                 <!--<button type="button" class="btn btn-warning text-dark rounded" style="background-color:#fcc120">受講履歴/添削履歴</button>-->
-                                <button class="btn-rounded btn-yellow text-dark">受講履歴/添削履歴</button>                               
+                                <!--<button class="btn-rounded btn-yellow text-dark">受講履歴/添削履歴</button>-->
                                 <img src="{{ url('images/btnYellow3.png') }}">
                             </a>
 
