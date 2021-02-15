@@ -94,7 +94,20 @@ class dummyController extends Controller
      */
     public function create()
     {
+
+
+        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id');
+        $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+        
+        
         echo "test";
+
+        //@todo: get all member
+
+        //@todo: get transaction that are expired for this member
+
+
     }
 
     /**

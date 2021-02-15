@@ -174,6 +174,7 @@ class ExportController extends Controller
         $ctr = 3;        
         foreach ($members as $member) 
         {            
+            //@get accumalted expired points
             $credits = $agenTransaction->getCredits($member->user_id);
             if ($credits >= 1) {
                 $spreadsheet->getActiveSheet()->getStyle('B'. $ctr.':G'.$ctr)->getAlignment()->setHorizontal('center');
@@ -205,6 +206,10 @@ class ExportController extends Controller
             header('Pragma: public');
             flush(); // Flush system output buffer
             readfile($filename);
+
+
+            unlink($filename);
+            
             die();
         } else {
             http_response_code(404);

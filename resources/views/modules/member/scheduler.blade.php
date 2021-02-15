@@ -92,19 +92,22 @@
                                     @php
                                         $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
 
-                                        if ($lessonSlot['startTime'] == '23:00' || $lessonSlot['startTime'] == '23:30') {
+                               
+
+                                        if ($lessonSlot['startTime'] >= '24:00') {
                                             $date = $nextDay;
                                         } else {
                                             $date = $dateToday;
                                         }
                                     @endphp
 
-
                                     @if (isset($schedules[$tutor->user_id][$date][$startTimePH]))
 
                                         @php
                                             $scheduleID = $schedules[$tutor->user_id][$date][$startTimePH]['id'];
                                             $scheduleMemberID =  $schedules[$tutor->user_id][$date][$startTimePH]['member_id'];
+
+
                                             $status = $schedules[$tutor->user_id][$date][$startTimePH]['status'];  
                                         @endphp
                                       
@@ -143,7 +146,7 @@
 
                                             </div>
 
-                                        @elseif($status == 'SUPRESSED_SCHEDULE' )
+                                        @elseif($status == 'SUPPRESSED_SCHEDULE' )
                                             <div id="scheduleID_{{$scheduleID}}" class="gen-med">{{'済他'}}</div>
 
                                         @elseif($status == 'CLIENT_NOT_AVAILABLE')

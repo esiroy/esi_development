@@ -247,9 +247,9 @@ class SignUpController extends Controller
 
         } catch (\Exception $e) {
 
-            return redirect()->route('signup')->with('message', $e->getMessage());
-
             DB::rollback();
+            
+            return redirect()->route('signup')->with('message', $e->getMessage());
         }
 
     }
