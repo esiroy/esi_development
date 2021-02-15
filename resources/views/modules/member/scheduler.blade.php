@@ -70,10 +70,17 @@
                                     <div id="{{ $tutor->user_id }}" style="width:110px"  class="hbordered">
 
                                         <div class="photo pt-1">
-                                            @if ($tutor->filename == null)
+
+                                            @php 
+                                                $userImage = new App\Models\UserImage();
+                                                $image =  $userImage->getTutorPhotobyID($tutor->user_id);
+
+                                            @endphp
+
+                                            @if ($image == null)
                                                 <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="60px">
                                             @else 
-                                                <img src="{{ Storage::url("$tutor->original") }}" class="img-fluid border" alt="profile photo" width="60px">
+                                                <img src="{{ Storage::url("$image->original") }}" class="img-fluid border" alt="profile photo" width="60px">
                                             @endif
                                         </div>
 
@@ -90,10 +97,8 @@
                                 @foreach($lessonSlots as $lessonSlot)
                                 <td>
                                     @php
+                                        //adjust time for Japanese standar time
                                         $startTimePH = date('H:i', strtotime($lessonSlot['startTime'] ." - 1 hour "));
-
-                               
-
                                         if ($lessonSlot['startTime'] >= '24:00') {
                                             $date = $nextDay;
                                         } else {
@@ -106,8 +111,6 @@
                                         @php
                                             $scheduleID = $schedules[$tutor->user_id][$date][$startTimePH]['id'];
                                             $scheduleMemberID =  $schedules[$tutor->user_id][$date][$startTimePH]['member_id'];
-
-
                                             $status = $schedules[$tutor->user_id][$date][$startTimePH]['status'];  
                                         @endphp
                                       

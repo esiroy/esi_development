@@ -128,20 +128,21 @@ class ReservationController extends Controller
             $shift = Shift::where("value", $shiftDuration)->first();
 
             $tutors = Tutor::where('lesson_shift_id', $shift->id)
-                        ->where('is_terminated', 0)
-                        //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
                         ->join('users', 'users.id', '=', 'tutors.user_id')
-                        ->leftjoin('user_image', 'user_image.user_id', '=', 'tutors.user_id')
-                        //->orderBy('firstname', 'ASC')
+                        ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')                        
+                        ->where('is_terminated', 0)
+                        ->where('users.valid', 1)                        
                         ->orderBy('sort', 'ASC')
-                        ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid', 'user_image.filename', 'user_image.original')
-                        ->where('users.valid', 1)
                         ->get();
+
+                        //->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated                        
+                        //->join('user_image', 'user_image.user_id', '=', 'tutors.user_id')
+                        //->orderBy('firstname', 'ASC')                        
+                        //->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid', 'user_image.filename', 'user_image.original')                        
+                        
+                        
                                      
             $member = Member::where('user_id', Auth::user()->id)->first();
-        
-
-
             //GET LESSONS FROM DATE TODAY ONLY
             $schedules = $scheduleItem->getSchedules($dateToday, $shiftDuration);
 
