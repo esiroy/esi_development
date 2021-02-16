@@ -28,14 +28,14 @@
                                             <td>Lesson Course</td>
                                             <td colspan="6">
                                                 <input required type="text" name="lessonCourse" id="lessonCourse*" class="form-control form-control-sm"
-                                                value="@if (isset($reportCard->lesson_course)) {{ $reportCard->lesson_course }}  @else {{  $latestReportCard->lesson_course }} @endif" size="50">
+                                                value="@if(isset($reportCard->lesson_course)){{$reportCard->lesson_course}}@else{{$latestReportCard->lesson_course??''}}@endif" size="50">
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Lesson Material</td>
                                             <td colspan="6">
                                                 <input required type="text" name="lessonMaterial" id="lessonMaterial*" class="form-control form-control-sm"
-                                                value="@if (isset($reportCard->lesson_material)) {{ $reportCard->lesson_material }}   @else {{  $latestReportCard->lesson_material }} @endif" size="50">
+                                                value="@if(isset($reportCard->lesson_material)){{$reportCard->lesson_material}}@else{{$latestReportCard->lesson_material??''}} @endif" size="50">
                                             </td>
                                         </tr>
                                         <tr>
@@ -44,7 +44,7 @@
                                             </td>
                                             <td colspan="6">
                                                 <input required type="text" name="lessonSubject" id="lessonSubject*" class="form-control form-control-sm"
-                                                value="@if (isset($reportCard->lesson_subject)) {{ $reportCard->lesson_subject }}   @else {{  $latestReportCard->lesson_subject }} @endif" size="50">
+                                                value="@if(isset($reportCard->lesson_subject)){{$reportCard->lesson_subject}}@else{{$latestReportCard->lesson_subject??''}} @endif" size="50">
                                             </td>
                                         </tr>
                                         <tr>
@@ -55,8 +55,14 @@
                                                 @php 
                                                     if (isset($reportCard->lesson_level)){
                                                         $lesson_level = $reportCard->lesson_level;
+
                                                     } elseif(isset($latestReportCard->lesson_level)) {
+
                                                         $lesson_level = $latestReportCard->lesson_level;
+                                                    } else {
+
+
+                                                        $lesson_level = null;
                                                     }
                                                 @endphp
 

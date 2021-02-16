@@ -38,7 +38,11 @@
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
                             レッスン教材
+                            <span class="text-right" style="width: 50%;display: block;float: right;font-size: 12px;">
+                                オリジナル教材 オリジナル教材 オリジナル教材 オリジナル教材 以外 はカスタマーサ カスタマーサ カスタマーサ ポート まで ご連絡ください ご連絡ください ご連絡ください ご連絡ください ）
+                            </span>                                                        
                         </div>
+                        
                         <div class="card-body">
 
                             <div id="parent-category" class="pb-5">
