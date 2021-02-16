@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Traits\AuthenticatesAdminUsers;
 
 use App\Models\User;
-use Hash, Auth, Str;
+use Hash, Auth, Str, Session;
 
 class AuthController extends Controller
 {
@@ -71,7 +71,11 @@ class AuthController extends Controller
             // Authentication passed...
             $user->api_token = Hash('sha256', Str::random(80)); //update api token for old md5 passowrd since older user is having md5 encryption
             $user->save();
-            return redirect()->intended('admin/dashboard');
+            return redirect()->intended('admin/dashboard');         
+
+            //@todo: detect if intended redirect is under admin url prefix;
+            
+            //return redirect('/admin/dashboard');
         }
         
 

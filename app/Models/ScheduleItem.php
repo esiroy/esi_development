@@ -230,9 +230,9 @@ class ScheduleItem extends Model
                 'endTime' => date("H:i", strtotime($item->lesson_time)),
                 'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
                 'email_type' => $item->email_type,
-                'duration' => $item->duration,
-                
+                'duration' => $item->duration,                
                 'member_id' => $item->member_id,
+                'member_memo' => $item->memo
             ];
         }
 

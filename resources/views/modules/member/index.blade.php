@@ -99,10 +99,7 @@
                         <div class="card-header esi-card-header text-center">                            
                                 レッスンの予約
                         </div>
-                        
-                       
-                        <div class="card-body">                          
-                       
+                        <div class="card-body">   
                             <div id="member-scheduler" class="mt-3">
                                 <p>
                                     固定レッスン以外はこちらから予約して下さい
@@ -111,8 +108,6 @@
                                 </p>
                                 <p>30 分前まで予約可能です</p>
                             </div>
-                       
-
                         </div>
                     </div>
                     -->
@@ -139,9 +134,7 @@
                                     @foreach ($reserves as $reserve)
                                     <tr class="row_reserve_{{$reserve->id}}">
                                         <td style="text-align: center;">
-                                            {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }}
-                                            
-                                            {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                            {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
                                         </td>
                                         <td style="text-align: center;" colspan="2">                                            
                                             @php

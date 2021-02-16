@@ -150,7 +150,7 @@ class TutorController extends Controller
                 'japanese_lastname' => '',
                 'email' => $request['email'],
                 'username' => $request['email'],
-                'password' => Hash::make($data['password']),
+                'password' => Hash::make($request['password']),
                 'api_token' => Hash('sha256', Str::random(80)),
                 'user_type' => "TUTOR",
                 'valid' => ! ((boolean) $request['is_terminated']),
