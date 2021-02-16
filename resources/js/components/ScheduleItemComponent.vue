@@ -5,7 +5,14 @@
 -->
 <template>
     <div id="scheduleItemModal">
-        <b-modal  id="schedulesModal" 
+
+
+        <b-modal id="memberMemoModal" title="Member Memo"  @show="retrieveMemo()">
+            <p class="my-4">{{ memberMemo }}</p>
+        </b-modal>
+
+
+        <b-modal id="schedulesModal" 
             title="Schedule Lesson"
             button-size="sm"
             :no-close-on-backdrop="true"
@@ -130,6 +137,8 @@
                             </th>
 
                             <td v-for="time in timeList" :key="time.id"> 
+
+
                                 <div :id="'btnAdd-' + tutor.user_id + '-' + time.startTime"
                                     class="addSchedule SCHEDULE_ITEM" 
                                     v-show="checkButton({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })">
@@ -142,7 +151,10 @@
                                     <div class="client">
                                         <div v-html="getMember({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
                                     </div>
-                                    <div class="btn-container">
+                                    <div class="btn-container">                          
+                                        <div class="iMail2" v-show="checkMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                            <a href="javascript:void(0);" @click="getMemberMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iMail2.gif"></a>
+                                        </div>
                                         <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
                                         <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
                                     </div>
@@ -191,6 +203,8 @@ export default {
     },
     data() {
         return {
+            memberMemo: "",
+
             memberDataList: [],
             isFound : false,
             fromDay : this.scheduled_at,
@@ -292,6 +306,39 @@ export default {
             }
             catch(err) { return ""; }
         },
+        retrieveMemo() {
+            //@todo : clean up memo
+        },
+        checkMemo(data) {
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
+                    if (lessonData.member_memo !== '') {
+                        return true;
+                         console.log(lessonData);                                              
+                    } else {
+                        return false;
+                    }                       
+                } else {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                                
+                    if (lessonData.member_memo !== '') {
+                        return true;
+                         console.log(lessonData);                                              
+                    } else {
+                        return false;
+                        console.log(lessonData);      
+                    }
+                }                        
+            }
+            catch(err) { return false; } 
+        },
+        getMemberMemo(scheduleData) 
+        {          
+            //get current schedule data
+            let memoData = this.getScheduleData(scheduleData);
+            this.$bvModal.show('memberMemoModal');                     
+            this.memberMemo = memoData.member_memo;
+        },
         getMember(data) 
         {          
             try {
@@ -332,7 +379,7 @@ export default {
                 }
             }
             catch(err) {
-               isFound =false
+               isFound = false
             } 
             return !isFound;
         },
@@ -745,12 +792,7 @@ export default {
                             options.push({'id': member.user_id, 'name': member.user_id + " " + member.firstname + " "+ member.lastname  });        
                         });
                         this.memberOptionList = options;
-
                         this.memberDataList = memberData;
-
-                        console.log(this.memberDataList[197])
-
-
                         this.$forceUpdate(); 
                     });
                 } 
@@ -954,9 +996,10 @@ export default {
         text-align: center;
     }
 
-    .iEdit, .iDelete {
+    .iEdit, .iDelete, .iMail2 {
         display: inline-block;
-        width: 15px;
+        width: 12px;
+        margin: 2px 3px 2px;
     }
     
 

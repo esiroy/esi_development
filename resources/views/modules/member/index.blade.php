@@ -134,7 +134,13 @@
                                     @foreach ($reserves as $reserve)
                                     <tr class="row_reserve_{{$reserve->id}}">
                                         <td style="text-align: center;">
-                                            {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+
+                                            @if (date('H', strtotime($reserve->lesson_time)) == '00') 
+                                                {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                            @else 
+                                                {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                            @endif
+                                            
                                         </td>
                                         <td style="text-align: center;" colspan="2">                                            
                                             @php
