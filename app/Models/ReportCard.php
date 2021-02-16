@@ -12,4 +12,9 @@ class ReportCard extends Model
     {
         return ReportCard::where('member_id', $memberID)->OrderByDesc('created_at')->first();
     }
+
+
+    public function getReportbyScheduleItemID($schedule_item_id) {
+        return ReportCard::where('schedule_item_id', $schedule_item_id)->first();
+    }
 }

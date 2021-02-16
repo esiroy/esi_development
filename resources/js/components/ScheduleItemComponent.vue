@@ -7,10 +7,9 @@
     <div id="scheduleItemModal">
 
 
-        <b-modal id="memberMemoModal" title="Member Memo"  @show="retrieveMemo()">
-            <p class="my-4">{{ memberMemo }}</p>
+        <b-modal id="memberMemoModal" title="Member Memo"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close">
+            <p class="my-2">{{ memberMemo }}</p>
         </b-modal>
-
 
         <b-modal id="schedulesModal" 
             title="Schedule Lesson"
@@ -151,7 +150,13 @@
                                     <div class="client">
                                         <div v-html="getMember({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })"></div>                                   
                                     </div>
-                                    <div class="btn-container">                          
+                                    <div class="btn-container">
+
+                                                          
+                                        <div class="iReportCard2" v-show="hasReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                            <a href="javascript:void(0);" @click="showReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iReportCard2.gif"></a>
+                                        </div>
+
                                         <div class="iMail2" v-show="checkMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
                                             <a href="javascript:void(0);" @click="getMemberMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iMail2.gif"></a>
                                         </div>
@@ -308,25 +313,64 @@ export default {
         },
         retrieveMemo() {
             //@todo : clean up memo
+            //@todo: add loading
+        },
+        hasReportCard(data) {
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];      
+
+                    //console.log(lessonData)
+
+                    if (lessonData.hasReportCard === true) {
+                        return true;                           
+                    } else {
+                        return false;
+                    }                       
+                } else {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                                
+
+                    //console.log(lessonData)
+                     
+                    if (lessonData.hasReportCard === true) {
+                        return true;                
+                    } else {
+                        return false;
+                    }
+                }                        
+            }
+            catch(err) { return false; } 
+        },
+        showReportCard(data) {
+
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
+                    window.open("reportcard?scheduleitemid="+lessonData.id, "_self");                
+                } else {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                 
+                    window.open("reportcard?scheduleitemid="+lessonData.id, "_self");
+                  
+                }                        
+            }
+            catch(err) { return false; } 
+           
         },
         checkMemo(data) {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
                     if (lessonData.member_memo !== '') {
-                        return true;
-                         console.log(lessonData);                                              
+                        return true;                                           
                     } else {
                         return false;
                     }                       
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                                
                     if (lessonData.member_memo !== '') {
-                        return true;
-                         console.log(lessonData);                                              
+                        return true;                                          
                     } else {
-                        return false;
-                        console.log(lessonData);      
+                        return false;  
                     }
                 }                        
             }
@@ -996,7 +1040,7 @@ export default {
         text-align: center;
     }
 
-    .iEdit, .iDelete, .iMail2 {
+    .iEdit, .iDelete, .iMail2, .iReportCard2 {
         display: inline-block;
         width: 12px;
         margin: 2px 3px 2px;

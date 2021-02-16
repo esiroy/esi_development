@@ -220,9 +220,20 @@ class ScheduleItem extends Model
             ->where('valid', 1)
             ->get();
         */
-        $schedules = [];
 
-        foreach ($scheduleItems as $item) {
+        $reportCard = new ReportCard();
+
+        $schedules = [];
+        foreach ($scheduleItems as $item) 
+        {
+            $memberReportCard = $reportCard->getReportbyScheduleItemID($item->id);
+
+            if ($memberReportCard) {
+                $hasReportCard = true;
+            } else {
+                $hasReportCard = false;
+            }
+
             $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
                 'id' => $item->id,
                 'status' => $item->schedule_status,
@@ -232,7 +243,8 @@ class ScheduleItem extends Model
                 'email_type' => $item->email_type,
                 'duration' => $item->duration,                
                 'member_id' => $item->member_id,
-                'member_memo' => $item->memo
+                'member_memo' => $item->memo,
+                'hasReportCard' => $hasReportCard,
             ];
         }
 
