@@ -360,14 +360,14 @@ export default {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
-                    if (lessonData.member_memo !== '' || lessonData.member_memo !== null) {
+                    if (lessonData.member_memo !== '' || lessonData.member_memo !== null ||  lessonData.member_memo !== 'null') {
                         return true;                                           
                     } else {
                         return false;
                     }                       
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                                
-                    if (lessonData.member_memo !== '' || lessonData.member_memo !== null)) {
+                    if (lessonData.member_memo !== '' || lessonData.member_memo !== null || lessonData.member_memo !== 'null')) {
                         return true;                                          
                     } else {
                         return false;  
