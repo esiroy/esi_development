@@ -315,32 +315,7 @@ export default {
             //@todo : clean up memo
             //@todo: add loading
         },
-        hasReportCard(data) {
-            try {
-                if (data.startTime == '23:00' || data.startTime == '23:30') {
-                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];      
 
-                    //console.log(lessonData)
-
-                    if (lessonData.hasReportCard === true) {
-                        return true;                           
-                    } else {
-                        return false;
-                    }                       
-                } else {
-                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                                
-
-                    //console.log(lessonData)
-                     
-                    if (lessonData.hasReportCard === true) {
-                        return true;                
-                    } else {
-                        return false;
-                    }
-                }                        
-            }
-            catch(err) { return false; } 
-        },
         showReportCard(data) {
 
             try {
@@ -356,18 +331,40 @@ export default {
             catch(err) { return false; } 
            
         },
+
+        hasReportCard(data) {
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];    
+                    if (lessonData.hasReportCard === true) {
+                        return true;                           
+                    } else {
+                        return false;
+                    }                       
+                } else {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
+                    if (lessonData.hasReportCard === true) {
+                        return true;                
+                    } else {
+                        return false;
+                    }
+                }                        
+            }
+            catch(err) { return false; } 
+        },
+
         checkMemo(data) {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
-                    if (lessonData.member_memo !== '' || lessonData.member_memo !== null ||  lessonData.member_memo !== 'null') {
+                    if (lessonData.member_memo !== '') {
                         return true;                                           
                     } else {
                         return false;
                     }                       
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                                
-                    if (lessonData.member_memo !== '' || lessonData.member_memo !== null || lessonData.member_memo !== 'null')) {
+                    if (lessonData.member_memo !== '') {
                         return true;                                          
                     } else {
                         return false;  
