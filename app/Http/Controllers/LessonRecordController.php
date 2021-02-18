@@ -28,7 +28,7 @@ class LessonRecordController extends Controller
     }
 
     //lessonRecords landing page
-    public function index() 
+    public function index(Request $request) 
     {
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
@@ -46,15 +46,23 @@ class LessonRecordController extends Controller
                 'skypeID'   => $skypeID,            
             ];  
             
-            $reportcards = ReportCard::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
+            $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
             
             $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');            
     
             $latestReportCard = ReportCard::where('member_id', $member->user_id)->OrderBy('created_at', 'DESC')->first();
 
 
+            if ($request->display == 'none') {
+
+                return view('modules.questionnaire.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
+
+            } else {
+
+                return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
+            }
             
-            return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
+            
 
         } else {
             abort(404);

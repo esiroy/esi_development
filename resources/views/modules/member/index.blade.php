@@ -61,8 +61,8 @@
 
                     <div class="grayBackgroundBox mt-4 pt-3 px-2">
                         <p>今日のレッスンはいかがでしたか？ 今後の円滑な運営と質の高いレッスン のご提供のため、何かお気づきの点がありましたら アンケートにお答え下さい！</p>
-                        <p align="right">
-                            <a href="{{ url('lessonrecord') }}">
+                        <p class="text-right">
+                            <a href="{{ url('lessonrecord?display=none') }}">
                                 <img src="images/btnRed2.gif" alt="Alternate Text Here" title="Title Text Here">
                             </a>
                         </p>

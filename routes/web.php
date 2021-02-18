@@ -126,7 +126,7 @@ Route::get('/lessonrecord', 'LessonRecordController@index')->name('lessonrecord'
 Route::get('/reportcard/{id}', 'LessonRecordController@reportcard')->name('reportcard');
 Route::get('/userreportcarddate/{id}', 'LessonRecordController@userreportcarddate')->name('reportcarddate');
 
-
+Route::resource('/questionnaire', 'Members\QuestionnaireController');
 
 
 /* Public Folder View */

@@ -33,7 +33,7 @@
                         </div>
 
                         <div class="card-body">
-                            <p>これまで受講した一覧です。</p>
+                            <p>その他お気づきになったことがあればご記入下さい</p>
 
                             <table class="table table-bordered table-sm">
                                 <tbody>
@@ -44,11 +44,16 @@
                                     </tr>
                                     @foreach ($reportcards as $reportcard)
                                     <tr>
-                                        <td class="text-center">                                            
-                                            {{ date('Y年 m月 d日', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
-                                        </td>
                                         <td class="text-center">
-   
+                                            {{ date('Y年 m月 d日', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
+
+                                            {{ date('H:i', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
+                                            -
+                                            {{ date('H:i', strtotime( \App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'] ." + 25 minutes")) }}
+                                        </td>
+
+                                        <td class="text-center">
+
                                             @php
                                                 $schedule = \App\Models\ScheduleItem::find($reportcard->schedule_item_id);
                                                 $tutor =  \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
@@ -58,7 +63,7 @@
                                             
                                         </td>
                                         <td class="text-center">
-                                            <a href="reportcard/{{$reportcard->id}}">» 評価</a>
+                                            <a href="questionnaire/{{$reportcard->schedule_item_id}}">» アンケート</a>
                                         </td>
                                     </tr>
                                     @endforeach
