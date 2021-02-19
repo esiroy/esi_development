@@ -213,6 +213,8 @@ class QuestionnaireController extends Controller
      */
     public function show($id)
     {      
+
+
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();        
         $reportcard = ReportCard::where('schedule_item_id', $id)->first();
@@ -223,7 +225,12 @@ class QuestionnaireController extends Controller
             $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_2")->first();
             $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
             $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();            
-        }        
+        } else {
+            $questionnaireItem1 = null;
+            $questionnaireItem2 = null;
+            $questionnaireItem3 = null;
+            $questionnaireItem4 = null;            
+        }   
 
         return view('modules.questionnaire.show', compact('member', 'reportcard', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
     }
