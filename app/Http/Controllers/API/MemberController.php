@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
-use Validator;
+use Validator, Auth;
 
 class MemberController extends Controller
 {
@@ -50,14 +50,50 @@ class MemberController extends Controller
      */
     public function bookSchedule(Request $request)
     {  
+        $scheduleItem = new ScheduleItem;
+
         $scheduleID = $request->scheduleID;
         $memberID = $request->memberID;
-        //@todo: check if the schedule is unique
 
-        //@todo: check if 3 hours and have attribute
+        //find the schedule
+        $schedule = $scheduleItem->find($scheduleID);
+
+        //@todo: check if 30 minutes is not reached 
+        
+
+        //@todo: check if member has enough points
+
+
+        //@todo: attribute
+
+        //check if 3 hours, if reached will not refund.
+
+        //@todo: check if the schedule not having same time with other schedules
+        $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
+
+        //@todo: check if not exists?
+        $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)                    
+                    ->where('member_id', Auth::user()->id)
+                    //->where('tutor_id', $schedule->tutor_id)
+                    //->where('schedule_status', $schedule_status)
+                    //->where('duration', $request['shiftDuration'])
+                    //->where('lesson_shift_id', $shift->id)
+                    ->where('valid', 1)
+                    ->exists();
+        
+        if ($isLessonExists) 
+        {               
+            //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+
+            return Response()->json([
+                "success" => false,
+                //"refresh"  => true,
+                //'tutorLessonsData' => $tutorLessonsData,
+                "message" => "Tご予約できません。　既に同じ時間にご予約があります。",
+            ]);
+        } 
 
         //@todo: save to database
-        $schedule = ScheduleItem::find($scheduleID);
         $data = [
             'member_id' => $memberID,
             'schedule_status' => 'CLIENT_RESERVED',
@@ -66,10 +102,40 @@ class MemberController extends Controller
 
         return Response()->json([
             "success" => true,
-            "message" => "Member has been scheduled",
+            "message" => "Member has been scheduled",            
+            "userData" => $request['user'],
+
+            "lesson_time" => $lessonTime,
+            "tutor_id" => $schedule->tutor_id,
+            "member_id" => Auth::user()->id,
+        ]);
+    }
+
+    public function cancelSchedule(Request $request)
+    {
+        $id = $request->id;
+
+        //@todo: check if the schedule is present
+
+        //@todo: refund points if status is [client reserved]
+        //@todo : no refund points if status if [client reserved b]
+        //@todo: (cancellation is 3 hours grace period)
+
+        //@todo: save to database
+        $schedule = ScheduleItem::find($id);
+        $data = [
+            'member_id' => null,
+            'schedule_status' => 'TUTOR_SCHEDULED',
+        ];
+        $schedule->update($data);
+
+        return Response()->json([
+            "success" => true,
+            "message" => "Member has been cancelled scheduled",
             "userData" => $request['user'],
         ]);
     }
+
 
 
     public function getMemo(Request $request) 
@@ -107,32 +173,7 @@ class MemberController extends Controller
             "memo"  => $message,
             "message" => "Memo has been saved"
         ]);
-    }
-
-    public function cancelSchedule(Request $request)
-    {
-        $id = $request->id;
-
-        //@todo: check if the schedule is present
-
-        //@todo: refund points if status is [client reserved]
-        //@todo : no refund points if status if [client reserved b]
-        //@todo: (cancellation is 3 hours grace period)
-
-        //@todo: save to database
-        $schedule = ScheduleItem::find($id);
-        $data = [
-            'member_id' => null,
-            'schedule_status' => 'TUTOR_SCHEDULED',
-        ];
-        $schedule->update($data);
-
-        return Response()->json([
-            "success" => true,
-            "message" => "Member has been cancelled scheduled",
-            "userData" => $request['user'],
-        ]);
-    }
+    }    
 
     /**
      * Store a newly created resource in storage.

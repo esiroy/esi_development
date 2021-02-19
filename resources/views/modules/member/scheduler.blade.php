@@ -18,9 +18,18 @@
                 <div class="card-header esi-card-header">講師スケジュール </div>
                 <div class="card-body">
 
-                    <div class="mt-2 mb-4">
-                        <div>予約= 予約可能です</div>
-                        <div>済　= 本人で予約済みです</div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mt-2 mb-4">
+                                <div>予約= 予約可能です</div>
+                                <div>済　= 本人で予約済みです</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div style="float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
+                                済他＝　講師キャンセル又は他の受講生が予約済みです
+                            </div>
+                        </div>
                     </div>
 
                     <!--[start] Update Date -->
@@ -134,6 +143,7 @@
                                             <div class="button_{{$scheduleID}}">
 
                                                 <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>                                               
+                     
 
                                                 @if ($member->user_id == $scheduleMemberID)
                                                     <div class="cancel">
@@ -151,17 +161,14 @@
 
                                         @elseif($status == 'SUPPRESSED_SCHEDULE' )
                                             <div id="scheduleID_{{$scheduleID}}" class="gen-med">{{'済他'}}</div>
-
                                         @elseif($status == 'CLIENT_NOT_AVAILABLE')
-                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{'欠席'}}</div>
-
+                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{'済他'}}</div>
                                         @elseif($status == 'TUTOR_CANCELLED')
-                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{ "予約" }}</div>
-
+                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{ "済他" }}</div>
                                         @elseif ($status == "COMPLETED")                                         
-                                            <a id="scheduleID_{{$scheduleID}}" href="javascript:void(0)"  class="gen-med">completed</a>
-
+                                            <div id="scheduleID_{{$scheduleID}}" class="gen-med">{{ "済他" }}</div>
                                         @endif
+
                                     @endif
 
 
@@ -224,10 +231,16 @@
                 success: function(data) {
                     //$("#msg").html(data.msg);
 
-                    console.log(scheduleID);
+                    if (data.success == true) {
+                        console.log(scheduleID);
 
-                    $('.button_' + scheduleID + ' .bookTutorSchedule').hide();
-                    $('.button_' + scheduleID + ' .cancel').show();
+                        $('.button_' + scheduleID + ' .bookTutorSchedule').hide();
+                        $('.button_' + scheduleID + ' .cancel').show();
+                    } else {
+                        alert(data.message);
+                    }
+
+
                 }
             });
         } else {

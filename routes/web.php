@@ -61,6 +61,13 @@ Route::resource('importUsers', 'TableUserImporterController');
 Route::get('importUsers/index/{per_item}', 'TableUserImporterController@index');
 Route::get('importUsers/{id}/{per_item}', 'TableUserImporterController@show');
 
+/*************** 
+ * TUTOR IMPORTER
+ ***************/
+Route::resource('importTutors', 'TableTutorImporterController');
+Route::get('importTutors/index/{per_item}', 'TableTutorImporterController@index');
+Route::get('importTutors/{id}/{per_item}', 'TableTutorImporterController@show');
+
 
 /*************** 
  * MEMBER IMPORTER

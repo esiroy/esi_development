@@ -33,11 +33,11 @@ class TableTutorImporterController extends Controller
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        echo "<div>ADDING agent  FROM : " . $start . " - " . $end . "</div>";
+        echo "<div>ADDING Tutor  FROM : " . $start . " - " . $end . "</div>";
         echo "<BR>";
 
         
-        $items = DB::connection('mysql_live')->select("select * from users_tutor ORDER BY user_id DESC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from users_tutor ORDER BY user_id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
