@@ -76,7 +76,7 @@ class QuestionnaireController extends Controller
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
         if (isset($questionnaire->id)) {
-            $questionnaire->update([
+            $newQuestionnaire = $questionnaire->update([
                 'schedule_item_id' => $id,
                 'remarks' =>  $request->remarks,
                 'tutor_id' => $request->tutor_id,
@@ -84,7 +84,7 @@ class QuestionnaireController extends Controller
                 'valid' => true
             ]);
         } else {
-            Questionnaire::create([
+            $newQuestionnaire = Questionnaire::create([
                 'schedule_item_id' => $id,
                 'remarks' =>  $request->remarks,
                 'tutor_id' => $request->tutor_id,
@@ -99,20 +99,20 @@ class QuestionnaireController extends Controller
         {
 
             $questionnaireItem = QuestionnaireItem::
-                                where('questionnaire_id', $questionnaire->id)
+                                where('questionnaire_id',  $newQuestionnaire->id)
                                 ->where('QUESTION', "QUESTION_1")
                                 ->first();
 
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
@@ -125,21 +125,21 @@ class QuestionnaireController extends Controller
         {
 
             $questionnaireItem = QuestionnaireItem::
-                                where('questionnaire_id', $questionnaire->id)
+                                where('questionnaire_id', $newQuestionnaire->id)
                                 ->where('QUESTION', "QUESTION_2")
                                 ->first();
 
 
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
@@ -152,21 +152,21 @@ class QuestionnaireController extends Controller
         {
 
             $questionnaireItem = QuestionnaireItem::
-                                where('questionnaire_id', $questionnaire->id)
+                                where('questionnaire_id', $newQuestionnaire->id)
                                 ->where('QUESTION', "QUESTION_3")
                                 ->first();
 
 
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
@@ -178,21 +178,21 @@ class QuestionnaireController extends Controller
         {
 
             $questionnaireItem = QuestionnaireItem::
-                                where('questionnaire_id', $questionnaire->id)
+                                where('questionnaire_id', $newQuestionnaire->id)
                                 ->where('QUESTION', "QUESTION_4")
                                 ->first();
 
 
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
-                    'questionnaire_id' =>  $questionnaire->id,
+                    'questionnaire_id' =>  $newQuestionnaire->id,
                     'QUESTION' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
