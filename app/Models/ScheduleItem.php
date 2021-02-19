@@ -226,8 +226,18 @@ class ScheduleItem extends Model
         $schedules = [];
         foreach ($scheduleItems as $item) 
         {
-            $memberReportCard = $reportCard->getReportbyScheduleItemID($item->id);
 
+            //add questionnair marker
+            $questionnaire = Questionnaire::where('schedule_item_id', $item->id)->first();
+            if ($questionnaire) {
+                $hasQuestionnaire = true;
+            } else {
+                $hasQuestionnaire = false;
+            }
+
+
+            //add report card marker
+            $memberReportCard = $reportCard->getReportbyScheduleItemID($item->id);
             if ($memberReportCard) {
                 $hasReportCard = true;
             } else {
@@ -245,6 +255,8 @@ class ScheduleItem extends Model
                 'member_id' => $item->member_id,
                 'member_memo' => $item->memo,
                 'hasReportCard' => $hasReportCard,
+                'hasQuestionnaire' => $hasQuestionnaire,
+                'questionnaire' => $questionnaire,
             ];
         }
 

@@ -152,7 +152,13 @@
                                     </div>
                                     <div class="btn-container">
 
-                                                          
+                                        <div class="iReportCard2" v-show="hasQuestionnaire({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                            <a href="javascript:void(0);" @click="showQuestionnaire({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                                <img src="/images/iQuestionnaire.gif">
+                                            </a>
+                                        </div>
+
+
                                         <div class="iReportCard2" v-show="hasReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
                                             <a href="javascript:void(0);" @click="showReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iReportCard2.gif"></a>
                                         </div>
@@ -272,29 +278,22 @@ export default {
         };
     },
     async beforeMount() {
-
         this.shiftDuration  = this.duration;
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;    
-        this.setMemberListLock(); //disabler of additoinal options          
-
-               
+        this.setMemberListLock(); //disabler of additoinal options                         
     },
     async mounted() {
         this.nextDay  = this.schedule_next_day;
-        this.fromDay = this.scheduled_at;
-       
+        this.fromDay = this.scheduled_at;       
         //@hide table 
-
         //let tableSchedules = document.getElementById("tableSchedules");
         //tableSchedules.style.display = "none";
-
         this.getSchedules(this.scheduled_at, this.shiftDuration); 
         this.getMemberList();        
           //preloader
         let preloader = document.getElementById("preloader");
-        preloader.style.display  = "block"; 
-                
+        preloader.style.display  = "block";                
     },
     methods: {
         getScheduleData(data) {            
@@ -315,23 +314,50 @@ export default {
             //@todo : clean up memo
             //@todo: add loading
         },
-
         showReportCard(data) {
-
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
                     window.open("reportcard?scheduleitemid="+lessonData.id, "_self");                
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                 
-                    window.open("reportcard?scheduleitemid="+lessonData.id, "_self");
-                  
+                    window.open("reportcard?scheduleitemid="+lessonData.id, "_self");                  
+                }                        
+            }
+            catch(err) { return false; }           
+        },
+        hasQuestionnaire(data) {
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];    
+                    if (lessonData.hasQuestionnaire === true) {
+                        return true;                           
+                    } else {
+                        return false;
+                    }                       
+                } else {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
+                    if (lessonData.hasQuestionnaire === true) {
+                        return true;                
+                    } else {
+                        return false;
+                    }
                 }                        
             }
             catch(err) { return false; } 
-           
+        },    
+        showQuestionnaire(data) {
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];    
+                    window.open("questionnaires/"+lessonData.id, "_self");                
+                } else {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
+                    window.open("questionnaires/"+lessonData.id, "_self");   
+                }                        
+            }
+            catch(err) { return false; } 
         },
-
         hasReportCard(data) {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
@@ -357,18 +383,18 @@ export default {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
-                    if (lessonData.member_memo !== '') {
-                        return true;                                           
-                    } else {
+                    if (lessonData.member_memo === '' || lessonData.member_memo === null || lessonData.member_memo === 'null') {
                         return false;
+                    } else {
+                        return true;
                     }                       
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                                
-                    if (lessonData.member_memo !== '') {
-                        return true;                                          
+                    if (lessonData.member_memo === '' || lessonData.member_memo === null || lessonData.member_memo === 'null') {
+                        return false;
                     } else {
-                        return false;  
-                    }
+                        return true;
+                    }  
                 }                        
             }
             catch(err) { return false; } 

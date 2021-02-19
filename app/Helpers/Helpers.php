@@ -116,4 +116,19 @@ if (! function_exists('createIndustries')) {
 
 
 
+if (! function_exists('getQuestionnnaireGrade')) {
+    function getQuestionnnaireGradeTranslation($grade) {
+        if ($grade == "GOOD") {
+            return "良かった";
+        } else if ($grade == "AVERAGE") {
+            return "まあまあ";
+        } else if ($grade == "BAD") {
+            return "良くなかった";
+        } else {
+            return "-";
+        }
+    };
+}
+
+
 ?>
