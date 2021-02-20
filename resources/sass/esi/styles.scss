@@ -305,6 +305,7 @@ a.red:hover {
 
     overflow: hidden;    
     border: 1px solid rgb(211, 211, 211);    
+    z-index: 9999;
 }
 
 .comment_tooltip:hover .comment_tooltiptext {

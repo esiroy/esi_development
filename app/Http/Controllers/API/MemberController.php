@@ -12,6 +12,8 @@ use App\Models\Role;
 use App\Models\ScheduleItem;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Models\Shift;
+use App\Models\AgentTransaction;
 use App\Models\ReportCard;
 use App\Models\ReportCardDate;
 use App\Models\Questionnaire;
@@ -248,16 +250,18 @@ class MemberController extends Controller
         $scheduleID = $request->scheduleID;
         $memberID = $request->memberID;
 
+        $schedule_status = 'CLIENT_RESERVED';
+
         //find the schedule
         $schedule = $scheduleItem->find($scheduleID);
 
-        //@todo: check if 30 minutes is not reached
+        //@todo: check if 30 minutes is not reached, if reached disallow reservation and give message
 
         //@todo: check if member has enough points
 
         //@todo: attribute
 
-        //check if 3 hours, if reached will not refund.
+       
 
         //@todo: check if the schedule not having same time with other schedules
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
@@ -286,9 +290,31 @@ class MemberController extends Controller
         //@todo: save to database
         $data = [
             'member_id' => $memberID,
-            'schedule_status' => 'CLIENT_RESERVED',
+            'schedule_status' => $schedule_status,
         ];
         $schedule->update($data);
+
+
+        //** (new) ADD MEMBER TRANSACTION */
+        if ($memberID != null) {
+
+            //add lesson
+            $shift = Shift::where('value', 25)->first();
+
+            $transaction = [
+                'schedule_item_id' => $scheduleID,
+                'member_id' => Auth::user()->id,
+                'created_by_id' => Auth::user()->id,
+                'lesson_shift_id' => $shift->id,
+                'transaction_type' => "LESSON",
+                'amount' => 1,
+                'valid' => true,
+            ];
+
+            AgentTransaction::create($transaction);
+
+        }
+                    
 
         return Response()->json([
             "success" => true,
@@ -304,6 +330,8 @@ class MemberController extends Controller
     public function cancelSchedule(Request $request)
     {
         $id = $request->id;
+        
+        $scheduleID = $request->scheduleID;        
 
         //@todo: check if the schedule is present
 
@@ -319,6 +347,19 @@ class MemberController extends Controller
         ];
         $schedule->update($data);
 
+
+        //cancel the transaction
+        $transaction = [
+            'schedule_item_id' => $scheduleID,
+            'member_id' => Auth::user()->id,
+            'created_by_id' => Auth::user()->id,
+            //'lesson_shift_id' => $shift->id,
+            'transaction_type' => "CANCEL_LESSON",
+            'amount' => 1,
+            'valid' => true,
+        ];        
+        AgentTransaction::create($transaction);
+        
         return Response()->json([
             "success" => true,
             "message" => "Member has been cancelled scheduled",
