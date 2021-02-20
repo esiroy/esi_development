@@ -105,7 +105,7 @@
                             
                                 <span><a class="blue" href="{{ url('/user/?id='. Auth::user()->id)}}"><strong>ユーザ名 {{ $member->nickname }}</strong></a></span>                                
 
-                                <span class="text-success">({{ number_format($credits, 2) }})</span>
+                                <span id="total_credits" class="text-success">({{ number_format($credits, 2) }})</span>
                                 <span class="px-2 text-success">|</span>
 
                                 <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>

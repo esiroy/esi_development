@@ -228,10 +228,10 @@ class MemberController extends Controller
 
             $data = [
                 'remarks' => $questionnaire->remarks,
-                'questionnaireItem1' => $questionnaireItem1->grade,
-                'questionnaireItem2' => $questionnaireItem2->grade,
-                'questionnaireItem3' => $questionnaireItem3->grade,
-                'questionnaireItem4' => $questionnaireItem4->grade,
+                'questionnaireItem1' => getQuestionnnaireGradeTranslation($questionnaireItem1->grade),
+                'questionnaireItem2' => getQuestionnnaireGradeTranslation($questionnaireItem2->grade),
+                'questionnaireItem3' => getQuestionnnaireGradeTranslation($questionnaireItem3->grade),
+                'questionnaireItem4' => getQuestionnnaireGradeTranslation($questionnaireItem4->grade),
             ];
 
             return Response()->json([
@@ -265,7 +265,42 @@ class MemberController extends Controller
 
         //@todo: check if 30 minutes is not reached, if reached disallow reservation and give message
 
+        $date_now =  date("Y-m-d H:i:s");
+
+        $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 30 minutes"));
+        $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
+
+
+        if ($lessonTime >= $valid_time) {
+            //@done : valid time */
+            /*
+            return Response()->json([
+                "success" => false,           
+                "message" => "valid TIME || " . $valid_time . " is before 30 minutes of lesson time " . $lessonTime ." ?? ",
+            ]);*/
+        } else {
+
+            /*
+            return Response()->json([
+                "success" => false,           
+                "message" => "!!!! time is not valid !!!  CURRENT TIME : " . $valid_time . " LESSON TIME ". $lessonTime .  " レッスン予約は開始30分前まで可能です",
+            ]);
+            */            
+            return Response()->json([
+                "success" => false,           
+                "message" => "レッスン予約は開始30分前まで可能です",
+            ]);  
+        }
+
+
         //@todo: check if member has enough points
+        $agentCredts = new AgentTransaction();
+        if ($agentCredts->getCredits($memberID) <= 0) {
+            return Response()->json([
+                "success" => false,           
+                "message" => "十分なポイントがないか、ポイントが期限切れになった",
+            ]);              
+        }
 
         //@todo: attribute
 

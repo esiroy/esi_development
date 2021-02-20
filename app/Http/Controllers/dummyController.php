@@ -38,6 +38,12 @@ class dummyController extends Controller
      */
     public function index()
     {   
+
+
+        date("Y-m-d H:i:s", strtotime($schedule->lesson_time ." - 30 minutes"));
+
+        
+        exit();
         $dateToday = date("m/d/Y");
         $filename =  "MyPageSortedMemberList.xlsx";
                
