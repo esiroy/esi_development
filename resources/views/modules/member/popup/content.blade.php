@@ -1,15 +1,6 @@
 <div class="modal fade" id="writingServiceModal" tabindex="-1" role="dialog" aria-labelledby="writingService" aria-hidden="true" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-xl" role="document" style="margin-top:100px">
         <div class="modal-content">
-            <!--
-            <div class="modal-header">
-                <h5 class="modal-title" id="tutorMemoLabel">Memo</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            -->
-           
                 <div class="modal-body">
                     <div class="form-group">
 
@@ -28,10 +19,7 @@
                         なるべく、どちらか一つを継続してご利用いただくことをお勧めいたします。
                         <br>
                         <center style="margin-top:5%;">
-
                         <a class="custom-button text-danger" href="https://writing.mytutor-jpn.info/" onclick="return closePopUp(this.href);return false">Ok</a></center>
-
-
                     </div>
                 </div>
                 

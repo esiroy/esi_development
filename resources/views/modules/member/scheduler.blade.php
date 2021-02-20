@@ -1,7 +1,6 @@
 @extends('layouts.esi-app')
 @section('content')
 <div class="container bg-light">
-
     <div class="esi-box mb-5 pb-4">
 
         <nav aria-label="breadcrumb">
@@ -134,7 +133,26 @@
                                                         <a href="javascript:void(0)" onClick="cancel('{{ $scheduleID }}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
                                                     </div>
                                                     <br />
-                                                    <a href="javascript:void(0)">済</a>
+                                                  
+
+                                                        <div class="comment_tooltip">
+                                                           <a href="javascript:void(0)">済</a>
+
+                                                            @php 
+                                                                //@todo: check if there  is already a comment in questionnaire, if there is then view mode only
+                                                                $questionnaire = App\Models\Questionnaire::where('schedule_item_id', $scheduleID)->first();
+                                                            @endphp
+
+                                                            @if ($questionnaire)
+                                                              <!--@todo: viewer for submitted comment -->
+                                                            @else
+                                                                <span class="comment_tooltiptext">
+                                                                    <a href="javascript:void(0)" onClick="viewCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
+                                                                </span>
+                                                            @endif 
+
+                                                        </div>
+
                                                 </div>
                                             </div>
 
@@ -142,16 +160,36 @@
 
                                             <div class="button_{{$scheduleID}}">
 
-                                                <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">予約</a>                                               
-                     
-
+                                                <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">
+                                                    予約                                                    
+                                                </a>                                                    
+                                             
                                                 @if ($member->user_id == $scheduleMemberID)
                                                     <div class="cancel">
+
                                                         <div id="{{ $scheduleID }}" style="float:right">
                                                             <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
                                                         </div>
                                                         <br />
-                                                        <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')">済</a>
+
+                                                        <div class="comment_tooltip">
+                                                            <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')">済</a>
+
+                                                            @php 
+                                                                //@todo: check if there  is already a comment in questionnaire, if there is then view mode only
+                                                                $questionnaire = App\Models\Questionnaire::where('schedule_item_id', $scheduleID)->first();
+                                                            @endphp
+
+                                                            @if ($questionnaire)
+                                                              <!--@todo: viewer for submitted comment -->
+                                                            @else
+                                                                <span class="comment_tooltiptext">
+                                                                    <a href="javascript:void(0)" onClick="viewCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
+                                                                </span>
+                                                            @endif 
+
+                                                        </div>
+
                                                     </div>
                                                 @else 
                                                     <div id="scheduleID_{{$scheduleID}}" class="gen-med">済他</div>
@@ -187,7 +225,7 @@
 
     </div>
 
-   
+    @include('modules.member.popup.questionnaire')
 
 </div>
 @endsection
@@ -213,8 +251,6 @@
         input.disabled = false; 
         input.setAttribute('min', date);
     }
-
-
 
     function book(scheduleID, memberID) {      
         if (confirm('予約してもいいですか？')) {
@@ -272,6 +308,57 @@
             return false;
         }
     }
+
+    //Start Comments for Questionnaire
+    function viewCommentModal(scheduleID, tutorid) 
+    {
+        $('#scheduleitemid').val(scheduleID)
+        $('#tutorid').val(tutorid)
+
+        $('#questionnaireModal').modal('show');
+    }
+
+    function postComment() {
+
+        let scheduleitemid = $('#scheduleitemid').val();
+        let questionnaireid = $('#questionnaireid').val();
+        let tutor_id = $('#tutorid').val();
+
+        let remarks = $('#remarks').val();
+
+
+        let QUESTION_1grade = $("input[name='QUESTION_1grade']:checked").val();
+        let QUESTION_2grade = $("input[name='QUESTION_2grade']:checked").val();
+        let QUESTION_3grade = $("input[name='QUESTION_3grade']:checked").val();
+        let QUESTION_4grade = $("input[name='QUESTION_4grade']:checked").val();
+
+        $.ajax({
+            type: 'POST',
+            url: 'api/postComment?api_token=' + api_token,
+            data: {
+                scheduleitemid: scheduleitemid,
+                tutor_id: tutor_id,
+                remarks: remarks,
+                QUESTION_1grade: QUESTION_1grade,
+                QUESTION_2grade: QUESTION_2grade,
+                QUESTION_3grade: QUESTION_3grade,
+                QUESTION_4grade: QUESTION_4grade,
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) {
+
+                if (data.success == true) {
+                    alert(data.message)
+                    $('#questionnaireModal').modal('hide');
+                } else {
+                    alert(data.message);
+                }
+            }
+        });
+    }
+
 
     window.addEventListener('load', function() {
         disablePreviousDates();

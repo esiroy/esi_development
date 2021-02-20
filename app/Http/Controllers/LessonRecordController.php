@@ -10,6 +10,8 @@ use App\Models\Tutor;
 use App\Models\Shift;
 use App\Models\Member;
 use App\Models\Status;
+use App\Models\Questionnaire;
+use App\Models\ScheduleItem;
 use App\Models\ReportCard;
 use App\Models\ReportCardDate;
 
@@ -45,8 +47,10 @@ class LessonRecordController extends Controller
                 'lecturer'  => $lecturer,
                 'skypeID'   => $skypeID,            
             ];  
-            
-            $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
+
+
+        
+
             
             $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');            
     
@@ -55,9 +59,14 @@ class LessonRecordController extends Controller
 
             if ($request->display == 'none') {
 
+                $reportcards = Questionnaire::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
+
+
                 return view('modules.questionnaire.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
 
             } else {
+
+                $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
 
                 return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
             }

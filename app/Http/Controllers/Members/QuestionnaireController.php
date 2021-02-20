@@ -65,13 +65,6 @@ class QuestionnaireController extends Controller
     {
         $id = $request->get('id');      
 
-        /*
-        echo "1" . $request->QUESTION_1grade;
-        echo "2" . $request->QUESTION_2grade;
-        echo "3" . $request->QUESTION_3grade;
-        echo "4" . $request->QUESTION_4grade;
-        echo $request->remarks;
-        */
 
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
@@ -222,7 +215,11 @@ class QuestionnaireController extends Controller
 
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();        
-        $reportcard = ReportCard::where('schedule_item_id', $id)->first();
+
+
+        $reportcard = Questionnaire::where('schedule_item_id', $id)->first();
+
+
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
         if (isset($questionnaire->id)) {

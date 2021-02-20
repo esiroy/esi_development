@@ -17,14 +17,14 @@
                 background-color: #e6e6e6;
             }
 
-            th, td {
+            th,
+            td {
                 font-size: 11px;
                 text-align: center;
             }
         }
     }
 }
-
 
 /*background*/
 .bg-gray {
@@ -71,7 +71,6 @@
     font-size: 12px;
     vertical-align: top;
 }
-
 
 /*checkbox*/
 .checkbox-options {
@@ -124,8 +123,9 @@
                 min-height: 29px;
             }
 
-            th::before, th::after {
-                top:1px;
+            th::before,
+            th::after {
+                top: 1px;
             }
 
             td {
@@ -133,30 +133,31 @@
                 border-bottom: 3px solid #7dbae0;
                 text-align: center;
                 min-width: 45px;
-                min-height: 29px;            
-            }            
+                min-height: 29px;
+            }
         }
-
     }
     tbody {
         td {
             font-size: 12px;
-            text-align: center;            
+            text-align: center;
             border: 0px;
             border-right: 1px solid #d0e8f7;
             vertical-align: top;
             padding: 5px 0px 5px;
             min-width: 45px;
-            min-height: 29px;        
+            min-height: 29px;
         }
     }
-
 }
 
 .table-schedules {
     td {
         min-width: 80px;
-        min-height: 29px;   
+        min-height: 29px;
+        background: url(../images/bgSchedule.gif) repeat scroll 0 0 transparent;
+        font: 12px Arial;
+        text-align: center;
     }
 }
 
@@ -174,18 +175,17 @@
     }
 }
 
-.esi-card-header-title { 
+.esi-card-header-title {
     background: #0076be;
     font: bold 18px Arial;
     color: #ffffff;
     text-align: center;
 }
 
-
 /* user */
 .blueBox {
     background: #d7f3fa;
-    padding: 10px;    
+    padding: 10px;
 }
 
 .blueBrokenLineBox {
@@ -197,19 +197,18 @@
 .reservationTable {
     border: 2px solid #d3eff1;
     border-radius: 5px 5px;
-    padding: 5px;    
+    padding: 5px;
     width: 100%;
 }
 
 .reservationTable th {
-    background-color: #caf3f5 ;
+    background-color: #caf3f5;
     padding: 7px 0;
     font-size: 12px;
     text-align: center;
 }
 
-
-.reservationTable th.heading  {
+.reservationTable th.heading {
     background: #8bdade;
     font: bold 14px Arial;
 }
@@ -217,7 +216,6 @@
 .reservationTable td {
     background: #fff;
     font: bold 14px Arial;
-    
 }
 
 a.blue {
@@ -229,25 +227,25 @@ a.blue {
 a.blue:hover {
     font: normal 12px Arial;
     color: #006684;
-    text-decoration: none;    
+    text-decoration: none;
 }
 
 a.red {
     font: normal 12px Arial;
     color: #e9333f;
-    text-decoration: none;  
+    text-decoration: none;
 }
 
-a.red:hover {   
+a.red:hover {
     font: normal 12px Arial;
     color: #7b0009;
-    text-decoration: none;      
+    text-decoration: none;
 }
 
 //hover displayer for schedules (tutor)
 .toggleHide:hover .hide {
-    background-color:#fff;
-    display: block;    
+    background-color: #fff;
+    display: block;
 }
 
 .toggleHide .hide {
@@ -263,8 +261,8 @@ a.red:hover {
 
 //write report
 .toggleWriteReport:hover .hide {
-    background-color:#fff;
-    display: block;    
+    background-color: #fff;
+    display: block;
 }
 
 .toggleWriteReport .hide {
@@ -281,4 +279,38 @@ a.red:hover {
     color: #ffffff;
     padding: 3px 5px;
     cursor: pointer;
+}
+
+/*tooltip*/
+.comment_tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.comment_tooltip .comment_tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #fff;
+    color: #c60000;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+
+    /* Position the comment_tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -60px;
+
+    overflow: hidden;    
+    border: 1px solid rgb(211, 211, 211);    
+}
+
+.comment_tooltip:hover .comment_tooltiptext {
+    visibility: visible;
+}
+
+.comment_tooltip a:hover .comment_tooltiptext {
+    visibility: visible;
 }

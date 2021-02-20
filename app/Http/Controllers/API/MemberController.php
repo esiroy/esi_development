@@ -12,13 +12,19 @@ use App\Models\Role;
 use App\Models\ScheduleItem;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Models\ReportCard;
+use App\Models\ReportCardDate;
+use App\Models\Questionnaire;
+use App\Models\QuestionnaireItem;
+
+use Auth;
 use DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
-use Validator, Auth;
+use Validator;
 
 class MemberController extends Controller
 {
@@ -30,7 +36,7 @@ class MemberController extends Controller
 
         if ($agentInfo) {
             return Response()->json([
-                "success" => true,             
+                "success" => true,
                 "firstname" => $agentInfo->user->firstname,
                 "lastname" => $agentInfo->user->lastname,
                 "message" => "test message",
@@ -42,14 +48,201 @@ class MemberController extends Controller
                 "message" => "Agent ID not found",
             ]);
         }
+    }
 
+    /*
+    Post the Questionnaire Comment
+     */
+    public function postComment(Request $request)
+    {
+
+        $id = $request->scheduleitemid;
+
+        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+
+        //@todo: Add to report card
+        
+        if (isset($questionnaire->id)) {
+            $newQuestionnaire = $questionnaire->update([
+                'schedule_item_id' => $id,
+                'remarks' =>  $request->remarks,
+                'tutor_id' => $request->tutor_id,
+                'member_id' => Auth::user()->id,
+                'valid' => true
+            ]);
+
+            $questionnaireID = $questionnaire->id;
+
+        } else {
+            $newQuestionnaire = Questionnaire::create([
+                'schedule_item_id' => $id,
+                'remarks' =>  $request->remarks,
+                'tutor_id' => $request->tutor_id,
+                'member_id' => Auth::user()->id,
+                'valid' => true
+            ]);         
+            
+            $questionnaireID = $newQuestionnaire->id;
+        }
+
+
+
+
+        if (isset($request->QUESTION_1grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id',  $questionnaireID)
+                                ->where('QUESTION', "QUESTION_1")
+                                ->first();
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_1',
+                    'grade' =>  $request->QUESTION_1grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_1',
+                    'grade' =>  $request->QUESTION_1grade,
+                    'valid' => true,
+                ]);
+            }
+
+        }
+
+        if (isset($request->QUESTION_2grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_2")
+                                ->first();
+
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_2',
+                    'grade' =>  $request->QUESTION_2grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_2',
+                    'grade' =>  $request->QUESTION_2grade,
+                    'valid' => true,
+                ]);
+            }
+        }
+        
+
+        if (isset($request->QUESTION_3grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_3")
+                                ->first();
+
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_3',
+                    'grade' =>  $request->QUESTION_3grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_3',
+                    'grade' =>  $request->QUESTION_3grade,
+                    'valid' => true,
+                ]);
+            }
+        }
+
+        if (isset($request->QUESTION_4grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_4")
+                                ->first();
+
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_4',
+                    'grade' =>  $request->QUESTION_4grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_4',
+                    'grade' =>  $request->QUESTION_4grade,
+                    'valid' => true,
+                ]);
+            }
+        }        
+
+       
+
+        return Response()->json([
+            "success" => true,
+            "message" => "ご協力ありがとうございました。",
+        ]);
+       
+    }
+
+    public function viewComment()
+    {
+
+        $id = $request->scheduleitemid;
+
+        $scheduleItem = ScheduleItem::find($id);
+
+        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+
+        $questionnaireID = $questionnaire->id;
+        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+            ->where('QUESTION', "QUESTION_1")->first();
+
+        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+            ->where('QUESTION', "QUESTION_2")->first();
+
+        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+            ->where('QUESTION', "QUESTION_3")->first();
+
+        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+            ->where('QUESTION', "QUESTION_4")->first();
+
+        if ($questionnaire) {
+
+            return Response()->json([
+                "success" => true,
+                "message" => "Questionnaire comment found",
+            ]);
+        } else {
+            return Response()->json([
+                "success" => false,
+                "message" => "Questionnaire not found",
+            ]);
+        }
     }
 
     /*
     Book a schedule
      */
     public function bookSchedule(Request $request)
-    {  
+    {
         $scheduleItem = new ScheduleItem;
 
         $scheduleID = $request->scheduleID;
@@ -58,11 +251,9 @@ class MemberController extends Controller
         //find the schedule
         $schedule = $scheduleItem->find($scheduleID);
 
-        //@todo: check if 30 minutes is not reached 
-        
+        //@todo: check if 30 minutes is not reached
 
         //@todo: check if member has enough points
-
 
         //@todo: attribute
 
@@ -72,17 +263,16 @@ class MemberController extends Controller
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
 
         //@todo: check if not exists?
-        $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)                    
-                    ->where('member_id', Auth::user()->id)
-                    //->where('tutor_id', $schedule->tutor_id)
-                    //->where('schedule_status', $schedule_status)
-                    //->where('duration', $request['shiftDuration'])
-                    //->where('lesson_shift_id', $shift->id)
-                    ->where('valid', 1)
-                    ->exists();
-        
-        if ($isLessonExists) 
-        {               
+        $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
+            ->where('member_id', Auth::user()->id)
+        //->where('tutor_id', $schedule->tutor_id)
+        //->where('schedule_status', $schedule_status)
+        //->where('duration', $request['shiftDuration'])
+        //->where('lesson_shift_id', $shift->id)
+            ->where('valid', 1)
+            ->exists();
+
+        if ($isLessonExists) {
             //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
 
             return Response()->json([
@@ -91,7 +281,7 @@ class MemberController extends Controller
                 //'tutorLessonsData' => $tutorLessonsData,
                 "message" => "Tご予約できません。　既に同じ時間にご予約があります。",
             ]);
-        } 
+        }
 
         //@todo: save to database
         $data = [
@@ -102,7 +292,7 @@ class MemberController extends Controller
 
         return Response()->json([
             "success" => true,
-            "message" => "Member has been scheduled",            
+            "message" => "Member has been scheduled",
             "userData" => $request['user'],
 
             "lesson_time" => $lessonTime,
@@ -136,9 +326,7 @@ class MemberController extends Controller
         ]);
     }
 
-
-
-    public function getMemo(Request $request) 
+    public function getMemo(Request $request)
     {
         $scheduleID = $request->scheduleID;
         $schedule = ScheduleItem::find($scheduleID);
@@ -146,34 +334,34 @@ class MemberController extends Controller
         if ($schedule) {
             return Response()->json([
                 "success" => true,
-                "memo"  => $schedule->memo,
-                "message" => "Memo has been found"
+                "memo" => $schedule->memo,
+                "message" => "Memo has been found",
             ]);
         } else {
             return Response()->json([
-                "success" => false,                
-                "message" => "Error: Memo is not found."
-            ]);            
+                "success" => false,
+                "message" => "Error: Memo is not found.",
+            ]);
         }
     }
 
-
-    public function sendMemo(Request $request) {
+    public function sendMemo(Request $request)
+    {
         $scheduleID = $request->scheduleID;
         $message = $request->message;
-                
+
         $data = [
             'memo' => $message,
         ];
-        $schedule = ScheduleItem::find($scheduleID);       
+        $schedule = ScheduleItem::find($scheduleID);
         $schedule->update($data);
 
         return Response()->json([
             "success" => true,
-            "memo"  => $message,
-            "message" => "Memo has been saved"
+            "memo" => $message,
+            "message" => "Memo has been saved",
         ]);
-    }    
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -185,7 +373,6 @@ class MemberController extends Controller
         //abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = json_decode($request['user']);
-
 
         //disallow duplicate email and username
         $validator = Validator::make(
@@ -237,10 +424,10 @@ class MemberController extends Controller
                 //Agent
                 $agent = Agent::where('agent_id', $data->agent_id)->first();
                 if (isset($agent->user_id)) {
-                    $agentID = $agent->user_id;    
+                    $agentID = $agent->user_id;
                 } else {
                     $agentID = null;
-                }                
+                }
 
                 $memberInformation =
                     [
@@ -401,9 +588,9 @@ class MemberController extends Controller
             try {
 
                 $userData =
-                [
+                    [
                     //'user_type' => 'MEMBER',
-                   // "valid" => true,
+                    // "valid" => true,
                     'firstname' => $data->first_name,
                     'lastname' => $data->last_name,
                     'email' => $data->email,
@@ -416,22 +603,20 @@ class MemberController extends Controller
                 //Tutor (required)
                 $tutorID = null;
                 if (isset($data->maintutorid)) {
-                    $tutorInfo = Tutor::where('user_id', $data->maintutorid)->first();  
+                    $tutorInfo = Tutor::where('user_id', $data->maintutorid)->first();
                     if (isset($tutorInfo->user_id)) {
-                        $tutorID = $tutorInfo->user_id;    
+                        $tutorID = $tutorInfo->user_id;
                     }
-                }                            
+                }
 
                 //Agent (optional)
                 $agentID = null;
-                if (isset($data->agent_id)) 
-                {
+                if (isset($data->agent_id)) {
                     $agent = Agent::where('agent_id', $data->agent_id)->first();
                     if (isset($agent->user_id)) {
-                        $agentID = $agent->user_id;    
+                        $agentID = $agent->user_id;
                     }
                 }
-                
 
                 $memberInformation = [
                     //'user_id'                 =>  $data->user_id,
@@ -540,7 +725,7 @@ class MemberController extends Controller
 
                 /****************************
                 Desired Schedules
-                *****************************/
+                 *****************************/
                 $desiredSchedules = [];
                 $ctr = 0;
                 foreach ($data->desiredScheduleList as $schedule) {
@@ -560,7 +745,7 @@ class MemberController extends Controller
 
                 return Response()->json([
                     "success" => true,
-                    "message" => "Member ". $data->first_name ." ". $data->last_name ." has been updated",
+                    "message" => "Member " . $data->first_name . " " . $data->last_name . " has been updated",
                     "userData" => $request['user'],
                 ]);
             } catch (\Exception $e) {
