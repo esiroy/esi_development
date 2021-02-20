@@ -60,6 +60,7 @@ Route::middleware('auth:api')->post('/cancelSchedule', 'API\MemberController@can
 Route::middleware('auth:api')->post('/sendMemo', 'API\MemberController@sendMemo')->name('APISendMemo');
 Route::middleware('auth:api')->post('/getMemo', 'API\MemberController@getMemo')->name('APIGetMemo');
 Route::middleware('auth:api')->post('/postComment', 'API\MemberController@postComment')->name('APIPostComment');
+Route::middleware('auth:api')->post('/viewComment', 'API\MemberController@viewComment')->name('APIViewComment');
 
 
 

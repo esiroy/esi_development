@@ -204,7 +204,7 @@ class MemberController extends Controller
        
     }
 
-    public function viewComment()
+    public function viewComment(Request $request)
     {
 
         $id = $request->scheduleitemid;
@@ -213,28 +213,36 @@ class MemberController extends Controller
 
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
-        $questionnaireID = $questionnaire->id;
-        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-            ->where('QUESTION', "QUESTION_1")->first();
-
-        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-            ->where('QUESTION', "QUESTION_2")->first();
-
-        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-            ->where('QUESTION', "QUESTION_3")->first();
-
-        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-            ->where('QUESTION', "QUESTION_4")->first();
-
         if ($questionnaire) {
+
+
+
+            //Questionnaire id
+            $questionnaireID = $questionnaire->id;
+
+            //get the items
+            $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)->where('QUESTION', "QUESTION_1")->first();
+            $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)->where('QUESTION', "QUESTION_2")->first();
+            $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)->where('QUESTION', "QUESTION_3")->first();
+            $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)->where('QUESTION', "QUESTION_4")->first();            
+
+            $data = [
+                'remarks' => $questionnaire->remarks,
+                'questionnaireItem1' => $questionnaireItem1->grade,
+                'questionnaireItem2' => $questionnaireItem2->grade,
+                'questionnaireItem3' => $questionnaireItem3->grade,
+                'questionnaireItem4' => $questionnaireItem4->grade,
+            ];
 
             return Response()->json([
                 "success" => true,
+                "comment"  => $data,
                 "message" => "Questionnaire comment found",
             ]);
         } else {
             return Response()->json([
                 "success" => false,
+                "schedule_item_id" => $id,
                 "message" => "Questionnaire not found",
             ]);
         }
@@ -359,7 +367,7 @@ class MemberController extends Controller
             'valid' => true,
         ];        
         AgentTransaction::create($transaction);
-        
+
         return Response()->json([
             "success" => true,
             "message" => "Member has been cancelled scheduled",

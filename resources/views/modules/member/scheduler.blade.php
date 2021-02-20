@@ -135,23 +135,14 @@
                                                     <br />
                                                   
 
-                                                        <div class="comment_tooltip">
-                                                           <a href="javascript:void(0)">済</a>
+                                                    <div class="comment_tooltip">
+                                                        <a href="javascript:void(0)">済</a>
 
-                                                            @php 
-                                                                //@todo: check if there  is already a comment in questionnaire, if there is then view mode only
-                                                                $questionnaire = App\Models\Questionnaire::where('schedule_item_id', $scheduleID)->first();
-                                                            @endphp
+                                                        <span class="comment_tooltiptext">
+                                                            <a href="javascript:void(0)" onClick="addCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
+                                                        </span>
 
-                                                            @if ($questionnaire)
-                                                              <!--@todo: viewer for submitted comment -->
-                                                            @else
-                                                                <span class="comment_tooltiptext">
-                                                                    <a href="javascript:void(0)" onClick="viewCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
-                                                                </span>
-                                                            @endif 
-
-                                                        </div>
+                                                    </div>
 
                                                 </div>
                                             </div>
@@ -182,10 +173,13 @@
 
                                                             @if ($questionnaire)
                                                               <!--@todo: viewer for submitted comment -->
+                                                                <div class="comment_tooltiptext">
+                                                                    <a href="javascript:void(0)" onClick="viewCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">View</a>
+                                                                </div>                                                              
                                                             @else
-                                                                <span class="comment_tooltiptext">
-                                                                    <a href="javascript:void(0)" onClick="viewCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
-                                                                </span>
+                                                                <div class="comment_tooltiptext">
+                                                                    <a href="javascript:void(0)" onClick="addCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
+                                                                </div>
                                                             @endif 
 
                                                         </div>
@@ -226,6 +220,8 @@
     </div>
 
     @include('modules.member.popup.questionnaire')
+
+    @include('modules.member.popup.questionnaireReadOnly')
 
 </div>
 @endsection
@@ -310,20 +306,49 @@
     }
 
     //Start Comments for Questionnaire
-    function viewCommentModal(scheduleID, tutorid) 
+    function addCommentModal(scheduleID, tutorid) 
     {
         $('#scheduleitemid').val(scheduleID)
         $('#tutorid').val(tutorid)
-
         $('#questionnaireModal').modal('show');
+    }
+
+    function viewCommentModal(scheduleitemid, tutorid) 
+    {   
+
+        $.ajax({
+            type: 'POST',
+            url: 'api/viewComment?api_token=' + api_token,
+            data: {
+                scheduleitemid: scheduleitemid
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) {
+
+                if (data.success == true) 
+                {   
+                    $("#questionnaireReadOnlyModal .modal-body #comment_1").text(data.comment.questionnaireItem1);
+                    $("#questionnaireReadOnlyModal .modal-body #comment_2").text(data.comment.questionnaireItem2);
+                    $("#questionnaireReadOnlyModal .modal-body #comment_3").text(data.comment.questionnaireItem3);
+                    $("#questionnaireReadOnlyModal .modal-body #comment_4").text(data.comment.questionnaireItem4);
+                    $("#questionnaireReadOnlyModal .modal-body #remarks").text(data.comment.remarks);
+                    $('#questionnaireReadOnlyModal').modal('show');
+                } else {
+                    alert(data.message);
+                }
+            }
+        });
+
     }
 
     function postComment() {
 
         let scheduleitemid = $('#scheduleitemid').val();
         let questionnaireid = $('#questionnaireid').val();
-        let tutor_id = $('#tutorid').val();
 
+        let tutor_id = $('#tutorid').val();
         let remarks = $('#remarks').val();
 
 
