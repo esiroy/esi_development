@@ -87,7 +87,7 @@
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
-                                    <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Attribue <div class="float-right">:</div></label>
+                                    <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Attribute <div class="float-right">:</div></label>
                                 </div>
                                 <div class="col-6">
                                     <select id="attribute" name="attribute"
@@ -288,7 +288,7 @@
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
-                                    <label for="birthday" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Birthday <div class="float-right">:</div>
+                                    <label for="birthday" class="px-0 col-md-12 col-form-label"> Birthday <div class="float-right">:</div>
                                     </label>
                                 </div>
                                 <div class="col-4">
@@ -298,9 +298,18 @@
                                             id="birthday" 
                                             name="birthday"
                                             :format="birthDateFormatter"
-                                            :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
+                                            :input-class="'form-control form-control-sm'"  
                                         ></datepicker>
                                         <!--
+
+                                        <datepicker 
+                                            :language="ja"
+                                            id="birthday" 
+                                            name="birthday"
+                                            :format="birthDateFormatter"
+                                            :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
+                                        ></datepicker>
+
                                         <div v-if="submitted && !$v.user.birthday.required" class="invalid-feedback" style="display: block">
                                             Birthday is required
                                         </div>
@@ -564,9 +573,6 @@
                                         </div>                                        
                                     </div>
 
-
-                                    
-
                                     <!--[start] enumaration of all added timeslot -->
                                     <div class="row py-2 bg-lightgray border-bottom" v-for="(lessonClass, index) in user.preference.lessonClasses" :key="lessonClass.id" >
                                         <div class="col-3 col-md-3 text-center">
@@ -574,7 +580,7 @@
                                         </div>
                                         <div year="col-3 col-md-3 text-center">{{ lessonClass.year }} {{ lessonClass.month }}</div>                                        
                                         <div class="col-3 col-md-3 text-center">     
-                                            <input type="text" :value="lessonClass.grade" class="form-control form-control-sm d-inline-block" />
+                                            <input type="text" v-model="lessonClass.grade" class="form-control form-control-sm d-inline-block" />
                                         </div> 
                                         <div class="col-3 col-md-3 text-center">
 											<button class="btn btn-danger btn-sm col-4" @click.prevent="removeLessonClass(index)">X</button>                                            
@@ -798,7 +804,7 @@
                                             </select>
                                         </div>
                                         <div class="col-3">                                                                                        
-                                            <b-form-timepicker id="timepicker-sm" size="sm" v-model="user.desiredSchedule.time" local="en" class="mb-4"></b-form-timepicker>
+                                            <b-form-timepicker id="timepicker-sm" size="sm" :hour12="false" v-model="user.desiredSchedule.time" local="en" class="mb-4"></b-form-timepicker>
                                         </div>
                                         <div class="col-3">
                                             <button class="btn btn-success btn-sm d-inline-block"  @click.prevent="addDesiredSchedule()">Add</button>
@@ -808,12 +814,12 @@
                             </div>
                             <div class="row">
                                 <div class="col-6 offset-md-2">
-                                    <!--[start] enumaration of all TOEIC timeslot */-->
+                                    <!--[start] enumaration desired Schedule */-->
                                     <div class="row py-2 bg-lightgray border-bottom" v-for="(schedule, index) in user.desiredScheduleList" :key="schedule.id" >
-                                        <div id="scheduleDayr" class="col-3 col-md-3 text-center">
+                                        <div id="scheduleDay" class="col-3 col-md-3 text-center">
                                             {{ schedule.day }}
                                         </div>
-                                        <div id="scheduleMo" class="col-3 col-md-3 text-center">                                            
+                                        <div id="scheduleMonth" class="col-3 col-md-3 text-center">                                            
                                             {{ schedule.time }}
                                         </div>
 										<div class="col-3 col-md-3 text-center">
@@ -1045,7 +1051,9 @@ export default {
             this.submitted = true;
             // stop here if form is invalid
             this.$v.$touch();
-            console.log(JSON.stringify(this.user));
+            
+            //console.log(JSON.stringify(this.user));
+
             if (this.$v.$invalid) {
                 alert ("Errors found, please check the form for errors");
                 console.log (this.submitted, this.$v.$invalid);
@@ -1232,11 +1240,9 @@ export default {
 			this.user.desiredScheduleList.splice(index, 1);
 		},
         addDesiredSchedule() 
-        {
-        
+        {        
             let day     = this.user.desiredSchedule.day;
             let time    = this.user.desiredSchedule.time;
-
             if (day && time) {
                 
                 let result =  this.user.desiredScheduleList.find(item => item.day === day && item.time === time);
@@ -1252,36 +1258,24 @@ export default {
                 }
             } else {
                  alert ("Please enter schedule day and time");
-            }
-                
+            }                
         },
         propagateMainTutorOptions() 
         {
-            //alert(lessonshiftid.value);
-
             axios.post("/api/get_tutors?api_token=" + this.api_token, 
             {
                 method          : "POST",
                 shift_id        : lessonshiftid.value
             })
             .then(response => 
-            {
-              
+            {              
               console.log(response.data.tutors);
-
               this.mainTutors = response.data.tutors;
-
-			}).catch(function(error) {
-                // handle error
+			}).catch(function(error) {                
                 alert("Error " + error);
                 console.log(error);
-            });
-            
-            
-            this.user.eikenList.push(["40-1"]);
+            });           
         }
-
-
     },
     computed : {
         years () {

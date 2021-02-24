@@ -600,13 +600,27 @@ class MemberController extends Controller
                     $agentID = null;
                 }
 
+                //format birthday
+                if ($data->birthday == null || $data->birthday == '') {
+                    $birthday = null;
+                    $age = null;
+                } else {
+                    $birthday = date('Y-m-d', strtotime($data->ubirthday));
+                }
+
+                if ($data->age == null || $date->age == '') {
+                    $age = null;
+                } else {
+                    $age = $data->age;
+                }                
+
                 $memberInformation =
                     [
                     'user_id' => $user->id,
                     'tutor_id' => $tutorInfo->user_id,
-                    'age' => $data->age,
+                    'age' => $age,
                     'attribute' => strtoupper($data->attribute),
-                    'birthday' => date('Y-m-d', strtotime($data->ubirthday)),
+                    'birthday' => $birthday,
                     'member_since' => (isset($data->umember_since)) ? date('Y-m-d', strtotime($data->umember_since)) : date('Y-m-d'),
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,
@@ -789,12 +803,26 @@ class MemberController extends Controller
                     }
                 }
 
+                //format birthday
+                if ($data->birthday == null || $data->birthday == '') {
+                    $birthday = null;
+                    $age = null;
+                } else {
+                    $birthday = date('Y-m-d', strtotime($data->ubirthday));
+                }
+
+                if ($data->age == null || $date->age == '') {
+                    $age = null;
+                } else {
+                    $age = $data->age;
+                }
+
                 $memberInformation = [
                     //'user_id'                 =>  $data->user_id,
                     'tutor_id' => $tutorID,
-                    'age' => $data->age,
+                    'age' => $age,
                     'attribute' => strtoupper($data->attribute),
-                    'birthday' => date('Y-m-d', strtotime($data->ubirthday)),
+                    'birthday' => $birthday,
                     'member_since' => (isset($data->umember_since)) ? date('Y-m-d', strtotime($data->umember_since)) : date('Y-m-d'),
                     'nickname' => $data->nickname,
                     'gender' => $data->gender,

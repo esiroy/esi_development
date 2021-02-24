@@ -129,13 +129,8 @@ class MemberController extends Controller
                 }                
             } //[END] USER SEARCH
 
-            $memberQuery = $memberQuery->orderby('users.id', 'ASC'); 
-
+            $memberQuery = $memberQuery->orderby('users.id', 'ASC');
         }
-
-
-
-       
         
         $members = $memberQuery->paginate(Auth::user()->items_per_page);
 

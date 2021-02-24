@@ -87,7 +87,11 @@
                                     @foreach($desiredSchedules as $schedule)
                                     <tr class="border-bottom">
                                         <td class="text-center font-weight-normal">{{ $schedule->day ?? '' }}</td>
-                                        <td class="text-center font-weight-normal">{{ $schedule->desired_time ?? '' }}</td>
+                                        <td class="text-center font-weight-normal">
+                                            
+
+                                            {{ date('H:i', strtotime($schedule->desired_time)) }} 
+                                        </td>
                                     </tr>
                                     @endforeach
                             </table>

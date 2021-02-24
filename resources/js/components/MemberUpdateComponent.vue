@@ -239,20 +239,30 @@
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
-                                <label for="birthday" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Birthday <div class="float-right">:</div>
+                                <label for="birthday" class="px-0 col-md-12 col-form-label">Birthday <div class="float-right">:</div>
                                 </label>
                             </div>
                             <div class="col-4">
                                 <div class="form-group">
                                     <datepicker 
                                         :language="ja"
+                                        :disabled="false"
+                                        id="birthday" 
+                                        name="birthday"
+                                        v-model="memberinfo.birthday"
+                                        :format="birthDateFormatter"
+                                        :input-class="'form-control form-control-sm'"                                          
+                                    ></datepicker>
+                                    <!--
+                                    <datepicker 
+                                        :language="ja"
+                                        :disabled="false"
                                         id="birthday" 
                                         name="birthday"
                                         v-model="memberinfo.birthday"
                                         :format="birthDateFormatter"
                                         :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
-                                    ></datepicker>
-                                    <!--
+                                    ></datepicker>                                    
                                     <div v-if="submitted && !$v.user.birthday.required" class="invalid-feedback" style="display: block">
                                         Birthday is required
                                     </div>
@@ -454,7 +464,7 @@
                                     </div>
                                     <div year="col-3 col-md-3 text-center">{{ lessonClass.year }} {{ lessonClass.month }}</div>                                        
                                     <div class="col-3 col-md-3 text-center">     
-                                        <input type="text" :value="lessonClass.lesson_limit" class="form-control form-control-sm d-inline-block" />
+                                        <input type="text" v-model="lessonClass.lesson_limit" class="form-control form-control-sm d-inline-block" />
                                     </div> 
                                     <div class="col-3 col-md-3 text-center">
                                         <button class="btn btn-danger btn-sm col-4" @click.prevent="removeLessonClass(index)">X</button>                                            
@@ -675,7 +685,7 @@
                                         </select>
                                     </div>
                                     <div class="col-3">                                                                                        
-                                        <b-form-timepicker id="timepicker-sm" size="sm" v-model="user.desiredSchedule.desired_time" local="en" class="mb-4"></b-form-timepicker>
+                                        <b-form-timepicker id="timepicker-sm" size="sm" :hour12="false" v-model="user.desiredSchedule.desired_time" local="en" class="mb-4"></b-form-timepicker>
                                     </div>
                                     <div class="col-3">
                                         <button class="btn btn-success btn-sm d-inline-block"  @click.prevent="addDesiredSchedule()">Add</button>
@@ -879,8 +889,7 @@ export default {
                     desired_time: ""
                 },
 
-                desiredScheduleList: [],                
-
+                desiredScheduleList: [],
               
             },
             
@@ -888,7 +897,6 @@ export default {
     },      
     mounted: function () 
 	{
- 
         try {
             this.user.agent_id	= this.agentinfo.agent_id;  
         } catch(err) {
@@ -899,10 +907,7 @@ export default {
             this.user.agent_name_en	 = this.agentinfo.firstname;  
         } catch(err) {
            this.user.agent_name_en = "";
-        }  
-
-        console.log(this.memberinfo.gender);
-
+        }
 
         //get user
         this.user.user_id                       = this.userinfo.id;
@@ -914,33 +919,29 @@ export default {
 		this.user.gender						= this.memberinfo.gender;		
 		this.user.communication_app             = this.memberinfo.communication_app;
 
-    
-
-        if ( this.user.communication_app === 'Skype' || this.user.communication_app === 'skype') {
+        if ( this.user.communication_app === 'Skype' || this.user.communication_app === 'skype') 
+        {
             this.user.communication_app_username    = this.memberinfo.skype_account; 
 
         } else if ( this.user.communication_app === 'Zoom' || this.user.communication_app === 'zoom') {
 
             this.user.communication_app_username    = this.memberinfo.zoom_account;
-
         } else {
 
-            if (this.memberinfo.skype_account) {
-
-                //he is adding skype so lets set comm app to skyp
+            //member added skype so lets set comm app to skype
+            if (this.memberinfo.skype_account) {               
                 this.user.communication_app = "Skype";
                 this.user.communication_app_username    = this.memberinfo.skype_account;
             } else {
-
-                //he is adding zoom account so let make it zoom
+                //member added zoom account so let make it zoom
                 this.user.communication_app = "Zoom";
                 this.user.communication_app_username    = this.memberinfo.zoom_account;
             }
         }
+
 		this.user.birthday						= this.memberinfo.birthday;
 		this.user.age							= this.memberinfo.age;
 		this.user.membership					= this.memberinfo.membership;
-	
 
 		//Lesson Details - Section
         this.user.member_since	    = this.memberinfo.member_since;
@@ -1173,6 +1174,8 @@ export default {
 		},
         addLessonClass() 
         {            
+            //console.log(this.user.preference.lessonClasses); //check all the classess added
+            
             if (this.user.attribute) {
                 
                 let year =  this.user.preference.lesson.class.year;
