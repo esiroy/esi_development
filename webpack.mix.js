@@ -38,28 +38,12 @@ mix.js(
     )
     .js(
         [
-            "resources/js/datatables/jquery.dataTables.js",
-            "resources/js/datatables/dataTables.bootstrap4.js",
-            "resources/js/datatables/dataTables.buttons.js",
-            "resources/js/datatables/buttons.bootstrap4.js",
-            "resources/js/datatables/buttons.html5.js",
-            "resources/js/datatables/dataTables.select.js",
-            "resources/js/datatables/buttons.print.js",
-            "resources/js/datatables/buttons.colVis.js",
-            "resources/js/pdfmake/pdfmake.js",
-            "resources/js/jszip/jszip.js",
-            "resources/js/select2/select2.full.js",
-            "resources/js/datatables/dataTables.fixedColumns.js",
             "resources/js/croppie/croppie.js",
+            "resources/js/datatables/jquery.dataTables.js",            
             "resources/js/app.js"
         ],
         "public/js/admin.js"
-    )
-    .copy(
-        "node_modules/pdfmake/build/vfs_fonts.js",
-        "public/js/vfs_fonts.js",
-        true
-    )
+    )  
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')

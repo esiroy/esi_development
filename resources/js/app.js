@@ -18,10 +18,6 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 
-//Vue Tree List
-//import VueTreeList from 'vue-tree-list'
-//Vue.use(VueTreeList);
-
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -32,6 +28,8 @@ Vue.use(IconsPlugin);
 
 const files = require.context('./', true, /\.vue$/i)
 files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+
+
 
 //Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 //Vue.component('file-upload', VueUploadComponent);
@@ -59,7 +57,7 @@ Vue.filter('formatSize', function(size) {
 const app = new Vue({
     el: '#app',
     components: {
-        draggable: window['vuedraggable'],
+        //draggable: window['vuedraggable'],
         //VueUploadComponent: window['vue-upload-component']
     },
 });
@@ -71,15 +69,3 @@ deferCSS.push(
     //"//fonts.googleapis.com/css?family=Nunito&display=swap",
     //window.location.protocol + "//" + window.location.host + "/css/app.css"
 );
-/* Items in the array are added to the page in reverse order */
-/*
-deferCSS.reverse(); 
-deferCSS.forEach(function(thisDeferCSS) {
-    var css = document.createElement('link');
-    css.rel = 'stylesheet';
-    css.href = thisDeferCSS;
-    css.type = 'text/css';
-    var goDefer = document.getElementsByTagName('link')[0];
-    goDefer.parentNode.insertBefore(css, goDefer);
-});
-*/
