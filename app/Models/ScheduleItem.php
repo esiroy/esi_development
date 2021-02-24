@@ -234,19 +234,12 @@ class ScheduleItem extends Model
     {
         $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
 
-        $scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
-        //->where('tutor_id', $tutor->user_id)
-        ->where('valid', 1)
-        ->get();
+        //$scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))->where('valid', 1)->get();
 
-        /*
-        $scheduleItems = ScheduleItem::join('tutors', 'schedule_item.tutor_id', '=', 'tutors.user_id')
-            ->select('schedule_item.*', 'tutors.id as tutorID')
-            ->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))
-            //->where('tutor_id', $tutor->user_id)
-            ->where('valid', 1)
-            ->get();
-        */
+        $scheduleItems = ScheduleItem::whereDate('lesson_time', '=', date('Y-m-d'))
+                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
+                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")
+                            ->get();
 
         $reportCard = new ReportCard();
 
