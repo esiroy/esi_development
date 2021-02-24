@@ -156,15 +156,20 @@
                                             </div>
 
                                             @if (isset($lessons[$dateView][$timeSlot['startTime']]['memo']))
-                                            <div id="memoContainer" class="btn-container2 pt-2">
-                                                <!-- open memo -->
-                                                <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                    <div id="memoContent" style="display:none">
-                                                        {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
-                                                    </div>
-                                                    <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
-                                                </a>
-                                            </div>
+
+                                                @if ($lessons[$dateView][$timeSlot['startTime']]['memo'] != '')
+
+                                                <div id="memoContainer" class="btn-container2 pt-2">
+                                                    <!-- open memo -->
+                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                        <div id="memoContent" style="display:none">
+                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                        </div>
+                                                        <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
+                                                    </a>
+                                                </div>
+
+                                                @endif
                                             @endif
 
                                         </div>
