@@ -1,7 +1,5 @@
 @extends('layouts.admin')
 @section('content')
-
-
 <div class="container bg-light">
     <div class="esi-box">
         <nav aria-label="breadcrumb">
@@ -73,17 +71,16 @@
                         <table class="table table-bordered table-schedules">
                             <tr>
                                 <td class="schedTime">
-                                   
+
                                 </td>
-                                @for($ctr=0; $ctr <= $lessonDays; $ctr++) 
-                                <td style="background-color:#f3e77f; border: 1px solid #d0e8f7;border-bottom: 3px solid #72add2; padding: 10px 0px 0px; border-right: 1px solid #ffffff;vertical-align: top;">
+                                @for($ctr=0; $ctr <= $lessonDays; $ctr++) <td style="background-color:#f3e77f; border: 1px solid #d0e8f7;border-bottom: 3px solid #72add2; padding: 10px 0px 0px; border-right: 1px solid #ffffff;vertical-align: top;">
                                     <div style="width:125px; background-color:#f3e77f">
                                         <div class="float-left text-small">{{ date('d', strtotime($dateFrom ." + $ctr day"))}}</div>
                                         <div class="text-center">{{ date('l', strtotime($dateFrom ." + $ctr day"))}}</div>
                                     </div>
                                     <div class="pt-1" style="background-color:#d0e8f7">Member</div>
-                                </td>
-                                @endfor
+                                    </td>
+                                    @endfor
                             </tr>
 
                             @foreach($timeSlots as $timeSlot)
@@ -97,80 +94,86 @@
                                         <div class="class-schedule-container">
                                             <span class="flag-jp"></span>
                                             <span class="class-schedule class-schedule-end">
-                                                @php 
-                                                    $hour = date('H', strtotime($timeSlot['startTime']) + 60*60);
-                                                    $minute = date('i', strtotime($timeSlot['startTime']) + 60*60);
-                                                    if ($hour == '00' || $hour == '0')  {
-                                                        $hour = "24";
-                                                    }
-                                                @endphp                                              
+                                                @php
+                                                $hour = date('H', strtotime($timeSlot['startTime']) + 60*60);
+                                                $minute = date('i', strtotime($timeSlot['startTime']) + 60*60);
+                                                if ($hour == '00' || $hour == '0') {
+                                                $hour = "24";
+                                                }
+                                                @endphp
                                                 {{ $hour .":" . $minute }}
                                             </span>
                                         </div>
                                     </div>
                                 </td>
 
-                                @for($ctr=0; $ctr <= $lessonDays; $ctr++) 
-                                <td class>                               
-                  
+                                @for($ctr=0; $ctr <= $lessonDays; $ctr++) <td class>
+
                                     @php
-                                        if ($timeSlot['startTime'] == "23:00" || $timeSlot['startTime'] == "23:30") {
-                                            //next day view
-                                            $nextDayCtr = $ctr + 1;
-                                            $dateView = date('m/d/Y', strtotime($dateFrom ." + $nextDayCtr day"));
-                                        } else {
-                                            $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
-                                        }
-                                    @endphp                              
+                                    if ($timeSlot['startTime'] == "23:00" || $timeSlot['startTime'] == "23:30") {
+                                    //next day view
+                                    $nextDayCtr = $ctr + 1;
+                                    $dateView = date('m/d/Y', strtotime($dateFrom ." + $nextDayCtr day"));
+                                    } else {
+                                    $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
+                                    }
+                                    @endphp
 
                                     <!--@PLOTTER
-                                        {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
-                                        {{  $dateView  }}
-                                    --> 
+                                            {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
+                                            {{  $dateView  }}
+                                        -->
 
                                     @if(isset($lessons[$dateView][$timeSlot['startTime']]['status']))
 
                                     <div class="toggleHide">
 
-                                      
+
                                         <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%; padding:5px">
 
-                                            <div class="client text-center text-white">                                                
+                                            <div class="client text-center text-white">
 
-                                                @php 
-                                                    $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
-                                                    $checkStatus = strtolower(str_replace(' ', '_', $status));                                              
+                                                @php
+                                                $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
+                                                $checkStatus = strtolower(str_replace(' ', '_', $status));
                                                 @endphp
 
                                                 <!--@note: get member profile link / name -->
                                                 @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id']))
-                                                    <div class="text-dark">                                                         
-                                                        <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
-                                                            {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
-                                                        </a>
-                                                    </div>
+                                                <div class="text-dark">
+                                                    <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
+                                                        {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
+                                                    </a>
+                                                </div>
+                                                <div class="hide">
+                                                    <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
+                                                </div>
+                                                @endif
 
-                                                    <div class="hide">                                                                                                       
-                                                        <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
-                                                    </div>
-                                                @endif                                               
-
-    
-                                                <!-- @todo: schedules status for 3 schedules are only view for grading (to be approved)
                                                 @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                                                                                                                                
                                                     
                                                 @endif
-                                                -->
-
                                             </div>
+
+                                            @if (isset($lessons[$dateView][$timeSlot['startTime']]['memo']))
+                                            <div id="memoContainer" class="btn-container2 pt-2">
+                                                <!-- open memo -->
+                                                <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                    <div id="memoContent" style="display:none">
+                                                        {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                    </div>
+                                                    <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
+                                                </a>
+                                            </div>
+                                            @endif
 
                                         </div>
                                     </div>
 
                                     @endif
 
-                                </td>
-                                @endfor
+                                    </td>
+                                    @endfor
                             </tr>
                             @endforeach
 
@@ -178,9 +181,53 @@
                     </div>
 
                 </div>
-
             </div>
-
         </div>
+    </div>
+    @include('admin.modules.tutor.includes.memo')
+</div>
+@endsection
 
-        @endsection
+@section('scripts')
+@parent
+<script type="text/javascript">
+    var api_token = "{{ Auth::user()->api_token }}";
+
+    function getMemo(scheduleID) {
+        $.ajax({
+            type: 'POST', 
+            url: "{{ url('api/getMemo?api_token=') }}" + api_token,
+            data: {
+                'scheduleID': scheduleID,
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found getting memo: " + error);
+            },            
+            success: function(data) {            
+                $('#tutorMemoModal #message').html(data.memo);
+            },
+        });
+    }
+
+
+    window.addEventListener('load', function () 
+    {
+        var button;
+        var id;
+        var modal;
+
+        $('#tutorMemoModal').on('show.bs.modal', function (event) 
+        {
+            $('#tutorMemoModal #message').html("");
+            button = $(event.relatedTarget) // Button that triggered the modal
+            id = button.data('id') // Extract info from data-* attributes            
+            modal = $(this); 
+            getMemo(id)
+        });
+    });
+
+
+</script>
+@endsection

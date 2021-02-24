@@ -22,10 +22,26 @@ class ScheduleItem extends Model
      */
     public function getMemberLessons($member) 
     {
+
+        $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->orderby('created_at', 'ASC')->get();
+
+        return $reserves;
+    }
+
+ 
+    public function getMemberActiveLessons($member) 
+    {
+        $date = date('Y-m-d');
+
         $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
             ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
-        })->orderby('created_at', 'DESC')->get();
+        })->whereDate('lesson_time', ">=", $date)
+        ->orderby('created_at', 'ASC')
+        ->get();
 
         return $reserves;
     }
@@ -96,6 +112,7 @@ class ScheduleItem extends Model
             $lessons[$dateKey][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
                 'id' => $item->id,
                 'status' => $item->schedule_status,
+                'memo' => $item->memo,
                 'startTime' => date("H:i", strtotime($item->lesson_time . " -1 hour")),
                 'endTime' => date("H:i", strtotime($item->lesson_time)),
                 'scheduled_at' => date('Y/m/d', strtotime($item->lesson_time)),

@@ -161,8 +161,20 @@
 
                                         </td>
                                         <td style="text-align: center;">
+
+                                            @php                                                
+                                                $date_now =  date("Y-m-d H:i:s");
+                                                $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 3 hours"));
+                                                $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));
+                                            @endphp
                                             
-                                            <a href="javascript:void(0)" onClick="cancel('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                             
+                                            @if ($valid_time <= $lessonTime) 
+                                                <!--valid time here since it is greater that 3 hours) -->
+                                                <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="欠席する" title="欠席する"></a>
+                                            @else 
+                                                <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
+                                            @endif
+
                                         </td>
                                     </tr>
                                     @endforeach
@@ -194,7 +206,7 @@
 <script type="text/javascript">
     var api_token = "{{ Auth::user()->api_token }}";
 
-    function cancel(id)
+    function cancelSchedule(id)
     {
         if (confirm('このレッスンをキャンセル（欠席）されるとポイントは消化されます。キャンセル(欠席）しますか？')) 
         {
@@ -211,6 +223,25 @@
                 }
             });
         }
+    }
+
+    function deleteSchedule(id) {
+       
+        if (confirm('このレッスンをキャンセルしてもいいですか？')) 
+        {
+            $.ajax({
+                type: 'POST', 
+                url: 'api/cancelSchedule?api_token=' + api_token,
+                data: {
+                    id: id
+                }, headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }, success: function(data) {
+                
+                    $('.row_reserve_' + id ).hide();                
+                }
+            });
+        }        
     }
 
     function getMemo(scheduleID) {

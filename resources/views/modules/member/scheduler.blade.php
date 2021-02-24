@@ -128,6 +128,8 @@
 
                                                 <a class="bookTutorSchedule" onclick="book('{{ $scheduleID }}', '{{ Auth::user()->id }}')" href="javascript:void(0)">予約</a>
 
+                                                <div class="doneTutorSchedule gen-med" style="display:none">済他</div>     
+                                                
                                                 <div class="cancel" style="display:none">
                                                     <div id="{{ $scheduleID }}" style="float:right">
                                                         <a href="javascript:void(0)" onClick="cancel('{{ $scheduleID }}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
@@ -151,9 +153,11 @@
 
                                             <div class="button_{{$scheduleID}}">
 
-                                                <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="padding:15px; display:none">
+                                                <a class="bookTutorSchedule" onclick="book('{{$scheduleID}}','{{ Auth::user()->id }}')" href="javascript:void(0)" style="display:none">
                                                     予約                                                    
-                                                </a>                                                    
+                                                </a>
+
+                                                <div class="doneTutorSchedule gen-med" style="display:none">済他</div>                                     
                                              
                                                 @if ($member->user_id == $scheduleMemberID)
                                                     <div class="cancel">
@@ -194,7 +198,9 @@
                                         @elseif($status == 'SUPPRESSED_SCHEDULE' )
                                             <div id="scheduleID_{{$scheduleID}}" class="gen-med">{{'済他'}}</div>
                                         @elseif($status == 'CLIENT_NOT_AVAILABLE')
-                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{'済他'}}</div>
+                                            <!-- client is absent : (text)  欠席 -->                                            
+                                            <!-- (Change to: Done and others'済他' -->
+                                            <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{'済他'}}</div>	
                                         @elseif($status == 'TUTOR_CANCELLED')
                                             <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{ "済他" }}</div>
                                         @elseif ($status == "COMPLETED")                                         
@@ -294,10 +300,15 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(data) {
-                    //$("#msg").html(data.msg);
-                    $('.button_' + id + ' .bookTutorSchedule').show();
-                    $('.button_' + id + ' .cancel').hide();
+                success: function(data) 
+                {
+                    if (data.bookable == true) {
+                        $('.button_' + id + ' .bookTutorSchedule').show();
+                        $('.button_' + id + ' .cancel').hide();
+                    } else if (data.bookable == false) {
+                        $('.button_' + id + ' .doneTutorSchedule').show();
+                        $('.button_' + id + ' .cancel').hide();                        
+                    }                    
                 }
             });
         } else {

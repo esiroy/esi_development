@@ -57,6 +57,7 @@ Route::middleware('auth:api')->post('/get_members', 'API\TutorScheduleController
 //[start] member ajax schedule
 Route::middleware('auth:api')->post('/book', 'API\MemberController@bookSchedule')->name('APIBookSchedule');
 Route::middleware('auth:api')->post('/cancelSchedule', 'API\MemberController@cancelSchedule')->name('APICancelSchedule');
+Route::middleware('auth:api')->post('/deleteSchedule', 'API\MemberController@deleteSchedule')->name('APIDeleteSchedule');
 Route::middleware('auth:api')->post('/sendMemo', 'API\MemberController@sendMemo')->name('APISendMemo');
 Route::middleware('auth:api')->post('/getMemo', 'API\MemberController@getMemo')->name('APIGetMemo');
 Route::middleware('auth:api')->post('/postComment', 'API\MemberController@postComment')->name('APIPostComment');

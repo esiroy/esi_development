@@ -53,14 +53,13 @@
                                         </td>
 
                                         <td class="text-center">
-
                                             @php
-                                                $schedule = \App\Models\ScheduleItem::find($reportcard->schedule_item_id);
-                                                $tutor =  \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
+                                                $schedule = \App\Models\ScheduleItem::where('id', $reportcard->schedule_item_id)->first();
+                                                if ($schedule) {
+                                                    $tutor =  \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
+                                                }                                                
                                             @endphp
-
-                                            {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}
-                                            
+                                            {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}                                            
                                         </td>
                                         <td class="text-center">
                                             <a href="questionnaire/{{$reportcard->schedule_item_id}}">» アンケート</a>
@@ -96,12 +95,15 @@
                                 <tbody id="reportCardBody">
                                     @foreach ($datereportcards as $datereportcard)
                                     <tr>
-                                        <td class="text-center">{{ $datereportcard->lesson_date }}</td>
+                                        <td class="text-center">
+                                            {{ date('Y年 m月 d日', strtotime($datereportcard->lesson_date)) }}
+                                        </td>
                                         <td class="text-center">
                                             @php
-                                            $member = \App\Models\Member::where('user_id', $datereportcard->member_id)->first();
+                                                $tutor = \App\Models\Tutor::where('user_id', $datereportcard->tutor_id)->first();
                                             @endphp
-                                            {{ $member->user->firstname ?? '' }} {{ $member->user->lastname ?? '' }}
+                                            
+                                            {{ $tutor->user->firstname ?? '' }} {{ $member->tutor->lastname ?? '' }}
                                         </td>
                                         <td class="text-center"><a href="userreportcarddate/{{$datereportcard->id}}">» 評価</a></td>
                                     </tr>

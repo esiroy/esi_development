@@ -289,12 +289,13 @@ a.red:hover {
 
 .comment_tooltip .comment_tooltiptext {
     visibility: hidden;
-    width: 120px;
+    width: 80px;
     background-color: #fff;
     color: #c60000;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
+    padding: 6px 0;
+    font-size: 12px;
 
     /* Position the comment_tooltip */
     position: absolute;
@@ -313,5 +314,6 @@ a.red:hover {
 }
 
 .comment_tooltip a:hover .comment_tooltiptext {
+    font-size: 12px;
     visibility: visible;
 }

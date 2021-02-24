@@ -211,11 +211,9 @@ class MemberController extends Controller
 
         $scheduleItem = ScheduleItem::find($id);
 
-        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+        $questionnaire = Questionnaire::where('schedule_item_id', $id)->where('valid', true)->first();
 
         if ($questionnaire) {
-
-
 
             //Questionnaire id
             $questionnaireID = $questionnaire->id;
@@ -257,35 +255,21 @@ class MemberController extends Controller
 
         $scheduleID = $request->scheduleID;
         $memberID = $request->memberID;
-
         $schedule_status = 'CLIENT_RESERVED';
 
         //find the schedule
         $schedule = $scheduleItem->find($scheduleID);
 
         //@todo: check if 30 minutes is not reached, if reached disallow reservation and give message
-
         $date_now =  date("Y-m-d H:i:s");
-
         $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 30 minutes"));
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
 
 
         if ($lessonTime >= $valid_time) {
-            //@done : valid time */
-            /*
-            return Response()->json([
-                "success" => false,           
-                "message" => "valid TIME || " . $valid_time . " is before 30 minutes of lesson time " . $lessonTime ." ?? ",
-            ]);*/
+            //valid time here.
         } else {
-
-            /*
-            return Response()->json([
-                "success" => false,           
-                "message" => "!!!! time is not valid !!!  CURRENT TIME : " . $valid_time . " LESSON TIME ". $lessonTime .  " レッスン予約は開始30分前まで可能です",
-            ]);
-            */            
+            //invalid time 
             return Response()->json([
                 "success" => false,           
                 "message" => "レッスン予約は開始30分前まで可能です",
@@ -302,20 +286,18 @@ class MemberController extends Controller
             ]);              
         }
 
-        //@todo: attribute
-
-       
+        //@todo: attribute check for this month
 
         //@todo: check if the schedule not having same time with other schedules
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
 
-        //@todo: check if not exists?
+        //@todo: check schedule if exists
         $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
             ->where('member_id', Auth::user()->id)
-        //->where('tutor_id', $schedule->tutor_id)
-        //->where('schedule_status', $schedule_status)
-        //->where('duration', $request['shiftDuration'])
-        //->where('lesson_shift_id', $shift->id)
+            //->where('tutor_id', $schedule->tutor_id)
+            //->where('schedule_status', $schedule_status)
+            //->where('duration', $request['shiftDuration'])
+            //->where('lesson_shift_id', $shift->id)
             ->where('valid', 1)
             ->exists();
 
@@ -338,12 +320,11 @@ class MemberController extends Controller
         $schedule->update($data);
 
 
-        //** (new) ADD MEMBER TRANSACTION */
-        if ($memberID != null) {
-
+        //** ADD MEMBER TRANSACTION */
+        if ($memberID != null) 
+        {
             //add lesson
             $shift = Shift::where('value', 25)->first();
-
             $transaction = [
                 'schedule_item_id' => $scheduleID,
                 'member_id' => Auth::user()->id,
@@ -353,11 +334,8 @@ class MemberController extends Controller
                 'amount' => 1,
                 'valid' => true,
             ];
-
             AgentTransaction::create($transaction);
-
-        }
-                    
+        }                    
 
         return Response()->json([
             "success" => true,
@@ -372,44 +350,118 @@ class MemberController extends Controller
 
     public function cancelSchedule(Request $request)
     {
-        $id = $request->id;
-        
-        $scheduleID = $request->scheduleID;        
+        $scheduleID = $request->id;
 
         //@todo: check if the schedule is present
+        $schedule = ScheduleItem::find($scheduleID);
 
-        //@todo: refund points if status is [client reserved]
-        //@todo : no refund points if status if [client reserved b]
-        //@todo: (cancellation is 3 hours grace period)
-
-        //@todo: save to database
-        $schedule = ScheduleItem::find($id);
-        $data = [
-            'member_id' => null,
-            'schedule_status' => 'TUTOR_SCHEDULED',
-        ];
-        $schedule->update($data);
+        if ($schedule) {
 
 
-        //cancel the transaction
-        $transaction = [
-            'schedule_item_id' => $scheduleID,
-            'member_id' => Auth::user()->id,
-            'created_by_id' => Auth::user()->id,
-            //'lesson_shift_id' => $shift->id,
-            'transaction_type' => "CANCEL_LESSON",
-            'amount' => 1,
-            'valid' => true,
-        ];        
-        AgentTransaction::create($transaction);
+            //@todo: remove report card
+            $reportCard = ReportCard::where('schedule_item_id', $scheduleID)->first();
 
-        return Response()->json([
-            "success" => true,
-            "message" => "Member has been cancelled scheduled",
-            "userData" => $request['user'],
-        ]);
+            if ($reportCard) {
+                $reportCard->delete();
+            }       
+
+            //@todo: (NEW) (cancellation is 3 hours grace period)
+            $date_now =  date("Y-m-d H:i:s");
+            $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 3 hours"));
+            $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
+
+            //valid time here since it is greater that 3 hours)
+            if ($valid_time  <= $lessonTime) 
+            {
+                //refund points if status is [client reserved]
+                if ($schedule->schedule_status == "CLIENT_RESERVED") {
+                    $transaction = [
+                        'schedule_item_id' => $scheduleID,
+                        'member_id' => Auth::user()->id,
+                        'created_by_id' => Auth::user()->id,                   
+                        'transaction_type' => "CANCEL_LESSON",
+                        'amount' => 1,
+                        'valid' => true,
+                    ];        
+                    AgentTransaction::create($transaction); 
+                } else {
+                    //[client reserved b]
+                }     
+
+                //cancel the transaction: 
+                //1. member id will be emptied  
+                //2.Update to back to tutor scheduled
+                $data = [
+                    'member_id' => null,
+                    'schedule_status' => 'TUTOR_SCHEDULED',
+                    'memo'  => null
+                ];
+                $schedule->update($data);          
+                
+                //@todo: search delete questionnaire 
+                $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->where('valid', true)->first();
+
+                if ($questionnaire) {
+                    //@todo: search to delete questionnairre items
+                    $questionnaireItems = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->get();
+                    foreach ($questionnaireItems as $questionnaireItem) {
+                        $questionnaireItem->delete();
+                    }
+                    $questionnaire->delete();
+                }
+
+        
+                return Response()->json([
+                    "success" => true,
+                    'bookable' => true,
+                    'buttonText' => '予約', //link for reserve
+                    "message" => "Member schedule has been cancelled  and refunded " . $lessonTime . " >= " .  $valid_time,
+                    "userData" => $request['user'],
+                ]);                     
+            
+            } else {
+                //@this section gives no refund since it has 3 hours below:  
+                //1. change the schedule status to client not available
+                $schedule = ScheduleItem::find($scheduleID);            
+                $data = [
+                    'schedule_status' => 'CLIENT_NOT_AVAILABLE',
+                    'memo'  => null
+                ];
+                $schedule->update($data);   
+
+                //@todo: search delete questionnaire 
+                $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->where('valid', true)->first();
+
+                if ($questionnaire) {
+                    //@todo: search to delete questionnairre items
+                    $questionnaireItems = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->get();
+                    foreach ($questionnaireItems as $questionnaireItem) {
+                        $questionnaireItem->delete();
+                    }
+                    $questionnaire->delete();
+                }
+
+
+                return Response()->json([
+                    "success" => true,
+                    'bookable' => false,
+                    'buttonText' => '済他', //done
+                    "message" => "Member schedule has been cancelled and points consumed " . $lessonTime . " >= " .  $valid_time,
+                    "userData" => $request['user'],
+                ]);                     
+            } 
+        } else {
+
+            return Response()->json([
+                "success" => false,
+                "message_jp"   => "スケジュールが見つかりません。すでに削除されている可能性があります",
+                "message" => "Schedule not found, it may have already been deleted",
+            ]);                 
+        }
     }
 
+
+    //get member memo
     public function getMemo(Request $request)
     {
         $scheduleID = $request->scheduleID;

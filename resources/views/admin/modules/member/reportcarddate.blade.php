@@ -21,7 +21,10 @@
                                 @csrf
 
                                 <input type="hidden" name="memberid" value="{{ $memberInfo->user_id }}">
-                                <input type="hidden" name="tutorid" value="{{ $memberInfo->tutor_id }}">
+                                <input type="hidden" name="tutorid" value="{{ Auth::user()->id }}">
+                                @php                                 
+                                    /* <input type="hidden" name="tutorid" value="{{ $memberInfo->tutor_id }}"> */
+                                @endphp
                               
                                 <table class="table table-sm table-borderless">
                                     <tbody>

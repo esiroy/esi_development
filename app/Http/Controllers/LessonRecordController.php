@@ -47,41 +47,27 @@ class LessonRecordController extends Controller
                 'lecturer'  => $lecturer,
                 'skypeID'   => $skypeID,            
             ];  
-
-
-        
-
             
-            $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');            
-    
+            $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');    
             $latestReportCard = ReportCard::where('member_id', $member->user_id)->OrderBy('created_at', 'DESC')->first();
-
 
             if ($request->display == 'none') {
 
                 $reportcards = Questionnaire::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
-
-
                 return view('modules.questionnaire.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
 
             } else {
 
                 $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
-
                 return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
             }
-            
-            
-
         } else {
             abort(404);
-        }
-
-    
+        }    
     }
 
 
-
+    
     public function reportcarddatelist($reportcardid, Request $request) {
 
         //$member = Member::find( $member_id);
