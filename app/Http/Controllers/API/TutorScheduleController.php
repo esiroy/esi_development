@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Member;
-use App\Models\Tutor;
-use App\Models\ScheduleItem;
 use App\Models\AgentTransaction;
+use App\Models\Member;
+use App\Models\MemberAttribute;
+use App\Models\ScheduleItem;
 use App\Models\Shift;
-use Auth;
+use App\Models\Tutor;
+use App\Models\ReportCard;
+use App\Models\Questionnaire;
+use App\Models\QuestionnaireItem;
 
-//use App\Models\Lesson;
 
 use DB;
 use Illuminate\Http\Request;
@@ -20,12 +22,12 @@ class TutorScheduleController extends Controller
 
     public function getMembers(Request $request)
     {
-        try {        
-            
+        try {
+
             $members = Member::join('users', 'users.id', '=', 'members.user_id')
                 ->select('members.id', 'members.user_id', 'members.nickname', 'users.firstname', 'users.lastname', 'users.valid')
                 ->where('users.valid', 1)
-                ->get();        
+                ->get();
 
             return Response()->json([
                 "success" => true,
@@ -72,71 +74,50 @@ class TutorScheduleController extends Controller
             DB::beginTransaction();
 
             $scheduledItemData = $request['scheduledItemData'];
-
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
-            $tutorInfo =  Tutor::find($tutor['tutorID']);
+            $tutorInfo = Tutor::find($tutor['tutorID']);
+
+            //find schedule to update
+            $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
 
             if (isset($member['id'])) {
                 $memberID = $member['id'];
             } else {
                 $memberID = null;
-            }            
-
+            }
 
             //v2 - change id to user_id
             $memberInfo = Member::where('user_id', $member['id'])->first();
-
             if ($memberInfo) {
                 $memberData = [
-                    'id'        => $memberInfo->user_id,
-                    'nickname'  => $memberInfo->nickname,
-                    'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->firstname),
-                    'lastname'  => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->lastname),                    
+                    'id' => $memberInfo->user_id,
+                    'nickname' => $memberInfo->nickname,
+                    'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ', $memberInfo->user->firstname),
+                    'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $memberInfo->user->lastname),
                 ];
             } else {
                 $memberData = [
-                    'id'        => "",
-                    'nickname'  => "",
+                    'id' => "",
+                    'nickname' => "",
                     'firstname' => "",
-                    'lastname'  => ""
-                ];          
+                    'lastname' => "",
+                ];
             }
-            
-            
 
             if ($request['status'] == 'TUTOR_CANCELLED') {
-
                 $emailType = $request['cancelationType'];
-
                 $lessonData = [
                     //'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
                     //'duration' => $request['shiftDuration'],
-                    //'tutor_id' => $tutorInfo->user_id,                    
+                    //'tutor_id' => $tutorInfo->user_id,
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
                 ];
-
-
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
 
-
                 $emailType = $request['reservationType'];
-
-                /*
-                if (isset($member['id'])) {                    
-                    $memberInfo = Member::where("user_id", $member['id'])->first();
-                    if (isset($memberInfo->user_id)) {
-                        $member_id = null;
-                    } else {
-                        $member_id = $memberInfo->user_id;
-                    }
-                } else {
-                    $member_id = null;
-                }
-                */
-
                 $lessonData = [
                     //'lesson_time' => date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " +1 hour")),
                     //'duration' => $request['shiftDuration'],
@@ -146,7 +127,37 @@ class TutorScheduleController extends Controller
                     'email_type' => $emailType,
                     'valid' => 1,
                 ];
-               
+
+                //************* NEW MEMBER POINTS AND ATTRIBUTES CHECKER********** */
+                //check if member has enough points
+                $agentCredts = new AgentTransaction();
+                if ($agentCredts->getCredits($memberID) <= 0) {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "十分なポイントがないか、ポイントが期限切れになった",
+                    ]);
+                } //END CREDIT CHECKER
+
+                //compare current lesson limit and total month total reserved schedules
+                $memberAttribute = new MemberAttribute();
+                $attribute = $memberAttribute->getLessonLimit($memberID);
+                if ($attribute) {
+                    $limit = $attribute->lesson_limit;
+                    $currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+                    if ($currentMonthTotalReserves >= $limit) {
+                        return Response()->json([
+                            "success" => false,
+                            "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                            "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                        ]);
+                    }
+                } else {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                        "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                    ]);
+                } //END MEMBER ATTRIBUTE CHECKER
 
             } else {
                 $emailType = null;
@@ -164,33 +175,26 @@ class TutorScheduleController extends Controller
             /*
             $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." +1 hour"));
             $scheduleItem = ScheduleItem::where('tutor_id', $tutorInfo->user_id)
-                ->where('duration', $request['shiftDuration'])
-                ->where('lesson_time', $lessonTime)->first();
-            */
-
-
-            $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
+            ->where('duration', $request['shiftDuration'])
+            ->where('lesson_time', $lessonTime)->first();
+             */
 
             //@todo: update only when exists?
             $scheduleItem->update($lessonData);
-
             DB::commit();
-
-
 
             //** ADD MEMBER TRANSACTION */
             /**@todo: add transaction only when it exits? */
-            if ($memberID != null) {                
+            if ($memberID != null) {
                 $memberTransactionData = [
                     //'scheduleItem'      => $scheduleItem,
-                    'memberID'          => $memberID,
-                    'shiftDuration'      => $request['shiftDuration'],
-                    'status'            => $request['status']
+                    'memberID' => $memberID,
+                    'shiftDuration' => $request['shiftDuration'],
+                    'status' => $request['status'],
                 ];
                 $transactionObj = new AgentTransaction();
                 $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
             }
-
 
             //get lessons
             $scheduleItem = new ScheduleItem();
@@ -204,7 +208,7 @@ class TutorScheduleController extends Controller
                 "success" => true,
                 "memberID" => $memberID,
                 "message" => "Lesson has been updated",
-                "scheduleItemID"        => $scheduledItemData['id'],
+                "scheduleItemID" => $scheduledItemData['id'],
                 "tutorData" => $tutor,
                 "memberData" => $memberData,
                 //'tutorLessonsData' => $tutorLessonsData,
@@ -214,7 +218,7 @@ class TutorScheduleController extends Controller
 
             return Response()->json([
                 "success" => false,
-                "message" => "Exception Error Found in (Update Tutor Schedule) : " . $e->getMessage() ." on Line " . $e->getLine(),
+                "message" => "Exception Error Found in (Update Tutor Schedule) : " . $e->getMessage() . " on Line " . $e->getLine(),
             ]);
 
             DB::rollback();
@@ -228,11 +232,12 @@ class TutorScheduleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, ScheduleItem $scheduleItem) {
+    public function store(Request $request, ScheduleItem $scheduleItem)
+    {
 
         $lessonData = null;
         $scheduled_at = $request['scheduled_at'];
-        $duration = $request['shiftDuration'];        
+        $duration = $request['shiftDuration'];
 
         try {
             DB::beginTransaction();
@@ -245,38 +250,39 @@ class TutorScheduleController extends Controller
                 $memberID = null;
             }
 
-            if ($request['status'] == 'TUTOR_CANCELLED') 
-            {
+            if ($request['status'] == 'TUTOR_CANCELLED') {
                 $emailType = $request['cancelationType'];
 
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
+
                 $emailType = $request['reservationType'];
+
             } else {
+
                 $emailType = null;
             }
-
 
             //v2 - change id to user_id
             $memberInfo = Member::where('user_id', $member['id'])->first();
 
             if ($memberInfo) {
                 $memberData = [
-                    'id'        => $memberInfo->user_id,
-                    'nickname'  => $memberInfo->nickname,
-                    'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->firstname),
-                    'lastname'  => preg_replace('/[^A-Za-z0-9]/', ' ',  $memberInfo->user->lastname),    
+                    'id' => $memberInfo->user_id,
+                    'nickname' => $memberInfo->nickname,
+                    'firstname' => preg_replace('/[^A-Za-z0-9]/', ' ', $memberInfo->user->firstname),
+                    'lastname' => preg_replace('/[^A-Za-z0-9]/', ' ', $memberInfo->user->lastname),
                 ];
             } else {
                 $memberData = [
-                    'id'        => "",
-                    'nickname'  => "",
+                    'id' => "",
+                    'nickname' => "",
                     'firstname' => "",
-                    'lastname'  => ""
-                ];          
+                    'lastname' => "",
+                ];
             }
 
-            $tutorInfo =  Tutor::find($tutor['tutorID']);
-            $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] ." + 1 hour"));
+            $tutorInfo = Tutor::find($tutor['tutorID']);
+            $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " + 1 hour"));
             $schedule_status = str_replace(' ', '_', $request['status']);
 
             $shift = Shift::where('value', $request['shiftDuration'])->first();
@@ -290,65 +296,91 @@ class TutorScheduleController extends Controller
                 'member_id' => $member['id'],
                 'schedule_status' => $schedule_status,
                 'duration' => $request['shiftDuration'],
-                'lesson_shift_id' => $shift->id, 
+                'lesson_shift_id' => $shift->id,
                 'valid' => 1,
                 'memo' => "",
             ];
 
             //@todo: check if not exists?
             $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
-                        ->where('tutor_id',$tutorInfo->user_id)
-                        //->where('member_id', $member['id'])
-                        //->where('schedule_status', $schedule_status)
-                        //->where('duration', $request['shiftDuration'])
-                        //->where('lesson_shift_id', $shift->id)
-                        ->where('valid', 1)
-                        ->exists();
-            
-            if ($isLessonExists) 
-            {               
+                ->where('tutor_id', $tutorInfo->user_id)
+            //->where('member_id', $member['id'])
+            //->where('schedule_status', $schedule_status)
+            //->where('duration', $request['shiftDuration'])
+            //->where('lesson_shift_id', $shift->id)
+                ->where('valid', 1)
+                ->exists();
+
+            if ($isLessonExists) {
                 $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
 
                 return Response()->json([
                     "success" => false,
-                    "refresh"  => true,
+                    "refresh" => true,
                     'tutorLessonsData' => $tutorLessonsData,
                     "message" => "The Schedule $lessonTime is already booked, press okay to refresh schedules.",
                 ]);
-            } 
-
-
-            //@todo: check if member has other booked schedule on this time slot?
-            //@todo: check if not exists?
-            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
-            {
-
-                $isTutorReserved = ScheduleItem::where('lesson_time', $lessonTime)
-                            //->where('tutor_id',$tutorInfo->user_id)
-                            ->where('member_id', $member['id'])
-                            ->where('schedule_status', $request['status'])
-                            ->where('valid', 1)
-                            ->exists();
-
-                $isTutorReserved_b = ScheduleItem::where('lesson_time', $lessonTime)
-                            //->where('tutor_id',$tutorInfo->user_id)
-                            ->where('member_id', $member['id'])
-                            ->where('schedule_status', $request['status'])
-                            ->where('valid', 1)
-                            ->exists();                            
-
-                if ($isTutorReserved || $isTutorReserved_b) 
-                {   
-                    return Response()->json([
-                        "success" => false,
-                        "refresh"  => false,                        
-                        "message" => "Member already have a booked schedule for this  $lessonTime  time slot, try booking other time slot for this member.",
-                    ]);
-                } 
-                
-
             }
 
+            //Check if member has other booked schedule on this time slot?
+            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
+
+                $memberID = $member['id'];
+
+                $isTutorReserved = ScheduleItem::where('lesson_time', $lessonTime)
+                //->where('tutor_id',$tutorInfo->user_id)
+                    ->where('member_id', $memberID)
+                    ->where('schedule_status', $request['status'])
+                    ->where('valid', 1)
+                    ->exists();
+
+                $isTutorReserved_b = ScheduleItem::where('lesson_time', $lessonTime)
+                //->where('tutor_id',$tutorInfo->user_id)
+                    ->where('member_id', $memberID)
+                    ->where('schedule_status', $request['status'])
+                    ->where('valid', 1)
+                    ->exists();
+
+                if ($isTutorReserved || $isTutorReserved_b) {
+                    return Response()->json([
+                        "success" => false,
+                        "refresh" => false,
+                        "message" => "Member already have a booked schedule for this  $lessonTime  time slot, try booking other time slot for this member.",
+                    ]);
+                }
+
+                //************* NEW MEMBER POINTS AND ATTRIBUTES CHECKER********** */
+                //check if member has enough points
+                $agentCredts = new AgentTransaction();
+                if ($agentCredts->getCredits($memberID) <= 0) {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "十分なポイントがないか、ポイントが期限切れになった",
+                    ]);
+                } //END CREDIT CHECKER
+
+                //compare current lesson limit and total month total reserved schedules
+                $memberAttribute = new MemberAttribute();
+                $attribute = $memberAttribute->getLessonLimit($memberID);
+                if ($attribute) {
+                    $limit = $attribute->lesson_limit;
+                    $currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+                    if ($currentMonthTotalReserves >= $limit) {
+                        return Response()->json([
+                            "success" => false,
+                            "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                            "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                        ]);
+                    }
+                } else {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                        "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                    ]);
+                } //END MEMBER ATTRIBUTE CHECKER
+
+            }
 
             $scheduleItem = ScheduleItem::create($lessonData);
             DB::commit();
@@ -358,23 +390,23 @@ class TutorScheduleController extends Controller
 
                 $memberTransactionData = [
                     //'scheduleItem'      => $scheduleItem,
-                    'memberID'          => $memberID,
-                    'shiftDuration'     => $request['shiftDuration'],
-                    'status'            => $request['status']
-                ];   
+                    'memberID' => $memberID,
+                    'shiftDuration' => $request['shiftDuration'],
+                    'status' => $request['status'],
+                ];
 
                 $transactionObj = new AgentTransaction();
                 $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
             }
-            
+
             //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
             //@todo: email user
             return Response()->json([
                 "success" => true,
                 "message" => "Lesson has been added",
-                "scheduleItemID"  => $scheduleItem->id,
+                "scheduleItemID" => $scheduleItem->id,
                 "tutorData" => $request['tutorData'],
-                "memberData" => $memberData,                
+                "memberData" => $memberData,
                 //'tutorLessonsData' => $tutorLessonsData, //@todo: replace this MEMOMY HUGGER WITH ID JS
             ]);
 
@@ -382,7 +414,7 @@ class TutorScheduleController extends Controller
 
             return Response()->json([
                 "success" => false,
-                "message" => "Exception Error Found (Create Tutor Schedule) : " . $e->getMessage() ." on Line " . $e->getLine(),
+                "message" => "Exception Error Found (Create Tutor Schedule) : " . $e->getMessage() . " on Line " . $e->getLine(),
             ]);
 
             DB::rollback();
@@ -404,12 +436,35 @@ class TutorScheduleController extends Controller
 
         $tutor = Tutor::find($tutorID);
 
-        $deleted = ScheduleItem::where('tutor_id', $tutor->user_id)->where('duration', $duration)->where('lesson_time', $lessonTime)->delete();
+        $schedule = ScheduleItem::where('tutor_id', $tutor->user_id)->where('duration', $duration)->where('lesson_time', $lessonTime)->first();
+        
+        if ($schedule) 
+        {
+            //set the deleted schedule id
+            $scheduleID = $schedule->id;
 
-        if ($deleted) {
+            //remove report card
+            $reportCard = ReportCard::where('schedule_item_id', $scheduleID)->first();
+            if ($reportCard) {
+                $reportCard->delete();
+            }              
+
+            //search delete questionnaire 
+            $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->where('valid', true)->first();
+
+            if ($questionnaire) {
+                //@todo: search to delete questionnairre items
+                $questionnaireItems = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->get();
+                foreach ($questionnaireItems as $questionnaireItem) {
+                    $questionnaireItem->delete();
+                }
+                $questionnaire->delete();
+            }
+            $schedule->delete();            
+
+            //refetch schedule items
             $scheduleItem = new ScheduleItem();
             $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
-
             return Response()->json([
                 "success" => true,
                 "message" => "lesson deleted",
@@ -417,12 +472,12 @@ class TutorScheduleController extends Controller
                 "tutorLessonsData" => $tutorLessonsData,
             ]);
 
-
         } else {
             return Response()->json([
                 "success" => false,
                 "message" => "lesson has been already deleted",
             ]);
         }
+
     }
 }

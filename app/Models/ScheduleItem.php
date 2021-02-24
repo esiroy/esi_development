@@ -42,8 +42,18 @@ class ScheduleItem extends Model
         })->whereDate('lesson_time', ">=", $date)
         ->orderby('created_at', 'ASC')
         ->get();
-
         return $reserves;
+    }
+
+    public function getTotalLessonForCurrentMonth($memberID) 
+    {
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $reserveCount = ScheduleItem::where('member_id', $memberID)
+                    ->whereYear('lesson_time', '=', $currentYear)
+                    ->whereMonth('lesson_time','=', $currentMonth)
+                    ->where('valid', 1)->count();
+        return $reserveCount;
     }
 
 

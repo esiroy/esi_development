@@ -260,11 +260,10 @@ class MemberController extends Controller
         //find the schedule
         $schedule = $scheduleItem->find($scheduleID);
 
-        //@todo: check if 30 minutes is not reached, if reached disallow reservation and give message
+        //check if 30 minutes is not reached, if reached disallow reservation and give message
         $date_now =  date("Y-m-d H:i:s");
         $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 30 minutes"));
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
-
 
         if ($lessonTime >= $valid_time) {
             //valid time here.
@@ -277,7 +276,7 @@ class MemberController extends Controller
         }
 
 
-        //@todo: check if member has enough points
+        //check if member has enough points
         $agentCredts = new AgentTransaction();
         if ($agentCredts->getCredits($memberID) <= 0) {
             return Response()->json([
@@ -285,8 +284,32 @@ class MemberController extends Controller
                 "message" => "十分なポイントがないか、ポイントが期限切れになった",
             ]);              
         }
+        
+        //attribute check for this month
+        //compare current lesson limit and total month total reserved schedules
+        $memberAttribute = new MemberAttribute();
+        $attribute = $memberAttribute->getLessonLimit($memberID);     
+        if ($attribute) {
+            $limit = $attribute->lesson_limit;        
+            $currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+            if ($currentMonthTotalReserves >= $limit) 
+            {
+                return Response()->json([
+                    "success" => false,           
+                    "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                    "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                ]);        
+            }    
+        } else {
+            return Response()->json([
+                "success" => false,           
+                "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+            ]);
+        }
+  
 
-        //@todo: attribute check for this month
+   
 
         //@todo: check if the schedule not having same time with other schedules
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
@@ -379,13 +402,13 @@ class MemberController extends Controller
                         'schedule_item_id' => $scheduleID,
                         'member_id' => Auth::user()->id,
                         'created_by_id' => Auth::user()->id,                   
-                        'transaction_type' => "CANCEL_LESSON",
+                        'transaction_type' => "CANCEL_LESSON", //<<--- this will refund the transaction
                         'amount' => 1,
                         'valid' => true,
                     ];        
                     AgentTransaction::create($transaction); 
                 } else {
-                    //[client reserved b]
+                    //[client reserved b] - no refund
                 }     
 
                 //cancel the transaction: 

@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\Member;
 use App\Models\Shift;
 use App\Models\Tutor;
+use App\Models\MemberAttribute;
+use App\Models\ScheduleItem;
 
 use Gate;
 use DB;
@@ -18,7 +20,6 @@ use Config;
 
 use Mail;
 use App\Mail\CustomerSupport as CustomerSupportMail;
-use App\Models\ScheduleItem;
 use App\Models\PhpSpreadsheetFontStyle as Style;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -39,6 +40,29 @@ class dummyController extends Controller
     public function index()
     {   
 
+        $memberID = Auth::user()->id;
+
+        $memberAttribute = new MemberAttribute();
+        $scheduleItem = new ScheduleItem();
+        $attribute = $memberAttribute->getLessonLimit($memberID);
+
+
+        
+
+        //current lesson limit
+        $limit = $attribute->lesson_limit;
+        //total schedule added (active)
+        $currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+
+        echo $currentMonthTotalReserves;
+
+        if ($currentMonthTotalReserves >= $limit) {
+            echo "over the total";
+        } else {
+            echo "okay";
+        }
+
+        exit();
 
         date("Y-m-d H:i:s", strtotime($schedule->lesson_time ." - 30 minutes"));
 
