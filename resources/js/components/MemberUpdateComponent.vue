@@ -252,9 +252,11 @@
                                         :format="birthDateFormatter"
                                         :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
                                     ></datepicker>
+                                    <!--
                                     <div v-if="submitted && !$v.user.birthday.required" class="invalid-feedback" style="display: block">
                                         Birthday is required
-                                    </div>                                          
+                                    </div>
+                                    -->
                                 </div>                                                              
                             </div>
                         </div>
@@ -1031,9 +1033,13 @@ export default {
             communication_app_username: {
                 required
             },
+
+            /*
             birthday: {
                 required
-            },            
+            },
+            */
+
             email: { required, email },
             //password: { required, minLength: minLength(6) },
             //confirmPassword: { required, sameAsPassword: sameAs("password") },

@@ -300,9 +300,11 @@
                                             :format="birthDateFormatter"
                                             :input-class="[ 'form-control form-control-sm ', { 'is-invalid': submitted && $v.user.birthday.$error }]"                                           
                                         ></datepicker>
+                                        <!--
                                         <div v-if="submitted && !$v.user.birthday.required" class="invalid-feedback" style="display: block">
                                             Birthday is required
-                                        </div>                                          
+                                        </div>
+                                        -->
                                     </div>                                                              
                                 </div>
                             </div>
@@ -1019,9 +1021,10 @@ export default {
             communication_app_username: {
                 required
             },
+            /* (removed required, updated as reqeusted)
             birthday: {
                 required
-            },            
+            },*/
             email: { required, email },
             password: { required, minLength: minLength(6) },
             confirmPassword: { required, sameAsPassword: sameAs("password") },
@@ -1038,26 +1041,16 @@ export default {
     methods: {
 
         handleSubmit(e) 
-        {
-         
-
+        {         
             this.submitted = true;
             // stop here if form is invalid
             this.$v.$touch();
-
             console.log(JSON.stringify(this.user));
-
-
             if (this.$v.$invalid) {
                 alert ("Errors found, please check the form for errors");
-
                 console.log (this.submitted, this.$v.$invalid);
-
-
                 return;
             }
-           
-
             //alert("SUCCESS!! :-)\n\n" + JSON.stringify(this.user));
          
             axios.post("/api/create_member?api_token=" + this.api_token, 
