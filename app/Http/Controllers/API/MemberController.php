@@ -260,6 +260,15 @@ class MemberController extends Controller
         //find the schedule
         $schedule = $scheduleItem->find($scheduleID);
 
+        if (!$schedule) {
+            //schedule time  not found
+            return Response()->json([
+                "success" => false,           
+                "message" => "スケジュールが見つからないか、もう存在しません",
+                "message_en" => "Schedule not found or no longer exists"
+            ]);            
+        }
+
         //check if 30 minutes is not reached, if reached disallow reservation and give message
         $date_now =  date("Y-m-d H:i:s");
         $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 30 minutes"));
@@ -307,9 +316,6 @@ class MemberController extends Controller
                 "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
             ]);
         }
-  
-
-   
 
         //@todo: check if the schedule not having same time with other schedules
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
@@ -359,12 +365,14 @@ class MemberController extends Controller
             ];
             AgentTransaction::create($transaction);
         }                    
+        
+        $credits = $agentCredts->getCredits($memberID);
 
         return Response()->json([
             "success" => true,
+            "credits"  => "(". number_format($credits, 2) .")",
             "message" => "Member has been scheduled",
             "userData" => $request['user'],
-
             "lesson_time" => $lessonTime,
             "tutor_id" => $schedule->tutor_id,
             "member_id" => Auth::user()->id,
@@ -375,12 +383,12 @@ class MemberController extends Controller
     {
         $scheduleID = $request->id;
 
+        $agentCredts = new AgentTransaction();
+        
         //@todo: check if the schedule is present
         $schedule = ScheduleItem::find($scheduleID);
 
         if ($schedule) {
-
-
             //@todo: remove report card
             $reportCard = ReportCard::where('schedule_item_id', $scheduleID)->first();
 
@@ -433,10 +441,12 @@ class MemberController extends Controller
                     $questionnaire->delete();
                 }
 
-        
+                $credits = $agentCredts->getCredits(Auth::user()->id );
+
                 return Response()->json([
                     "success" => true,
-                    'bookable' => true,
+                    'bookable' => true, //bookable(true) will add the link for booking
+                    "credits"  => "(". number_format($credits, 2) .")",
                     'buttonText' => '予約', //link for reserve
                     "message" => "Member schedule has been cancelled  and refunded " . $lessonTime . " >= " .  $valid_time,
                     "userData" => $request['user'],
@@ -464,10 +474,12 @@ class MemberController extends Controller
                     $questionnaire->delete();
                 }
 
+                $credits = $agentCredts->getCredits(Auth::user()->id );
 
                 return Response()->json([
                     "success" => true,
                     'bookable' => false,
+                    "credits"  => "(". number_format($credits, 2) .")",                   
                     'buttonText' => '済他', //done
                     "message" => "Member schedule has been cancelled and points consumed " . $lessonTime . " >= " .  $valid_time,
                     "userData" => $request['user'],

@@ -274,10 +274,11 @@
 
                         $('.button_' + scheduleID + ' .bookTutorSchedule').hide();
                         $('.button_' + scheduleID + ' .cancel').show();
+
+                        $('#total_credits').text(data.credits)
                     } else {
                         alert(data.message);
                     }
-
 
                 }
             });
@@ -308,7 +309,10 @@
                     } else if (data.bookable == false) {
                         $('.button_' + id + ' .doneTutorSchedule').show();
                         $('.button_' + id + ' .cancel').hide();                        
-                    }                    
+                    }
+
+                    //total credits
+                    $('#total_credits').text(data.credits)        
                 }
             });
         } else {
