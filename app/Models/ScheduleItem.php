@@ -275,8 +275,8 @@ class ScheduleItem extends Model
                 'member_id' => $item->member_id,
                 'member_memo' => $item->memo,
                 'hasReportCard' => $hasReportCard,
-                'hasQuestionnaire' => $hasQuestionnaire,
-                'questionnaire' => $questionnaire,
+                'hasQuestionnaire' => $hasQuestionnaire
+                //'questionnaire' => $questionnaire,
             ];
         }
 
