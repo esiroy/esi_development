@@ -77,7 +77,7 @@ class TableScheduleItemImporterController extends Controller
                 ];
 
                 $transaction = ScheduleItem::insert($data);
-                echo "<div style='color:blue'>$ctr - Added : " . $liveItem->id . " " . $liveItem->created_on . "</div>";
+                echo "<div style='color:blue'>$ctr - Added : " . $liveItem->id . " lesson time :" .  $liveItem->lesson_time ." created: " . $liveItem->created_on . "</div>";
 
             }
 

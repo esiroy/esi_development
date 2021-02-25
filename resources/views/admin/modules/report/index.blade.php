@@ -62,11 +62,12 @@
                                     <option value="Client Not Available" {{ (request()->has('status') && request()->get('status') == "Client Not Available") ? "selected" : '' }}>Client Not Available</option>
                                     <option value="Nothing" {{ (request()->has('status') && request()->get('status') == "Nothing") ? "selected" : '' }}>Nothing</option>
                                 </select>
+                                <div class="d-inline-block">
+                                    <input type="submit" class="btn btn-primary btn-sm" value="Go">
+                                </div>                                
                             </div>
 
-                            <div class="col-lg-2 col-md-3 col-sm-12 pt-2">
-                                <input type="submit" class="btn btn-primary btn-sm" value="Go">
-                            </div>
+
                         </div>
                     </form>
 
@@ -99,13 +100,12 @@
 
 
                     <div id="schedule-report" class="card mt-3">
-                        <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold ">
+                        <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold ">                        
                             {{ date("Y年 m月 d日", strtotime($from)) }}
-
                             @if(isset($to)) {{ " - " . date("Y年 m月 d日", strtotime($to)) }} @endif
                         </div>
                         <div class="card-body p-0 m-0 b-0">
-                            <div class="table-responsive">
+                            <div class="table-responsive mb-0">
                                 <table class="table esi-table table-bordered table-striped  ">
                                     <thead>
                                         <td>I.D.</td>
@@ -119,21 +119,39 @@
                                     </thead>
 
                                     @foreach($schedules as $schedule)
+                                    
                                     <tr>
                                         <td>
                                             {{ $schedule->id }}
                                         </td>
                                         <td>
-                                            {{ date("m/d/Y", strtotime($schedule->lesson_time ." + 1 hour")) }}
+                                            <!-- Date -->
+                                            @if ( date("H", strtotime($schedule->lesson_time)) == "00")
+                                                {{ date("m/d/Y", strtotime($schedule->lesson_time ." -1 day" )) }}    
+                                            @else 
+                                                {{ date("m/d/Y", strtotime($schedule->lesson_time )) }}    
+                                            @endif
+                                            
                                         </td>
+
                                         <td>
-                                            {{ date("H:i", strtotime($schedule->lesson_time ." + 1 hour")) }}
+                                            <!-- Time -->      
+                                            @if (date("H", strtotime($schedule->lesson_time)) == "00")
+                                                {{ date("24:i", strtotime($schedule->lesson_time)) }}
+                                            @else 
+                                                {{ date("H:i", strtotime($schedule->lesson_time)) }}
+                                            @endif
                                         </td>
+
                                         <td>
                                             {{ formatStatus($schedule->schedule_status) }}
                                         </td>
                                         <td>
-                                            {{ $schedule->lesson_shift_id }}
+                                            @php
+                                                $shift = App\Models\Shift::where('id', $schedule->lesson_shift_id)->first();
+                                            @endphp
+
+                                            {{ $shift->name }}
                                         </td>
                                         <td>
                                             @php
