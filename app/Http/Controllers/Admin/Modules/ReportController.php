@@ -26,14 +26,14 @@ class ReportController extends Controller
         if (isset($request->status)) 
         {
             $status = str_replace(" ", "_", strtoupper($request->status));
-            $schedules = ScheduleItem::where('schedule_status', $status)->orderBy('created_at', 'DESC')->paginate(30);
+            $schedules = ScheduleItem::where('schedule_status', $status)->orderBy('schedule_status', 'DESC')->paginate(30);
 
         } else if (isset($request->date_from) && isset($request->date_to)) {
 
             $dateFrom = date('Y-m-d', strtotime($request['date_from']));
             $dateTo = date('Y-m-d', strtotime($request['date_to']));
 
-            $schedules = ScheduleItem::whereBetween('lesson_time', [$dateFrom, $dateTo])->orderBy('created_at', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);
+            $schedules = ScheduleItem::whereBetween('lesson_time', [$dateFrom, $dateTo])->orderBy('schedule_status', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);
             
         } else if (isset($request->date_from) && isset($request->date_to) && isset($request->status)) {
 
