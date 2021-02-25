@@ -19,33 +19,51 @@ class ReportController extends Controller
 
         $per_page = Auth::user()->items_per_page;
 
-        //$from   = date("Y年 m月 j日");
-        $from = date("Y m j");
-        $to = null;
+        //Current date
+        $from = date("Y-m-d");
+        $to = date('Y-m-d', strtotime($from . " 1 day"));      
 
-        if (isset($request->status)) 
-        {
-            $status = str_replace(" ", "_", strtoupper($request->status));
-            $schedules = ScheduleItem::where('schedule_status', $status)->orderBy('schedule_status', 'DESC')->paginate(30);
-
-        } else if (isset($request->date_from) && isset($request->date_to)) {
+        if (isset($request->date_from) && isset($request->date_to) && !isset($request->status)) {
 
             $dateFrom = date('Y-m-d', strtotime($request['date_from']));
             $dateTo = date('Y-m-d', strtotime($request['date_to']));
 
-            $schedules = ScheduleItem::whereBetween('lesson_time', [$dateFrom, $dateTo])->orderBy('schedule_status', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);
-            
+            $schedules = ScheduleItem::whereDate('lesson_time', '>=', $dateFrom)
+                                        ->whereDate('lesson_time', '<=', $dateTo);
+            $schedules = $schedules->orderBy('schedule_status', 'DESC');
+            $schedules = $schedules->paginate($per_page);
+
         } else if (isset($request->date_from) && isset($request->date_to) && isset($request->status)) {
 
-
             $dateFrom = date('Y-m-d', strtotime($request['date_from']));
             $dateTo = date('Y-m-d', strtotime($request['date_to']));
+            $status = str_replace(' ', '_', strtoupper($request->status));
 
-            $schedules = ScheduleItem::whereBetween('lesson_time', [$dateFrom, $dateTo])->where('schedule_status', $request->status)->orderBy('created_at', 'DESC')->paginate($per_page);
+            $schedules = ScheduleItem::whereDate('lesson_time', '>=', $dateFrom)
+                                        ->whereDate('lesson_time', '<=', $dateTo);
+
+            $schedules = $schedules->where('schedule_status', $status);
+
+            $schedules = $schedules->orderBy('schedule_status', 'DESC');
+            $schedules = $schedules->paginate($per_page);
+
+        } else if (isset($request->status)) {
+
+            $status = str_replace(' ', '_', strtoupper($request->status));
+            $status = str_replace(" ", "_", strtoupper($status));
+
+            $schedules = ScheduleItem::where('schedule_status', $status);
+            $schedules = $schedules->orderBy('schedule_status', 'DESC');
+            $schedules = $schedules->paginate($per_page);
 
         } else {
 
-            $schedules = ScheduleItem::orderBy('lesson_time', 'DESC')->paginate($per_page);
+            // $schedules = ScheduleItem::orderBy('lesson_time', 'DESC')->paginate($per_page);
+
+            $schedules = ScheduleItem::whereDate('lesson_time', '>=', $from)
+                                        ->whereDate('lesson_time', '<=', $to);
+            $schedules = $schedules->paginate($per_page);                                        
+
         }
 
         return view('admin.modules.report.index', compact('schedules', 'from', 'to'));

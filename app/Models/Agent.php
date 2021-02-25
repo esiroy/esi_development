@@ -28,7 +28,7 @@ class Agent extends Model
 
         if ($member) {
 
-            $agent = Agent::where('user_id', $memberID)->first();
+            $agent = Agent::where('user_id', $member->agent_id)->first();
         
             if (isset($agent)) {
                 return $agent;
