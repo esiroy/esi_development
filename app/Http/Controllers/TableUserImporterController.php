@@ -89,21 +89,12 @@ class TableUserImporterController extends Controller
             if (User::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
-                echo "<pre>";
-                print_r ($data);
-            
-
                 try
                 {
 
                     $UserObj = UserImporter::where('id', $item->id)->first();
 
                     $user = $UserObj->update($data);
-
-                
-
-                    print_r ($UserObj);
-                    echo "</pre>";
 
                     DB::commit();
 
@@ -136,9 +127,7 @@ class TableUserImporterController extends Controller
                         $user->roles()->sync($roles);     
 
                     }
-
-                                  
-
+                    
                     DB::commit();
 
                     echo "<div style='color:blue'>$ctr - added : " . $item->id . " " . $item->firstname . " " . $item->created_on . "</div>";
