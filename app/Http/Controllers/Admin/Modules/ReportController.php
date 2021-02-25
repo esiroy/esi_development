@@ -30,8 +30,9 @@ class ReportController extends Controller
 
         } else if (isset($request->date_from) && isset($request->date_to)) {
 
-            $from = date($request->date_from);
-            $to = date($request->date_to);
+            $dateFrom = date('Y-m-d', strtotime($request['date_from']));
+            $dateTo = date('Y-m-d', strtotime($request['date_to']));
+
             $schedules = ScheduleItem::whereBetween('lesson_time', [$from, $to])->orderBy('created_at', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);
             
         } else if (isset($request->date_from) && isset($request->date_to) && isset($request->status)) {
