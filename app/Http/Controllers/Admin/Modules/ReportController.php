@@ -33,13 +33,15 @@ class ReportController extends Controller
             $dateFrom = date('Y-m-d', strtotime($request['date_from']));
             $dateTo = date('Y-m-d', strtotime($request['date_to']));
 
-            $schedules = ScheduleItem::whereBetween('lesson_time', [$from, $to])->orderBy('created_at', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);
+            $schedules = ScheduleItem::whereBetween('lesson_time', [$dateFrom, $dateTo])->orderBy('created_at', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);
             
         } else if (isset($request->date_from) && isset($request->date_to) && isset($request->status)) {
 
-            $from = date($request->date_from);
-            $to = date($request->date_to);
-            $schedules = ScheduleItem::whereBetween('lesson_time', [$from, $to])->where('schedule_status', $request->status)->orderBy('created_at', 'DESC')->paginate($per_page);
+
+            $dateFrom = date('Y-m-d', strtotime($request['date_from']));
+            $dateTo = date('Y-m-d', strtotime($request['date_to']));
+
+            $schedules = ScheduleItem::whereBetween('lesson_time', [$dateFrom, $dateTo])->where('schedule_status', $request->status)->orderBy('created_at', 'DESC')->paginate($per_page);
 
         } else {
 
