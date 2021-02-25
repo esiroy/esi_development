@@ -44,7 +44,7 @@ class SalaryReportController extends Controller
         
         $schedules = $query->where('valid', 1)->orderBy('created_at', 'DESC')->paginate($per_page);
        
-        return view('admin.modules.salary.index', compact('schedules', 'date', 'from', 'to'));        
+        return view('admin.modules.salary.index', compact('schedules', 'from', 'to'));        
         
     }
 
