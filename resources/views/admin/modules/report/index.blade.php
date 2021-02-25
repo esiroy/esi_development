@@ -35,29 +35,21 @@
                 <div class="card-body">
                     <form name="dateForm" method="GET">
                         <div class="row">
-                            <div class="col-lg-2 col-md-3 col-sm-12 pt-2">
+
+                            <div class="col-lg-3 col-md-3 col-sm-12 pt-2">
                                 <label for="inputDate">From:</label>
                                 <input id="date_from" name="date_from" type="date" class="inputDate hasDatepicker form-control form-control-sm  d-inline-block col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12" 
                                 value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">                                
                             </div>
-                            <div class="col-lg-2 col-md-4 col-sm-12 pt-2">
+
+                            <div class="col-lg-3 col-md-4 col-sm-12 pt-2">
                                 <label for="inputDate">To:</label>
                                 <input id="date_to" name="date_to" type="date" class="inputDate hasDatepicker form-control form-control-sm col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12  d-inline-block" 
                                  value="{{ request()->has('date_to') ? request()->get('date_to') : '' }}">
                             </div>
-                            <!--
-                            <div class="col-lg-2 col-md-3 col-sm-12 pt-2">
-                                <div class="form-group">
-                                    <label for="shift">Shift:</label>
-                                    <select id="shift" name="shift" class="form-control form-control-sm  d-inline-block col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                                        <option value="4" selected="">25 mins</option>
-                                        <option value="5">40 mins</option>
-                                    </select>
-                                </div>
-                            </div>
-                            -->
+                     
 
-                            <div class="col-lg-2 col-md-3 col-sm-12 pt-2">
+                            <div class="col-lg-3 col-md-3 col-sm-12 pt-2">
                                 <label for="status">Status:</label>
                                 <select name="status" id="shiftValue" class="form-control form-control-sm  d-inline-block col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12 ">         
                                         <option value="">All</option>                                    
@@ -127,21 +119,27 @@
 
                                     @foreach($schedules as $schedule)
                                     <tr>
-                                        <td>{{ $schedule->id }}</td>
-                                        <td>{{ date("Y-d-m", strtotime($schedule->lesson_time ." + 1 hour")) }}</td>
-                                        <td>{{ date("H:i", strtotime($schedule->lesson_time ." + 1 hour")) }}</td>
-                                        <td>{{ $schedule->schedule_status }}</td>
-                                        <td>{{ $schedule->lesson_shift_id }}</td>
+                                        <td>
+                                            {{ $schedule->id }}
+                                        </td>
+                                        <td>
+                                            {{ date("m/d/Y", strtotime($schedule->lesson_time ." + 1 hour")) }}
+                                        </td>
+                                        <td>
+                                            {{ date("H:i", strtotime($schedule->lesson_time ." + 1 hour")) }}
+                                        </td>
+                                        <td>
+                                            {{ formatStatus($schedule->schedule_status) }}                                            
+                                        </td>
+                                        <td>                                        
+                                            {{ $schedule->lesson_shift_id }}
+                                        </td>
                                         <td>
                                             @php
-                                                $agent = new \App\Models\Agent();
+                                                $agent = new \App\Models\Agent();                                                
                                                 $agentInfo = $agent->getMemberAgent($schedule->member_id);
-                                            @endphp                                            
-
-                                      
+                                            @endphp   
                                             {{ $agentInfo->firstname ?? ''}}
-
-                                          
                                         </td>
                                         <td>
                                             @php                                                

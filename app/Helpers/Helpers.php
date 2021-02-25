@@ -22,6 +22,14 @@ if (! function_exists('formatGrade')) {
 
 
 
+if (! function_exists('formatStatus')) {
+    function formatStatus($status) {
+       $str = str_replace('_', ' ', strtolower($status));
+       return ucwords($str);
+    }
+}
+
+
 if (! function_exists('createAttributes')) {
     function createAttributes() {
         $attributes = [

@@ -104,8 +104,6 @@ Route::get('/stagelevel', 'PageController@stageLevel')->name('stagelevel');
 Route::get('/user', 'MemberDashboard@index')->name('user');
 Route::get('/faq', 'MemberDashboard@faq')->name('faq');
 
-
-
 /** TUTOR */
 Route::resource('viewtutor', 'TutorProfileController');
 

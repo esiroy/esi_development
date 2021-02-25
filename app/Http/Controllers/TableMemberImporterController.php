@@ -34,22 +34,10 @@ class TableMemberImporterController extends Controller
 
         $items = DB::connection('mysql_live')->select("select * from users_member where user_id = $id");
 
-        foreach ($items as $item) {
-
-            echo "<pre>";
-
-            print_r ($item);
-
-            echo "</pre>";
-
-            echo "<BR>================<BR>";
-
-            echo $item->agent_id;
+        foreach ($items as $item) 
+        {
 
             $agent = Agent::where('user_id', $item->agent_id)->first();
-
-            echo $agent->user->firstname;
-
 
             $data = [
                 'user_id' => $item->user_id,
@@ -119,7 +107,7 @@ class TableMemberImporterController extends Controller
 
                     DB::commit();
 
-                    echo "<div style='color:blue'> - added : " . $item->user_id . "</div>";
+                    echo "<div style='color:blue'> - member Added : " . $item->user_id . "</div>";
 
                 } catch (\Exception $e) {
 

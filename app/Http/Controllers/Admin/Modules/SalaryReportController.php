@@ -32,14 +32,12 @@ class SalaryReportController extends Controller
             $query = $query->whereBetween('created_at', [$from, $to]);                   
             
         } 
-
         
         if (isset($request->status)) 
         {            
             $status = str_replace(" ", "_", strtoupper($request->status));
             $query->where('schedule_status', $status);
-        }
-        
+        }        
       
         
         $schedules = $query->where('valid', 1)->orderBy('created_at', 'DESC')->paginate($per_page);
