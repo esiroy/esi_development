@@ -59,7 +59,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-lg-3 col-md-3 col-sm-12 pt-2">
+                            <div class="col-lg-4 col-md-4 col-sm-12 pt-2">
                                 <label for="status">Tutor:</label>
                                 <select name="tutor" id="status" class="form-control form-control-sm  d-inline-block col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                     <option value="">All</option>
@@ -69,12 +69,12 @@
                                     </option>
                                     @endforeach
                                 </select>
+                                <div class="d-inline-block">
+                                    <input type="submit" class="btn btn-primary btn-sm" value="Go">
+                                </div>
                             </div>
 
 
-                            <div class="col-lg-2 col-md-3 col-sm-12 pt-2">
-                                <input type="submit" class="btn btn-primary btn-sm" value="Go">
-                            </div>
                         </div>
 
                     </form>
@@ -86,7 +86,7 @@
                             @if(isset($to)) {{ " - " . date("Y年 m月 d日", strtotime($to)) }} @endif
                         </div>
                         <div class="card-body p-0 m-0 b-0">
-                        
+
                             <div class="table-responsive mb-0">
                                 <table class="table esi-table table-bordered table-striped  ">
                                     <thead>
@@ -111,7 +111,12 @@
                                         </td>
 
                                         <td>
-                                            {{ $schedule->lesson_shift_id }}
+                                           
+                                            @php
+                                                $shift = App\Models\Shift::where('id', $schedule->lesson_shift_id)->first();
+                                            @endphp
+
+                                            {{ $shift->name ?? ''}}                                            
                                         </td>
 
                                         <td>
@@ -143,15 +148,18 @@
                                             {{ $tutor->salary_rate ?? "" }}
                                         </td>
                                         <td>
-                                            @if ($schedule->schedule_status == "COMPLETED") 
-                                                {{ number_format($tutor->salary_rate, 2) }}
-                                            @elseif($schedule->schedule_status == "TUTOR_CANCELLED" || $schedule->schedule_status == "CLIENT NOT AVAILABLE")
-                                                @php
-                                                    $newSalary = $tutor->salary_rate / 2;
-                                                @endphp
-                                                {{ number_format($newSalary, 2) }}
-                                            @else
-                                                {{ number_format(0, 2) }}
+
+                                            @if (isset($tutor->salary_rate))
+                                                @if ($schedule->schedule_status == "COMPLETED" || $schedule->schedule_status == "CLIENT_NOT_AVAILABLE") 
+                                                    {{ number_format($tutor->salary_rate, 1) }}
+                                                @elseif($schedule->schedule_status == "SUPPRESSED_SCHEDULE" )
+                                                    @php
+                                                        $newSalary = $tutor->salary_rate / 2;
+                                                    @endphp
+                                                    {{ number_format($newSalary, 1) }}                                                
+                                                @else
+                                                    {{ number_format(0, 1) }}
+                                                @endif
                                             @endif
 
                                         </td>

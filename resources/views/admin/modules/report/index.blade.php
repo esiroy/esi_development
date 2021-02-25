@@ -151,7 +151,7 @@
                                                 $shift = App\Models\Shift::where('id', $schedule->lesson_shift_id)->first();
                                             @endphp
 
-                                            {{ $shift->name }}
+                                            {{ $shift->name ?? ''}}
                                         </td>
                                         <td>
                                             @php
