@@ -1,11 +1,11 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Modules;
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use App\Models\ScheduleItem;
 
+use App\Http\Controllers\Controller;
+use App\Models\ScheduleItem;
 use Auth;
+use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
@@ -20,42 +20,33 @@ class ReportController extends Controller
         $per_page = Auth::user()->items_per_page;
 
         //$from   = date("Y年 m月 j日");
-        $from   = date("Y m j");
-        $to   = null;
+        $from = date("Y m j");
+        $to = null;
 
-        if (isset($request->status)) {
+        if (isset($request->status)) 
+        {
             $status = str_replace(" ", "_", strtoupper($request->status));
-            $schedules = ScheduleItem::where('schedule_status', $status )->orderBy('created_at', 'DESC')->paginate(30);
-        } 
-        else if (isset($request->date_from) && isset($request->date_to)) 
-        {
-            echo "2";
+            $schedules = ScheduleItem::where('schedule_status', $status)->orderBy('created_at', 'DESC')->paginate(30);
+
+        } else if (isset($request->date_from) && isset($request->date_to)) {
 
             $from = date($request->date_from);
-            $to = date($request->date_to);      
-
-            $schedules = ScheduleItem::whereBetween('lesson_time', [$from, $to])->orderBy('created_at', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);            
-        } 
-        else if (isset($request->date_from) && isset($request->date_to) && isset($request->status)) 
-        {
-            echo "3";
+            $to = date($request->date_to);
+            $schedules = ScheduleItem::whereBetween('lesson_time', [$from, $to])->orderBy('created_at', 'DESC')->where('schedule_status', $request->status)->paginate($per_page);
+            
+        } else if (isset($request->date_from) && isset($request->date_to) && isset($request->status)) {
 
             $from = date($request->date_from);
-            $to = date($request->date_to);  
+            $to = date($request->date_to);
             $schedules = ScheduleItem::whereBetween('lesson_time', [$from, $to])->where('schedule_status', $request->status)->orderBy('created_at', 'DESC')->paginate($per_page);
 
         } else {
 
-            echo "4";
-
             $schedules = ScheduleItem::orderBy('lesson_time', 'DESC')->paginate($per_page);
         }
 
-       
         return view('admin.modules.report.index', compact('schedules', 'from', 'to'));
     }
-
-
 
     /**
      * Show the form for creating a new resource.
