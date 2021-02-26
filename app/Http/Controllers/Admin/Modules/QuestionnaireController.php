@@ -23,7 +23,6 @@ class QuestionnaireController extends Controller
      */
     public function index(Request $request)
     {
-
         $items_per_page = Auth::user()->items_per_page;        
 
         if (isset($request->date_from) && isset($request->date_to)) 
@@ -34,22 +33,18 @@ class QuestionnaireController extends Controller
 
             $questionnaires = Questionnaire::whereBetween('schedule_item.lesson_time', [$dateFrom, $dateTo])
                                 ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
-                                ->select('schedule_item.lesson_time', 'questionnaire.*')
-                                ->orderBy('schedule_item.lesson_time', 'DESC')->paginate($items_per_page);
-
+                                ->select('schedule_item.lesson_time', 'questionnaire.*');
 
         } else {            
             $questionnaires = Questionnaire::orderBy('questionnaire.id', 'ASC')
                             ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
-                            ->select('schedule_item.lesson_time', 'questionnaire.*')
-                            ->paginate($items_per_page);
-        }
-        
+                            ->select('schedule_item.lesson_time', 'questionnaire.*');
+        }        
 
-      
-        $questionnaireItem = New QuestionnaireItem();
+        $questionnaires = $questionnaires->orderBy('schedule_item.lesson_time', 'DESC');
+        $questionnaires = $questionnaires->paginate($items_per_page);        
 
-        return view('admin.modules.questionnaires.index', compact('questionnaires', 'questionnaireItem'));
+        return view('admin.modules.questionnaires.index', compact('questionnaires'));
     }
 
     /**
