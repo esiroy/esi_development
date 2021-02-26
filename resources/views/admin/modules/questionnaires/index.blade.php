@@ -109,15 +109,24 @@
                                             <td class="small text-center">{{ $questionnaire->tutor_id  }}</td>
 
                                             @php
-                                                $questionnaireItems = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->orderBy('id', 'asc')->get();
+                                                $questionnaireItem1 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_1')->where('valid', true)->first();
+                                                $questionnaireItem2 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_2')->where('valid', true)->first();
+                                                $questionnaireItem3 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_3')->where('valid', true)->first();
+                                                $questionnaireItem4 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_4')->where('valid', true)->first();
                                             @endphp
 
-                                            @foreach($questionnaireItems as $item)
-                                            <td class="small text-center">
-                                                <!--<small>{{ $item->question }}</small>-->
-                                                {{ $item->grade }}
+                                            <td class="question_1">
+                                                {{ $questionnaireItem1->grade ?? '' }}
                                             </td>
-                                            @endforeach
+                                            <td class="question_1">
+                                                {{ $questionnaireItem2->grade ?? '' }}
+                                            </td>
+                                            <td class="question_1">
+                                                {{ $questionnaireItem3->grade ?? '' }}
+                                            </td>
+                                            <td class="question_1">
+                                                {{ $questionnaireItem4->grade ?? '' }}
+                                            </td>
                                             <td class="small text-center" style="width:300px">{{ $questionnaire->remarks }}</td>
                                         </tr>
                                         @endforeach
