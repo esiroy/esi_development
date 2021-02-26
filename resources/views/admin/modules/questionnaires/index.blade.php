@@ -86,9 +86,9 @@
                                             <td class="small text-center">
                                                 <!-- Date -->
                                                 @if ( date("H", strtotime($questionnaire->lesson_time)) == "00")
-                                                {{ date("m/d/Y", strtotime($questionnaire->lesson_time ." -1 day" )) }}    
+                                                    {{ date("Y/m/d", strtotime($questionnaire->lesson_time ." -1 day" )) }}    
                                                 @else 
-                                                {{ date("m/d/Y", strtotime($questionnaire->lesson_time )) }}    
+                                                    {{ date("Y/m/d", strtotime($questionnaire->lesson_time )) }}    
                                                 @endif                                                
 
                                                 <!-- Time -->
