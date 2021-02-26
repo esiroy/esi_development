@@ -12,7 +12,7 @@ use App\Models\ScheduleItem;
 use App\Models\userImage;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
-
+use Auth;
 
 class QuestionnaireController extends Controller
 {
@@ -23,21 +23,25 @@ class QuestionnaireController extends Controller
      */
     public function index(Request $request)
     {
-        //@todo: items_per_page from user settings
-        $items_per_page = 10;
+
+        //$items_per_page = Auth::user()->items_per_page;
+
+        $items_per_page = 1000;
 
         if (isset($request->date_from) && isset($request->date_to)) 
         {
             $from = date($request->date_from);
             $to = date($request->date_to);      
 
-            $questionnaires = Questionnaire::whereBetween('created_at', [$from, $to])->orderBy('created_at', 'DESC')->paginate(10);
+            $questionnaires = Questionnaire::whereBetween('created_at', [$from, $to])
+                                ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                                ->orderBy('created_at', 'DESC')->paginate($items_per_page);
 
 
         } else {            
             $questionnaires = Questionnaire::orderBy('questionnaire.id', 'ASC')
-                            //->join('lessons', 'questionnaire.schedule_item_id', '=', 'lessons.id')
-                            ->paginate(10);
+                            ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                            ->paginate($items_per_page);
         }
         
 
