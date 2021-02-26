@@ -31,23 +31,16 @@ class DownloadController extends Controller
 
     public function downloadLessonMaterial($filename)
     {
-
         try
-        {
-            
+        {            
             $file = public_path() . "/storage/uploads/lesson_materials/" . $filename;
-
-
             $name = basename($filename);
-
             $content_type = $this->mime_content_type($file);
             $headers = array('Content-Type: ' . $content_type . '');
         } catch (\Exception $e) {
             echo $e->getMessage();
         }
-
         return Response::download($file, $name);
-
     }
 
     public function mime_content_type($filename)

@@ -251,6 +251,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::get('/course/sort', 'Modules\CourseController@sort');
         Route::resource('/course', 'Modules\CourseController');
 
+        //upload course
+        Route::post('/course/uploadCourseImage', 'Modules\CourseController@uploadCourseImage')->name('course.uploadCourseImage');
+        
+
         Route::resource('/accounts', 'Modules\AccountController');
         Route::resource('/company', 'Modules\CompanyController');
 

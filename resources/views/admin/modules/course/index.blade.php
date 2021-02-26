@@ -24,16 +24,16 @@
             </ol>
         </nav>
 
-        <div class="container">
+        <div class="container">        
             <div class="row">
                 <div class="col-md-12">
                     @if (session('message'))
                     <div class="alert alert-success">
-                        {{ session('message') }}
+                        {!! session('message') !!}
                     </div>
                     @elseif (session('error_message'))
                     <div class="alert alert-danger">
-                        {{ session('error_message') }}
+                        {!! session('error_message') !!}
                     </div>
                     @endif
                 </div>
@@ -41,11 +41,14 @@
         </div>
 
 
+
         <div class="container pt-4">
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
-
-                    <table class="table esi-table">
+                    Category
+                </div>
+                <div class="card-body">                 
+                    <table class="esi-table table table-hover table-bordered table-sm table-striped">
                         <thead>
                             <tr>
                                 <th>Course</th>
@@ -71,7 +74,6 @@
                             @endforeach
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
@@ -92,7 +94,7 @@
                                     <td>Parent Category</td>
                                     <td>:</td>
                                     <td>
-                                        <select name="parentid">
+                                        <select name="parentid" class="form-control form-control-sm col-md-3">
                                             <option value="">-- Select --</option>
                                             @foreach($categories as $category)
                                             <option value="">{{ $category->name }}</option>
@@ -101,12 +103,11 @@
                                     </td>
                                 </tr>
 
-
                                 <tr valign="top">
                                     <td>Name</td>
                                     <td>:</td>
                                     <td>
-                                        <input required type="text" id="name*" name="name">
+                                        <input required type="text" id="name*" name="name" class="form-control form-control-sm col-md-4">
                                     </td>
                                 </tr>
 
@@ -114,7 +115,9 @@
                                     <td>Category Description</td>
                                     <td>:</td>
                                     <td>
-                                        <textarea id="body" name="body"></textarea>
+                                        <div class="col-md-8 p-0 m-0">
+                                            <textarea id="body" name="body"></textarea>
+                                        </div>
                                     </td>
                                 </tr>
 
@@ -124,7 +127,7 @@
                                     <td></td>
                                     <td></td>
                                     <td>
-                                        <input type="submit" value="Save" class="btnPink">
+                                        <input type="submit" value="Save" class="btn-pink">
                                     </td>
                                 </tr>
                             </tbody>
@@ -142,11 +145,20 @@
 </div>
 @endsection
 
-
 @section('scripts')
-<script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 <script>
-    CKEDITOR.replace('body');
-
+ CKEDITOR.replace('body', {
+	toolbarGroups: [
+		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+		{ name: 'forms', groups: [ 'forms' ] },		
+		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+		{ name: 'paragraph', groups: [ 'list', 'links', 'indent', 'blocks',  'styles', 'align', 'bidi', 'paragraph' ] },
+	],
+    removePlugins: 'easyimage, exportpdf, cloudservices',
+	removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Preview,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks'
+});
 </script>
 @endsection

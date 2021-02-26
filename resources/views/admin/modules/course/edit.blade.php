@@ -1,5 +1,4 @@
 @extends('layouts.adminsimple')
-
 @section('content')
 <div class="container bg-light px-0">
 
@@ -24,16 +23,16 @@
             </ol>
         </nav>
 
-        <div class="container">
+        <div class="container">        
             <div class="row">
                 <div class="col-md-12">
                     @if (session('message'))
                     <div class="alert alert-success">
-                        {{ session('message') }}
+                        {!! session('message') !!}
                     </div>
                     @elseif (session('error_message'))
                     <div class="alert alert-danger">
-                        {{ session('error_message') }}
+                        {!! session('error_message') !!}
                     </div>
                     @endif
                 </div>
@@ -46,17 +45,41 @@
                 <div class="card-header esi-card-header">
                     Category Form
                 </div>
+
                 <div class="card-body esi-card-body">
+                    <!--UPLOAD PHOTO - IMAGE SIZE REQUIREMENTS 100x100 -->
+                    <div class="col-md-4">
+                    
+                        <div class="category_image_container">
+                            @if ($courseCategoryImage == null)
+                                <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded">
+                            @else 
+                                <img src="{{ Storage::url("$courseCategoryImage->path") }}" class="img-fluid border" alt="profile photo">
+                            @endif
+                        </div>
+
+
+                        <form action="{{ route("admin.course.uploadCourseImage", ['course_category_id' => $course]) }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <table cellspacing="0" cellpadding="0" class="table table-borderless mt-4">
+                                <tr valign="top">
+                                    <td class="p-0 m-0">
+                                        <input type="file" id="file" name="file" multiple="multiple" accept="image/*" />
+                                    </td>
+                                    <td class="p-0 m-0">
+                                        <input type="submit" value="upload">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+
 
                     <form action="{{ route("admin.course.update", ['course' => $course]) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PATCH')
-
-                    
-                        @csrf
                         <table cellspacing="9" cellpadding="0" class="table table-borderless">
                             <tbody>
-
                                 <tr valign="top">
                                     <td>Parent Category</td>
                                     <td>:</td>
@@ -93,7 +116,7 @@
                                     <td></td>
                                     <td></td>
                                     <td>
-                                        <input type="submit" value="Save" class="btnPink">
+                                        <input type="submit" value="Save" class="btn-pink">
                                     </td>
                                 </tr>
                             </tbody>
@@ -107,15 +130,22 @@
 
     </div>
 </div>
-
-</div>
 @endsection
 
-
 @section('scripts')
-<script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 <script>
-    CKEDITOR.replace('body');
-
+ CKEDITOR.replace('body', {
+	toolbarGroups: [
+		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+		{ name: 'forms', groups: [ 'forms' ] },		
+		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+		{ name: 'paragraph', groups: [ 'list', 'links', 'indent', 'blocks',  'styles', 'align', 'bidi', 'paragraph' ] },
+	],
+    removePlugins: 'easyimage, exportpdf, cloudservices',
+	removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Preview,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks'
+});
 </script>
 @endsection

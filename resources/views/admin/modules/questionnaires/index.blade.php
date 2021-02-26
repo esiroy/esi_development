@@ -70,7 +70,7 @@
                                 <table class="table table-bordered table-sm table-striped">
                                     <thead>
                                         <tr>
-                                            <!--<th class="small text-center bg-light text-dark font-weight-bold">ID</th>-->
+                                            <th class="small text-center bg-light text-dark font-weight-bold">ID</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Start Time</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Member Name</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Tutor Name</th>
@@ -84,13 +84,11 @@
                                     <tbody>
                                         @foreach($questionnaires as $questionnaire)
                                         <tr>
-                                            <!--
-                                            <td id="{{ $questionnaire->id }}">
+                                           
+                                            <td id="{{ $questionnaire->id }}" class="small text-center bg-light text-dark font-weight-bold">
                                                 {{ $questionnaire->schedule_item_id }}
                                             </td>
-                                            -->
-
-                                            <!-- Lesson Date 
+                                           
                                             <td class="small text-center">
                                              
                                                 @if ( date("H", strtotime($questionnaire->lesson_time)) == "00")
@@ -105,21 +103,8 @@
                                                     {{ date("H:i", strtotime($questionnaire->lesson_time)) }}
                                                 @endif        
                                             </td>
-                                            -->
+                                           
 
-                                            <td class="small text-center">
-                                                @if ( date("H", strtotime($questionnaire->created_at)) == "00")
-                                                    {{ date("Y/m/d", strtotime($questionnaire->created_at ." -1 day" )) }}    
-                                                @else 
-                                                    {{ date("Y/m/d", strtotime($questionnaire->created_at )) }}    
-                                                @endif                                            
-                                                <!-- Time -->      
-                                                @if (date("H", strtotime($questionnaire->created_at)) == "00")
-                                                    {{ date("24:i", strtotime($questionnaire->created_at)) }}
-                                                @else 
-                                                    {{ date("H:i", strtotime($questionnaire->created_at)) }}
-                                                @endif                                        
-                                            </td>
                                           
                                             <td class="small text-center">
                                                 @php
