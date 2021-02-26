@@ -24,9 +24,7 @@ class QuestionnaireController extends Controller
     public function index(Request $request)
     {
 
-        //$items_per_page = Auth::user()->items_per_page;
-
-        $items_per_page = 1000;
+        $items_per_page = Auth::user()->items_per_page;        
 
         if (isset($request->date_from) && isset($request->date_to)) 
         {
