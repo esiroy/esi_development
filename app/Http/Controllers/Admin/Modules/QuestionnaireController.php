@@ -34,12 +34,14 @@ class QuestionnaireController extends Controller
 
             $questionnaires = Questionnaire::whereBetween('schedule_item.lesson_time', [$dateFrom, $dateTo])
                                 ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                                ->select('schedule_item.lesson_time', 'questionnaire.*')
                                 ->orderBy('schedule_item.lesson_time', 'DESC')->paginate($items_per_page);
 
 
         } else {            
             $questionnaires = Questionnaire::orderBy('questionnaire.id', 'ASC')
                             ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                            ->select('schedule_item.lesson_time', 'questionnaire.*')
                             ->paginate($items_per_page);
         }
         
