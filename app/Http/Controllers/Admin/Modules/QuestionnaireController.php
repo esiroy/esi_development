@@ -28,10 +28,11 @@ class QuestionnaireController extends Controller
 
         if (isset($request->date_from) && isset($request->date_to)) 
         {
-            $from = date($request->date_from);
-            $to = date($request->date_to);      
 
-            $questionnaires = Questionnaire::whereBetween('schedule_item.lesson_time', [$from, $to])
+            $dateFrom = date('Y-m-d', strtotime($request['date_from']));
+            $dateTo = date('Y-m-d', strtotime($request['date_to']));            
+
+            $questionnaires = Questionnaire::whereBetween('schedule_item.lesson_time', [$dateFrom, $dateTo])
                                 ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
                                 ->orderBy('schedule_item.lesson_time', 'DESC')->paginate($items_per_page);
 
