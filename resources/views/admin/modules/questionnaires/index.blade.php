@@ -106,7 +106,13 @@
                                                 {{ $member->user->lastname ?? '' }} {{ ", "}} {{ $member->user->firstname ?? '' }}
                                             </td>
 
-                                            <td class="small text-center">{{ $questionnaire->tutor_id  }}</td>
+                                            <td class="small text-center">
+                                                <!-- TUTOR NAME -->
+                                                @php
+                                                    $tutor = \App\Models\Tutor::where('user_id', $questionnaire->tutor_id)->first();
+                                                @endphp
+                                                {{ $tutor->user->firstname ?? "" }}                                                
+                                            </td>
 
                                             @php
                                                 $questionnaireItem1 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_1')->where('valid', true)->first();
