@@ -23,7 +23,7 @@
             </ol>
         </nav>
 
-        <div class="container">        
+        <div class="container">
             <div class="row">
                 <div class="col-md-12">
                     @if (session('message'))
@@ -42,19 +42,21 @@
 
         <div class="container pt-4">
             <div class="card esi-card">
+
                 <div class="card-header esi-card-header">
                     Category Form
                 </div>
 
                 <div class="card-body esi-card-body">
+
                     <!--UPLOAD PHOTO - IMAGE SIZE REQUIREMENTS 100x100 -->
                     <div class="col-md-4">
-                    
+
                         <div class="category_image_container">
                             @if ($courseCategoryImage == null)
-                                <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded">
-                            @else 
-                                <img src="{{ Storage::url("$courseCategoryImage->path") }}" class="img-fluid border" alt="profile photo">
+                            <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded">
+                            @else
+                            <img src="{{ Storage::url("$courseCategoryImage->path") }}" class="img-fluid border" alt="profile photo">
                             @endif
                         </div>
 
@@ -121,12 +123,55 @@
                                 </tr>
                             </tbody>
                         </table>
-                    </form>
+                    </form>             
 
+                    <div class="pt-4">
+                        <form method="post" action="{{ route("admin.course.uploadlessonmaterial", ['course' => $course]) }}" enctype="multipart/form-data" onsubmit="disableSubmit(this);">
+                            @csrf
+                            <input type="hidden" name="course_category_id" value="{{ $courseCategory->id  }}">
+                             <table cellspacing="9" cellpadding="0" class="table table-borderless">
+                                <tbody id="sortable" class="ui-sortable">
+                                    <tr>
+                                        <td>
+                                            <p>Drag the files to sort</p>
+                                            <!-- List all Lesson Materials -->
+                                            @foreach ($lessonMaterials as $lessonMaterial)
+                                                <div id="{{$lessonMaterial->filename}}">
+                                                    <a href="{{ Storage::url("$lessonMaterial->path") }}" download>
+                                                        <img src="{{ url('images/pdf.gif') }}"> {{$lessonMaterial->filename}} 
+                                                    </a>
+                                                    &nbsp;&nbsp;
+                                                    <a href="#" onclick="event.preventDefault();document.getElementById('delete-lessonMaterial-{{ $lessonMaterial->id }}').submit();">[delete]</a>
+                                                </div>
+                                            @endforeach
+                                        </td>
+                                    </tr>
+                                    <tr>                                     
+                                        <td>
+                                            <input type="file" name="upload[]"><a href="javascript:void(0)" onclick="addFileUpload(this);">Add another</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tr>                                  
+                                    <td><input type="submit" value="Upload" class="btn-pink"></td>
+                                </tr>
+                            </table>
+                        </form>
+                    </div>
+
+                    @foreach ($lessonMaterials as $lessonMaterial)
+                    <form id="delete-lessonMaterial-{{ $lessonMaterial->id }}" action="{{ route('admin.course.destroyLessonMaterial', ['id' => $lessonMaterial->id]) }}" method="POST" style="display: none;">
+                        @method("DELETE")
+                        @csrf
+                    </form>                    
+                    @endforeach
 
                 </div>
             </div>
-        </div>
+            <!--[end] card esi-card-->
+        </div><!-- [end] contaner-->
+
+
 
     </div>
 </div>
@@ -135,17 +180,41 @@
 @section('scripts')
 <script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 <script>
- CKEDITOR.replace('body', {
-	toolbarGroups: [
-		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-		{ name: 'forms', groups: [ 'forms' ] },		
-		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-		{ name: 'paragraph', groups: [ 'list', 'links', 'indent', 'blocks',  'styles', 'align', 'bidi', 'paragraph' ] },
-	],
-    removePlugins: 'easyimage, exportpdf, cloudservices',
-	removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Preview,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks'
-});
+    CKEDITOR.replace('body', {
+        toolbarGroups: [
+            { name: 'document', groups: ['mode', 'document', 'doctools'] },
+            { name: 'clipboard', groups: ['clipboard', 'undo']},
+            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
+            {name: 'forms', groups: ['forms']},
+            {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
+            {name: 'paragraph', groups: ['list', 'links', 'indent', 'blocks', 'styles', 'align', 'bidi', 'paragraph']},
+        ],
+        removePlugins: 'easyimage, exportpdf, cloudservices',
+        removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Preview,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks'
+    });
+
+</script>
+
+<script>
+    function addFileUpload(obj) {
+        var objTbody = jQuery(obj).parent().parent().parent();
+
+        var courseCategoryId = '{{ $courseCategory->id  }}';
+
+        /* Limiting the number of file upload
+        if(objTbody.children().length < 6) {
+        	objTbody.append("<tr><td></td><td><input type='hidden' name='courseItemId' value='"+courseItemId+"' /><input type='file' name='upload' /></td></tr>");
+        } else {
+        	alert("File upload exceeded. Maximum of 5 items.");
+        }*/
+
+        var inputFile = jQuery("input[type='file']");
+        if (inputFile.length < 20) {
+            objTbody.append("<tr><td colspan='3'><input type='file' name='upload[]' /></td></tr>");
+        } else {
+            alert("Maximum of 20 files per batch");
+        }
+    }
+
 </script>
 @endsection

@@ -249,11 +249,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/announcement', 'Modules\AnnouncementController');
 
         Route::get('/course/sort', 'Modules\CourseController@sort');
-        Route::resource('/course', 'Modules\CourseController');
 
+        Route::delete('/course/destroyLessonMaterial', 'Modules\CourseController@destroyLessonMaterial')->name('course.destroyLessonMaterial');
+
+        Route::resource('/course', 'Modules\CourseController');
         //upload course
         Route::post('/course/uploadCourseImage', 'Modules\CourseController@uploadCourseImage')->name('course.uploadCourseImage');
-        
+        Route::post('/course/uploadlessonmaterial', 'Modules\CourseController@uploadlessonmaterial')->name('course.uploadlessonmaterial');
+
 
         Route::resource('/accounts', 'Modules\AccountController');
         Route::resource('/company', 'Modules\CompanyController');

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
+
+use App\Models\LessonMaterial;
+use App\Models\UploadFile;
 use App\Models\CourseCategory;
 use App\Models\CourseCategoryImage;
 use Illuminate\Http\Request;
@@ -33,6 +36,45 @@ class CourseController extends Controller
     public function create()
     {
         //
+    }
+
+    public function uploadlessonmaterial(Request $request, UploadFile $uploadFile) 
+    {    
+        $errors = [];
+
+        $storagePath = 'public/uploads/lesson_materials/';
+ 
+        foreach ($request->file('upload') as $index => $file) 
+        {
+            $allowed = array('pdf');
+         
+            $ext = $file->getClientOriginalExtension();
+            $filename = $file->getClientOriginalName();
+
+            if (!in_array($ext, $allowed)) {
+                $errors[] = "<div>Cannot upload $filename invalid format.</div>";
+            } else {
+                $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+                $courseCategoryImage = [
+                    'valid' => 1,
+                    'course_category_id' => $request->course_category_id,
+                    'filename' => $file->getClientOriginalName(),
+                    'path' => $uploadFileName,
+                    'sequence_number' => $index
+                ];
+                LessonMaterial::create($courseCategoryImage);
+            }
+        }
+
+        if (count($errors) > 0) 
+        {
+            $error_message = "<strong>Error(s) to Required Fields</strong> " . implode($errors) ;
+            return back()->with('error_message', $error_message);
+
+        } else {
+
+            return back()->with('message', '<strong>Success!</strong> <div>Lesson materials has been uploaded successfully.</div>');
+        }
     }
 
     public function uploadCourseImage(Request $request)
@@ -67,10 +109,9 @@ class CourseController extends Controller
                 }
 
                 $courseImage = new CourseCategoryImage();
-
                 $course_images = $courseImage->where('course_category_id', $request->course_category_id)->get();
 
-                //delete the images that are old
+                //delete the images that are old or previous
                 foreach ($course_images as $course_image) {
                     $file = storage_path('app/public/course_category_images/' . $course_image->filename);
                     if (is_file($file)) {
@@ -78,7 +119,6 @@ class CourseController extends Controller
                     } else {
                         //echo "File does not exist";
                     }
-
                     $deleted = $course_image->delete();
                 }
 
@@ -142,15 +182,11 @@ class CourseController extends Controller
      */
     public function edit(CourseCategory $course)
     {
-
         $categories = CourseCategory::get();
         $courseCategory = CourseCategory::find($course->id);
-
         $courseCategoryImage = CourseCategoryImage::where('course_category_id', $course->id)->first();
-
-
-
-        return view('admin.modules.course.edit', compact('course', 'courseCategory', 'categories', 'courseCategoryImage'));
+        $lessonMaterials = LessonMaterial::where('course_category_id', $course->id)->get();
+        return view('admin.modules.course.edit', compact('course', 'courseCategory', 'categories', 'courseCategoryImage', 'lessonMaterials'));
     }
 
     /**
@@ -174,6 +210,34 @@ class CourseController extends Controller
 
         return redirect()->route('admin.course.index')->with('message', 'Course category has been updated successfully!');
     }
+    
+
+    public function destroyLessonMaterial(Request $request) 
+    {
+        $lessonMaterialObj = new LessonMaterial();        
+        $lessonMaterial = $lessonMaterialObj->find($request->id);
+
+        if ($lessonMaterial) {
+            $file = storage_path('app/public/uploads/lesson_materials/' . basename($lessonMaterial->path));
+
+            if (is_file($file)) {
+                unlink($file);
+                $deleted = $lessonMaterial->delete();
+    
+                return redirect()->route('admin.course.edit',  $lessonMaterial->course_category_id )->with('message', 'File has been deleted');
+    
+            } else {            
+                return redirect()->route('admin.course.edit',  $lessonMaterial->course_category_id )->with('error_message', 'File does not exist');
+            }   
+        } else {           
+
+            return redirect()->back()->with('error_message', 'File was not found on our records');
+
+        }
+
+     
+    }
+
 
     /**
      * Remove the specified resource from storage.
