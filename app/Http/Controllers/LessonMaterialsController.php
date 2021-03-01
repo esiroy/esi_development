@@ -35,11 +35,7 @@ class LessonMaterialsController extends Controller
         if (isset($member)) 
         {
             $latestReportCard = $reportcard->getLatest($member->user_id);
-
             $courseParents = $courseCategory->getParents();
-
-          
-
             return view('modules/lessonmaterials/index', compact('member', 'latestReportCard', 'courseParents'));
 
         } else {
@@ -76,13 +72,16 @@ class LessonMaterialsController extends Controller
                 return view('modules/lessonmaterials/materials', compact('member', 'latestReportCard', 'lessonMaterials', 'course', 'courseSiblings'));
 
             } else {
-
+                
+                //subcategories
+                
                 $course = $courseCategory->where('parent_course_category', $id)->first();
-
                 $courseParent = $courseCategory->getCourseInfo($course->parent_course_category);
 
+                $lessonMaterials = $lessonMaterial->getLessonMaterial($id);
 
-                return view('modules/lessonmaterials/index', compact('member',  'latestReportCard', 'courseParents', 'courseParent'));
+
+                return view('modules/lessonmaterials/index', compact('id', 'member',  'latestReportCard', 'lessonMaterials', 'course', 'courseParents', 'courseParent'));
             }
 
             

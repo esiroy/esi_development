@@ -78,7 +78,6 @@
                                             </div>
                                             -->
                                         @endif
-                                    
                                     </div>
 
                                     @if (count($courseSiblings) > 0) 

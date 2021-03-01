@@ -21,11 +21,8 @@ class CourseController extends Controller
     public function index()
     {
 
-        $categories = CourseCategory::orderBy('parent_course_category', 'ASC')->where('valid', 1)->paginate(Auth::user()->per_page);
-
         $optionCategories = CourseCategory::orderBy('parent_course_category', 'ASC')->where('valid', 1)->get();
-
-
+        $categories = CourseCategory::orderBy('parent_course_category', 'ASC')->where('valid', 1)->paginate(Auth::user()->items_per_page);
         return view('admin.modules.course.index', compact('categories', 'optionCategories'));
     }
 
@@ -266,9 +263,13 @@ class CourseController extends Controller
         $lessonMaterial = $lessonMaterialObj->find($request->id);
 
         if ($lessonMaterial) {
+
+            $lessonMaterial->delete();
+
             $file = storage_path('app/public/uploads/lesson_materials/' . basename($lessonMaterial->path));
 
-            if (is_file($file)) {
+            if (is_file($file)) 
+            {
                 unlink($file);
                 $deleted = $lessonMaterial->delete();
     

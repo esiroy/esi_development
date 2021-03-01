@@ -8,7 +8,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="My Tutor">
     <meta name="keywords" content="Tutor, Japan, Lesson">
-    <title>{{ config('app.name', 'My Tutor') }}</title>
+
+    
+
+    <title>{{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(1))->replace('-', ' ') ) ?? '' }}</title>
+
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>

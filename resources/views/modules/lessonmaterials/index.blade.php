@@ -46,24 +46,64 @@
                         <div class="card-body">
 
                             <div id="parent-category" class="pb-5">
-
                                 @if (isset( $courseParent->name ))
-                                <div style="border-bottom:1px dashed #d4d4d4">
-                                    <div class="text-left px-5 ml-4 py-4">                                        
-                                        <div class="font-weight-bold" style="margin-left:160px">{{ $courseParent->name ?? '' }}</div>
-                                        <p id="parent-category-description" class="text-secondary">{!! $courseParent->description ?? '' !!}</p>
+                                    <!--[START] PARENT IMAGE -->
+                                    <div style="border-bottom:1px dashed #d4d4d4">
+                                        <div class="text-left pl-2 py-4">
+                                            <table>
+                                            <tr>
+                                                <td class="pl-4 pr-4 align-top">
+                                                    @php 
+                                                        $courseCategoryImage = new App\Models\CourseCategoryImage();
+                                                        $courseParentImage = $courseCategoryImage::where('course_category_id', $id)->first();                                                        
+                                                    @endphp
+                                                    <a id="parent-category-name" href="{{ url('lessonmaterials/'.$id )}}" class="text-danger font-weight-bold"><img src="{{ Storage::url($courseParentImage->path) }}"></a>                                                
+                                                </td>
+                                                <td class="align-top">
+                                                    <div class="font-weight-bold">{{ $courseParent->name ?? '' }}</div>
+                                                    <p id="parent-category-description" class="text-secondary">{!! $courseParent->description ?? '' !!}</p>
+                                                </td>
+                                            </table>
+                                        </div>
+
+                                        <!-- LESSON MATERIALS FOR PARENT -->
+                                        <div id="course-materials" class="pb-2" style="border-bottom:1px dashed #d4d4d4">
+                                            @if (count($lessonMaterials) >= 1)
+                                                <strong>Download File</Strong>
+                                                @foreach($lessonMaterials as $material)
+                                                    <div id="{{ $material->id }}" class="my-2">   
+                                                        <a href="{{ url('download/'. basename($material->path) ) }}" download class="text-danger">
+                                                            <img src="{{ url('images/pdf.gif') }}" alt="{{ basename($material->filename) }}" title="{{ basename($material->filename) }}">
+                                                            {{ basename($material->filename) }}
+                                                        </a>
+                                                    </div>
+                                                @endforeach
+                                             @endif
+                                        </div>                                        
                                     </div>
-                                </div>
+                                    <!--[END] PARENT IMAGE -->
                                 @endif
+
+    
+
+                               
 
                                 @foreach($courseParents as $item)
                                 <div style="border-bottom:1px dashed #d4d4d4">
-                                    <div class="text-left px-5 ml-4 py-4">
+                                    <div class="text-left pl-2 py-4">
                                         <table>
                                             <tr>
-                                                <td class="w-25 align-top">
+                                                <td class="pl-4 pr-4 align-top">
+
+                                                    @php 
+                                                        $courseCategoryImage = new App\Models\CourseCategoryImage();
+                                                        $courseImage = $courseCategoryImage::where('course_category_id', $item->id)->first();                                                        
+                                                    @endphp
+
                                                     @if (isset($item->path))
-                                                    <img src="{{ Storage::url($item->path) }}">
+                                                        <img src="{{ Storage::url($item->path) }}">
+                                                    @elseif ($courseImage)
+                                                         <a id="parent-category-name" href="{{ url('lessonmaterials/'.$item->id )}}" class="text-danger font-weight-bold"><img src="{{ Storage::url($courseImage->path) }}"></a>
                                                     @endif
                                                 </td>
                                                 <td class="align-top">
