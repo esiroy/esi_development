@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agent;
+use App\Models\Tutor;
 
 use DB;
 
@@ -18,7 +19,7 @@ class TableTutorImporterController extends Controller
         for ($i = 1; $i <= $total_pages; $i++) {
             $url = url("importTutors/$i");
 
-            echo "<a href='$url'><small>Agent Page $i</small></a><br>";
+            echo "<a href='$url'><small>Tutor Page $i</small></a><br>";
         }
     }
 
@@ -69,8 +70,9 @@ class TableTutorImporterController extends Controller
                 'is_terminated' => $item->is_terminated,
             ];
 
-            if (Tutor::where('user_id', $item->user_id)->exists()) {
-                echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
+            if (Tutor::where('user_id', $item->user_id)->exists()) 
+            {
+                echo "<div style='color:red'>$ctr - EXISTING : " . $item->user_id . "</div>";
 
                 try
                 {
@@ -93,7 +95,7 @@ class TableTutorImporterController extends Controller
                 {
                     $tutor = Tutor::insert($data);
 
-                    $tutor->tutors()->sync([$tutor->user_id], false);  
+                    //$tutor->tutors()->sync([$tutor->user_id], false);  
 
                     DB::commit();
 

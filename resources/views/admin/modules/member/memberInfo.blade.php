@@ -342,7 +342,8 @@
                                         <td class="red">&nbsp;</td>
                                         <td>Uploaded File</td>
                                         <td>:</td>
-                                        <td>{{ $latestWritingReport->file_name ?? '-' }}
+                                        <td>
+                                            <a href="{{ Storage::url('uploads/report_files/'. basename($latestWritingReport->file_path) ) }}" download> {{ $latestWritingReport->file_name ?? '-' }} </a>
                                         </td>
                                     </tr>
 

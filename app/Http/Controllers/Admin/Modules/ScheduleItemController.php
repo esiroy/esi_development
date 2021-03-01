@@ -181,16 +181,23 @@ class ScheduleItemController extends Controller
             //actual number of days (integer)
             $lessonDays = round($datediff / (60 * 60 * 24));
 
+            
+
             //@todo: Tutor - get the lessons of the current user only since this is tutor  
             $tutor = Tutor::where('user_id', Auth::user()->id)->first();
 
-
-            //@todo: ajax load lessons and members (NOT CHECKED)
-            $scheduleItem =  new ScheduleItem();
+            if ($tutor) {
+                $scheduleItem =  new ScheduleItem();
+                
+                $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
             
-            $lessons = $scheduleItem->getTutorLessons($tutor->id, $dateFrom, $dateTo);
-          
-            return view('admin.modules.tutor.lessons', compact('dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));            
+                return view('admin.modules.tutor.lessons', compact('dateFrom', 'dateTo', 'lessonDays', 'timeSlots', 'lessons'));    
+
+            } else {
+                abort(404, 'Something went wrong');
+
+            }
+        
             
         } else {
             //echo "admin_lesson_scheduler_access or tutor_lesson_scheduler_access is disallowed..";

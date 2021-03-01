@@ -42,7 +42,8 @@ class ReportCardDateController extends Controller
         if ($files = $request->file('file')) {
 
             //file path
-            $storagePath = 'storage/uploads/';
+            $storagePath = 'public/uploads/report_files/';
+
             $newFilename = time()."_". preg_replace('/\s+/', '_', $files->getClientOriginalName());
             $newFilename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $newFilename);            
             // Remove any runs of periods (thanks falstro!)
