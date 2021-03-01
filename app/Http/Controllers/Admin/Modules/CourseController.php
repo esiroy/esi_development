@@ -74,11 +74,16 @@ class CourseController extends Controller
         $errors = [];
 
         $storagePath = 'public/uploads/lesson_materials/';
- 
+
+        if ($request->file('upload') == null) {
+            $error_message = "<strong>Error(s) to Required Fields</strong> " . implode($errors) ;
+            return back()->with('error_message', $error_message);
+        }
+
         foreach ($request->file('upload') as $index => $file) 
         {
             $allowed = array('pdf');
-         
+            
             $ext = $file->getClientOriginalExtension();
             $filename = $file->getClientOriginalName();
 
@@ -106,6 +111,9 @@ class CourseController extends Controller
 
             return back()->with('message', '<strong>Success!</strong> <div>Lesson materials has been uploaded successfully.</div>');
         }
+
+ 
+
     }
 
     public function uploadCourseImage(Request $request)
