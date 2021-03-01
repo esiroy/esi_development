@@ -53,6 +53,8 @@ class LessonMaterialsController extends Controller
         {
             $latestReportCard = $reportcard->getLatest($member->user_id);
 
+
+            
             $courseParents = $courseCategory->getCourses($id);
 
             if (count($courseParents) == 0) 
@@ -60,12 +62,7 @@ class LessonMaterialsController extends Controller
                 $course = $courseCategory->getCourseInfo($id);
 
                 //get course siblings ()
-                if (isset($course->parent_course_category)) {
-                    $courseSiblings = $courseCategory->getSiblings($id);
-                } else {
-                  
-                    $courseSiblings = array();
-                }         
+                $courseSiblings = $courseCategory->getSiblings($id);     
 
                 $lessonMaterials = $lessonMaterial->getLessonMaterial($id);
 

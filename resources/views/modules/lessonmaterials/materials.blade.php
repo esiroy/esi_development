@@ -46,7 +46,7 @@
                                     <div class="text-left px-3 ml-4 py-3">
                                         <table>
                                             <tr>
-                                                <td class="w-25 align-top">
+                                                <td class="pl-4 pr-4 align-top">
                                                     @if(isset($course->path))
                                                         <img src="{{ Storage::url($course->path) }}">
                                                     @endif
@@ -78,6 +78,7 @@
                                             </div>
                                             -->
                                         @endif
+                                    
                                     </div>
 
                                     @if (count($courseSiblings) > 0) 
@@ -86,7 +87,7 @@
                                             <div class="text-left px-5 ml-4 py-4">
                                                 <table>
                                                     <tr>
-                                                        <td style="width:150px">
+                                                        <td class="pl-4 pr-4 align-top">
                                                             @if (isset($item->path))
                                                             <img src="{{ Storage::url($item->path) }}">
                                                             @endif

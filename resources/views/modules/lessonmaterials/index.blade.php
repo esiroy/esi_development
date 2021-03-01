@@ -87,16 +87,13 @@
                                     <!--[END] PARENT IMAGE -->
                                 @endif
 
-    
-
-                               
-
                                 @foreach($courseParents as $item)
                                 <div style="border-bottom:1px dashed #d4d4d4">
                                     <div class="text-left pl-2 py-4">
                                         <table>
                                             <tr>
                                                 <td class="pl-4 pr-4 align-top">
+                                              
 
                                                     @php 
                                                         $courseCategoryImage = new App\Models\CourseCategoryImage();
