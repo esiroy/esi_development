@@ -177,7 +177,7 @@ class CourseController extends Controller
             }
 
         } else {
-            return back()->with('error_message', '<strong>Error(s) to Required Fields</strong> <div>You did not select any file.</div>');
+            return back()->with('error_message', '<strong>Error(s) Required Fields</strong> <div>You did not select any file.</div>');
 
         }
     }
