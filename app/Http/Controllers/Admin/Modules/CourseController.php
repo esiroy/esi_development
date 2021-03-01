@@ -76,7 +76,7 @@ class CourseController extends Controller
         $storagePath = 'public/uploads/lesson_materials/';
 
         if ($request->file('upload') == null) {
-            $error_message = "<strong>Error(s) to Required Fields</strong> " . implode($errors) ;
+            $error_message = "<strong>Error(s) Required Fields</strong> " . implode($errors) ;
             return back()->with('error_message', $error_message);
         }
 
@@ -104,7 +104,7 @@ class CourseController extends Controller
 
         if (count($errors) > 0) 
         {
-            $error_message = "<strong>Error(s) to Required Fields</strong> " . implode($errors) ;
+            $error_message = "<strong>Error(s) Required Fields</strong> " . implode($errors) ;
             return back()->with('error_message', $error_message);
 
         } else {
