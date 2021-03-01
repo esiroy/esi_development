@@ -29,15 +29,17 @@ class CourseCategory extends Model
           ->where('parent_course_category', $parentID)->orderBy('sequence_number', 'asc')->get();
   }
 
-
-  
-
   public function getCourseInfo($id) 
   {
     return CourseCategory::where('course_category.valid', 1)         
             ->join('course_category_image as course_category_image', 'course_category_image.course_category_id', '=', 'course_category.id', 'left outer')
             ->where('course_category.id', $id)->orderBy('sequence_number', 'asc')->first();
           
+
+  }
+
+  public function getParentNameHeirachy($subcategoryID) {
+
 
   }
 }

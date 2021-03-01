@@ -222,10 +222,10 @@ class CourseController extends Controller
         $courseCategory = CourseCategory::find($course->id);
 
         echo $courseCategory->parent_course_category;
-        
+
         $courseCategoryImage = CourseCategoryImage::where('course_category_id', $course->id)->first();
         $lessonMaterials = LessonMaterial::where('course_category_id', $course->id)->get();
-        return view('admin.modules.course.edit', compact('id', 'course', 'courseCategory', 'categories', 'courseCategoryImage', 'lessonMaterials'));
+        return view('admin.modules.course.edit', compact('course', 'courseCategory', 'categories', 'courseCategoryImage', 'lessonMaterials'));
     }
 
     /**

@@ -89,8 +89,6 @@
                                         <select name="parentid">
                                             <option value="">-- Select --</option>
                                             @foreach($categories as $category)
-
-
                                                 <option value="{{$category->id}}" @if($category->id == $courseCategory->parent_course_category) {{ "selected" }}@endif>{{ $category->name }}</option>
                                             @endforeach
                                         </select>

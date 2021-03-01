@@ -66,7 +66,9 @@
                             @foreach($categories as $category)
                             <tr>
                                 <td class="small">{{ $category->name }}</td>
-                                <td>{{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}</td>
+                                <td>
+                                    {{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}
+                                </td>
                                 <td>
                                     <a href="{{ route('admin.course.edit', ['course' => $category->id]) }}">Edit</a> |
                                    
@@ -89,8 +91,8 @@
                         {{ $categories->appends(request()->query())->links() }}
                     </ul>
                 </div>
-                
-                                    
+
+
                 </div>
 
   
