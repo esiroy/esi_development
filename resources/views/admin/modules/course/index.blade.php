@@ -65,9 +65,22 @@
                         <tbody>
                             @foreach($categories as $category)
                             <tr>
-                                <td class="small">{{ $category->name }}</td>
+                                <td class="small">
+                                   
+
+
+                                    @php 
+                                        //get the heirchy of parent eg: parent <-sub
+                                        $courseCategory = new \App\Models\CourseCategory();
+                                        $test = $courseCategory->getParentNameHeirachy($category->id)
+                                    @endphp
+
+
+                                    {!! $test !!}
+                                   
+                                </td>
                                 <td>
-                                    {{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}
+                                    {{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}               
                                 </td>
                                 <td>
                                     <a href="{{ route('admin.course.edit', ['course' => $category->id]) }}">Edit</a> |
