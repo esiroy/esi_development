@@ -33,12 +33,14 @@
 
                 <div class="col-md-9">
 
-                    <h1 class="callout">お知らせ</h1>
-
-                    <div class="blueBrokenLineBox text-center announcements px-4 py-4">                    
-                        {!! html_entity_decode($announcement->body) ?? '' !!}
-                    </div>
-
+                        @if (isset($announcement->body))
+                            <h1 class="callout">お知らせ</h1>                        
+                            <div class="blueBrokenLineBox text-center announcements px-4 py-4">                    
+                                {!! html_entity_decode($announcement->body) ?? '' !!}
+                            </div>
+                        @else 
+                          
+                        @endif
                     <div class="row">
                         <div class="col-md-12 mt-3">
 

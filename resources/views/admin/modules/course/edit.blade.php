@@ -133,26 +133,39 @@
                     </form>             
 
                     <div class="pt-4">
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p class="small">Drag the files to sort</p>
+                                </div>
+                            </div>
+                        </div>
+
                         <form method="post" action="{{ route("admin.course.uploadlessonmaterial", ['course' => $course]) }}" enctype="multipart/form-data" onsubmit="disableSubmit(this);">
                             @csrf
                             <input type="hidden" name="course_category_id" value="{{ $courseCategory->id  }}">
-                             <table cellspacing="9" cellpadding="0" class="table table-borderless">
+                             <table cellspacing="1" cellpadding="0" class="table table-borderless ml-4">
                                 <tbody id="sortable" class="ui-sortable">
+
+                                    <div id="sortMessage" class="alert alert-success" style="display:none"></div>
+
+                                    <!-- List all Lesson Materials -->
+                                    @foreach ($lessonMaterials as $lessonMaterial)
                                     <tr>
-                                        <td>
-                                            <p>Drag the files to sort</p>
-                                            <!-- List all Lesson Materials -->
-                                            @foreach ($lessonMaterials as $lessonMaterial)
-                                                <div id="{{$lessonMaterial->filename}}">
-                                                    <a href="{{ Storage::url("$lessonMaterial->path") }}" download>
-                                                        <img src="{{ url('images/pdf.gif') }}"> {{$lessonMaterial->filename}} 
-                                                    </a>
-                                                    &nbsp;&nbsp;
-                                                    <a href="#" onclick="event.preventDefault();document.getElementById('delete-lessonMaterial-{{ $lessonMaterial->id }}').submit();">[delete]</a>
-                                                </div>
-                                            @endforeach
+                                        <td class="m-0 p-2">
+                                            <div id="{{$lessonMaterial->filename}}">
+                                                <a href="{{ Storage::url("$lessonMaterial->path") }}" download>
+                                                    <img src="{{ url('images/pdf.gif') }}"> {{$lessonMaterial->filename}}
+                                                </a>
+                                                &nbsp;&nbsp;
+                                                <a href="#" onclick="event.preventDefault();document.getElementById('delete-lessonMaterial-{{ $lessonMaterial->id }}').submit();">[delete]</a>
+                                                <input type="hidden" name="material[]" value="{{ $lessonMaterial->id }}">
+
+                                            </div>
                                         </td>
                                     </tr>
+                                    @endforeach
                                     <tr>                                     
                                         <td>
                                             <input type="file" name="upload[]"><a href="javascript:void(0)" onclick="addFileUpload(this);">Add another</a>
@@ -185,6 +198,52 @@
 @endsection
 
 @section('scripts')
+@parent
+<script src="https://code.jquery.com/jquery-1.12.4.js" defer></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" defer></script>
+<script>
+
+    var api_token = "{{ Auth::user()->api_token }}";
+
+    window.addEventListener('load', function() {
+        jQuery( function() {
+            jQuery( "#sortable" ).sortable({
+                update: function() {
+
+                    var material = [];
+
+                    $('input[name="material[]"]').each( function(index, elem) {                        
+                        material.push( $(this).val() );
+                    });
+
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/sortLessonMaterials?api_token=' + api_token,
+                        data: {
+                            id: {{ $courseCategory->id }},
+                            material: material,
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(data) 
+                        {
+                            $('#sortMessage').html(data.message);
+                            $('#sortMessage').show().delay(3000).fadeOut();
+                        }
+                    });
+                                               
+
+                }
+            });
+            jQuery( "#sortable" ).disableSelection();
+        } );
+    });
+</script>
+
+
+
 <script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 <script>
     CKEDITOR.replace('body', {

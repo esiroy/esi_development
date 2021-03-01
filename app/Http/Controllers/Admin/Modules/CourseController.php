@@ -190,9 +190,6 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
-
- 
-
         $data = [
             'name' => $request->name,
             'parent_course_category' => $request->parentid,
@@ -229,11 +226,8 @@ class CourseController extends Controller
 
         $categories = CourseCategory::get();
         $courseCategory = CourseCategory::find($course->id);
-
-        echo $courseCategory->parent_course_category;
-
         $courseCategoryImage = CourseCategoryImage::where('course_category_id', $course->id)->first();
-        $lessonMaterials = LessonMaterial::where('course_category_id', $course->id)->get();
+        $lessonMaterials = LessonMaterial::where('course_category_id', $course->id)->orderBy('sort_order', 'ASC')->get();
         return view('admin.modules.course.edit', compact('course', 'courseCategory', 'categories', 'courseCategoryImage', 'lessonMaterials'));
     }
 
