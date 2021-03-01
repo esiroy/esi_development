@@ -66,18 +66,11 @@
                             @foreach($categories as $category)
                             <tr>
                                 <td class="small">
-                                   
-
-
                                     @php 
                                         //get the heirchy of parent eg: parent <-sub
                                         $courseCategory = new \App\Models\CourseCategory();
-                                        $test = $courseCategory->getParentNameHeirachy($category->id)
                                     @endphp
-
-
-                                    {!! $test !!}
-                                   
+                                    {!! $courseCategory->getParentNameHeirachy($category->id) !!}
                                 </td>
                                 <td>
                                     {{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}               
@@ -99,18 +92,12 @@
                         </tbody>
                     </table>
 
-              <div class="float-right mt-4">
-                    <ul class="pagination pagination-sm">
-                        {{ $categories->appends(request()->query())->links() }}
-                    </ul>
+                    <div class="float-right mt-4">
+                        <ul class="pagination pagination-sm">
+                            {{ $categories->appends(request()->query())->links() }}
+                        </ul>
+                    </div>
                 </div>
-
-
-                </div>
-
-  
-
-
             </div>
         </div>
 
@@ -132,8 +119,14 @@
                                     <td>
                                         <select name="parentid" class="form-control form-control-sm col-md-3">
                                             <option value="">-- Select --</option>
-                                            @foreach($categories as $category)
-                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @foreach($optionCategories as $category)
+                                                <option value="{{ $category->id }}">
+                                                    @php 
+                                                    //get the heirchy of parent eg: parent <-sub
+                                                    $courseCategoryOption = new \App\Models\CourseCategory();
+                                                    @endphp                                                   
+                                                    {!! $courseCategoryOption->getParentNameHeirachy($category->id) !!}
+                                                </option>                                                
                                             @endforeach
                                         </select>
                                     </td>
@@ -156,9 +149,6 @@
                                         </div>
                                     </td>
                                 </tr>
-
-
-
                                 <tr valign="top">
                                     <td></td>
                                     <td></td>

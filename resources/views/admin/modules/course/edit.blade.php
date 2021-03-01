@@ -86,10 +86,17 @@
                                     <td>Parent Category</td>
                                     <td>:</td>
                                     <td>
+                                             
                                         <select name="parentid">
                                             <option value="">-- Select --</option>
                                             @foreach($categories as $category)
-                                                <option value="{{$category->id}}" @if($category->id == $courseCategory->parent_course_category) {{ "selected" }}@endif>{{ $category->name }}</option>
+                                                <option value="{{$category->id}}" @if($category->id == $courseCategory->parent_course_category) {{ "selected" }}@endif>                                                  
+                                                    @php 
+                                                    //get the heirchy of parent eg: parent <-sub
+                                                    $courseCategoryOption = new \App\Models\CourseCategory();
+                                                    @endphp                                                   
+                                                    {!! $courseCategoryOption->getParentNameHeirachy($category->id) !!}
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>

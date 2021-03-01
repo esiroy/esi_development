@@ -21,11 +21,12 @@ class CourseController extends Controller
     public function index()
     {
 
-        $categories = CourseCategory::orderBy('parent_course_category', 'ASC')
-            ->where('valid', 1)
-            ->paginate(Auth::user()->per_page);
+        $categories = CourseCategory::orderBy('parent_course_category', 'ASC')->where('valid', 1)->paginate(Auth::user()->per_page);
 
-        return view('admin.modules.course.index', compact('categories'));
+        $optionCategories = CourseCategory::orderBy('parent_course_category', 'ASC')->where('valid', 1)->get();
+
+
+        return view('admin.modules.course.index', compact('categories', 'optionCategories'));
     }
 
     /**
@@ -238,13 +239,20 @@ class CourseController extends Controller
     public function update(Request $request, $id)
     {        
         $course = CourseCategory::find($id);
-        $data = [
-            'name' => $request->name,
-            'parent_course_category' => $request->parentid,
-            'description' => $request->body,
-            'valid' => true,
-        ];
-        $item = $course->update($data);
+
+        if ($id == $request->parentid) 
+        {
+            return redirect()->back()->with('error_message', '<strong>Error</strong> <div>Please select different category as your parent</div>');
+        } else {
+            $data = [
+                'name' => $request->name,
+                'parent_course_category' => $request->parentid,
+                'description' => $request->body,
+                'valid' => true,
+            ];
+            $item = $course->update($data);
+        }
+
 
         return redirect()->route('admin.course.index')->with('message', 'Course category has been updated successfully!');
     }
