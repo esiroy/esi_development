@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.adminsimple')
 @section('content')
 
 <div class="container bg-light px-0">
@@ -99,9 +99,8 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col-md-12 text-center">
-                                        <div id="image_demo">
-                                            test
-                                        </div>
+                                        <!--preview the uploaded image-->
+                                        <div id="image_demo"></div>
                                     </div>
                                     <div class="col-md-12 text-center">
                                         <button class="btn btn-success btn-sm crop_image">Crop & Upload Image</button>
@@ -298,8 +297,8 @@
                         <label for="introduction" class="col-md-2 pr-0 col-form-label ">{{ __('Introduction By Host') }}
                             <div class="float-right">:</div>
                         </label>
-                        <div class="col-md-3">
-                            <textarea name="introduction" class="form-control">{{ old('major', isset($tutor->introduction ) ? $tutor->introduction : '') }}</textarea>
+                        <div class="col-md-8">
+                            <textarea id="introduction" name="introduction" class="form-control">{{ old('major', isset($tutor->introduction ) ? $tutor->introduction : '') }}</textarea>
                         </div>
                     </div>
 
@@ -402,6 +401,7 @@
 
 @section('scripts')
 @parent
+<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 
 <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js' type='text/javascript'></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -412,6 +412,22 @@
 
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />
+
+<script>
+    CKEDITOR.replace('introduction', {
+        toolbarGroups: [
+            { name: 'document', groups: ['mode', 'document', 'doctools'] },
+            { name: 'clipboard', groups: ['clipboard', 'undo']},
+            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
+            {name: 'forms', groups: ['forms']},
+            {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
+            {name: 'paragraph', groups: ['list', 'links', 'indent', 'blocks', 'styles', 'align', 'bidi', 'paragraph']},
+        ],
+        removePlugins: 'easyimage, exportpdf, cloudservices',
+        removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Preview,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks'
+    });
+
+</script>
 
 <script>
     (function($) {

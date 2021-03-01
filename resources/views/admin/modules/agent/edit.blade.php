@@ -103,9 +103,8 @@
                                 <div class="modal-body">
                                     <div class="row">
                                         <div class="col-md-12 text-center">
-                                            <div id="image_demo">
-                                                test
-                                            </div>
+                                            <!--preview the uploaded image-->
+                                            <div id="image_demo"></div>
                                         </div>
                                         <div class="col-md-12 text-center">
                                             <button class="btn btn-success btn-sm crop_image">Crop & Upload Image</button>

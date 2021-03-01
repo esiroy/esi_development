@@ -248,10 +248,12 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/questionnaires', 'Modules\QuestionnaireController');
         Route::resource('/announcement', 'Modules\AnnouncementController');
 
-        Route::get('/course/sort', 'Modules\CourseController@sort');
+        Route::get('/course/sortcategory', 'Modules\CourseController@sortcategory')->name('course.sortcategory');
+        Route::get('/course/sortcategory/{id}', 'Modules\CourseController@sortcategory')->name('course.sortsubcategory');
+
+        Route::post('/course/savesortedcategory', 'Modules\CourseController@savesortedcategory')->name('course.savesortedcategory');
 
         Route::delete('/course/destroyLessonMaterial', 'Modules\CourseController@destroyLessonMaterial')->name('course.destroyLessonMaterial');
-
         Route::resource('/course', 'Modules\CourseController');
         //upload course
         Route::post('/course/uploadCourseImage', 'Modules\CourseController@uploadCourseImage')->name('course.uploadCourseImage');

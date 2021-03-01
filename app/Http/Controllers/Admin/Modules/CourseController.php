@@ -9,7 +9,7 @@ use App\Models\UploadFile;
 use App\Models\CourseCategory;
 use App\Models\CourseCategoryImage;
 use Illuminate\Http\Request;
-use Storage;
+use Storage, Auth;
 
 class CourseController extends Controller
 {
@@ -23,7 +23,7 @@ class CourseController extends Controller
 
         $categories = CourseCategory::orderBy('parent_course_category', 'ASC')
             ->where('valid', 1)
-            ->paginate(50);
+            ->paginate(Auth::user()->per_page);
 
         return view('admin.modules.course.index', compact('categories'));
     }
@@ -37,6 +37,36 @@ class CourseController extends Controller
     {
         //
     }
+
+    public function sortcategory($id = null) 
+    {
+        if (isset($id)) {
+            $categories = CourseCategory::where('parent_course_category', $id)->orderBy('sequence_number', 'ASC')->where('valid', 1)->get();
+        } else {
+            $categories = CourseCategory::where('parent_course_category', null)->orderBy('sequence_number', 'ASC')->where('valid', 1)->get();
+        }
+        return view('admin.modules.course.sortcategory', compact('categories'));
+    }
+    
+    public function savesortedcategory(Request $request, $id = null) 
+    {   
+        $sequence = 1;
+        $courseCategoryObj = new CourseCategory();
+
+        foreach($request->courseids as $course) 
+        {
+            $data = [
+                'sequence_number' => $sequence
+            ];
+            $courseCategory = $courseCategoryObj->find($course);
+            $courseCategory->update($data);        
+            $sequence = $sequence + 1;
+        }
+
+        return back()->with('message', '<strong>Success!</strong> <div>Successfully updated.</div>');
+
+    }
+
 
     public function uploadlessonmaterial(Request $request, UploadFile $uploadFile) 
     {    
@@ -151,6 +181,9 @@ class CourseController extends Controller
      */
     public function store(Request $request)
     {
+
+ 
+
         $data = [
             'name' => $request->name,
             'parent_course_category' => $request->parentid,
@@ -182,11 +215,17 @@ class CourseController extends Controller
      */
     public function edit(CourseCategory $course)
     {
+
+        //$categories = CourseCategory::where('parent_course_category', '!=', $course->id)->get();
+
         $categories = CourseCategory::get();
         $courseCategory = CourseCategory::find($course->id);
+
+        echo $courseCategory->parent_course_category;
+        
         $courseCategoryImage = CourseCategoryImage::where('course_category_id', $course->id)->first();
         $lessonMaterials = LessonMaterial::where('course_category_id', $course->id)->get();
-        return view('admin.modules.course.edit', compact('course', 'courseCategory', 'categories', 'courseCategoryImage', 'lessonMaterials'));
+        return view('admin.modules.course.edit', compact('id', 'course', 'courseCategory', 'categories', 'courseCategoryImage', 'lessonMaterials'));
     }
 
     /**
@@ -197,9 +236,8 @@ class CourseController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
+    {        
         $course = CourseCategory::find($id);
-
         $data = [
             'name' => $request->name,
             'parent_course_category' => $request->parentid,

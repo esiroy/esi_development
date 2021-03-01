@@ -47,7 +47,13 @@
                 <div class="card-header esi-card-header">
                     Category
                 </div>
-                <div class="card-body">                 
+                <div class="card-body">
+
+                    <div class="mb-3 float-right">
+                        <a href="{{ route('admin.course.sortcategory') }}">Sort parent category</a>
+                    </div>
+
+
                     <table class="esi-table table table-hover table-bordered table-sm table-striped">
                         <thead>
                             <tr>
@@ -63,6 +69,9 @@
                                 <td>{{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}</td>
                                 <td>
                                     <a href="{{ route('admin.course.edit', ['course' => $category->id]) }}">Edit</a> |
+                                   
+                                    <a href="{{ route('admin.course.sortsubcategory', ['id' => $category->id]) }}">Sort</a> |
+
                                     <a href="{{ route('admin.course.destroy', ['course' => $category->id]) }}" onclick="event.preventDefault();document.getElementById('delete-form-{{ $category->id }}').submit();">Delete
                                     </a>
                                     <form id="delete-form-{{ $category->id }}" action="{{ route('admin.course.destroy', ['course' => $category->id]) }}" method="POST" style="display: none;">
@@ -74,7 +83,19 @@
                             @endforeach
                         </tbody>
                     </table>
+
+              <div class="float-right mt-4">
+                    <ul class="pagination pagination-sm">
+                        {{ $categories->appends(request()->query())->links() }}
+                    </ul>
                 </div>
+                
+                                    
+                </div>
+
+  
+
+
             </div>
         </div>
 
@@ -97,7 +118,7 @@
                                         <select name="parentid" class="form-control form-control-sm col-md-3">
                                             <option value="">-- Select --</option>
                                             @foreach($categories as $category)
-                                            <option value="">{{ $category->name }}</option>
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -133,6 +154,7 @@
                             </tbody>
                         </table>
                     </form>
+
 
 
                 </div>
