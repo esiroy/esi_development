@@ -57,7 +57,10 @@
                                                         $courseCategoryImage = new App\Models\CourseCategoryImage();
                                                         $courseParentImage = $courseCategoryImage::where('course_category_id', $id)->first();                                                        
                                                     @endphp
+
+                                                    @if ($courseParentImage)
                                                     <a id="parent-category-name" href="{{ url('lessonmaterials/'.$id )}}" class="text-danger font-weight-bold"><img src="{{ Storage::url($courseParentImage->path) }}"></a>                                                
+                                                    @endif
                                                 </td>
                                                 <td class="align-top">
                                                     <div class="font-weight-bold">{{ $courseParent->name ?? '' }}</div>
