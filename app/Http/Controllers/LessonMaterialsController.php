@@ -53,31 +53,32 @@ class LessonMaterialsController extends Controller
         {
             $latestReportCard = $reportcard->getLatest($member->user_id);
 
-
-            
             $courseParents = $courseCategory->getCourses($id);
 
             if (count($courseParents) == 0) 
             {
                 $course = $courseCategory->getCourseInfo($id);
 
-                //get course siblings ()
-                $courseSiblings = $courseCategory->getSiblings($id);     
+                if ($course) {
+                    //get course siblings ()
+                    $courseSiblings = $courseCategory->getSiblings($id);     
+                    $lessonMaterials = $lessonMaterial->getLessonMaterial($id);
+                    return view('modules/lessonmaterials/materials', compact('member', 'latestReportCard', 'lessonMaterials', 'course', 'courseSiblings'));
+                } else {
 
-                $lessonMaterials = $lessonMaterial->getLessonMaterial($id);
+                    //course not found
 
-                return view('modules/lessonmaterials/materials', compact('member', 'latestReportCard', 'lessonMaterials', 'course', 'courseSiblings'));
+                    abort(404, 'Course not found');
+
+                }
+
 
             } else {
                 
-                //subcategories
-                
+                //subcategories                
                 $course = $courseCategory->where('parent_course_category', $id)->first();
                 $courseParent = $courseCategory->getCourseInfo($course->parent_course_category);
-
                 $lessonMaterials = $lessonMaterial->getLessonMaterial($id);
-
-
                 return view('modules/lessonmaterials/index', compact('id', 'member',  'latestReportCard', 'lessonMaterials', 'course', 'courseParents', 'courseParent'));
             }
 
