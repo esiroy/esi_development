@@ -84,7 +84,7 @@
                                     <tr>
                                         <td>Uploaded File</td>
                                         <td></td>
-                                        <td><a href="{{ url($userreportcard->file_path) }}" download>DOWNLOAD</a></td>
+                                        <td><a href="{{ Storage::url("uploads/report_files/". basename($userreportcard->file_path)) }}" download>DOWNLOAD</a></td>
                                     </tr>
 
                                 </tbody>

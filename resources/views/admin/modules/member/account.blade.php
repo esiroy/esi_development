@@ -168,6 +168,7 @@
                                     @php 
                                         $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
                                     @endphp
+
                                     {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
                                 </td>
 
@@ -175,11 +176,12 @@
                                 <td>
                                     <!-- points -->
                                     @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON")
-                                        {{ "-" }}
+                                        {{ "-" }} {{ $transaction->amount }}
+                                    @elseif ($transaction->transaction_type ==  "MANUAL_ADD" || $transaction->transaction_type == "CANCEL_LESSON" || $transaction->transaction_type == "DISTRIBUTE" || $transaction->transaction_type == "FREE_CREDITS")
+                                        {{ "+" }} {{ $transaction->amount }}
                                     @else 
-                                        {{ "+" }}
+                                        {{ " " }}
                                     @endif
-                                    {{ $transaction->amount }}
                                 </td>
 
 

@@ -112,6 +112,7 @@ class ReportCardController extends Controller
 
     public function store(Request $request) 
     {
+
         $scheduleItem = ScheduleItem::find($request->scheduleitemid);
 
         $reportCard = ReportCard::where('schedule_item_id', $scheduleItem['id'])->first();

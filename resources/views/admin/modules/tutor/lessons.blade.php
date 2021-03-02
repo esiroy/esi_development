@@ -10,6 +10,16 @@
         </nav>
 
 
+        @if (session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
+            </div>
+        @elseif (session('error_message'))
+            <div class="alert alert-danger">
+                {{ session('error_message') }}
+            </div>
+        @endif
+            
         <div class="container">
             <!--[start card] -->
             <div class="card esi-card">
@@ -68,33 +78,44 @@
                     </div>
 
                     <div class="card-body scrollable-x p-0">
-                        <table class="table table-bordered table-schedules">
-                            <tr>
-                                <td class="schedTime">
-
-                                </td>
-                                @for($ctr=0; $ctr <= $lessonDays; $ctr++)                                 
-                                    <td style="background-color:#f3e77f; border: 1px solid #d0e8f7;border-bottom: 3px solid #72add2; padding: 0px; border-right: 1px solid #ffffff;vertical-align: top;">
-
-                                        <div class="pt-1 pb-2" style="width:100%; background-color:#f3e77f">
-                                            <div class="float-left text-small">{{ date('d', strtotime($dateFrom ." + $ctr day"))}}</div>
-                                            <div class="text-center">{{ date('l', strtotime($dateFrom ." + $ctr day"))}}</div>
+                        <table class="table table-tutor-schedules">
+                            <thead>
+                                <tr>
+                                    <td class="scheduleTimeList">
+                                        <div class="dateContainer">
+                                            &nbsp;
                                         </div>
-
-                                        <div class="pt-1 pb-2" style="background-color:#d0e8f7">Member</div>
+                                        <div style="background-color:#d0e8f7">&nbsp;</div>
                                     </td>
-                                @endfor
-                            </tr>
+                                    @for($ctr=0; $ctr <= $lessonDays; $ctr++) <td class="schedules">
+                                        <div class="dateContainer">
+                                            <div class="row p-0 m-0">
+                                                <div class="day col-md-4">
+                                                    <div class="text-small text-center">
+                                                        <strong>{{ date('d', strtotime($dateFrom ." + $ctr day"))}}</strong>
+                                                    </div>
+                                                </div>
+                                                <div class="text-left col-md-8">{{ date('l', strtotime($dateFrom ." + $ctr day"))}}</div>
+                                            </div>
+                                        </div>
+                                        <div class="text-center" style="background-color:#d0e8f7">Member</div>
+                                        </td>
+                                        @endfor
+                                </tr>
+                            </thead>
 
                             @foreach($timeSlots as $timeSlot)
                             <tr>
-                                <td class="" style="padding:3px 0px 3px">
-                                    <div style="width:125px">
-                                        <div class="class-schedule-container">
+                                <td class="scheduleTimeList">
+
+                                    <div class="class-schedule-container">
+
+                                        <div class="time">
                                             <span class="flag-ph"></span>
                                             <span class="class-schedule class-schedule-start">{{ $timeSlot['startTime'] }}</span>
                                         </div>
-                                        <div class="class-schedule-container">
+
+                                        <div>
                                             <span class="flag-jp"></span>
                                             <span class="class-schedule class-schedule-end">
                                                 @php
@@ -108,9 +129,10 @@
                                             </span>
                                         </div>
                                     </div>
+
                                 </td>
 
-                                @for($ctr=0; $ctr <= $lessonDays; $ctr++) <td class>
+                                @for($ctr=0; $ctr <= $lessonDays; $ctr++) <td class="tutorSchedules">
 
                                     @php
                                     if ($timeSlot['startTime'] == "23:00" || $timeSlot['startTime'] == "23:30") {
@@ -153,26 +175,26 @@
                                                 </div>
                                                 @endif
 
-                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')                                                                                                                                                                
-                                                    
+                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')
+
                                                 @endif
                                             </div>
 
                                             @if (isset($lessons[$dateView][$timeSlot['startTime']]['memo']))
 
-                                                @if ($lessons[$dateView][$timeSlot['startTime']]['memo'] != '')
+                                            @if ($lessons[$dateView][$timeSlot['startTime']]['memo'] != '')
 
-                                                <div id="memoContainer" class="btn-container2 pt-2">
-                                                    <!-- open memo -->
-                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                        <div id="memoContent" style="display:none">
-                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
-                                                        </div>
-                                                        <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
-                                                    </a>
-                                                </div>
+                                            <div id="memoContainer" class="btn-container2 pt-2">
+                                                <!-- open memo -->
+                                                <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                    <div id="memoContent" style="display:none">
+                                                        {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                    </div>
+                                                    <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
+                                                </a>
+                                            </div>
 
-                                                @endif
+                                            @endif
                                             @endif
 
                                         </div>
@@ -191,9 +213,86 @@
                 </div>
             </div>
         </div>
+
     </div>
     @include('admin.modules.tutor.includes.memo')
 </div>
+@endsection
+
+@section('styles')
+@parent
+
+<style>
+.table-tutor-schedules {
+    background: #ffffff;
+    border: 1px solid #0076be;
+}
+
+.table-tutor-schedules thead td.scheduleTimeList {
+    border-bottom: 3px solid #72add2;
+}
+
+.table-tutor-schedules .tutorSchedules {
+    border-left: 1px solid #7dbae0;
+}
+
+.table-tutor-schedules .dateContainer {
+    width: 100%; 
+    background-color: #f0ebc1;
+}
+
+.table-tutor-schedules .dateContainer .day {
+    background-color: #f0ebc1;
+    background-color: #f3e77f;
+}
+
+.table-tutor-schedules tbody td {
+    padding: 0px;    
+    padding-top: 8px;
+    padding-left: 1px;
+    padding-right: 4px;
+}
+
+.table-tutor-schedules td.scheduleTimeList {
+    min-width: 75px;
+    width: 75px;
+    padding: 0px;
+}
+
+.table-tutor-schedules td.scheduleTimeList .class-schedule-container {
+    padding: 10px 2px 0px;
+   
+}
+
+.table-tutor-schedules td.scheduleTimeList .class-schedule-container .class-schedule-start,
+.table-tutor-schedules td.scheduleTimeList .class-schedule-container .class-schedule-end
+ {  
+    font-size:11px;
+    font-weight:bold;
+    line-height: 1em;
+}
+
+.table-tutor-schedules td.schedules {
+    min-width: 142px;
+    padding: 0px;
+    background-color:#f3e77f; 
+    border: 1px solid #d0e8f7;
+    border-bottom: 3px solid #72add2; 
+    border-right: 1px solid #ffffff;
+    vertical-align: top;    
+}
+
+.table-tutor-schedules .client 
+{
+    width: 142px;
+}
+
+.table-tutor-schedules .client a{
+    font-size: 10px;
+}
+
+
+</style>
 @endsection
 
 @section('scripts')

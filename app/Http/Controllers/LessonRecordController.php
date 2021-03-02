@@ -32,6 +32,7 @@ class LessonRecordController extends Controller
     //lessonRecords landing page
     public function index(Request $request) 
     {
+     
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
 
@@ -51,15 +52,21 @@ class LessonRecordController extends Controller
             $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');    
             $latestReportCard = ReportCard::where('member_id', $member->user_id)->OrderBy('created_at', 'DESC')->first();
 
-            if ($request->display == 'none') {
-
+            if ($request->display == 'none') 
+            {
                 $reportcards = Questionnaire::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
-                return view('modules.questionnaire.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
+
+                //@todo: fetch all schedules that needed for the member to give a answer for the question
+                $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)->orderBy('lesson_time', 'DESC')->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');                
+                return view('modules.questionnaire.index', compact('member', 'data', 'scheduleItems', 'reportcards', 'datereportcards', 'latestReportCard'));
 
             } else {
 
                 $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
-                return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'datereportcards', 'latestReportCard'));
+
+                $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)->orderBy('lesson_time', 'DESC')->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');                
+
+                return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'scheduleItems', 'datereportcards', 'latestReportCard'));
             }
         } else {
             abort(404);
@@ -83,37 +90,32 @@ class LessonRecordController extends Controller
 
 
     public function reportcard($reportcardid) 
-    {
-        
-
-        $user = Auth::user();
-        
+    {       
+        $user = Auth::user();        
         $member = Member::where('user_id', $user->id)->first();
 
         if (isset($member)) 
         {
             $memberData = Member::find($member->id);
             $skypeID    = $memberData->communication_app_username; 
-
             $tutorData = Tutor::find($member->main_tutor_id);
-
             $lecturer   = (isset($tutorData->name_en))? $tutorData->name_en : '';
-
             $data = [
                 'lecturer'  => $lecturer,
                 'skypeID'   => $skypeID,            
-            ];  
-            
+            ];
         }
 
 
         $reportcard = ReportCard::where('id', $reportcardid)->first();
 
-        $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
+        if ($reportcard) {
+            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
 
-
-        return view('modules.lessonrecord.reportcard', compact('reportcard', 'member', 'data', 'latestReportCard'));
-
+            return view('modules.lessonrecord.reportcard', compact('reportcard', 'member', 'data', 'latestReportCard'));
+        } else {
+            abort(404);
+        }
     }
 
  
@@ -134,14 +136,17 @@ class LessonRecordController extends Controller
             $data = [
                 'lecturer'  => $lecturer,
                 'skypeID'   => $skypeID,            
-            ];  
-            
+            ];              
         }
-
 
         $userreportcard = ReportCardDate::where('id', $reportcardid)->first();
 
-        return view('modules.lessonrecord.userreportcarddate', compact('userreportcard', 'member', 'data'));
+        if ($userreportcard) {
+            return view('modules.lessonrecord.userreportcarddate', compact('userreportcard', 'member', 'data'));
+        } else {
+            abort(404);
+        }
+        
     }
 
 

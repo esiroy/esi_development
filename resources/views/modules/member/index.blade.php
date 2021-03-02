@@ -45,18 +45,15 @@
                         <div class="col-md-12 mt-3">
 
                             <a href="{{ url('lessonrecord') }}">
-                                <!--<button type="button" class="btn btn-warning text-dark rounded" style="background-color:#fcc120">受講履歴/添削履歴</button>-->
-                                <img src="{{ url('images/btnYellow3.png') }}">
+                                <img src="{{ url('images/btnYellow3.png') }}" alt="受講履歴/添削履歴" title="受講履歴/添削履歴">
                             </a>
 
-                            <a href="{{ url('memberschedule') }}">
-                                <!--<button type="button" class="btn btn-primary  text-dark ">レッスンの予約</button>-->
-                                <img src="{{ url('images/btnBlue.gif') }}">
+                            <a href="{{ url('memberschedule') }}">                                
+                                <img src="{{ url('images/btnBlue.gif') }}" alt="レッスンの予約" title="レッスンの予約">
                             </a>
 
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
-                                <!--<button type="button" class="btn btn-success  text-dark ">添削くん</button>-->
-                                <img src="{{ url('images/newBtn3.png') }}">
+                                <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
                             </a>                      
                         </div>
                     </div>
@@ -65,7 +62,7 @@
                         <p>今日のレッスンはいかがでしたか？ 今後の円滑な運営と質の高いレッスン のご提供のため、何かお気づきの点がありましたら アンケートにお答え下さい！</p>
                         <p class="text-right">
                             <a href="{{ url('lessonrecord?display=none') }}">
-                                <img src="images/btnRed2.gif" alt="Alternate Text Here" title="Title Text Here">
+                                <img src="images/btnRed2.gif" alt="受講履歴　評価e" title="受講履歴　評価">
                             </a>
                         </p>
                     </div>
@@ -90,8 +87,6 @@
                                     <tr class="border-bottom">
                                         <td class="text-center font-weight-normal">{{ $schedule->day ?? '' }}</td>
                                         <td class="text-center font-weight-normal">
-                                            
-
                                             {{ date('H:i', strtotime($schedule->desired_time)) }} 
                                         </td>
                                     </tr>
@@ -100,7 +95,8 @@
                         </div>
 
 
-                    <!--
+                    @php                     
+                    /*
                     <div id="member-lesson-schedules" class="card esi-card mt-3">                        
                         <div class="card-header esi-card-header text-center">                            
                                 レッスンの予約
@@ -116,7 +112,8 @@
                             </div>
                         </div>
                     </div>
-                    -->
+                    */
+                    @endphp
 
                     <!--[start] lesson lists-->
                     <div class="card mt-4" style="">
@@ -159,12 +156,11 @@
 
                                         </td>
                                         <td style="text-align: center;">
-                                            <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">
+                                            <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">-->
+
+                                            <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-id="{{ $reserve->id }}">
                                                 <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
                                             </a>
-
-                                            <!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-id="{{ $reserve->id }}">Open modal for @mdo</button>-->
-
                                         </td>
                                         <td style="text-align: center;">
 
@@ -176,7 +172,7 @@
                                             
                                             @if ($valid_time <= $lessonTime) 
                                                 <!--valid time here since it is greater that 3 hours) -->
-                                                <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="欠席する" title="欠席する"></a>
+                                                <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
                                             @else 
                                                 <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
                                             @endif
@@ -198,11 +194,9 @@
     </div> <!--[end] esi-box -->
 </div>
 
-
-
  @include('modules.member.popup.content')
  @include('modules.member.popup.memo')
-
+ @include('modules.member.popup.loading')
 
 @endsection
 
@@ -210,7 +204,30 @@
 @section('scripts')
 @parent
 <script type="text/javascript">
+
+   
     var api_token = "{{ Auth::user()->api_token }}";
+
+    window.addEventListener('load', function() 
+    {        
+        //$('#loadingModal').modal('show'); //test
+
+        jQuery.ajaxSetup({
+            beforeSend: function() 
+            {
+                //hide tutor memo modal first
+                $('#tutorMemoModal').modal('hide')      
+
+                $('#loadingModal').modal('show');
+            },
+            complete: function(){
+                $('#loadingModal').modal('hide');
+            },
+            success: function() {
+                $('#loadingModal').modal('hide');
+            }
+        });
+    });
 
     function cancelSchedule(id)
     {
@@ -223,9 +240,9 @@
                     id: id
                 }, headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }, success: function(data) {
-                
-                    $('.row_reserve_' + id ).hide();                
+                }, success: function(data) {                
+                    $('.row_reserve_' + id ).hide();
+                    $('#loadingModal').modal('hide');          
                 }
             });
         }
@@ -242,15 +259,22 @@
                     id: id
                 }, headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }, success: function(data) {
-                
-                    $('.row_reserve_' + id ).hide();                
+                }, success: function(data) {                
+                    $('.row_reserve_' + id ).hide();
+                    $('#loadingModal').modal('hide');          
                 }
             });
         }        
     }
 
-    function getMemo(scheduleID) {
+    function openMemo(id)
+    {   
+        id = id;
+        getMemo(id);
+    }
+
+    function getMemo(scheduleID) 
+    {
         $.ajax({
             type: 'POST', 
             url: 'api/getMemo?api_token=' + api_token,
@@ -263,8 +287,11 @@
                 alert("Error Found getting memo: " + error);
             },            
             success: function(data) {            
-                console.log("memo received....")            
-                $('#message').val(data.memo)
+                console.log("memo received....");
+                $('#message').val(data.memo);
+                $('#scheduleID').val(scheduleID);
+                $('#loadingModal').modal('hide');
+                $('#tutorMemoModal').modal('show')      
             },
         });
     }
@@ -283,29 +310,27 @@
                 alert("Error Found getting memo: " + error);    
             },
             success: function(data) {
-            
-                console.log("memo sent....");
-
                 $('#tutorMemoModal').modal('hide')      
             }
         });
     }
 
     function closePopUp(url) {
-        $('#writingServiceModal').modal('hide');    
-
+        $('#writingServiceModal').modal('hide');
         window.open(url,'popUpWindow','height=600,width=720,left=50,top=50,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes')
-
         return false;
 
     }
 
+
+
+
     window.addEventListener('load', function () 
     {
-        var button;
-        var id;
+        var button;        
         var modal;
 
+        /*
         $('#tutorMemoModal').on('show.bs.modal', function (event) 
         {
             button = $(event.relatedTarget) // Button that triggered the modal
@@ -321,9 +346,16 @@
             console.log(message);
             sendMemo(scheduleID, message);
         });
+        */
 
 
-
+        $('#saveTutorMemo').on('click', function() 
+        {           
+            let scheduleID =  $('#scheduleID').val();
+            let message = $('#message').val();
+            console.log(message);
+            sendMemo(scheduleID, message);
+        });
     });
 
 </script>

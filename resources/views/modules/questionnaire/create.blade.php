@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container bg-light">
-
+create 
     <div class="esi-box">
 
         <nav aria-label="breadcrumb">
@@ -37,7 +37,7 @@
 
                         <div class="card-body">
 
-                            <form method="POST" action="{{ route('questionnaire.store', ['id' => $reportcard->schedule_item_id  ]) }}">
+                            <form method="POST" action="{{ route('questionnaire.store', ['scheduleitemid' => $scheduleItem->id  ]) }}">
                                 @csrf
                                 <table cellspacing="3" cellpadding="3">
                                     <tbody>
@@ -45,11 +45,15 @@
                                             <td>Lesson Schedule</td>
                                             <td>:</td>
                                             <td>
-                                                {{ date('Y年 m月 d日', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
+                                                <strong>
 
-                                                {{ date('H:i', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
-                                                -
-                                                {{ date('H:i', strtotime( \App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'] ." + 25 minutes")) }}
+                                                    {{ date('Y年 m月 d日', strtotime($scheduleItem->lesson_time)) }}
+
+                                                    <span id="time">
+                                                        {{ date('H:i', strtotime($scheduleItem->lesson_time)) }}
+                                                        -
+                                                        {{ date('H:i', strtotime($scheduleItem->lesson_time . " +25 minutes")) }}
+                                                    </span>
 
                                             </td>
                                         </tr>
@@ -58,19 +62,32 @@
                                             <td>Tutor</td>
                                             <td>:</td>
                                             <td>
+                                                <!-- Tutor -->
                                                 @php
-                                                $schedule = \App\Models\ScheduleItem::find($reportcard->schedule_item_id);
-                                                $tutor = \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
+                                                $tutor = \App\Models\Tutor::where('user_id', $scheduleItem->tutor_id)->first();
                                                 @endphp
-                                                {{ $tutor->user->firstname ?? ' - ' }}
 
-                                                <input type="hidden" name="tutor_id" value="{{ $schedule->tutor_id }}">
+                                                <strong>
+                                                    @if (isset($tutor->user->japanese_firstname))
+                                                    {!! $tutor->user->japanese_firstname ?? '' !!}
+                                                    @else
+                                                    {!! $tutor->user->firstname ?? '' !!}
+                                                    @endif
+                                                </strong>
+
+                                                <input type="hidden" name="tutor_id" value="{{ $scheduleItem->tutor_id }}">
+
                                             </td>
                                         </tr>
 
                                         <tr>
                                             <td colspan="4">
-                                                通信状態が安定していた<br>（通信断、エコー、ノイズなどの雑音が無く安定していた。）
+
+                                                <div class="pt-4">
+                                                    通信状態が安定していた<br>（通信断、エコー、ノイズなどの雑音が無く安定していた。）
+                                                </div>
+
+
                                             </td>
                                         </tr>
 
@@ -79,7 +96,7 @@
                                                 <input type="radio" name="QUESTION_1grade" id="QUESTION_1GOOD" alt="" value="GOOD" @if (isset($questionnaireItem1->grade) && $questionnaireItem1->grade == "GOOD") {{ 'checked="checked"' }} @endif > 良かった
                                             </td>
                                             <td>
-                                                <input type="radio" name="QUESTION_1grade" id="QUESTION_1AVERAGE" alt="" value="AVERAGE"  @if (isset($questionnaireItem1->grade) && $questionnaireItem1->grade == "AVERAGE") {{ 'checked="checked"' }} @endif  > まあまあ
+                                                <input type="radio" name="QUESTION_1grade" id="QUESTION_1AVERAGE" alt="" value="AVERAGE" @if (isset($questionnaireItem1->grade) && $questionnaireItem1->grade == "AVERAGE") {{ 'checked="checked"' }} @endif > まあまあ
                                             </td>
                                             <td>
                                                 <input type="radio" name="QUESTION_1grade" id="QUESTION_1BAD" alt="" value="BAD" @if (isset($questionnaireItem1->grade) && $questionnaireItem1->grade == "BAD") {{ 'checked="checked"' }} @endif > 良くなかった
@@ -103,7 +120,7 @@
                                                 <input type="radio" name="QUESTION_2grade" id="QUESTION_2GOOD" alt="" value="GOOD" @if (isset($questionnaireItem2->grade) && $questionnaireItem2->grade == "GOOD") {{ 'checked="checked"' }} @endif > 良かった
                                             </td>
                                             <td>
-                                                <input type="radio" name="QUESTION_2grade" id="QUESTION_2AVERAGE" alt="" value="AVERAGE"  @if (isset($questionnaireItem2->grade) && $questionnaireItem2->grade == "AVERAGE") {{ 'checked="checked"' }} @endif  > まあまあ
+                                                <input type="radio" name="QUESTION_2grade" id="QUESTION_2AVERAGE" alt="" value="AVERAGE" @if (isset($questionnaireItem2->grade) && $questionnaireItem2->grade == "AVERAGE") {{ 'checked="checked"' }} @endif > まあまあ
                                             </td>
                                             <td>
                                                 <input type="radio" name="QUESTION_2grade" id="QUESTION_2BAD" alt="" value="BAD" @if (isset($questionnaireItem2->grade) && $questionnaireItem2->grade == "BAD") {{ 'checked="checked"' }} @endif > 良くなかった
@@ -123,15 +140,15 @@
 
                                         <tr>
 
-                                           <td>
+                                            <td>
                                                 <input type="radio" name="QUESTION_3grade" id="QUESTION_3GOOD" alt="" value="GOOD" @if (isset($questionnaireItem3->grade) && $questionnaireItem3->grade == "GOOD") {{ 'checked="checked"' }} @endif > 良かった
                                             </td>
                                             <td>
-                                                <input type="radio" name="QUESTION_3grade" id="QUESTION_3AVERAGE" alt="" value="AVERAGE"  @if (isset($questionnaireItem3->grade) && $questionnaireItem3->grade == "AVERAGE") {{ 'checked="checked"' }} @endif  > まあまあ
+                                                <input type="radio" name="QUESTION_3grade" id="QUESTION_3AVERAGE" alt="" value="AVERAGE" @if (isset($questionnaireItem3->grade) && $questionnaireItem3->grade == "AVERAGE") {{ 'checked="checked"' }} @endif > まあまあ
                                             </td>
                                             <td>
                                                 <input type="radio" name="QUESTION_3grade" id="QUESTION_3BAD" alt="" value="BAD" @if (isset($questionnaireItem3->grade) && $questionnaireItem3->grade == "BAD") {{ 'checked="checked"' }} @endif > 良くなかった
-                                            </td>                                            
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -148,16 +165,16 @@
                                         <tr>
 
 
-            
-                                           <td>
+
+                                            <td>
                                                 <input type="radio" name="QUESTION_4grade" id="QUESTION_4GOOD" alt="" value="GOOD" @if (isset($questionnaireItem4->grade) && $questionnaireItem4->grade == "GOOD") {{ 'checked="checked"' }} @endif > 良かった
                                             </td>
                                             <td>
-                                                <input type="radio" name="QUESTION_4grade" id="QUESTION_4AVERAGE" alt="" value="AVERAGE"  @if (isset($questionnaireItem4->grade) && $questionnaireItem4->grade == "AVERAGE") {{ 'checked="checked"' }} @endif  > まあまあ
+                                                <input type="radio" name="QUESTION_4grade" id="QUESTION_4AVERAGE" alt="" value="AVERAGE" @if (isset($questionnaireItem4->grade) && $questionnaireItem4->grade == "AVERAGE") {{ 'checked="checked"' }} @endif > まあまあ
                                             </td>
                                             <td>
                                                 <input type="radio" name="QUESTION_4grade" id="QUESTION_4BAD" alt="" value="BAD" @if (isset($questionnaireItem4->grade) && $questionnaireItem4->grade == "BAD") {{ 'checked="checked"' }} @endif > 良くなかった
-                                            </td>    
+                                            </td>
 
                                         </tr>
                                         <tr>
@@ -174,7 +191,7 @@
 
                                         <tr>
                                             <td colspan="4">
-                                                <input type="submit" class="btn btn-pink" value="提出する">
+                                                <input id="submit" type="submit" class="btn btn-pink" value="提出する">
                                             </td>
                                         </tr>
 
@@ -200,7 +217,19 @@
 
     </div>
 
+    @include('modules.member.popup.loading')
 
 </div>
-</div>
+
+@endsection
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+window.addEventListener('load', function() {
+    $('#submit').on("click", function() {
+        $('#loadingModal').modal('show');      
+    });
+});
+</script>
 @endsection

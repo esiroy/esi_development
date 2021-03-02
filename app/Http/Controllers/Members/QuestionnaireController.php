@@ -63,9 +63,216 @@ class QuestionnaireController extends Controller
      */
     public function store(Request $request)
     {
-        $id = $request->get('id');      
+        $id = $request->scheduleitemid;
+
+        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();    
+        
+        if (isset($questionnaire->id)) {
+            $newQuestionnaire = $questionnaire->update([
+                'schedule_item_id' => $id,
+                'remarks' =>  $request->remarks,
+                'tutor_id' => $request->tutor_id,
+                'member_id' => Auth::user()->id,
+                'valid' => true
+            ]);
+
+            $questionnaireID = $questionnaire->id;
+
+        } else {
+            $newQuestionnaire = Questionnaire::create([
+                'schedule_item_id' => $id,
+                'remarks' =>  $request->remarks,
+                'tutor_id' => $request->tutor_id,
+                'member_id' => Auth::user()->id,
+                'valid' => true
+            ]);         
+            
+            $questionnaireID = $newQuestionnaire->id;
+        }
 
 
+
+
+        if (isset($request->QUESTION_1grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id',  $questionnaireID)
+                                ->where('QUESTION', "QUESTION_1")
+                                ->first();
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_1',
+                    'grade' =>  $request->QUESTION_1grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_1',
+                    'grade' =>  $request->QUESTION_1grade,
+                    'valid' => true,
+                ]);
+            }
+
+        }
+
+        if (isset($request->QUESTION_2grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_2")
+                                ->first();
+
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_2',
+                    'grade' =>  $request->QUESTION_2grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_2',
+                    'grade' =>  $request->QUESTION_2grade,
+                    'valid' => true,
+                ]);
+            }
+        }
+        
+
+        if (isset($request->QUESTION_3grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_3")
+                                ->first();
+
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_3',
+                    'grade' =>  $request->QUESTION_3grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_3',
+                    'grade' =>  $request->QUESTION_3grade,
+                    'valid' => true,
+                ]);
+            }
+        }
+
+        if (isset($request->QUESTION_4grade))
+        {
+
+            $questionnaireItem = QuestionnaireItem::
+                                where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_4")
+                                ->first();
+
+
+            if (isset($questionnaireItem->id)) {
+                $questionnaireItem->update([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_4',
+                    'grade' =>  $request->QUESTION_4grade,
+                    'valid' => true,
+                ]);
+            } else {
+                $data = QuestionnaireItem::create([
+                    'questionnaire_id' =>  $questionnaireID,
+                    'QUESTION' => 'QUESTION_4',
+                    'grade' =>  $request->QUESTION_4grade,
+                    'valid' => true,
+                ]);
+            }
+        }        
+
+       
+
+        return redirect('questionnaire/'. $id)->with('message', 'ご協力ありがとうございました。');
+
+       
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {      
+        $user = Auth::user();
+        $member = Member::where('user_id', $user->id)->first();
+        if ($member) {
+
+            $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+    
+            if (isset($questionnaire->id)) {
+
+                //EDIT : found the questionnaire 
+                $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_1")->first();
+                $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_2")->first();
+                $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
+                $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();
+                
+                return view('modules.questionnaire.edit', compact('member',  'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+
+            } else {  
+                //CREATE: new questionnaire 
+                $scheduleItem = ScheduleItem::find($id);
+
+                if ($scheduleItem) {
+
+
+                    $questionnaireItem1 = null;
+                    $questionnaireItem2 = null;
+                    $questionnaireItem3 = null;
+                    $questionnaireItem4 = null;
+                    
+                    return view('modules.questionnaire.create', compact('member', 'scheduleItem'));
+
+                } else {
+                    
+                    abort(404);
+                }
+
+
+            }          
+        }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
         if (isset($questionnaire->id)) {
@@ -200,64 +407,6 @@ class QuestionnaireController extends Controller
         
         
         return redirect('questionnaire/'. $id)->with('message', 'ご協力ありがとうございました。');
-
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {      
-
-
-        $user = Auth::user();
-        $member = Member::where('user_id', $user->id)->first();        
-
-
-        $reportcard = Questionnaire::where('schedule_item_id', $id)->first();
-
-
-        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
-
-        if (isset($questionnaire->id)) {
-            $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_1")->first();
-            $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_2")->first();
-            $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
-            $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();            
-        } else {
-            $questionnaireItem1 = null;
-            $questionnaireItem2 = null;
-            $questionnaireItem3 = null;
-            $questionnaireItem4 = null;            
-        }   
-
-        return view('modules.questionnaire.show', compact('member', 'reportcard', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**

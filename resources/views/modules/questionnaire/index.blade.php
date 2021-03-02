@@ -32,6 +32,57 @@
                             受講履歴
                         </div>
 
+                       
+                         <!-- show only answered questionnaires                  
+                            <div class="card-body">
+                                <p>その他お気づきになったことがあればご記入下さい</p>
+
+                                <table class="table table-bordered table-sm">
+                                    <tbody>
+                                        <tr>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Date</th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Tutor</th>
+                                            <th class="small text-center bg-light text-dark font-weight-bold">View</th>
+                                        </tr>
+                                        @foreach ($reportcards as $reportcard)
+                                        <tr>
+                                            <td class="text-center">
+                                                {{ date('Y年 m月 d日', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
+
+                                                {{ date('H:i', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
+                                                -
+                                                {{ date('H:i', strtotime( \App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'] ." + 25 minutes")) }}
+                                            </td>
+
+                                            <td class="text-center">
+                                                @php
+                                                    $schedule = \App\Models\ScheduleItem::where('id', $reportcard->schedule_item_id)->first();
+
+                                                    if ($schedule) {
+                                                        $tutor =  \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
+                                                    }                                                
+                                                @endphp
+                                                {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}                                            
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="questionnaire/{{$reportcard->schedule_item_id}}">» アンケート</a>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+
+                                    </tbody>
+                                </table>
+
+                                <div class="float-right mt-4">
+                                    <ul class="pagination pagination-sm">
+                                        {{ $reportcards->appends(request()->query())->links() }}
+                                    </ul>
+                                </div>
+
+                            </div>                       
+                        -->
+                      
+
                         <div class="card-body">
                             <p>その他お気づきになったことがあればご記入下さい</p>
 
@@ -42,27 +93,32 @@
                                         <th class="small text-center bg-light text-dark font-weight-bold">Tutor</th>
                                         <th class="small text-center bg-light text-dark font-weight-bold">View</th>
                                     </tr>
-                                    @foreach ($reportcards as $reportcard)
+                                    @foreach ($scheduleItems as $scheduleItem)
                                     <tr>
                                         <td class="text-center">
-                                            {{ date('Y年 m月 d日', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
+                                            {{ date('Y年 m月 d日', strtotime($scheduleItem->lesson_time)) }}
 
-                                            {{ date('H:i', strtotime(\App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'])) }}
+                                            {{ date('H:i', strtotime($scheduleItem->lesson_time)) }}
                                             -
-                                            {{ date('H:i', strtotime( \App\Models\ScheduleItem::find($reportcard->schedule_item_id)['lesson_time'] ." + 25 minutes")) }}
+                                            {{ date('H:i', strtotime($scheduleItem->lesson_time . " +25 minutes")) }}
                                         </td>
 
                                         <td class="text-center">
-                                            @php
-                                                $schedule = \App\Models\ScheduleItem::where('id', $reportcard->schedule_item_id)->first();
-                                                if ($schedule) {
-                                                    $tutor =  \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
-                                                }                                                
+                                            <!-- Tutor -->                                            
+                                            @php                                             
+                                                $tutor =  \App\Models\Tutor::where('user_id', $scheduleItem->tutor_id)->first();                                                                                            
                                             @endphp
-                                            {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}                                            
+
+
+                                            @if (isset($tutor->user->japanese_firstname)) 
+                                                {{ $tutor->user->japanese_firstname ?? '' }} {{ $member->tutor->japanese_lastname ?? '' }}
+                                            @else 
+                                                {{ $tutor->user->firstname ?? '' }} {{ $member->tutor->lastname ?? '' }}
+                                            @endif
+
                                         </td>
                                         <td class="text-center">
-                                            <a href="questionnaire/{{$reportcard->schedule_item_id}}">» アンケート</a>
+                                            <a href="questionnaire/{{$scheduleItem->id}}">» アンケート</a>
                                         </td>
                                     </tr>
                                     @endforeach
@@ -72,12 +128,14 @@
 
                             <div class="float-right mt-4">
                                 <ul class="pagination pagination-sm">
-                                    {{ $reportcards->appends(request()->query())->links() }}
+                                    {{ $scheduleItems->appends(request()->query())->links() }}
                                 </ul>
                             </div>
 
                         </div>
+
                     </div>
+
 
                     <div class="card esi-card mt-4">
                         <div class="card-header esi-card-header">
@@ -103,7 +161,12 @@
                                                 $tutor = \App\Models\Tutor::where('user_id', $datereportcard->tutor_id)->first();
                                             @endphp
                                             
-                                            {{ $tutor->user->firstname ?? '' }} {{ $member->tutor->lastname ?? '' }}
+                                            @if (isset($tutor->user->japanese_firstname)) 
+                                                {{ $tutor->user->japanese_firstname ?? '' }} {{ $member->tutor->japanese_lastname ?? '' }}
+                                            @else 
+                                                {{ $tutor->user->firstname ?? '' }} {{ $member->tutor->lastname ?? '' }}
+                                            @endif
+                                            
                                         </td>
                                         <td class="text-center"><a href="userreportcarddate/{{$datereportcard->id}}">» 評価</a></td>
                                     </tr>
@@ -120,7 +183,11 @@
 
                         </div>
                     </div>
+
+
                 </div>
+
+
 
             </div>
         </div>

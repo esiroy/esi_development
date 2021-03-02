@@ -440,7 +440,8 @@ class MemberController extends Controller
 
         //lesson_shift_id 
 
-        if ($request->transaction_type == 'CREDITS_EXPIRATION') {
+        if ($request->transaction_type == 'CREDITS_EXPIRATION') 
+        {
             //Update expiry  member
 
             $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
@@ -459,8 +460,8 @@ class MemberController extends Controller
                 'member_id' => $member->user_id,
                 'lesson_shift_id' => $member->lesson_shift_id,
                 'created_by_id' => Auth::user()->id,
-                'amount' => 0, //amount is zero
-                'price' => 0, //amount is zero
+                'amount' => null, //amount is zero
+                'price' => null, //amount is zero
                 'remarks' => $request->remarks,
                 'credits_expiration' => $expiry_date,
                 'old_credits_expiration' => $old_credits_expiration,
