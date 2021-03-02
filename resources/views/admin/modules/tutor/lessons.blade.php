@@ -73,14 +73,17 @@
                                 <td class="schedTime">
 
                                 </td>
-                                @for($ctr=0; $ctr <= $lessonDays; $ctr++) <td style="background-color:#f3e77f; border: 1px solid #d0e8f7;border-bottom: 3px solid #72add2; padding: 10px 0px 0px; border-right: 1px solid #ffffff;vertical-align: top;">
-                                    <div style="width:125px; background-color:#f3e77f">
-                                        <div class="float-left text-small">{{ date('d', strtotime($dateFrom ." + $ctr day"))}}</div>
-                                        <div class="text-center">{{ date('l', strtotime($dateFrom ." + $ctr day"))}}</div>
-                                    </div>
-                                    <div class="pt-1" style="background-color:#d0e8f7">Member</div>
+                                @for($ctr=0; $ctr <= $lessonDays; $ctr++)                                 
+                                    <td style="background-color:#f3e77f; border: 1px solid #d0e8f7;border-bottom: 3px solid #72add2; padding: 0px; border-right: 1px solid #ffffff;vertical-align: top;">
+
+                                        <div class="pt-1 pb-2" style="width:100%; background-color:#f3e77f">
+                                            <div class="float-left text-small">{{ date('d', strtotime($dateFrom ." + $ctr day"))}}</div>
+                                            <div class="text-center">{{ date('l', strtotime($dateFrom ." + $ctr day"))}}</div>
+                                        </div>
+
+                                        <div class="pt-1 pb-2" style="background-color:#d0e8f7">Member</div>
                                     </td>
-                                    @endfor
+                                @endfor
                             </tr>
 
                             @foreach($timeSlots as $timeSlot)
