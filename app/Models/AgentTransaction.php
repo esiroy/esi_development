@@ -168,7 +168,9 @@ class AgentTransaction extends Model
                 ->orWhere('transaction_type', 'MANUAL_ADD')
                 ->orWhere('transaction_type', 'FREE_CREDITS')                
                 ->orWhere('transaction_type', 'DISTRIBUTE')
+                ->orWhere('transaction_type', 'AGENT_SUBTRACT')
                 ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+                
 
         })->get();
        
@@ -176,15 +178,19 @@ class AgentTransaction extends Model
         return $transactions;
     }
 
+    /*
+        1. Distrube transaction is the only type that will change the latest purchase date.
+        2. 
+    */
     public function getMemberLatestDateOfPurchase($memberID)
     {
 
         $transaction = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->where(function ($q) use ($memberID) {
             $q->orWhere('transaction_type', 'ADD')
-                ->orWhere('transaction_type', 'MANUAL_ADD')
-                ->orWhere('transaction_type', 'FREE_CREDITS')
-                ->orWhere('transaction_type', 'DISTRIBUTE')
-                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
+            ->orWhere('transaction_type', 'DISTRIBUTE')
+            ->orWhere('transaction_type', 'MANUAL_ADD');
+            //->orWhere('transaction_type', 'FREE_CREDITS');            
+            //->orWhere('transaction_type', 'CREDITS_EXPIRATION');
 
         })->orderBy('id', "DESC")->first();
 
