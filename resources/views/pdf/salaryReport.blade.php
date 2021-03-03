@@ -1,12 +1,12 @@
 
 <table id="report" cellspacing="0" cellpadding="0" style="margin-top:10px">
     <tr>
-        <td>Tutor Salary Report</div></td>
+        <td colspan="3">Tutor Salary Report</div></td>
     </tr>
     <tr>
-        <td style="width:30%">From: {{ $dateFrom }}</td>
-        <td style="width:30%">To: {{ $dateTo }}</td>
-        <td style="width:40%;text-align:right">Date: {{ $dateToday }}</td>
+        <td style="width:150px">From: {{ $dateFrom }}</td>
+        <td style="width:150px">To: {{ $dateTo }}</td>
+        <td style="width:150px;text-align:right">Date: {{ $dateToday }}</td>
     </tr>
     <thead>
         <tr>
