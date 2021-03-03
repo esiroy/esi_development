@@ -1,14 +1,13 @@
-<div>Tutor Salary Report</div>
-
-<table style="margin-top:10px">
-    <tr>
-        <td style="width:20%">From: {{ $dateFrom }}</td>
-        <td style="width:20%">To: {{ $dateTo }}</td>
-        <td style="width:80%;text-align:right">Date: {{ $dateToday }}</td>
-    </tr>
-</table>
 
 <table id="report" cellspacing="0" cellpadding="0" style="margin-top:10px">
+    <tr>
+        <td>Tutor Salary Report</div></td>
+    </tr>
+    <tr>
+        <td style="width:30%">From: {{ $dateFrom }}</td>
+        <td style="width:30%">To: {{ $dateTo }}</td>
+        <td style="width:40%;text-align:right">Date: {{ $dateToday }}</td>
+    </tr>
     <thead>
         <tr>
             <td style="border-top:1px solid #000;border-bottom:1px solid #000; width:35px">I.D.</td>
