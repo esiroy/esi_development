@@ -323,68 +323,66 @@ class ExportController extends Controller
         {
             foreach ($schedules as $schedule) {
 
+                $memberName = "-";
                 $tutorName = "-";
                 $shiftValue = "";
                 $salary = "";
                 $salaryRate = "";
+                $agentName = "";
 
+                $member = Member::where('user_id', $schedule->member_id)->first();
+                if ($member) {
+                    $memberName = $member->user->firstname ." ". $member->user->lastname;
+                }
+
+                $agent = new Agent();
+                $agentInfo = $agent->getMemberAgent($schedule->member_id);
+
+                if ($agentInfo) {
+                    $agentName = $agentInfo->user->firstname ." ". $agentInfo->user->lastname;
+                }
+          
                 $tutor = Tutor::where('user_id', $schedule->tutor_id)->first();
                 if ($tutor) {
                     if (isset($tutor->user->firstname)) {
-                        $tutorName = $tutor->user->firstname;
-                    } else {
-                        $tutorName = $tutor->user->japanese_firstname;
+                        $tutorName = $tutor->user->firstname; //english name
+                    } else { 
+                        $tutorName = $tutor->user->japanese_firstname;      //fall back the japanese name
                     }
                 } else {
                     $tutorName = "-";
                 }
-    
+
                 $shift = Shift::where('id', $schedule->lesson_shift_id)->first();
                 if ($shift) {
                     $shiftValue = $shift->name;
-                }            
-    
+                }
+
                 //date
                 if (date("H", strtotime($schedule->lesson_time)) == "00") {
                     $scheduleDate = date("F j, Y", strtotime($schedule->lesson_time . " -1 day"));
                 } else {
                     $scheduleDate = date("F j, Y", strtotime($schedule->lesson_time));
                 }
-    
+
                 //Time
                 if (date("H", strtotime($schedule->lesson_time)) == "00") {
                     $scheduleTime = date("24:i", strtotime($schedule->lesson_time)) . " - " . date("24:i", strtotime($schedule->lesson_time . " +25 minutes"));
                 } else {
                     $scheduleTime = date("H:i", strtotime($schedule->lesson_time)) . " - " . date("H:i", strtotime($schedule->lesson_time . " +25 minutes"));
                 }
-    
+
                 $status = ucwords(str_replace("_", " ", strtolower($schedule->schedule_status)));
-    
-                if (isset($tutor->salary_rate)) {
-                    $salary = number_format($tutor->salary_rate, 1);
-                }
-    
-                if (isset($tutor->salary_rate)) {
-                    if ($schedule->schedule_status == "COMPLETED" || $schedule->schedule_status == "CLIENT_NOT_AVAILABLE") {
-                        $cost = number_format($tutor->salary_rate, 1);
-                    } elseif ($schedule->schedule_status == "SUPPRESSED_SCHEDULE") {
-                        $newSalary = $tutor->salary_rate / 2;
-                        $cost = number_format($newSalary, 1);
-                    } else {
-                        $cost = number_format(0, 1);
-                    }
-                }       
-                
                 
                 $schedulesData[] = [
                     'id' => $schedule->id,
-                    'tutor'=> $tutorName,
-                    'shift'=> $shiftValue,
-                    'date '=> $scheduleDate,
-                    'time '=> $scheduleTime,
+                    'date' => $scheduleDate,
+                    'time' => $scheduleTime,
                     'status'=> $status,
-                    'salary'=> $salary,
-                    'cost '=> $cost
+                    'shift'=> $shiftValue,
+                    'agent' => $agentName,
+                    'tutor'=> $tutorName,                    
+                    'member'=> $memberName,                    
                 ];
             }
 
@@ -392,7 +390,7 @@ class ExportController extends Controller
             $dateFrom = date("F j, Y", strtotime($dateFrom));
             $dateTo = date("F j, Y", strtotime($dateTo));
 
-            $pdf = PDF::loadView('pdf.salaryReport', compact('schedulesData', 'dateToday', 'dateFrom', 'dateTo'));
+            $pdf = PDF::loadView('pdf.lessonReport', compact('schedulesData', 'dateToday', 'dateFrom', 'dateTo'));
             // Finally, you can download the file using download function
             return $pdf->download('Salary Report.pdf');
             exit();
