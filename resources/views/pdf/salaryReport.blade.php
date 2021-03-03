@@ -1,7 +1,7 @@
 
 <table id="report" cellspacing="0" cellpadding="0" style="margin-top:10px">
     <tr>
-        <td colspan="3">Tutor Salary Report</div></td>
+        <td colspan="3">Tutor Salary Report</td>
     </tr>
     <tr>
         <td style="width:150px">From: {{ $dateFrom }}</td>
