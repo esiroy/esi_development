@@ -8,6 +8,7 @@ use App\Models\PhpSpreadsheetFontStyle as Style;
 use App\Models\ScheduleItem;
 use App\Models\Shift;
 use App\Models\Tutor;
+use App\Models\Agent;
 use App\Models\User;
 use Carbon\Carbon;
 use DB;
@@ -238,6 +239,7 @@ class ExportController extends Controller
         fclose($output);
     }
 
+    //Member Export To CSV /
     public function exportCSV()
     {
         $selected_array = array('I.D', 'Lastname', 'Firstname', 'Japanese', 'Email', 'Attribute', 'Age', 'Purpose');
@@ -273,8 +275,9 @@ class ExportController extends Controller
         fclose($output);
     }
 
-    public function downloadSalaryReport(Request $request)
+    public function downloadlessonReport(Request $request)
     {
+
         //Current date
         $from = date("Y-m-d");
         $to = date('Y-m-d', strtotime($from . " +1 day"));
@@ -313,11 +316,11 @@ class ExportController extends Controller
         //Date Today
         $dateToday = date("m/d/Y");
 
+        set_time_limit(0);
+
+        //lesson report to PDF
         if (strtolower($request->type) == 'pdf') 
         {
-            set_time_limit(0);
-
-
             foreach ($schedules as $schedule) {
 
                 $tutorName = "-";
@@ -396,6 +399,262 @@ class ExportController extends Controller
 
 
         } elseif (strtolower($request->type) == 'excel') {
+            
+            //lesson report to PDF
+
+            //EXPORT LESSON REPORT FILENAME
+            $filename = "Salary Report.xlsx";
+
+            //SET STYLE
+            $styleArrayH1 = Style::setHeader();
+            $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 18);
+
+            //Initialize
+            $spreadsheet = Style::init_report();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            //Set Header Text
+            $sheet->setCellValue('A1', "Tutor Salary Report from $request->dateFrom to $request->dateTo");
+
+            //Secondary Field Headers (h2)
+            $sheet->setCellValue('A2', "I.D");
+            $sheet->setCellValue('B2', "Date");
+            $sheet->setCellValue('C2', "Time");
+            $sheet->setCellValue('D2', "Status");
+            $sheet->setCellValue('E2', "Shift");
+            $sheet->setCellValue('F2', "Agent");
+            $sheet->setCellValue('G2', "Tutor");
+            $sheet->setCellValue('H2', "Member");
+
+            //style for field headers h2
+            $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 20);
+            $spreadsheet->getActiveSheet()->getStyle('A1:H1')->applyFromArray($styleArrayH1);
+            $spreadsheet->getActiveSheet()->getStyle('A2:H2')->applyFromArray($styleArrayH2);
+            $spreadsheet->getActiveSheet()->getStyle('A1:G2')->getAlignment()->setHorizontal('center');
+
+            //get to expired members
+            $today = Carbon::now();
+            $dateFrom = $request->get('dateFrom');
+            $dateTo = $request->get('dateTo');
+
+            //Agent Credits Initialize
+            $agenTransaction = new AgentTransaction;
+
+            $ctr = 3;
+            foreach ($schedules as $schedule) {
+                
+                $memberName = "-";
+                $tutorName = "-";
+                $shiftValue = "";
+                $salary = "";
+                $salaryRate = "";
+                $agentName = "";
+
+                $member = Member::where('user_id', $schedule->member_id)->first();
+                if ($member) {
+                    $memberName = $member->user->firstname ." ". $member->user->lastname;
+                }
+
+                $agent = new Agent();
+                $agentInfo = $agent->getMemberAgent($schedule->member_id);
+
+                if ($agentInfo) {
+                    $agentName = $agentInfo->user->firstname ." ". $agentInfo->user->lastname;
+                }
+          
+                $tutor = Tutor::where('user_id', $schedule->tutor_id)->first();
+                if ($tutor) {
+                    if (isset($tutor->user->firstname)) {
+                        $tutorName = $tutor->user->firstname; //english name
+                    } else { 
+                        $tutorName = $tutor->user->japanese_firstname;      //fall back the japanese name
+                    }
+                } else {
+                    $tutorName = "-";
+                }
+
+                $shift = Shift::where('id', $schedule->lesson_shift_id)->first();
+                if ($shift) {
+                    $shiftValue = $shift->name;
+                }
+
+                //date
+                if (date("H", strtotime($schedule->lesson_time)) == "00") {
+                    $scheduleDate = date("F j, Y", strtotime($schedule->lesson_time . " -1 day"));
+                } else {
+                    $scheduleDate = date("F j, Y", strtotime($schedule->lesson_time));
+                }
+
+                //Time
+                if (date("H", strtotime($schedule->lesson_time)) == "00") {
+                    $scheduleTime = date("24:i", strtotime($schedule->lesson_time)) . " - " . date("24:i", strtotime($schedule->lesson_time . " +25 minutes"));
+                } else {
+                    $scheduleTime = date("H:i", strtotime($schedule->lesson_time)) . " - " . date("H:i", strtotime($schedule->lesson_time . " +25 minutes"));
+                }
+
+                $status = ucwords(str_replace("_", " ", strtolower($schedule->schedule_status)));
+
+                $spreadsheet->getActiveSheet()->getStyle('A' . $ctr . ':I' . $ctr)->getAlignment()->setHorizontal('center');
+                $sheet->setCellValue('A' . $ctr, $schedule->id); //user id
+                $sheet->setCellValue('B' . $ctr, $scheduleDate);  //tutorName
+                $sheet->setCellValue('C' . $ctr, $scheduleTime);
+                $sheet->setCellValue('D' . $ctr, $status);
+                $sheet->setCellValue('E' . $ctr, $shiftValue);
+                $sheet->setCellValue('F' . $ctr, $agentName);
+                $sheet->setCellValue('G' . $ctr, $tutorName);
+                $sheet->setCellValue('H' . $ctr, $memberName);
+                $ctr = $ctr + 1;
+
+            }
+
+            $writer = new Xlsx($spreadsheet);
+            $writer->save($filename);
+
+            if (file_exists($filename)) {
+                header('Content-Description: File Transfer');
+                header("Content-Type:  application/vnd.ms-excel; charset=utf-8");
+                header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+                header('Content-Type: application/vnd.ms-excel');
+                header('Expires: 0');
+                header('Content-Length: ' . filesize($filename));
+                header('Content-Transfer-Encoding: binary');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                flush(); // Flush system output buffer
+                readfile($filename);
+                unlink($filename);
+                die();
+            } else {
+                http_response_code(404);
+                die();
+            }
+
+        }
+    }    
+
+    public function downloadSalaryReport(Request $request)
+    {
+        //Current date
+        $from = date("Y-m-d");
+        $to = date('Y-m-d', strtotime($from . " +1 day"));
+        $extendedTo = date('Y-m-d', strtotime($from . " +2 day"));
+
+        //initiatte schedule for reporting
+        $schedules = new ScheduleItem();
+
+        $status = $request->status;
+
+        if (isset($request->dateFrom) && isset($request->dateTo)) {
+            $dateFrom = date('Y-m-d', strtotime($request['dateFrom']));
+            $dateTo = date('Y-m-d', strtotime($request['dateTo']));
+            $schedules = $schedules->where('lesson_time', '>=', $dateFrom . " 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");
+        }
+
+        if (isset($request->tutorid)) {
+            $schedules = $schedules->where('tutor_id', $request->tutorid);
+        }
+
+        if (isset($request->status)) {
+            $status = str_replace(' ', '_', strtoupper($request->status));
+            $schedules = $schedules->where('schedule_status', $status);
+        }
+
+        //no request paramters
+        if (!isset($request->dateFrom) && !isset($request->dateTo) && !isset($request->status) && (!isset($request->tutorid))) {
+            $schedules = $schedules->where('lesson_time', '>=', $from . " 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");
+        }
+
+        //valid only
+        $schedules = $schedules->where('valid', true);
+        $schedules = $schedules->orderBy('lesson_time', 'DESC')->orderBy('id', 'DESC');
+        $schedules = $schedules->get();
+
+        //Date Today
+        $dateToday = date("m/d/Y");
+
+        set_time_limit(0);
+
+        if (strtolower($request->type) == 'pdf') 
+        {
+            foreach ($schedules as $schedule) {
+
+                $tutorName = "-";
+                $shiftValue = "";
+                $salary = "";
+                $salaryRate = "";
+
+                $tutor = Tutor::where('user_id', $schedule->tutor_id)->first();
+                if ($tutor) {
+                    if (isset($tutor->user->firstname)) {
+                        $tutorName = $tutor->user->firstname;
+                    } else {
+                        $tutorName = $tutor->user->japanese_firstname;
+                    }
+                } else {
+                    $tutorName = "-";
+                }
+    
+                $shift = Shift::where('id', $schedule->lesson_shift_id)->first();
+                if ($shift) {
+                    $shiftValue = $shift->name;
+                }            
+    
+                //date
+                if (date("H", strtotime($schedule->lesson_time)) == "00") {
+                    $scheduleDate = date("F j, Y", strtotime($schedule->lesson_time . " -1 day"));
+                } else {
+                    $scheduleDate = date("F j, Y", strtotime($schedule->lesson_time));
+                }
+    
+                //Time
+                if (date("H", strtotime($schedule->lesson_time)) == "00") {
+                    $scheduleTime = date("24:i", strtotime($schedule->lesson_time)) . " - " . date("24:i", strtotime($schedule->lesson_time . " +25 minutes"));
+                } else {
+                    $scheduleTime = date("H:i", strtotime($schedule->lesson_time)) . " - " . date("H:i", strtotime($schedule->lesson_time . " +25 minutes"));
+                }
+    
+                $status = ucwords(str_replace("_", " ", strtolower($schedule->schedule_status)));
+    
+                if (isset($tutor->salary_rate)) {
+                    $salary = number_format($tutor->salary_rate, 1);
+                }
+    
+                if (isset($tutor->salary_rate)) {
+                    if ($schedule->schedule_status == "COMPLETED" || $schedule->schedule_status == "CLIENT_NOT_AVAILABLE") {
+                        $cost = number_format($tutor->salary_rate, 1);
+                    } elseif ($schedule->schedule_status == "SUPPRESSED_SCHEDULE") {
+                        $newSalary = $tutor->salary_rate / 2;
+                        $cost = number_format($newSalary, 1);
+                    } else {
+                        $cost = number_format(0, 1);
+                    }
+                }       
+                
+                
+                $schedulesData[] = [
+                    'id' => $schedule->id,
+                    'tutor'=> $tutorName,
+                    'shift'=> $shiftValue,
+                    'date '=> $scheduleDate,
+                    'time '=> $scheduleTime,
+                    'status'=> $status,
+                    'salary'=> $salary,
+                    'cost '=> $cost
+                ];
+            }
+
+            $dateToday = date("F j, Y", strtotime($dateToday));
+            $dateFrom = date("F j, Y", strtotime($dateFrom));
+            $dateTo = date("F j, Y", strtotime($dateTo));
+
+            $pdf = PDF::loadView('pdf.salaryReport', compact('schedulesData', 'dateToday', 'dateFrom', 'dateTo'));
+            // Finally, you can download the file using download function
+            return $pdf->download('Salary Report.pdf');
+            exit();
+
+
+        } elseif (strtolower($request->type) == 'excel') {
+
             //EXPORT FILENAME
             $filename = "salaryReport.xlsx";
 
@@ -489,7 +748,7 @@ class ExportController extends Controller
                     }
                 }
 
-                $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':I' . $ctr)->getAlignment()->setHorizontal('center');
+                $spreadsheet->getActiveSheet()->getStyle('A' . $ctr . ':I' . $ctr)->getAlignment()->setHorizontal('center');
                 $sheet->setCellValue('A' . $ctr, $schedule->id); //user id
                 $sheet->setCellValue('B' . $ctr, $tutorName);
                 $sheet->setCellValue('C' . $ctr, $shiftValue);

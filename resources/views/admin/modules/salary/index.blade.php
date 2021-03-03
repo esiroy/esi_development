@@ -178,7 +178,6 @@
 
                     <div class="row mt-2">
                         <div class="col-md-5">
-
                             <span class="mr-4">
                                 <a href="/downloadSalaryReport?type=pdf&dateFrom={{$from}}&dateTo={{$to}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
                                     <img src="{{ url('images/pdf.gif') }}"> Download As PDF
@@ -193,9 +192,9 @@
 
                         <div class="col-md-7">
                             <div class="float-right">
-                            <ul class="pagination pagination-sm pb-0 mb-0">
-                                {{ $schedules->appends(request()->query())->links() }}
-                            </ul>
+                                <ul class="pagination pagination-sm pb-0 mb-0">
+                                    {{ $schedules->appends(request()->query())->links() }}
+                                </ul>
                             </div>
                         </div>
                     </div>

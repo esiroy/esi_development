@@ -184,10 +184,29 @@
                         </div>
                     </div>
 
-                    <div class="float-right mt-4">
-                        <ul class="pagination pagination-sm">
-                            {{ $schedules->appends(request()->query())->links() }}
-                        </ul>
+                      <div class="row mt-2">
+
+                        <div class="col-md-5">
+                            <span class="mr-4">
+                                <a href="/downloadlessonReport?type=pdf&dateFrom={{$from}}&dateTo={{$to}}&status={{ Request::get('status')}}">
+                                    <img src="{{ url('images/pdf.gif') }}"> Download As PDF
+                                </a>
+                            </span>
+                            <span>
+                                <a href="/downloadlessonReport?type=excel&dateFrom={{$from}}&dateTo={{$to}}&status={{ Request::get('status')}}">
+                                    <img src="{{ url('images/excel.gif') }}"> Download As Excel
+                                </a> 
+                            </span>
+                        </div>
+
+                        <div class="col-md-7">
+                            <div class="float-right">
+                                <ul class="pagination pagination-sm">
+                                    {{ $schedules->appends(request()->query())->links() }}
+                                </ul>
+                            </div>
+                        </div>
+                        
                     </div>
 
 
