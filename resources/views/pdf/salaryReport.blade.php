@@ -2,9 +2,9 @@
 
 <table style="margin-top:10px">
     <tr>
-        <td style="width:150px">From: {{ $dateFrom }}</td>
-        <td style="width:150px">To: {{ $dateTo }}</td>
-        <td style="width:300px;text-align:right">Date: {{ $dateToday }}</td>
+        <td style="width:20%">From: {{ $dateFrom }}</td>
+        <td style="width:20%">To: {{ $dateTo }}</td>
+        <td style="width:80%;text-align:right">Date: {{ $dateToday }}</td>
     </tr>
 </table>
 
