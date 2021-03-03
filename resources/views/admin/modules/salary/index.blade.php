@@ -90,14 +90,16 @@
                             <div class="table-responsive mb-0">
                                 <table class="table esi-table table-bordered table-striped  ">
                                     <thead>
-                                        <td>I.D.</td>
-                                        <td>Tutor</td>
-                                        <td>Shift</td>
-                                        <td>Date</td>
-                                        <td>Time</td>
-                                        <td>Status</td>
-                                        <td>Salary</td>
-                                        <td>Cost</td>
+                                        <tr>
+                                            <td>I.D.</td>
+                                            <td>Tutor</td>
+                                            <td>Shift</td>
+                                            <td>Date</td>
+                                            <td>Time</td>
+                                            <td>Status</td>
+                                            <td>Salary</td>
+                                            <td>Cost</td>
+                                        </tr>
                                     </thead>
 
                                     @foreach($schedules as $schedule)
