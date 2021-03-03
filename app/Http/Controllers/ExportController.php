@@ -24,7 +24,7 @@ class ExportController extends Controller
         $this->middleware('auth');
     }
     
-
+    //@note: Export Only with Point Balance (Membership)
     public function exportExpiredXLS(Request $request) 
     {
         //Date Today
@@ -75,7 +75,7 @@ class ExportController extends Controller
         $agenTransaction = new AgentTransaction;
 
         $ctr = 3;        
-        foreach ($members as $member) 
+        foreach ($memberQuery as $member) 
         {            
             $credits = $agenTransaction->getCredits($member->user_id);
             if ($credits >= 1) {

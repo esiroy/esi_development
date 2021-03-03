@@ -442,9 +442,10 @@ class MemberController extends Controller
 
         if ($request->transaction_type == 'CREDITS_EXPIRATION') 
         {
-            //Update expiry  member
+            //Update expiry member
+            $newExpiryDate = $request->expiry_date ." " . date("G:i:s");
 
-            $expiry_date = date('Y-m-d', strtotime($request->expiry_date));
+            $expiry_date = date('Y-m-d G:i:s', strtotime($newExpiryDate));
             $old_credits_expiration = date('Y-m-d G:i:s', strtotime($member->credits_expiration));
 
             //agent transaction
