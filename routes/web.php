@@ -53,6 +53,21 @@ Route::get('importSchedules/index/', 'TableScheduleItemImporterController@index'
 Route::get('importSchedules/import/{id}', 'TableScheduleItemImporterController@importSchedules');
 Route::get('importSchedules/import/{id}/{per_item}', 'TableScheduleItemImporterController@importSchedules');
 
+/*************** 
+ *  IMPORT QUESTIONNAIRES 
+ ***************/
+Route::get('importQuestionnaire', 'TableQuestionnaireImporterController@index');
+Route::get('importQuestionnaire/import/{id}', 'TableQuestionnaireImporterController@import');
+Route::get('importQuestionnaire/import/{id}/{per_item}', 'TableQuestionnaireImporterController@import');
+
+
+/*************** 
+ *  IMPORT QUESTIONNAIRE ITEMS
+ ***************/
+Route::get('importQuestionnaireItem', 'TableQuestionnaireItemImporterController@index');
+Route::get('importQuestionnaireItem/import/{id}', 'TableQuestionnaireItemImporterController@import');
+Route::get('importQuestionnaireItem/import/{id}/{per_item}', 'TableQuestionnaireItemImporterController@import');
+
 
 /*************** 
  * USER IMPORTER
@@ -80,6 +95,8 @@ Route::get('importMembers/{id}/{per_item}', 'TableMemberImporterController@show'
  * AGENT IMPORTER
  ***************/
 Route::resource('importAgents', 'TableAgentImporterController');
+Route::get('importAgents/index/{per_item}', 'TableAgentImporterController@index');
+Route::get('importAgents/{id}/{per_item}', 'TableAgentImporterController@show');
 
 /*************** 
  * REPORTCARD IMPORTER

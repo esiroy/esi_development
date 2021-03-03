@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Questionnaire;
+use App\Models\QuestionnaireItem;
 use DB;
 
-class TableQuestionnaireImporterController extends Controller
+class TableQuestionnaireItemImporterController extends Controller
 {
 
     public function index()
     {
         set_time_limit(0);
 
-        $items = DB::connection('mysql_live')->table('questionnaire')->count();
+        $items = DB::connection('mysql_live')->table('questionnaire_item')->count();
 
         echo "<div>there are " . $items . " questioinnaire item</div>";
 
@@ -27,8 +27,8 @@ class TableQuestionnaireImporterController extends Controller
 
             $start = ($i - 1) * ($per_item);
             $end = $i * ($per_item);
-            $items_live_count = DB::connection('mysql_live')->table('questionnaire')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
-            $items_local_count = DB::connection('mysql')->table('questionnaire')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
+            $items_live_count = DB::connection('mysql_live')->table('questionnaire_item')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
+            $items_local_count = DB::connection('mysql')->table('questionnaire_item')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
 
             $counter = $counter + count($items_local_count->toArray());
 
@@ -39,12 +39,12 @@ class TableQuestionnaireImporterController extends Controller
 
                 $total_missing = $live_count - $local_count;
 
-                $url = url("importQuestionnaire/import/$i");
+                $url = url("importQuestionnaireItem/import/$i");
                 echo "<a href='$url'><small>Questionnaire Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";
 
             } else {
 
-                $url = url("importQuestionnaire/import/$i");
+                $url = url("importQuestionnaireItem/import/$i");
                 echo "<a href='$url'><small>Questionnaire Page $i</small> </a><br>";
             }
         }
@@ -55,7 +55,7 @@ class TableQuestionnaireImporterController extends Controller
 
     public function update($id)
     {
-        $items = DB::connection('mysql_live')->select("select * from questionnaire where id = $id");
+        $items = DB::connection('mysql_live')->select("select * from questionnaire_item where id = $id");
         $ctr = 0;
 
         foreach ($items as $item) {
@@ -77,13 +77,13 @@ class TableQuestionnaireImporterController extends Controller
                 //'email_type' => $liveItem->email_type,
             ];
 
-            if (Questionnaire::where('id', $item->id)->exists()) {
-                $scheduleItem = Questionnaire::where('id', $id)->first();
+            if (QuestionnaireItem::where('id', $item->id)->exists()) {
+                $scheduleItem = QuestionnaireItem::where('id', $id)->first();
                 $transaction = $scheduleItem->update($data);
 
                 echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             } else {
-                $transaction = Questionnaire::insert($data);
+                $transaction = QuestionnaireItem::insert($data);
                 echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             }
 
@@ -104,13 +104,13 @@ class TableQuestionnaireImporterController extends Controller
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        echo "<div>ADDING questionnaire FROM : " . $start . " - " . $end . "</div>";
+        echo "<div>ADDING questionnaire_item FROM : " . $start . " - " . $end . "</div>";
         echo "<BR>";
 
         //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
         //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 
-        $items = DB::connection('mysql_live')->select("select * from questionnaire ORDER BY id ASC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from questionnaire_item ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
@@ -125,18 +125,17 @@ class TableQuestionnaireImporterController extends Controller
                 'created_at' => $item->created_on,
                 'updated_at' => $item->updated_on,
                 'valid' => $item->valid,
-                'remarks' => $item->remarks,
-                'member_id' => $item->member_id,
-                'schedule_item_id' => $item->schedule_item_id,
-                'tutor_id' => $item->tutor_id,
+                'grade' => $item->grade,
+                'question' => $item->question,
+                'questionnaire_id' => $item->questionnaire_id,                
             ];
 
-            if (Questionnaire::where('id', $item->id)->exists()) {
+            if (QuestionnaireItem::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
                 try
                 {
-                    $scheduleObj = Questionnaire::where('id', $item->id);
+                    $scheduleObj = QuestionnaireItem::where('id', $item->id);
                     $transaction = $scheduleObj->update($data);
                     DB::commit();
                     echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
@@ -148,7 +147,7 @@ class TableQuestionnaireImporterController extends Controller
 
                 try
                 {
-                    $transaction = Questionnaire::insert($data);
+                    $transaction = QuestionnaireItem::insert($data);
                     DB::commit();
                     echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
                 } catch (\Exception $e) {
