@@ -86,9 +86,9 @@
                             @if(isset($to)) {{ " - " . date("Y年 m月 d日", strtotime($to)) }} @endif
                         </div>
                         <div class="card-body p-0 m-0 b-0">
-
                             <div class="table-responsive mb-0">
-                                <table class="table esi-table table-bordered table-striped  ">
+
+                                <table id="report" class="table esi-table table-bordered table-striped  ">
                                     <thead>
                                         <tr>
                                             <td>I.D.</td>
@@ -178,6 +178,7 @@
 
                     <div class="row mt-2">
                         <div class="col-md-5">
+
                             <span class="mr-4">
                                 <a href="/downloadSalaryReport?type=pdf&dateFrom={{$from}}&dateTo={{$to}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
                                     <img src="{{ url('images/pdf.gif') }}"> Download As PDF
@@ -256,6 +257,6 @@
             this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
         }).trigger("change")
     });
-
 </script>
 @endsection
+ 

@@ -315,6 +315,9 @@ class ExportController extends Controller
 
         if (strtolower($request->type) == 'pdf') 
         {
+            set_time_limit(0);
+
+
             foreach ($schedules as $schedule) {
 
                 $tutorName = "-";
