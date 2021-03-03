@@ -165,6 +165,9 @@ Route::get('exportCSV', 'ExportController@exportCSV')->name('exportMemberCSV');
 Route::get('exportExpiredXLS', 'ExportController@exportExpiredXLS')->name('exportExpiredXLS');
 Route::get('exportSoonToExpireXLS', 'ExportController@exportSoonToExpireXLS')->name('exportSoonToExpireXLS');
 
+//salary report
+Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->name('downloadSalaryReport');
+
 
 
 

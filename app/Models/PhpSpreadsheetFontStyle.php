@@ -33,6 +33,34 @@ class PhpSpreadsheetFontStyle extends Model
         return $spreadsheet;
     }
 
+
+    public static function init_report() 
+    {
+        //Init
+        $spreadsheet = new Spreadsheet();     
+
+        //STYLE
+        $styleArrayH1 = Style::setHeader();
+        
+        //general style
+        $spreadsheet->getDefaultStyle()->getFont()->setName('Arial');
+        $spreadsheet->getActiveSheet()->getDefaultColumnDimension()->setWidth(25);
+
+        //set initial width
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(35);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(35);
+
+        //Header Style
+        $spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleArrayH1);
+
+        //Merge Header
+        $spreadsheet->getActiveSheet()->mergeCells('A1:H1');        
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
+
+        return $spreadsheet;
+    }
+    
+    
     public static function setHeader($fontColor = 'FFFFFF', $bgColor = "0000c1", $fonSize = 25) 
     {
         $styleArray = [

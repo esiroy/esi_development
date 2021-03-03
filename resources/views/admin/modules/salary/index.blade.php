@@ -61,11 +61,11 @@
 
                             <div class="col-lg-4 col-md-4 col-sm-12 pt-2">
                                 <label for="status">Tutor:</label>
-                                <select name="tutor" id="status" class="form-control form-control-sm  d-inline-block col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                                <select name="tutor" id="tutor" class="form-control form-control-sm  d-inline-block col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12">
                                     <option value="">All</option>
                                     @foreach($tutors as $key => $tutor)
                                     <option value="{{ $tutor->user_id }}" {{ (request()->has('tutor') && request()->get('tutor') == $tutor->user_id) ? "selected" : '' }}>
-                                        {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}
+                                        {!! $tutor->user->firstname ?? '' !!} {!! $tutor->user->lastname ?? '' !!}
                                     </option>
                                     @endforeach
                                 </select>
@@ -107,7 +107,7 @@
                                             @php
                                                 $tutor = \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
                                             @endphp
-                                            {{ $tutor->user->firstname ?? "" }}
+                                            {!! $tutor->user->firstname ?? "" !!}
                                         </td>
 
                                         <td>
@@ -140,7 +140,9 @@
                                         </td>                                        
 
 
-                                        <td>{{ ucwords(str_replace("_", " ", strtolower($schedule->schedule_status))) }}</td>
+                                        <td>
+                                            {{ ucwords(str_replace("_", " ", strtolower($schedule->schedule_status))) }}
+                                        </td>
                                         <td>
                                             @php
                                             $tutor = \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
@@ -169,21 +171,44 @@
                                 </table>
 
                             </div>
-                        </div>
+                        </div>                        
                     </div>
 
+                    <div class="row mt-2">
+                        <div class="col-md-5">
+                            <span class="mr-4">
+                                <a href="/downloadSalaryReport?type=pdf&dateFrom={{$from}}&dateTo={{$to}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
+                                    <img src="{{ url('images/pdf.gif') }}"> Download As PDF
+                                </a>
+                            </span>
+                            <span>
+                                <a href="/downloadSalaryReport?type=excel&dateFrom={{$from}}&dateTo={{$to}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
+                                    <img src="{{ url('images/excel.gif') }}"> Download As Excel
+                                </a> 
+                            </span>
+                        </div>
 
-                    <div class="float-right mt-4">
-                        <ul class="pagination pagination-sm">
-                            {{ $schedules->appends(request()->query())->links() }}
-                        </ul>
+                        <div class="col-md-7">
+                            <div class="float-right">
+                            <ul class="pagination pagination-sm pb-0 mb-0">
+                                {{ $schedules->appends(request()->query())->links() }}
+                            </ul>
+                            </div>
+                        </div>
                     </div>
 
 
                 </div>
                 <!--[end] card body-->
+
+
+
             </div>
             <!--[end] card-->
+
+
+
+
         </div>
         <!--[end] container -->
     </div>
