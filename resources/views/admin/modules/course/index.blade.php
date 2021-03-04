@@ -71,6 +71,13 @@
                                         $courseCategory = new \App\Models\CourseCategory();
                                     @endphp
                                     {!! $courseCategory->getParentNameHeirachy($category->id) !!}
+
+                                    @php                                     
+                                        $lessonMaterials = new \App\Models\LessonMaterial();
+                                        $materialCount = $lessonMaterials->where('course_category_id', $category->id)->count();
+                                    @endphp
+
+                                    ({{$materialCount . " Files"}})
                                 </td>
                                 <td>
                                     {{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}               
