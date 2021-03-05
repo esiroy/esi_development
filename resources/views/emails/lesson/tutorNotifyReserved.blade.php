@@ -18,7 +18,7 @@ Hi {{ $tutor->user->firstname }}
     @elseif (strtolower($member->communication_app) == 'zoom')
         Member Zoom : {{ $member->zoom_account ?? '' }}
     @else 
-        @if (isset($member->skype_account)) {
+        @if (isset($member->skype_account)) 
             Member Skype : {{ $member->skype_account ?? ''}}
         @else 
             Member Zoom : {{ $member->zoom_account ?? ''}}
