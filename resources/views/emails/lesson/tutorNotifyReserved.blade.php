@@ -13,7 +13,7 @@ Hi {{ $tutor->user->firstname }}
 </div>
 
 <div style="margin-top:20px; font-size: 14px">
-    @if (strtolower($member->communication_app) == 'skype') {
+    @if (strtolower($member->communication_app) == 'skype')
         Member Skype : {{ $member->skype_account ?? ''}}
     @elseif (strtolower($member->communication_app) == 'zoom')
         Member Zoom : {{ $member->zoom_account ?? '' }}
