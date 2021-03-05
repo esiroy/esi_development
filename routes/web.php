@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::resource('dump', 'dummyController');
+
+
+Route::get('testMailReserved', 'dummyController@testMailReserved');
+Route::get('testMailCancelled', 'dummyController@testMailCancelled');
+
 //Route::get('test/{id}', 'TableImporterController@test')->name('test');
 //Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 

@@ -18,7 +18,6 @@ use App\Models\ReportCard;
 use App\Models\ReportCardDate;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
-
 use Auth;
 use DB;
 use Illuminate\Http\Request;
@@ -331,12 +330,8 @@ class MemberController extends Controller
             ->exists();
 
         if ($isLessonExists) {
-            //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
-
             return Response()->json([
                 "success" => false,
-                //"refresh"  => true,
-                //'tutorLessonsData' => $tutorLessonsData,
                 "message" => "Tご予約できません。　既に同じ時間にご予約があります。",
             ]);
         }
@@ -347,6 +342,41 @@ class MemberController extends Controller
             'schedule_status' => $schedule_status,
         ];
         $schedule->update($data);
+
+      
+        /*******************************************               
+        *       [START] SEND MAIL (JOB) RESERVED
+        *******************************************/      
+        //initialize member, tutor and schedule items    
+        $scheduleItemObj = new scheduleItem();
+        $selectedSchedule = $scheduleItemObj->find($scheduleID);
+
+        if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
+        {            
+            $memberObj = new Member();
+            $tutorObj = new Tutor();
+            $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id )->first();
+            $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();
+
+            $details['template'] = "emails.lesson.reserved";                                
+            $details['subject'] = 'マイチューター：レッスン予約のご案内'; //reserved
+            $details['email'] =  $memberInfo->user->email; //recipient (mailto:)
+            $job = new \App\Jobs\SendEmailJob($details, $memberInfo, $tutorInfo, $selectedSchedule);
+            dispatch($job); //Add to Queue 
+
+            /*******************************************
+            *       SEND MAIL TO TUTOR 
+            *******************************************/
+            $tutorDetails['template'] = "emails.lesson.tutorNotifyReserved";                                
+            $tutorDetails['subject'] = 'My Tutor: Lesson Schedule Reserved'; //reserved
+            $tutorDetails['email'] =  $tutorInfo->user->email; //recipient (mailto:)            
+            $jobTutor = new \App\Jobs\SendEmailJob($tutorDetails, $memberInfo, $tutorInfo, $selectedSchedule);
+            dispatch($jobTutor); //Add to Queue 
+
+        } 
+        /*******************************************               
+        *       [END] SEND MAIL (JOB) RESERVED
+        *******************************************/          
 
 
         //** ADD MEMBER TRANSACTION */

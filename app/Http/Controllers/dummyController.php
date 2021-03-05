@@ -1,9 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\User;
@@ -12,42 +10,197 @@ use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\MemberAttribute;
 use App\Models\ScheduleItem;
-
+use App\Mail\SendEmailDemo;
+use App;
 use Gate;
 use DB;
 use Auth;
 use Config;
-
 use Mail;
+
+use App\Models\LessonMailer;
+
+
 use App\Mail\CustomerSupport as CustomerSupportMail;
+
+
+
 use App\Models\PhpSpreadsheetFontStyle as Style;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+
+use Carbon\Carbon;
+
+
 
 class dummyController extends Controller
 {
 
     public function __construct()
     {
-       //$this->middleware('auth')->except(['index']);
+
     }
+
+    public function index( LessonMailer $lessonMailer){
+        
+        //initialize member, tutor and schedule items
+        $memberObj = new Member();
+        $tutorObj = new Tutor();
+        $scheduleItem = new scheduleItem();
+
+        $memberInfo = $memberObj->where('user_id',20372)->first();
+        $tutorInfo = $tutorObj->where('user_id', 21809)->first();
+        $scheduleItem = $scheduleItem->find(879884);
+        
+        
+        $lessonMailer->send($memberInfo, $tutorInfo, $scheduleItem);
+
+        dd('Send Email Successfully');
+
+    }
+    
+
+    public function sendTestMail() {
+
+        //$user['email'] = 'emailroy2002@yahoo.com';
+        //Mail::to($user['email'])->send(new SendEmailDemo());        
+        
+        Mail::to("bhadz.trex@gmail.com")
+        ->cc(["emailroy2002@yahoo.com", "abellana@gmail.com"])
+        //->bcc($evenMoreUsers)
+        //->from('support@mytutor.co.jp', 'マイチューター')        
+        ->send(new SendEmailDemo());
+    }
+
 
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {   
+    public function testMailReserved()
+    {         
+        /*
+        if (App::environment(['local', 'staging'])) {
+            echo "1";
+        } else {
+            echo "2";
+        }*/
 
+
+
+        //*** TEMPLATE ***/
+        $details['template'] = "emails.lesson.reserved";
+
+        //email to:
+        $details['email'] = 'emailroy2002@yahoo.com';
+        $details['subject'] = 'マイチューター：レッスン予約のご案内'; //reserved
+        
+        //initialize member, tutor and schedule items
+        $memberObj = new Member();
+        $tutorObj = new Tutor();
+        $scheduleItem = new scheduleItem();
+
+        $member = $memberObj->where('user_id',20372)->first();
+        $tutor = $tutorObj->where('user_id', 14253)->first();
+        $scheduleItem = $scheduleItem->find(879884);
+
+        return view('emails.lesson.tutorNotifyReserved', compact('member','tutor', 'scheduleItem'));
+
+
+
+        $job = new \App\Jobs\SendEmailJob($details, $member, $tutor, $scheduleItem);
+        dispatch($job);        
+
+
+        dd('Send Email Successfully');
+        //return view('emails.lesson.reserved', compact('member','tutor', 'scheduleItem'));
+    }
+
+
+    public function testMailCancelled()
+    {        //*** TEMPLATE ***/
+        $details['template'] = "emails.lesson.memberNotifyCancelled";
+
+        //email to:
+        $details['email'] = 'emailroy2002@yahoo.com';
+        $details['subject'] = 'マイチューター：レッスンキャンセルのご案内'; //cancelled
+        
+        //initialize member, tutor and schedule items
+        $memberObj = new Member();
+        $tutorObj = new Tutor();
+        $scheduleItem = new scheduleItem();
+
+        $member = $memberObj->where('user_id',20372)->first();
+        $tutor = $tutorObj->where('user_id', 14253)->first();
+        $scheduleItem = $scheduleItem->find(879884);
+
+        $job = new \App\Jobs\SendEmailJob($details, $member, $tutor, $scheduleItem);
+
+        dispatch($job);        
+        dd('Send Email Successfully');        
+    }    
+
+
+    public function clientNotAvailable() 
+    {  
+        $details['template'] = "emails.lesson.cancelled";
+
+        //email to:
+        $details['email'] = 'emailroy2002@yahoo.com';
+        $details['subject'] = 'マイチューター：レッスン欠席のご案内'; //client not available
+        
+        //initialize member, tutor and schedule items
+        $memberObj = new Member();
+        $tutorObj = new Tutor();
+        $scheduleItem = new scheduleItem();
+
+        $member = $memberObj->where('user_id',20372)->first();
+        $tutor = $tutorObj->where('user_id', 14253)->first();
+        $scheduleItem = $scheduleItem->find(879884);
+
+        $job = new \App\Jobs\SendEmailJob($details, $member, $tutor, $scheduleItem);
+
+        dispatch($job);        
+        dd('Send Email Successfully');         
+    }
+
+
+    public function tutorNotAvailable() 
+    {    
+        //マイチューター：レッスンキャンセルのご案内 (CHECKED)
+
+
+        $details['template'] = "emails.lesson.cancelled";
+
+        //email to:
+        $details['email'] = 'emailroy2002@yahoo.com';
+        $details['subject'] = 'マイチューター：レッスンキャンセルのご案内'; //tutor not available
+        
+        //initialize member, tutor and schedule items
+        $memberObj = new Member();
+        $tutorObj = new Tutor();
+        $scheduleItem = new scheduleItem();
+
+        $member = $memberObj->where('user_id',20372)->first();
+        $tutor = $tutorObj->where('user_id', 14253)->first();
+        $scheduleItem = $scheduleItem->find(879884);
+
+        $job = new \App\Jobs\SendEmailJob($details, $member, $tutor, $scheduleItem);
+
+        dispatch($job);        
+        dd('Send Email Successfully');          
+
+    }
+
+
+
+    function lessonLimitTest() 
+    {      
         $memberID = Auth::user()->id;
-
         $memberAttribute = new MemberAttribute();
         $scheduleItem = new ScheduleItem();
         $attribute = $memberAttribute->getLessonLimit($memberID);
-
-
-        
 
         //current lesson limit
         $limit = $attribute->lesson_limit;
@@ -62,12 +215,12 @@ class dummyController extends Controller
             echo "okay";
         }
 
-        exit();
-
-        date("Y-m-d H:i:s", strtotime($schedule->lesson_time ." - 30 minutes"));
+    }
 
         
-        exit();
+
+    function excelExportTest() 
+    {
         $dateToday = date("m/d/Y");
         $filename =  "MyPageSortedMemberList.xlsx";
                
@@ -111,8 +264,7 @@ class dummyController extends Controller
         } else {
             http_response_code(404);
 	        die();
-        }
-
+        }        
 
     }
 
@@ -124,19 +276,9 @@ class dummyController extends Controller
      */
     public function create()
     {
-
-
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id');
         $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
         $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
-        
-        
-        echo "test";
-
-        //@todo: get all member
-
-        //@todo: get transaction that are expired for this member
-
 
     }
 

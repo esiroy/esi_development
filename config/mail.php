@@ -84,8 +84,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'info@mytutor-jpn.com'),
-        'name' => env('MAIL_FROM_NAME', 'My Tutor'),
+        'address' => env('MAIL_FROM_ADDRESS', 'support@mytutor.co.jp'),
+        'name' => env('MAIL_FROM_NAME', 'マイチューター'),
     ],
     
 
@@ -107,5 +107,13 @@ return [
             resource_path('views/vendor/mail'),
         ],
     ],
+
+    'stream' => [
+        'ssl' => [
+            'verify_peer' => false,
+            'verify_peer_name' => false,
+            'allow_self_signed' => true,
+        ],
+    ],    
 
 ];
