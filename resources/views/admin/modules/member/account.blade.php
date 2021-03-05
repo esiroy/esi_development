@@ -47,7 +47,11 @@
                                 <div class="row py-1">
                                     <div class="col-md-3">Agent : </div>
                                     <div class="col-md-9">
-                                        {{ $member->agent->name_en ?? " ~ " }}
+                                        @php 
+                                            $agent = new App\Models\Agent();
+                                            $agentInfo = $agent->where('user_id', $member->agent_id)->first();                                          
+                                        @endphp
+                                        {!! $agentInfo->user->firstname ?? '' !!}                                         
                                     </div>
                                 </div>
 
@@ -161,7 +165,9 @@
                                 <td>
                                     {{ date('F d, Y h:i:s a', strtotime($transaction->created_at)) }}
                                 </td>
-                                <td>{{ str_replace("_", " ", ucwords(strtolower($transaction->transaction_type))) }}</td>
+                                <td>
+                                    {{ str_replace("_", " ", ucwords(strtolower($transaction->transaction_type))) }}
+                                </td>
 
                                 <td>
                                     <!-- @note: get member name -->
