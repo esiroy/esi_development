@@ -18,6 +18,7 @@ use App\Models\ReportCard;
 use App\Models\ReportCardDate;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
+use App\Models\LessonMailer;
 use Auth;
 use DB;
 use Illuminate\Http\Request;
