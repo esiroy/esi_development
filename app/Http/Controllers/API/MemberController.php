@@ -512,17 +512,14 @@ class MemberController extends Controller
                 //initialize member, tutor and schedule items    
                 $scheduleItemObj = new scheduleItem();
                 $selectedSchedule = $scheduleItemObj->find($scheduleID);
-
-                if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
-                {            
-                    $memberObj = new Member();
-                    $tutorObj = new Tutor();
-                    $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
-                    $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
-                    
-                    $lessonMailer = new LessonMailer();
-                    $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);    
-                } 
+                $memberObj = new Member();
+                $tutorObj = new Tutor();
+                $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
+                $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                
+                $lessonMailer = new LessonMailer();
+                $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);    
+               
                 /*******************************************               
                 *       [END] SEND MAIL 
                 *******************************************/           
