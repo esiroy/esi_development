@@ -343,41 +343,6 @@ class MemberController extends Controller
         ];
         $schedule->update($data);
 
-      
-        /*******************************************               
-        *       [START] SEND MAIL (JOB) RESERVED
-        *******************************************/      
-        //initialize member, tutor and schedule items    
-        $scheduleItemObj = new scheduleItem();
-        $selectedSchedule = $scheduleItemObj->find($scheduleID);
-
-        if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
-        {            
-            $memberObj = new Member();
-            $tutorObj = new Tutor();
-            $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id )->first();
-            $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();
-
-            $details['template'] = "emails.lesson.reserved";                                
-            $details['subject'] = 'マイチューター：レッスン予約のご案内'; //reserved
-            $details['email'] =  $memberInfo->user->email; //recipient (mailto:)
-            $job = new \App\Jobs\SendEmailJob($details, $memberInfo, $tutorInfo, $selectedSchedule);
-            dispatch($job); //Add to Queue 
-
-            /*******************************************
-            *       SEND MAIL TO TUTOR 
-            *******************************************/
-            $tutorDetails['template'] = "emails.lesson.tutorNotifyReserved";                                
-            $tutorDetails['subject'] = 'My Tutor: Lesson Schedule Reserved'; //reserved
-            $tutorDetails['email'] =  $tutorInfo->user->email; //recipient (mailto:)            
-            $jobTutor = new \App\Jobs\SendEmailJob($tutorDetails, $memberInfo, $tutorInfo, $selectedSchedule);
-            dispatch($jobTutor); //Add to Queue 
-
-        } 
-        /*******************************************               
-        *       [END] SEND MAIL (JOB) RESERVED
-        *******************************************/          
-
 
         //** ADD MEMBER TRANSACTION */
         if ($memberID != null) 
@@ -396,6 +361,26 @@ class MemberController extends Controller
             AgentTransaction::create($transaction);
         }                    
         
+        /*******************************************               
+        *       [START] SEND MAIL
+        *******************************************/      
+        //initialize member, tutor and schedule items    
+        $scheduleItemObj = new scheduleItem();
+        $selectedSchedule = $scheduleItemObj->find($scheduleID);
+        if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
+        {            
+            $memberObj = new Member();
+            $tutorObj = new Tutor();
+            $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id )->first();
+            $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+            
+            $lessonMailer = new LessonMailer();
+            $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);    
+        } 
+        /*******************************************               
+        *       [END] SEND MAIL 
+        *******************************************/    
+
         $credits = $agentCredts->getCredits($memberID);
 
         return Response()->json([
@@ -471,8 +456,24 @@ class MemberController extends Controller
                     $questionnaire->delete();
                 }
 
-                $credits = $agentCredts->getCredits(Auth::user()->id );
 
+                /*******************************************               
+                *       [START] SEND MAIL
+                *******************************************/      
+                $scheduleItemObj = new scheduleItem();
+                $selectedSchedule = $scheduleItemObj->find($scheduleID);
+                $memberObj = new Member();
+                $tutorObj = new Tutor();
+                $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
+                $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                
+                $lessonMailer = new LessonMailer();
+                $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);                
+                /*******************************************               
+                *       [END] SEND MAIL 
+                *******************************************/   
+
+                $credits = $agentCredts->getCredits(Auth::user()->id );
                 return Response()->json([
                     "success" => true,
                     'bookable' => true, //bookable(true) will add the link for booking
@@ -504,8 +505,29 @@ class MemberController extends Controller
                     $questionnaire->delete();
                 }
 
-                $credits = $agentCredts->getCredits(Auth::user()->id );
 
+                /*******************************************               
+                *       [START] SEND MAIL
+                *******************************************/      
+                //initialize member, tutor and schedule items    
+                $scheduleItemObj = new scheduleItem();
+                $selectedSchedule = $scheduleItemObj->find($scheduleID);
+
+                if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
+                {            
+                    $memberObj = new Member();
+                    $tutorObj = new Tutor();
+                    $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
+                    $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                    
+                    $lessonMailer = new LessonMailer();
+                    $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);    
+                } 
+                /*******************************************               
+                *       [END] SEND MAIL 
+                *******************************************/           
+
+                $credits = $agentCredts->getCredits(Auth::user()->id );
                 return Response()->json([
                     "success" => true,
                     'bookable' => false,

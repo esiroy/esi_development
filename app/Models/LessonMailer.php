@@ -14,6 +14,10 @@ class LessonMailer extends Model
     
     
     //@data: [Email, subject, View Template]
+    //Mail will only reserved: 
+    //1. Client not available
+    //2. Reservation
+    //3. Tutor cancel
     public function send($memberInfo, $tutorInfo, $scheduleItem) 
     {
         $scheduleItemObj = new scheduleItem();
@@ -42,25 +46,9 @@ class LessonMailer extends Model
 
         } else if ( $selectedSchedule->schedule_status == 'SUPPRESSED_SCHEDULE')  {
 
-
             /*******************************************
-            *       SEND MAIL TO MEMBER 
-            *******************************************/                
-            $memberEmailData['template'] = "emails.lesson.memberNotifyReserved";
-            $memberEmailData['subject'] = 'マイチューター：代講講師予約のご案内'; //My Tutor: Advance Lecture Instructor Reservation
-            $memberEmailData['email'] = $memberInfo->user->email; //recipient (mailto:)
-
-            self::dispatchEmail($memberEmailData, $memberInfo, $tutorInfo, $selectedSchedule);            
-
-            /*******************************************
-            *       SEND MAIL TO TUTOR 
+            * NO EMAIL, JUST RESERVED IT FOR NO ONE (BLOCKED, SUPPRESSED, NOT AVAILBLE)
             *******************************************/
-            $tutorEmaildata['template'] = "emails.lesson.tutorNotifyReserved";                                
-            $tutorEmaildata['subject'] = 'My Tutor: Lesson Schedule Reserved'; //reserved
-            $tutorEmaildata['email'] =  $tutorInfo->user->email; //recipient (mailto:)            
-    
-            self::dispatchEmail($tutorEmaildata, $memberInfo, $tutorInfo, $selectedSchedule); //Add to Queue        
-            
 
         } else if ( $selectedSchedule->schedule_status == 'TUTOR_CANCELLED')  {
 
@@ -105,7 +93,11 @@ class LessonMailer extends Model
             self::dispatchEmail($tutorEmaildata, $memberInfo, $tutorInfo, $selectedSchedule); //Add to Queue                    
 
         } else if ( $selectedSchedule->schedule_status == 'COMPLETED')  {       
-            //@note: completed does not send any message
+            
+            /*******************************************
+            * NO EMAIL, JUST SILENT MARKED COMPLETED
+            *******************************************/
+
         } 
 
 
