@@ -259,9 +259,11 @@
                     id: id
                 }, headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }, success: function(data) {                
+                }, success: function(data) {
+                    //total credits
+                    $('#total_credits').text(data.credits)                            
                     $('.row_reserve_' + id ).hide();
-                    $('#loadingModal').modal('hide');          
+                    $('#loadingModal').modal('hide');
                 }
             });
         }        
