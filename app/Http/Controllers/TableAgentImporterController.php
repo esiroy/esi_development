@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Agent;
-
+use App\Models\User;
 use DB;
 
 class TableAgentImporterController extends Controller
