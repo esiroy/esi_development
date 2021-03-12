@@ -91,7 +91,7 @@ class TableAgentImporterController extends Controller
 
                 try
                 {
-                    $agent = Agent::insert($data);
+                    $agent = Agent::create($data);
 
                     $user = User::find($item->user_id);
 
