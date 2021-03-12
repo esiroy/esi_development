@@ -93,7 +93,9 @@ class TableAgentImporterController extends Controller
                 {
                     $agent = Agent::insert($data);
 
-                    //$agent->agents()->sync([$agent->id], false);  
+                    $user = User::find($item->user_id);
+
+                    $user->members()->sync([$agent->id], false); 
 
                     DB::commit();
 
