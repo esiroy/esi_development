@@ -111,6 +111,8 @@ class TableUserImporterController extends Controller
                 {
                     $user = User::create($data);
 
+                    $roles = [];
+
                     if ($item->user_type == "MEMBER") {
 
                         $roles[] = Role::where('title', 'Member')->first()->id;                    
