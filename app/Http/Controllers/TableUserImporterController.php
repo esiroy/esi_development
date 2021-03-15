@@ -112,8 +112,20 @@ class TableUserImporterController extends Controller
                     $user = User::create($data);
 
                     $roles = [];
+                    
 
-                    if ($item->user_type == "MEMBER") {
+                    if ($item->user_type == "ADMINISTRATOR") 
+                    {
+
+                        $roles[] = Role::where('title', 'Admin')->first()->id;                    
+                        $user->roles()->sync($roles);           
+
+                    } else if  ($item->user_type == "MANAGER") {               
+
+                        $roles[] = Role::where('title', 'Manager')->first()->id;                    
+                        $user->roles()->sync($roles);                            
+
+                    } else if ($item->user_type == "MEMBER") {
 
                         $roles[] = Role::where('title', 'Member')->first()->id;                    
                         $user->roles()->sync($roles);   
