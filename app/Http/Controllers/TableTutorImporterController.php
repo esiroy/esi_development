@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\User;
 use App\Models\Agent;
 use App\Models\Tutor;
 
@@ -93,9 +93,13 @@ class TableTutorImporterController extends Controller
 
                 try
                 {
-                    $tutor = Tutor::insert($data);
+                    $tutor = Tutor::create($data);
 
                     //$tutor->tutors()->sync([$tutor->user_id], false);  
+
+                    $user = User::find($item->user_id);
+
+                    $user->tutors()->sync([$tutor->id], false);                      
 
                     DB::commit();
 
