@@ -99,7 +99,7 @@
         </footer>
     </div>
 
-    <script type="text/javascript" src="http://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
+    <script type="text/javascript" src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
 
     @yield('styles')
     @yield('scripts')
