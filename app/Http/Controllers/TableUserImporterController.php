@@ -109,7 +109,7 @@ class TableUserImporterController extends Controller
 
                 try
                 {
-                    $user = UserImporter::insert($data);
+                    $user = UserImporter::create($data);
 
                     $roles = [];
                     
