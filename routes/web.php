@@ -96,6 +96,15 @@ Route::resource('importMembers', 'TableMemberImporterController');
 Route::get('importMembers/index/{per_item}', 'TableMemberImporterController@index');
 Route::get('importMembers/{id}/{per_item}', 'TableMemberImporterController@show');
 
+
+/*************** 
+ * MEMBER ATTRIBUTE IMPORTER
+ ***************/
+Route::resource('importMemberAttribute', 'TableMemberAttributeImporterController');
+Route::get('importMemberAttribute/index/{per_item}', 'TableMemberAttributeImporterController@index');
+Route::get('importMemberAttribute/{id}/{per_item}', 'TableMemberAttributeImporterController@show');
+
+
 /*************** 
  * AGENT IMPORTER
  ***************/
