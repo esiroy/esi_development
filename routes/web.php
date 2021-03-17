@@ -25,20 +25,9 @@ Route::get('testMailCancelled', 'dummyController@testMailCancelled');
 /*************** 
  * AGENT IMPORTER
  ****************/
-Route::get('importAgentTranscations/compare', 'TableImportAgentTransactionsController@compare');
-Route::get('importAgentTranscations/getnew', 'TableImportAgentTransactionsController@getNewTransactions');
-
-//import table
-Route::get('importAgentTranscations/updateMember/{id}', 'TableImportAgentTransactionsController@updateMember');
-
-Route::get('importAgentTranscations/updateAgent/{id}', 'TableImportAgentTransactionsController@updateAgent');
-
-//page chunk links
-Route::get('importAgentTranscations/index', 'TableImportAgentTransactionsController@index');
-
-//@param id - page id number for the chunk
-Route::get('importAgentTranscations/import/{id}', 'TableImportAgentTransactionsController@importAgentTranscations');
-Route::get('importAgentTranscations/import/{id}/{per_item}', 'TableImportAgentTransactionsController@importAgentTranscations');
+Route::resource('importAgentTranscations', 'TableGetAgentTransactionController');
+Route::get('importAgentTranscations/index/{per_item}', 'TableGetAgentTransactionController@index');
+Route::get('importAgentTranscations/{id}/{per_item}', 'TableGetAgentTransactionController@show');
 
 
 /*************** 
