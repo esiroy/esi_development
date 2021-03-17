@@ -187,7 +187,7 @@ class AgentController extends Controller
             $agentTransaction = new AgentTransaction();
             $paymentHistory = $agentTransaction->getAgentPaymentHistory($agentID);
 
-            return view('admin.modules.agent.agentpaymenthistory', compact('member', 'memberInfo', 'agentInfo', 'tutorInfo', 'paymentHistory'));
+            return view('admin.modules.agent.agentpaymenthistory', compact('member',  'agentInfo', 'tutorInfo', 'paymentHistory'));
 
         } else {
             abort(404);
