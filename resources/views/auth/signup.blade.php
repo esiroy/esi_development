@@ -68,7 +68,7 @@
                         <div class="form-group row mb-0">
 
                             <label for="email" class="col-md-4 col-form-label text-md-right       py-4 offset-md-1 border-top border-left">
-                                <span class="font-weight-bold">{{ __('E-Mail Address') }}</span>
+                                <span class="font-weight-bold">{{ __('メールアドレス') }}</span>
                             </label>
 
                             <div class="col-md-6 border-left border-top border-right py-4">
@@ -85,7 +85,7 @@
 
                         <div class="form-group row mt-0 mb-0">
                             <label for="password" class="col-md-4 col-form-label text-md-right    mt-0 pt-0 py-4 offset-md-1 border-top border-left">
-                                <span class="font-weight-bold">{{ __('Password') }}</span>
+                                <span class="font-weight-bold">{{ __('パスワード') }}</span>
                             </label>
 
                             <div class="col-md-6  border-left border-top border-right py-4">
@@ -103,7 +103,7 @@
 
                         <div class="form-group row mt-0 mb-0">
                             <label for="password-confirm" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left border-bottom">
-                                <span class="font-weight-bold">{{ __('Confirm Password') }}</span>
+                                <span class="font-weight-bold">{{ __('パスワードを認証する') }}</span>
                             </label>
                             <div class="col-md-6  border-left border-top border-right border-bottom py-4">
                                 <input name="confirm_password" type="password" class="form-control form-control-sm"  required autocomplete="new-password">
