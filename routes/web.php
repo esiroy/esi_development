@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('dump', 'dummyController');
 
+Route::get('sendTestMail', 'dummyController@sendTestMail');
 
 Route::get('testMailReserved', 'dummyController@testMailReserved');
 Route::get('testMailCancelled', 'dummyController@testMailCancelled');

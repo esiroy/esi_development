@@ -19,13 +19,13 @@
 
                                 <div class="login-box">
 
-                                    <h2 class="heading"> Member Login </h2>
+                                    <h2 class="heading"> 会員ログイン</h2>
 
                                     <form method="POST" action="{{ route('login') }}">
                                         @csrf
 
                                         <div class="form-group row mb-1 mt-1">
-                                            <label for="username" class="col-4 col-form-label text-md-right pt-1">{{ __('Username') }}</label>
+                                            <label for="username" class="col-4 col-form-label text-md-right pt-1">{{ __('メールアドレス	') }}</label>
                                             <div class="col-7 pl-0">
                                                 <input id="username" type="text" class="form-control form-control-sm  @error('username') is-invalid @enderror" name="username" value="{{ old('username') }}" required autocomplete="username" autofocus>
                                                 @error('username')
@@ -37,7 +37,7 @@
                                         </div>
 
                                         <div class="form-group row mb-2 mt-2">
-                                            <label for="password" class="col-4 col-form-label text-md-right">{{ __('Password') }}</label>
+                                            <label for="password" class="col-4 col-form-label text-md-right">{{ __('パスワード') }}</label>
                                             <div class="col-7 pl-0">
                                                 <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
 
@@ -66,7 +66,7 @@
                                         <div class="form-group row mb-0 mt-0">
                                             <div class="col-md-11 text-right text-md-right">
                                                 <button type="submit" id="btn-login" class="btn btn-sm btn-success px-4">
-                                                    {{ __('Login') }}
+                                                    {{ __('ログイン') }}
                                                 </button>
                                             </div>
                                         </div>
@@ -74,7 +74,7 @@
                                             <div class="col-md-12">
                                                 @if (Route::has('password.request'))
                                                 <a class="btn btn-link float-right" href="{{ route('password.request') }}">
-                                                    {{ __('Forgot your password?') }}
+                                                    {{ __('パスワードを忘れた方') }}
                                                 </a>
                                                 @endif
                                             </div>
