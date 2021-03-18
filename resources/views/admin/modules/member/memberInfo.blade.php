@@ -343,7 +343,11 @@
                                         <td>Uploaded File</td>
                                         <td>:</td>
                                         <td>
-                                            <a href="{{ Storage::url('uploads/report_files/'. basename($latestWritingReport->file_path) ) }}" download> {{ $latestWritingReport->file_name ?? '-' }} </a>
+                                            @if(isset($latestWritingReport->file_path))
+                                                <a href="{{ Storage::url('uploads/report_files/'. basename($latestWritingReport->file_path) ) }}" download> {{ $latestWritingReport->file_name ?? '-' }} </a>
+                                            @else 
+                                                ~ 
+                                            @endif
                                         </td>
                                     </tr>
 
