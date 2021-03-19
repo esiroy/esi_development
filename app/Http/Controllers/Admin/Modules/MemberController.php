@@ -18,7 +18,7 @@ use App\Models\User;
 use App\Models\UserImage;
 
 
-use Auth;
+use Auth, Hash;
 use Carbon\Carbon;
 use DB;
 
@@ -324,6 +324,8 @@ class MemberController extends Controller
      */
     public function create()
     {
+        abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         return view('admin.modules.member.create');
     }
 
@@ -338,6 +340,24 @@ class MemberController extends Controller
         //api storing
     }
 
+
+    public function resetPassword($id, Request $request)
+    {
+        abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
+        $member = Member::where('user_id', $id)->first();
+
+        $userData = [
+            'password' => Hash::make($request->password),
+        ];
+
+        $user = User::find($member->user_id);
+        
+        $user->update($userData);
+
+        return redirect()->route('admin.member.edit', $id)->with('message', 'Member password has been updated successfully!');
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -346,6 +366,9 @@ class MemberController extends Controller
      */
     public function edit($memberID)
     {
+
+        abort_if(Gate::denies('member_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $memberInfo = Member::where('user_id', $memberID)->first();
 
         if (!$memberInfo) {
@@ -504,12 +527,25 @@ class MemberController extends Controller
             AgentTransaction::create($agentCredit);
         }
 
-
-
-
         return redirect()->route('admin.member.account', $id)->with('message', 'Member transaction has been added successfully!');
-
     }
+
+    public function activate($id) {
+        $user = User::find($id);
+        $data = ['is_activated'=> true];
+        $user->update($data);
+        return redirect()->route('admin.member.edit', $id)->with('message', 'Member has been activated successfully!');
+    }
+
+
+    public function deactivate($id) 
+    {
+        $user = User::find($id);
+        $data = ['is_activated'=> false];
+        $user->update($data);
+        return redirect()->route('admin.member.edit', $id)->with('message', 'Member has been deactivated successfully!');
+    }
+
 
     /**
      * Remove the specified resource from storage.
@@ -519,6 +555,9 @@ class MemberController extends Controller
      */
     public function destroy($id)
     {
+        abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         $member = Member::where('user_id', $id)->first();
         $user = User::find($member->user_id);
 

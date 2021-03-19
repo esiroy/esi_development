@@ -107,7 +107,10 @@ class LessonMailer extends Model
     public function dispatchEmail($emailData, $memberInfo, $tutorInfo, $selectedSchedule) 
     {
         $jobTutor = new \App\Jobs\SendEmailJob($emailData, $memberInfo, $tutorInfo, $selectedSchedule);
+
         dispatch($jobTutor); //Add to Queue 
+
+           
     }
 
 

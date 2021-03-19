@@ -235,13 +235,13 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
         //Member
         Route::delete('/member/destroy', 'Modules\MemberController@massDestroy')->name('member.massDestroy');
-        Route::resource('/member', 'Modules\MemberController');
-        
+        Route::post('/member/resetPassword/{id}', 'Modules\MemberController@resetPassword')->name('member.resetPassword');        
+        Route::post('/member/activate/{id}', 'Modules\MemberController@activate')->name('member.activate');
+        Route::post('/member/deactivate/{id}', 'Modules\MemberController@deactivate')->name('member.deactivate');
+        Route::resource('/member', 'Modules\MemberController');        
         Route::get('/member/paymenthistory/{id}', 'Modules\MemberController@paymenthistory')->name('member.paymenthistory');
-
         Route::get('/member/account/{id}', 'Modules\MemberController@account')->name('member.account');
-        Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist')->name('member.schedulelist');
-        
+        Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist')->name('member.schedulelist');        
         Route::get('/member/{id}', 'Modules\MemberController@show')->name('member.details');
 
         //tutor

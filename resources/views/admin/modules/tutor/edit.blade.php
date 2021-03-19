@@ -14,8 +14,8 @@
         </div>
     </div>
 
+    <!--[start] Reset Password Container -->
     <div class="container">
-
         <div class="row">
             <div class="col-12 pt-4">
                 @if (session('message'))
@@ -30,6 +30,7 @@
             </div>
         </div>
 
+        <!--[start] Reset Password -->
         <div class="card esi-card mt-2">
             <div class="card-header esi-card-header">Reset Password</div>
             <div class="card-body">
