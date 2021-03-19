@@ -229,6 +229,8 @@
 
     @include('modules.member.popup.questionnaireReadOnly')
 
+
+    @include('modules.member.popup.loading')
 </div>
 @endsection
 
@@ -236,8 +238,29 @@
 @section('scripts')
 @parent
 <script type="text/javascript">
+
     var api_token = "{{ Auth::user()->api_token }}";
 
+    window.addEventListener('load', function() 
+    {   
+        jQuery.ajaxSetup({
+            beforeSend: function() 
+            {
+                //hide questionnaire modals first
+                $('#questionnaireModal').modal('hide');
+                $('#questionnaireReadOnlyModal').modal('hide');   
+
+                $('#loadingModal').modal('show');
+            },
+            complete: function(){
+                $('#loadingModal').modal('hide');
+            },
+            success: function() {
+                $('#loadingModal').modal('hide');
+            }
+        });
+    });
+    
     function disablePreviousDates() {
         var input = document.getElementById("dateToday");
         var today = new Date();
