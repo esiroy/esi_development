@@ -16,6 +16,8 @@ Route::resource('dump', 'dummyController');
 
 Route::get('sendTestMail', 'dummyController@sendTestMail');
 
+Route::get('testDispatch', 'dummyController@testDispatch');
+
 Route::get('testMailReserved', 'dummyController@testMailReserved');
 Route::get('testMailCancelled', 'dummyController@testMailCancelled');
 

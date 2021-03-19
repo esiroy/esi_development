@@ -72,6 +72,19 @@ class dummyController extends Controller
         ->send(new SendEmailDemo());
     }
 
+    public function testDispatch() {
+
+        $details['to'] = 'abellana@gmail.com';
+        $details['name'] = 'Roy this is a test dispatch';
+        $details['subject'] = 'Hello roy i am testing this';
+        $details['message'] = 'Here goes all message body.';
+
+        SendMailJob::dispatch($details);
+
+        return response('Email sent successfully');
+
+    }
+
 
     /**
      * Display a listing of the resource.
