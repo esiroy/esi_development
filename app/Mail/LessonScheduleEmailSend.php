@@ -42,7 +42,9 @@ class LessonScheduleEmailSend extends Mailable
         $scheduleItem = $this->scheduleItem;
 
         if ($member && $tutor && $scheduleItem) {
-            return $this->view($this->details['template'], compact('member','tutor', 'scheduleItem'))->subject($this->details['subject']);
+            return $this->view($this->details['template'], compact('member','tutor', 'scheduleItem'), function ($member) {
+                $message->getHeaders()->addTextHeader('-f'.$member->user->email);
+            })->subject($this->details['subject']);
         }        
     }
 }
