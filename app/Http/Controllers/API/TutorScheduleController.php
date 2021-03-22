@@ -25,7 +25,7 @@ class TutorScheduleController extends Controller
 
             //DB::table('members')->
             $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
-                ->select('members.user_id as uid', 'members.nickname as nn', 'users.firstname as fn', 'users.lastname as ln')
+                ->select('members.user_id as uid', 'members.nickname as nn')
                 ->where('users.valid', 1)
                 ->get();
 
@@ -40,10 +40,35 @@ class TutorScheduleController extends Controller
                 "success" => false,
                 "message" => "Exception Error Found (Get Members) : " . $e->getMessage() . " on Line : " . $e->getLine(),
             ]);
-
         }
-
     }
+
+
+    public function getMembersDropdownOptions(Request $request)
+    {
+        try {
+
+            //DB::table('members')->
+            $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
+                ->select('members.user_id as uid',  'users.firstname as fn', 'users.lastname as ln')
+                ->where('users.valid', 1)
+                ->get();
+
+            return Response()->json([
+                "success" => true,
+                "members" => $members,
+            ]);
+
+        } catch (\Exception $e) {
+
+            return Response()->json([
+                "success" => false,
+                "message" => "Exception Error Found (Get Members) : " . $e->getMessage() . " on Line : " . $e->getLine(),
+            ]);
+        }
+    }
+    
+    
 
     public function getSchedules(Request $request)
     {

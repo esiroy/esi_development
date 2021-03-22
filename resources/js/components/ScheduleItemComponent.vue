@@ -7,7 +7,7 @@
     <div id="scheduleItemModal">
 
 
-        <b-modal id="memberMemoModal" title="Member Memo"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close">
+        <b-modal id="memberMemoModal" title="Member Memo"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade>
             <p class="my-2">{{ memberMemo }}</p>
         </b-modal>
 
@@ -282,6 +282,11 @@ export default {
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;    
         this.setMemberListLock(); //disabler of additoinal options                         
+
+        this.getMemberList();
+
+        this.getMemberDropDownOptionList();       
+                
     },
     async mounted() {
         this.nextDay  = this.schedule_next_day;
@@ -289,9 +294,11 @@ export default {
         //@hide table 
         //let tableSchedules = document.getElementById("tableSchedules");
         //tableSchedules.style.display = "none";
-        this.getSchedules(this.scheduled_at, this.shiftDuration); 
-        this.getMemberList();        
-          //preloader
+        this.getSchedules(this.scheduled_at, this.shiftDuration);
+
+ 
+
+        //preloader
         let preloader = document.getElementById("preloader");
         preloader.style.display  = "block";                
     },
@@ -493,10 +500,8 @@ export default {
         openSchedule(tutorData) 
         {
             this.modalType = "save";
-            //console.log(tutorData);
-            
-            console.log("open schedule");
-
+            //console.log(tutorData);            
+            //console.log("open schedule");
             this.$bvModal.show("schedulesModal");
             this.tutorData = tutorData;
         },
@@ -569,7 +574,7 @@ export default {
         editSchedule(scheduleData) 
         {
             //show the modal first and update the values below             
-            this.$bvModal.show("schedulesModal");            
+            //this.$bvModal.show("schedulesModal");            
             this.modalType = "edit";
 
             //get current schedule data
@@ -581,20 +586,23 @@ export default {
             this.currentSelectedID = this.currentScheduledData.member_id;            
             this.currentStatus = this.currentScheduledData.status;
 
-            let memberData = this.memberDataList[this.currentScheduledData.member_id];
+            let memberData = this.memberOptionList[this.currentScheduledData.member_id];
             
             let memberIDFullName = "";
 
-            console.log(this.modalType);
-            console.log(this.currentScheduledData.member_id);
 
-            if (this.currentScheduledData.member_id !== null && this.currentScheduledData.member_id !== '') {                            
+
+            if (this.currentScheduledData.member_id !== null && this.currentScheduledData.member_id !== '') {         
+
                 let nickname = memberData.nickname;
                 let firstname = memberData.firstname;
                 let lastname = memberData.lastname;  
 
                 memberIDFullName =  this.currentScheduledData.member_id + " " + firstname  + " " + lastname;  
-                this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };                    
+
+                this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };    
+
+
             } else {
                  this.memberSelectedID = { id: "" , 'name': "-- Select A Member --" };
             }
@@ -826,12 +834,52 @@ export default {
                 alert("Error : updateTutorSchedule - " + error);                
 			});            
         },
+        getMemberDropDownOptionList() 
+        {
+            var options = [];
+
+            axios.post("/api/get_members_dropdown_options?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+                message             : "",                
+            }).then(response => {
+
+                if (response.data.success === true) 
+                {              
+                    var options = [];
+
+                    this.$nextTick(function()
+                    {  
+
+                        response.data.members.forEach(function (member, index) {
+
+                            //options.push({'id': member.uid, 'name': member.uid + " " + member.fn + " "+ member.ln  });
+
+                            options[member.uid] = {
+                                                            'id': member.uid, 
+                                                            'firstname': member.fn,
+                                                            'lastname': member.ln,
+                                                            'name': member.uid + " " + member.fn + " "+ member.ln
+                                                        } ;                            
+
+                        });
+
+                        this.memberOptionList = options;
+                        this.$forceUpdate();                        
+                    });
+                    
+                }
+
+            });    
+
+
+        },
         getMemberList() {
             
             axios.post("/api/get_members?api_token=" + this.api_token, 
             {
                 method              : "POST",
-                message             : "this is a test message",
+                message             : "",
                 
             }).then(response => {
 
@@ -839,12 +887,12 @@ export default {
                 {
                     this.$nextTick(function()
                     {  
-                        this.memberList = response.data.members;
-                     
-                        //@todo: ajax load members         
-                        //optionLists of Members
+                        this.memberList = response.data.members;                    
+     
                         let memberData = [];
-                        var options = [];
+
+                        //var options = [];
+
 
                         this.memberList.forEach(function (member, index) 
                         {   
@@ -856,9 +904,11 @@ export default {
                                                             'nickname': member.nn 
                                                         } ;
 
-                            options.push({'id': member.uid, 'name': member.uid + " " + member.fn + " "+ member.ln  });        
+                            //options.push({'id': member.uid, 'name': member.uid + " " + member.fn + " "+ member.ln  });        
                         });
-                        this.memberOptionList = options;
+
+
+
                         this.memberDataList = memberData;
                         this.$forceUpdate(); 
                     });
@@ -866,6 +916,7 @@ export default {
                 else {                    
                     alert (response.data.message);                   
                 }
+
 			}).catch(function(error) {
                 console.log("Error: Get Member List - " + error);                
 			});               
@@ -938,10 +989,7 @@ export default {
             if (this.status === "TUTOR_CANCELLED") {
                 this.membersSelection = 0;
                 this.isStatusDisabled = true;                
-            } else if (this.status === 'CLIENT_RESERVED' || this.status === "CLIENT_RESERVED_B" 
-                || this.status === "TUTOR_CANCELLED" || this.status === "NOTHING"
-                || this.status === 'CLIENT_NOT_AVAILABLE'
-            ){
+            } else if (this.status === 'CLIENT_RESERVED' || this.status === "CLIENT_RESERVED_B" || this.status === "TUTOR_CANCELLED" || this.status === "NOTHING" || this.status === 'CLIENT_NOT_AVAILABLE'){
                 this.isStatusDisabled = false;
             } else {
                 this.membersSelection = 0;

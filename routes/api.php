@@ -52,6 +52,7 @@ Route::middleware('auth:api')->post('/update_tutor_schedule', 'API\TutorSchedule
 Route::middleware('auth:api')->post('/delete_tutor_schedule', 'API\TutorScheduleController@deleteTutorSchedule')->name('APIDeleteTutorSchedule');
 Route::middleware('auth:api')->post('/get_schedules', 'API\TutorScheduleController@getSchedules')->name('APIGetSchedules');
 Route::middleware('auth:api')->post('/get_members', 'API\TutorScheduleController@getMembers')->name('APIGetMemberList');
+Route::middleware('auth:api')->post('/get_members_dropdown_options', 'API\TutorScheduleController@getMembersDropdownOptions')->name('APIGetMemberDropdownOptionList');
 
 
 //[start] member ajax schedule
