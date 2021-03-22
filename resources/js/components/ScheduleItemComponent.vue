@@ -574,7 +574,7 @@ export default {
         editSchedule(scheduleData) 
         {
             //show the modal first and update the values below             
-            //this.$bvModal.show("schedulesModal");            
+            this.$bvModal.show("schedulesModal");            
             this.modalType = "edit";
 
             //get current schedule data
