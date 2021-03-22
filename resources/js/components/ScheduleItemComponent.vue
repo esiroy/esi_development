@@ -839,7 +839,7 @@ export default {
                 {
                     this.$nextTick(function()
                     {  
-                        this.memberList = JSON.parse(response.data.members);
+                        this.memberList = response.data.members;
                      
                         //@todo: ajax load members         
                         //optionLists of Members
@@ -848,15 +848,15 @@ export default {
 
                         this.memberList.forEach(function (member, index) 
                         {   
-                            memberData[member.user_id] = {
-                                                            'id': member.user_id, 
-                                                            'firstname': member.firstname,
-                                                            'lastname': member.lastname,
-                                                            'name': member.user_id + " " + member.firstname + " "+ member.lastname, 
-                                                            'nickname': member.nickname 
+                            memberData[member.uid] = {
+                                                            'id': member.uid, 
+                                                            'firstname': member.fn,
+                                                            'lastname': member.ln,
+                                                            'name': member.uid + " " + member.fn + " "+ member.ln, 
+                                                            'nickname': member.nn 
                                                         } ;
 
-                            options.push({'id': member.user_id, 'name': member.user_id + " " + member.firstname + " "+ member.lastname  });        
+                            options.push({'id': member.uid, 'name': member.uid + " " + member.fn + " "+ member.ln  });        
                         });
                         this.memberOptionList = options;
                         this.memberDataList = memberData;

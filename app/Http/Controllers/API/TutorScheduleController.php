@@ -25,13 +25,10 @@ class TutorScheduleController extends Controller
 
             //DB::table('members')->
             $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
-                ->select('members.id', 'members.user_id', 'members.nickname', 'users.firstname', 'users.lastname', 'users.valid')
+                ->select('members.user_id as uid', 'members.nickname as nn', 'users.firstname as fn', 'users.lastname as ln')
                 ->where('users.valid', 1)
                 ->get();
 
-
-            $members = json_encode($members);
-            
             return Response()->json([
                 "success" => true,
                 "members" => $members,
