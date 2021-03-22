@@ -839,7 +839,7 @@ export default {
                 {
                     this.$nextTick(function()
                     {  
-                        this.memberList = response.data.members;
+                        this.memberList = JSON.parse(response.data.members);
                      
                         //@todo: ajax load members         
                         //optionLists of Members

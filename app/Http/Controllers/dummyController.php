@@ -41,6 +41,33 @@ class dummyController extends Controller
 
     }
 
+    public function testGetMembers() 
+    {
+        $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
+        ->select('members.id', 'members.user_id', 'members.nickname', 'users.firstname', 'users.lastname', 'users.valid')
+        ->where('users.valid', 1)
+        ->get();
+
+        $members = json_encode($members);
+
+
+        echo "<pre>";
+        print_r ($members);
+        echo "</pre>";
+
+
+
+        //echo (microtime(true));
+
+        list($usec, $sec) = explode(' ', microtime()); //split the microtime on space
+        //with two tokens $usec and $sec
+
+        $usec = str_replace("0.", ".", $usec);     //remove the leading '0.' from usec
+
+        print date('H:i:s', $sec) . $usec;       //appends the decimal portion of seconds        
+
+    }
+
     public function index( LessonMailer $lessonMailer){
         
         //initialize member, tutor and schedule items
