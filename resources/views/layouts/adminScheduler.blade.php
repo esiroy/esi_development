@@ -99,7 +99,7 @@
             //js
         });
     </script>
-    <script type="text/javascript" src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
+    <script type="text/javascript" src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js" defer></script>
     @yield('styles')    
     @yield('scripts')
 </body>
