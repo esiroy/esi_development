@@ -14,7 +14,8 @@
         <b-modal id="schedulesModal" 
             title="Schedule Lesson"
             button-size="sm"
-            :no-close-on-backdrop="true"
+            no-fade
+            :no-close-on-backdrop="true"            
             @show="resetModal"
             @hidden="hideModal"
             @ok="handleOk"                    
@@ -277,16 +278,14 @@ export default {
             ] 
         };
     },
+    created() {
+        this.getMemberList();
+    },
     async beforeMount() {
         this.shiftDuration  = this.duration;
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;    
-        this.setMemberListLock(); //disabler of additoinal options                         
-
-        this.getMemberList();
-
-        this.getMemberDropDownOptionList();       
-                
+        this.setMemberListLock(); //disabler of additoinal options 
     },
     async mounted() {
         this.nextDay  = this.schedule_next_day;
@@ -297,6 +296,7 @@ export default {
         this.getSchedules(this.scheduled_at, this.shiftDuration);
 
  
+        //this.getMemberDropDownOptionList();       
 
         //preloader
         let preloader = document.getElementById("preloader");
@@ -933,6 +933,9 @@ export default {
                 shift_duration      : shiftDuration
 
             }).then(response => {
+
+                this.getMemberDropDownOptionList();
+
                 if (response.data.success === true) 
                 {
                     this.$nextTick(function()
