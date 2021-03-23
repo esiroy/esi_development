@@ -38,14 +38,16 @@
 
 
             <div class="col-md-12">
-                <div class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象</div>
-            </div>
-            <div class="col-md-12">
-                <div class="text-dark">
+                <div class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 : 
                     @php                        
                         $transaction = new \App\Models\AgentTransaction();      
                         echo $transaction->getCredits(Auth::user()->id);
-                    @endphp
+                    @endphp                
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-dark">
+
                 </div>
             </div>
 

@@ -418,7 +418,7 @@ class MemberController extends Controller
             $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
 
             //valid time here since it is greater that 3 hours)
-            if ($valid_time  <= $lessonTime) 
+            if ($valid_time <= $lessonTime) 
             {
                 //refund points if status is [client reserved]
                 if ($schedule->schedule_status == "CLIENT_RESERVED") {
@@ -431,19 +431,31 @@ class MemberController extends Controller
                         'valid' => true,
                     ];        
                     AgentTransaction::create($transaction); 
-                } else {
+
+                    //cancel the transaction: 
+                    //1. member id will be emptied  
+                    //2. Update to back to tutor scheduled
+                    $data = [
+                        'member_id' => null,
+                        'schedule_status' => 'TUTOR_SCHEDULED',
+                        'memo'  => null
+                    ];
+                    $schedule->update($data);
+                    
+                
+                } else if ($schedule->schedule_status == "CLIENT_RESERVED_B") { 
+
                     //[client reserved b] - no refund
+
+                    //turn the the status to not available since it is B
+                    $data = [
+                        'schedule_status' => 'CLIENT_NOT_AVAILABLE',                     
+                    ];
+                    $schedule->update($data);
+
                 }     
 
-                //cancel the transaction: 
-                //1. member id will be emptied  
-                //2.Update to back to tutor scheduled
-                $data = [
-                    'member_id' => null,
-                    'schedule_status' => 'TUTOR_SCHEDULED',
-                    'memo'  => null
-                ];
-                $schedule->update($data);          
+          
                 
                 //@todo: search delete questionnaire 
                 $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->where('valid', true)->first();

@@ -40,8 +40,9 @@ class ScheduleItem extends Model
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
             ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
         })->whereDate('lesson_time', ">=", $date)
-        ->orderby('created_at', 'ASC')
-        ->get();
+        ->orderby('lesson_time', 'ASC')
+        ->paginate(5);
+
         return $reserves;
     }
 

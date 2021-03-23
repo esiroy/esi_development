@@ -135,6 +135,7 @@
                                     </tr>
                                     <!-- COUNTER FOR PAGINATION -->
                                     @foreach ($reserves as $reserve)
+
                                     <tr class="row_reserve_{{$reserve->id}}">
                                         <td style="text-align: center;">
 
@@ -170,16 +171,29 @@
                                                 $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));
                                             @endphp
                                             
-                                            @if ($valid_time <= $lessonTime) 
-                                                <!--valid time here since it is greater that 3 hours) -->
-                                                <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
-                                            @else 
+                                            @if ($reserve->schedule_status == "CLIENT_RESERVED_B")
                                                 <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
+                                            @else 
+                                                @if ($valid_time <= $lessonTime) 
+                                                    <!--valid time here since it is greater that 3 hours) -->
+                                                    <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
+                                                @else 
+                                                    <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
+                                                @endif
                                             @endif
 
                                         </td>
                                     </tr>
                                     @endforeach
+
+                                    <tr>
+                                        <td colspan="5">
+                                            <div class="float-right">
+                                                {{ $reserves->links() }}
+                                            </div>
+                                        </td>
+                                    </tr>
+
 
 
                                 </tbody>
@@ -240,7 +254,9 @@
                     id: id
                 }, headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }, success: function(data) {                
+                }, success: function(data) {              
+                    //total credits
+                    $('#total_credits').text(data.credits);                      
                     $('.row_reserve_' + id ).hide();
                     $('#loadingModal').modal('hide');          
                 }
