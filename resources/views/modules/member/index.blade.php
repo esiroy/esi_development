@@ -176,7 +176,7 @@
                                             @else 
                                                 @if ($valid_time <= $lessonTime) 
                                                     <!--valid time here since it is greater that 3 hours) -->
-                                                    <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
+                                                    <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
                                                 @else 
                                                     <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
                                                 @endif
@@ -264,6 +264,7 @@
         }
     }
 
+    /* delete schedule is now merge to cancel schedule which will auto determine the sched status
     function deleteSchedule(id) {
        
         if (confirm('このレッスンをキャンセルしてもいいですか？')) 
@@ -283,7 +284,8 @@
                 }
             });
         }        
-    }
+    } 
+    */
 
     function openMemo(id)
     {   

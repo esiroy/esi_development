@@ -305,15 +305,23 @@ class MemberController extends Controller
             {
                 return Response()->json([
                     "success" => false,           
-                    "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
-                    "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                    //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                    //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+
+                    "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                    "message_en" => "You are out of points or your points have expired.",                    
+
+                    
                 ]);        
             }    
         } else {
             return Response()->json([
                 "success" => false,           
-                "message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
-                "message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
+                //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+
+                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                "message_en" => "You are out of points or your points have expired.",                     
             ]);
         }
 
