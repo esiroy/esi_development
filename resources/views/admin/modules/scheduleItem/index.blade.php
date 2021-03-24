@@ -24,18 +24,24 @@
                 <div class="card-body">
 
                     <form name="dateForm" method="GET">
-                    <div class="row">
-                            <div class="col-6">
-                                <label for="inputDate" class="pr-3">Date:</label>
-                                <input type="date" id="inputDate" name="inputDate" value="{{ $dateToday }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-3"> 
-                                <input type="submit" class="btn btn-primary btn-sm d-inline col-1" value="Go">
-
-                            </div>
-                    </div>
+                        <table>
+                            <tr>
+                                <td style="width:60px">
+                                    <small>Date</small>
+                                </td>
+                                <td style="width:150px">
+                                    <input type="date" id="inputDate" name="inputDate" placeholder="{{ $dateToday }}" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-sm-12 col-md-12">
+                                </td>
+                                <td>
+                                  <input type="submit" class="btn btn-primary btn-sm" value="Go">
+                                </td>
+                            </tr>
+                        </table>
                     </form>
 
 
-                    
+
+
                     <div class="legend bg-lightgray mt-2">
                         <table cellspacing="0" cellpadding="5">
                             <tbody>
@@ -61,24 +67,19 @@
                             </tbody>
                         </table>
                     </div>
-                    
+
                     <p class="card-text"></p>
 
 
-                    <schedule-item-component
-                        ref="scheduleItemComponent"
-                        :scheduled_at="'{{ $dateToday }}'"
-                        :schedule_next_day="'{{ $nextDay }}'"
-                        :year="{{ $year}}" 
-                        :month="{{ $month }}" 
-                        :day="{{ $day}}"
-                        :duration="{{ $shiftDuration }}"
-                        :schedule_items ="{{ json_encode($scheduleItems) }}"
-                        :tutors="{{ $tutors }}"
-                        :members="{{ $members }}"
-                        api_token="{{ Auth::user()->api_token }}"
-                        csrf_token="{{ csrf_token() }}"
-                    />
+                    <schedule-item-component ref="scheduleItemComponent" 
+                        :scheduled_at="'{{ $dateToday }}'" 
+                        :schedule_next_day="'{{ $nextDay }}'" 
+                        :year="{{ $year}}" :month="{{ $month }}" :day="{{ $day}}" 
+                        :duration="{{ $shiftDuration }}" 
+                        :schedule_items="{{ json_encode($scheduleItems) }}" 
+                        :tutors="{{ $tutors }}" :members="{{ $members }}" 
+                        api_token="{{ Auth::user()->api_token }}" 
+                        csrf_token="{{ csrf_token() }}" />
 
                 </div>
             </div>
@@ -93,12 +94,57 @@
 </div>
 @endsection
 
+
+
+@section('styles')
+@parent
+<style>
+    input.inputDate {}
+
+    input.inputDate:before {
+        content: attr(data-date);
+    }
+
+    input.inputDate::-webkit-datetime-edit,
+    input.inputDate::-webkit-inner-spin-button,
+    input.inputDate::-webkit-clear-button {
+        display: none;
+    }
+
+    input.inputDate::-webkit-calendar-picker-indicator {
+        position: absolute;
+        top: 3px;
+        right: 0;
+        color: black;
+        opacity: 1;
+    }
+
+</style>
+@endsection
+
+
+
 @section('scripts')
 @parent
+
 <script>
     let url = "{{ url('/admin/member/') }}";
-    function openMemberTab(id) {       
-       window.open(url + "/" + id,'memberTab');
+
+    function openMemberTab(id) {
+        window.open(url + "/" + id, 'memberTab');
     }
+
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+<script type="text/javascript">
+    window.addEventListener('load', function() 
+    {        
+        $(".inputDate").on("change", function() {
+            this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
+        }).trigger("change")
+    });
+
 </script>
 @endsection
