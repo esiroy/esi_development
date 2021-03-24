@@ -96,7 +96,7 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 <script>
   CKEDITOR.replace( 'body' );
 </script>
