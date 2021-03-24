@@ -1,4 +1,4 @@
-@extends('layouts.adminsimple')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container bg-light px-0">
@@ -50,7 +50,7 @@
                                 <td>From</td>
                                 <td>:</td>
                                 <td>
-                                    <input required type="date"  name="dateFrom" value="{{ old('dateFrom', isset($announcement->date_from ) ? date("Y-m-d", strtotime($announcement->date_from)) : '') }}" class="hasDatepicker">
+                                    <input required type="date"  name="dateFrom" value="{{ old('dateFrom', isset($announcement->date_from ) ? date("Y-m-d", strtotime($announcement->date_from)) : '') }}"  data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
                                     
                                 </td>
                             </tr>
@@ -59,7 +59,7 @@
                                 <td>To</td>
                                 <td>:</td>
                                 <td>
-                                    <input required type="date" id="dateTo*" name="dateTo" value="{{ old('dateTo', isset($announcement->date_to ) ?date("Y-m-d", strtotime($announcement->date_to))  : '') }}" class="hasDatepicker">
+                                    <input required type="date" id="dateTo*" name="dateTo" value="{{ old('dateTo', isset($announcement->date_to ) ?date("Y-m-d", strtotime($announcement->date_to))  : '') }}"  data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
                                 </td>
                             </tr>
 
@@ -100,10 +100,48 @@
 </div>
 @endsection
 
+
+@section('styles')
+@parent
+<style>
+    input.inputDate {}
+
+    input.inputDate:before {
+        content: attr(data-date);
+    }
+
+    input.inputDate::-webkit-datetime-edit,
+    input.inputDate::-webkit-inner-spin-button,
+    input.inputDate::-webkit-clear-button {
+        display: none;
+    }
+
+    input.inputDate::-webkit-calendar-picker-indicator {
+        position: absolute;
+        top: 3px;
+        right: 0;
+        color: black;
+        opacity: 1;
+    }
+
+</style>
+@endsection
+
 @section('scripts')
 <script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
-<script>
-  CKEDITOR.replace( 'body' );
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+<script type="text/javascript">
+    window.addEventListener('load', function() 
+    {        
+      
+        $(".inputDate").on("change", function() {
+            this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
+        }).trigger("change")
+  
+
+        //editor
+        CKEDITOR.replace('body');
+
+    });
 </script>
 @endsection
-        

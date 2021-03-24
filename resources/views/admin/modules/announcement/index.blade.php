@@ -142,7 +142,7 @@
                                     <td>From</td>
                                     <td>:</td>
                                     <td>
-                                        <input  type="date" id="dateFrom*" name="dateFrom" data-date-format="YYYY年 M月 DD日" value="" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
+                                        <input required type="date" id="dateFrom*" name="dateFrom" data-date-format="YYYY年 M月 DD日" value="" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
                                     </td>
                                 </tr>
 
@@ -219,25 +219,19 @@
 </style>
 @endsection
 
-
-
 @section('scripts')
-
 <script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
 <script type="text/javascript">
     window.addEventListener('load', function() 
     {        
-            $(".inputDate").on("change", function() {
-                this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
-            });
+        $(".inputDate").on("change", function() {
+            this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
+        });
 
         //editor
         CKEDITOR.replace('body');
 
     });
-
 </script>
-
-
 @endsection
