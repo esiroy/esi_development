@@ -341,7 +341,7 @@ class MemberController extends Controller
         if ($isLessonExists) {
             return Response()->json([
                 "success" => false,
-                "message" => "Tご予約できません。　既に同じ時間にご予約があります。",
+                "message" => "ご予約できません。　既に同じ時間にご予約があります。",
             ]);
         }
 

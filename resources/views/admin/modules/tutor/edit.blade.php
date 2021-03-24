@@ -299,7 +299,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-8">
-                            <textarea id="introduction" name="introduction" class="form-control">{{ old('major', isset($tutor->introduction ) ? $tutor->introduction : '') }}</textarea>
+                            <textarea id="introduction" name="introduction" class="form-control">{{ old('introduction', isset($tutor->introduction ) ? $tutor->introduction : '') }}</textarea>
                         </div>
                     </div>
 

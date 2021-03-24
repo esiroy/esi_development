@@ -192,8 +192,8 @@
                             <label for="introduction" class="col-md-2 pr-0 col-form-label ">{{ __('Introduction By Host') }}
                                 <div class="float-right">:</div>
                             </label>
-                            <div class="col-md-3">
-                                <textarea name="introduction" class="form-control">{{ old('introduction') }}</textarea>
+                            <div class="col-md-7">
+                                <textarea  id="introduction"  name="introduction" class="form-control">{{ old('introduction') }}</textarea>
                             </div>
                         </div>
 
