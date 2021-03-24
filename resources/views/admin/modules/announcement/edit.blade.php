@@ -49,13 +49,18 @@
                             <tr valign="top">
                                 <td>From</td>
                                 <td>:</td>
-                                <td><input required type="date" id="dateFrom*" name="dateFrom" value="{{ old('dateFrom', isset($announcement->dateFrom ) ? $announcement->dateFrom : '') }}" class="hasDatepicker"></td>
+                                <td>
+                                    <input required type="date"  name="dateFrom" value="{{ old('dateFrom', isset($announcement->date_from ) ? date("Y-m-d", strtotime($announcement->date_from)) : '') }}" class="hasDatepicker">
+                                    
+                                </td>
                             </tr>
 
                             <tr valign="top">
                                 <td>To</td>
                                 <td>:</td>
-                                <td><input required type="date" id="dateTo*" name="dateTo" value="{{ old('dateTo', isset($announcement->dateTo ) ? $announcement->dateTo : '') }}" class="hasDatepicker"></td>
+                                <td>
+                                    <input required type="date" id="dateTo*" name="dateTo" value="{{ old('dateTo', isset($announcement->date_to ) ?date("Y-m-d", strtotime($announcement->date_to))  : '') }}" class="hasDatepicker">
+                                </td>
                             </tr>
 
                             <tr valign="top">

@@ -1,4 +1,4 @@
-@extends('layouts.adminsimple')
+@extends('layouts.admin')
 
 @section('content')
 <div class="container bg-light px-0">
@@ -75,7 +75,7 @@
                                             <th class="small text-center">{{ $announcement->date_from }}</th>
                                             <th class="small text-center">{{ $announcement->date_to }}</th>
                                             <th class="small text-center">
-                                                {!!html_entity_decode(htmlspecialchars($announcement->body)) !!}
+                                                {!! html_entity_decode($announcement->body) !!}
 
                                             </th>
                                             <th class="small text-center">{{ $announcement->is_hidden ? 'true' : 'false' }}</th>
@@ -124,6 +124,8 @@
                 </div>
                 <div class="card-body">
 
+                
+
                     <form action="{{ route("admin.announcement.store") }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <table cellspacing="9" cellpadding="0" class="table table-borderless">
@@ -139,13 +141,17 @@
                                 <tr valign="top">
                                     <td>From</td>
                                     <td>:</td>
-                                    <td><input required type="date" id="dateFrom*" name="dateFrom" value="" class="hasDatepicker"></td>
+                                    <td>
+                                        <input  type="date" id="dateFrom*" name="dateFrom" data-date-format="YYYY年 M月 DD日" value="" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
+                                    </td>
                                 </tr>
 
                                 <tr valign="top">
                                     <td>To</td>
                                     <td>:</td>
-                                    <td><input required type="date" id="dateTo*" name="dateTo" value="" class="hasDatepicker"></td>
+                                    <td>
+                                        <input required type="date" id="dateTo*" name="dateTo" data-date-format="YYYY年 M月 DD日" value="" class="inputDate form-control form-control-sm col-2" style="min-width:150px">
+                                    </td>
                                 </tr>
 
                                 <tr valign="top">
@@ -187,10 +193,51 @@
 @endsection
 
 
+@section('styles')
+@parent
+<style>
+    input.inputDate {}
+
+    input.inputDate:before {
+        content: attr(data-date);
+    }
+
+    input.inputDate::-webkit-datetime-edit,
+    input.inputDate::-webkit-inner-spin-button,
+    input.inputDate::-webkit-clear-button {
+        display: none;
+    }
+
+    input.inputDate::-webkit-calendar-picker-indicator {
+        position: absolute;
+        top: 3px;
+        right: 0;
+        color: black;
+        opacity: 1;
+    }
+
+</style>
+@endsection
+
+
+
 @section('scripts')
-<script src="https://cdn.ckeditor.com/4.15.1/standard/ckeditor.js"></script>
-<script>
-    CKEDITOR.replace('body');
+
+<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+<script type="text/javascript">
+    window.addEventListener('load', function() 
+    {        
+            $(".inputDate").on("change", function() {
+                this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
+            });
+
+        //editor
+        CKEDITOR.replace('body');
+
+    });
 
 </script>
+
+
 @endsection

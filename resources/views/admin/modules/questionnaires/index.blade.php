@@ -39,7 +39,7 @@
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="date_from" class="small col-4">From:</label>
-                                    <input id="date_from" required name="date_from" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">
+                                    <input id="date_from" required name="date_from" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">
                                 </div>
                             </div>
                             <div class="col-md-3">
