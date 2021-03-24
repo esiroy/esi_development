@@ -39,7 +39,7 @@
                         </div>
 
                         <div class="card-body">
-                            <p>お問い合わせの前に, お問い合わせの前に <a href="https://www.mytutor-jpn.com/faq.html" style="color:red" target="_blank">よくあるご質問</a>のページをご確認ください。</p>
+                            <p>お問い合わせの前に <a href="https://www.mytutor-jpn.com/faq.html" style="color:red" target="_blank">のページをご確認ください。</p>
 
                             <div>
                                 <b>お問い合わせフォーム</b>
