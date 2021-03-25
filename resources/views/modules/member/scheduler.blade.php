@@ -1,146 +1,13 @@
 @extends('layouts.esi-app')
+@section('content')
 
-@section('styles')
-@parent
 <style>
-
    #loadingModal {
         display: block;
         background-color: #0009;
     }
-
-    
-    input.inputDate {
-        overflow: hidden;
-    }
-
-    input.inputDate:before {    
-        content: attr(data-date);
-    }
-
-    input.inputDate::-webkit-datetime-edit,
-    input.inputDate::-webkit-inner-spin-button,
-    input.inputDate::-webkit-clear-button {
-        display: none;
-    }
-
-    input.inputDate::-webkit-calendar-picker-indicator {
-        position: absolute;
-        top: 3px;
-        right: 0;
-        color: black;
-        opacity: 1;
-    }
- 
-
-    .modal-backdrop {
-        background-color: #0009;
-    }
-
-    .table-schedules td a,  .table-schedules td a:hover {
-        color: #c60000;
-        font: 14px Arial;
-        text-align: center;            
-    }
-
-    .table-schedules td {
-        min-width: 44px;
-        padding: 0px;
-        width: 44px;
-        padding-top:38px;
-    }
-
-    .table-schedules td .gen-small {
-        font: bold 11px Arial;
-    }
-
-
-    .table-schedules td.schedTime {
-        background: #d0e8f7;
-        text-align: center;
-        font: bold 12px Arial;
-        vertical-align: top;
-        width: 37px;
-        height: 30px;
-        position: -webkit-sticky; /* for Safari */
-        position: sticky;
-        top: -1px;
-        padding-top:0px;
-        padding-left:0px;
-        padding-right:0px;
-        padding-bottom:0px;
-        z-index: 99;
-    }
-
-    .table-schedules th.schedTime .bordered {
-        background: #d0e8f7;
-        height: 40px;
-        padding: 0px;
-        border-bottom: 3px solid #72add2;
-        border-right: 3px solid #72add2;        
-    }
-    
-
-    .table-schedules td .bordered {
-        border-top: 0px;
-        border-left: 0px;
-        border-bottom: 3px solid #72add2;
-        border-right: 1px solid #fff;
-        width: 100%;
-        padding-top: 5px;
-        padding-bottom: 5px; 
-        height: 40px;
-
-    }
-
-    .table-schedules thead th {
-        height: 40px;
-        /*border-bottom: 3px solid #72add2;*/
-        position: -webkit-sticky; /* for Safari */
-        position: sticky;
-        background-color: #fff;
-        z-index: 999;
-        top: -1px;
-        padding:0px;
-    }
-
-    .table-schedules tbody th, .static {
-        position: -webkit-sticky; /* for Safari */
-        position: sticky;
-        left: -1px;
-        background-color: #fff;
-        border: 0px;
-        padding: 0px;
-        margin: 0px;
-        height: 60px;        
-        z-index: 100;
-    }
-
-    .table-schedules tbody th .hbordered {
-        border-top: 0px;
-        border-left: 0px;
-        border-right: 3px solid #72add2;
-        border-bottom: 1px solid #72add2;
-        width: 100%;
-        height: 100%;
-        padding-left: 5px;
-        padding-right: 5px;
-    }
-
-    .table-schedules td , .table-schedules td div.gen-med {
-        vertical-align: top;
-        height: 39px;
-        width: 37px;
-        font: 14px Arial;
-        text-align: center;
-    }
-
 </style>
-@endsection
 
-
-
-@section('content')
 <div class="container bg-light">
     <div class="esi-box mb-5 pb-4">
 
@@ -382,6 +249,140 @@
 </div>
 @endsection
 
+@section('styles')
+@parent
+<style>
+
+
+
+    
+    input.inputDate {
+        overflow: hidden;
+    }
+
+    input.inputDate:before {    
+        content: attr(data-date);
+    }
+
+    input.inputDate::-webkit-datetime-edit,
+    input.inputDate::-webkit-inner-spin-button,
+    input.inputDate::-webkit-clear-button {
+        display: none;
+    }
+
+    input.inputDate::-webkit-calendar-picker-indicator {
+        position: absolute;
+        top: 3px;
+        right: 0;
+        color: black;
+        opacity: 1;
+    }
+ 
+
+    .modal-backdrop {
+        background-color: #0009;
+    }
+
+    .table-schedules td a,  .table-schedules td a:hover {
+        color: #c60000;
+        font: 14px Arial;
+        text-align: center;            
+    }
+
+    .table-schedules td {
+        min-width: 44px;
+        padding: 0px;
+        width: 44px;
+        padding-top:38px;
+    }
+
+    .table-schedules td .gen-small {
+        font: bold 11px Arial;
+    }
+
+
+    .table-schedules td.schedTime {
+        background: #d0e8f7;
+        text-align: center;
+        font: bold 12px Arial;
+        vertical-align: top;
+        width: 37px;
+        height: 30px;
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        top: -1px;
+        padding-top:0px;
+        padding-left:0px;
+        padding-right:0px;
+        padding-bottom:0px;
+        z-index: 99;
+    }
+
+    .table-schedules th.schedTime .bordered {
+        background: #d0e8f7;
+        height: 40px;
+        padding: 0px;
+        border-bottom: 3px solid #72add2;
+        border-right: 3px solid #72add2;        
+    }
+    
+
+    .table-schedules td .bordered {
+        border-top: 0px;
+        border-left: 0px;
+        border-bottom: 3px solid #72add2;
+        border-right: 1px solid #fff;
+        width: 100%;
+        padding-top: 5px;
+        padding-bottom: 5px; 
+        height: 40px;
+
+    }
+
+    .table-schedules thead th {
+        height: 40px;
+        /*border-bottom: 3px solid #72add2;*/
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        background-color: #fff;
+        z-index: 999;
+        top: -1px;
+        padding:0px;
+    }
+
+    .table-schedules tbody th, .static {
+        position: -webkit-sticky; /* for Safari */
+        position: sticky;
+        left: -1px;
+        background-color: #fff;
+        border: 0px;
+        padding: 0px;
+        margin: 0px;
+        height: 60px;        
+        z-index: 100;
+    }
+
+    .table-schedules tbody th .hbordered {
+        border-top: 0px;
+        border-left: 0px;
+        border-right: 3px solid #72add2;
+        border-bottom: 1px solid #72add2;
+        width: 100%;
+        height: 100%;
+        padding-left: 5px;
+        padding-right: 5px;
+    }
+
+    .table-schedules td , .table-schedules td div.gen-med {
+        vertical-align: top;
+        height: 39px;
+        width: 37px;
+        font: 14px Arial;
+        text-align: center;
+    }
+
+</style>
+@endsection
 
 
 @section('scripts')
