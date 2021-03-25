@@ -222,6 +222,8 @@
    
     var api_token = "{{ Auth::user()->api_token }}";
 
+
+
     window.addEventListener('load', function() 
     {        
         //$('#loadingModal').modal('show'); //test

@@ -23,7 +23,7 @@
         
 
          <div class="col-md-12">
-             <div class="text-secondary" title="level"> Course</div>
+             <div class="text-secondary" title="level">Course:</div>
          </div>
          <div class="col-md-12">
              <div class="text-dark">

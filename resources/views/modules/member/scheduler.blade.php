@@ -89,13 +89,10 @@
                                     <div id="{{ $tutor->user_id }}" style="width:110px"  class="hbordered">
 
                                         <div class="photo pt-1">
-
                                             @php 
                                                 $userImage = new App\Models\UserImage();
                                                 $image =  $userImage->getTutorPhotobyID($tutor->user_id);
-
                                             @endphp
-
                                             @if ($image == null)
                                                 <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="60px">
                                             @else 
@@ -237,11 +234,10 @@
     </div>
 
     @include('modules.member.popup.questionnaire')
-
     @include('modules.member.popup.questionnaireReadOnly')
-
-
     @include('modules.member.popup.loading')
+
+
 </div>
 @endsection
 
@@ -472,7 +468,14 @@
         jQuery(".inputDate").on("change", function() {
             this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
         }).trigger("change")        
+
+        $('#loadingModal').modal('hide');
+
+        $('#loadingModal').hide();
     });
+
+   
+
 
 </script>
 @endsection
@@ -480,6 +483,15 @@
 @section('styles')
 @parent
     <style>
+        #loadingModal {
+            display: block;
+            background-color: #0009;
+        }
+
+        .modal-backdrop {
+            background-color: #0009;
+        }
+
         .table-schedules td a,  .table-schedules td a:hover {
             color: #c60000;
             font: 14px Arial;
