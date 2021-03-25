@@ -120,7 +120,7 @@ class LessonRecordController extends Controller
 
  
 
-    public function userreportcarddate($reportcardid, Request $request) {
+    public function userreportcarddate($reportcardid, ReportCard $reportcards, Request $request) {
 
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
@@ -137,12 +137,15 @@ class LessonRecordController extends Controller
                 'lecturer'  => $lecturer,
                 'skypeID'   => $skypeID,            
             ];              
+
+            $latestReportCard = $reportcards->getLatest($member->user_id);
+
         }
 
         $userreportcard = ReportCardDate::where('id', $reportcardid)->first();
 
         if ($userreportcard) {
-            return view('modules.lessonrecord.userreportcarddate', compact('userreportcard', 'member', 'data'));
+            return view('modules.lessonrecord.userreportcarddate', compact('userreportcard', 'member', 'latestReportCard', 'data'));
         } else {
             abort(404);
         }
