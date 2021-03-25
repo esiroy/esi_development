@@ -32,16 +32,27 @@
                     </div>
 
                     <!--[start] Update Date -->
-                    <form name="dateForm" method="GET">
-                        <div class="row mt-3 mb-3">
-                            <div class="col-md-3">
-                                <label for="dateToday" class="pr-0">Date:</label>
-                                <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm d-inline col-7">
-                                <input type="submit" class="btn btn-primary btn-sm form-control form-control-sm d-inline col-3" value="Go">
-                            </div>
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <form name="dateForm" method="GET">
+                                <table>
+                                    <tr>
+                                        <td style="width:40px">
+                                            <label for="dateToday" class="pr-0">Date:</label>
+                                        </td>                                        
+                                        <td style="width:150px">
+                                            <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm d-inline col-12">
+                                        </td>
+                                        <td>
+                                            <input type="submit" class="btn btn-primary btn-sm form-control form-control-sm d-inline col-12" value="Go">
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                     <!--[end] Update Date -->
+
 
                     <div class="card-header esi-card-header-title text-center">
                         {{ date('Y', strtotime($dateToday)) }} 年 {{ date('m', strtotime($dateToday)) }}月 {{ date('d', strtotime($dateToday)) }}日
