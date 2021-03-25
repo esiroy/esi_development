@@ -40,7 +40,7 @@
                                <label for="inputDate">From:</label>
                             </td>
                             <td style="width:150px">
-                                <input id="date_from" name="date_from" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm col-12"
+                                <input id="date_from" name="date_from" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm col-12"
                                  value="{{ request()->has('date_from') ?  request()->get('date_from') : $from }}" style="min-width:120px">
                             </td>
 
@@ -48,7 +48,7 @@
                                 <label for="inputDate"  class="ml-2">To:</label>
                             </td>
                             <td style="width:150px">
-                                <input id="date_to" name="date_to" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm  col-12" 
+                                <input id="date_to" name="date_to" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm  col-12" 
                                 value="{{ request()->has('date_to') ? request()->get('date_to') : $to }}" style="min-width:120px">
                            </td>
 

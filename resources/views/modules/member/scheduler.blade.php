@@ -36,7 +36,7 @@
                         <div class="row mt-3 mb-3">
                             <div class="col-md-3">
                                 <label for="dateToday" class="pr-0">Date:</label>
-                                <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" class="inputDate hasDatepicker form-control form-control-sm d-inline col-7">
+                                <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm d-inline col-7">
                                 <input type="submit" class="btn btn-primary btn-sm form-control form-control-sm d-inline col-3" value="Go">
                             </div>
                         </div>
@@ -234,9 +234,41 @@
 </div>
 @endsection
 
+@section('styles')
+@parent
+<style>
+    input.inputDate {
+        overflow: hidden;
+    }
+
+    input.inputDate:before {    
+        content: attr(data-date);
+    }
+
+    input.inputDate::-webkit-datetime-edit,
+    input.inputDate::-webkit-inner-spin-button,
+    input.inputDate::-webkit-clear-button {
+        display: none;
+    }
+
+    input.inputDate::-webkit-calendar-picker-indicator {
+        position: absolute;
+        top: 3px;
+        right: 0;
+        color: black;
+        opacity: 1;
+    }
+
+</style>
+@endsection
+
 
 @section('scripts')
 @parent
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+
+
 <script type="text/javascript">
 
     var api_token = "{{ Auth::user()->api_token }}";
@@ -425,6 +457,10 @@
 
     window.addEventListener('load', function() {
         disablePreviousDates();
+
+        jQuery(".inputDate").on("change", function() {
+            this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
+        }).trigger("change")        
     });
 
 </script>
