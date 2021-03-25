@@ -1,6 +1,6 @@
  <div class="profile bg-lightorange pt-0 px-0">
-     <div class="col-md-12 bg-orange text-white pt- pb-1 text-center">
-         管理人
+     <div class="col-md-12 bg-orange text-white pt-2 pb-2 text-center">
+        <strong>管理人</strong>
      </div>
 
      <table cellpadding="4" cellspacing="0" class="mt-2">
