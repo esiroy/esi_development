@@ -40,30 +40,33 @@
             <div class="col-md-12">
                 @if ($memberInfo->membership == 'Point Balance')
 
-                <!-- Current remaining points: For point members: -->
-                <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 : </span>
-                <span>
-                    @php
-                    $transaction = new \App\Models\AgentTransaction();
-                    echo $transaction->getCredits(Auth::user()->id);
-                    @endphp
-                </span>
+                    <!-- Current remaining points: For point members: -->
+                    <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 : </span>
+                    <span>
+                        @php
+                        $transaction = new \App\Models\AgentTransaction();
+                        echo $transaction->getCredits(Auth::user()->id);
+                        @endphp
+                    </span>
 
                 @elseif($memberInfo->membership == 'Monthly')
 
-                <span class="text-secondary" title="point">Class: 月額会員対象</span>
-
-
-                <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>
+                    <span class="text-secondary" title="point">Class: 月額会員対象</span>
+                    <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>
 
 
                 @else
-                <div class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :
-                    @php
-                    $transaction = new \App\Models\AgentTransaction();
-                    echo $transaction->getCredits(Auth::user()->id);
-                    @endphp
-                </div>
+
+                    <div class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :
+                        @php
+                        $transaction = new \App\Models\AgentTransaction();
+                        echo $transaction->getCredits(Auth::user()->id);
+                        @endphp
+                    </div>
+
+
+                    <span class="text-secondary" title="point">Class: 月額会員対象</span>
+                    <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>                    
 
                 @endif
             </div>
@@ -81,17 +84,31 @@
             </div>
             <div class="col-md-12">
                 <div class="text-dark">                 
-                    {{ "担任講師は " . $member->getTutorName() ." 先生です " }}               
+                    {{ "担任講師は " . $memberInfo->getTutorName() ." 先生です " }}               
                 </div>
             </div>
+
+            @if (strtolower($memberInfo->communication_app) == "skype")
             <div class="col-md-12">
                 <div class="text-secondary">Skype ID:</div>
             </div>
             <div class="col-md-12">
                 <div class="text-dark">                 
-                    {{ "スカイプ名 ". $member->getSkype() }}                     
+                    {{ "スカイプ名 (". $memberInfo->getSkype() .")"}}
                 </div>
             </div>
+            @elseif (strtolower($memberInfo->communication_app) == "zoom")
+            <div class="col-md-12">
+                <div class="text-secondary">Zoom ID:</div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-dark">                 
+                    {{ "スカイプ名 (". $memberInfo->getZoom() .")"}}
+                </div>
+            </div>
+            @endif
+
+
         </div>
     </div>
 

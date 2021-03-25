@@ -64,11 +64,12 @@ class Member extends Model
     }
 
 
-    public function getSkype() {
+    public function getSkype() 
+    {
         $user = Auth::user();
         $memberInfo = Member::where('user_id', $user->id)->first();
 
-        if (isset($tutorInfo->skype_account)) {
+        if (isset($memberInfo->skype_account)) {
             return $memberInfo->skype_account;
         } else {
             return null;
@@ -79,8 +80,8 @@ class Member extends Model
         $user = Auth::user();
         $memberInfo = Member::where('user_id', $user->id)->first();       
 
-        if (isset($tutorInfo->skype_account)) {
-            return $memberInfo->skype_account;   
+        if (isset($memberInfo->zoom_account)) {
+            return $memberInfo->zoom_account;   
         } else {
             return null;
         }
