@@ -32,7 +32,7 @@
                     <form name="dateForm" method="GET">
 
                         <div class="row">
-                            <div class="col-lg-3 col-md-3 col-sm-12 pt-2">
+                            <div class="col-lg-3 col-md-4 col-sm-12 pt-2">
                                 <label for="inputDate">From:</label>
                                 <input id="date_from" name="date_from" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm  d-inline-block col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12" value="{{ request()->has('date_from') ? request()->get('date_from') : $from  }}">
                             </div>
@@ -223,7 +223,9 @@
 @section('styles')
 @parent
 <style>
-    input.inputDate {}
+    input.inputDate {
+        overflow: hidden;
+    }
 
     input.inputDate:before {
         content: attr(data-date);

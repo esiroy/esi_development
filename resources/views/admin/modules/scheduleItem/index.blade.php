@@ -99,7 +99,9 @@
 @section('styles')
 @parent
 <style>
-    input.inputDate {}
+    input.inputDate {
+        overflow: hidden;
+    }
 
     input.inputDate:before {
         content: attr(data-date);

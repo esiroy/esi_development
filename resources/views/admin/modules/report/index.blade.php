@@ -33,25 +33,31 @@
                     Lesson List
                 </div>
                 <div class="card-body">
-                    <form name="dateForm" method="GET">
-                        <div class="row">
+                    <form name="dateForm" method="GET">                     
+                            
+                         <table>
+                            <td>
+                               <label for="inputDate">From:</label>
+                            </td>
+                            <td style="width:150px">
+                                <input id="date_from" name="date_from" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm col-12"
+                                 value="{{ request()->has('date_from') ?  request()->get('date_from') : $from }}" style="min-width:120px">
+                            </td>
 
-                            <div class="col-lg-3 col-md-3 col-sm-12 pt-2">
-                                <label for="inputDate">From:</label>
-                                <input id="date_from" name="date_from" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm d-inline-block col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12"
-                                 value="{{ request()->has('date_from') ?  request()->get('date_from') : $from }}">
-                            </div>
+                            <td>
+                                <label for="inputDate"  class="ml-2">To:</label>
+                            </td>
+                            <td style="width:150px">
+                                <input id="date_to" name="date_to" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm  col-12" 
+                                value="{{ request()->has('date_to') ? request()->get('date_to') : $to }}" style="min-width:120px">
+                           </td>
 
-                            <div class="col-lg-3 col-md-4 col-sm-12 pt-2">
-                                <label for="inputDate">To:</label>
-                                <input id="date_to" name="date_to" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12  d-inline-block" 
-                                value="{{ request()->has('date_to') ? request()->get('date_to') : $to }}">
-                            </div>
+                            <td>                                
+                                <label for="status"  class="ml-2">Status:</label>
+                            </td>
 
-
-                            <div class="col-lg-3 col-md-3 col-sm-12 pt-2">
-                                <label for="status">Status:</label>
-                                <select name="status" id="status" class="form-control form-control-sm  d-inline-block col-xl-8 col-lg-8 col-md-8 col-sm-12 col-xs-12 ">
+                            <td style="width:150px">
+                                <select name="status" id="status" class="form-control form-control-sm" style="min-width:120px">
                                     <option value="">All</option>
                                     <option value="Tutor Scheduled" {{ (request()->has('status') && request()->get('status') == "Tutor Scheduled") ? "selected" : '' }}>Tutor Scheduled</option>
                                     <option value="Client Reserved" {{ (request()->has('status') && request()->get('status') == "Client Reserved") ? "selected" : '' }}>Client Reserved</option>
@@ -62,13 +68,18 @@
                                     <option value="Client Not Available" {{ (request()->has('status') && request()->get('status') == "Client Not Available") ? "selected" : '' }}>Client Not Available</option>
                                     <option value="Nothing" {{ (request()->has('status') && request()->get('status') == "Nothing") ? "selected" : '' }}>Nothing</option>
                                 </select>
-                                <div class="d-inline-block">
+                            </td>
+
+                            <td>
+                                <div class="d-inline-block ml-2">
                                     <input type="submit" class="btn btn-primary btn-sm" value="Go">
-                                </div>                                
-                            </div>
+                                </div>
+                            </td>
+                        </table>                                                                             
+                           
 
 
-                        </div>
+                      
                     </form>
 
                     <div id="legend-chart" class="legend table-responsive bg-lightgray mt-2">
@@ -226,7 +237,9 @@
 @section('styles')
 @parent
 <style>
-    input.inputDate {}
+    input.inputDate {
+        overflow: hidden;
+    }
 
     input.inputDate:before {    
         content: attr(data-date);
