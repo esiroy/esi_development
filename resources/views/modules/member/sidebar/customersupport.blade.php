@@ -1,6 +1,6 @@
  <div class="profile bg-lightorange pt-0 px-0">
-     <div class="col-md-12 bg-orange text-white pt- pb-1">
-         メンバー
+     <div class="col-md-12 bg-orange text-white pt- pb-1 text-center">
+         管理人
      </div>
 
      <table cellpadding="4" cellspacing="0" class="mt-2">

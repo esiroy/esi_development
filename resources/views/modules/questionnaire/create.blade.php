@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container bg-light">
-create 
+ 
     <div class="esi-box">
 
         <nav aria-label="breadcrumb">
@@ -20,6 +20,11 @@ create
                     <div>
                         @include('modules.member.sidebar.profile')
                     </div>
+
+                    <div class="mt-3 mb-4">
+                        @include('modules.member.sidebar.customersupport')
+                    </div>
+
                     <div class="mt-3 mb-4">
                         @include('modules.member.sidebar.reports')
                     </div>

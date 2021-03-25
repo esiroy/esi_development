@@ -1,7 +1,7 @@
 
     <div class="profile blueBox pt-0 px-0">
-        <div class="col-md-12 bg-blue text-white pt-1 pb-1">
-            マイページ
+        <div class="col-md-12 bg-blue text-white pt-1 pb-1 text-center">
+            <img src="{{ url('images/userMale.png') }}" align="absmiddle"> マイページ
         </div>
         
         <div class="profile-image text-center mt-2">
@@ -36,15 +36,40 @@
                 </div>
             </div>
 
-
+            
             <div class="col-md-12">
-                <div class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 : 
-                    @php                        
-                        $transaction = new \App\Models\AgentTransaction();      
-                        echo $transaction->getCredits(Auth::user()->id);
-                    @endphp                
+                @if ($memberInfo->membership == 'Point Balance')
+
+                <!-- Current remaining points: For point members: -->
+                <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 : </span>
+                <span>
+                    @php
+                    $transaction = new \App\Models\AgentTransaction();
+                    echo $transaction->getCredits(Auth::user()->id);
+                    @endphp
+                </span>
+
+                @elseif($memberInfo->membership == 'Monthly')
+
+                <span class="text-secondary" title="point">Class: 月額会員対象</span>
+
+
+                <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>
+
+
+                @else
+                <div class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :
+                    @php
+                    $transaction = new \App\Models\AgentTransaction();
+                    echo $transaction->getCredits(Auth::user()->id);
+                    @endphp
                 </div>
+
+                @endif
             </div>
+
+
+
             <div class="col-md-12">
                 <div class="text-dark">
 

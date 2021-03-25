@@ -46,6 +46,7 @@ class ScheduleItem extends Model
         return $reserves;
     }
 
+    /* Returns the Schedules based on Lesson Time */
     public function getTotalLessonForCurrentMonth($memberID) 
     {
         $currentYear = date('Y');
@@ -57,19 +58,19 @@ class ScheduleItem extends Model
         return $reserveCount;
     }
 
-
-    /*
-    public function getReservationsold($date, $lesson_shift_id)
+    /* Returns the Schedules based on Created Time */
+    public function getTotalReservedForCurrentMonth($memberID) 
     {
-        $lessons = [];
-        $lessonItems = ScheduleItem::whereDate('lesson_time', $date)->where('lesson_shift_id', $lesson_shift_id)->get();
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+        $reserveCount = ScheduleItem::where('member_id', $memberID)
+                    ->whereYear('created_at', '=', $currentYear)
+                    ->whereMonth('created_at','=', $currentMonth)
+                    ->where('valid', 1)->count();
+        return $reserveCount;
+    }
+    
 
-        foreach ($lessonItems as $lessonItem) {
-            $lessons[$lessonItem->tutor_id][$lessonItem->lesson_time] = $lessonItem;
-        }
-
-        return $lessons;
-    }*/
 
     /** @v2
      * @param tutorID - ID FROM tutor admin panel

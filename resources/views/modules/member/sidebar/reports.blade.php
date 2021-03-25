@@ -1,7 +1,7 @@
 <!--latest report cards-->
 
  <div class="profile bg-lightgreen pt-0 pb-4 px-0">
-    <div class="col-md-12 bg-green text-white pt-1 pb-1">
+    <div class="col-md-12 bg-green text-white pt-1 pb-1 text-center">
        メンバー
     </div>
 

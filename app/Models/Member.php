@@ -3,7 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\MemberAttribute;
+use App\Models\ScheduleItem;
 use Auth;
 
 class Member extends Model
@@ -83,5 +84,27 @@ class Member extends Model
         } else {
             return null;
         }
+    }
+
+    //returns: current lesson limit
+    public function getLessonLimit() 
+    {
+        $user = Auth::user();
+        $memberAttributeObj = new MemberAttribute();
+        $memberAttribute = $memberAttributeObj->getLessonLimit($user->id);
+        return $memberAttribute->lesson_limit;
+    }
+
+    public function getLessonConsumed() 
+    {
+        $user = Auth::user();        
+        $scheduleItemObj = new ScheduleItem();        
+        return $scheduleItemObj->getTotalReservedForCurrentMonth($user->id);
+    }
+
+    public function getMonthlyLessonsLeft() {
+        $credits = $this->getLessonLimit();
+        $consumed = $this->getLessonConsumed();
+        return $credits - $consumed;
     }
 }
