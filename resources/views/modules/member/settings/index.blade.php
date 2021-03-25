@@ -21,6 +21,9 @@
                 </div>
                 <div class="card-body">
 
+                    <div class="bg-gray p-2 mt-4">
+                        <div class="pl-2 font-weight-bold small">ユーザの写真</div>
+                    </div>
 
                     <div id="uploaded_image" class="mt-4 mb-4">
                         @php                

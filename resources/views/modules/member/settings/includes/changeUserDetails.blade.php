@@ -1,10 +1,10 @@
 <!--@note: change password form-->
 
 
-<div class="mt-3">
+<div class="mt-4">
 
-    <div class="bg-gray p-1">
-        <div class="pl-2 font-weight-bold small">Change Password</div>
+    <div class="bg-gray p-2 mt-5">
+        <div class="pl-2 font-weight-bold small">変更のユーザーの細部</div>
     </div>
 
     <div class="form">
