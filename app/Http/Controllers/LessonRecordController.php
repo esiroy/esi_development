@@ -33,6 +33,8 @@ class LessonRecordController extends Controller
     public function index(Request $request) 
     {
      
+      
+
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
 
@@ -57,14 +59,21 @@ class LessonRecordController extends Controller
                 $reportcards = Questionnaire::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
 
                 //@todo: fetch all schedules that needed for the member to give a answer for the question
-                $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)->orderBy('lesson_time', 'DESC')->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');                
+                $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
+                            ->where('schedule_status', '!=', 'TUTOR_CANCELLED')
+                            ->orderBy('lesson_time', 'DESC')
+                            ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');
+
                 return view('modules.questionnaire.index', compact('member', 'data', 'scheduleItems', 'reportcards', 'datereportcards', 'latestReportCard'));
 
             } else {
 
                 $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
 
-                $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)->orderBy('lesson_time', 'DESC')->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');                
+                $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
+                                ->where('schedule_status', '!=', 'TUTOR_CANCELLED')
+                                ->orderBy('lesson_time', 'DESC')                                
+                                ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');                
 
                 return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'scheduleItems', 'datereportcards', 'latestReportCard'));
             }
