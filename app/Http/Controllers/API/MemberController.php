@@ -290,7 +290,8 @@ class MemberController extends Controller
         if ($agentCredts->getCredits($memberID) <= 0) {
             return Response()->json([
                 "success" => false,           
-                "message" => "十分なポイントがないか、ポイントが期限切れになった",
+                //"message" => "十分なポイントがないか、ポイントが期限切れになった",
+                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
             ]);              
         }
         
