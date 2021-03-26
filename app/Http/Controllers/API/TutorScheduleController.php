@@ -109,6 +109,8 @@ class TutorScheduleController extends Controller
             //find schedule to update
             $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
 
+  
+
             if (isset($member['id'])) {
                 $memberID = $member['id'];
             } else {
@@ -155,8 +157,8 @@ class TutorScheduleController extends Controller
                 /****************************************************
                  *       DUPLICATE MEMBER LESSON TIME CHECKER (UPDATE)
                  *****************************************************/
-                $isTutorReserved = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', '!=', $memberID)->where('schedule_status', 'CLIENT_RESERVED')->where('valid', 1)->exists();
-                $isTutorReserved_b = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', '!=', $memberID)->where('schedule_status', 'CLIENT_RESERVED_B')->where('valid', 1)->exists();
+                $isTutorReserved = ScheduleItem::where('id', '!=', $scheduleItem->id)->where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED')->where('valid', 1)->exists();
+                $isTutorReserved_b = ScheduleItem::where('id', '!=', $scheduleItem->id)->where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED_B')->where('valid', 1)->exists();
                 if ($isTutorReserved || $isTutorReserved_b) {
                     return Response()->json([
                         "success" => false,
