@@ -103,7 +103,9 @@ class TutorScheduleController extends Controller
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
             $tutorInfo = Tutor::find($tutor['tutorID']);
+            $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)
 
+            
             //find schedule to update
             $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
 
@@ -130,7 +132,8 @@ class TutorScheduleController extends Controller
                 ];
             }
 
-            if ($request['status'] == 'TUTOR_CANCELLED') {
+            if ($request['status'] == 'TUTOR_CANCELLED') 
+            {
                 $emailType = $request['cancelationType'];
                 $lessonData = [
                     'schedule_status' => $request['status'],
@@ -147,6 +150,20 @@ class TutorScheduleController extends Controller
                     'email_type' => $emailType,
                     'valid' => 1,
                 ];
+
+
+                /****************************************************
+                 *       DUPLICATE MEMBER LESSON TIME CHECKER (UPDATE)
+                 *****************************************************/
+                $isTutorReserved = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', '!=', $memberID)->where('schedule_status', 'CLIENT_RESERVED')->where('valid', 1)->exists();
+                $isTutorReserved_b = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', '!=', $memberID)->where('schedule_status', 'CLIENT_RESERVED_B')->where('valid', 1)->exists();
+                if ($isTutorReserved || $isTutorReserved_b) {
+                    return Response()->json([
+                        "success" => false,
+                        "refresh" => false,
+                        "message" => "Member already have a booked schedule for this  $lessonTime  time slot, try booking other time slot for this member.",
+                    ]);
+                }                
 
                 /****************************************************
                  *       NEW MEMBER POINTS AND ATTRIBUTES CHECKER
@@ -280,7 +297,8 @@ class TutorScheduleController extends Controller
                 $memberID = null;
             }
 
-            if ($request['status'] == 'TUTOR_CANCELLED') {
+            if ($request['status'] == 'TUTOR_CANCELLED') 
+            {
                 $emailType = $request['cancelationType'];
 
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
@@ -346,6 +364,10 @@ class TutorScheduleController extends Controller
             if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
             {
                 $memberID = $member['id'];
+
+                /****************************************************
+                 *       DUPLICATE MEMBER LESSON TIME CHECKER
+                 *****************************************************/
                 $isTutorReserved = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED')->where('valid', 1)->exists();
                 $isTutorReserved_b = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED_B')->where('valid', 1)->exists();
                 if ($isTutorReserved || $isTutorReserved_b) {

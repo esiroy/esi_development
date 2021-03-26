@@ -7,13 +7,10 @@ use App\Models\User;
 use App\Models\Shift;
 use App\Models\Tutor;
 
-
-
 class TutorController extends Controller
 {
     public function getTutors(Request $request, User $user)
     {
-
         $tutors = Tutor::where('lesson_shift_id', $request['shift_id'])
         ->where('is_terminated', '!=', 1)
         ->orWhere('is_terminated', '=', null) //@todo: confirm null is not terminated
@@ -25,6 +22,4 @@ class TutorController extends Controller
             "tutors" => $tutors,            
         ]);  
     }
-
-
 }

@@ -6,7 +6,7 @@
 
     <div style="margin-top:20px; font-size: 14px">
         いつもマイチューターをご利用いただき、誠にありがとうございます。
-    <div style="margin-top:20px; font-size: 14px">
+    </div>
 
     <div style="margin-top:20px; font-size: 14px">
         <div>ご予約いただいておりましたレッスンにつきまして、</div>
@@ -32,5 +32,5 @@
         <div>マイチューター カスタマーサポート</div>
         <div>お問い合せ 　support@mytutor.co.jp</div>
     </div>
-
+    
 </div>
