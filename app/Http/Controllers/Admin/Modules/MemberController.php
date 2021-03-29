@@ -427,6 +427,7 @@ class MemberController extends Controller
     public function update($id, Request $request)
     {
 
+     
 
         if ($request->transaction_type !== 'CREDITS_EXPIRATION') {
 
@@ -489,24 +490,27 @@ class MemberController extends Controller
 
         } else {
 
+      
+
             //generate agent transaction expiration date
             $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));
+
             $old_credits_expiration = date('Y-m-d G:i:s', strtotime($member->credits_expiration));
 
            
-            //check the last member expiration if not greater than expiry date generated.
-            if ($old_credits_expiration >= $expiry_date) {
-               // $expiry_date = $old_credits_expiration;
-            }
 
-            //add member expiration
-            $member->update([
-                'credits_expiration' => $expiry_date,
-            ]);            
 
-            if ($request->transaction_type == 'DISTRIBUTE') {
 
+            if ($request->transaction_type == 'DISTRIBUTE') 
+            {                
                 //create Agent Transaction :  (updates) ONLY Distribute will change expiration date + 6months
+
+
+                //add member expiration
+                $member->update([
+                    'credits_expiration' => $expiry_date,
+                ]); 
+
                 $agentCredit = [
                     'valid' => 1,
                     'transaction_type' => $request->transaction_type,
@@ -520,7 +524,12 @@ class MemberController extends Controller
                     'credits_expiration' => $expiry_date,
                     'old_credits_expiration' => $old_credits_expiration,
                 ];
+
+                AgentTransaction::create($agentCredit);
+
+
             } else {
+
                 //create Agent Transaction
                 $agentCredit = [
                     'valid' => 1,
@@ -535,11 +544,13 @@ class MemberController extends Controller
                     //'credits_expiration' => $expiry_date,
                     //'old_credits_expiration' => $old_credits_expiration,
                 ];
+
+                AgentTransaction::create($agentCredit);
+
             }
 
 
 
-            AgentTransaction::create($agentCredit);
         }
 
         return redirect()->route('admin.member.account', $id)->with('message', 'Member transaction has been added successfully!');
