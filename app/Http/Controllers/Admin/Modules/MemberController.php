@@ -454,11 +454,8 @@ class MemberController extends Controller
             abort(404);
         }
 
-        $memberUserId = $member->user_id;
+        $memberUserId = $member->user_id; 
 
-   
-
-        //lesson_shift_id 
 
         if ($request->transaction_type == 'CREDITS_EXPIRATION') 
         {
@@ -507,20 +504,41 @@ class MemberController extends Controller
                 'credits_expiration' => $expiry_date,
             ]);            
 
-            //create Agent Transaction
-            $agentCredit = [
-                'valid' => 1,
-                'transaction_type' => $request->transaction_type,
-                'agent_id' => null,
-                'member_id' => $member->user_id,
-                'lesson_shift_id' => $member->lesson_shift_id,
-                'created_by_id' => Auth::user()->id,
-                'amount' => $request->credits,
-                'price' => $request->amount,
-                'remarks' => $request->remarks,
-                'credits_expiration' => $expiry_date,
-                'old_credits_expiration' => $old_credits_expiration,
-            ];
+            if ($request->transaction_type == 'DISTRIBUTE') {
+
+                //create Agent Transaction :  (updates) ONLY Distribute will change expiration date + 6months
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type' => $request->transaction_type,
+                    'agent_id' => null,
+                    'member_id' => $member->user_id,
+                    'lesson_shift_id' => $member->lesson_shift_id,
+                    'created_by_id' => Auth::user()->id,
+                    'amount' => $request->credits,
+                    'price' => $request->amount,
+                    'remarks' => $request->remarks,
+                    'credits_expiration' => $expiry_date,
+                    'old_credits_expiration' => $old_credits_expiration,
+                ];
+            } else {
+                //create Agent Transaction
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type' => $request->transaction_type,
+                    'agent_id' => null,
+                    'member_id' => $member->user_id,
+                    'lesson_shift_id' => $member->lesson_shift_id,
+                    'created_by_id' => Auth::user()->id,
+                    'amount' => $request->credits,
+                    'price' => $request->amount,
+                    'remarks' => $request->remarks,
+                    //'credits_expiration' => $expiry_date,
+                    //'old_credits_expiration' => $old_credits_expiration,
+                ];
+            }
+
+
+
             AgentTransaction::create($agentCredit);
         }
 

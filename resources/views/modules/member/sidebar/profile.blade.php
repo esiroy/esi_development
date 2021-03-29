@@ -49,29 +49,47 @@
                         @endphp
                     </span>
 
+
+                    <div class="pt-2">
+                        <span class="text-secondary" title="expiry">有効期限: ポイント会員対象 : </span>
+                        <span>
+                            {{ date("Y年 m月 d日", strtotime($memberInfo->credits_expiration)) }}                    
+                        </span>
+                    </div>
+
                 @elseif($memberInfo->membership == 'Monthly')
 
-                    <span class="text-secondary" title="point">Class: 月額会員対象</span>
+                    <div class="text-secondary" title="lessonLimit">Class: 月額会員対象</div>
                     <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>
-
 
                 @else
 
-                    <div class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :
-                        @php
-                        $transaction = new \App\Models\AgentTransaction();
-                        echo $transaction->getCredits(Auth::user()->id);
-                        @endphp
+                    <div class="point">
+
+                        <div class="pt-1">
+                            <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :</span>                            
+                            <span>@php
+                                $transaction = new \App\Models\AgentTransaction();
+                                echo $transaction->getCredits(Auth::user()->id);
+                                @endphp
+                            </span>                            
+                        </div>                       
+
+                        <div class="pt-2">
+                            <span class="text-secondary" title="expiry">有効期限: ポイント会員対象 : </span>
+                            <span>
+                                {{ date("Y年 m月 d日", strtotime($memberInfo->credits_expiration)) }}                    
+                            </span>           
+                        </div>             
                     </div>
 
-
-                    <span class="text-secondary" title="point">Class: 月額会員対象</span>
-                    <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>                    
+                    <div class="pt-2">
+                        <div class="text-secondary" title="lessonLimit">Class: 月額会員対象</div>
+                        <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>                    
+                    </div>
 
                 @endif
             </div>
-
-
 
             <div class="col-md-12">
                 <div class="text-dark">
@@ -80,7 +98,7 @@
             </div>
 
             <div class="col-md-12">
-                <div class="text-secondary">Lecturer</div>
+                <div class="text-secondary pt-1">Lecturer:</div>
             </div>
             <div class="col-md-12">
                 <div class="text-dark">                 
@@ -90,7 +108,7 @@
 
             @if (strtolower($memberInfo->communication_app) == "skype")
             <div class="col-md-12">
-                <div class="text-secondary">Skype ID:</div>
+                <div class="text-secondary pt-1">Skype ID:</div>
             </div>
             <div class="col-md-12">
                 <div class="text-dark">                 
@@ -99,10 +117,10 @@
             </div>
             @elseif (strtolower($memberInfo->communication_app) == "zoom")
             <div class="col-md-12">
-                <div class="text-secondary">Zoom ID:</div>
+                <div class="text-secondary pt-1">Zoom ID:</div>
             </div>
             <div class="col-md-12">
-                <div class="text-dark">                 
+                <div class="text-dark pt-1">                 
                     {{ "スカイプ名 (". $memberInfo->getZoom() .")"}}
                 </div>
             </div>
