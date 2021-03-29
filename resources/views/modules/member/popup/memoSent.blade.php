@@ -7,7 +7,7 @@
                 <div class="px-5 py-5 text-center">
                     <h3 class="text-success">
                         <i class="fas fa-check-circle"></i>
-                        <span>Memo Sent!</span>
+                        <span>送信完了しました</span>
                     </h3>
                 </div>
 
