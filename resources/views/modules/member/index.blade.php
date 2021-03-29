@@ -214,6 +214,7 @@
  @include('modules.member.popup.content')
  @include('modules.member.popup.memo')
  @include('modules.member.popup.loading')
+ @include('modules.member.popup.memoSent')
 
 @endsection
 
@@ -269,28 +270,6 @@
         }
     }
 
-    /* delete schedule is now merge to cancel schedule which will auto determine the sched status
-    function deleteSchedule(id) {
-       
-        if (confirm('このレッスンをキャンセルしてもいいですか？')) 
-        {
-            $.ajax({
-                type: 'POST', 
-                url: 'api/cancelSchedule?api_token=' + api_token,
-                data: {
-                    id: id
-                }, headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                }, success: function(data) {
-                    //total credits
-                    $('#total_credits').text(data.credits)                            
-                    $('.row_reserve_' + id ).hide();
-                    $('#loadingModal').modal('hide');
-                }
-            });
-        }        
-    } 
-    */
 
     function openMemo(id)
     {   
@@ -311,8 +290,7 @@
             error: function (data, error) {             
                 alert("Error Found getting memo: " + error);
             },            
-            success: function(data) {            
-                console.log("memo received....");
+            success: function(data) { 
                 $('#message').val(data.memo);
                 $('#scheduleID').val(scheduleID);
                 $('#loadingModal').modal('hide');
@@ -335,7 +313,12 @@
                 alert("Error Found getting memo: " + error);    
             },
             success: function(data) {
-                $('#tutorMemoModal').modal('hide')      
+                $('#tutorMemoModal').modal('hide')   
+
+                $('#tutorMemoSentModal').modal('show');
+
+                setTimeout(function() { $('#tutorMemoSentModal').modal('hide') }, 1500);                
+                
             }
         });
     }
@@ -354,25 +337,6 @@
     {
         var button;        
         var modal;
-
-        /*
-        $('#tutorMemoModal').on('show.bs.modal', function (event) 
-        {
-            button = $(event.relatedTarget) // Button that triggered the modal
-            id = button.data('id') // Extract info from data-* attributes            
-            modal = $(this); 
-            getMemo(id)
-        });
-
-        $('#saveTutorMemo').on('click', function() 
-        {           
-            let scheduleID = id;
-            let message = $('#message').val();
-            console.log(message);
-            sendMemo(scheduleID, message);
-        });
-        */
-
 
         $('#saveTutorMemo').on('click', function() 
         {           
