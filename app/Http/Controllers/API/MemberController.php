@@ -257,6 +257,18 @@ class MemberController extends Controller
         $memberID = $request->memberID;
         $schedule_status = 'CLIENT_RESERVED';
 
+        $memberInfo = Member::where('user_id',  $memberID)->first();
+
+        //check deactivated
+        if ($memberInfo->user->is_activated == false) {
+            return Response()->json([
+                "success" => false,
+                "message" => "エラー：スケジュールを予約できません。ユーザーは現在非アクティブ化されています",
+                "message_en" => "Schedule not found or no longer exists"
+
+            ]);
+        }    
+
         //find the schedule
         $schedule = $scheduleItem->find($scheduleID);
 
@@ -281,6 +293,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success" => false,           
                 "message" => "レッスン予約は開始30分前まで可能です",
+                "message_en" => "Lesson reservations can be made up to 30 minutes before the start"
             ]);  
         }
 
