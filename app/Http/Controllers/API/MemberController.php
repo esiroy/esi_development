@@ -281,6 +281,7 @@ class MemberController extends Controller
             ]);            
         }
 
+        
         //check if 30 minutes is not reached, if reached disallow reservation and give message
         $date_now =  date("Y-m-d H:i:s");
         $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 30 minutes"));
