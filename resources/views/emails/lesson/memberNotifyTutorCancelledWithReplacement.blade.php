@@ -1,6 +1,6 @@
 <div class="container">
     <div style="margin-top:20px; font-size: 14px">
-        {{ $member->user->lastname}}, { $member->user->firstname }} 様
+        {{ $member->user->lastname}}, {{ $member->user->firstname }} 様
     </div>
 
     <div style="margin-top:20px; font-size: 14px">
