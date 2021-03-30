@@ -134,6 +134,14 @@ class TutorScheduleController extends Controller
                 ];
             }
 
+            //check deactivated
+            if ($memberInfo->user->is_activated == false) {
+                return Response()->json([
+                    "success" => false,
+                    "message" => "Error: Can not reserve schedule, the user is currently deactivated",
+                ]);
+            }                  
+
             if ($request['status'] == 'TUTOR_CANCELLED') 
             {
                 $emailType = $request['cancelationType'];
@@ -312,8 +320,10 @@ class TutorScheduleController extends Controller
                 $emailType = null;
             }
 
+
             //Member Info
             $memberInfo = Member::where('user_id', $member['id'])->first();
+            //check memberInfo
             if ($memberInfo) {
                 $memberData = [
                     'id' => $memberInfo->user_id,
@@ -329,6 +339,14 @@ class TutorScheduleController extends Controller
                     'lastname' => "",
                 ];
             }
+
+            //check deactivated
+            if ($memberInfo->user->is_activated == false) {
+                return Response()->json([
+                    "success" => false,
+                    "message" => "Error: Can not reserve schedule, the user is currently deactivated",
+                ]);
+            }            
 
             $tutorInfo = Tutor::find($tutor['tutorID']);
             $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)

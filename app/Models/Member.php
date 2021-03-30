@@ -108,4 +108,7 @@ class Member extends Model
         $consumed = $this->getLessonConsumed();
         return $credits - $consumed;
     }
+
+
+
 }
