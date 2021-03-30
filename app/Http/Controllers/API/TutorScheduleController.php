@@ -134,13 +134,7 @@ class TutorScheduleController extends Controller
                 ];
             }
 
-            //check deactivated
-            if ($memberInfo->user->is_activated == false) {
-                return Response()->json([
-                    "success" => false,
-                    "message" => "Error: Can not reserve schedule, the user is currently deactivated",
-                ]);
-            }                  
+           
 
             if ($request['status'] == 'TUTOR_CANCELLED') 
             {
@@ -151,6 +145,15 @@ class TutorScheduleController extends Controller
                     'valid' => 1,
                 ];
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
+
+
+                //check deactivated
+                if ($memberInfo->user->is_activated == false) {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "Error: Can not reserve schedule, the user is currently deactivated",
+                    ]);
+                }       
 
                 $emailType = $request['reservationType'];
 
@@ -340,13 +343,6 @@ class TutorScheduleController extends Controller
                 ];
             }
 
-            //check deactivated
-            if ($memberInfo->user->is_activated == false) {
-                return Response()->json([
-                    "success" => false,
-                    "message" => "Error: Can not reserve schedule, the user is currently deactivated",
-                ]);
-            }            
 
             $tutorInfo = Tutor::find($tutor['tutorID']);
             $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)
@@ -384,6 +380,14 @@ class TutorScheduleController extends Controller
             if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
             {
                 $memberID = $member['id'];
+
+                //check deactivated
+                if ($memberInfo->user->is_activated == false) {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "Error: Can not reserve schedule, the user is currently deactivated",
+                    ]);
+                }            
 
                 /****************************************************
                  *       DUPLICATE MEMBER LESSON TIME CHECKER
