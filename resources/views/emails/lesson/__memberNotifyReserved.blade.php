@@ -1,7 +1,7 @@
 <div class="container">
 
     <div style="margin-top:20px; font-size: 14px">
-        {{ $member->user->lastname ?? '' }}, {{ $member->user->firstname ?? ''}} 様
+        Hi {{ $member->user->lastname ?? '' }}, {{ $member->user->firstname ?? ''}}  様
     </div>
 
     <div style="margin-top:20px; font-size: 14px">
@@ -14,14 +14,12 @@
 
     <div style="margin-top:20px; font-size: 14px">
         <div>予約日時　：{{ date("F j, Y, H:i", strtotime($scheduleItem->lesson_time)) }}</div>
-        <div>担当講師　：{{ $tutor->user->firstname ?? '' }} ({{  $tutor->user->japanese_firstname ?? '' }})</div>
+        <div>担当講師　：{{ $tutor->user->firstname ?? '' }}</div>
     </div>
 
 
     <div style="margin-top:20px; font-size: 14px">      
-        <div>レッスン開始5分前にはSkype又はZOOMを立ち上げて先生からの連絡をお待ちくださ</div>
-        <div>いレッスン開始予定時刻10分後までにスカイプ又はZOOMにログイン頂けない場合に</div>
-        <div>は、自動的にレッスンが欠席扱いとなってしまいますのでご注意下さいませ。</div>        
+        <div>レッスン開始5分前にはSkype又はZOOMを立ち上げて先生からの連絡をお待ちくださいレッスン開始予定時刻10分後までにスカイプ又はZOOMにログイン頂けない場合には、自動的にレッスンが欠席扱いとなってしまいますのでご注意下さいませ。</div>        
     </div>
 
     <div>
@@ -45,12 +43,7 @@
             <hr>
         </div>
 
-        <div>
-            <div>レッスン開始3時間前までがキャンセル有効期限となります。有効期限までにキャンセ</div>
-            <div>ル処理されず、レッスンを欠席された場合はレッスンが消化されたものとみなされます</div>
-            <div>のでご注意ください。キャンセルまたは欠席処理は、お客様マイページから行うことが</div>
-            <div>できます。</div>
-        </div>
+        <div>レッスン開始3時間前までがキャンセル有効期限となります。有効期限までにキャンセル処理されず、レッスンを欠席された場合はレッスンが消化されたものとみなされますのでご注意ください。キャンセルまたは欠席処理は、お客様マイページから行うことができます。</div>
     </div>
 
     <div style="margin-top:20px; font-size: 14px">

@@ -399,7 +399,7 @@ class MemberController extends Controller
             $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
             
             $lessonMailer = new LessonMailer();
-            $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);    
+            $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
         } 
         /*******************************************               
         *       [END] SEND MAIL 
@@ -504,7 +504,7 @@ class MemberController extends Controller
                 $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
                 
                 $lessonMailer = new LessonMailer();
-                $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);                
+                $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);                
                 /*******************************************               
                 *       [END] SEND MAIL 
                 *******************************************/   
@@ -554,7 +554,7 @@ class MemberController extends Controller
                 $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
                 
                 $lessonMailer = new LessonMailer();
-                $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);    
+                $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
                
                 /*******************************************               
                 *       [END] SEND MAIL 

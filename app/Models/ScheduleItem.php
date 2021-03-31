@@ -46,7 +46,17 @@ class ScheduleItem extends Model
         return $reserves;
     }
 
-    /* Returns the Schedules based on Lesson Time */
+    /* Returns the Schedules based on Lesson Time, month, year */
+    public function getTotalLessonReserved($memberID, $month, $year) 
+    {
+        $reserveCount = ScheduleItem::where('member_id', $memberID)
+                    ->whereYear('lesson_time', '=', $year)
+                    ->whereMonth('lesson_time','=', $month)
+                    ->where('valid', 1)->count();
+        return $reserveCount;        
+    }
+
+    /* Returns the Schedules based on Lesson Time for current month*/
     public function getTotalLessonForCurrentMonth($memberID) 
     {
         $currentYear = date('Y');

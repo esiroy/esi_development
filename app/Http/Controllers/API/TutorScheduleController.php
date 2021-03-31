@@ -13,7 +13,7 @@ use App\Models\ScheduleItem;
 use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\LessonMailer;
-use DB;
+use DB, Auth;
 use Illuminate\Http\Request;
 
 class TutorScheduleController extends Controller
@@ -104,12 +104,9 @@ class TutorScheduleController extends Controller
             $member = $request['memberData'];
             $tutorInfo = Tutor::find($tutor['tutorID']);
             $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)
-
             
             //find schedule to update
-            $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
-
-  
+            $scheduleItem = ScheduleItem::find($scheduledItemData['id']);  
 
             if (isset($member['id'])) {
                 $memberID = $member['id'];
@@ -144,6 +141,7 @@ class TutorScheduleController extends Controller
                     'email_type' => $emailType,
                     'valid' => 1,
                 ];
+                
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
 
 
@@ -198,12 +196,21 @@ class TutorScheduleController extends Controller
 
                 //compare current lesson limit and total month total reserved schedules
                 $memberAttribute = new MemberAttribute();
-                $attribute = $memberAttribute->getLessonLimit($memberID);
+                $check_month_limit = date("M", strtotime($request['scheduled_at']));
+                $check_year_limit = date("Y", strtotime($request['scheduled_at']));
+                $attribute = $memberAttribute->getLessonLimit($memberID, $check_month_limit, $check_year_limit);
+
                 if ($attribute) {
                     //USER HAS ATTRIBUTE BUT EXCEEDED THE LIMIT
                     $limit = $attribute->lesson_limit;
-                    $currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
-                    if ($currentMonthTotalReserves >= $limit) {
+                    //$currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+
+                    //check if there if it is not over the lesson limit capacity
+                    $month_to_reserve = date("m", strtotime($request['scheduled_at']));
+                    $year_to_reserve = date("Y", strtotime($request['scheduled_at']));
+                    $totalReserved = $scheduleItem->getTotalLessonReserved($memberID, $month_to_reserve, $year_to_reserve);       
+
+                    if ($totalReserved >= $limit) {
                         return Response()->json([
                             "success" => false,
                             //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
@@ -298,17 +305,18 @@ class TutorScheduleController extends Controller
         $lessonData = null;
         $scheduled_at = $request['scheduled_at'];
         $duration = $request['shiftDuration'];
+        $tutor = $request['tutorData'];
+        $member = $request['memberData'];
 
+        if (isset($member['id'])) {
+            $memberID = $member['id'];
+        } else {
+            $memberID = null;
+        }
+
+      
         try {
             DB::beginTransaction();
-            $tutor = $request['tutorData'];
-            $member = $request['memberData'];
-
-            if (isset($member['id'])) {
-                $memberID = $member['id'];
-            } else {
-                $memberID = null;
-            }
 
             if ($request['status'] == 'TUTOR_CANCELLED') 
             {
@@ -325,7 +333,7 @@ class TutorScheduleController extends Controller
 
 
             //Member Info
-            $memberInfo = Member::where('user_id', $member['id'])->first();
+            $memberInfo = Member::where('user_id', $memberID)->first();
             //check memberInfo
             if ($memberInfo) {
                 $memberData = [
@@ -379,8 +387,6 @@ class TutorScheduleController extends Controller
             //Check if member has other booked schedule on this time slot?
             if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
             {
-                $memberID = $member['id'];
-
                 //check deactivated
                 if ($memberInfo->user->is_activated == false) {
                     return Response()->json([
@@ -417,17 +423,32 @@ class TutorScheduleController extends Controller
                     ]);
                 } //END CREDIT CHECKER
 
-                //compare current lesson limit and total month total reserved schedules
+                //compare current lesson limit and total month total reserved schedules (storing)
                 $memberAttribute = new MemberAttribute();
-                $attribute = $memberAttribute->getLessonLimit($memberID);
+
+                $check_month_limit = date("M", strtotime($request['scheduled_at']));
+                $check_year_limit = date("Y", strtotime($request['scheduled_at']));
+                $attribute = $memberAttribute->getLessonLimit($memberID, $check_month_limit, $check_year_limit);
+                
                 if ($attribute) {
+                    
                     $limit = $attribute->lesson_limit;
-                    $currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
-                    if ($currentMonthTotalReserves >= $limit) {
+                    //$currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+
+                    //check if there if it is not over the lesson limit capacity
+                    $month_to_reserve = date("m", strtotime($request['scheduled_at']));
+                    $year_to_reserve = date("Y", strtotime($request['scheduled_at']));
+
+                    $totalReserved = $scheduleItem->getTotalLessonReserved($memberID, $month_to_reserve, $year_to_reserve);       
+
+                  
+      
+                    if ($totalReserved >= $limit) {
                         return Response()->json([
                             "success" => false,
                             //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                             //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
+                            
                             "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                             "message_en" => "No points / monthly limit or Credit Balance",                            
                         ]);
@@ -465,15 +486,14 @@ class TutorScheduleController extends Controller
             }
 
             /*******************************************
-             *  [START] SEND MAIL (JOB) RESERVED 
-             *  @note: (send only for client reserved since it is only the start of transaction)
+             *  [START] SEND E-MAIL (JOB) RESERVED           
              *******************************************/
-            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
-            {      
+            //if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
+            //{      
                 $selectedSchedule = ScheduleItem::find($scheduleItem->id);            
                 $lessonMailer = new LessonMailer();
                 $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);                    
-            }            
+            //}
 
             //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
             //@todo: email user

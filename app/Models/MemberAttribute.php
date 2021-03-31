@@ -17,12 +17,25 @@ class MemberAttribute extends Model
         return MemberAttribute::where('member_id', $memberID)->get();
     }
 
-    public function getLessonLimit($memberID)
+
+
+    public function getCurrentMonthLessonLimit($memberID)
     {
         $month = strtoupper(date("M"));
         $year = date('Y');
 
-        return MemberAttribute::where('month', $month)
+        return MemberAttribute::where('month', strtoupper($month))
+                ->where('year', $year)
+                ->where('member_id', $memberID)
+                ->first();
+    }    
+
+    public function getLessonLimit($memberID, $month, $year)
+    {
+        //$month = strtoupper(date("M"));
+        //$year = date('Y');
+
+        return MemberAttribute::where('month', strtoupper($month))
                 ->where('year', $year)
                 ->where('member_id', $memberID)
                 ->first();

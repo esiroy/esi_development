@@ -87,12 +87,14 @@ class Member extends Model
         }
     }
 
+
+    
     //returns: current lesson limit
     public function getLessonLimit() 
     {
         $user = Auth::user();
         $memberAttributeObj = new MemberAttribute();
-        $memberAttribute = $memberAttributeObj->getLessonLimit($user->id);
+        $memberAttribute = $memberAttributeObj->getCurrentMonthLessonLimit($user->id);
         return $memberAttribute->lesson_limit;
     }
 

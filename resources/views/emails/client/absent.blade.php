@@ -1,0 +1,40 @@
+<div class="container">
+    <div style="margin-top:20px; font-size: 14px">
+        {{ $member->user->lastname ?? '' }}, {{ $member->user->firstname ?? ''}} 様
+    </div>
+
+    <div style="margin-top:20px; font-size: 14px">
+        <div>いつもマイチューターをご利用いただき、誠にありがとうございます。</div>
+    </div>
+
+    <div style="margin-top:20px; font-size: 14px">
+        <div>ご予約いただいておりましたレッスンにつきまして、</div>
+        <div>欠席受け付けました。</div>
+    </div>
+
+    <div style="margin-top:20px; font-size: 14px">
+        <div>下記、ご確認ください。</div>
+        <div>またのご予約をお待ちしております。</div>
+    </div>
+
+    <div style="margin-top:20px; font-size: 14px">
+        <div>欠席完了レッスン</div>
+        <div>レッスン日時：{{ date("F j, Y, H:i", strtotime($scheduleItem->lesson_time)) }}</div>
+        <div>講師： { $tutor->user->firstname ?? '' }}</div>
+    </div>
+
+    <div style="margin-top:20px; font-size: 14px">
+        <div>【キャンセル期限について】</div>
+        <div>レッスン開始3時間前までがキャンセル有効期限となります。</div>
+        <div>有効期限までにキャンセル処理されず、レッスンを欠席された場合は</div>
+        <div>レッスンが消化されたものとみなされますのでご注意ください。</div>
+        <div>キャンセルまたは欠席処理は、お客様マイページから行うことができます。</div>
+    </div>
+
+
+    <div style="margin-top:20px; font-size: 14px">
+        <div>マイチューター カスタマーサポート</div>
+        <div>お問い合せ 　support@mytutor.co.jp</div>
+    </div>
+</div>
+

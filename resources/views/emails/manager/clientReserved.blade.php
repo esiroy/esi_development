@@ -30,7 +30,7 @@
         <hr>
     <div>
 
-    <div>
+    <div style="margin-top:20px; font-size: 14px">
         <ul>
             <li>予め決められた担任講師の予約。</li>
             <li>当初予約した講師の都合でレッスンを行えない場合の代講として。</li>
