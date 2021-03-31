@@ -192,7 +192,7 @@ class LessonMailer extends Model
             /*******************************************
              *       SEND MAIL TO MEMBER
              *******************************************/
-            $memberEmailData['template'] = "emails.manager.clientNotAvailable.blade";
+            $memberEmailData['template'] = "emails.manager.clientNotAvailable";
             $memberEmailData['subject'] = 'マイチューター：レッスン欠席のご案内'; //My Tutor: Lesson Absence
             $memberEmailData['email'] = $memberInfo->user->email; //recipient (mailto:)
 
