@@ -1,4 +1,4 @@
-Hi {{ $tutor->user->firstname }}
+Hi {{ $tutor->user->firstname ?? '' }}
 
 <div style="margin-top:20px; font-size: 14px">
     Good Day!

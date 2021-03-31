@@ -114,7 +114,7 @@ class dummyController extends Controller
 
 
         //*** TEMPLATE ***/
-        $details['template'] = "emails.lesson.reserved";
+        $details['template'] = "emails.tutor.tutorNotifyCancelled";
 
         //email to:
         $details['email'] = 'emailroy2002@yahoo.com';
@@ -129,7 +129,7 @@ class dummyController extends Controller
         $tutor = $tutorObj->where('user_id', 14253)->first();
         $scheduleItem = $scheduleItem->find(879884);
 
-        return view('emails.lesson.tutorNotifyReserved', compact('member','tutor', 'scheduleItem'));
+        return view('emails.tutor.tutorNotifyCancelled', compact('member','tutor', 'scheduleItem'));
 
 
 

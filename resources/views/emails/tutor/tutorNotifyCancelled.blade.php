@@ -1,4 +1,4 @@
-Hi {{ $tutor->user->firstname }}
+Hi {{ $tutor->user->firstname ?? '' }}
 
 <div style="margin-top:20px; font-size: 14px">
     Good Day!
@@ -9,15 +9,18 @@ Hi {{ $tutor->user->firstname }}
 </div>
 
 <div style="margin-top:20px; font-size: 14px">
-    Member Name : {{ $member->user->firstname }} {{ $member->user->lastname ?? ''}}
+    Member Name : {{ $member->user->firstname ?? '' }} {{ $member->user->lastname ?? ''}}
 </div>
 
 <div style="margin-top:20px; font-size: 14px">
     @if (strtolower($member->communication_app) == 'skype') {
-        Member Skype : {{ $member->skype_account ?? ''}}
+
+        Member Skype : {{ $member->skype_account ?? '' }}
+
     @elseif (strtolower($member->communication_app) == 'zoom')
         Member Zoom : {{ $member->zoom_account ?? '' }}
     @else 
+
         @if (isset($member->skype_account)) {
             Member Skype : {{ $member->skype_account ?? ''}}
         @else 

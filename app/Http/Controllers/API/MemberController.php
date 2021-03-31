@@ -264,7 +264,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success" => false,
                 "message" => "エラー：スケジュールを予約できません。ユーザーは現在非アクティブ化されています",
-                "message_en" => "Schedule not found or no longer exists"
+                "message_en" => "Error: Unable to reserve schedule. User is currently deactivated"
 
             ]);
         }    
@@ -280,6 +280,7 @@ class MemberController extends Controller
                 "message_en" => "Schedule not found or no longer exists"
             ]);            
         }
+
 
         
         //check if 30 minutes is not reached, if reached disallow reservation and give message
@@ -307,26 +308,31 @@ class MemberController extends Controller
                 //"message" => "十分なポイントがないか、ポイントが期限切れになった",
                 "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
             ]);              
-        }
-        
-        //attribute check for this month
-        //compare current lesson limit and total month total reserved schedules
+        }       
+     
+        //compare current lesson limit and total month total reserved schedules (storing)
         $memberAttribute = new MemberAttribute();
-        $attribute = $memberAttribute->getLessonLimit($memberID);     
+        $check_month_limit = date("M", strtotime($schedule->lesson_time));
+        $check_year_limit = date("Y", strtotime($schedule->lesson_time));
+        $attribute = $memberAttribute->getLessonLimit($memberID, $check_month_limit, $check_year_limit);
+
         if ($attribute) {
-            $limit = $attribute->lesson_limit;        
-            $currentMonthTotalReserves = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
-            if ($currentMonthTotalReserves >= $limit) 
-            {
-                return Response()->json([
+
+            $limit = $attribute->lesson_limit;
+
+            //check if there if it is not over the lesson limit capacity
+            $month_to_reserve = date("m", strtotime($schedule->lesson_time));
+            $year_to_reserve = date("Y", strtotime($schedule->lesson_time));
+            $totalReserved = $scheduleItem->getTotalLessonReserved($memberID, $month_to_reserve, $year_to_reserve);
+
+            if ($totalReserved >= $limit) 
+            {                return Response()->json([
                     "success" => false,           
                     //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                     //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
 
                     "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                    "message_en" => "You are out of points or your points have expired.",                    
-
-                    
+                    "message_en" => "You are out of points or your points have expired.",
                 ]);        
             }    
         } else {
@@ -340,7 +346,6 @@ class MemberController extends Controller
             ]);
         }
 
-        //@todo: check if the schedule not having same time with other schedules
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
 
         //@todo: check schedule if exists
@@ -357,6 +362,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success" => false,
                 "message" => "ご予約できません。　既に同じ時間にご予約があります。",
+                "message_en"    => "I cannot make a reservation. There is already a reservation at the same time"
             ]);
         }
 
@@ -428,7 +434,7 @@ class MemberController extends Controller
         $schedule = ScheduleItem::find($scheduleID);
 
         if ($schedule) {
-            //@todo: remove report card
+           
             $reportCard = ReportCard::where('schedule_item_id', $scheduleID)->first();
 
             if ($reportCard) {
@@ -445,6 +451,7 @@ class MemberController extends Controller
             {
                 //refund points if status is [client reserved]
                 if ($schedule->schedule_status == "CLIENT_RESERVED") {
+
                     $transaction = [
                         'schedule_item_id' => $scheduleID,
                         'member_id' => Auth::user()->id,
@@ -463,8 +470,6 @@ class MemberController extends Controller
                         'schedule_status' => 'TUTOR_SCHEDULED',
                         'memo'  => null
                     ];
-                    $schedule->update($data);
-                    
                 
                 } else if ($schedule->schedule_status == "CLIENT_RESERVED_B") { 
 
@@ -474,24 +479,18 @@ class MemberController extends Controller
                     $data = [
                         'schedule_status' => 'CLIENT_NOT_AVAILABLE',                     
                     ];
-                    $schedule->update($data);
-
-                }     
-
-          
+                }
                 
                 //@todo: search delete questionnaire 
                 $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->where('valid', true)->first();
-
-                if ($questionnaire) {
-                    //@todo: search to delete questionnairre items
+                if ($questionnaire) 
+                {                    
                     $questionnaireItems = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->get();
                     foreach ($questionnaireItems as $questionnaireItem) {
                         $questionnaireItem->delete();
                     }
                     $questionnaire->delete();
                 }
-
 
                 /*******************************************               
                 *       [START] SEND MAIL
@@ -504,12 +503,15 @@ class MemberController extends Controller
                 $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
                 
                 $lessonMailer = new LessonMailer();
-                $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);                
+                $lessonMailer->sendMemberCancellationEmail($memberInfo, $tutorInfo, $selectedSchedule);               
+                
                 /*******************************************               
                 *       [END] SEND MAIL 
                 *******************************************/   
 
-                $credits = $agentCredts->getCredits(Auth::user()->id );
+                $credits = $agentCredts->getCredits(Auth::user()->id);
+                $schedule->update($data);
+
                 return Response()->json([
                     "success" => true,
                     'bookable' => true, //bookable(true) will add the link for booking
@@ -517,7 +519,9 @@ class MemberController extends Controller
                     'buttonText' => '予約', //link for reserve
                     "message" => "Member schedule has been cancelled  and refunded " . $lessonTime . " >= " .  $valid_time,
                     "userData" => $request['user'],
-                ]);                     
+                ]);         
+                
+               
             
             } else {
                 //@this section gives no refund since it has 3 hours below:  
@@ -527,7 +531,7 @@ class MemberController extends Controller
                     'schedule_status' => 'CLIENT_NOT_AVAILABLE',
                     'memo'  => null
                 ];
-                $schedule->update($data);   
+       
 
                 //@todo: search delete questionnaire 
                 $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->where('valid', true)->first();
@@ -554,13 +558,15 @@ class MemberController extends Controller
                 $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
                 
                 $lessonMailer = new LessonMailer();
-                $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
+                $lessonMailer->sendMemberAbsentEmail($memberInfo, $tutorInfo, $selectedSchedule);    
                
                 /*******************************************               
                 *       [END] SEND MAIL 
                 *******************************************/           
 
-                $credits = $agentCredts->getCredits(Auth::user()->id );
+                $credits = $agentCredts->getCredits(Auth::user()->id);
+                $schedule->update($data);  
+
                 return Response()->json([
                     "success" => true,
                     'bookable' => false,
