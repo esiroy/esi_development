@@ -97,7 +97,7 @@ class LessonMailer extends Model
             /*******************************************
              *       SEND MAIL TO MEMBER - (check for "Regular reservation" or "For replacement")
              *******************************************/
-            if ($selectedSchedule->reservationType == "Regular reservation") {
+            if (strtolower($selectedSchedule->email_type) == "regular reservation") {
 
                 $memberEmailData['template'] = "emails.manager.clientReserved";
                 $memberEmailData['subject'] = 'マイチューター：レッスン予約のご案内'; //My Tutor: Lesson Reservations
@@ -105,7 +105,7 @@ class LessonMailer extends Model
 
                 self::dispatchEmail($memberEmailData, $memberInfo, $tutorInfo, $selectedSchedule);
 
-            } else if ($selectedSchedule->reservationType == "For replacement") {
+            } else if (strtolower($selectedSchedule->email_type) == "for replacement") {
 
                 $memberEmailData['template'] = "emails.manager.clientReservedForReplacement";
                 $memberEmailData['subject'] = 'マイチューター：レッスン予約のご案内'; //My Tutor: Lesson Reservations
@@ -117,7 +117,7 @@ class LessonMailer extends Model
             /*******************************************
              *       SEND MAIL TO TUTOR
              *******************************************/
-            $tutorEmaildata['template'] = "emails.manager.tutorNotifyReserved";
+            $tutorEmaildata['template'] = "emails.tutor.tutorNotifyReserved";
             $tutorEmaildata['subject'] = 'My Tutor: Lesson Schedule Reserved'; //reserved
             $tutorEmaildata['email'] = $tutorInfo->user->email; //recipient (mailto:)
 
@@ -129,7 +129,7 @@ class LessonMailer extends Model
              *       SEND MAIL TO MEMBER  (check for "Regular reservation" or "For replacement")
             *******************************************/
 
-            if ($selectedSchedule->reservationType == "Regular reservation") {
+            if (strtolower($selectedSchedule->email_type) == "regular reservation") {
 
                 $memberEmailData['template'] = "emails.manager.clientReserved_b";
                 $memberEmailData['subject'] = 'マイチューター：レッスン予約のご案内'; //My Tutor: Lesson Reservations
@@ -137,7 +137,7 @@ class LessonMailer extends Model
     
                 self::dispatchEmail($memberEmailData, $memberInfo, $tutorInfo, $selectedSchedule);                
 
-            } else if ($selectedSchedule->reservationType == "For replacement") {
+            } else if (strtolower($selectedSchedule->email_type) == "for replacement") {
 
                 $memberEmailData['template'] = "emails.manager.clientReserved_b_ForReplacement";
                 $memberEmailData['subject'] = 'マイチューター：レッスン予約のご案内'; //My Tutor: Lesson Reservations
@@ -151,7 +151,7 @@ class LessonMailer extends Model
             /*******************************************
              *       SEND MAIL TO TUTOR
              *******************************************/
-            $tutorEmaildata['template'] = "emails.manager.tutorNotifyReserved";
+            $tutorEmaildata['template'] = "emails.tutor.tutorNotifyReserved";
             $tutorEmaildata['subject'] = 'My Tutor: Lesson Schedule Reserved'; //reserved
             $tutorEmaildata['email'] = $tutorInfo->user->email; //recipient (mailto:)
 
@@ -159,9 +159,9 @@ class LessonMailer extends Model
 
         } else if ($selectedSchedule->schedule_status == 'SUPPRESSED_SCHEDULE') {
 
-        /*******************************************
-         * NO EMAIL, JUST RESERVED IT FOR NO ONE (BLOCKED, SUPPRESSED, NOT AVAILBLE)
-         *******************************************/
+            /*******************************************
+             * NO EMAIL, JUST RESERVED IT FOR NO ONE (BLOCKED, SUPPRESSED, NOT AVAILBLE)
+             *******************************************/
 
         } else if ($selectedSchedule->schedule_status == 'TUTOR_CANCELLED') {
 
@@ -181,7 +181,7 @@ class LessonMailer extends Model
             /*******************************************
              *       SEND MAIL TO TUTOR
              *******************************************/
-            $tutorEmaildata['template'] = "emails.manager.tutorNotifyCancelled";
+            $tutorEmaildata['template'] = "emails.tutor.tutorNotifyCancelled";
             $tutorEmaildata['subject'] = 'My Tutor: Lesson Schedule Cancelled'; //Cancelled
             $tutorEmaildata['email'] = $tutorInfo->user->email; //recipient (mailto:)
 
@@ -201,7 +201,7 @@ class LessonMailer extends Model
             /*******************************************
              *       SEND MAIL TO TUTOR
              *******************************************/
-            $tutorEmaildata['template'] = "emails.manager.tutorNotifyCancelled";
+            $tutorEmaildata['template'] = "emails.tutor.tutorNotifyCancelled";
             $tutorEmaildata['subject'] = 'My Tutor: Lesson Schedule Cancelled'; //Cancelled
             $tutorEmaildata['email'] = $tutorInfo->user->email; //recipient (mailto:)
 
@@ -210,8 +210,8 @@ class LessonMailer extends Model
         } else if ($selectedSchedule->schedule_status == 'COMPLETED') {
 
             /*******************************************
-         * NO EMAIL, JUST SILENT MARKED COMPLETED
-         *******************************************/
+             * NO EMAIL, JUST SILENT MARKED COMPLETED
+             *******************************************/
 
         }
 
@@ -219,10 +219,8 @@ class LessonMailer extends Model
 
     public function dispatchEmail($emailData, $memberInfo, $tutorInfo, $selectedSchedule)
     {
-        $jobTutor = new \App\Jobs\SendEmailJob($emailData, $memberInfo, $tutorInfo, $selectedSchedule);
-
-        dispatch($jobTutor); //Add to Queue
-
+        $job = new \App\Jobs\SendEmailJob($emailData, $memberInfo, $tutorInfo, $selectedSchedule);
+        dispatch($job); //Add to Queue
     }
 
 }

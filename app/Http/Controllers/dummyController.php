@@ -143,8 +143,13 @@ class dummyController extends Controller
 
 
     public function testMailCancelled()
-    {        //*** TEMPLATE ***/
-        $details['template'] = "emails.lesson.memberNotifyCancelled";
+    {        
+        
+        //*** TEMPLATE ***/
+        //$details['template'] = "emails.lesson.memberNotifyCancelled";
+
+
+        $details['template'] = "emails.manager.clientReserved";
 
         //email to:
         $details['email'] = 'emailroy2002@yahoo.com';
@@ -159,9 +164,15 @@ class dummyController extends Controller
         $tutor = $tutorObj->where('user_id', 14253)->first();
         $scheduleItem = $scheduleItem->find(879884);
 
-        $job = new \App\Jobs\SendEmailJob($details, $member, $tutor, $scheduleItem);
+        //$job = new \App\Jobs\SendEmailJob($details, $member, $tutor, $scheduleItem);
+        //dispatch($job);        
+        //dispatch(new \App\Jobs\SendEmailJob($details, $member, $tutor, $scheduleItem));        
 
-        dispatch($job);        
+
+        $lessonMailer = new LessonMailer();
+        $lessonMailer->send($member, $tutor, $scheduleItem);      
+        
+        
         dd('Send Email Successfully');        
     }    
 

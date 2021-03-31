@@ -333,7 +333,7 @@ class TutorScheduleController extends Controller
 
 
             //Member Info
-            $memberInfo = Member::where('user_id', $memberID)->first();
+            $memberInfo = Member::where('user_id', $member['id'])->first();
             //check memberInfo
             if ($memberInfo) {
                 $memberData = [

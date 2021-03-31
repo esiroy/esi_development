@@ -165,7 +165,6 @@ return [
         Illuminate\Translation\TranslationServiceProvider::class,
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
-        Aws\Laravel\AwsServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -181,6 +180,10 @@ return [
         App\Providers\RouteServiceProvider::class,
 
         Barryvdh\DomPDF\ServiceProvider::class,
+
+        //Live
+        Aws\Laravel\AwsServiceProvider::class,
+
 
     ],
     /*
