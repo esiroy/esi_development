@@ -21,8 +21,8 @@
     </div>
 
     <div style="margin-top:20px; font-size: 14px">
-        レッスン開始5分前にはSkype又はZOOMを立ち上げて先生からの連絡をお待ちください
-        レッスン開始予定時刻10分後までにスカイプ又はZOOMにログイン頂けない場合には、自動的にレッ
+        <div>レッスン開始5分前にはSkype又はZOOMを立ち上げて先生からの連絡をお待ちください</div>
+        <div>レッスン開始予定時刻10分後までにスカイプ又はZOOMにログイン頂けない場合には、自動的にレッ</div>
     </div>
 
     <div style="margin-top:20px; font-size: 14px">
