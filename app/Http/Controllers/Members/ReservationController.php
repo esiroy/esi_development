@@ -91,14 +91,10 @@ class ReservationController extends Controller
     {        
         if (Gate::allows('member_lesson_scheduler_access')) 
         {
-
             //redirect to admin if he is scheduling here.
             if (Auth::user()->roles->contains('title', 'Admin')) {
                 return redirect(route('admin.dashboard.index'));
-            } else {            
-                abort(403, 'Unauthorized action, you are not allowed to view this page');
-            }
-            
+            }            
             
             //LATES REPORT CARD
             $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->limit(1)->first();
