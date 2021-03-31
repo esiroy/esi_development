@@ -488,12 +488,12 @@ class TutorScheduleController extends Controller
             /*******************************************
              *  [START] SEND E-MAIL (JOB) RESERVED           
              *******************************************/
-            //if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
-            //{      
+            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
+            {      
                 $selectedSchedule = ScheduleItem::find($scheduleItem->id);            
                 $lessonMailer = new LessonMailer();
                 $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);                    
-            //}
+            }
 
             //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
             //@todo: email user
