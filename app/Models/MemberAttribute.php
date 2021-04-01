@@ -24,20 +24,22 @@ class MemberAttribute extends Model
         $month = strtoupper(date("M"));
         $year = date('Y');
 
-        return MemberAttribute::where('month', strtoupper($month))
-                ->where('year', $year)
-                ->where('member_id', $memberID)
-                ->first();
+        $lessonLimit = MemberAttribute::where('month', strtoupper($month))->where('year', $year)->where('member_id', $memberID)->first();
+
+        if ($lessonLimit) {
+            return $lessonLimit;
+        } else {
+            return null;
+        }
     }    
 
     public function getLessonLimit($memberID, $month, $year)
     {
-        //$month = strtoupper(date("M"));
-        //$year = date('Y');
-
-        return MemberAttribute::where('month', strtoupper($month))
-                ->where('year', $year)
-                ->where('member_id', $memberID)
-                ->first();
+        $lessonLimit = MemberAttribute::where('month', strtoupper($month))->where('year', $year)->where('member_id', $memberID)->first();
+        if ($lessonLimit) {
+            return $lessonLimit;
+        } else {
+            return null;
+        }        
     }
 }

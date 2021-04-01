@@ -95,7 +95,13 @@ class Member extends Model
         $user = Auth::user();
         $memberAttributeObj = new MemberAttribute();
         $memberAttribute = $memberAttributeObj->getCurrentMonthLessonLimit($user->id);
-        return $memberAttribute->lesson_limit;
+
+        if ($memberAttribute) {
+            return $memberAttribute->lesson_limit;
+        } else {
+            return null;
+        }
+        
     }
 
     public function getLessonConsumed() 

@@ -280,7 +280,7 @@ class MemberController extends Controller
 
     }
 
-    public function schedulelist($memberID, ScheduleItem $scheduleItem)
+    public function schedulelist($memberID, ScheduleItem $scheduleItem, MemberAttribute $memberAttribute)
     {
         $memberInfo = Member::where('user_id', $memberID)->first();
 
@@ -297,14 +297,13 @@ class MemberController extends Controller
             $thisYear = date("Y");
 
        
-            //lesson limit (attribute)
-            $memberAttribute = MemberAttribute::where('member_id', $memberID)
-                ->where('month', $thisMonth)
-                ->where('year', $thisYear)
-                ->first();
+            
+            $memberAttribute->getCurrentMonthLessonLimit($memberID);
+       
                 
             $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
             $totalReserved = $scheduleItem->getTotalReservedForCurrentMonth($memberID);
+
             $memberLessonsRemaining = $memberAttribute->lesson_limit - $totalReserved;
 
             return view('admin.modules.member.schedulelist', compact('schedules', 'totalReserved', 'memberLessonsRemaining', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
