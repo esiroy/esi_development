@@ -77,7 +77,9 @@
                             <table width="100%" cellspacing="0" cellpadding="5" border="0" align="center">
                                 <thead>
                                     <tr>
-                                        <th colspan="2" class="heading">担任講師による固定レッスン</th>
+                                        <th colspan="2" class="heading">
+                                            <a href="https://www.mytutor-jpn.com/info/2020/0526183735.html" target="_blank">担任講師による固定レッスン</a>
+                                        </th>
                                     </tr>
                                     <tr>
                                         <th>Day</th>
@@ -122,7 +124,7 @@
                     <div class="card mt-4" style="">
                         <div class="card-header esi-card-header text-center">
                             予約表
-                            <small style="font-size:11px; color:#333">予約記録は最大５件まで表示されます</small>
+                            <small style="font-size:11px; color:#333">予約は最大15コマまでとなります</small>
                         </div>
 
                         <div class="card-body px-3">
@@ -179,7 +181,7 @@
                                             @else 
                                                 @if ($valid_time <= $lessonTime) 
                                                     <!--valid time here since it is greater that 3 hours) -->
-                                                    <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
+                                                    <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
                                                 @else 
                                                     <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
                                                 @endif
@@ -268,6 +270,26 @@
                 }
             });
         }
+    }
+
+    function deleteSchedule(id) {
+        if (confirm('このレッスンをキャンセルしてもいいですか？')) 
+        {
+            $.ajax({
+                type: 'POST', 
+                url: 'api/cancelSchedule?api_token=' + api_token,
+                data: {
+                    id: id
+                }, headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }, success: function(data) {              
+                    //total credits
+                    $('#total_credits').text(data.credits);                      
+                    $('.row_reserve_' + id ).hide();
+                    $('#loadingModal').modal('hide');          
+                }
+            });
+        }        
     }
 
 
