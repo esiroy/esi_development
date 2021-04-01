@@ -121,6 +121,8 @@
                     @endphp
 
                     <!--[start] lesson lists-->
+                    <a name="reservation_section">
+
                     <div class="card mt-4" style="">
                         <div class="card-header esi-card-header text-center">
                             予約表
@@ -130,7 +132,7 @@
                         <div class="card-body px-3">
                             初めての講師の場合、講師からSkype(ZOOM)コンタクトリクエストがあります。 レッスン時間の15分前にSkype(ZOOM)を立ち上げ承認してコールをお待ちください。
 
-                            <table cellspacing="0" cellpadding="9" class="tblRegister mt-3" width="100%">
+                            <table id="memberReservations" cellspacing="0" cellpadding="9" class="tblRegister mt-3" width="100%">
                                 <tbody>
                                     <tr>
                                         <th style="text-align: center;">Date</th>
@@ -141,7 +143,7 @@
                                     <!-- COUNTER FOR PAGINATION -->
                                     @foreach ($reserves as $reserve)
 
-                                    <tr class="row_reserve_{{$reserve->id}}">
+                                    <tr class="row_reserve_{{$reserve->id}} reserved_items">
                                         <td style="text-align: center;">
 
                                             @if (date('H', strtotime($reserve->lesson_time)) == '00') 
@@ -195,6 +197,8 @@
                                         <td colspan="5">
                                             <div class="float-right">
                                                 {{ $reserves->links() }}
+
+                                              
                                             </div>
                                         </td>
                                     </tr>
@@ -223,16 +227,17 @@
 
 @section('scripts')
 @parent
-<script type="text/javascript">
-
-   
-    var api_token = "{{ Auth::user()->api_token }}";
-
-
+<script type="text/javascript">   
+    let api_token = "{{ Auth::user()->api_token }}";
+    
+    let currentPage = "{{ app('request')->input('page') }}";    
+    let previousPage = currentPage - 1;
+    let lastPage = "{{ $reserves->lastPage() }}";
+    let previousPageURL = "{{ url('home?page=') }}" + previousPage +"#reservation_section";
 
     window.addEventListener('load', function() 
     {        
-        //$('#loadingModal').modal('show'); //test
+        //$('#loadingModal').modal('show'); //test      
 
         jQuery.ajaxSetup({
             beforeSend: function() 
@@ -267,6 +272,13 @@
                     $('#total_credits').text(data.credits);                      
                     $('.row_reserve_' + id ).hide();
                     $('#loadingModal').modal('hide');          
+
+                    if (isCurrentResevationPageEmpty()) {
+                        if (currentPage > 1) {
+                            window.location.replace(previousPageURL);
+                        }
+                    }
+                
                 }
             });
         }
@@ -286,9 +298,26 @@
                     //total credits
                     $('#total_credits').text(data.credits);                      
                     $('.row_reserve_' + id ).hide();
-                    $('#loadingModal').modal('hide');          
+                    $('#loadingModal').modal('hide');
+
+                    if (isCurrentResevationPageEmpty()) {
+                        if (currentPage > 1) {
+                            window.location.replace(previousPageURL);
+                        }                        
+                    }
+
                 }
             });
+        }        
+    }
+
+    function isCurrentResevationPageEmpty() 
+    {
+        var rowCount = $('#memberReservations tr.reserved_items:visible').length;
+        if (rowCount == 0) {
+            return true;
+        } else {
+            return false
         }        
     }
 
