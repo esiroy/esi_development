@@ -326,7 +326,8 @@ class MemberController extends Controller
             $totalReserved = $scheduleItem->getTotalLessonReserved($memberID, $month_to_reserve, $year_to_reserve);
 
             if ($totalReserved >= $limit) 
-            {                return Response()->json([
+            {                
+                return Response()->json([
                     "success" => false,           
                     //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                     //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
@@ -431,7 +432,7 @@ class MemberController extends Controller
         $agentCredts = new AgentTransaction();
         
         //@todo: check if the schedule is present
-        $schedule = ScheduleItem::find($scheduleID);
+        $schedule = ScheduleItem::where('id', $scheduleID)->where('member_id', Auth::user()->id)->first();
 
         if ($schedule) {
            
