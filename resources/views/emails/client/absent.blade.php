@@ -20,7 +20,7 @@
     <div style="margin-top:20px; font-size: 14px">
         <div>欠席完了レッスン</div>
         <div>レッスン日時：{{ date("F j, Y, H:i", strtotime($scheduleItem->lesson_time)) }}</div>
-        <div>講師： { $tutor->user->firstname ?? '' }}</div>
+        <div>講師： {{ $tutor->user->firstname ?? '' }}</div>
     </div>
 
     <div style="margin-top:20px; font-size: 14px">

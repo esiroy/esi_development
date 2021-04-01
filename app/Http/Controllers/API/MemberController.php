@@ -471,15 +471,43 @@ class MemberController extends Controller
                         'schedule_status' => 'TUTOR_SCHEDULED',
                         'memo'  => null
                     ];
+
+
+                    /*******************************************               
+                    *       [START] SEND MAIL
+                    *******************************************/      
+                    $scheduleItemObj = new scheduleItem();
+                    $selectedSchedule = $scheduleItemObj->find($scheduleID);
+                    $memberObj = new Member();
+                    $tutorObj = new Tutor();
+                    $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
+                    $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                    
+                    $lessonMailer = new LessonMailer();
+                    $lessonMailer->sendMemberCancellationEmail($memberInfo, $tutorInfo, $selectedSchedule);                       
                 
-                } else if ($schedule->schedule_status == "CLIENT_RESERVED_B") { 
-
-                    //[client reserved b] - no refund
-
+                } 
+                else if ($schedule->schedule_status == "CLIENT_RESERVED_B") 
+                {
+                    //[client reserved b] - no refund 
                     //turn the the status to not available since it is B
                     $data = [
                         'schedule_status' => 'CLIENT_NOT_AVAILABLE',                     
                     ];
+
+                    /*******************************************               
+                    *       [START] SEND MAIL
+                    *******************************************/      
+                    $scheduleItemObj = new scheduleItem();
+                    $selectedSchedule = $scheduleItemObj->find($scheduleID);
+                    $memberObj = new Member();
+                    $tutorObj = new Tutor();
+                    $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
+                    $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                    
+                    $lessonMailer = new LessonMailer();
+                    $lessonMailer->sendMemberAbsentEmail($memberInfo, $tutorInfo, $selectedSchedule);   
+
                 }
                 
                 //@todo: search delete questionnaire 
@@ -493,25 +521,21 @@ class MemberController extends Controller
                     $questionnaire->delete();
                 }
 
-                /*******************************************               
-                *       [START] SEND MAIL
-                *******************************************/      
-                $scheduleItemObj = new scheduleItem();
-                $selectedSchedule = $scheduleItemObj->find($scheduleID);
-                $memberObj = new Member();
-                $tutorObj = new Tutor();
-                $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
-                $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
-                
-                $lessonMailer = new LessonMailer();
-                $lessonMailer->sendMemberCancellationEmail($memberInfo, $tutorInfo, $selectedSchedule);               
+            
                 
                 /*******************************************               
                 *       [END] SEND MAIL 
-                *******************************************/   
+                *******************************************/  
 
                 $credits = $agentCredts->getCredits(Auth::user()->id);
+
+
+                /*******************************************               
+                    [START] UPDATE THE SCHEDULE
+                *******************************************/   
                 $schedule->update($data);
+
+
 
                 return Response()->json([
                     "success" => true,
