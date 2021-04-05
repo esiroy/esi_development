@@ -178,10 +178,18 @@ class TutorScheduleController extends Controller
 
                 /****************************************************
                  *       NEW MEMBER POINTS AND ATTRIBUTES CHECKER
-                 *****************************************************/
+                 *****************************************************/                
+                $agentCredts = new AgentTransaction();
+                //CHECK IF POINTS IS EXPIRED
+                if ($memberInfo->isMemberCreditExpired($memberID)) {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                        "message_en" => "You are out of points or your points have expired.",    
+                    ]);                  
+                } //END EXPIRED CHECKER
 
                 //CHECK IF MEMBER HAS ENOUGH POINTS TO BOOK A SCHEDULE
-                $agentCredts = new AgentTransaction();
                 if ($agentCredts->getCredits($memberID) <= 0) {
                     return Response()->json([
                         "success" => false,
@@ -406,6 +414,16 @@ class TutorScheduleController extends Controller
                 /****************************************************
                  *       NEW MEMBER POINTS AND ATTRIBUTES CHECKER
                  *****************************************************/
+                $agentCredts = new AgentTransaction();
+
+                //CHECK IF POINTS IS EXPIRED
+                if ($memberInfo->isMemberCreditExpired($memberID)) {
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                        "message_en" => "You are out of points or your points have expired.",    
+                    ]);
+                }
 
                 //CHECK IF MEMBER HAS ENOUGH POINTS TO BOOK A SCHEDULE
                 $agentCredts = new AgentTransaction();

@@ -94,8 +94,13 @@
                             
                                 <span><a class="blue" href="{{ url('/user/?id='. Auth::user()->id)}}"><strong>ユーザ名 {{ $member->nickname }}</strong></a></span>                                
 
-                                <span id="total_credits" class="text-success">({{ number_format($credits, 2) }})</span>
-                                <span class="px-2 text-success">|</span>
+                                @if ($member->isMemberCreditExpired(Auth::user()->id))
+                                    <span id="total_credits" class="text-danger">(0)</span>
+                                    <span class="px-2 text-success">|</span>
+                                @else
+                                    <span id="total_credits" class="text-success">({{ number_format($credits, 2) }})</span>
+                                    <span class="px-2 text-success">|</span>
+                                @endif
 
                                 <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>
                                 <span class="px-2 text-success">|</span>

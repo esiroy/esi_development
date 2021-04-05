@@ -41,6 +41,23 @@ class dummyController extends Controller
 
     }
 
+
+    public function testExpiry(Member $member) 
+    {
+        $user_id =  Auth::user()->id;        
+    
+        echo $user_id;
+
+
+        if ($member->isMemberCreditExpired($user_id)) {
+            echo "<p>expired</p>";
+        } 
+
+
+
+    }
+
+
     public function testGetMembers() 
     {
         $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')

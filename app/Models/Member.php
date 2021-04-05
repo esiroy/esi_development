@@ -119,4 +119,25 @@ class Member extends Model
 
 
 
+    public function isMemberCreditExpired($memberID) 
+    {
+        $today = date("F j, Y, H:i");
+
+        $member = new Member();
+        $memberInfo = $member->where('user_id', $memberID)->first();
+
+        if ($memberInfo) 
+        {
+            $expiry = date("F j, Y, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));
+            if ($today > $expiry) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true; //return true, set this as expired so it member can't book
+        }
+
+    }
+
 }

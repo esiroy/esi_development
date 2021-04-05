@@ -300,8 +300,17 @@ class MemberController extends Controller
         }
 
 
-        //check if member has enough points
+        //check if member has enough points or is it expired
         $agentCredts = new AgentTransaction();
+
+        if ($memberInfo->isMemberCreditExpired($memberID)) {
+            return Response()->json([
+                "success" => false,
+                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                "message_en" => "You are out of points or your points have expired.",    
+            ]);                  
+        } //END EXPIRED CHECKER
+                
         if ($agentCredts->getCredits($memberID) <= 0) {
             return Response()->json([
                 "success" => false,           

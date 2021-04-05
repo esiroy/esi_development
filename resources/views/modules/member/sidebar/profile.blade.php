@@ -42,12 +42,18 @@
 
                     <!-- Current remaining points: For point members: -->
                     <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 : </span>
-                    <span>
-                        @php
-                        $transaction = new \App\Models\AgentTransaction();
-                        echo $transaction->getCredits(Auth::user()->id);
-                        @endphp
-                    </span>
+
+                 
+                        @if ($memberInfo->isMemberCreditExpired(Auth::user()->id)) 
+                            <span class="text-danger">{{ "0" }}</span>
+                        @else 
+                            <span>
+                                @php
+                                $transaction = new \App\Models\AgentTransaction();
+                                echo $transaction->getCredits(Auth::user()->id);
+                                @endphp
+                            </span>
+                        @endif
 
 
                     <div class="pt-2">
@@ -68,10 +74,16 @@
 
                         <div class="pt-1">
                             <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :</span>                            
-                            <span>@php
-                                $transaction = new \App\Models\AgentTransaction();
-                                echo $transaction->getCredits(Auth::user()->id);
-                                @endphp
+                            <span>
+                                    
+                                @if ($memberInfo->isMemberCreditExpired(Auth::user()->id)) 
+                                    <span class="text-danger">{{ "0" }}</span>
+                                @else 
+                                    @php
+                                    $transaction = new \App\Models\AgentTransaction();
+                                    echo $transaction->getCredits(Auth::user()->id);
+                                    @endphp
+                                @endif
                             </span>                            
                         </div>                       
 
