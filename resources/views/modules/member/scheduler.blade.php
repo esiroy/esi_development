@@ -28,13 +28,19 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mt-2 mb-4">
-                                <div>予約= 予約可能です</div>
+                                <div>予約 = 予約可能です</div>
                                 <div>済　= 本人で予約済みです</div>
+                                <div>済他 ＝　講師キャンセル又は他の受講生が予約済みです</div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div style="float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
-                                済他＝　講師キャンセル又は他の受講生が予約済みです
+                            <div style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
+                                @php /*済他＝　講師キャンセル又は他の受講生が予約済みです*/ @endphp
+                                <div>予約は30分前まで、キャンセルは3時間前まで可能</div>
+                            </div>
+
+                            <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
+                                <div>予約数制限：　最大15コマまで予約可能です</div>
                             </div>
                         </div>
                     </div>
