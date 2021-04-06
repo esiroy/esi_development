@@ -196,8 +196,6 @@ class TableGetAgentTransactionController extends Controller
 
         //$items = DB::connection('mysql_live')->select("select * from agent_transaction ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
-      
-
         $ctr = 0;
 
         foreach ($items as $item) {
@@ -223,32 +221,29 @@ class TableGetAgentTransactionController extends Controller
             ];
 
             DB::beginTransaction();
-            
-            if (AgentTransaction::where('id', $item->id)->exists()) {
-                echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
-                try
-                {
-                    $agentTransaction = AgentTransaction::where('id', $item->id)->first();
-                    $transaction = $agentTransaction->update($data);
-                    DB::commit();
-                    echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
-                } catch (\Exception $e) {
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On update </div>";
-                }
+            $agentTransaction = AgentTransaction::where('id', $item->id)->first();
+
+            if ($agentTransaction) 
+            {
+
+                $transaction = $agentTransaction->update($data);
+                DB::commit();
+
+                echo "<div style='color:red'>$ctr - UPDATED : " . $item->id . " " . $item->created_on . "</div>";
 
             } else {
 
-                try
-                {
-                    $transaction = AgentTransaction::insert($data);
-                    DB::commit();
-                    echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
-                } catch (\Exception $e) {
-                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
-                }
+
+                $transaction = AgentTransaction::insert($data);
+                DB::commit();
+
+                echo "<div style='color:red'>$ctr - CREATED : " . $item->id . " " . $item->created_on . "</div>";
+
+             
             }
         }
+
         echo "success!!! data imported";
 
     }
