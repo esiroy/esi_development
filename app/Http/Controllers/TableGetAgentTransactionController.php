@@ -8,7 +8,7 @@ use DB;
 class TableGetAgentTransactionController extends Controller
 {
 
-    public function index()
+    public function index($per_item = null)
     {
         set_time_limit(0);
 
@@ -16,14 +16,16 @@ class TableGetAgentTransactionController extends Controller
 
         echo "<div>there are " . $items . " agent transaction item</div>";
 
-        $per_item = 8000;
+        if ($per_item == null) {
+            $per_item = 8000;
+        }
+       
         $total_pages = ($items / $per_item) + 1;
 
         $counter = 0;
 
-        for ($i = 1; $i <= $total_pages; $i++) {
-
-            set_time_limit(0);
+        for ($i = 1; $i <= $total_pages; $i++) 
+        {       
 
             $start = ($i - 1) * ($per_item);
             $end = $i * ($per_item);
