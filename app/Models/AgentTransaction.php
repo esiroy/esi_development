@@ -113,18 +113,9 @@ class AgentTransaction extends Model
     public function getCredits($memberID)
     {
 
-        $today = date("Y-m-d, H:i");
-
-
-        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1);
-        $transaction->orderBy('created_at', 'ASC')->get();
+        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'ASC')->get();
         $credits = 0;
-        
-        foreach ($transactions as $transaction) 
-        {
-            
-            $expiry = date("Y-m-d, H:i", strtotime($transaction->credits_expiration));
-
+        foreach ($transactions as $transaction) {
             if ($transaction->transaction_type == 'ADD' ||
                 $transaction->transaction_type == 'MANUAL_ADD' ||
                 $transaction->transaction_type == 'FREE_CREDITS' ||
@@ -133,20 +124,12 @@ class AgentTransaction extends Model
                 $transaction->transaction_type == 'CREDITS_EXPIRATION'
 
             ) {
-
-                if ($today > $expiry) {
-                    //expired
-                } else {
-                    $credits = $credits + $transaction->amount;
-                }                    
+                $credits = $credits + $transaction->amount;
 
             } else {
-
                 $credits = $credits - $transaction->amount;
-
             }
         }
-        
         return $credits;
 
     }
