@@ -100,6 +100,9 @@ class TableGetAgentTransactionController extends Controller
 
     public function show($id = null, $per_item = null) 
     {
+
+        set_time_limit(0);
+        
         if ($per_item == null) {
             $per_item = 8000;
         }
