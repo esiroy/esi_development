@@ -39,12 +39,12 @@ class TableGetAgentTransactionController extends Controller
 
                 $total_missing = $live_count - $local_count;
 
-                $url = url("importAgentTranscations/$i");
+                $url = url("importAgentTranscations/$i/$per_item");
                 echo "<a href='$url'><small>Agent Transaction Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";
 
             } else {
 
-                $url = url("importAgentTranscations/$i");
+                $url = url("importAgentTranscations/$i/$per_item");
                 echo "<a href='$url'><small>Agent Transaction Page $i</small> </a><br>";
             }
         }

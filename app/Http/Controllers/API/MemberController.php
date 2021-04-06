@@ -251,6 +251,8 @@ class MemberController extends Controller
      */
     public function bookSchedule(Request $request)
     {
+
+        
         $scheduleItem = new ScheduleItem;
 
         $scheduleID = $request->scheduleID;
@@ -258,6 +260,9 @@ class MemberController extends Controller
         $schedule_status = 'CLIENT_RESERVED';
 
         $memberInfo = Member::where('user_id',  $memberID)->first();
+
+
+        
 
         //check deactivated
         if ($memberInfo->user->is_activated == false) {
