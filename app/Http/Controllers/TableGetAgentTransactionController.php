@@ -37,19 +37,19 @@ class TableGetAgentTransactionController extends Controller
 
             $live_count = count($items_live_count->toArray());
             $local_count = count($items_local_count->toArray());
-                        
+
             if ($items_local_count < $items_live_count) {
 
 
                 $total_missing = $live_count - $local_count;
 
                 $url = url("importAgentTranscations/$i/$per_item");
-                echo "<a href='$url'><small>Agent Transaction Page $i</small>   <span style='color:red'>Local:  $local_count </span> <span style='color:red'>Live:  $live_count </span> </a><br>";
+                echo "<a href='$url'><small>Agent Transaction Page $i</small></a> <span style='color:red'>Local:  $local_count </span> <span style='color:red'>Live:  $live_count </span><br>";
 
             } else {
 
                 $url = url("importAgentTranscations/$i/$per_item");
-                echo "<a href='$url'><small>Agent Transaction Page $i</small> <span style='color:blue'>Local:  $local_count </span> <span style='color:blue'>Live:  $live_count </span> </a><br>";
+                echo "<a href='$url'><small>Agent Transaction Page $i</small></a> <span style='color:blue'>Local:  $local_count </span> <span style='color:blue'>Live:  $live_count </span><br>";
             }
         }
 
