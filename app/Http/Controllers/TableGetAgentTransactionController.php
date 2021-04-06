@@ -39,8 +39,8 @@ class TableGetAgentTransactionController extends Controller
            
 
 
-            $live_count = citems_live_count;
-            $local_count = count($items_local_count->toArray());
+            $live_count = $items_live_count;
+            $local_count = $items_local_count;
 
             if ($items_local_count < $items_live_count) {
 
