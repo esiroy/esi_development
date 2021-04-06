@@ -14,8 +14,6 @@ class TableGetAgentTransactionController extends Controller
 
         $items = DB::connection('mysql_live')->table('agent_transaction')->count();
 
-        echo "<div>there are " . $items . " agent transaction live item, $localItems items</div>";
-
         if ($per_item == null) {
             $per_item = 8000;
         }
@@ -58,7 +56,7 @@ class TableGetAgentTransactionController extends Controller
 
         $localItems = AgentTransaction::count();
 
-        
+
         echo $localItems . " local items | live items : " . $items;
 
     }
