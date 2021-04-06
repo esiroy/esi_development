@@ -12,12 +12,8 @@ class TableGetAgentTransactionController extends Controller
     {
         set_time_limit(0);
 
-
-
         $items = DB::connection('mysql_live')->table('agent_transaction')->count();
         $localItems = AgentTransaction::count();
-
-        
 
         echo "<div>there are " . $items . " agent transaction live item, $localItems items</div>";
 
@@ -200,7 +196,7 @@ class TableGetAgentTransactionController extends Controller
 
         //$items = DB::connection('mysql_live')->select("select * from agent_transaction ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
-        DB::beginTransaction();
+      
 
         $ctr = 0;
 
@@ -226,6 +222,8 @@ class TableGetAgentTransactionController extends Controller
                 'old_credits_expiration' => $item->old_credits_expiration,
             ];
 
+            DB::beginTransaction();
+            
             if (AgentTransaction::where('id', $item->id)->exists()) {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
