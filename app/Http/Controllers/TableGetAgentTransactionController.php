@@ -100,13 +100,66 @@ class TableGetAgentTransactionController extends Controller
 
     public function show($id = null, $per_item = null) 
     {
-        echo "show";
-        exit();
+        if ($per_item == null) {
+            $per_item = 8000;
+        }
+
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        for($i = $start; $i<=$end; $i++) {
-            echo $i;
+        echo $start ." ". $end ."<Br>";
+
+        DB::beginTransaction();
+
+        for($i = $start; $i<=$end; $i++) 
+        {
+            $item = DB::connection('mysql_live')->select("select * from agent_transaction where id = $id");
+
+            $item = $item[0];
+            
+            if ($item) 
+            {                
+                $data = [
+                    'id' => $item->id,
+                    'created_at' => $item->created_on,
+                    'updated_at' => $item->updated_on,
+                    'valid' => $item->valid,
+                    'amount' => $item->amount,
+                    'remarks' => $item->remarks,
+                    'transaction_type' => $item->transaction_type,
+                    'agent_id' => $item->agent_id,
+                    'created_by_id' => $item->created_by_id,
+                    'member_id' => $item->member_id,
+                    'schedule_item_id' => $item->schedule_item_id,
+                    'price' => $item->price,
+                    'lesson_shift_id' => $item->lesson_shift_id,
+                    'credits_expiration' => $item->credits_expiration,
+                    'old_credits_expiration' => $item->old_credits_expiration,
+                ];
+
+                $agentTransaction = AgentTransaction::where('id', $item->id)->first();
+
+                try
+                {                
+                    if ($agentTransaction) 
+                    {
+                        $transaction = $agentTransaction->update($data);
+                        DB::commit();
+
+                        echo "<div style='color:blue'> Updated : " . $item->id . " " . $item->created_on . "</div>";
+
+                    } else {
+                    
+                        $transaction = AgentTransaction::insert($data);
+                        DB::commit();
+
+                        echo "<div style='color:blue'> CREATED : " . $item->id . " " . $item->created_on . "</div>";
+
+                    }                    
+                } catch (\Exception $e) {
+                    echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
+                }
+            }
         }
     }
 
