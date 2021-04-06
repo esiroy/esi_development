@@ -149,14 +149,14 @@ class TableGetAgentTransactionController extends Controller
                         $transaction = $agentTransaction->update($data);
                         DB::commit();
 
-                        echo "<div style='color:blue'> Updated : " . $item->id . " " . $item->created_on . "</div>";
+                        echo "<div style='color:blue'> Updated : " . $item->id . " ,  " . $item->created_on . "</div>";
 
                     } else {
                     
                         $transaction = AgentTransaction::insert($data);
                         DB::commit();
 
-                        echo "<div style='color:blue'> CREATED : " . $item->id . " " . $item->created_on . "</div>";
+                        echo "<div style='color:blue'> CREATED : " . $item->id . " , " . $item->created_on . "</div>";
 
                     }                    
                 } catch (\Exception $e) {
