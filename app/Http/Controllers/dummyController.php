@@ -48,13 +48,13 @@ class dummyController extends Controller
     
         echo $user_id;
 
-
         if ($member->isMemberCreditExpired($user_id)) {
             echo "<p>expired</p>";
-        } 
+        }
 
-
-
+        $member->isReservedScheduleValid($user_id) {
+            
+        }
     }
 
 

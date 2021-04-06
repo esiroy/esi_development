@@ -147,7 +147,7 @@ class TableGetAgentTransactionController extends Controller
 
                 try
                 {
-                    $agentTransaction = AgentTransaction::where('id', $item->id);
+                    $agentTransaction = AgentTransaction::where('id', $item->id)->first();
                     $transaction = $agentTransaction->update($data);
                     DB::commit();
                     echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
