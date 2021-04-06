@@ -113,12 +113,12 @@ class TableGetAgentTransactionController extends Controller
 
         for($i = $start; $i<=$end; $i++) 
         {
-            $item = DB::connection('mysql_live')->select("select * from agent_transaction where id = $id");
+            $item = DB::connection('mysql_live')->select("select * from agent_transaction where id = $id");         
 
-            $item = $item[0];
-            
             if ($item) 
-            {                
+            {          
+                $item = $item[0];
+
                 $data = [
                     'id' => $item->id,
                     'created_at' => $item->created_on,
