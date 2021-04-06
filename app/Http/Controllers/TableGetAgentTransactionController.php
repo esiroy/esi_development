@@ -12,9 +12,14 @@ class TableGetAgentTransactionController extends Controller
     {
         set_time_limit(0);
 
-        $items = DB::connection('mysql_live')->table('agent_transaction')->count();
 
-        echo "<div>there are " . $items . " agent transaction item</div>";
+
+        $items = DB::connection('mysql_live')->table('agent_transaction')->count();
+        $localItems = AgentTransaction::->count();
+
+        
+
+        echo "<div>there are " . $items . " agent transaction live item, $localItems items</div>";
 
         if ($per_item == null) {
             $per_item = 8000;
