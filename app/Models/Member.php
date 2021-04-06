@@ -137,7 +137,10 @@ class Member extends Model
         } else {
             return true; //return true, set this as expired so it member can't book
         }
+    }
 
+    public function isReservedScheduleValid($memberID) {
+        
     }
 
 }

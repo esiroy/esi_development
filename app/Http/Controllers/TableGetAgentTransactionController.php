@@ -114,13 +114,17 @@ class TableGetAgentTransactionController extends Controller
         echo "<BR>";
 
 
-        $items = DB::connection('mysql_live')->select("select * from agent_transaction ORDER BY id ASC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select id from agent_transaction ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
         $ctr = 0;
 
-        foreach ($items as $item) {
+        foreach ($items as $live_item) {
+
+            $item = DB::connection('mysql_live')->select("select * from agent_transaction where id = $live_item->id");
+
+
             set_time_limit(0);
             $ctr = $ctr + 1;
 
