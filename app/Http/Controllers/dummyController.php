@@ -46,15 +46,34 @@ class dummyController extends Controller
     {
         $user_id =  Auth::user()->id;        
     
-        echo $user_id;
+        $memberInfo = $member->where('user_id', 20372)->first();
 
-        if ($member->isMemberCreditExpired($user_id)) {
+
+        $today = date("Y-m-d, H:i");
+        $expiry = date("Y-m-d, H:i, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));;
+
+        echo $today ." > ". $expiry;
+
+
+        
+        echo "<bR>";
+
+        
+        if ($today > $expiry) {
+            echo "hala expired<BR>";
+        } else {
+            echo "hala dili<BR>";
+        }
+
+        echo "<bR>";
+
+        if ($member->isMemberCreditExpired(20372)) {
             echo "<p>expired</p>";
+        } else {
+            echo "not expired";
         }
 
-        $member->isReservedScheduleValid($user_id) {
-            
-        }
+
     }
 
 

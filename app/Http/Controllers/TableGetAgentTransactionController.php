@@ -166,8 +166,11 @@ class TableGetAgentTransactionController extends Controller
                 } catch (\Exception $e) {
                     echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
                 }
-            }
+
+            } 
         }
+
+        echo "<p> done </p>";
     }
 
 

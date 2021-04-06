@@ -121,14 +121,14 @@ class Member extends Model
 
     public function isMemberCreditExpired($memberID) 
     {
-        $today = date("F j, Y, H:i");
+        $today = date("Y-m-d, H:i");
 
         $member = new Member();
         $memberInfo = $member->where('user_id', $memberID)->first();
 
         if ($memberInfo) 
         {
-            $expiry = date("F j, Y, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));
+            $expiry = date("Y-m-d, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));
             if ($today > $expiry) {
                 return true;
             } else {
