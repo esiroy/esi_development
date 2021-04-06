@@ -30,6 +30,7 @@ Route::get('testExpiry', 'dummyController@testExpiry');
 Route::resource('importAgentTranscations', 'TableGetAgentTransactionController');
 Route::get('importAgentTranscations/index/{per_item}', 'TableGetAgentTransactionController@index');
 Route::get('importAgentTranscations/{id}/{per_item}', 'TableGetAgentTransactionController@show');
+Route::get('importAgentTranscations/old/{id}/{per_item}', 'TableGetAgentTransactionController@showOld');
 
 
 /*************** 
