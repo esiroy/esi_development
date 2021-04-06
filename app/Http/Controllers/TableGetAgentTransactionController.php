@@ -98,7 +98,7 @@ class TableGetAgentTransactionController extends Controller
 
     }
 
-    public function show_v2($id = null, $per_item = null) 
+    public function show($id = null, $per_item = null) 
     {
 
         set_time_limit(0);
@@ -171,7 +171,7 @@ class TableGetAgentTransactionController extends Controller
     }
 
 
-    public function show($id = null, $per_item = null)
+    public function show_old($id = null, $per_item = null)
     {
 
         set_time_limit(0);
