@@ -100,7 +100,7 @@ class TableGetAgentTransactionController extends Controller
 
     }
 
-    public function show($id = null, $per_item = null) 
+    public function showNew($id = null, $per_item = null) 
     {
 
         set_time_limit(0);
@@ -176,7 +176,7 @@ class TableGetAgentTransactionController extends Controller
     }
 
 
-    public function show_old($id = null, $per_item = null)
+    public function show($id = null, $per_item = null)
     {
 
         set_time_limit(0);
@@ -191,8 +191,9 @@ class TableGetAgentTransactionController extends Controller
         echo "<div>ADDING agent_transaction FROM : " . $start . " - " . $end . "</div>";
         echo "<BR>";
 
+        $items = DB::connection('mysql_live')->table('agent_transaction')->select('*')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
 
-        $items = DB::connection('mysql_live')->select("select * from agent_transaction ORDER BY id ASC LIMIT $per_item OFFSET $start");
+        //$items = DB::connection('mysql_live')->select("select * from agent_transaction ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
