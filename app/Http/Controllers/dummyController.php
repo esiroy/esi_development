@@ -41,6 +41,10 @@ class dummyController extends Controller
 
     }
 
+    public function testUserPoints($memberID) {
+        //18153 - Kobayashi, Ryusei
+
+    }
 
     public function testExpiry(Member $member) 
     {

@@ -179,6 +179,10 @@ class TableGetAgentTransactionController extends Controller
             }
         }
 
+        DB::disconnect('mysql_live');
+        DB::disconnect('mysql');
+
+
         echo "<p> done </p>";
     }
 
