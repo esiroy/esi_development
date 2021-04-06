@@ -98,7 +98,7 @@ class TableGetAgentTransactionController extends Controller
 
     }
 
-    public function show($id = null, $per_item = null) 
+    public function show_v2($id = null, $per_item = null) 
     {
 
         set_time_limit(0);
@@ -114,8 +114,12 @@ class TableGetAgentTransactionController extends Controller
 
         DB::beginTransaction();
 
+        $ctr = 0;
+
         for($i = $start; $i<=$end; $i++) 
         {
+            $ctr++; 
+
             $item = DB::connection('mysql_live')->select("select * from agent_transaction where id = $i");         
 
             if ($item) 
@@ -149,14 +153,14 @@ class TableGetAgentTransactionController extends Controller
                         $transaction = $agentTransaction->update($data);
                         DB::commit();
 
-                        echo "<div style='color:blue'> Updated : " . $item->id . " ,  " . $item->created_on . "</div>";
+                        echo "<div style='color:blue'> $ctr | Updated : " . $item->id . " ,  " . $item->created_on . "</div>";
 
                     } else {
                     
                         $transaction = AgentTransaction::insert($data);
                         DB::commit();
 
-                        echo "<div style='color:blue'> CREATED : " . $item->id . " , " . $item->created_on . "</div>";
+                        echo "<div style='color:blue'> $ctr |  CREATED : " . $item->id . " , " . $item->created_on . "</div>";
 
                     }                    
                 } catch (\Exception $e) {
@@ -167,7 +171,7 @@ class TableGetAgentTransactionController extends Controller
     }
 
 
-    public function show_old($id = null, $per_item = null)
+    public function show($id = null, $per_item = null)
     {
 
         set_time_limit(0);
