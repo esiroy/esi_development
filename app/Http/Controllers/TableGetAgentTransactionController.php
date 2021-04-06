@@ -56,8 +56,10 @@ class TableGetAgentTransactionController extends Controller
 
         $localItems = AgentTransaction::count();
 
+        DB::disconnect('mysql_live');
+        DB::disconnect('mysql');
 
-        echo $localItems . " local items | live items : " . $items;
+        echo $localItems . " local items | live items : " . $items . ", items counted on loop " .  $counter;
 
     }
 
