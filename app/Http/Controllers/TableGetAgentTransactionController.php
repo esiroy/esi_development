@@ -30,13 +30,16 @@ class TableGetAgentTransactionController extends Controller
 
             $start = ($i - 1) * ($per_item);
             $end = $i * ($per_item);
-            $items_live_count = DB::connection('mysql_live')->table('agent_transaction')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
-            $items_local_count = DB::connection('mysql')->table('agent_transaction')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
 
-            $counter = $counter + count($items_local_count->toArray());
+            $items_live_count = DB::connection('mysql_live')->table('agent_transaction')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->count();
+            //$items_local_count = DB::connection('mysql')->table('agent_transaction')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
+
+            $items_local_count = AgentTransaction::take($per_item)->skip($start)->count();
+
+           
 
 
-            $live_count = count($items_live_count->toArray());
+            $live_count = citems_live_count;
             $local_count = count($items_local_count->toArray());
 
             if ($items_local_count < $items_live_count) {
@@ -45,12 +48,12 @@ class TableGetAgentTransactionController extends Controller
                 $total_missing = $live_count - $local_count;
 
                 $url = url("importAgentTranscations/$i/$per_item");
-                echo "<a href='$url'><small>Agent Transaction Page $i</small></a> <span style='color:red'>Local:  $local_count </span> <span style='color:red'>Live:  $live_count </span><br>";
+                echo "<a href='$url'><small>Agent Transaction Page $i</small></a> <span style='color:red'>Local:  $items_local_count </span> <span style='color:red'>Live:  $items_live_count </span><br>";
 
             } else {
 
                 $url = url("importAgentTranscations/$i/$per_item");
-                echo "<a href='$url'><small>Agent Transaction Page $i</small></a> <span style='color:blue'>Local:  $local_count </span> <span style='color:blue'>Live:  $live_count </span><br>";
+                echo "<a href='$url'><small>Agent Transaction Page $i</small></a> <span style='color:blue'>Local:  $items_local_count </span> <span style='color:blue'>Live:  $items_live_count </span><br>";
             }
         }
 
