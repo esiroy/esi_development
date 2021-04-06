@@ -116,7 +116,7 @@ class AgentTransaction extends Model
         $today =   Carbon::now();
         
         $transactions = AgentTransaction::where('member_id', $memberID)
-        ->whereDate('credits_expiration', '<', $today->toDateString())
+        //->whereDate('credits_expiration', '<', $today->toDateString())
         ->where('valid', 1)->orderBy('created_at', 'ASC')->get();
 
         $credits = 0;
