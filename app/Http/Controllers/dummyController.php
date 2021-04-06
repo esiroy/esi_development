@@ -50,7 +50,7 @@ class dummyController extends Controller
 
 
         $today = date("Y-m-d, H:i");
-        $expiry = date("Y-m-d, H:i, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));;
+        $expiry = date("Y-m-d, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));;
 
         echo $today ." > ". $expiry;
 
