@@ -123,7 +123,7 @@ class AgentTransaction extends Model
         foreach ($transactions as $transaction) 
         {
             
-            $expiry = date("Y-m-d, H:i", $transaction->credits_expiration);
+            $expiry = date("Y-m-d, H:i", strtotime($transaction->credits_expiration));
 
             if ($transaction->transaction_type == 'ADD' ||
                 $transaction->transaction_type == 'MANUAL_ADD' ||
@@ -146,6 +146,7 @@ class AgentTransaction extends Model
 
             }
         }
+        
         return $credits;
 
     }
