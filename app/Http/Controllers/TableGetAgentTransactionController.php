@@ -102,7 +102,7 @@ class TableGetAgentTransactionController extends Controller
     {
 
         set_time_limit(0);
-        
+
         if ($per_item == null) {
             $per_item = 8000;
         }
@@ -116,7 +116,7 @@ class TableGetAgentTransactionController extends Controller
 
         for($i = $start; $i<=$end; $i++) 
         {
-            $item = DB::connection('mysql_live')->select("select * from agent_transaction where id = $id");         
+            $item = DB::connection('mysql_live')->select("select * from agent_transaction where id = $i");         
 
             if ($item) 
             {          
