@@ -174,7 +174,7 @@ class TableGetAgentTransactionController extends Controller
                 }
 
             } else {
-                echo "<div style='color:blue'> $ctr not found </div>";
+                echo "<div style='color:blue'> $ctr | ID : $i not found </div>";
 
             }
         }
