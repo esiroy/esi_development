@@ -112,8 +112,12 @@ class AgentTransaction extends Model
     //Get Credits or Point Balance Member
     public function getCredits($memberID)
     {
+        $today =   Carbon::now();
+        
+        $transactions = AgentTransaction::where('member_id', $memberID)
+        ->whereDate('credits_expiration', '<', $today->toDateString())
+        ->where('valid', 1)->orderBy('created_at', 'ASC')->get();
 
-        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'ASC')->get();
         $credits = 0;
         foreach ($transactions as $transaction) {
             if ($transaction->transaction_type == 'ADD' ||
@@ -124,6 +128,10 @@ class AgentTransaction extends Model
                 $transaction->transaction_type == 'CREDITS_EXPIRATION'
 
             ) {
+
+                $expiry = date("Y-m-d, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));;
+
+
                 $credits = $credits + $transaction->amount;
 
             } else {
@@ -160,8 +168,13 @@ class AgentTransaction extends Model
     public function getMemberTransactions($memberID)
     {
         //$transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
-        
-        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->where(function ($q) use ($memberID) {
+        $today = date("Y-m-d, H:i");
+        $expiry = date("Y-m-d, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));;
+
+        $memberQuery->whereDate('members.credits_expiration', '>', $today->toDateString());
+
+        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->where(function ($q) use ($memberID) 
+        {
             $q->orWhere('transaction_type', 'ADD')
                 ->orWhere('transaction_type', 'LESSON')
                 ->orWhere('transaction_type', 'CANCEL_LESSON')
@@ -170,8 +183,6 @@ class AgentTransaction extends Model
                 ->orWhere('transaction_type', 'DISTRIBUTE')
                 ->orWhere('transaction_type', 'AGENT_SUBTRACT')
                 ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
-                
-
         })->get();
        
 
