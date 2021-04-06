@@ -15,7 +15,7 @@ class TableGetAgentTransactionController extends Controller
 
 
         $items = DB::connection('mysql_live')->table('agent_transaction')->count();
-        $localItems = AgentTransaction::->count();
+        $localItems = AgentTransaction::count();
 
         
 
