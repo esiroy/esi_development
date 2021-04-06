@@ -98,7 +98,20 @@ class TableGetAgentTransactionController extends Controller
 
     }
 
-    public function show($id = null, $per_item = null)
+    public function show($id = null, $per_item = null) 
+    {
+        echo "show";
+        exit();
+        $start = ($id - 1) * ($per_item);
+        $end = $id * ($per_item);
+
+        for($i = $start; $i<=$end; $i++) {
+            echo $i;
+        }
+    }
+
+
+    public function show_old($id = null, $per_item = null)
     {
 
         set_time_limit(0);
