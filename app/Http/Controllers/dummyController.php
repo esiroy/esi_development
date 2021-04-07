@@ -90,17 +90,16 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
         $memberQuery = $memberQuery->groupby('members.user_id')->get()->toArray();
 
+
+
         $memberQueryOne = Member::join('users', 'users.id', '=', 'members.user_id');
         $memberQueryOne = $memberQueryOne->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
-
         $memberQueryOne = $memberQueryOne->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
-
-        //$memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
-        //$memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);  //expired
-
+        $memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
+        $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
         $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");
         $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
-        $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
+        $memberQueryOne = $memberQueryOne->where('members.credits_expiration', null);  //expired
         $memberQueryAll = array_merge($memberQuery, $memberQueryOne);
         
 
