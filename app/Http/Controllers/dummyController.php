@@ -17,21 +17,12 @@ use DB;
 use Auth;
 use Config;
 use Mail;
-
 use App\Models\LessonMailer;
-
-
 use App\Mail\CustomerSupport as CustomerSupportMail;
-
-
-
 use App\Models\PhpSpreadsheetFontStyle as Style;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
 use Carbon\Carbon;
-
-
 
 class dummyController extends Controller
 {
@@ -87,7 +78,7 @@ class dummyController extends Controller
 
     public function testGetMembers(Request $request) 
     {
-
+        $today = Carbon::now();
         $dateFrom = $request->get('from');
         $dateTo = $request->get('to');
 
@@ -95,6 +86,8 @@ class dummyController extends Controller
         $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
         $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
+        $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  //expired
+
         $memberQuery = $memberQuery->get();        
 
         foreach ($memberQuery as $member) {
