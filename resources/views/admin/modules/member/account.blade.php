@@ -118,9 +118,11 @@
                                 <div class="row py-1">
                                     <div class="col-md-4">Credits Expiration : </div>
                                     <div class="col-md-8">
+                                        @if (isset($member->credits_expiration))
                                         <strong>
                                             {{ date('m/d/y h:i:s a', strtotime($member->credits_expiration)) }}
                                         </strong>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="row py-1">
