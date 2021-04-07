@@ -98,7 +98,7 @@ class ExportController extends Controller
             $member = Member::where('user_id', $memberItem['user_id'])->first();
 
             $credits = $agenTransaction->getCredits($memberItem['user_id']);
-            if ($credits >= 1) {
+            //if ($credits >= 1) {
                 $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
                 $sheet->setCellValue('B' . $ctr, $member->user->id); //user id
                 $sheet->setCellValue('C' . $ctr, $member->user->firstname);
@@ -107,7 +107,7 @@ class ExportController extends Controller
                 $sheet->setCellValue('F' . $ctr, $credits);
                 $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
                 $ctr = $ctr + 1;
-            }
+            //}
         }
 
         $writer = new Xlsx($spreadsheet);
