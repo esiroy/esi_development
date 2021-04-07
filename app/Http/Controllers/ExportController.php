@@ -67,11 +67,16 @@ class ExportController extends Controller
         //$extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
         
 
-        /*
-        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id');
-        $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+        
+        $memberQuery = Member::join('agent_transactions', 'agent_transactions.member_id', '=', 'members.user_id');
+        $memberQuery = $memberQuery->select("agent_transactions.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
         $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
         $memberQuery = $memberQuery->where('membership', "Point Balance");
+
+       
+        $memberQuery = $memberQuery->where('agent_transactions.transaction_type', "EXPIRED");
+
+
         $memberQuery = $memberQuery->orderby('members.credits_expiration', 'ASC')->get();
 
         //Agent Credits Initialize
@@ -92,15 +97,8 @@ class ExportController extends Controller
                 $ctr = $ctr + 1;
             }
         }
-        */
+      
 
-  
-              
-        $memberQuery = AgentTransaction::whereBetween('created_at', [$dateFrom, $dateTo]);
-        //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->where('transaction_type', 'LIKE', '%EXPIRED%');
-        $memberQuery = $memberQuery->get();
-        
 
        
 
@@ -112,7 +110,7 @@ class ExportController extends Controller
         foreach ($memberQuery as $query) 
         {
 
-            $member = Member::where('user_id', $query->user_id)->first();
+            $member = Member::where('user_id', $query->member_id)->first();
 
             $credits = $agenTransaction->getCredits($member->user_id);
             if ($credits >= 1) 

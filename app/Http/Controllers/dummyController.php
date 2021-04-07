@@ -85,15 +85,20 @@ class dummyController extends Controller
     }
 
 
-    public function testGetMembers() 
+    public function testGetMembers(Request $request) 
     {
 
-        $memberQuery = Members::join('agent_transaction', 'member.user_id', '=', 'agent_transaction.member_id');        
-        $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom)->whereDate('agent_transactioncreated_at.', '<=', $to . " 00:30:00");             
+        $dateFrom = $request->get('from');
+        $dateTo = $request->get('to');
+
+        
+        $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
+        $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
+        $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
         $memberQuery = $memberQuery->get();        
 
         foreach ($memberQuery as $member) {
-            echo $member->user->firstname . " " . $member->user->lastname;
+            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . " " .  $member->transaction_type;
             echo "<BR>";
         }
         
