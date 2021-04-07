@@ -96,7 +96,7 @@ class ExportController extends Controller
 
 
   
-        $memberQuery = Members::join('agent_transaction', 'member.user_id', '=', 'agent_transaction.member_id');        
+        $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');        
         $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom)->whereDate('agent_transaction.created_at', '<=', $to);             
 
         $memberQuery = $memberQuery->get();
