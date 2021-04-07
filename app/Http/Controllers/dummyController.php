@@ -96,7 +96,7 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->groupby('members.user_id')->get();        
 
         foreach ($memberQuery as $member) {
-            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " - " . $member->credits_expiration;
+            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " - " . $member->credits_expiration ." ". $member->created_at;
             echo "<BR>";
         }
         
