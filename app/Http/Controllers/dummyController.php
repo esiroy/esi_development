@@ -86,20 +86,26 @@ class dummyController extends Controller
         $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
         $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
-        $memberQuery = $memberQuery->where('members.membership', "Point Balance");    
+        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
-        $memberQuery = $memberQuery->groupby('members.user_id')->get();
+        $memberQuery = $memberQuery->groupby('members.user_id')->get()->toArray();;
 
         $memberQueryOne = Member::join('users', 'users.id', '=', 'members.user_id');
         $memberQueryOne = $memberQueryOne->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+
         $memberQueryOne = $memberQueryOne->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+
+        $memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
+        $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);  //expired
+
         $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");
-        $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get();
+        $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();;
 
         $memberQueryAll = array_merge($memberQuery, $memberQueryOne);
         
 
-        foreach ($memberQueryAll as $member) {
+        foreach ($memberQueryAll as $memberItem) {
+            $member = Member::where('user_id', $memberItem['user_id'])->first();
             echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration ." | Expired Added :  ". $member->created_at;
             echo "<BR>";
         }
