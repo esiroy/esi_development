@@ -78,7 +78,7 @@ class ExportController extends Controller
         $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
 
         $memberQuery = array_merge($memberQuery, $memberQueryOne);
-        $memberQuery = unique_multidim_array($memberQuery, 'user_id');
+        //$memberQuery = unique_multidim_array($memberQuery, 'user_id');
 
 
 
