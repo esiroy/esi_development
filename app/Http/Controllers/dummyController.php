@@ -44,6 +44,10 @@ class dummyController extends Controller
     public function testUserPoints($memberID) {
         //18153 - Kobayashi, Ryusei
 
+
+  
+   
+
     }
 
     public function testExpiry(Member $member) 
@@ -83,12 +87,25 @@ class dummyController extends Controller
 
     public function testGetMembers() 
     {
+
+        $memberQuery = Members::join('agent_transaction', 'member.user_id', '=', 'agent_transaction.member_id');        
+        $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom)->whereDate('agent_transactioncreated_at.', '<=', $to . " 00:30:00");             
+        $memberQuery = $memberQuery->get();        
+
+        foreach ($memberQuery as $member) {
+            echo $member->user->firstname . " " . $member->user->lastname;
+            echo "<BR>";
+        }
+
+        
+        /*
         $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
         ->select('members.user_id', 'members.nickname')
         ->where('users.valid', 1)
         ->get();
 
         return view('admin.test.index');
+        */
 
     }
 
