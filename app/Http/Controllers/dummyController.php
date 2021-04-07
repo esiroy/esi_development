@@ -90,8 +90,6 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
         $memberQuery = $memberQuery->groupby('members.user_id')->get()->toArray();
 
-        
-
         $memberQueryOne = Member::join('users', 'users.id', '=', 'members.user_id');
         $memberQueryOne = $memberQueryOne->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
         $memberQueryOne = $memberQueryOne->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
@@ -102,7 +100,7 @@ class dummyController extends Controller
 
         $memberQuery = array_merge($memberQuery, $memberQueryOne);
         $memberQuery = unique_multidim_array($memberQuery, 'user_id');
-        
+
         foreach ($memberQuery as $memberItem) {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
             echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  Status: " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration

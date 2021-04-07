@@ -56,10 +56,10 @@ class ExportController extends Controller
         $spreadsheet->getActiveSheet()->getStyle('B2:G2')->applyFromArray($styleArrayH2);
         $spreadsheet->getActiveSheet()->getStyle('B2:G2')->getAlignment()->setHorizontal('center');
 
-            //get to expired members
-            $today = Carbon::now();
-            $dateFrom = $request->get('from');
-            $dateTo = $request->get('to');
+        //get to expired members
+        $today = Carbon::now();
+        $dateFrom = $request->get('from');
+        $dateTo = $request->get('to');
 
         //get query with expiration null
         $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
@@ -117,6 +117,8 @@ class ExportController extends Controller
             header('Pragma: public');
             flush(); // Flush system output buffer
             readfile($filename);
+            unlink($filename);
+
             die();
         } else {
             http_response_code(404);
