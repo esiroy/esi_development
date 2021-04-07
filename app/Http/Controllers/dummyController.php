@@ -106,7 +106,7 @@ class dummyController extends Controller
 
         foreach ($memberQueryAll as $memberItem) {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
-            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration ." | Expired Added :  ". $member->created_at;
+            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration ." | Expired Added :  ". $agent_transaction->created_at;
             echo "<BR>";
         }
         
