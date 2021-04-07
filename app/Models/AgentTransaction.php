@@ -140,8 +140,15 @@ class AgentTransaction extends Model
 
         $expiredCredit = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->where('transaction_type', "EXPIRED")->orderBy('created_at', 'DESC')->first();
       
-        if ($expiredCredit) {
-            return $expiredCredit->amount;
+        if ($expiredCredit) 
+        {
+            if ($expiredCredit->amount) {
+                return $expiredCredit->amount;
+            } else {
+                return $this->getCredits($memberID);
+            }
+           
+
         } else {
             return $this->getCredits($memberID);
         }
