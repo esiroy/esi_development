@@ -61,7 +61,8 @@ class ExportController extends Controller
         $dateFrom = $request->get('from');
         $dateTo = $request->get('to');
 
-        /* create extended dates   */          
+        /* create extended dates   */ 
+        $dateFrom =  date('Y-m-d', strtotime($dateFrom));;         
         $to = date('Y-m-d', strtotime($dateFrom . " +1 day"));
         $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
         
@@ -96,7 +97,7 @@ class ExportController extends Controller
 
   
         $memberQuery = Members::join('agent_transaction', 'member.user_id', '=', 'agent_transaction.member_id');        
-        $memberQuery = $memberQuery->where('agent_transaction.created_at', '>=', $dateFrom ." 00:00:01")->where('agent_transactioncreated_at.', '<=', $to . " 00:30:00");             
+        $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom)->whereDate('agent_transactioncreated_at.', '<=', $to . " 00:30:00");             
 
         $memberQuery = $memberQuery->get();
         
