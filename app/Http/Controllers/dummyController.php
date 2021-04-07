@@ -95,8 +95,8 @@ class dummyController extends Controller
 
         $memberQueryOne = $memberQueryOne->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
 
-        $memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
-        $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);  //expired
+        //$memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
+        //$memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);  //expired
 
         $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");
         $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();;
