@@ -89,7 +89,8 @@ class ExportController extends Controller
         foreach ($memberQuery as $memberItem) 
         {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
-            $credits = $agenTransaction->getCredits($member->user->id);
+
+            $credits = $agenTransaction->getCredits($memberItem['user_id']);
             if ($credits >= 1) {
                 $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
                 $sheet->setCellValue('B' . $ctr, $member->user->id); //user id
