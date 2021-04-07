@@ -131,8 +131,22 @@ class AgentTransaction extends Model
             }
         }
         return $credits;
-
     }
+
+
+    //Get Credits or Point Balance Member
+    public function getExpiredCredits($memberID)
+    {
+
+        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'ASC')->limit(1)->get();
+        $credits = 0;
+        foreach ($transactions as $transaction) {
+            if ($transaction->transaction_type == 'EXPIRED') {
+                $credits = $credits + $transaction->amount;
+            }
+        }
+        return $credits;
+    }       
 
     public function getAgentCredits($agentID)
     {

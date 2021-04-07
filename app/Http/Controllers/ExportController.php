@@ -97,7 +97,7 @@ class ExportController extends Controller
         {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
 
-            $credits = $agenTransaction->getCredits($memberItem['user_id']);
+            $credits = $agenTransaction->getExpiredCredits($memberItem['user_id']);
             //if ($credits >= 1) {
                 $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
                 $sheet->setCellValue('B' . $ctr, $member->user->id); //user id
@@ -105,7 +105,6 @@ class ExportController extends Controller
                 $sheet->setCellValue('D' . $ctr, $member->user->lastname);
                 $sheet->setCellValue('E' . $ctr, $member->user->email);
                 $sheet->setCellValue('F' . $ctr, $credits);
-
                 if (isset($member->credits_expiration)) {
                     $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
                 } else {
