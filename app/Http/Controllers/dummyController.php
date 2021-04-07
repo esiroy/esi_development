@@ -110,7 +110,7 @@ class dummyController extends Controller
         $memberQueryThree = $memberQueryThree->where('members.membership', "Point Balance");
         $memberQueryThree = $memberQueryThree->groupby('members.user_id')->get()->toArray();
 
-        $memberQuery = array_merge($memberQuery, $memberQueryThree);
+        $memberQueryAll = array_merge($memberQuery, $memberQueryThree);
 
 
         foreach ($memberQueryAll as $memberItem) {
