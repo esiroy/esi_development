@@ -56,33 +56,46 @@ class ExportController extends Controller
         $spreadsheet->getActiveSheet()->getStyle('B2:G2')->applyFromArray($styleArrayH2);
         $spreadsheet->getActiveSheet()->getStyle('B2:G2')->getAlignment()->setHorizontal('center');
 
-        //get to expired members
-        $today = Carbon::now();
-        $dateFrom = $request->get('from');
-        $dateTo = $request->get('to');
+            //get to expired members
+            $today = Carbon::now();
+            $dateFrom = $request->get('from');
+            $dateTo = $request->get('to');
 
-        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id');
-        $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
-        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+        //get query with expiration null
+        $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
+        $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
+        //$memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
+        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
+        $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
+        $memberQuery = $memberQuery->groupby('members.user_id')->get()->toArray();
 
-        //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  //expired
+        $memberQueryOne = Member::join('users', 'users.id', '=', 'members.user_id');
+        $memberQueryOne = $memberQueryOne->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+        $memberQueryOne = $memberQueryOne->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+        $memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
+        $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
+        $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");        
+        $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
 
-        $memberQuery = $memberQuery->where('membership', "Point Balance");
-        $memberQuery = $memberQuery->orderby('members.credits_expiration', 'ASC')->get();
+        $memberQuery = array_merge($memberQuery, $memberQueryOne);
+        $memberQuery = unique_multidim_array($memberQuery, 'user_id');
+
+
 
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
 
         $ctr = 3;
-        foreach ($memberQuery as $member) {
-            $credits = $agenTransaction->getCredits($member->user_id);
+        foreach ($memberQuery as $memberItem) 
+        {
+            $member = Member::where('user_id', $memberItem['user_id'])->first();
+            $credits = $agenTransaction->getCredits($member->user->id);
             if ($credits >= 1) {
                 $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
-
-                $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
-                $sheet->setCellValue('C' . $ctr, $member->firstname);
-                $sheet->setCellValue('D' . $ctr, $member->lastname);
-                $sheet->setCellValue('E' . $ctr, $member->email);
+                $sheet->setCellValue('B' . $ctr, $member->user->id); //user id
+                $sheet->setCellValue('C' . $ctr, $member->user->firstname);
+                $sheet->setCellValue('D' . $ctr, $member->user->lastname);
+                $sheet->setCellValue('E' . $ctr, $member->user->email);
                 $sheet->setCellValue('F' . $ctr, $credits);
                 $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
                 $ctr = $ctr + 1;
