@@ -98,7 +98,7 @@ class ExportController extends Controller
               
         $memberQuery = AgentTransaction::whereBetween('created_at', [$dateFrom, $dateTo]);
         //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->where('transaction_type', '=', 'EXPIRED');
+        $memberQuery = $memberQuery->where('transaction_type', 'LIKE', '%EXPIRED%');
         $memberQuery = $memberQuery->get();
         
 
