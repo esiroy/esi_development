@@ -107,6 +107,8 @@ class dummyController extends Controller
         //get query with expiration null
         $memberQueryThree = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
         $memberQueryThree = $memberQueryThree->whereBetween('members.credits_expiration', array($dateFrom, $dateTo));
+        $memberQueryThree = $memberQueryThree->where('members.credits_expiration', null);  //expired
+
         //$memberQueryThree = $memberQueryThree->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
         $memberQueryThree = $memberQueryThree->where('members.membership', "Point Balance");
         $memberQueryThree = $memberQueryThree->groupby('members.user_id')->get()->toArray();
