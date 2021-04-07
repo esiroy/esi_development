@@ -105,7 +105,13 @@ class ExportController extends Controller
                 $sheet->setCellValue('D' . $ctr, $member->user->lastname);
                 $sheet->setCellValue('E' . $ctr, $member->user->email);
                 $sheet->setCellValue('F' . $ctr, $credits);
-                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
+
+                if (isset($member->credits_expiration)) {
+                    $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
+                } else {
+                    $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($memberItem['created_at'])));
+                }
+                
                 $ctr = $ctr + 1;
             //}
         }
