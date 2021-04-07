@@ -96,7 +96,6 @@ class dummyController extends Controller
             echo $member->user->firstname . " " . $member->user->lastname;
             echo "<BR>";
         }
-
         
         /*
         $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
