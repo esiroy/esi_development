@@ -96,9 +96,9 @@ class ExportController extends Controller
 
   
               
-        $memberQuery = AgentTransaction::whereBetween('agent_transaction.created_at', [$dateFrom, $dateTo]);
+        $memberQuery = AgentTransaction::whereBetween('created_at', [$dateFrom, $dateTo]);
         //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->where('agent_transaction.transaction_type', 'LIKE', '%'. 'EXPIRED'.'%');
+        $memberQuery = $memberQuery->where('transaction_type', '=', 'EXPIRED');
         $memberQuery = $memberQuery->get();
         
 
@@ -109,17 +109,21 @@ class ExportController extends Controller
         $agenTransaction = new AgentTransaction;
 
         $ctr = 3;
-        foreach ($memberQuery as $member) {
-            $credits = $agenTransaction->getCredits($member->user_id);
-            if ($credits >= 1) {
-                $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
+        foreach ($memberQuery as $query) 
+        {
 
+            $member = Member::where('user_id', $query->member_id)->first();
+
+            $credits = $agenTransaction->getCredits($member->user_id);
+            if ($credits >= 1) 
+            {
+                $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
                 $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
                 $sheet->setCellValue('C' . $ctr, $member->user->firstname);
                 $sheet->setCellValue('D' . $ctr, $member->user->lastname);
                 $sheet->setCellValue('E' . $ctr, $member->user->email);
                 $sheet->setCellValue('F' . $ctr, $member->amount);
-                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
+                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($query->created_at)));
                 $ctr = $ctr + 1;
             }
         }
