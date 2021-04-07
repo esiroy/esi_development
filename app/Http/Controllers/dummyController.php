@@ -98,8 +98,9 @@ class dummyController extends Controller
         $memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
         $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
         $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");
-        $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
         $memberQueryOne = $memberQueryOne->where('members.credits_expiration', null);  //expired
+        $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
+
         $memberQueryAll = array_merge($memberQuery, $memberQueryOne);
         
 
