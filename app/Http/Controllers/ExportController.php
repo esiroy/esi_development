@@ -61,11 +61,25 @@ class ExportController extends Controller
         $dateFrom = $request->get('from');
         $dateTo = $request->get('to');
 
+
+        $dateFrom = date('Y-m-d', strtotime($dateFrom));
+        $dateTo = date('Y-m-d', strtotime( $dateTo));                
+        $to = date('Y-m-d', strtotime($dateFrom . " +1 day"));
+        $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
+
+
         $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
 
         //$memberQuery = $memberQuery->select("agent_transaction.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
 
-        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
+        //$memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
+
+        //$memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+
+
+        $schedules = $memberQuery->where('credits_expiration', '>=', $dateFrom . " 01:00:00")->where('credits_expiration', '<=', $extendedTo . " 00:30:00");        
+
+
         $memberQuery = $memberQuery->where('membership', "Point Balance");
         $memberQuery = $memberQuery->where('transaction_type', "EXPIRED");        
         $memberQuery = $memberQuery->orderby('members.created_at', 'ASC')->get();
