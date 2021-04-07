@@ -96,9 +96,11 @@ class ExportController extends Controller
 
 
   
-        $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');        
-        //$memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom)->whereDate('agent_transaction.created_at', '<=', $to);             
-        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
+        //$memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');        
+        //$memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom)->whereDate('agent_transaction.created_at', '<=', $to);
+
+
+        $memberQuery = AgentTransaction::whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
 
 
         //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
