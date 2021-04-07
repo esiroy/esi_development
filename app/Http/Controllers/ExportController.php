@@ -62,9 +62,9 @@ class ExportController extends Controller
         $dateTo = $request->get('to');
 
         /* create extended dates   */ 
-        $dateFrom =  date('Y-m-d', strtotime($dateFrom));;         
-        $to = date('Y-m-d', strtotime($dateFrom . " +1 day"));
-        $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
+        //$dateFrom =  date('Y-m-d', strtotime($dateFrom));;         
+        //$to = date('Y-m-d', strtotime($dateFrom . " +1 day"));
+        //$extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
         
 
         /*
@@ -96,9 +96,9 @@ class ExportController extends Controller
 
   
               
-        $memberQuery = AgentTransaction::whereBetween('created_at', [$dateFrom, $to]);
+        $memberQuery = AgentTransaction::whereBetween('created_at', [$dateFrom, $dateTo]);
         //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->where('transaction_type', 'LIKE', 'EXPIRED');
+        $memberQuery = $memberQuery->where('transaction_type', 'LIKE', '%EXPIRED%');
         $memberQuery = $memberQuery->get();
         
 
