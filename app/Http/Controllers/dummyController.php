@@ -99,15 +99,25 @@ class dummyController extends Controller
         $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
         $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");        
         $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
-        $memberQueryAll = array_merge($memberQuery, $memberQueryOne);
+
+        $memberQuery = array_merge($memberQuery, $memberQueryOne);
 
 
 
-        
+        //get query with expiration null
+        $memberQueryThree = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
+        $memberQueryThree = $memberQueryThree->whereBetween('members.credits_expiration', array($dateFrom, $dateTo));
+        $memberQueryThree = $memberQueryThree->where('members.membership', "Point Balance");
+        $memberQueryThree = $memberQueryThree->groupby('members.user_id')->get()->toArray();
+
+        $memberQueryAll = array_merge($memberQuery, $memberQueryThree);
+
+        $memberQueryAll = unique_multidim_array($memberQueryAll, 'user_id');
+
 
         foreach ($memberQueryAll as $memberItem) {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
-            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration
+            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  Status: " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration
              ." | Expired Added :  ". date('M-d-y', strtotime($memberItem['created_at']));
             echo "<BR>";
         }

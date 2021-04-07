@@ -26,6 +26,7 @@ class ExportController extends Controller
     //@note: Export Only with Point Balance (Membership)
     public function exportExpiredXLS(Request $request)
     {
+        set_time_limit(0);
         
         //Date Today
         $dateToday = date("m/d/Y");
@@ -58,7 +59,7 @@ class ExportController extends Controller
         $spreadsheet->getActiveSheet()->getStyle('B2:G2')->getAlignment()->setHorizontal('center');
 
         //get to expired members
-        $today = Carbon::now();
+        //$today = Carbon::now();
         $dateFrom = $request->get('from');
         $dateTo = $request->get('to');
 
@@ -80,9 +81,9 @@ class ExportController extends Controller
         $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
         $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");        
         $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
-        $memberQueryAll = array_merge($memberQuery, $memberQueryOne);
+        $memberQueryAll = array_merge($memberQuery, $memberQueryOne);  
 
-
+        $memberQueryAll = unique_multidim_array($memberQueryAll, 'user_id');
 
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
@@ -92,14 +93,14 @@ class ExportController extends Controller
         {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
 
-            //$credits = $agenTransaction->getCredits($memberItem['user_id']);
+            $credits = $agenTransaction->getCredits($memberItem['user_id']);
             if ($credits >= 1) {
                 $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
                 $sheet->setCellValue('B' . $ctr, $member->user->id); //user id
                 $sheet->setCellValue('C' . $ctr, $member->user->firstname);
                 $sheet->setCellValue('D' . $ctr, $member->user->lastname);
                 $sheet->setCellValue('E' . $ctr, $member->user->email);
-                $sheet->setCellValue('F' . $ctr, 0);
+                $sheet->setCellValue('F' . $ctr, $credits);
                 $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
                 $ctr = $ctr + 1;
             }
