@@ -88,7 +88,7 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
 
         $memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  //expired
+        //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  //expired
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
 
 
