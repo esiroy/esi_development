@@ -139,8 +139,18 @@ class Member extends Model
         }
     }
 
-    public function isReservedScheduleValid($memberID) {
-        
+    public function isReservedLessonValid($memberID, $lessonTime) 
+    {   
+        $memberInfo = Member::where('user_id', $memberID)->first();
+
+        $lessonTime = date("Y-m-d, H:i", strtotime($lessonTime));
+        $expiry = date("Y-m-d, 00:30:00", strtotime($memberInfo->credits_expiration ." + 1 day"));
+
+        if ($lessonTime < $expiry) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 }

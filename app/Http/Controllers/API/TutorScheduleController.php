@@ -184,10 +184,7 @@ class TutorScheduleController extends Controller
                     return Response()->json([
                         "success" => false,
                         //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                        //"message_en" => "You are out of points or your points have expired.",    
-
-
-
+                        //"message_en" => "You are out of points or your points have expired.", 
                         "message" => "member credits expired",
                         "message_en" => "member credits expired"
                     ]);

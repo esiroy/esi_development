@@ -157,10 +157,28 @@ class AgentTransaction extends Model
 
     }
 
-    public function getMemberTransactions($memberID)
+
+    public function getAgentTransactions($agentID)
     {
-        //$transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
-        
+        //$transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
+        //return $transactions;
+        $transactions = AgentTransaction::where('member_id', $agentID)->where('valid', 1)->orderBy('created_at', 'DESC')->where(function ($q) use ($memberID) {
+            $q->orWhere('transaction_type', 'ADD')
+                ->orWhere('transaction_type', 'LESSON')
+                ->orWhere('transaction_type', 'CANCEL_LESSON')
+                ->orWhere('transaction_type', 'MANUAL_ADD')
+                ->orWhere('transaction_type', 'FREE_CREDITS')                
+                ->orWhere('transaction_type', 'DISTRIBUTE')
+                ->orWhere('transaction_type', 'AGENT_SUBTRACT')
+                ->orWhere('transaction_type', 'CREDITS_EXPIRATION')
+                ->orWhere('transaction_type', 'EXPIRED');
+        })->get();
+        return $transactions;        
+    }
+
+
+    public function getMemberTransactions($memberID)
+    {        
         $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'DESC')->where(function ($q) use ($memberID) {
             $q->orWhere('transaction_type', 'ADD')
                 ->orWhere('transaction_type', 'LESSON')
@@ -169,12 +187,9 @@ class AgentTransaction extends Model
                 ->orWhere('transaction_type', 'FREE_CREDITS')                
                 ->orWhere('transaction_type', 'DISTRIBUTE')
                 ->orWhere('transaction_type', 'AGENT_SUBTRACT')
-                ->orWhere('transaction_type', 'CREDITS_EXPIRATION');
-                
-
+                ->orWhere('transaction_type', 'CREDITS_EXPIRATION')
+                ->orWhere('transaction_type', 'EXPIRED');
         })->get();
-       
-
         return $transactions;
     }
 
@@ -208,11 +223,6 @@ class AgentTransaction extends Model
     
     
 
-    public function getAgentTransactions($agentID)
-    {
-        $transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
-        return $transactions;
-    }
 
 
 

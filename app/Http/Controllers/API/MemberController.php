@@ -250,19 +250,13 @@ class MemberController extends Controller
     Book a schedule
      */
     public function bookSchedule(Request $request)
-    {
-
-        
+    {        
         $scheduleItem = new ScheduleItem;
-
         $scheduleID = $request->scheduleID;
         $memberID = $request->memberID;
         $schedule_status = 'CLIENT_RESERVED';
 
         $memberInfo = Member::where('user_id',  $memberID)->first();
-
-
-        
 
         //check deactivated
         if ($memberInfo->user->is_activated == false) {
@@ -281,18 +275,47 @@ class MemberController extends Controller
             //schedule time  not found
             return Response()->json([
                 "success" => false,           
-                "message" => "スケジュールが見つからないか、もう存在しません",
+                //"message" => "スケジュールが見つからないか、もう存在しません",
                 "message_en" => "Schedule not found or no longer exists"
             ]);            
         }
 
+        /*****************************************************
+         *  [START] POINTS AND EXPIRATION CHECKER 
+        ******************************************************/
 
+        //1. CHECK IF MEMBER EXPIRED
+        $agentCredts = new AgentTransaction();
+        if ($memberInfo->isMemberCreditExpired($memberID)) {
+            return Response()->json([
+                "success" => false,
+                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                "message_en" => "You are out of points or your points have expired.",    
+            ]);                  
+        }
+
+        //2. CHECK IF MEMBER HAS ENOUGH POINTS
+        if ($agentCredts->getCredits($memberID) <= 0) {
+            return Response()->json([
+                "success" => false,           
+                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                "message_en" => "You are out of points or your points have expired.",   
+            ]);              
+        }  
+
+        //3. CHECK IF LESSON TIME IS INVALID
+        if (!$memberInfo->isReservedLessonValid($memberID, $schedule->lesson_time)) {            
+            return Response()->json([
+                "success" => false,
+                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。/ reserved schedule exceeds expiration date",
+                "message_en" => "You are out of points or your points have expired.",       
+            ]); 
+        }        
         
-        //check if 30 minutes is not reached, if reached disallow reservation and give message
+        //4. check if 30 minutes is not reached, if reached disallow reservation and give message
         $date_now =  date("Y-m-d H:i:s");
         $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 30 minutes"));
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
-
         if ($lessonTime >= $valid_time) {
             //valid time here.
         } else {
@@ -303,37 +326,14 @@ class MemberController extends Controller
                 "message_en" => "Lesson reservations can be made up to 30 minutes before the start"
             ]);  
         }
-
-
-        //check if member has enough points or is it expired
-        $agentCredts = new AgentTransaction();
-
-        if ($memberInfo->isMemberCreditExpired($memberID)) {
-            return Response()->json([
-                "success" => false,
-                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                "message_en" => "You are out of points or your points have expired.",    
-            ]);                  
-        } //END EXPIRED CHECKER
-                
-        if ($agentCredts->getCredits($memberID) <= 0) {
-            return Response()->json([
-                "success" => false,           
-                //"message" => "十分なポイントがないか、ポイントが期限切れになった",
-                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-            ]);              
-        }       
      
-        //compare current lesson limit and total month total reserved schedules (storing)
+        //5. compare current lesson limit and total month total reserved schedules (storing)
         $memberAttribute = new MemberAttribute();
         $check_month_limit = date("M", strtotime($schedule->lesson_time));
         $check_year_limit = date("Y", strtotime($schedule->lesson_time));
         $attribute = $memberAttribute->getLessonLimit($memberID, $check_month_limit, $check_year_limit);
-
         if ($attribute) {
-
             $limit = $attribute->lesson_limit;
-
             //check if there if it is not over the lesson limit capacity
             $month_to_reserve = date("m", strtotime($schedule->lesson_time));
             $year_to_reserve = date("Y", strtotime($schedule->lesson_time));
@@ -363,13 +363,9 @@ class MemberController extends Controller
 
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
 
-        //@todo: check schedule if exists
+        //check if duplicate schedule if exists
         $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
-            ->where('member_id', Auth::user()->id)
-            //->where('tutor_id', $schedule->tutor_id)
-            //->where('schedule_status', $schedule_status)
-            //->where('duration', $request['shiftDuration'])
-            //->where('lesson_shift_id', $shift->id)
+            ->where('member_id', Auth::user()->id)          
             ->where('valid', 1)
             ->exists();
 
