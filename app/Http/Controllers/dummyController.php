@@ -89,8 +89,7 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->where('members.membership', "Point Balance");        
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
 
-        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
-
+        
 
 
         $memberQuery = $memberQuery->groupby('members.user_id')->get();        
