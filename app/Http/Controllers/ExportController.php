@@ -72,12 +72,40 @@ class ExportController extends Controller
         $dateFrom = $request->get('from');
         $dateTo = $request->get('to');
 
+
+        /*
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id');
         $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
         $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
-
         $memberQuery = $memberQuery->where('membership', "Point Balance");
         $memberQuery = $memberQuery->orderby('members.credits_expiration', 'ASC')->get();
+
+        //Agent Credits Initialize
+        $agenTransaction = new AgentTransaction;
+
+        $ctr = 3;
+        foreach ($memberQuery as $member) {
+            $credits = $agenTransaction->getCredits($member->user_id);
+            if ($credits >= 1) {
+                $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
+
+                $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
+                $sheet->setCellValue('C' . $ctr, $member->user->firstname);
+                $sheet->setCellValue('D' . $ctr, $member->user->lastname);
+                $sheet->setCellValue('E' . $ctr, $member->user->email);
+                $sheet->setCellValue('F' . $ctr, $member->amount);
+                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
+                $ctr = $ctr + 1;
+            }
+        }
+        */
+
+
+  
+        $memberQuery = Members::join('agent_transaction', 'member.user_id', '=', 'agent_transaction.member_id');
+        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
+        $memberQuery = $memberQuery->get();
+
 
 
         //Agent Credits Initialize
@@ -98,9 +126,7 @@ class ExportController extends Controller
                 $ctr = $ctr + 1;
             }
         }
-
-
-
+    
 
         $writer = new Xlsx($spreadsheet);
         $writer->save($filename);
