@@ -84,6 +84,7 @@ class dummyController extends Controller
 
         //get query with expiration null
         $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
+        $memberQuery = Member::select('agent_transaction.credits_expiration as member_point_expiry', 'agent_transaction.member_id', '=', 'members.user_id');
         $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
         $memberQuery = $memberQuery->where('members.membership', "Point Balance");
@@ -106,7 +107,7 @@ class dummyController extends Controller
         foreach ($memberQueryAll as $memberItem) {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
             echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration
-             ." | Expired Added :  ". $memberItem['credits_expiration'];
+             ." | Expired Added :  ". $memberItem['member_point_expiry'];
             echo "<BR>";
         }
         
