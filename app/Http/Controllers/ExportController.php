@@ -66,10 +66,8 @@ class ExportController extends Controller
         //$memberQuery = $memberQuery->select("agent_transaction.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
 
         $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
-
         $memberQuery = $memberQuery->where('membership', "Point Balance");
-        $memberQuery = $memberQuery->where('transaction_type', "EXPIRED");
-        
+        $memberQuery = $memberQuery->where('transaction_type', "EXPIRED");        
         $memberQuery = $memberQuery->orderby('members.created_at', 'ASC')->get();
 
         //Agent Credits Initialize
