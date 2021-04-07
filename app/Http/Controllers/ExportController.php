@@ -99,10 +99,6 @@ class ExportController extends Controller
         }
       
 
-
-       
-
-
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
 

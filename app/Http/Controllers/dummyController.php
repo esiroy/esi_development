@@ -87,12 +87,15 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
 
+        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
+        $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  //expired
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
+
 
         $memberQuery = $memberQuery->get();        
 
         foreach ($memberQuery as $member) {
-            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " " . $member->credits_expiration;
+            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " - " . $member->credits_expiration;
             echo "<BR>";
         }
         
