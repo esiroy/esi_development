@@ -67,13 +67,18 @@ class ExportController extends Controller
         */
 
 
+        //get to expired members
+        $today = Carbon::now();
+        $dateFrom = $request->get('from');
+        $dateTo = $request->get('to');
 
-        $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
-        $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom);
-        $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '<=', $dateTo);
-        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "EXPIRED");        
-        $memberQuery = $memberQuery->orderby('agent_transaction.created_at', 'ASC')->get();
+        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id');
+        $memberQuery = $memberQuery->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+
+        $memberQuery = $memberQuery->where('membership', "Point Balance");
+        $memberQuery = $memberQuery->orderby('members.credits_expiration', 'ASC')->get();
+
 
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
