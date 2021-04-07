@@ -61,16 +61,16 @@ class ExportController extends Controller
         $dateFrom = $request->get('from');
         $dateTo = $request->get('to');
 
-
-        //$dateFrom = date('Y-m-d', strtotime($dateFrom));
-        $dateTo = date('Y-m-d', strtotime( $dateTo));                
+        /* create extended dates             
         $to = date('Y-m-d', strtotime($dateFrom . " +1 day"));
         $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
+        */
 
 
 
         $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
-        $memberQuery = $memberQuery->where('agent_transaction.created_at', '>=', $dateFrom)->where('agent_transaction.created_at', '<=', $to);
+        $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom);
+        $memberQuery = $memberQuery->where('agent_transaction.created_at', '<=', $dateTo);
         //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
         $memberQuery = $memberQuery->where('transaction_type', "EXPIRED");        
         $memberQuery = $memberQuery->orderby('agent_transaction.created_at', 'ASC')->get();
