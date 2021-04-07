@@ -86,10 +86,11 @@ class dummyController extends Controller
         $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
         $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
-
-        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        //$memberQuery = $memberQuery->whereDate('members.credits_expiration', '<', $today->toDateString());  //expired
+        $memberQuery = $memberQuery->where('members.membership', "Point Balance");        
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
+
+        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+
 
 
         $memberQuery = $memberQuery->groupby('members.user_id')->get();        
