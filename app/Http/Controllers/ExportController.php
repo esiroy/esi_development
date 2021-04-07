@@ -105,6 +105,7 @@ class ExportController extends Controller
             header('Pragma: public');
             flush(); // Flush system output buffer
             readfile($filename);
+            unlink($filename);
             die();
         } else {
             http_response_code(404);
