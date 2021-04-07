@@ -97,6 +97,7 @@ class dummyController extends Controller
             echo "<BR>";
         }
         
+        
         /*
         $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
         ->select('members.user_id', 'members.nickname')
