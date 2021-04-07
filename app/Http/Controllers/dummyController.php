@@ -89,6 +89,8 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->where('members.membership', "Point Balance");        
         //$memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
 
+        $memberQuery = $memberQuery->whereDate('members.credits_expiration', '<=', $today->toDateString());  //expired
+
         
 
 
