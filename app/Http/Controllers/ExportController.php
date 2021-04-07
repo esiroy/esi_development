@@ -112,7 +112,7 @@ class ExportController extends Controller
         foreach ($memberQuery as $query) 
         {
 
-            $member = Member::where('user_id', $query->member_id)->first();
+            $member = Member::where('user_id', $query->user_id)->first();
 
             $credits = $agenTransaction->getCredits($member->user_id);
             if ($credits >= 1) 
