@@ -23,8 +23,97 @@ class ExportController extends Controller
         $this->middleware('auth');
     }
 
-    //@note: Export Only with Point Balance (Membership)
+
     public function exportExpiredXLS(Request $request)
+    {
+        //Date Today
+        $dateToday = date("m/d/Y");
+
+        //EXPORT FILENAME
+        $filename = "MyPageSortedMemberList.xlsx";
+
+        //SET STYLE
+        $styleArrayH1 = Style::setHeader();
+        $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 18);
+
+        //Initialize
+        $spreadsheet = Style::init();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        //Set Header Text
+        $sheet->setCellValue('B1', "Sorted Expired Member List as of $dateToday");
+
+        //Secondary Field Headers (h2)
+        $sheet->setCellValue('B2', "I.D");
+        $sheet->setCellValue('C2', "First Name");
+        $sheet->setCellValue('D2', "Last Name");
+        $sheet->setCellValue('E2', "E-Mail");
+        $sheet->setCellValue('F2', "Credits");
+        $sheet->setCellValue('G2', "Expiration Date");
+
+        //style for field headers h2
+        $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 20);
+        $spreadsheet->getActiveSheet()->getStyle('B2:G2')->applyFromArray($styleArrayH2);
+        $spreadsheet->getActiveSheet()->getStyle('B2:G2')->getAlignment()->setHorizontal('center');
+
+        //get to expired members
+        $today = Carbon::now();
+        $dateFrom = $request->get('from');
+        $dateTo = $request->get('to');
+
+        $memberQuery = Member::join('users', 'users.id', '=', 'agent_transaction.member_id');
+        $memberQuery = $memberQuery->select("agent_transaction.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+
+        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_on)'), array($dateFrom, $dateTo));
+
+        $memberQuery = $memberQuery->where('membership', "Point Balance");
+        $memberQuery = $memberQuery->where('transaction_type', "Expired");
+        
+        $memberQuery = $memberQuery->orderby('members.created_on', 'ASC')->get();
+
+        //Agent Credits Initialize
+        $agenTransaction = new AgentTransaction;
+
+        $ctr = 3;
+        foreach ($memberQuery as $member) {
+            $credits = $agenTransaction->getCredits($member->user_id);
+            if ($credits >= 1) {
+                $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
+
+                $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
+                $sheet->setCellValue('C' . $ctr, $member->firstname);
+                $sheet->setCellValue('D' . $ctr, $member->lastname);
+                $sheet->setCellValue('E' . $ctr, $member->email);
+                $sheet->setCellValue('F' . $ctr, $member->amount);
+                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->created_on)));
+                $ctr = $ctr + 1;
+            }
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filename);
+
+        if (file_exists($filename)) {
+            header('Content-Description: File Transfer');
+            header("Content-Type:  application/vnd.ms-excel; charset=utf-8");
+            header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+            header('Content-Type: application/vnd.ms-excel');
+            header('Expires: 0');
+            header('Content-Length: ' . filesize($filename));
+            header('Content-Transfer-Encoding: binary');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            flush(); // Flush system output buffer
+            readfile($filename);
+            die();
+        } else {
+            http_response_code(404);
+            die();
+        }
+    }
+
+    /* THIS EXPORT IS JUST SEARCHING /TEST FOR THE EXPIRY DATE  NOT THE MEMBER TRANSACTION
+    public function _OLD_exportExpiredXLS(Request $request)
     {
         //Date Today
         $dateToday = date("m/d/Y");
@@ -109,7 +198,7 @@ class ExportController extends Controller
             http_response_code(404);
             die();
         }
-    }
+    }*/
 
     public function exportSoonToExpireXLS(Request $request)
     {
