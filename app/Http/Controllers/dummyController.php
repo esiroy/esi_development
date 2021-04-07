@@ -85,9 +85,9 @@ class dummyController extends Controller
         //get query with expiration null
         $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
         $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
-        //$memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
-        //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        //$memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
+        $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
+        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
+        $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
         $memberQuery = $memberQuery->groupby('members.user_id')->get()->toArray();
 
         
@@ -99,11 +99,19 @@ class dummyController extends Controller
         $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
         $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");        
         $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
-        $memberQueryAll = array_merge($memberQuery, $memberQueryOne);
+
+        $memberQuery = array_merge($memberQuery, $memberQueryOne);
 
 
 
-        
+        //get query with expiration null
+        $memberQueryThree = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
+        $memberQueryThree = $memberQueryThree->whereBetween('members.credits_expiration', array($dateFrom, $dateTo));
+        $memberQueryThree = $memberQueryThree->where('members.membership', "Point Balance");
+        $memberQueryThree = $memberQueryThree->groupby('members.user_id')->get()->toArray();
+
+        $memberQuery = array_merge($memberQuery, $memberQueryOne);
+
 
         foreach ($memberQueryAll as $memberItem) {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
