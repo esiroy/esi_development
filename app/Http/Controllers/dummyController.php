@@ -112,10 +112,12 @@ class dummyController extends Controller
 
         $memberQueryAll = array_merge($memberQuery, $memberQueryThree);
 
+        $memberQueryAll = unique_multidim_array($memberQueryAll,'id');
+
 
         foreach ($memberQueryAll as $memberItem) {
             $member = Member::where('user_id', $memberItem['user_id'])->first();
-            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration
+            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  Status: " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration
              ." | Expired Added :  ". date('M-d-y', strtotime($memberItem['created_at']));
             echo "<BR>";
         }
