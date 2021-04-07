@@ -138,14 +138,9 @@ class AgentTransaction extends Model
     public function getExpiredCredits($memberID)
     {
 
-        $transactions = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->orderBy('created_at', 'ASC')->limit(1)->get();
-        $credits = 0;
-        foreach ($transactions as $transaction) {
-            if ($transaction->transaction_type == 'EXPIRED') {
-                $credits = $credits + $transaction->amount;
-            }
-        }
-        return $credits;
+        $ExpiredCredits = AgentTransaction::where('member_id', $memberID)->where('valid', 1)->where('transaction_type', "EXPIRED")->orderBy('created_at', 'ASC')->limit(1)->first();
+      
+        return $ExpiredCredits;
     }       
 
     public function getAgentCredits($agentID)
