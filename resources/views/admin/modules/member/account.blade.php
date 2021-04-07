@@ -183,7 +183,7 @@
 
                                 <td>
                                     <!-- points -->
-                                    @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON")
+                                    @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON" || $transaction->transaction_type == "EXPIRED" )
                                         {{ "-" }} {{ $transaction->amount }}
                                     @elseif ($transaction->transaction_type ==  "MANUAL_ADD" || $transaction->transaction_type == "CANCEL_LESSON" || $transaction->transaction_type == "DISTRIBUTE" || $transaction->transaction_type == "FREE_CREDITS")
                                         {{ "+" }} {{ $transaction->amount }}
