@@ -61,15 +61,16 @@ class ExportController extends Controller
         $dateFrom = $request->get('from');
         $dateTo = $request->get('to');
 
-        $memberQuery = Member::join('users', 'users.id', '=', 'agent_transaction.member_id');
-        $memberQuery = $memberQuery->select("agent_transaction.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+        $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
 
-        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_on)'), array($dateFrom, $dateTo));
+        //$memberQuery = $memberQuery->select("agent_transaction.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+
+        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
 
         $memberQuery = $memberQuery->where('membership', "Point Balance");
-        $memberQuery = $memberQuery->where('transaction_type', "Expired");
+        $memberQuery = $memberQuery->where('transaction_type', "EXPIRED");
         
-        $memberQuery = $memberQuery->orderby('members.created_on', 'ASC')->get();
+        $memberQuery = $memberQuery->orderby('members.created_at', 'ASC')->get();
 
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
@@ -81,11 +82,11 @@ class ExportController extends Controller
                 $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':G' . $ctr)->getAlignment()->setHorizontal('center');
 
                 $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
-                $sheet->setCellValue('C' . $ctr, $member->firstname);
-                $sheet->setCellValue('D' . $ctr, $member->lastname);
-                $sheet->setCellValue('E' . $ctr, $member->email);
+                $sheet->setCellValue('C' . $ctr, $member->user->firstname);
+                $sheet->setCellValue('D' . $ctr, $member->user->lastname);
+                $sheet->setCellValue('E' . $ctr, $member->user->email);
                 $sheet->setCellValue('F' . $ctr, $member->amount);
-                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->created_on)));
+                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->created_at)));
                 $ctr = $ctr + 1;
             }
         }
