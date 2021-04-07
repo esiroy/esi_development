@@ -77,9 +77,7 @@ class ExportController extends Controller
         //$memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
 
 
-        $schedules = $memberQuery->where('credits_expiration', '>=', $dateFrom . " 01:00:00")->where('credits_expiration', '<=', $extendedTo . " 00:30:00");        
-
-
+        $memberQuery = $memberQuery->where('members.credits_expiration', '>=', $dateFrom . " 01:00:00")->where('members.credits_expiration', '<=', $extendedTo . " 00:30:00");        
         $memberQuery = $memberQuery->where('membership', "Point Balance");
         $memberQuery = $memberQuery->where('transaction_type', "EXPIRED");        
         $memberQuery = $memberQuery->orderby('members.created_at', 'ASC')->get();
@@ -98,7 +96,7 @@ class ExportController extends Controller
                 $sheet->setCellValue('D' . $ctr, $member->user->lastname);
                 $sheet->setCellValue('E' . $ctr, $member->user->email);
                 $sheet->setCellValue('F' . $ctr, $member->amount);
-                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->created_at)));
+                $sheet->setCellValue('G' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
                 $ctr = $ctr + 1;
             }
         }
