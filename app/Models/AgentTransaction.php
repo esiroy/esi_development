@@ -143,7 +143,7 @@ class AgentTransaction extends Model
         if ($expiredCredit) {
             return $expiredCredit->amount;
         } else {
-            return $this->getCredits($memberID)
+            return $this->getCredits($memberID);
         }
         
     }       
