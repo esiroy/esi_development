@@ -68,17 +68,9 @@ class ExportController extends Controller
         $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
 
 
+
         $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
-
-        //$memberQuery = $memberQuery->select("agent_transaction.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
-
-        //$memberQuery = $memberQuery->whereBetween(DB::raw('DATE(agent_transaction.created_at)'), array($dateFrom, $dateTo));
-
-        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
-
-
-        //$memberQuery = $memberQuery->where('members.credits_expiration', '>=', $dateFrom . " 01:00:00")->where('members.credits_expiration', '<=', $extendedTo . " 00:30:00");        
-        
+        $memberQuery = $memberQuery->whereBetween(DB::raw('DATE(members.created_at)'), array($dateFrom, $dateTo));
         $memberQuery = $memberQuery->where('membership', "Point Balance");
         $memberQuery = $memberQuery->where('transaction_type', "EXPIRED");        
         $memberQuery = $memberQuery->orderby('members.created_at', 'ASC')->get();
@@ -101,6 +93,9 @@ class ExportController extends Controller
                 $ctr = $ctr + 1;
             }
         }
+
+
+        
 
         $writer = new Xlsx($spreadsheet);
         $writer->save($filename);
