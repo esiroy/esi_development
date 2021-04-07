@@ -92,7 +92,7 @@ class dummyController extends Controller
         $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
 
 
-        $memberQuery = $memberQuery->get();        
+        $memberQuery = $memberQuery->groupby('members.user_id')->get();        
 
         foreach ($memberQuery as $member) {
             echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  " .  $member->transaction_type . " - " . $member->credits_expiration;
