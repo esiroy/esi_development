@@ -103,11 +103,10 @@ class ExportController extends Controller
 
         //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', 'LIKE', '%'. 'EXPIRED'.'%');
-        $memberQuery = $memberQuery->toSql();
+        $memberQuery = $memberQuery->get();
         
 
-        exit();
-
+       
 
 
         //Agent Credits Initialize
