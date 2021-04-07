@@ -70,8 +70,8 @@ class ExportController extends Controller
 
         $memberQuery = Member::join('agent_transaction', 'members.user_id', '=', 'agent_transaction.member_id');
         $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom);
-        //$memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '<=', $dateTo);
-        //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
+        $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '<=', $dateTo);
+        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
         $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "EXPIRED");        
         $memberQuery = $memberQuery->orderby('agent_transaction.created_at', 'ASC')->get();
 
