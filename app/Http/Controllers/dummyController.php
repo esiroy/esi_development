@@ -113,7 +113,7 @@ class dummyController extends Controller
 
         $memberQueryAll = array_merge($memberQuery, $memberQueryThree);
 
-        $memberQueryAll = unique_multidim_array($memberQueryAll, 'user_id');
+        //$memberQueryAll = unique_multidim_array($memberQueryAll, 'user_id');
 
 
         foreach ($memberQueryAll as $memberItem) {
