@@ -72,8 +72,8 @@ class ExportController extends Controller
         $memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '>=', $dateFrom);
         //$memberQuery = $memberQuery->whereDate('agent_transaction.created_at', '<=', $dateTo);
         //$memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->where('transaction_type.', "EXPIRED");        
-        $memberQuery = $memberQuery->orderby('created_at', 'ASC')->get();
+        $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "EXPIRED");        
+        $memberQuery = $memberQuery->orderby('agent_transaction.created_at', 'ASC')->get();
 
         //Agent Credits Initialize
         $agenTransaction = new AgentTransaction;
