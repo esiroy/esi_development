@@ -41,26 +41,15 @@ class CustomerSupport extends Mailable
     {
         if (isset($this->data['attachment'])) {
             return $this->view('emails.customersupport_to_admin')
-            ->to(Config::get('mail.from.address'))
-            ->subject('マイチューター カスタマーサポート')
-            ->attach($this->data['attachment']->getRealPath(),
-            [
-                'as' => $this->data['attachment']->getClientOriginalName(),
-                'mime' => $this->data['attachment']->getClientMimeType(),
-            ]); 
+                        ->text('emails.customersupport_to_admin_plain')
+                        ->to(Config::get('mail.from.address'))
+                        ->subject('マイチューター カスタマーサポート')
+                        ->attach($this->data['attachment']->getRealPath(),['as' => $this->data['attachment']->getClientOriginalName(),'mime' => $this->data['attachment']->getClientMimeType()]); 
         } else {
             return $this->view('emails.customersupport_to_admin')
-            ->to(Config::get('mail.from.address'))
-            ->subject('マイチューター カスタマーサポート');
-            //->subject('Customer Support Request from ' . $this->data['nickname']);
+                        ->text('emails.customersupport_to_admin_plain')
+                        ->to(Config::get('mail.from.address'))->subject('マイチューター カスタマーサポート');            
         }
     } 
-
-    /*
-
-    */
-
-   
-
     
 }
