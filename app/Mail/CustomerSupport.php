@@ -36,12 +36,13 @@ class CustomerSupport extends Mailable
      *
      * @return $this
      */
+    
     public function build()
     {
         if (isset($this->data['attachment'])) {
             return $this->view('emails.customersupport_to_admin')
             ->to(Config::get('mail.from.address'))
-            ->subject('Customer Support Request from ' . $this->data['nickname'])
+            ->subject('マイチューター カスタマーサポート')
             ->attach($this->data['attachment']->getRealPath(),
             [
                 'as' => $this->data['attachment']->getClientOriginalName(),
@@ -52,6 +53,13 @@ class CustomerSupport extends Mailable
             ->to(Config::get('mail.from.address'))
             ->subject('Customer Support Request from ' . $this->data['nickname']);
         }
+    } 
 
-    }
+    /*
+
+    */
+
+   
+
+    
 }
