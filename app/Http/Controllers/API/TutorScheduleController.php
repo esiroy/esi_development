@@ -179,18 +179,18 @@ class TutorScheduleController extends Controller
                 /****************************************************
                  *       NEW MEMBER POINTS AND ATTRIBUTES CHECKER
                  *****************************************************/                
-                //CHECK IF POINTS IS EXPIRED
+                //1. CHECK IF POINTS IS EXPIRED
                 if ($memberInfo->isMemberCreditExpired($memberID)) {
                     return Response()->json([
                         "success" => false,
                         //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                         //"message_en" => "You are out of points or your points have expired.", 
-                        "message" => "member credits expired",
+                        "message" => "Member credits expired",
                         "message_en" => "member credits expired"
                     ]);
                 }
 
-                //CHECK IF MEMBER HAS ENOUGH POINTS TO BOOK A SCHEDULE
+                //2. CHECK IF MEMBER HAS ENOUGH POINTS TO BOOK A SCHEDULE
                 $agentCredts = new AgentTransaction();
                 if ($agentCredts->getCredits($memberID) <= 0) {
                     return Response()->json([
@@ -198,10 +198,19 @@ class TutorScheduleController extends Controller
                         //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                         //"message_en" => "You are out of points or your points have expired.",
 
-                        "message" => "out of credits",
+                        "message" => "Member out of credits",
                         "message_en" => "out of credits"
                     ]);
-                } //END CREDIT CHECKER
+                } //END CREDIT CHECKER                
+
+                //3. CHECK IF LESSON TIME IS INVALID
+                if (!$memberInfo->isReservedLessonValid($memberID, $lessonTime)) {            
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "you selected a schedule is past member's expiration date",
+                        "message_en" => "you selected a schedule is past member's expiration date.",       
+                    ]); 
+                } 
 
                 //compare current lesson limit and total month total reserved schedules
                 $memberAttribute = new MemberAttribute();
@@ -218,16 +227,17 @@ class TutorScheduleController extends Controller
                     $month_to_reserve = date("m", strtotime($request['scheduled_at']));
                     $year_to_reserve = date("Y", strtotime($request['scheduled_at']));
                     $totalReserved = $scheduleItem->getTotalLessonReserved($memberID, $month_to_reserve, $year_to_reserve);
-
                     if ($totalReserved >= $limit) {
                         return Response()->json([
                             "success" => false,
                             //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                             //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
 
-                            "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                            "message_en" => "No points / monthly limit or Credit Balance",
+                            //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                            //"message_en" => "No points / monthly limit or Credit Balance",
 
+                            "message" => "Member Monthly Reservation limit Reached",
+                            "message_en" => "Member Monthly Reservation limit Reached"
                         ]);
                     }
                 } else {
@@ -237,9 +247,8 @@ class TutorScheduleController extends Controller
                         "success" => false,
                         //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                         //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
-
-                        "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                        "message_en" => "No points / monthly limit or Credit Balance",
+                        "message" => "Member Monthly Reservation limit Reached",
+                        "message_en" => "Member Monthly Reservation limit Reached",
                     ]);
                 } //END MEMBER ATTRIBUTE CHECKER
 
@@ -417,21 +426,18 @@ class TutorScheduleController extends Controller
                  *****************************************************/
                 $agentCredts = new AgentTransaction();
 
-                //CHECK IF POINTS IS EXPIRED
+                //1. CHECK IF POINTS IS EXPIRED
                 if ($memberInfo->isMemberCreditExpired($memberID)) {
                     return Response()->json([
                         "success" => false,
                         //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                        //"message_en" => "You are out of points or your points have expired.",    
-
-
-
+                        //"message_en" => "You are out of points or your points have expired.",
                         "message" => "member credits expired",
                         "message_en" => "member credits expired"
                     ]);
                 }
 
-                //CHECK IF MEMBER HAS ENOUGH POINTS TO BOOK A SCHEDULE
+                //2. CHECK IF MEMBER HAS ENOUGH POINTS TO BOOK A SCHEDULE
                 $agentCredts = new AgentTransaction();
                 if ($agentCredts->getCredits($memberID) <= 0) {
                     return Response()->json([
@@ -443,6 +449,15 @@ class TutorScheduleController extends Controller
                         "message_en" => "out of credits"
                     ]);
                 } //END CREDIT CHECKER
+
+                //3. CHECK IF LESSON TIME IS INVALID
+                if (!$memberInfo->isReservedLessonValid($memberID, $lessonTime)) {            
+                    return Response()->json([
+                        "success" => false,
+                        "message" => "you selected a schedule is past member's expiration date",
+                        "message_en" => "you selected a schedule is past member's expiration date.",       
+                    ]); 
+                }                 
 
                 //compare current lesson limit and total month total reserved schedules (storing)
                 $memberAttribute = new MemberAttribute();
@@ -468,8 +483,12 @@ class TutorScheduleController extends Controller
                             //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                             //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
 
-                            "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                            "message_en" => "No points / monthly limit or Credit Balance",
+                            //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                            //"message_en" => "No points / monthly limit or Credit Balance",
+
+
+                            "message" => "Member Monthly Reservation limit Reached",
+                            "message_en" => "Member Monthly Reservation limit Reached"                            
                         ]);
                     }
                 } else {
@@ -477,8 +496,13 @@ class TutorScheduleController extends Controller
                         "success" => false,
                         //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                         //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
-                        "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                        "message_en" => "No points / monthly limit or Credit Balance",
+
+                        //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                        //"message_en" => "No points / monthly limit or Credit Balance",
+
+
+                        "message" => "Member Monthly Reservation limit Reached",
+                        "message_en" => "Member Monthly Reservation limit Reached"                        
                     ]);
                 } //END MEMBER ATTRIBUTE CHECKER
             }
