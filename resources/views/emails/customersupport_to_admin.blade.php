@@ -9,7 +9,7 @@
 
  
     <div style="margin-top:10px; margin-left: 5px; font-weight: bold; font-size: 12px">
-        フリガナ: 
+        フリガナ:  
         <span style="font-weight:normal">
             {{ $data['nickname'] }}
         </span>
@@ -27,7 +27,7 @@
 <div style="margin-top:20px; font-weight: bold; font-size: 12px">
 
     <div style="margin-top:5px; font-weight: bold; font-size: 16px">
-        お問い合わせ内容 （必須）
+       お問い合わせ内容 （必須）: 
     </div>
  
     <div style="margin-top:10px; margin-left: 15px; font-weight:normal; font-size: 12px">
