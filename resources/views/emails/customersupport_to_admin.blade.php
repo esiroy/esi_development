@@ -1,7 +1,7 @@
 
 <div style="margin-top:5px; margin-left: 15px; font-weight: bold; font-size: 14px">
 
-    <div style="margin-top:10px; margin-left: 5px; font-weight: bold; font-size: 12px">{{ date(M d, Y)}}</div>
+    <div style="margin-top:10px; margin-left: 5px; font-weight: bold; font-size: 12px">{{ date('M d, Y')}}</div>
 
     <div style="margin-top:10px; margin-left: 5px; font-weight: bold; font-size: 12px">
         お名前 （必須）: <span style="font-weight:normal">{{ $data['name']}}</span>
