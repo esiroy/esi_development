@@ -1,22 +1,22 @@
 
 {{ date('M d, Y')}} 
-{{PHP_EOL}} {{PHP_EOL}}
+<Br/><Br/>
 
 
 お名前 （必須）: {{ $member->user->firstname }}  {{ $member->user->lastname }}
-{{PHP_EOL}} {{PHP_EOL}}
+<Br/><Br/>
 
 
 フリガナ: {{ $member['nickname'] }}
-{{PHP_EOL}} {{PHP_EOL}}
+<Br/><Br/>
 
  
 ご登録メールアドレス （必須）: {{ $member->user->email }} 
-{{PHP_EOL}} {{PHP_EOL}}
+<Br/><Br/>
 
 
 お問い合わせ内容 （必須）: {{ $data['inquiry']}} 
-{{PHP_EOL}} {{PHP_EOL}}
+<Br/><Br/>
 
 
 
