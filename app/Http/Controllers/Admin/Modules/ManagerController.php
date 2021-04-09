@@ -237,7 +237,10 @@ class ManagerController extends Controller
         abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         
         $member = Member::where('user_id', $id)->first();
-        $member->forceDelete();
+        if ($member) {
+            $member->forceDelete();
+        }
+        
 
         $user   = User::find($id);
         $user->forceDelete();
