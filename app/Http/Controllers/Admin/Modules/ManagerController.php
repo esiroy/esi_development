@@ -16,6 +16,7 @@ use App\Models\Manager;
 use App\Models\Grade;
 use App\Models\Permission;
 use App\Models\Tutor;
+use App\Models\Member;
 
 use Auth;
 use Gate;
@@ -233,8 +234,11 @@ class ManagerController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        //abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         
+        $member = Member::where('user_id', $id)->first();
+        $member->forceDelete();
+
         $user   = User::find($id);
         $user->forceDelete();
 
