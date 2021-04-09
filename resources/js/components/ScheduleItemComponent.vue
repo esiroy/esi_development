@@ -594,17 +594,13 @@ export default {
 
 
 
-            if (this.currentScheduledData.member_id !== null && this.currentScheduledData.member_id !== '') {         
-
+            if (this.currentScheduledData.member_id !== null && this.currentScheduledData.member_id !== '') 
+            {         
                 let nickname = memberData.nickname;
                 let firstname = memberData.firstname;
                 let lastname = memberData.lastname;  
-
                 memberIDFullName =  this.currentScheduledData.member_id + " " + firstname  + " " + lastname;  
-
-                this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };    
-
-
+                this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };   
             } else {
                  this.memberSelectedID = { id: "" , 'name': "-- Select A Member --" };
             }
@@ -701,10 +697,10 @@ export default {
                             "status": this.status,                      
                             //member info
                             'member_id': response.data.memberData.id,
-
                             'firstname': firstname,
                             'lastname':  lastname,
-                            'nickname':  nickname
+                            'nickname':  nickname,
+                            'member_memo': null,
                         }
 
                         //set the schedule to display
@@ -809,7 +805,8 @@ export default {
                         'member_id': response.data.memberData.id,
                         'firstname': response.data.memberData.firstname,
                         'lastname': response.data.memberData.lastname,
-                        'nickname': response.data.memberData.nickname
+                        'nickname': response.data.memberData.nickname,
+                        'member_memo': response.data.member_memo,
                     }
 
                     //set the schedule to display

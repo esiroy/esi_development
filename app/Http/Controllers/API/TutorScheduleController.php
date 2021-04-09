@@ -290,11 +290,18 @@ class TutorScheduleController extends Controller
             $lessonMailer = new LessonMailer();
             $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
 
+            if ($selectedSchedule->memo == null) {
+                $hasMemo = null;
+            } else {
+                $hasMemo = true;
+            }
+
             return Response()->json([
                 "success" => true,
                 "memberID" => $memberID,
                 "message" => "Lesson has been updated",
                 "scheduleItemID" => $scheduledItemData['id'],
+                "member_memo" => $hasMemo,
                 "tutorData" => $tutor,
                 "memberData" => $memberData,
                 //'tutorLessonsData' => $tutorLessonsData,
