@@ -37,7 +37,7 @@
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
-                                <label for="japanese_lastname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Last Name <div class="float-right">:</div></label>
+                                <label for="japanese_lastname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Japanese Last Name <div class="float-right">:</div></label>
                             </div>
                             <div class="col-6">
                                 <input type="text"                                                
@@ -57,7 +57,7 @@
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
-                                <label for="japanese_firstname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> First Name<div class="float-right">:</div></label>
+                                <label for="japanese_firstname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Japanese First Name<div class="float-right">:</div></label>
                             </div>
                             <div class="col-6">                                       
                                 <div class="form-group">

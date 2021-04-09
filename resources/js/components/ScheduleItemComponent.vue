@@ -164,9 +164,11 @@
                                             <a href="javascript:void(0);" @click="showReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iReportCard2.gif"></a>
                                         </div>
 
-                                        <div class="iMail2" v-show="checkMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                        <div class="iMail2" v-show="checkMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})" >
                                             <a href="javascript:void(0);" @click="getMemberMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iMail2.gif"></a>
                                         </div>
+
+                                        
                                         <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
                                         <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
                                     </div>
@@ -713,6 +715,7 @@ export default {
                         //hide the add button
                         let addButton = document.getElementById("btnAdd-" + tutorUserID + "-" + startTime);
                         addButton.style.display = "none";
+                        
                         
                         //preloader
                         let preloader = document.getElementById("preloader");                    
