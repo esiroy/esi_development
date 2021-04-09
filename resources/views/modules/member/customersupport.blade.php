@@ -53,14 +53,14 @@
                                         <tr valign="top">
                                             <td>お名前 <em>（必須）</em></td>
                                             <td>:</td>
-                                            <td><input required disabled type="text" name="japanese_name" id="name*" alt="お名前" value="{{ $member->user->japanese_firstname ?? '' }} {{ $member->user->japanese_lastname ?? '' }} " class="form-control form-control-sm"></td>
+                                            <td><input required disabled type="text" name="japanese_name" id="name*" alt="お名前" value="{{ $member->user->japanese_lastname ?? '' }}, {{ $member->user->japanese_firstname ?? '' }}  " class="form-control form-control-sm"></td>
                                         </tr>
                                 
                                        <tr valign="top">
                                             <td>Name</td>:
                                             <td>:</td>
                                             <td>
-                                                <input required disabled type="text" name="name" id="name*" alt="お名前" value="{{ $member->user->firstname ?? '' }} {{ $member->user->lastname ?? '' }} " class="form-control form-control-sm"></td>
+                                                <input required disabled type="text" name="name" id="name*" alt="お名前" value="{{ $member->user->lastname ?? '' }}, {{ $member->user->firstname ?? '' }}" class="form-control form-control-sm"></td>
                                         </tr>
 
                                         <tr valign="top">
