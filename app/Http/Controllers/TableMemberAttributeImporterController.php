@@ -136,7 +136,7 @@ class TableMemberAttributeImporterController extends Controller
 
                 try
                 {
-                    $memberAttribute = MemberAttribute::where('id', $item->id);
+                    $memberAttribute = MemberAttribute::where('id', $item->id)->first();
                     $transaction = $memberAttribute->update($data);
                     DB::commit();
                     echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
