@@ -14,7 +14,7 @@ class MemberAttribute extends Model
 
     public function getMemberAttribute($memberID)
     {
-        return MemberAttribute::where('member_id', $memberID)->where('valid', true)->orderBy('year', 'ASC')->limit(12)->get();
+        return MemberAttribute::where('member_id', $memberID)->where('valid', true)->orderby('created_at', 'DESC')->orderBy('year', 'ASC')->limit(12)->get();
     }
 
 
