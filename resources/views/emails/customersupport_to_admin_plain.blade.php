@@ -19,4 +19,3 @@
 {{PHP_EOL}} {{PHP_EOL}} 
 
 
-[this message is read in plain text]
