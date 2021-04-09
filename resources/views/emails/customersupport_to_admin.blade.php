@@ -1,23 +1,5 @@
-
-{{ date('M d, Y')}} 
-<Br/><Br/>
-
-
-お名前 （必須）: {{ $member->user->firstname }}  {{ $member->user->lastname }}
-<Br/><Br/>
-
-
-フリガナ: {{ $member['nickname'] }}
-<Br/><Br/>
-
- 
-ご登録メールアドレス （必須）: {{ $member->user->email }} 
-<Br/><Br/>
-
-
-お問い合わせ内容 （必須）: {{ $data['inquiry']}} 
-<Br/><Br/>
-
-
-
-
+{{ date('M d, Y')}} <br/><br/>
+お名前 （必須）: {{ $member->user->firstname }}  {{ $member->user->lastname }}<br/><br/>
+フリガナ: {{ $member['nickname'] }}<br/><br/> 
+ご登録メールアドレス （必須）: {{ $member->user->email }} <br/><br/>
+お問い合わせ内容 （必須）: {{ $data['inquiry']}} <br/><br/>
