@@ -233,7 +233,7 @@ class ManagerController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         
         $user   = User::find($id);
         $user->forceDelete();
