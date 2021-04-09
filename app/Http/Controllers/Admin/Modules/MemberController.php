@@ -401,6 +401,7 @@ class MemberController extends Controller
 
         //MemberAttribute - (lessonClasses)
         $memberAttribute = new MemberAttribute();
+        
         $lessonClasses = $memberAttribute->getMemberAttribute($memberID);
 
         $memberDesiredSchedule = new MemberDesiredSchedule();
