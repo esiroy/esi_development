@@ -14,7 +14,7 @@ class MemberAttribute extends Model
 
     public function getMemberAttribute($memberID)
     {
-        return MemberAttribute::where('member_id', $memberID)->get();
+        return MemberAttribute::where('member_id', $memberID)->where('valid', true)->orderBy('year', 'ASC')->get();
     }
 
 
