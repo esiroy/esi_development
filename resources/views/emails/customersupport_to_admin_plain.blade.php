@@ -17,3 +17,6 @@
 
 お問い合わせ内容 （必須）: {{ $data['inquiry']}} 
 {{PHP_EOL}} {{PHP_EOL}} 
+
+
+[this message is read in plain text]
