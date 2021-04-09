@@ -182,7 +182,7 @@ return [
         Barryvdh\DomPDF\ServiceProvider::class,
 
         //Live
-        Aws\Laravel\AwsServiceProvider::class,
+        //Aws\Laravel\AwsServiceProvider::class,
 
 
     ],
@@ -236,7 +236,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
-        'AWS' => Aws\Laravel\AwsFacade::class,
+        //'AWS' => Aws\Laravel\AwsFacade::class,
     ],
 
 ];

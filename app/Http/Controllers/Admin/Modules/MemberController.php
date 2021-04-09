@@ -377,10 +377,7 @@ class MemberController extends Controller
         $userImage = $userImageObj->getMemberPhoto($memberInfo);
 
         //user Info
-        $userInfo = User::where('id', $memberID)->select('id', 'firstname', 'lastname', 'email',
-            'japanese_firstname', 'japanese_lastname',
-            'user_type', 'is_activated')->first();
-
+        $userInfo = User::where('id', $memberID)->select('id', 'firstname', 'lastname', 'email', 'japanese_firstname', 'japanese_lastname','user_type', 'is_activated')->first();
         $attributes = createAttributes();
         $memberships = createMembership();
         $shifts = Shift::all();

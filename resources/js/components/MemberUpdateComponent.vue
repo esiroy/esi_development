@@ -32,7 +32,54 @@
                     </div>
                 </div>
 
-                <div id="lastname-row" class="row pt-2">
+
+                <div id="japanese-name-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="japanese_lastname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Last Name <div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">
+                                <input type="text"                                                
+                                        v-model="user.japanese_lastname"                                                 
+                                        id="japanese_lastname" 
+                                        name="japanese_lastname" 
+                                        class="form-control form-control-sm"
+                                        :class="{ 'is-invalid' : submitted && $v.user.japanese_lastname.$error }"
+                                        @blur='checkIsValid($v.user.japanese_lastname, $event)' 
+                                />
+                                <div v-if="submitted && !$v.user.japanese_lastname.required" class="invalid-feedback">
+                                    Japenese Last Name is required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="japanese_firstname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> First Name<div class="float-right">:</div></label>
+                            </div>
+                            <div class="col-6">                                       
+                                <div class="form-group">
+                                    <input type="text" 
+                                            v-model="user.japanese_firstname"                                                    
+                                            id="japanese_firstname" 
+                                            name="japanese_firstname" 
+                                            class="form-control form-control-sm" 
+                                            :class="{ 'is-invalid' : submitted && $v.user.japanese_firstname.$error}"
+                                            @blur='checkIsValid($v.user.japanese_firstname, $event)'
+                                    />
+                                    <div v-if="submitted && !$v.user.japanese_firstname.required" class="invalid-feedback">
+                                        Japanese First Name is required
+                                    </div>                                 
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                </div>        
+
+
+                <div id="english-name-row" class="row pt-2">
                     <div class="col-6">
                         <div class="row">
                             <div class="col-4 small pr-0">
@@ -76,6 +123,7 @@
                         </div>
                     </div>
                 </div>
+            
 
                 <div id="member-attribute-row" class="row pt-2">
                     <div class="col-6">
@@ -794,6 +842,10 @@ export default {
                 id: "",
                 first_name: "",
                 last_name: "",
+                
+                japanese_lastname: "",
+                japanese_firstname: "",
+
                 attribute: "",
                 email: "",
                 username: "",
@@ -909,10 +961,16 @@ export default {
            this.user.agent_name_en = "";
         }
 
+        console.log(this.userinfo)
+
         //get user
         this.user.user_id                       = this.userinfo.id;
 		this.user.first_name					= this.userinfo.firstname;
 		this.user.last_name						= this.userinfo.lastname;
+
+        this.user.japanese_firstname			= this.userinfo.japanese_firstname;
+		this.user.japanese_lastname			    = this.userinfo.japanese_lastname;
+
         this.user.email							= this.userinfo.email;
 		this.user.attribute						= this.memberinfo.attribute;		
 		this.user.nickname						= this.memberinfo.nickname;
@@ -1019,6 +1077,14 @@ export default {
             last_name: { 
                 required                
             },
+
+            japanese_firstname: { 
+                required                
+            },
+            japanese_lastname: { 
+                required                
+            },
+
             attribute: {
                 required
             },

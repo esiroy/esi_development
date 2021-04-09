@@ -676,11 +676,15 @@ class MemberController extends Controller
             [
                 'first_name' => $data->first_name,
                 'last_name' => $data->last_name,
+                'japanese_firstname' => $data->japanese_firstname,
+                'japanese_lastname' => $data->japanese_lastname,                 
                 'email' => $data->email,
             ],
             [
                 'first_name' => ['required', 'max:255'],
                 'last_name' => ['required', 'max:255'],
+                'japanese_firstname' => ['required', 'max:255'],
+                'japanese_lastname' => ['required', 'max:255'],                 
                 'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
                 //'username' => ['required','max:190',Rule::unique('users')->whereNull('deleted_at')],
             ]);
@@ -704,6 +708,8 @@ class MemberController extends Controller
                     "valid" => true,
                     'firstname' => $data->first_name,
                     'lastname' => $data->last_name,
+                    'japanese_firstname' => $data->japanese_firstname,
+                    'japanese_lastname' => $data->japanese_lastname,    
                     'email' => $data->email,
                     'username' => $data->email,
                     'password' => $data->password,
@@ -875,11 +881,17 @@ class MemberController extends Controller
             [
                 'firstname' => $data->first_name,
                 'lastname' => $data->last_name,
+                'japanese_firstname' => $data->japanese_firstname,
+                'japanese_lastname' => $data->japanese_lastname,                
                 'email' => $data->email,
             ],
             [
                 'firstname' => ['required', 'max:255'],
                 'lastname' => ['required', 'max:255'],
+                
+                'japanese_firstname' => ['required', 'max:255'],
+                'japanese_lastname' => ['required', 'max:255'], 
+
                 'email' => ['required', 'string', 'email', 'max:255',
                     Rule::unique('users')->ignore($data->user_id)->whereNull('deleted_at'),
                 ],
@@ -904,6 +916,8 @@ class MemberController extends Controller
                     // "valid" => true,
                     'firstname' => $data->first_name,
                     'lastname' => $data->last_name,
+                    'japanese_firstname' => $data->japanese_firstname,
+                    'japanese_lastname' => $data->japanese_lastname,                 
                     'email' => $data->email,
                     'username' => $data->email,
                     //'password'      => $data->password,

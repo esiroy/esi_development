@@ -1,7 +1,7 @@
 <template>
-    <div id="createMemberContainer" class="card mt-4">
+    <div id="createMemberContainer" class="card esi-card mt-4">
 
-        <div class="card-header">Member Form</div>
+        <div class="card-header esi-card-header">Member Form</div>
 
         <div class="card-body">
             <form name="createMemberForm" @submit.prevent="handleSubmit">
@@ -36,9 +36,52 @@
                         </div>
                     </div>
 
+                    <div id="japanese-name-row" class="row pt-2">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-4 small pr-0">
+                                    <label for="japanese_lastname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Last Name <div class="float-right">:</div></label>
+                                </div>
+                                <div class="col-6">
+                                    <input type="text"                                                
+                                            v-model="user.japanese_lastname"                                                 
+                                            id="japanese_lastname" 
+                                            name="japanese_lastname" 
+                                            class="form-control form-control-sm"
+                                            :class="{ 'is-invalid' : submitted && $v.user.japanese_lastname.$error }"
+                                            @blur='checkIsValid($v.user.japanese_lastname, $event)' 
+                                    />
+                                    <div v-if="submitted && !$v.user.japanese_lastname.required" class="invalid-feedback">
+                                        Japenese Last Name is required
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-4 small pr-0">
+                                    <label for="japanese_firstname" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> First Name<div class="float-right">:</div></label>
+                                </div>
+                                <div class="col-6">                                       
+                                    <div class="form-group">
+                                        <input type="text" 
+                                                v-model="user.japanese_firstname"                                                    
+                                                id="japanese_firstname" 
+                                                name="japanese_firstname" 
+                                                class="form-control form-control-sm" 
+                                                :class="{ 'is-invalid' : submitted && $v.user.japanese_firstname.$error}"
+                                                @blur='checkIsValid($v.user.japanese_firstname, $event)'
+                                        />
+                                        <div v-if="submitted && !$v.user.japanese_firstname.required" class="invalid-feedback">
+                                            First Name is required
+                                        </div>                                 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>    
+                    </div>   
 
-
-                    <div id="lastname-row" class="row pt-2">
+                    <div id="english-name-row" class="row pt-2">
                         <div class="col-6">
                             <div class="row">
                                 <div class="col-4 small pr-0">
@@ -82,6 +125,10 @@
                             </div>
                         </div>
                     </div>
+
+
+
+             
 
                     <div id="member-attribute-row" class="row pt-2">
                         <div class="col-6">
@@ -896,6 +943,11 @@ export default {
                 agent_id: "",
                 first_name: "",
                 last_name: "",
+
+                japanese_lastname: "",
+                japanese_firstname: "",
+
+
                 attribute: "",
                 email: "",
                 nickname: "",
@@ -1012,6 +1064,15 @@ export default {
             last_name: { 
                 required                
             },
+
+            japanese_firstname: { 
+                required                
+            },
+            japanese_lastname: { 
+                required                
+            },
+
+
             attribute: {
                 required
             },
