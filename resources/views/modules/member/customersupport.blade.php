@@ -47,6 +47,52 @@
 
                             <form action="{{ route("customersupport.store") }}"  method="POST" enctype="multipart/form-data" onsubmit="return validate(this)">
                                 @csrf
+
+                                     <table class="tblRegister" cellpadding="4" cellspacing="0" style="width: 600px; margin: 0px auto;">
+                                    <tbody>
+                                        <tr valign="top">
+                                            <td>お名前 <em>（必須）</em></td>
+                                            <td>:</td>
+                                            <td><input required disabled type="text" name="japanese_name" id="name*" alt="お名前" value="{{ $member->user->japanese_firstname ?? '' }} {{ $member->user->japanese_lastname ?? '' }} " class="form-control form-control-sm"></td>
+                                        </tr>
+                                
+                                       <tr valign="top">
+                                            <td>Name</td>:
+                                            <td>:</td>
+                                            <td>
+                                                <input required disabled type="text" name="name" id="name*" alt="お名前" value="{{ $member->user->firstname ?? '' }} {{ $member->user->lastname ?? '' }} " class="form-control form-control-sm"></td>
+                                        </tr>
+
+                                        <tr valign="top">
+                                            <td>ご登録メールアドレス <em>（必須）</em></td>
+                                            <td>:</td>
+                                            <td><input required disabled type="text" name="email" id="email" alt="ご登録メールアドレス " value="{{ $member->user->email ?? '' }}" class="form-control form-control-sm"></td>
+                                        </tr>
+                        
+                                        <tr valign="top">
+                                            <td>お問い合わせ内容 <em>（必須）</em></td>
+                                            <td>:</td>
+                                            <td><textarea required name="inquiry" id="inquiry*" alt="お問い合わせ内容" class="form-control form-control-sm"  rows="4"></textarea></td>
+                                        </tr>
+
+                                        <tr valign="top">
+                                            <td>Attachment</td>
+                                            <td>:</td>
+                                            <td><input name="file_upload" type="file" id="fileItem" class="" style="" multiple=""></td>
+                                        </tr>
+
+                                        <tr valign="top">
+                                            <td colspan="3" align="right">
+                                                <input type="submit" value="送信" class="btn-pink">
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+
+
+                                @php
+                                /*
                                 <table class="tblRegister" cellpadding="4" cellspacing="0" style="width: 600px; margin: 0px auto;">
                                     <tbody>
                                         <tr valign="top">
@@ -89,6 +135,8 @@
 
                                     </tbody>
                                 </table>
+                                */
+                                @endphp
 
                             </form>
 
