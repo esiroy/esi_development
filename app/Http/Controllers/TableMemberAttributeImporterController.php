@@ -110,7 +110,7 @@ class TableMemberAttributeImporterController extends Controller
         echo "<BR>";
 
 
-        $items = DB::connection('mysql_live')->select("select * from member_attribute ORDER BY id ASC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from member_attribute where member_id = 87 ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
