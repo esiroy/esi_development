@@ -43,14 +43,14 @@ class CustomerSupport extends Mailable
             return $this->view('emails.customersupport_to_admin')
                         ->text('emails.customersupport_to_admin_plain')                        
                         ->to(Config::get('mail.from.address'))
-                        ->cc('esi.roy.dev@gmail.com')
+                        //->cc('esi.roy.dev@gmail.com')
                         ->subject('マイチューター カスタマーサポート')
                         ->attach($this->data['attachment']->getRealPath(),['as' => $this->data['attachment']->getClientOriginalName(),'mime' => $this->data['attachment']->getClientMimeType()]); 
         } else {
             return $this->view('emails.customersupport_to_admin')
                         ->text('emails.customersupport_to_admin_plain')
                         ->to(Config::get('mail.from.address'))
-                        ->cc('esi.roy.dev@gmail.com')
+                        //->cc('esi.roy.dev@gmail.com')
                         ->subject('マイチューター カスタマーサポート');            
         }
     } 
