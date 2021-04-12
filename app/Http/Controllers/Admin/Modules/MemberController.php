@@ -295,18 +295,15 @@ class MemberController extends Controller
 
             $thisMonth = strtoupper(date("M"));
             $thisYear = date("Y");
-
-       
+      
             
-            $memberAttribute->getCurrentMonthLessonLimit($memberID);
-       
-                
+            $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID)->lesson_limit;
             $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
-            $totalReserved = $scheduleItem->getTotalReservedForCurrentMonth($memberID);
+            $totalReserved = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+            $memberLessonsRemaining = $lessonLimit - $totalReserved;
 
-            $memberLessonsRemaining = $memberAttribute->lesson_limit - $totalReserved;
-
-            return view('admin.modules.member.schedulelist', compact('schedules', 'totalReserved', 'memberLessonsRemaining', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
+            return view('admin.modules.member.schedulelist', compact('schedules', 'lessonLimit', 'totalReserved', 'memberLessonsRemaining', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
+            
         } else {
             abort(404);
         }

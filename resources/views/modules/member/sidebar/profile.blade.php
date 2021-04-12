@@ -57,6 +57,8 @@
 
 
                     <div class="pt-2">
+
+
                         <span class="text-secondary" title="expiry">有効期限: ポイント会員対象 : </span>
                         <span>
                             {{ date("Y年 m月 d日", strtotime($memberInfo->credits_expiration)) }}                    
@@ -64,6 +66,11 @@
                     </div>
 
                 @elseif($memberInfo->membership == 'Monthly')
+
+                    @php                    
+                         $scheduleItemObj = new \App\Models\ScheduleItem();        
+                    @endphp
+                    <!--(test total reserved current month: ) {{ $scheduleItemObj->getTotalReservedForCurrentMonth($memberInfo->user_id) }}-->
 
                     <div class="text-secondary" title="lessonLimit">Class: 月額会員対象</div>
                     <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>
@@ -95,7 +102,7 @@
                         </div>             
                     </div>
 
-                    <div class="pt-2">
+                    <div class="monthly pt-2">
                         <div class="text-secondary" title="lessonLimit">Class: 月額会員対象</div>
                         <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>                    
                     </div>
