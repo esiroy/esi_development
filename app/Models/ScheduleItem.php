@@ -358,7 +358,7 @@ class ScheduleItem extends Model
             ->join('tutors', 'tutors.user_id', '=', 'schedule_item.tutor_id')
             ->join('users', 'users.id', '=', 'schedule_item.tutor_id')
             ->where('member_id', $memberID)
-            ->where('valid', true)
+            ->where('schedule_item.valid', true)
             ->orderBy('lesson_time', 'desc')
             ->paginate(Auth::user()->items_per_page);
         return $lessons;
