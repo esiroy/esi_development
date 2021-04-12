@@ -66,7 +66,7 @@ class ScheduleItem extends Model
                     ->whereYear('lesson_time', '=', $currentYear)
                     ->whereMonth('lesson_time','=', $currentMonth)
                     ->where('schedule_status', '=', "CLIENT_RESERVED")                       
-                    //->where('valid', 1)
+                    ->where('valid', 1)
                     ->count();
 
       
@@ -76,22 +76,21 @@ class ScheduleItem extends Model
                     ->whereYear('lesson_time', '=', $currentYear)
                     ->whereMonth('lesson_time','=', $currentMonth)
                     ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
-                    //->where('valid', 1)
+                    ->where('valid', 1)
                     ->count();                    
                     
         $completed = ScheduleItem::where('member_id', $memberID)
                     ->whereYear('lesson_time', '=', $currentYear)
                     ->whereMonth('lesson_time','=', $currentMonth)
                     ->where('schedule_status', '=', "COMPLETED")                       
-                    //->where('valid', 1)
+                    ->where('valid', 1)
                     ->count();
 
         $not_available = ScheduleItem::where('member_id', $memberID)
                         ->whereYear('lesson_time', '=', $currentYear)
                         ->whereMonth('lesson_time','=', $currentMonth)
                         ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
-                        //->where('valid', 1)
-                        ->count();
+                        ->where('valid', 1)->count();
                         
         $reserveCount = $reserved + $reserved_b + $completed + $not_available;
 
@@ -359,6 +358,7 @@ class ScheduleItem extends Model
             ->join('tutors', 'tutors.user_id', '=', 'schedule_item.tutor_id')
             ->join('users', 'users.id', '=', 'schedule_item.tutor_id')
             ->where('member_id', $memberID)
+            ->where('valid', true)
             ->orderBy('lesson_time', 'desc')
             ->paginate(Auth::user()->items_per_page);
         return $lessons;
