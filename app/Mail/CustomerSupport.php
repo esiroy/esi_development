@@ -39,12 +39,13 @@ class CustomerSupport extends Mailable
     
     public function build()
     {
+        
         if (isset($this->data['attachment'])) {
             return $this->view('emails.customersupport_to_admin')
                         ->text('emails.customersupport_to_admin_plain')                        
                         ->to(Config::get('mail.from.address'))
                         //->cc('esi.roy.dev@gmail.com')
-                        ->replyTo('bhadz.trex+1235@gmail.com', 'bhadz.trex+1235@gmail.com')
+                        ->replyTo($member->user->email, $member->user->japanese_firstname + " " + $member->user->japanese_lastname)
                         ->subject('マイチューター カスタマーサポート')
                         ->attach($this->data['attachment']->getRealPath(),['as' => $this->data['attachment']->getClientOriginalName(),'mime' => $this->data['attachment']->getClientMimeType()]); 
         } else {
@@ -52,7 +53,7 @@ class CustomerSupport extends Mailable
                         ->text('emails.customersupport_to_admin_plain')
                         ->to(Config::get('mail.from.address'))
                         //->cc('esi.roy.dev@gmail.com')
-                        ->replyTo('bhadz.trex+1235@gmail.com', 'bhadz.trex+1235@gmail.com')
+                        ->replyTo($member->user->email,  $member->user->japanese_firstname + " " + $member->user->japanese_lastname)
                         ->subject('マイチューター カスタマーサポート');            
         }
     } 
