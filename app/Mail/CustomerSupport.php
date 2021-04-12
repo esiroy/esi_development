@@ -45,7 +45,7 @@ class CustomerSupport extends Mailable
                         ->text('emails.customersupport_to_admin_plain')                        
                         ->to(Config::get('mail.from.address'))
                         //->cc('esi.roy.dev@gmail.com')
-                        ->replyTo($member->user->email, $member->user->japanese_firstname + " " + $member->user->japanese_lastname)
+                        ->replyTo($this->member->user->email, $this->member->user->japanese_firstname + " " + $this->member->user->japanese_lastname)
                         ->subject('マイチューター カスタマーサポート')
                         ->attach($this->data['attachment']->getRealPath(),['as' => $this->data['attachment']->getClientOriginalName(),'mime' => $this->data['attachment']->getClientMimeType()]); 
         } else {
@@ -53,7 +53,7 @@ class CustomerSupport extends Mailable
                         ->text('emails.customersupport_to_admin_plain')
                         ->to(Config::get('mail.from.address'))
                         //->cc('esi.roy.dev@gmail.com')
-                        ->replyTo($member->user->email,  $member->user->japanese_firstname + " " + $member->user->japanese_lastname)
+                        ->replyTo($this->member->user->email,  $this->member->user->japanese_firstname + " " + $this->member->user->japanese_lastname)
                         ->subject('マイチューター カスタマーサポート');            
         }
     } 
