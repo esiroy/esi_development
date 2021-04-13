@@ -128,8 +128,12 @@
                                 <div class="row py-1">
                                     <div class="col-md-4">Latest Purchase Date : </div>
                                     <div class="col-md-8">
-                                        <strong>                                            
-                                            {{ date('m/d/y h:i:s a', strtotime($latestDateOfPurchase)) }}
+                                        <strong>                            
+                                            @if (isset($latestDateOfPurchase))                
+                                                {{ date('m/d/y h:i:s a', strtotime($latestDateOfPurchase)) }}
+                                            @else 
+                                                {{ "-" }}
+                                            @endif
                                         </strong>
                                     </div>
                                 </div>
@@ -195,8 +199,7 @@
 
                                 <td>
                                     <!-- original credit expiration -->
-                                    @if (isset($transaction->credits_expiration))
-                                        <!--{{ date('F d, Y h:i:s a', strtotime($transaction->old_credits_expiration)) }}-->
+                                    @if (isset($transaction->old_credits_expiration))
                                         {{ date('m/d/y h:i:s a', strtotime($transaction->old_credits_expiration)) }}
                                     @endif
                                 </td>

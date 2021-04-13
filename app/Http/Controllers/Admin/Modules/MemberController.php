@@ -482,9 +482,7 @@ class MemberController extends Controller
             AgentTransaction::create($agentCredit);
 
 
-        } else {
-
-      
+        } else {      
 
             //generate agent transaction expiration date
             $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));

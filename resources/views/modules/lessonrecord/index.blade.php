@@ -38,7 +38,12 @@
                         </div>
 
                         <div class="card-body">
-                            <p>これまで受講した一覧です。</p>
+
+
+                            <div class="my-2">
+                                <span class="">これまで受講した一覧です。</span>
+                                <span class="float-right">（「欠席」も含まれます）</span>
+                            </div>
 
                             <table class="table table-bordered table-sm">
                                 <tbody>

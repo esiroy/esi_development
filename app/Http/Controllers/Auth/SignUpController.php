@@ -198,6 +198,8 @@ class SignUpController extends Controller
             //@todo: 127 - default tutor id
             $defaultTutor = Tutor::where('user_id', 127)->first();
             
+            $expiry_date = date('Y-m-d G:i:s', strtotime('+6 months'));
+
             
             $memberInformation =
                 [
@@ -209,12 +211,16 @@ class SignUpController extends Controller
                 'membership' => "Point Balance",
                 'member_since' => date('Y-m-d'),
                 "gender" => "null",
-                //"birthday" => "null",
+                'credits_expiration' =>  $expiry_date,
 
+                //"birthday" => "null",
                 //default agent (auto filled)
+                
                 'agent_id' => $defaultAgent->user_id,
                 //default tutor (auto filled)
                 'tutor_id' => $defaultTutor->user_id,
+
+
                 //attribute (auto filled)
                 'attribute' => 'TRIAL',
                 'lesson_shift_id' => $lessonShift->id,
