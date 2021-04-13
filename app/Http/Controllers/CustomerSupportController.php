@@ -22,7 +22,7 @@ class CustomerSupportController extends Controller
         $this->middleware('auth');
     }    
     
-    public function index() 
+    public function index(ReportCard $reportcards) 
     {
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
@@ -39,7 +39,9 @@ class CustomerSupportController extends Controller
                 'skypeID' => $skypeID,
             ];
 
-            $latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
+
+            $latestReportCard = $reportcards->getLatest($member->user_id);
+
 
             return view('modules/member/customersupport', compact('member', 'data', 'latestReportCard'));
         } else {
