@@ -42,7 +42,7 @@
 
                             <div class="my-2">
                                 <span class="">これまで受講した一覧です。</span>
-                                <span class="float-right">（「欠席」も含まれます）</span>
+                                <span class="ml-3">（「欠席」も含まれます）</span>
                             </div>
 
                             <table class="table table-bordered table-sm">
