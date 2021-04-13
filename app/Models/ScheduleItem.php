@@ -49,10 +49,34 @@ class ScheduleItem extends Model
     /* Returns the Schedules based on Lesson Time, month, year */
     public function getTotalLessonReserved($memberID, $month, $year) 
     {
-        $reserveCount = ScheduleItem::where('member_id', $memberID)
+        $reserved = ScheduleItem::where('member_id', $memberID)
                     ->whereYear('lesson_time', '=', $year)
                     ->whereMonth('lesson_time','=', $month)
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")      
                     ->where('valid', 1)->count();
+
+        $reserved_b = ScheduleItem::where('member_id', $memberID)
+            ->whereYear('lesson_time', '=', $year)
+            ->whereMonth('lesson_time','=', $month)
+            ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
+            ->where('valid', 1)
+            ->count();                       
+
+        $completed = ScheduleItem::where('member_id', $memberID)
+            ->whereYear('lesson_time', '=', $year)
+            ->whereMonth('lesson_time','=', $month)
+            ->where('schedule_status', '=', "COMPLETED")                       
+            ->where('valid', 1)
+            ->count();
+
+        $not_available = ScheduleItem::where('member_id', $memberID)
+            ->whereYear('lesson_time', '=', $year)
+            ->whereMonth('lesson_time','=', $month)
+            ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
+            ->where('valid', 1)->count();            
+
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+
         return $reserveCount;        
     }
 
@@ -68,9 +92,6 @@ class ScheduleItem extends Model
                     ->where('schedule_status', '=', "CLIENT_RESERVED")                       
                     ->where('valid', 1)
                     ->count();
-
-      
-
         
         $reserved_b = ScheduleItem::where('member_id', $memberID)
                     ->whereYear('lesson_time', '=', $currentYear)
