@@ -4,7 +4,7 @@
 <div class="container bg-light pb-5 rounded-bottom">
     <div class="row">
         <div class="col-md-12">
-            <input type="date">
+            <input type="date" class="inputDate form-control form-control-sm col-sm-12 col-md-12">
         </div>
     </div>
 </div>
