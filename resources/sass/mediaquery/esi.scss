@@ -1,0 +1,28 @@
+@media (min-width: 768px) {
+    .container,
+    .container-md,
+    .container-sm {
+        max-width: 100%;
+    }
+    
+    .navbar-brand img {
+        width: 480px;
+    }    
+}
+
+
+
+
+
+@media (min-width: 1200px) and (max-width: 4080px)
+{
+    .container,
+    .container-md,
+    .container-sm {
+        max-width: 1140px;
+    }
+
+
+}
+
+
