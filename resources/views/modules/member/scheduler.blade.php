@@ -55,7 +55,8 @@
                                             <label for="dateToday" class="pr-0">Date:</label>
                                         </td>                                        
                                         <td style="width:150px">
-                                            <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm d-inline col-12">
+                                            <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" 
+                                            class="inputDate form-control form-control-sm col-sm-12 col-md-12">
                                         </td>
                                         <td>
                                             <input type="submit" class="btn btn-primary btn-sm form-control form-control-sm d-inline col-12" value="Go">
@@ -258,10 +259,6 @@
 @section('styles')
 @parent
 <style>
-
-
-
-    
     input.inputDate {
         overflow: hidden;
     }
