@@ -1,13 +1,5 @@
 @extends('layouts.esi-app')
 @section('content')
-
-<style>
-   #loadingModal {
-        display: block;
-        background-color: #0009;
-    }
-</style>
-
 <div class="container bg-light">
     <div class="esi-box mb-5 pb-4">
 
@@ -55,8 +47,7 @@
                                             <label for="dateToday" class="pr-0">Date:</label>
                                         </td>                                        
                                         <td style="width:150px">
-                                            <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" 
-                                            class="inputDate form-control form-control-sm col-sm-12 col-md-12">
+                                            <input type="date" id="dateToday" name="dateToday" value="{{ $dateToday }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm d-inline col-12">
                                         </td>
                                         <td>
                                             <input type="submit" class="btn btn-primary btn-sm form-control form-control-sm d-inline col-12" value="Go">
@@ -259,6 +250,13 @@
 @section('styles')
 @parent
 <style>
+
+   #loadingModal {
+        display: block;
+        background-color: #0009;
+    }
+
+    
     input.inputDate {
         overflow: hidden;
     }
@@ -585,7 +583,11 @@
 
         jQuery(".inputDate").on("change", function() {
             this.setAttribute("data-date", moment(this.value, "YYYY-MM-DD").format(this.getAttribute("data-date-format")))
-        }).trigger("change")        
+        }).trigger("change")
+
+        jQuery(".inputDateIcon").on("click", function(){
+            jQuery(".inputDate").trigger("change");
+        })
 
         $('#loadingModal').modal('hide');
 

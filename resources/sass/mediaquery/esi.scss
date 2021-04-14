@@ -1,3 +1,16 @@
+@media  (min-device-width: 100px) and (max-device-width: 768px)
+{
+    input.inputDate::after {    
+        font-family: "Font Awesome\ 5 Free";
+        content: "\F133";
+        position: absolute;
+        top: 2%;
+        right: 15px;
+        color: black;
+        
+    } 
+}
+
 @media (min-width: 768px) {
     .container,
     .container-md,
@@ -7,20 +20,8 @@
     
     .navbar-brand img {
         width: 480px;
-    }    
-
-    .inputDate::after {    
-        font-family: "Font Awesome\ 5 Free";
-        content: "\F133";
-        position: absolute;
-        top: 0%;
-        right: 0%;
-        color: black;
-    }    
+    } 
 }
-
-
-
 
 
 @media (min-width: 1200px) and (max-width: 4080px)
