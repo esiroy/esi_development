@@ -14,15 +14,16 @@
 @parent
 <style>
 
-
+/*
 .inputDate::after {    
     font-family: "Font Awesome\ 5 Free";
     content: "\F133";
     position: absolute;
-    top: 0%;
-    right: 0%;
+    top: 2%;
+    right: 1%;
     color: black;
 }
+*/
 
 </style>
 @endsection
