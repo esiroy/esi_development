@@ -18,12 +18,10 @@
 .inputDate::after {    
 font-family: "Font Awesome\ 5 Free";
     content: "\F133";
-    padding-right: 200px;
-    padding-left: 200px;
     position: absolute;
     top: 0%;
     right: 0%;
-    color: red
+    color: black;
 }
 
 </style>
