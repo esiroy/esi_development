@@ -32,12 +32,13 @@ class dummyController extends Controller
 
     }
 
+    public function test() {
+        return view('admin.test.index');
+
+    }
+
     public function testUserPoints($memberID) {
-        //18153 - Kobayashi, Ryusei
-
-
-  
-   
+        //18153 - Kobayashi, Ryusei  
 
     }
 
