@@ -16,7 +16,7 @@
 
 
 .inputDate::after {    
-font-family: "Font Awesome\ 5 Free";
+    font-family: "Font Awesome\ 5 Free";
     content: "\F133";
     position: absolute;
     top: 0%;
