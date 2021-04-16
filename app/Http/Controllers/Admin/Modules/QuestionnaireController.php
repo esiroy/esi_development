@@ -83,8 +83,7 @@ class QuestionnaireController extends Controller
         
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
-        echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
-        exit();
+
 
         if ($member) {
             $userImage = UserImage::where('user_id', $member->user_id)->first();
@@ -98,7 +97,8 @@ class QuestionnaireController extends Controller
             //Tutor
             $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
 
-        
+            echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
+            exit();
     
             //Questions
             $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
