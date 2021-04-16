@@ -94,12 +94,10 @@ class QuestionnaireController extends Controller
                 $userImage = null;
             }
 
-            
-            print_r ( $questionnaire );
+            echo "Test";
+            exit();
+      
 
-            exit();  
-
-            
             //Tutor
             $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
 
