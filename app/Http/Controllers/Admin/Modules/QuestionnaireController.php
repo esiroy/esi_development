@@ -9,7 +9,7 @@ use App\Models\Tutor;
 use App\Models\Member;
 use App\Models\Lesson;
 use App\Models\ScheduleItem;
-use App\Models\userImage;
+use App\Models\UserImage;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 use Auth;
@@ -79,55 +79,29 @@ class QuestionnaireController extends Controller
 
         $scheduleItem = ScheduleItem::find($id);
 
-        echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
-
-        echo "<br>";
-        
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
-
-    
-      
-
-   
-        exit();
-      
-      
-    
-        if ($member) {
-            $userImage = UserImage::where('user_id', $member->user_id)->first();
-        } else {
-            $userImage = null;
-        }
-
-    
-         //Questions
-         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
-
-           
+        $userImage = UserImage::where('user_id', $member->user_id)->first();
         
+        //Tutor
+        $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
 
-            $questionnaireID =  $questionnaire->id;   
+        //Questions
+        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
-
-            $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
-                                ->where('QUESTION', "QUESTION_1")->first();
-
-                                                    
-           
-            $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                                ->where('QUESTION', "QUESTION_2")->first();
-    
-            $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                                ->where('QUESTION', "QUESTION_3")->first();
-    
-            $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                                ->where('QUESTION', "QUESTION_4")->first();
-    
-                        
-                                
-            return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
-  
+        $questionnaireID =  $questionnaire->id;   
+        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
+                            ->where('QUESTION', "QUESTION_1")->first();
        
+        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                            ->where('QUESTION', "QUESTION_2")->first();
+
+        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                            ->where('QUESTION', "QUESTION_3")->first();
+
+        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                            ->where('QUESTION', "QUESTION_4")->first();
+
+        return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
     }
 
     /**
