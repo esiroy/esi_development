@@ -97,16 +97,6 @@ class QuestionnaireController extends Controller
 
       
       
-
-            //Tutor
-            $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
-
-            if ($tutor) {
-
-                echo $tutor->id;
-            } else {
-                echo "tutor not found";
-            }
     
    
     
