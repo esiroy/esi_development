@@ -93,9 +93,7 @@ class QuestionnaireController extends Controller
         }
 
 
-                 //Questions
-                 $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
-
+   
 
       
       
@@ -103,10 +101,12 @@ class QuestionnaireController extends Controller
             //Tutor
             $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
 
-         
+            print_r ($tutor);
     
    
     
+         //Questions
+         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
            
         
