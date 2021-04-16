@@ -80,11 +80,12 @@ class QuestionnaireController extends Controller
         $scheduleItem = ScheduleItem::find($id);
 
         echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
+
+        echo "<br>";
         
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
-        print_r($member);
-
+    
         if ($member) {
             $userImage = UserImage::where('user_id', $member->user_id)->first();
         } else {
