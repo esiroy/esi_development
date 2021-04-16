@@ -213,9 +213,6 @@ class QuestionnaireController extends Controller
      */
     public function show($id)
     {      
-
-        echo $id;
-        
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
         if ($member) {
@@ -248,8 +245,7 @@ class QuestionnaireController extends Controller
 
                 } else {
                     
-                    echo "Questionaire - shedule item id not found : " . $id;
-                   //abort(404);
+                    abort(404);
                 }
 
 
