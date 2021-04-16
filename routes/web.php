@@ -159,17 +159,17 @@ Route::resource('/questionnaire', 'Members\QuestionnaireController');
 
 
 /* Public Folder View */
-Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
+//Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
 
 /*File Controller*/
-Route::resource('file', 'FileController');
+//Route::resource('file', 'FileController');
 
 
 /* Folder Manager Controllers */
-Route::resource('uploader', 'FolderCreatorController');
+//Route::resource('uploader', 'FolderCreatorController');
 
 /*Upload Controller */
-Route::post('uploader/fileUploader', 'FileUploadController@upload');
+//Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
 /* Download Controller*/
 //Route::resource('download', 'DownloadController');
