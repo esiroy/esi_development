@@ -83,7 +83,6 @@ class QuestionnaireController extends Controller
             $scheduleItem = ScheduleItem::find($id);
             
 
-            print_r ($scheduleItem);
             
             $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
@@ -93,10 +92,12 @@ class QuestionnaireController extends Controller
                 $userImage = null;
             }
 
-            exit();
+            
 
             //Tutor
             $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
+
+            exit();
     
             //Questions
             $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
