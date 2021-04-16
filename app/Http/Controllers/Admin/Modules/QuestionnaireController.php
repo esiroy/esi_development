@@ -77,25 +77,18 @@ class QuestionnaireController extends Controller
     public function show($id)
     {
 
+        $scheduleItem = ScheduleItem::find($id);
+        
+        $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
-        try {
+        if ($member) {
+            $userImage = UserImage::where('user_id', $member->user_id)->first();
+        } else {
+            $userImage = null;
+        }
 
-            $scheduleItem = ScheduleItem::find($id);
-           
-
-
-
-            
-            $member = Member::where('user_id', $scheduleItem->member_id)->first();
-
-            if ($member) {
-                $userImage = UserImage::where('user_id', $member->user_id)->first();
-            } else {
-                $userImage = null;
-            }
-
-            echo "Test";
-            exit();
+        echo "Test";
+        exit();
       
 
             //Tutor
@@ -130,13 +123,7 @@ class QuestionnaireController extends Controller
                         
                                 
             return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
-
-        } catch (\Exception $e) {
-
-            echo "<div style='color:red'>". $e->getMessage() . " on Line : " . $e->getLine() . "</div>";
-
-            return false;
-        }        
+  
        
     }
 
