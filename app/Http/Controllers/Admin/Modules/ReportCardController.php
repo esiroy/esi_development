@@ -20,8 +20,7 @@ class ReportCardController extends Controller
      Description: a link will show the report card in the tutor lesson plan  and will let the tutor report
     */
     public function index(Request $request) 
-    {
-       
+    {     
 
         $scheduleitemid = $request->scheduleitemid;
 

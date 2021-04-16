@@ -17,6 +17,8 @@ class TableUserImporterController extends Controller
     {
         $items = DB::connection('mysql_live')->table('users')->count();
 
+        echo "Live Items Count: " . $items;
+
         if ($per_item == null) {
             $per_item = 8000;
         }

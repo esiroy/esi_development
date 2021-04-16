@@ -327,10 +327,10 @@ export default {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
-                    window.open("reportcard?scheduleitemid="+lessonData.id, "_self");                
+                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/reportcard?scheduleitemid="+lessonData.id, "_self");                
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                 
-                    window.open("reportcard?scheduleitemid="+lessonData.id, "_self");                  
+                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/reportcard?scheduleitemid="+lessonData.id, "_self");                  
                 }                        
             }
             catch(err) { return false; }           
@@ -359,10 +359,10 @@ export default {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];    
-                    window.open("questionnaires/"+lessonData.id, "_self");                
+                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/questionnaires/"+lessonData.id, "_self");                
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
-                    window.open("questionnaires/"+lessonData.id, "_self");   
+                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/questionnaires/"+lessonData.id, "_self");   
                 }                        
             }
             catch(err) { return false; } 
