@@ -245,7 +245,8 @@ class QuestionnaireController extends Controller
 
                 } else {
                     
-                    abort(404);
+                    echo "Questionaire - shedule item id not found : " . $id;
+                   //abort(404);
                 }
 
 
