@@ -106,7 +106,7 @@ class QuestionnaireController extends Controller
     
             return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
 
-        } catch (Throwable $e) {
+        } catch (\Exception $e) {
 
             echo "<div style='color:red'>". $e->getMessage() . " on Line : " . $e->getLine() . "</div>";
 
