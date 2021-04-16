@@ -77,7 +77,12 @@ class QuestionnaireController extends Controller
     public function show($id)
     {
 
+        echo "Test";
+        exit();
+                
         $scheduleItem = ScheduleItem::find($id);
+
+
         
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
@@ -87,8 +92,7 @@ class QuestionnaireController extends Controller
             $userImage = null;
         }
 
-        echo "Test";
-        exit();
+
       
 
             //Tutor
