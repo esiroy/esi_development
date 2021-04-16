@@ -196,10 +196,16 @@ class AgentController extends Controller
 
     public function account($agentID)
     {
+
+        
         $agent = Agent::where('user_id', $agentID)->first();
 
+        echo "test";
+
+        
         if (!isset($agent)) {
-            abort(404);
+            //abort(404);
+            echo "agent not found";
         } else {
 
             $agentTransaction = new AgentTransaction();
