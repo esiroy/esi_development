@@ -183,7 +183,7 @@ class AgentTransaction extends Model
     {
         //$transactions = AgentTransaction::where('agent_id', $agentID)->where('valid', 1)->orderBy('created_at', 'DESC')->get();
         //return $transactions;
-        $transactions = AgentTransaction::where('member_id', $agentID)->where('valid', 1)->orderBy('created_at', 'DESC')->where(function ($q) use ($memberID) {
+        $transactions = AgentTransaction::where('member_id', $agentID)->where('valid', 1)->orderBy('created_at', 'DESC')->where(function ($q) use ($agentID) {
             $q->orWhere('transaction_type', 'ADD')
                 ->orWhere('transaction_type', 'LESSON')
                 ->orWhere('transaction_type', 'CANCEL_LESSON')
