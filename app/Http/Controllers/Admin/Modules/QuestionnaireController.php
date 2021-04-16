@@ -81,7 +81,7 @@ class QuestionnaireController extends Controller
 
         $scheduleItem = ScheduleItem::find($id);
 
-        echo "Test";
+        echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
         exit();
         
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
