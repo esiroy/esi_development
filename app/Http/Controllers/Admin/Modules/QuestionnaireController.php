@@ -77,44 +77,42 @@ class QuestionnaireController extends Controller
     public function show($id)
     {
 
-        $scheduleItem = ScheduleItem::find($id);
 
-       
+        try {
 
+            $scheduleItem = ScheduleItem::find($id);
 
-        $member = Member::where('user_id', $scheduleItem->member_id)->first();
-
-
-        
-        $userImage = UserImage::where('user_id', $member->user_id)->first();
-
-        exit();
-
-        
-        //Tutor
-        $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
-
-        //Questions
-        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
-
-        if ($questionnaire) {       
+            $member = Member::where('user_id', $scheduleItem->member_id)->first();
+            $userImage = UserImage::where('user_id', $member->user_id)->first();
+            
+            //Tutor
+            $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
+    
+            //Questions
+            $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+    
             $questionnaireID =  $questionnaire->id;   
             $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
                                 ->where('QUESTION', "QUESTION_1")->first();
-        
+           
             $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
                                 ->where('QUESTION', "QUESTION_2")->first();
-
+    
             $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
                                 ->where('QUESTION', "QUESTION_3")->first();
-
+    
             $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
                                 ->where('QUESTION', "QUESTION_4")->first();
-
+    
             return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
-        } else {
-            echo  "Questionnaire not found";
-        }
+
+        } catch (Throwable $e) {
+
+            echo "<div style='color:red'>". $e->getMessage() . " on Line : " . $e->getLine() . "</div>";
+
+            return false;
+        }        
+       
     }
 
     /**
