@@ -90,6 +90,7 @@ class QuestionnaireController extends Controller
                 $userImage = null;
             }
 
+            exit();
             
             //Tutor
             $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
