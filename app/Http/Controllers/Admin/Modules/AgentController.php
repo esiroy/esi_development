@@ -200,13 +200,15 @@ class AgentController extends Controller
         
         $agent = Agent::where('user_id', $agentID)->first();
 
-        echo "test";
+       
 
-        
+
         if (!isset($agent)) {
             //abort(404);
             echo "agent not found";
         } else {
+
+            echo "test";
 
             $agentTransaction = new AgentTransaction();
             $credits = $agentTransaction->getAgentCredits($agentID);
