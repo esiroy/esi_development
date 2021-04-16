@@ -73,7 +73,7 @@
                                         <td>Lesson Date</td>
                                         <td>:</td>
                                         <td colspan="5">
-                                           {{  $scheduleItem->lesson_time }}
+                                           {{  $scheduleItem->lesson_time ?? '' }}
                                         </td>
                                     </tr>
                                     <tr>
