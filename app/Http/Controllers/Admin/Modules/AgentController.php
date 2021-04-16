@@ -208,15 +208,29 @@ class AgentController extends Controller
             echo "agent not found";
         } else {
 
-            echo "test";
+           
 
             $agentTransaction = new AgentTransaction();
             $credits = $agentTransaction->getAgentCredits($agentID);
+
+            echo "test 0";
+
             $latestDateOfPurchase = $agentTransaction->getAgentLatestDateOfPurchase($agentID);    
+
+            echo "test 1";
 
             //list
             $transactions  = $agentTransaction->getAgentTransactions($agentID);
+
+            echo "test 2";
+
+
             $purchaseHistory = $agentTransaction->getAgentAllPaymentHistory($agentID);           
+
+            echo "test 3";
+
+
+            exit();
 
             return view('admin.modules.agent.account', compact('agent', 'credits', 'latestDateOfPurchase', 'transactions', 'purchaseHistory'));
 
