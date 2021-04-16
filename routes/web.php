@@ -270,9 +270,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         
 
         //Manage
-        Route::resource('/questionnaires', 'Modules\QuestionnaireController');
+        Route::resource('questionnaires', 'Modules\QuestionnaireController');
         Route::resource('/announcement', 'Modules\AnnouncementController');
-        
+
         Route::get('/course/sortcategory', 'Modules\CourseController@sortcategory')->name('course.sortcategory');
         Route::get('/course/sortcategory/{id}', 'Modules\CourseController@sortcategory')->name('course.sortsubcategory');
 
