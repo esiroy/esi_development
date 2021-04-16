@@ -76,6 +76,8 @@ class QuestionnaireController extends Controller
      */
     public function show(Request $request)
     {
+        echo "questionnaire";
+        exit();
 
         $scheduleItem = ScheduleItem::find($id);
 
