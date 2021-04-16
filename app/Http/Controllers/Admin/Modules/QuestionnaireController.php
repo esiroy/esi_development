@@ -77,12 +77,12 @@ class QuestionnaireController extends Controller
     public function show($id)
     {
 
-        echo "Test";
-        exit();
-                
+    
+
         $scheduleItem = ScheduleItem::find($id);
 
-
+        echo "Test";
+        exit();
         
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
