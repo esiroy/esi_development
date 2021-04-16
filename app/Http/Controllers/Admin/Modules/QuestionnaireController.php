@@ -77,14 +77,14 @@ class QuestionnaireController extends Controller
     public function show($id)
     {
 
-    
-
         $scheduleItem = ScheduleItem::find($id);
+
+       
+        
+        $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
         echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
         exit();
-        
-        $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
         if ($member) {
             $userImage = UserImage::where('user_id', $member->user_id)->first();
