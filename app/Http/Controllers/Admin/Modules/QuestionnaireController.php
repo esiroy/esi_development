@@ -86,19 +86,19 @@ class QuestionnaireController extends Controller
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
     
-        if ($member) {
-            $userImage = UserImage::where('user_id', $member->user_id)->first();
-        } else {
-            $userImage = null;
-        }
-
+      
 
    
         exit();
       
       
     
-   
+        if ($member) {
+            $userImage = UserImage::where('user_id', $member->user_id)->first();
+        } else {
+            $userImage = null;
+        }
+
     
          //Questions
          $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
