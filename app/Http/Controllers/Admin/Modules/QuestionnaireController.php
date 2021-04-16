@@ -74,9 +74,9 @@ class QuestionnaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show($id)
     {
-        echo "questionnaire";
+        echo $id;
         exit();
 
         $scheduleItem = ScheduleItem::find($id);
@@ -90,20 +90,24 @@ class QuestionnaireController extends Controller
         //Questions
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
-        $questionnaireID =  $questionnaire->id;   
-        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
-                            ->where('QUESTION', "QUESTION_1")->first();
-       
-        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_2")->first();
+        if ($questionnaire) {       
+            $questionnaireID =  $questionnaire->id;   
+            $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
+                                ->where('QUESTION', "QUESTION_1")->first();
+        
+            $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_2")->first();
 
-        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_3")->first();
+            $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_3")->first();
 
-        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_4")->first();
+            $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_4")->first();
 
-        return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+            return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+        } else {
+            echo  "Questionnaire not found";
+        }
     }
 
     /**
