@@ -79,7 +79,7 @@ class QuestionnaireController extends Controller
 
         $scheduleItem = ScheduleItem::find($id);
 
-        echo $id;
+        echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
         
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
@@ -96,8 +96,7 @@ class QuestionnaireController extends Controller
                  $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
 
-        echo $id . "  - " . $scheduleItem->member_id . "  " . $scheduleItem->tutor_id;
-        exit();
+      
       
 
             //Tutor
