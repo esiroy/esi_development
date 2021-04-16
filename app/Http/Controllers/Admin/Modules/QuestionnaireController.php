@@ -81,6 +81,8 @@ class QuestionnaireController extends Controller
         try {
 
             $scheduleItem = ScheduleItem::find($id);
+            echo $scheduleItem->tutor_id;
+
             
 
             
