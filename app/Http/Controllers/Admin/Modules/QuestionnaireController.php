@@ -81,7 +81,10 @@ class QuestionnaireController extends Controller
         try {
 
             $scheduleItem = ScheduleItem::find($id);
+            
 
+            print_r ($scheduleItem);
+            
             $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
             if ($member) {
@@ -91,7 +94,7 @@ class QuestionnaireController extends Controller
             }
 
             exit();
-            
+
             //Tutor
             $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
     
