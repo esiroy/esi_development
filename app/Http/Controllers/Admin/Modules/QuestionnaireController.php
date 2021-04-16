@@ -106,9 +106,13 @@ class QuestionnaireController extends Controller
     
 
            
+          print_r ( $questionnaire );
 
+            exit();  
 
             $questionnaireID =  $questionnaire->id;   
+
+
             $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
                                 ->where('QUESTION', "QUESTION_1")->first();
 
@@ -123,9 +127,7 @@ class QuestionnaireController extends Controller
             $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
                                 ->where('QUESTION', "QUESTION_4")->first();
     
-                                echo "TEST";
-
-                                exit();  
+                        
                                 
             return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
 
