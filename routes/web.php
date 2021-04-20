@@ -120,6 +120,20 @@ Route::resource('importReportCardsDate', 'TableReportCardDateImporterController'
 Route::get('importReportCardsDate/index/{per_item}', 'TableReportCardDateImporterController@index');
 Route::get('importReportCardsDate/{id}/{per_item}', 'TableReportCardDateImporterController@show');
 
+/*************** 
+ * CUSTOMER SUPPORT IMPORTER
+ ***************/
+Route::resource('importCustomerSupport', 'TableCustomerSupportImporterController');
+Route::get('importCustomerSupport/index/{per_item}', 'TableCustomerSupportImporterController@index');
+Route::get('importCustomerSupport/{id}/{per_item}', 'TableCustomerSupportImporterController@show');
+
+/*************** 
+ *  DESIRED SCHEDULE IMPORTER
+ ***************/
+Route::resource('importDesiredSchedule', 'TableDesiredScheduleImporterController');
+Route::get('importDesiredSchedule/index/{per_item}', 'TableDesiredScheduleImporterController@index');
+Route::get('importDesiredSchedule/{id}/{per_item}', 'TableDesiredScheduleImporterController@show');
+
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
