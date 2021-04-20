@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MemberDesiredSchedule;
+use App\Models\CourseCategoryImage;
 use DB;
 
-class TableDesiredScheduleImporterController extends Controller
+class TableCourseCategoryImageImporterController extends Controller
 {
 
     public function index()
     {
         set_time_limit(0);
 
-        $items = DB::connection('mysql_live')->table('desired_schedule')->count();
+        $items = DB::connection('mysql_live')->table('course_category_image')->count();
 
-        echo "<div>there are " . $items . " Desired Schedule  item</div>";
+        echo "<div>there are " . $items . " Course Category Image item</div>";
 
         $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
@@ -27,8 +27,8 @@ class TableDesiredScheduleImporterController extends Controller
 
             $start = ($i - 1) * ($per_item);
             $end = $i * ($per_item);
-            $items_live_count = DB::connection('mysql_live')->table('desired_schedule')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
-            $items_local_count = DB::connection('mysql')->table('desired_schedule')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
+            $items_live_count = DB::connection('mysql_live')->table('course_category_image')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
+            $items_local_count = DB::connection('mysql')->table('course_category_image')->select('id')->orderBy('id', 'ASC')->take($per_item)->skip($start)->get();
 
             $counter = $counter + count($items_local_count->toArray());
 
@@ -39,13 +39,13 @@ class TableDesiredScheduleImporterController extends Controller
 
                 $total_missing = $live_count - $local_count;
 
-                $url = url("importDesiredSchedule/$i/$per_item");
-                echo "<a href='$url'><small>Desired Schedule Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";
+                $url = url("importCourseCategoryImage/$i/$per_item");
+                echo "<a href='$url'><small>Course Category Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";
 
             } else {
 
-                $url = url("importDesiredSchedule/$i/$per_item");
-                echo "<a href='$url'><small>Desired Schedule Page $i</small> </a><br>";
+                $url = url("importCourseCategoryImage/$i/$per_item");
+                echo "<a href='$url'><small>Course Category Page $i</small> </a><br>";
             }
         }
 
@@ -55,7 +55,7 @@ class TableDesiredScheduleImporterController extends Controller
 
     public function update($id)
     {
-        $items = DB::connection('mysql_live')->select("select * from desired_schedule where id = $id");
+        $items = DB::connection('mysql_live')->select("select * from course_category_image where id = $id");
         $ctr = 0;
 
         foreach ($items as $item) {
@@ -67,19 +67,18 @@ class TableDesiredScheduleImporterController extends Controller
                 'created_at' => $item->created_on,
                 'updated_at' => $item->updated_on,
                 'valid' => $item->valid,
-                'day' => $item->day,
-                'desired_time' => $item->desired_time,
-                'member_id' => $item->member_id,                
-                'sequence_number' => $item->sequence_number,              
+                'filename' => $item->filename,
+                'path' => $item->path,
+                'course_category_id' => $item->course_category_id,           
             ];
 
-            if (MemberDesiredSchedule::where('id', $item->id)->exists()) {
-                $scheduleItem = MemberDesiredSchedule::where('id', $id)->first();
+            if (CourseCategoryImage::where('id', $item->id)->exists()) {
+                $scheduleItem = CourseCategoryImage::where('id', $id)->first();
                 $transaction = $scheduleItem->update($data);
 
                 echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             } else {
-                $transaction = MemberDesiredSchedule::insert($data);
+                $transaction = CourseCategoryImage::insert($data);
                 echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             }
 
@@ -100,13 +99,13 @@ class TableDesiredScheduleImporterController extends Controller
         $start = ($id - 1) * ($per_item);
         $end = $id * ($per_item);
 
-        echo "<div>ADDING desired_schedule FROM : " . $start . " - " . $end . "</div>";
+        echo "<div>ADDING course_category_image FROM : " . $start . " - " . $end . "</div>";
         echo "<BR>";
 
         //The SQL query below says "return only 10 records, start on record 16 (OFFSET 15)":
         //$sql = "SELECT * FROM Orders LIMIT 10 OFFSET 15";
 
-        $items = DB::connection('mysql_live')->select("select * from desired_schedule ORDER BY id ASC LIMIT $per_item OFFSET $start");
+        $items = DB::connection('mysql_live')->select("select * from course_category_image ORDER BY id ASC LIMIT $per_item OFFSET $start");
 
         DB::beginTransaction();
 
@@ -121,21 +120,21 @@ class TableDesiredScheduleImporterController extends Controller
                 'created_at' => $item->created_on,
                 'updated_at' => $item->updated_on,
                 'valid' => $item->valid,
-                'day' => $item->day,
-                'desired_time' => $item->desired_time,
-                'member_id' => $item->member_id,                
-                'sequence_number' => $item->sequence_number,                     
+                'filename' => $item->filename,
+                'path' => $item->path,
+                'course_category_id' => $item->course_category_id,                      
             ];
 
-            if (MemberDesiredSchedule::where('id', $item->id)->exists()) {
+            if (CourseCategoryImage::where('id', $item->id)->exists()) 
+            {
                 echo "<div style='color:red'>$ctr - EXISTING : " . $item->id . " " . $item->created_on . "</div>";
 
                 try
                 {
-                    $scheduleObj = MemberDesiredSchedule::where('id', $item->id);
+                    $scheduleObj = CourseCategoryImage::where('id', $item->id);
                     $transaction = $scheduleObj->update($data);
                     DB::commit();
-                    echo "<div style='color:blue'>$ctr - updated : " . $item->id . " " . $item->created_on . "</div>";
+                    echo "<div style='color:blue'>$ctr - updated : " . $item->id . " "  . $item->filename . " " . $item->created_on . "</div>";
                 } catch (\Exception $e) {
                     echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On update </div>";
                 }
@@ -144,9 +143,9 @@ class TableDesiredScheduleImporterController extends Controller
 
                 try
                 {
-                    $transaction = MemberDesiredSchedule::insert($data);
+                    $transaction = CourseCategoryImage::insert($data);
                     DB::commit();
-                    echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
+                    echo "<div style='color:blue'>$ctr - Added : " . $item->id . " "  . $item->name . " " . $item->created_on . "</div>";
                 } catch (\Exception $e) {
                     echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
                 }

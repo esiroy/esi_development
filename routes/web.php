@@ -134,6 +134,21 @@ Route::resource('importDesiredSchedule', 'TableDesiredScheduleImporterController
 Route::get('importDesiredSchedule/index/{per_item}', 'TableDesiredScheduleImporterController@index');
 Route::get('importDesiredSchedule/{id}/{per_item}', 'TableDesiredScheduleImporterController@show');
 
+/*************** 
+ *  COURSE CATEGORY IMPORTER
+ ***************/
+Route::resource('importCourseCategory', 'TableCourseCategoryImporterController');
+Route::get('importCourseCategory/index/{per_item}', 'TableCourseCategoryImporterController@index');
+Route::get('importCourseCategory/{id}/{per_item}', 'TableCourseCategoryImporterController@show');
+
+ /*************** 
+ *  COURSE CATEGORY IMPORTER IMAGE
+ ***************/
+Route::resource('importCourseCategoryImage', 'TableCourseCategoryImageImporterController');
+Route::get('importCourseCategoryImage/index/{per_item}', 'TableCourseCategoryImageImporterController@index');
+Route::get('importCourseCategoryImage/{id}/{per_item}', 'TableCourseCategoryImageImporterController@show');
+
+
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
