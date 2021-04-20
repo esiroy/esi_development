@@ -149,6 +149,15 @@ Route::get('importCourseCategoryImage/index/{per_item}', 'TableCourseCategoryIma
 Route::get('importCourseCategoryImage/{id}/{per_item}', 'TableCourseCategoryImageImporterController@show');
 
 
+/*************** 
+ *  ANNOUNCEMENTS
+ ***************/
+
+/*************** 
+ *  COMPANY
+ ***************/
+
+
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 

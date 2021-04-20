@@ -37,13 +37,13 @@
 
             .code {
                 border-right: 2px solid;
-                font-size: 26px;
+                font-size: 42px;
                 padding: 0 15px 0 15px;
                 text-align: center;
             }
 
             .message {
-                font-size: 18px;
+                font-size: 42px;
                 text-align: center;
             }
         </style>
