@@ -40,12 +40,12 @@ class TableUserImageImporterController extends Controller
                 $total_missing = $live_count - $local_count;
 
                 $url = url("importUserImage/$i/$per_item");
-                echo "<a href='$url'><small>Course Category Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";
+                echo "<a href='$url'><small>User Image Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";
 
             } else {
 
                 $url = url("importUserImage/$i/$per_item");
-                echo "<a href='$url'><small>Course Category Page $i</small> </a><br>";
+                echo "<a href='$url'><small>User Image Page $i</small> </a><br>";
             }
         }
 
