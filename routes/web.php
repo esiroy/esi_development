@@ -68,6 +68,13 @@ Route::get('importQuestionnaireItem/import/{id}/{per_item}', 'TableQuestionnaire
 
 
 /*************** 
+* USER IMAGE IMPORTER
+***************/
+Route::resource('importUserImage', 'TableUserImageImporterController');
+Route::get('importUserImage/index/{per_item}', 'TableUserImageImporterController@index');
+Route::get('importUserImage/{id}/{per_item}', 'TableUserImageImporterController@show');
+
+/*************** 
  * USER IMPORTER
  ***************/
 Route::resource('importUsers', 'TableUserImporterController');
