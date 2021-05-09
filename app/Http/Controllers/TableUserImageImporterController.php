@@ -14,7 +14,7 @@ class TableUserImageImporterController extends Controller
 
         $items = DB::connection('mysql_live')->table('user_image')->count();
 
-        echo "<div>there are " . $items . " Course Category Image item</div>";
+        echo "<div>there are " . $items . " User image item</div>";
 
         $per_item = 8000;
         $total_pages = ($items / $per_item) + 1;
@@ -39,12 +39,12 @@ class TableUserImageImporterController extends Controller
 
                 $total_missing = $live_count - $local_count;
 
-                $url = url("importCourseCategoryImage/$i/$per_item");
+                $url = url("importUserImage/$i/$per_item");
                 echo "<a href='$url'><small>Course Category Page $i</small>   <span style='color:red'>Total Missing: $total_missing </span> </a><br>";
 
             } else {
 
-                $url = url("importCourseCategoryImage/$i/$per_item");
+                $url = url("importUserImage/$i/$per_item");
                 echo "<a href='$url'><small>Course Category Page $i</small> </a><br>";
             }
         }
