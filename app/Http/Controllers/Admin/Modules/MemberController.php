@@ -300,13 +300,15 @@ class MemberController extends Controller
             $thisYear = date("Y");
       
           
-            $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID)->lesson_limit;
+            $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID);
 
+            print_r($lessonLimit);
+            
             echo "1";
             exit();
             
             
-            
+
             $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
             $totalReserved = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
             $memberLessonsRemaining = $lessonLimit - $totalReserved;
