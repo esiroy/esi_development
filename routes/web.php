@@ -243,6 +243,8 @@ Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->nam
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
     /* Admin Auth */
+    Route::get('login.do', 'AuthController@showLoginForm')->name('showLoginFormDo');
+
     Route::get('login', 'AuthController@showLoginForm')->name('showLoginForm');
     Route::post('login', 'AuthController@login')->name('AdminLogin');
     Route::post('logout', 'AuthController@logout')->name('AdminLogout');
