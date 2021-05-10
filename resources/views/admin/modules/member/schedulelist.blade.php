@@ -96,9 +96,9 @@
                                     </td>
                                     <td>{{ ucwords(str_replace('_', ' ', strtolower($schedule->schedule_status))) }}</td>
 
-                                    <td>{{ $schedule->firstname }}</td>
+                                    <td>{{ $schedule->firstname ?? ''}}</td>
 
-                                    <td>{{ $schedule->memo }}</td>
+                                    <td>{{ $schedule->memo ?? ''}}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
