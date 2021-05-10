@@ -288,10 +288,6 @@ class MemberController extends Controller
 
         if ($memberInfo) {
 
-            echo $memberInfo->user;
-
-           
-
             $member = $memberInfo->user;
 
             //agent
@@ -303,6 +299,7 @@ class MemberController extends Controller
             $thisMonth = strtoupper(date("M"));
             $thisYear = date("Y");
       
+            echo "1";
             exit();
             
             $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID)->lesson_limit;
