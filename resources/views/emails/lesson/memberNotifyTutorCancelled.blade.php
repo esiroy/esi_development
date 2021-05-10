@@ -8,7 +8,7 @@
     </div>
 
     <div style="margin-top:20px; font-size: 14px">
-        <div>March 31, 2021 11:30</div>
+        <div>{{ date("F j, Y, H:i", strtotime($scheduleItem->lesson_time)) }}</div>
         <div>でご予約いただいてました講師{{ $tutor->user->firstname }}のレッスンですが</div>
         </div>講師の都合によりレッスンがキャンセルとなりました。</div>
     </div>
