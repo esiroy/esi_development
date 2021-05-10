@@ -388,4 +388,4 @@ Auth::routes();
 Route::post('login', 'Auth\LoginController@login')->name('login_member');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout_member');
 
-Route::get('login.do', 'App\Http\Controllers\Auth\LoginController@showLoginForm')->name('login_member_do');
+Route::get('login.do', 'Auth\LoginController@showLoginForm')->name('login_member_do');
