@@ -282,6 +282,11 @@ class MemberController extends Controller
 
     public function schedulelist($memberID, ScheduleItem $scheduleItem, MemberAttribute $memberAttribute)
     {
+
+        echo $memberID;
+
+        exit();
+        
         $memberInfo = Member::where('user_id', $memberID)->first();
 
         if ($memberInfo) {
