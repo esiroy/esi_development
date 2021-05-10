@@ -280,6 +280,39 @@ class MemberController extends Controller
 
     }
 
+    public function schedulelist_test($memberID, ScheduleItem $scheduleItem, MemberAttribute $memberAttribute)
+    {
+
+
+        $memberInfo = Member::where('user_id', $memberID)->first();
+
+        if ($memberInfo) {
+            $member = $memberInfo->user;
+
+            //agent
+            $agentInfo = Agent::where('user_id', $memberInfo->agent_id)->first();
+
+            //tutor for
+            $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
+
+            $thisMonth = strtoupper(date("M"));
+            $thisYear = date("Y");
+      
+            
+            $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID)->lesson_limit;
+            $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
+            $totalReserved = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
+            $memberLessonsRemaining = $lessonLimit - $totalReserved;
+
+            return view('admin.modules.member.schedulelist', compact('schedules', 'lessonLimit', 'totalReserved', 'memberLessonsRemaining', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
+            
+        } else {
+            abort(404);
+        }
+
+    }
+
+
     public function schedulelist($memberID, ScheduleItem $scheduleItem, MemberAttribute $memberAttribute)
     {
 

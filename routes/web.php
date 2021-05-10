@@ -287,6 +287,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/member', 'Modules\MemberController');        
         Route::get('/member/paymenthistory/{id}', 'Modules\MemberController@paymenthistory')->name('member.paymenthistory');
         Route::get('/member/account/{id}', 'Modules\MemberController@account')->name('member.account');
+
+        Route::get('/member/schedulelist_test/{id}', 'Modules\MemberController@schedulelist_test')->name('member.schedulelist_test');
+
         Route::get('/member/schedulelist/{id}', 'Modules\MemberController@schedulelist')->name('member.schedulelist');        
         Route::get('/member/{id}', 'Modules\MemberController@show')->name('member.details');
 
