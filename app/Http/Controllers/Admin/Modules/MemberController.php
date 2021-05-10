@@ -286,10 +286,10 @@ class MemberController extends Controller
         $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
         
         
-        $limit = 0;
+        $lessonLimit = 0;
         $memberAttribute = $memberAttribute->getCurrentMonthLessonLimit($memberID);        
         if (isset($memberAttribute->lesson_limit)) {
-            $limit = $memberAttribute->lesson_limit;
+            $lessonLimit = $memberAttribute->lesson_limit;
         }
 
         $totalReserved = $scheduleItem->getTotalLessonForCurrentMonth($memberID);        
