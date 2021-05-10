@@ -282,9 +282,9 @@ class MemberController extends Controller
 
     public function schedulelist_test($memberID, ScheduleItem $scheduleItem, MemberAttribute $memberAttribute)
     {
-        $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID)->lesson_limit;
-
-        echo $lessonLimit;
+        $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID);
+        //>lesson_limit;
+        print_r ($lessonLimit);
 
     }
 
