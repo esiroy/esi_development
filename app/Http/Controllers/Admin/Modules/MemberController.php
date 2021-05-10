@@ -290,8 +290,8 @@ class MemberController extends Controller
 
             echo $memberInfo->user;
 
-            exit();
-            
+           
+
             $member = $memberInfo->user;
 
             //agent
@@ -303,6 +303,7 @@ class MemberController extends Controller
             $thisMonth = strtoupper(date("M"));
             $thisYear = date("Y");
       
+            exit();
             
             $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID)->lesson_limit;
             $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
