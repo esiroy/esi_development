@@ -374,6 +374,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 });
 
 Route::get('/signup', 'Auth\SignUpController@showSignUpForm')->name('signup');
+Route::get('/signup.do', 'Auth\SignUpController@showSignUpForm')->name('signup_do');
+
 Route::post('/validateSignUpForm', 'Auth\SignUpController@validateSignUpForm')->name('validateSignUp');
 Route::get('/confirmation', 'Auth\SignUpController@showConfirmationForm')->name('signUpConfirmation');
 Route::post('/createMember','Auth\SignUpController@store')->name('createMember');
@@ -385,3 +387,5 @@ Route::get('/saveuser','Auth\SignUpController@step3')->name('step3');
 Auth::routes();
 Route::post('login', 'Auth\LoginController@login')->name('login_member');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout_member');
+
+Route::get('login.do', 'App\Http\Controllers\Auth\LoginController@showLoginForm')->name('login_member_do');
