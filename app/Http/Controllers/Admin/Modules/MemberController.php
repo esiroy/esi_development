@@ -302,8 +302,8 @@ class MemberController extends Controller
           
             $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID);
 
-            print_r($lessonLimit);
-            
+            print_r($lessonLimit->->lesson_limit);
+
             echo "1";
             exit();
             
