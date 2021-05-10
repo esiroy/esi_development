@@ -280,6 +280,14 @@ class MemberController extends Controller
 
     }
 
+    public function schedulelist_test($memberID, ScheduleItem $scheduleItem, MemberAttribute $memberAttribute)
+    {
+        $lessonLimit = $memberAttribute->getCurrentMonthLessonLimit($memberID)->lesson_limit;
+
+        echo $lessonLimit;
+
+    }
+
     public function schedulelist($memberID, ScheduleItem $scheduleItem, MemberAttribute $memberAttribute)
     {
         $memberInfo = Member::where('user_id', $memberID)->first();
