@@ -287,6 +287,11 @@ class MemberController extends Controller
         $memberInfo = Member::where('user_id', $memberID)->first();
 
         if ($memberInfo) {
+
+            echo $memberInfo->user;
+
+            exit();
+            
             $member = $memberInfo->user;
 
             //agent
