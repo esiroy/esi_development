@@ -286,14 +286,17 @@ class MemberController extends Controller
         $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
         
         
-        $memberAttribute = $memberAttribute->getCurrentMonthLessonLimit($memberID);
-        //>lesson_limit;
+        $limit = 0;
+        $memberAttribute = $memberAttribute->getCurrentMonthLessonLimit($memberID);        
         if (isset($memberAttribute->lesson_limit)) {
-            echo $memberAttribute->lesson_limit;
-        } else {
-            echo "0";
+            $limit = $memberAttribute->lesson_limit;
         }
+
+        $totalReserved = $scheduleItem->getTotalLessonForCurrentMonth($memberID);        
         
+        $memberLessonsRemaining = $lessonLimit - $totalReserved;
+
+        echo $memberLessonsRemaining;
 
     }
 
@@ -313,11 +316,12 @@ class MemberController extends Controller
             $thisMonth = strtoupper(date("M"));
             $thisYear = date("Y");
       
-            
+            $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
+
+
             $memberAttribute = $memberAttribute->getCurrentMonthLessonLimit($memberID);
             $lessonLimit = $memberAttribute->lesson_limit;
-
-            $schedules = $scheduleItem->getMemberScheduledLesson($memberID);
+            
             $totalReserved = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
             $memberLessonsRemaining = $lessonLimit - $totalReserved;
 
