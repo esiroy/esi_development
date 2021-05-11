@@ -230,7 +230,7 @@ class QuestionnaireController extends Controller
                 $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
                 $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();
                 
-                return view('modules.questionnaire.edit', compact('member',  'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+                return view('modules.questionnaire.edit', compact('member', 'latestReportCard', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
 
             } else {  
                 //CREATE: new questionnaire 
