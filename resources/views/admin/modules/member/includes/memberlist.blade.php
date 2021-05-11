@@ -11,7 +11,8 @@
 
                 <th class="small text-center">Agent</th>
                 <th class="small text-center">Email</th>
-                <th class="small text-center">Skype /<br> Zoom</th>
+                <th class="small text-center">Credit Expiration</th>
+                <!--<th class="small text-center">Skype /<br> Zoom</th>-->
                 <th class="small text-center">Credit</th>
                 <th class="small text-center">Class</th>
                 <th class="small text-center">Main<br>Tutor</th>
@@ -52,7 +53,16 @@
                     {{$member->user->email ?? "-" }}
                 </td>
 
-                <!--communcation app-->
+                
+                <td class="small">
+                    @if (isset($member->credits_expiration))
+                    <strong>
+                        {{ date('m/d/y h:i:s a', strtotime($member->credits_expiration)) }}
+                    </strong>
+                    @endif
+                </td>
+
+                <!--communcation app
                 <td class="small">
                     @if (isset($member->communication_app))
                         {{ $member->communication_app }} : {!! "<BR>" !!}
@@ -61,8 +71,9 @@
                     @if (strtolower($member->communication_app) == 'skype') {{ $member->skype_account }} @endif
                     @if (strtolower($member->communication_app) == 'zoom') {{ $member->zoom_account }} @endif
                 </td>
+                -->
                 
-                <td class="small">                
+                <td class="small">
                     @php 
                         $agentTransaction = new App\Models\AgentTransaction();
                         $credits = $agentTransaction->getCredits($member->user_id)
