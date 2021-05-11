@@ -327,7 +327,7 @@ class ScheduleItem extends Model
         $scheduleItems = ScheduleItem::whereDate('lesson_time', '=', $date)
                             ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
                             ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")
-                            ->where('valid', '=', true)
+                            ->where('valid', "=", '1')
                             ->get();
 
         $reportCard = new ReportCard();
