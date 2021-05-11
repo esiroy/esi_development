@@ -9,6 +9,10 @@
      <div id="userDetails" class="row mx-0 pt-2">
 
          <div class="col-md-12">
+
+             <!--
+                report card id:    $latestReportCard->id
+              -->
              <div class="text-secondary">Level: 
                 <a href="javascript:void(0);" class="text-danger" onclick="window.open('{{ url('stagelevel') }}','popup','width=650,height=500,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,status=no,location=no,directories=no')">
                     <i>(１０段階レベル表)</i>
