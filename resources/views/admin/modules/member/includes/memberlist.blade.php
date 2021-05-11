@@ -33,7 +33,8 @@
 
                     {{ucfirst($member->lastname) ?? "-" }},<br>  {{ucfirst($member->firstname) ?? "-" }} 
                     @if($member->is_activated)
-                        <img src="{{ url('images/iInactive.png')}}"></a>
+                        <!--<img src="{{ url('images/iInactive.png')}}"></a>-->
+                        <span style="color:green"><i class="fas fa-check-circle"></i></div>
                     @endif
                 </td>
 
