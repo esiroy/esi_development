@@ -269,6 +269,7 @@ class TutorScheduleController extends Controller
             /**@todo: add transaction only when it exits? */
             if ($memberID != null) {
                 $memberTransactionData = [
+                     //'scheduleItem'      => $scheduleItem,
                     'scheduleItemID'      => $scheduledItemData['id'],
                     'memberID' => $memberID,
                     'shiftDuration' => $request['shiftDuration'],
@@ -525,6 +526,7 @@ class TutorScheduleController extends Controller
             if ($memberID != null) {
                 $memberTransactionData = [
                     //'scheduleItem'      => $scheduleItem,
+                    'scheduleItemID'      => $scheduledItemData['id'],
                     'memberID' => $memberID,
                     'shiftDuration' => $request['shiftDuration'],
                     'status' => $request['status'],
