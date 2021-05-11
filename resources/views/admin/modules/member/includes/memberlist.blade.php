@@ -57,7 +57,8 @@
                 <td class="small">
                     @if (isset($member->credits_expiration))
                     <strong>
-                        {{ date('m/d/y h:i:s a', strtotime($member->credits_expiration)) }}
+                        {{ date('m/d/y', strtotime($member->credits_expiration)) }}
+                        {{ date('h:i:s a', strtotime($member->credits_expiration)) }}
                     </strong>
                     @endif
                 </td>
