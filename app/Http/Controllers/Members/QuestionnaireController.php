@@ -211,10 +211,13 @@ class QuestionnaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, ReportCard $reportcards)
     {      
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
+        $latestReportCard = $reportcards->getLatest($member->user_id);
+
+
         if ($member) {
 
             $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
