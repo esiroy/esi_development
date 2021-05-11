@@ -67,7 +67,7 @@ class MemberController extends Controller
         $shifts = Shift::all();
 
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')                            
-                            ->select("members.*", "users.id", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name"));
+                            ->select("members.*", "users.is_activated", "users.id", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as full_name"));
 
         if ($request->expired) {
 

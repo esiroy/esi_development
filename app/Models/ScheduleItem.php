@@ -353,20 +353,26 @@ class ScheduleItem extends Model
                 $hasReportCard = false;
             }
 
-            $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
-                'id' => $item->id,
-                'status' => $item->schedule_status,
-                'startTime' => date("H:i", strtotime($item->lesson_time . " -1 hour")),
-                'endTime' => date("H:i", strtotime($item->lesson_time)),
-                'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
-                'email_type' => $item->email_type,
-                'duration' => $item->duration,                
-                'member_id' => $item->member_id,
-                'member_memo' => $item->memo,
-                'hasReportCard' => $hasReportCard,
-                'hasQuestionnaire' => $hasQuestionnaire
-                //'questionnaire' => $questionnaire,
-            ];
+            if ($item->valid === 1 || $item->valid === '1') 
+            {                
+                $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
+                    'valid' => $item->valid,
+                    'id' => $item->id,
+                    'status' => $item->schedule_status,
+                    'startTime' => date("H:i", strtotime($item->lesson_time . " -1 hour")),
+                    'endTime' => date("H:i", strtotime($item->lesson_time)),
+                    'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
+                    'email_type' => $item->email_type,
+                    'duration' => $item->duration,                
+                    'member_id' => $item->member_id,
+                    'member_memo' => $item->memo,
+                    'hasReportCard' => $hasReportCard,
+                    'hasQuestionnaire' => $hasQuestionnaire
+                    //'questionnaire' => $questionnaire,
+                ];
+            }
+
+
         }
 
         return $schedules;

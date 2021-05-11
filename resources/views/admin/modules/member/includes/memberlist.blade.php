@@ -28,9 +28,12 @@
                 <td class="small"></td>
                 <td class="small">{{$member->user_id}}</td>
 
-                <td class="small" id="member-fullname" style="width:30px">
-                    
-                    {{ucfirst($member->lastname) ?? "-" }},<br>  {{ucfirst($member->firstname) ?? "-" }}
+                <td class="small" id="member-fullname" style="width:30px"> 
+
+                    {{ucfirst($member->lastname) ?? "-" }},<br>  {{ucfirst($member->firstname) ?? "-" }} 
+                    @if($member->is_activated)
+                        <img src="{{ url('images/iInactive.png')}}"></a>
+                    @endif
                 </td>
 
                 <td class="small">{{$member->nickname ?? "-" }}</td>
