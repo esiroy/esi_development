@@ -526,7 +526,7 @@ class TutorScheduleController extends Controller
             if ($memberID != null) {
                 $memberTransactionData = [
                     //'scheduleItem'      => $scheduleItem,
-                    'scheduleItemID'      => $scheduledItemData['id'],
+                    'scheduleItemID'      => $scheduleItem->id,
                     'memberID' => $memberID,
                     'shiftDuration' => $request['shiftDuration'],
                     'status' => $request['status'],
