@@ -18,6 +18,8 @@ class AgentTransaction extends Model
 
         if ($memberTransactionData['status'] == 'TUTOR_CANCELLED') {
             $transaction = [
+                'schedule_item_id' => $scheduleItem->id,
+
                 'member_id' => $memberTransactionData['memberID'],
                 'lesson_shift_id' => $shift->id,
                 'created_by_id' => Auth::user()->id,
@@ -31,6 +33,8 @@ class AgentTransaction extends Model
         } else if ($memberTransactionData['status'] == 'CLIENT_RESERVED_B') {
 
             $transaction = [
+                'schedule_item_id' => $scheduleItem->id,
+
                 'member_id' => $memberTransactionData['memberID'],
                 'lesson_shift_id' => $shift->id,
                 'created_by_id' => Auth::user()->id,
@@ -44,6 +48,8 @@ class AgentTransaction extends Model
         } else if ($memberTransactionData['status'] == 'CLIENT_RESERVED') {
 
             $transaction = [
+                'schedule_item_id' => $scheduleItem->id,
+                
                 'member_id' => $memberTransactionData['memberID'],
                 'lesson_shift_id' => $shift->id,
                 'created_by_id' => Auth::user()->id,
