@@ -327,7 +327,7 @@ class ScheduleItem extends Model
         $scheduleItems = ScheduleItem::whereDate('lesson_time', '=', $date)
                             ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
                             ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")
-                            ->where('valid', 1)
+                            ->where('valid', true)
                             ->get();
 
         $reportCard = new ReportCard();
@@ -353,8 +353,8 @@ class ScheduleItem extends Model
                 $hasReportCard = false;
             }
 
-            if ($item->valid === 1 || $item->valid === '1') 
-            {                
+            //if ($item->valid === 1 || $item->valid === '1') 
+            //{                
                 $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
                     'valid' => $item->valid,
                     'id' => $item->id,
@@ -370,7 +370,7 @@ class ScheduleItem extends Model
                     'hasQuestionnaire' => $hasQuestionnaire
                     //'questionnaire' => $questionnaire,
                 ];
-            }
+            //}
 
 
         }
