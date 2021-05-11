@@ -244,7 +244,7 @@ class QuestionnaireController extends Controller
                     $questionnaireItem3 = null;
                     $questionnaireItem4 = null;
                     
-                    return view('modules.questionnaire.create', compact('member', 'scheduleItem'));
+                    return view('modules.questionnaire.create', compact('member', 'latestReportCard', 'scheduleItem'));
 
                 } else {
                     
