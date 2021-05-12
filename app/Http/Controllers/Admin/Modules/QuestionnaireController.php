@@ -93,10 +93,10 @@ class QuestionnaireController extends Controller
 
 
         //User Image
-        $userImage = UserImage::where('user_id', $member->user_id)->first();
-        print_r ($scheduleItem);
-        echo "<p>test 1<p>";
-        exit();        
+        $userImage = null;
+        //UserImage::where('user_id', $member->user_id)->first();
+ 
+            
 
 
   
