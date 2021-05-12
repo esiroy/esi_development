@@ -72,6 +72,8 @@ class QuestionnaireController extends Controller
     {  
         echo $id;
 
+        $scheduleItem = ScheduleItem::find($id);
+
         //Questions
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
@@ -95,7 +97,7 @@ class QuestionnaireController extends Controller
         echo "</pre>";
 
 
-        return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+        return view('admin.modules.questionnaires.test_show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
 
 
     }

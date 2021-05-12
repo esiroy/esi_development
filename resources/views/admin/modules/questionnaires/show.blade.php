@@ -43,9 +43,7 @@
                                             @if ($userImage == null)
                                             <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded">
                                             @else
-                                                @if (isset($userImage->original))
-                                                    <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
-                                                @endif
+                                            <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
                                             @endif
                                         </td>
                                     </tr>
