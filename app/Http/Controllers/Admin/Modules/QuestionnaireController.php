@@ -69,67 +69,16 @@ class QuestionnaireController extends Controller
     }
 
     public function questionnaire_test($id) 
-    {
+    {  
+        echo $id;
 
-
-        echo $id;       
-
-        $scheduleItem = ScheduleItem::find($id);
-    
-
-        $member = Member::where('user_id', $scheduleItem->member_id)->first();
-
-
-        print_r ($scheduleItem);
-        echo "<p>test 1<p>";
-
-
-        //Tutor
-        $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
-
-
-        print_r ($scheduleItem);
-        echo "<p>test 2<p>";
-
-
-   
- 
-               
-
-
-  
         //Questions
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
-        echo "<p>test 3<p>";
 
         echo "<pre>";
-        
-        print_r ($questionnaire) ;
-
+        print_r ($questionnaire);
         echo "</pre>";
-
-        $questionnaireID =  $questionnaire->id;   
-
-        echo "<p>test 4<p>";
-
-
-
-        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
-                            ->where('QUESTION', "QUESTION_1")->first();
-       
-        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_2")->first();
-
-        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_3")->first();
-
-        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_4")->first();
-
-        $userImage = null;
-
-        return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));        
 
     }
     /**
