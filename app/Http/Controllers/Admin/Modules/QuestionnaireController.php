@@ -97,7 +97,7 @@ class QuestionnaireController extends Controller
         echo "</pre>";
 
 
-        return view('admin.modules.questionnaires.test_show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+        return view('admin.modules.questionnaires.test_show');
 
 
     }
