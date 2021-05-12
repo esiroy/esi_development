@@ -70,8 +70,7 @@ class QuestionnaireController extends Controller
 
     public function questionnaire_test($id) 
     {
-     //User Image
-     $userImage = null;UserImage::where('user_id', $member->user_id)->first();
+
 
         echo $id;       
 
@@ -95,7 +94,7 @@ class QuestionnaireController extends Controller
 
    
  
-            
+               
 
 
   
@@ -114,6 +113,8 @@ class QuestionnaireController extends Controller
 
         $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
                             ->where('QUESTION', "QUESTION_4")->first();
+
+        $userImage = null;
 
         return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));        
 
