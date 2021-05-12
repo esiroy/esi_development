@@ -99,7 +99,8 @@ class QuestionnaireController extends Controller
 
 
        
-
+        $member = Member::where('user_id', $scheduleItem->member_id)->first();
+        $userImage = UserImage::where('user_id', $member->user_id)->first();
 
 
         return view('admin.modules.questionnaires.test_show', compact('scheduleItem'));
