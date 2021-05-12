@@ -3,7 +3,11 @@
 @section('content')
 
   
-    {{  $questionnaireItem1->grade ?? "" }}
+    test grade 1: {{  $questionnaireItem1->grade ?? "" }}
+
+
+    {{ getQuestionnnaireGradeTranslation( $questionnaireItem1->grade) ?? '' }}
+
 
   
 @endsection
