@@ -84,11 +84,6 @@ class QuestionnaireController extends Controller
         exit();        
 
 
-        //User Image
-        $userImage = UserImage::where('user_id', $member->user_id)->first();
-        print_r ($scheduleItem);
-        echo "<p>test 1<p>";
-        exit();        
 
         //Tutor
         $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
@@ -96,6 +91,15 @@ class QuestionnaireController extends Controller
 
         print_r ($scheduleItem);
         echo "<p>test 2<p>";
+
+
+        //User Image
+        $userImage = UserImage::where('user_id', $member->user_id)->first();
+        print_r ($scheduleItem);
+        echo "<p>test 1<p>";
+        exit();        
+
+        
         exit();
         
         //Questions
