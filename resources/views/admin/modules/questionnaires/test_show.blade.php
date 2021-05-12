@@ -11,14 +11,28 @@
     @endif
 
 
+    <br>
+    {{ $tutor->user->firstname ?? '' }} {{ $tutor->user->lastname ?? '' }}
 
-    test grade 1: {{  $questionnaireItem1->grade ?? "" }}
+    <br>
 
-    test grade 2: {{  $questionnaireItem1->grade ?? "" }}
 
-    test grade 3: {{  $questionnaireItem1->grade ?? "" }}
+    @if (strtolower($member->gender) == 'male')
+        {{ '男' }}
+    @elseif (strtolower($member->gender) == 'female')
+        {{ '女' }}
+    @else 
+        {{ '-'}}
+    @endif    
+    <br>
 
-    test grade 4: {{  $questionnaireItem1->grade ?? "" }}
+    test grade 1: {{  $questionnaireItem1->grade ?? "" }} <br>
+
+    test grade 2: {{  $questionnaireItem1->grade ?? "" }} <br>
+
+    test grade 3: {{  $questionnaireItem1->grade ?? "" }} <br>
+
+    test grade 4: {{  $questionnaireItem1->grade ?? "" }} <br>
 
 
   
