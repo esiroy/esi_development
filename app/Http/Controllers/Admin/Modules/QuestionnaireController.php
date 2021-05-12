@@ -93,7 +93,7 @@ class QuestionnaireController extends Controller
 
                             
         echo "<pre>";
-        print_r ($questionnaire);
+        //print_r ($questionnaire);
         echo "</pre>";
 
 
