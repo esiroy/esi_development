@@ -79,16 +79,23 @@ class QuestionnaireController extends Controller
 
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
+        print_r ($scheduleItem);
+        echo "<p>test<p>";
+        exit();        
 
-        
+
+        //User Image
         $userImage = UserImage::where('user_id', $member->user_id)->first();
-        
+        print_r ($scheduleItem);
+        echo "<p>test 1<p>";
+        exit();        
+
         //Tutor
         $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
 
 
         print_r ($scheduleItem);
-        echo "test";
+        echo "<p>test 2<p>";
         exit();
         
         //Questions
