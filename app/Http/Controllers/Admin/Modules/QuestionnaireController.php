@@ -81,7 +81,7 @@ class QuestionnaireController extends Controller
 
 
         print_r ($scheduleItem);
-        echo "<p>test<p>";
+        echo "<p>test 1<p>";
 
 
         //Tutor
@@ -101,7 +101,14 @@ class QuestionnaireController extends Controller
         //Questions
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
+        echo "<p>test 3<p>";
+
         $questionnaireID =  $questionnaire->id;   
+
+        echo "<p>test 4<p>";
+
+
+
         $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
                             ->where('QUESTION', "QUESTION_1")->first();
        
