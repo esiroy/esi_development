@@ -94,6 +94,10 @@ class QuestionnaireController extends Controller
         print_r ($questionnaire);
         echo "</pre>";
 
+
+        return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+
+
     }
     /**
      * Display the specified resource.
