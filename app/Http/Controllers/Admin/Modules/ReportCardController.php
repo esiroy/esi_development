@@ -35,8 +35,8 @@ class ReportCardController extends Controller
         $userImage = $userImageObj->getMemberPhoto($memberInfo);
 
 
-        if (isset($memberInfo->tutor_id)) {
-            $tutorInfo = Tutor::where('user_id',  $memberInfo->tutor_id)->first();
+        if (isset($scheduleItem->tutor_id)) {
+            $tutorInfo = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
         } else {
             $tutorInfo = null;
         }
