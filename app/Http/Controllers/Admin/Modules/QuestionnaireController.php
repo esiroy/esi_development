@@ -98,11 +98,7 @@ class QuestionnaireController extends Controller
 
 
 
-        $userImage = UserImage::where('user_id', $member->user_id)->first();
-
-        if (!isset($userImage)) {
-            $userImage = null;
-        }
+       
 
 
 
