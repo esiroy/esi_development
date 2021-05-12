@@ -79,10 +79,9 @@ class QuestionnaireController extends Controller
 
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
 
+
         print_r ($scheduleItem);
         echo "<p>test<p>";
-        exit();        
-
 
 
         //Tutor
@@ -99,9 +98,8 @@ class QuestionnaireController extends Controller
         echo "<p>test 1<p>";
         exit();        
 
-        
-        exit();
-        
+
+  
         //Questions
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
