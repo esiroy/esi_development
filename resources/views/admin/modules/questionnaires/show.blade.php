@@ -105,7 +105,9 @@
                                     </tr>
                                     <tr>                                        
                                         <td class="answer-1  pl-5">
-                                            {{ getQuestionnnaireGradeTranslation( $questionnaireItem1->grade) ?? '' }}
+                                            @if (isset($questionnaireItem1->grade))
+                                                {{ getQuestionnnaireGradeTranslation( $questionnaireItem1->grade) ?? '' }}
+                                            @endif
                                         </td>
                                     </tr>
 
@@ -120,7 +122,9 @@
                                     </tr>
                                     <tr>                                        
                                         <td class="answer-2  pl-5">
-                                            {{ getQuestionnnaireGradeTranslation( $questionnaireItem2->grade) ?? '' }}
+                                            @if (isset($questionnaireItem2->grade))
+                                                {{ getQuestionnnaireGradeTranslation( $questionnaireItem2->grade) ?? '' }}
+                                            @endif
                                         </td>
                                     </tr>
 
@@ -135,7 +139,9 @@
                                     </tr>
                                     <tr>                                        
                                         <td class="answer-3  pl-5">
-                                            {{ getQuestionnnaireGradeTranslation( $questionnaireItem3->grade) ?? '' }}
+                                            @if (isset($questionnaireItem3->grade))
+                                                {{ getQuestionnnaireGradeTranslation( $questionnaireItem3->grade) ?? '' }}
+                                            @endif
                                         </td>
                                     </tr>
 
@@ -150,7 +156,9 @@
                                     </tr>
                                     <tr>                                        
                                         <td class="answer-4  pl-5">
-                                            {{ getQuestionnnaireGradeTranslation( $questionnaireItem4->grade) ?? '' }}
+                                            @if (isset($questionnaireItem3->grade))
+                                                {{ getQuestionnnaireGradeTranslation( $questionnaireItem4->grade) ?? '' }}
+                                            @endif
                                         </td>
                                     </tr>
                                     <tr>
