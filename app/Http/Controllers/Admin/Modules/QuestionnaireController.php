@@ -70,7 +70,8 @@ class QuestionnaireController extends Controller
 
     public function questionnaire_test($id) 
     {
-
+     //User Image
+     $userImage = null;UserImage::where('user_id', $member->user_id)->first();
 
         echo $id;       
 
@@ -92,9 +93,7 @@ class QuestionnaireController extends Controller
         echo "<p>test 2<p>";
 
 
-        //User Image
-        $userImage = null;
-        //UserImage::where('user_id', $member->user_id)->first();
+   
  
             
 
