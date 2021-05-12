@@ -106,7 +106,8 @@ class QuestionnaireController extends Controller
        $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();        
 
 
-        return view('admin.modules.questionnaires.test_show', compact('scheduleItem'));
+        //return view('admin.modules.questionnaires.test_show', compact('scheduleItem'));
+        return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
 
 
     }
