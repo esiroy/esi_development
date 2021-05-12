@@ -103,6 +103,12 @@ class QuestionnaireController extends Controller
 
         echo "<p>test 3<p>";
 
+        echo "<pre>";
+        
+        print_r ($questionnaire) 
+
+        echo "</pre>";
+
         $questionnaireID =  $questionnaire->id;   
 
         echo "<p>test 4<p>";
