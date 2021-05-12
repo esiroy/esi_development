@@ -165,7 +165,11 @@ class TableScheduleItemImporterController extends Controller
                 $scheduleItem = ScheduleItem::where('id', $id)->first();
                 $transaction = $scheduleItem->update($data);
                 
-                echo "<div style='color:yellow'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
+                echo "<pre>";
+                print_r ($data);
+                echo "</pre>";
+                
+                echo "<div style='color:green'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
             } else {
                 $transaction = ScheduleItem::insert($data);
                 echo "<div style='color:blue'>$ctr - Added : " . $item->id . " " . $item->created_on . "</div>";
