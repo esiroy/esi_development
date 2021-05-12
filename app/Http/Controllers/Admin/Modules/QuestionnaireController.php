@@ -72,11 +72,13 @@ class QuestionnaireController extends Controller
     {
 
 
-        echo $id;
-
-        exit();
+        echo $id;       
 
         $scheduleItem = ScheduleItem::find($id);
+
+        print_r ($scheduleItem);
+        echo "test";
+        exit();
 
         $member = Member::where('user_id', $scheduleItem->member_id)->first();
         $userImage = UserImage::where('user_id', $member->user_id)->first();
