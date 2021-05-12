@@ -97,7 +97,16 @@ class QuestionnaireController extends Controller
         echo "</pre>";
 
 
-        return view('admin.modules.questionnaires.test_show');
+
+        $userImage = UserImage::where('user_id', $member->user_id)->first();
+
+        if (!isset($userImage)) {
+            $userImage = null;
+        }
+
+
+
+        return view('admin.modules.questionnaires.test_show', compact('scheduleItem'));
 
 
     }
