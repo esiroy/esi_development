@@ -75,7 +75,21 @@ class QuestionnaireController extends Controller
         //Questions
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
 
+        $questionnaireID =  $questionnaire->id;   
+        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
+                            ->where('QUESTION', "QUESTION_1")->first();
+       
+        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                            ->where('QUESTION', "QUESTION_2")->first();
 
+        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                            ->where('QUESTION', "QUESTION_3")->first();
+
+        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                            ->where('QUESTION', "QUESTION_4")->first();
+
+
+                            
         echo "<pre>";
         print_r ($questionnaire);
         echo "</pre>";
