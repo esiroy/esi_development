@@ -3,6 +3,7 @@
 @section('content')
 
   
-  test_show!!!
+    {{ getQuestionnnaireGradeTranslation( $questionnaireItem1->grade) ?? '' }}
+
   
 @endsection
