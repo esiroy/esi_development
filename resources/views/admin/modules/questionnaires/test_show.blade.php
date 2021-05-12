@@ -3,7 +3,7 @@
 @section('content')
 
   
-    {{  $questionnaireItem1->grade }}
+    {{  $questionnaireItem1->grade ?? "" }}
 
   
 @endsection
