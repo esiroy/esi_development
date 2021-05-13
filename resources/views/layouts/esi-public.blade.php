@@ -13,12 +13,14 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
 
+
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
 
     <!-- Styles -->
+    <link rel="icon" href="{{ url('images/favicon.ico') }}"/>        
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @yield('styles')

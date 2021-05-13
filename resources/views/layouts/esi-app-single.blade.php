@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="Description" content="{{ config('app.name', 'My Tutor')}} {{'- ' . ucwords(Request::segment(3)) ?? '' }} ">
     <title>{{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(1))->replace('-', ' ') ) ?? '' }}</title>
-
+    <link rel="icon" href="{{ url('images/favicon.ico') }}"/>    
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Styles -->

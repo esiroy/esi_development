@@ -12,6 +12,7 @@
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <!-- Styles -->
+    <link rel="icon" href="{{ url('images/favicon.ico') }}"/>        
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}" >
 </head>

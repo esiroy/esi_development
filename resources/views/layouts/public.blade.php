@@ -11,6 +11,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <!-- Fonts -->
+    <link rel="icon" href="{{ url('images/favicon.ico') }}"/>        
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />

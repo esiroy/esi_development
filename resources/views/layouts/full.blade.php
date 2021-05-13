@@ -8,6 +8,7 @@
     <title>
         {{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(3))->replace('-', ' ') ) ?? '' }} {{ " - " . ucwords( Str::of(Request::segment(2))->replace('-', ' ') ) ?? '' }}
     </title>
+    <link rel="icon" href="{{ url('images/favicon.ico') }}"/>
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
