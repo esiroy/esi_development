@@ -66,10 +66,15 @@
 
                                     @foreach($reportcards as $item)
                                     <tr>
-                                        <td>
-                                            @php $time = \App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'] @endphp
-
-                                            {{ date('F d, Y H:i', strtotime(\App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'])) }}
+                                        <td>                                            
+                                            @php 
+                                                if (isset(\App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'])) {
+                                                    $time = \App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'];
+                                                    echo date('F d, Y H:i', strtotime($time));
+                                                } else {
+                                                    echo "-";
+                                                }                                                
+                                            @endphp                                            
 
                                         </td>
                                         <td>
