@@ -680,6 +680,87 @@
                     </div>
                 </div>
             </div>
+             <!--[end] Report Requirement-->
+
+
+            <!--[start] Member Latest Report Card -->
+            <div id="member-latest-reportcard" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Latest Report Card</div>
+                </div>
+                <div class="row pt-2">
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Level<div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+                                       {{ this.latestreportcard.lesson_level }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Course<div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+                                       {{ this.latestreportcard.lesson_course }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Material<div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+                                       {{ this.latestreportcard.lesson_material }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Grade<div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+                                       {{ this.latestreportcard.lesson_grade }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>  
+                                        
+                </div>
+            </div>
+            <!--[end] Member Latest Report Card -->
 
 
             <div id="member-point-purchase-type" class="section">
@@ -801,7 +882,9 @@ export default {
         userinfo: {
             type: Object,
         },
-
+        latestreportcard: {
+            type: Object,
+        },
 		purposes: {
 			type: Array
 		},
@@ -961,7 +1044,8 @@ export default {
            this.user.agent_name_en = "";
         }
 
-        console.log(this.userinfo)
+        //console.log(this.userinfo);
+        console.log(this.latestreportcard);
 
         //get user
         this.user.user_id                       = this.userinfo.id;

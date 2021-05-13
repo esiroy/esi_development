@@ -145,7 +145,8 @@
                             </div>
 
 
-                            <member-update-component :memberships="{{ json_encode($memberships) }}" 
+                            <member-update-component 
+                                :memberships="{{ json_encode($memberships) }}" 
                                 :attributes="{{ json_encode($attributes) }}" 
                                 :shifts="{{ json_encode($shifts) }}" 
                                 :agentinfo="{{ json_encode($agentInfo) }}" 
@@ -154,6 +155,7 @@
                                 :purposes="{{ json_encode($lessonGoals) }}" 
                                 :lessonclasses="{{ json_encode($lessonClasses) }}" 
                                 :desiredschedule="{{ json_encode($desiredSchedule) }}" 
+                                :latestreportcard="{{ json_encode($latestReportCard) }}" 
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />
                         </div>

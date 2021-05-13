@@ -412,6 +412,20 @@ class MemberController extends Controller
         $shifts = Shift::all();
         
 
+        //get latest report card
+        $reportCardObject = new ReportCard();
+        $latestReportCardValue = $reportCardObject->getLatest($memberID);
+
+        
+
+        $latestReportCard = [
+            'lesson_level' => isset($latestReportCardValue->lesson_level)? $latestReportCardValue->lesson_level : ' - ',
+            'lesson_course' => isset($latestReportCardValue->lesson_course)? $latestReportCardValue->lesson_course : ' - ',
+            'lesson_material' => isset($latestReportCardValue->lesson_material)? $latestReportCardValue->lesson_material : ' - ',
+            'lesson_grade' => isset($latestReportCardValue->grade)? formatGrade($latestReportCardValue->grade) : ' - '
+        ];
+
+
         if (isset($memberInfo->agent_id))
         {
             $agentInfo = Agent::where("user_id", $memberInfo->agent_id)->first();
@@ -438,7 +452,7 @@ class MemberController extends Controller
 
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
-            'userInfo', 'memberInfo', 'userImage',
+            'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
             'lessonGoals', 'lessonClasses', 'desiredSchedule'));
 
     }
