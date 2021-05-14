@@ -146,9 +146,18 @@ class SignUpController extends Controller
     public function store(Request $request)
     {
 
-        //Session::reflash();
-        DB::beginTransaction();
+        $checkUser = User::where('email', $request['email'])->first();
 
+        if ($checkUser) 
+        {
+            $name = $request['first_name'] . " " . $request['last_name'];          
+            $message = "<p>登録ありがとうございます。 $name </p><br/><p>アカウントを有効にするには、メールを確認してください。</p>";
+            return redirect()->route('step3')->with('message', $message);
+            exit();
+        }
+
+        //Session::reflash();
+        DB::beginTransaction();  
         try {
 
             //create activation code
