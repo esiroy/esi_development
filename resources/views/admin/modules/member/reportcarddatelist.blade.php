@@ -30,6 +30,11 @@
                                         <th>Grade</th>
                                         <th>Created By</th>
                                         <th>Uploaded File</th>
+
+                                        @if(Auth::user()->user_type == 'ADMINISTRATOR')
+                                        <th>Action</th>
+                                        @endif
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -40,7 +45,6 @@
                                         <td>{{ $item->lesson_course }}</td>
                                         <td>{{ $item->lesson_material }}</td>
                                         <td>{{ $item->lesson_subject }}</td>
-
                                         <td>{{ $item->grade }}</td>
                                         <td>
                                         @php
@@ -49,7 +53,22 @@
 
                                         {{  $createBy->firstname }}
                                         </td>
-                                        <td>{{ $item->file_name }}</td>
+                                        <td>
+                                            <a href="{{ Storage::url("uploads/report_files/". basename($item->file_path)) }}" download>DOWNLOAD</a>
+                                            <!--{{ $item->file_name }}-->
+                                        </td>
+
+                                        @if(Auth::user()->user_type == 'ADMINISTRATOR')
+                                        <td> 
+                                            <a href="{{ route('admin.reportcarddate.edit', $item->id) }}" class="btn btn-sm btn-info">Edit</a>  
+                                            <form action="{{ route('admin.reportcarddate.destroy', $item->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
+                                                style="display: inline-block;">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                <input type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}">
+                                            </form>
+                                        </td>
+                                        @endif
                           
                               
                                     </tr>
@@ -58,7 +77,7 @@
 
                                     @if (count($reportcards) == 0)
                                     <tr>
-                                        <td colspan="7">
+                                        <td colspan="8">
                                             <div class="text-center">No Result</div>
                                         </td>
                                     </tr>

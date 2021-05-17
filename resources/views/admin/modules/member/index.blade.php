@@ -14,6 +14,22 @@
         </nav>
 
         <div class="container">        
+
+            <div class="row">
+                <div class="col-12">
+                    @if (session('message'))
+                    <div class="alert alert-success">
+                        {{ session('message') }}
+                    </div>
+                    @elseif (session('error_message'))
+                    <div class="alert alert-danger">
+                        {{ session('error_message') }}
+                    </div>
+                    @endif
+                </div>
+            </div>
+
+
            <!--Member List -->
 
             <!--[start card] -->
