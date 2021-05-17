@@ -306,15 +306,16 @@ class ExportController extends Controller
         $sheet->setCellValue('B2', "I.D");
         $sheet->setCellValue('C2', "First Name");
         $sheet->setCellValue('D2', "Last Name");
-        $sheet->setCellValue('E2', "Japanese");
-        $sheet->setCellValue('F2', "E-Mail");
-        $sheet->setCellValue('G2', "Attribute");
-        $sheet->setCellValue('H2', "Age");
-        $sheet->setCellValue('I2', "Purpose");
+        $sheet->setCellValue('E2', "Japanese First Name");
+        $sheet->setCellValue('F2', "Japanese Last Name");
+        $sheet->setCellValue('G2', "E-Mail");
+        $sheet->setCellValue('H2', "Attribute");
+        $sheet->setCellValue('I2', "Age");
+        $sheet->setCellValue('J2', "Purpose");
         //style for field headers h2
         $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 20);
         $spreadsheet->getActiveSheet()->getStyle('B2:I2')->applyFromArray($styleArrayH2);
-        $spreadsheet->getActiveSheet()->getStyle('B2:I2')->getAlignment()->setHorizontal('center');
+        $spreadsheet->getActiveSheet()->getStyle('B2:J2')->getAlignment()->setHorizontal('center');
 
         //GET MEMBER AND ORDERING
         $members = Member::orderby('members.user_id', 'ASC')->get();
@@ -328,15 +329,16 @@ class ExportController extends Controller
             $jp_firstname = isset($member->user->japanese_lastname)? $member->user->japanese_lastname : '';
             $jp_lastname = isset($member->user->japanese_firstname)? $member->user->japanese_firstname : '';
 
-            $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':I' . $ctr)->getAlignment()->setHorizontal('center');
+            $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':J' . $ctr)->getAlignment()->setHorizontal('center');
             $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
             $sheet->setCellValue('C' . $ctr, isset($member->user->firstname)? $member->user->firstname : '');
             $sheet->setCellValue('D' . $ctr, isset($member->user->lastname)? $member->user->lastname : '');
-            $sheet->setCellValue('E' . $ctr, $jp_lastname ."," . $jp_firstname );
-            $sheet->setCellValue('F' . $ctr, isset($member->user->email)? $member->user->email : '');
-            $sheet->setCellValue('G' . $ctr, isset($member->attribute)? $member->attribute : '');
-            $sheet->setCellValue('H' . $ctr, isset($member->age)? $member->age : '');
-            $sheet->setCellValue('I' . $ctr, (isset($member->purpose)) ? $member->purpose : '' );
+            $sheet->setCellValue('E' . $ctr, $jp_firstname );
+            $sheet->setCellValue('F' . $ctr, $jp_lastname);
+            $sheet->setCellValue('G' . $ctr, isset($member->user->email)? $member->user->email : '');
+            $sheet->setCellValue('H' . $ctr, isset($member->attribute)? $member->attribute : '');
+            $sheet->setCellValue('I' . $ctr, isset($member->age)? $member->age : '');
+            $sheet->setCellValue('J' . $ctr, (isset($member->purpose)) ? $member->purpose : '' );
             $ctr = $ctr + 1;            
         }
 

@@ -112,11 +112,14 @@
                                         <div class="tutor-name">
                                             <a href="javascript:void(0);" onclick="window.open('viewtutor/{{ $tutor->user_id }}','家庭教師の詳細')" class="text-danger font-weight-normal">
                                                 @if (isset($tutor->user->japanese_firstname)) {!! $tutor->user->japanese_firstname !!}@endif <br/>
-                                                @if (isset($tutor->user->firstname)) {!! "(" . $tutor->user->firstname . ")" !!} @endif                                                
+                                                @if (isset($tutor->user->firstname)) {!! "(" . $tutor->user->firstname . ")" !!} @endif
+                                           
                                             </a>
+                                            <!--
                                             <form action="/favorite/store">
                                                 <input type="checkbox" id="favorite_{{ $tutor->user_id }}" class="favorite" name="favorite_{{ $tutor->user_id }}" value="{{ $tutor->user_id }}">    
                                             </form>                                            
+                                            -->
                                         </div>
 
                                     </div>
