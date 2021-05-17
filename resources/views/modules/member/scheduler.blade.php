@@ -89,8 +89,10 @@
                             </thead>
 
                             <tbody>
+                            <tr class="tr_clone_container"></tr>
+
                             @foreach($tutors as $tutor)
-                            <tr>
+                            <tr id="{{ $tutor->user_id }}" class="tr_clone tutor_row_id_{{ $tutor->user_id}}">
                                 <!--[start] Tutor Information-->
                                 <th id="{{ $tutor->id }}">
                                     <div id="{{ $tutor->user_id }}" style="width:110px"  class="hbordered">
@@ -110,8 +112,11 @@
                                         <div class="tutor-name">
                                             <a href="javascript:void(0);" onclick="window.open('viewtutor/{{ $tutor->user_id }}','家庭教師の詳細')" class="text-danger font-weight-normal">
                                                 @if (isset($tutor->user->japanese_firstname)) {!! $tutor->user->japanese_firstname !!}@endif <br/>
-                                                @if (isset($tutor->user->firstname)) {!! "(" . $tutor->user->firstname . ")" !!} @endif
+                                                @if (isset($tutor->user->firstname)) {!! "(" . $tutor->user->firstname . ")" !!} @endif                                                
                                             </a>
+                                            <form action="/favorite/store">
+                                                <input type="checkbox" id="favorite_{{ $tutor->user_id }}" class="favorite" name="favorite_{{ $tutor->user_id }}" value="{{ $tutor->user_id }}">    
+                                            </form>                                            
                                         </div>
 
                                     </div>
@@ -399,6 +404,7 @@
 
     window.addEventListener('load', function() 
     {   
+        //activate loading modals
         jQuery.ajaxSetup({
             beforeSend: function() 
             {
@@ -415,6 +421,50 @@
                 $('#loadingModal').modal('hide');
             }
         });
+
+        //add onclick action on tutor
+        $(".tr_clone input.favorite").on('click', function() 
+        {      
+
+            let clonedCount = $('.tr_cloned').length;
+
+            if (clonedCount >= 3) {
+                alert ("Sorry, We can't add anymore favorites teachers since it is only limited to 3 teachers")
+                return true;
+            }
+
+            //clone row
+            var $tr    = $(this).closest('.tr_clone');
+            var $cloned = $tr.clone();
+            $(this).closest(':checkbox').prop('checked', false);
+            $tr.hide();
+
+            //cloned row settings
+            $cloned.insertBefore(".tr_clone_container");
+            $cloned.find('td').css('background', 'none');
+            $cloned.find('td').css('background-color', 'yellow')
+            $cloned.find('td').css('background-color', 'yellow')
+            $cloned.removeClass('tr_clone');
+            $cloned.addClass('tr_cloned');
+
+
+            //$cloned.removeClass('tutor_row_id_'+ $tr.attr('id'));
+            //$cloned.addClass('tutor_cloned_row_id_'+$(this).attr('id'));
+
+            //add onclick action on cloned favorited
+            $cloned.find(':checkbox').on('click', function() {
+                let id = $(this).parent().parent().parent().parent().parent().attr('id');  
+                
+                $(this).parent().parent().parent().parent().parent().remove();                            
+                
+                $('.tutor_cloned_row_id_favorite_'+id).hide();
+                $('.tutor_row_id_'+id).show();
+            });
+
+        });
+
+        
+
     });
     
     function disablePreviousDates() {
