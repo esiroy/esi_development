@@ -278,7 +278,18 @@ class MemberController extends Controller
                 //"message" => "スケジュールが見つからないか、もう存在しません",
                 "message_en" => "Schedule not found or no longer exists"
             ]);            
+        } else {
+            //found check if tutor is still available in this time slot
+            if ($schedule->schedule_status !== 'TUTOR_SCHEDULED') {
+                return Response()->json([
+                    "success" => false,
+                    "message" => "ご予約できません。　既に同じ時間にご予約があります。/ ページにアクセスしたときに撮影しました",
+                    "message_en"    => "I cannot make a reservation. There is already a reservation at the same time / It was taken when you visited the page"
+                ]);
+            }
         }
+
+
 
         /*****************************************************
          *  [START] POINTS AND EXPIRATION CHECKER 
