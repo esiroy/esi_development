@@ -21,13 +21,13 @@ class PhpSpreadsheetFontStyle extends Model
 
         //set initial width
         $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(5);
-        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(35);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(35);
 
         //Header Style
         $spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleArrayH1);
 
         //Merge Header
-        $spreadsheet->getActiveSheet()->mergeCells('B1:G1');        
+        $spreadsheet->getActiveSheet()->mergeCells('B1:I1');        
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
 
         return $spreadsheet;
@@ -48,13 +48,13 @@ class PhpSpreadsheetFontStyle extends Model
 
         //set initial width
         $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(35);
-        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(35);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(35);
 
         //Header Style
         $spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleArrayH1);
 
         //Merge Header
-        $spreadsheet->getActiveSheet()->mergeCells('A1:H1');        
+        $spreadsheet->getActiveSheet()->mergeCells('A1:I1');        
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
 
         return $spreadsheet;
