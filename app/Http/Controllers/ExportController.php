@@ -290,8 +290,81 @@ class ExportController extends Controller
         fclose($output);
     }
 
-    //Member Export To CSV /
+
     public function exportCSV()
+    {            
+        $filename = "memberlist.xlsx";
+        //SET STYLE
+        $styleArrayH1 = Style::setHeader();
+        $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 18);
+        //Initialize
+        $spreadsheet = Style::init();
+        $sheet = $spreadsheet->getActiveSheet();
+        //Set Header Text
+        $sheet->setCellValue('B1', "Member List");
+        //Secondary Field Headers (h2)
+        $sheet->setCellValue('B2', "I.D");
+        $sheet->setCellValue('C2', "First Name");
+        $sheet->setCellValue('D2', "Last Name");
+        $sheet->setCellValue('E2', "Japanese");
+        $sheet->setCellValue('F2', "E-Mail");
+        $sheet->setCellValue('G2', "Attribute");
+        $sheet->setCellValue('H2', "Age");
+        $sheet->setCellValue('I2', "Purpose");
+        //style for field headers h2
+        $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 20);
+        $spreadsheet->getActiveSheet()->getStyle('B2:I2')->applyFromArray($styleArrayH2);
+        $spreadsheet->getActiveSheet()->getStyle('B2:I2')->getAlignment()->setHorizontal('center');
+
+        //GET MEMBER AND ORDERING
+        $members = Member::orderby('members.user_id', 'ASC')->get();
+        $ctr = 3;
+
+
+
+        foreach ($members as $member) 
+        {  
+
+            $jp_firstname = isset($member->user->japanese_lastname)? $member->user->japanese_lastname : '';
+            $jp_lastname = isset($member->user->japanese_firstname)? $member->user->japanese_firstname : '';
+
+            $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':I' . $ctr)->getAlignment()->setHorizontal('center');
+            $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
+            $sheet->setCellValue('C' . $ctr, isset($member->user->firstname)? $member->user->firstname : '');
+            $sheet->setCellValue('D' . $ctr, isset($member->user->lastname)? $member->user->lastname : '');
+            $sheet->setCellValue('E' . $ctr, $jp_lastname ."," . $jp_firstname );
+            $sheet->setCellValue('F' . $ctr, isset($member->user->email)? $member->user->email : '');
+            $sheet->setCellValue('G' . $ctr, isset($member->attribute)? $member->attribute : '');
+            $sheet->setCellValue('H' . $ctr, isset($member->age)? $member->age : '');
+            $sheet->setCellValue('I' . $ctr, (isset($member->purpose)) ? $member->purpose : '' );
+            $ctr = $ctr + 1;            
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($filename);
+
+        if (file_exists($filename)) {
+            header('Content-Description: File Transfer');
+            header("Content-Type:  application/vnd.ms-excel; charset=utf-8");
+            header('Content-Disposition: attachment; filename="' . basename($filename) . '"');
+            header('Content-Type: application/vnd.ms-excel');
+            header('Expires: 0');
+            header('Content-Length: ' . filesize($filename));
+            header('Content-Transfer-Encoding: binary');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            flush(); // Flush system output buffer
+            readfile($filename);
+            unlink($filename);
+            die();
+        } else {
+            http_response_code(404);
+            die();
+        }        
+    }
+    //Member Export To CSV
+    /*
+    public function exportCSVOLD()
     {
         $selected_array = array('I.D', 'Lastname', 'Firstname', 'Japanese', 'Email', 'Attribute', 'Age', 'Purpose');
         $members = Member::get();
@@ -324,7 +397,7 @@ class ExportController extends Controller
             fputcsv($output, $row);
         }
         fclose($output);
-    }
+    }*/
 
     public function downloadlessonReport(Request $request)
     {
