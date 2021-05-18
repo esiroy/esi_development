@@ -34,6 +34,11 @@
                             <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
                                 <div>予約数制限：　最大15コマまで予約可能です</div>
                             </div>
+
+                            <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
+                                <div>お気に入り講師を最大５人まで上段に選べます</div>
+                            </div>
+                            
                         </div>
                     </div>
 
