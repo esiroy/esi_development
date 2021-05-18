@@ -433,42 +433,31 @@
 
         //add onclick action on tutor
         $(".tr_clone input.favorite").on('click', function() 
-        {      
-
+        {
             let clonedCount = $('.tr_cloned').length;
 
             if (clonedCount >= 5) {
-                alert ("Sorry, We can't add anymore favorite teachers since it is only limited to 3 teachers")
+                alert ("お気に入りの上限を超えています。")
                 return false;
             }
-
             let tutorID = $(this).parent().parent().parent().parent().parent().attr('id'); 
-            saveFavoriteTutor(tutorID, {{ Auth::user()->id }});
 
-            //clone row
-            highlightFavoriteTeacher(tutorID);
-
-            //$cloned.removeClass('tutor_row_id_'+ $tr.attr('id'));
-            //$cloned.addClass('tutor_cloned_row_id_'+$(this).attr('id'));
-
-            //add onclick action on cloned favorited
-            /*
-            $cloned.find(':checkbox').on('click', function() {
-                let favoriteTutorID = $(this).parent().parent().parent().parent().parent().attr('id');                  
-                $(this).parent().parent().parent().parent().parent().remove();                
-                $('.tutor_cloned_row_id_favorite_'+favoriteTutorID).hide();
-                $('.tutor_row_id_'+favoriteTutorID).show();
-
-                removeFavoriteTutor(favoriteTutorID, {{ Auth::user()->id }});
-            });
-            */
-
+            //save to DB - [favorite_tutor] Table
+            if (confirm('お気に入りに追加しますか？')) {                
+                saveFavoriteTutor(tutorID, {{ Auth::user()->id }});
+                highlightFavoriteTeacher(tutorID);
+            } else {
+                return false;
+            }           
+            
         });
 
     });
     
 
-    function saveFavoriteTutor(tutorID, memberID) {
+    function saveFavoriteTutor(tutorID, memberID) 
+    {
+            
         $.ajax({
             type: 'POST',
             url: 'api/saveFavoriteTutor?api_token=' + api_token,
@@ -493,6 +482,7 @@
 
             }
         });
+      
     }
 
     function removeFavoriteTutor(tutorID, memberID) {
@@ -509,13 +499,14 @@
             success: function(data) 
             {
                 if (data.success == true) {
-                   //@todo: add message here for members to inform the tutor was removed from favorite list
+                //@todo: add message here for members to inform the tutor was removed from favorite list
                 } else {
                     alert(data.message);
                 }
 
             }
-        });        
+        });
+      
     }
 
 
@@ -568,16 +559,19 @@
         $cloned.removeClass('tr_clone');
         $cloned.addClass('tr_cloned');    
 
-        $('.tr_cloned #favorite_'+tutorID).closest(':checkbox').prop('checked', true);
+        $('.tr_cloned #favorite_'+tutorID).closest(':checkbox').prop('checked', true);        
 
-        
-
-        $cloned.find(':checkbox').on('click', function() {
-            let favoriteTutorID = $(this).parent().parent().parent().parent().parent().attr('id');                  
-            $(this).parent().parent().parent().parent().parent().remove();             
-            $('.tutor_cloned_row_id_favorite_'+favoriteTutorID).hide();
-            $('.tutor_row_id_'+favoriteTutorID).show();
-            removeFavoriteTutor(favoriteTutorID, {{ Auth::user()->id }});
+        $cloned.find(':checkbox').on('click', function() 
+        {
+            if (confirm('お気に入りを解除しますか？')) {            
+                let favoriteTutorID = $(this).parent().parent().parent().parent().parent().attr('id');                  
+                $(this).parent().parent().parent().parent().parent().remove();             
+                $('.tutor_cloned_row_id_favorite_'+favoriteTutorID).hide();
+                $('.tutor_row_id_'+favoriteTutorID).show();
+                removeFavoriteTutor(favoriteTutorID, {{ Auth::user()->id }});
+            } else {
+                return false;
+            }
         });
 
     }
