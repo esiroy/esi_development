@@ -434,18 +434,20 @@
         //add onclick action on tutor
         $(".tr_clone input.favorite").on('click', function() 
         {
-            let clonedCount = $('.tr_cloned').length;
-
-            if (clonedCount >= 5) {
-                alert ("お気に入りの上限を超えています。")
-                return false;
-            }
+            let clonedCount = $('.tr_cloned').length;  
             let tutorID = $(this).parent().parent().parent().parent().parent().attr('id'); 
 
             //save to DB - [favorite_tutor] Table
-            if (confirm('お気に入りに追加しますか？')) {                
-                saveFavoriteTutor(tutorID, {{ Auth::user()->id }});
-                highlightFavoriteTeacher(tutorID);
+            if (confirm('お気に入りに追加しますか？')) { 
+
+                if (clonedCount >= 5) {
+                    alert ("お気に入りの上限を超えています。")
+                    return false;
+                } else {
+                    saveFavoriteTutor(tutorID, {{ Auth::user()->id }});
+                    highlightFavoriteTeacher(tutorID);
+                }
+
             } else {
                 return false;
             }           
