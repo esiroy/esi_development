@@ -122,7 +122,7 @@ class SignUpController extends Controller
                 'last_name_jp' => ['required', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
 
-                'password' => 'required|min:8|same:confirm_password',
+                'password' => 'required|min:4|max:32|same:confirm_password',
                 'confirm_password' => 'required',
 
                 'communication_app_username' => ['required', 'max:255'],
