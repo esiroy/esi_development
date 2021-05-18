@@ -39,9 +39,9 @@ class MemberSettingController extends Controller
         $user = Auth::user();
 
         $validator = Validator::make($request->all(), [
-            'currentPassword' => ['required', 'string', 'min:8'],
-            'newPassword' => ['required', 'string', 'min:8'],
-            'confirmPassword' => 'required|min:8|same:newPassword',
+            'currentPassword' => ['required', 'string', 'min:4|max:32'],
+            'newPassword' => ['required', 'string', 'min:4|max:32'],
+            'confirmPassword' => 'required|min:4|max:32|same:newPassword',
         ]);
 
         if ($validator->fails()) {
