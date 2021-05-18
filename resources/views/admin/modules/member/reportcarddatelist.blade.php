@@ -31,7 +31,7 @@
                                         <th>Created By</th>
                                         <th>Uploaded File</th>
 
-                                        @if(Auth::user()->user_type == 'ADMINISTRATOR')
+                                        @if(Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
                                         <th>Action</th>
                                         @endif
 
@@ -58,7 +58,7 @@
                                             <!--{{ $item->file_name }}-->
                                         </td>
 
-                                        @if(Auth::user()->user_type == 'ADMINISTRATOR')
+                                        @if(Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
                                         <td> 
                                             <a href="{{ route('admin.reportcarddate.edit', $item->id) }}" class="btn btn-sm btn-info">Edit</a>  
                                             <form action="{{ route('admin.reportcarddate.destroy', $item->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
