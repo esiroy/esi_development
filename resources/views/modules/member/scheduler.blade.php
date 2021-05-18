@@ -66,7 +66,7 @@
                     </div>
 
                     <!--[start] card-body -->
-                    <div class="card-body scrollable-x p-0 text-center" style="height:720px">
+                    <div id="tutor_content_holder" class="card-body scrollable-x p-0 text-center" style="height:720px">
                         <table class="table table-bordered table-schedules">
                             <thead>
                                 <tr>
@@ -114,12 +114,10 @@
                                                 @if (isset($tutor->user->japanese_firstname)) {!! $tutor->user->japanese_firstname !!}@endif <br/>
                                                 @if (isset($tutor->user->firstname)) {!! "(" . $tutor->user->firstname . ")" !!} @endif
                                            
-                                            </a>
-                                            <!--
+                                            </a>                                            
                                             <form action="/favorite/store">
                                                 <input type="checkbox" id="favorite_{{ $tutor->user_id }}" class="favorite" name="favorite_{{ $tutor->user_id }}" value="{{ $tutor->user_id }}">    
-                                            </form>                                            
-                                            -->
+                                            </form>                                        
                                         </div>
 
                                     </div>
@@ -425,6 +423,9 @@
             }
         });
 
+        //Initiate Get Favorite Tutors
+        this.getFavoriteTutors()
+
         //add onclick action on tutor
         $(".tr_clone input.favorite").on('click', function() 
         {      
@@ -432,44 +433,152 @@
             let clonedCount = $('.tr_cloned').length;
 
             if (clonedCount >= 3) {
-                alert ("Sorry, We can't add anymore favorites teachers since it is only limited to 3 teachers")
-                return true;
+                alert ("Sorry, We can't add anymore favorite teachers since it is only limited to 3 teachers")
+                return false;
             }
 
+            let tutorID = $(this).parent().parent().parent().parent().parent().attr('id'); 
+            saveFavoriteTutor(tutorID, {{ Auth::user()->id }});
+
             //clone row
-            var $tr    = $(this).closest('.tr_clone');
-            var $cloned = $tr.clone();
-            $(this).closest(':checkbox').prop('checked', false);
-            $tr.hide();
-
-            //cloned row settings
-            $cloned.insertBefore(".tr_clone_container");
-            $cloned.find('td').css('background', 'none');
-            $cloned.find('td').css('background-color', 'yellow')
-            $cloned.find('td').css('background-color', 'yellow')
-            $cloned.removeClass('tr_clone');
-            $cloned.addClass('tr_cloned');
-
+            highlightFavoriteTeacher(tutorID);
 
             //$cloned.removeClass('tutor_row_id_'+ $tr.attr('id'));
             //$cloned.addClass('tutor_cloned_row_id_'+$(this).attr('id'));
 
             //add onclick action on cloned favorited
+            /*
             $cloned.find(':checkbox').on('click', function() {
-                let id = $(this).parent().parent().parent().parent().parent().attr('id');  
-                
-                $(this).parent().parent().parent().parent().parent().remove();                            
-                
-                $('.tutor_cloned_row_id_favorite_'+id).hide();
-                $('.tutor_row_id_'+id).show();
+                let favoriteTutorID = $(this).parent().parent().parent().parent().parent().attr('id');                  
+                $(this).parent().parent().parent().parent().parent().remove();                
+                $('.tutor_cloned_row_id_favorite_'+favoriteTutorID).hide();
+                $('.tutor_row_id_'+favoriteTutorID).show();
+
+                removeFavoriteTutor(favoriteTutorID, {{ Auth::user()->id }});
             });
+            */
 
         });
 
-        
-
     });
     
+
+    function saveFavoriteTutor(tutorID, memberID) {
+        $.ajax({
+            type: 'POST',
+            url: 'api/saveFavoriteTutor?api_token=' + api_token,
+            data: {               
+                tutorID: tutorID,
+                memberID: memberID
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) 
+            {
+                if (data.success == true) 
+                {   
+                    $("#tutor_content_holder").animate({
+                        scrollTop: 1
+                    }, 1500);                   
+                    
+                } else {
+                    alert(data.message);
+                }
+
+            }
+        });
+    }
+
+    function removeFavoriteTutor(tutorID, memberID) {
+        $.ajax({
+            type: 'POST',
+            url: 'api/removeFavoriteTutor?api_token=' + api_token,
+            data: {               
+                tutorID: tutorID,
+                memberID: memberID
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) 
+            {
+                if (data.success == true) {
+                   //@todo: add message here for members to inform the tutor was removed from favorite list
+                } else {
+                    alert(data.message);
+                }
+
+            }
+        });        
+    }
+
+
+    function getFavoriteTutors() {
+        $.ajax({
+            type: 'POST',
+            url: 'api/getFavoriteTutors?api_token=' + api_token,
+            data: {               
+                memberID: {{ Auth::user()->id }}
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(data) 
+            {
+                if (data.success == true) 
+                {
+                    let favoriteTutors = data.favoriteTutors;
+
+                    favoriteTutors.forEach(function(favoriteTutor) {
+                        console.log(favoriteTutor.tutor_id);
+
+                        highlightFavoriteTeacher(favoriteTutor.tutor_id);
+                    });
+                    
+                   
+     
+
+                } else {
+                    alert(data.message);
+                }
+
+            }
+        });
+    }
+
+    function highlightFavoriteTeacher(tutorID) {
+        var $tr    = $('#'+tutorID).closest('.tr_clone');
+        var $cloned = $tr.clone();
+        $tr.hide();
+        $('.tr_clone #favorite_'+tutorID).closest(':checkbox').prop('checked', false);
+        
+
+        //cloned row settings
+        $cloned.insertBefore(".tr_clone_container");
+        $cloned.find('td').css('background', 'none');
+        $cloned.find('td').css('background-color', 'yellow')
+        $cloned.find('td').css('background-color', 'yellow')
+        
+        $cloned.removeClass('tr_clone');
+        $cloned.addClass('tr_cloned');    
+
+        $('.tr_cloned #favorite_'+tutorID).closest(':checkbox').prop('checked', true);
+
+        
+
+        $cloned.find(':checkbox').on('click', function() {
+            let favoriteTutorID = $(this).parent().parent().parent().parent().parent().attr('id');                  
+            $(this).parent().parent().parent().parent().parent().remove();             
+            $('.tutor_cloned_row_id_favorite_'+favoriteTutorID).hide();
+            $('.tutor_row_id_'+favoriteTutorID).show();
+            removeFavoriteTutor(favoriteTutorID, {{ Auth::user()->id }});
+        });
+
+    }
+
+
+
     function disablePreviousDates() {
         var input = document.getElementById("dateToday");
         var today = new Date();
