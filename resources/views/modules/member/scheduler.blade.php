@@ -432,7 +432,7 @@
 
             let clonedCount = $('.tr_cloned').length;
 
-            if (clonedCount >= 3) {
+            if (clonedCount >= 5) {
                 alert ("Sorry, We can't add anymore favorite teachers since it is only limited to 3 teachers")
                 return false;
             }
