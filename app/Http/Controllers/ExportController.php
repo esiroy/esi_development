@@ -518,7 +518,7 @@ class ExportController extends Controller
 
             $pdf = PDF::loadView('pdf.lessonReport', compact('schedulesData', 'dateToday', 'dateFrom', 'dateTo'));
             // Finally, you can download the file using download function
-            return $pdf->download('Salary Report.pdf');
+            return $pdf->download('Lesson Report.pdf');
             exit();
 
 
@@ -527,7 +527,7 @@ class ExportController extends Controller
             //lesson report to PDF
 
             //EXPORT LESSON REPORT FILENAME
-            $filename = "Salary Report.xlsx";
+            $filename = "Lesson Report.xlsx";
 
             //SET STYLE
             $styleArrayH1 = Style::setHeader();
@@ -538,7 +538,7 @@ class ExportController extends Controller
             $sheet = $spreadsheet->getActiveSheet();
 
             //Set Header Text
-            $sheet->setCellValue('A1', "Tutor Salary Report from $request->dateFrom to $request->dateTo");
+            $sheet->setCellValue('A1', "Tutor Lesson Report from $request->dateFrom to $request->dateTo");
 
             //Secondary Field Headers (h2)
             $sheet->setCellValue('A2', "I.D");
@@ -752,7 +752,9 @@ class ExportController extends Controller
                     } else {
                         $cost = number_format(0, 1);
                     }
-                }       
+                } else {
+                    $cost = number_format(0, 1);
+                }
                 
                 
                 $schedulesData[] = [
