@@ -658,11 +658,6 @@ class ExportController extends Controller
 
     public function downloadSalaryReport(Request $request)
     {
-        //Current date
-        $from = date("Y-m-d");
-        $to = date('Y-m-d', strtotime($from . " +1 day"));
-        $extendedTo = date('Y-m-d', strtotime($from . " +2 day"));
-
         //initiatte schedule for reporting
         $schedules = new ScheduleItem();
 
@@ -671,7 +666,14 @@ class ExportController extends Controller
         if (isset($request->dateFrom) && isset($request->dateTo)) {
             $dateFrom = date('Y-m-d', strtotime($request['dateFrom']));
             $dateTo = date('Y-m-d', strtotime($request['dateTo']));
+            $extendedTo = date('Y-m-d', strtotime($dateTo . " +1 day"));
             $schedules = $schedules->where('lesson_time', '>=', $dateFrom . " 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");
+        } else {
+            //Current date
+            $dateFrom = date("Y-m-d");            
+            $dateTo = date('Y-m-d', strtotime($dateFrom . " +1 day"));
+            $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
+            $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");
         }
 
         if (isset($request->tutorid)) {
@@ -685,7 +687,7 @@ class ExportController extends Controller
 
         //no request paramters
         if (!isset($request->dateFrom) && !isset($request->dateTo) && !isset($request->status) && (!isset($request->tutorid))) {
-            $schedules = $schedules->where('lesson_time', '>=', $from . " 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");
+            $schedules = $schedules->where('lesson_time', '>=', $dateFrom . " 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");
         }
 
         //valid only
