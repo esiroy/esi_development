@@ -36,16 +36,10 @@ class SalaryReportController extends Controller
 
         if (isset($request->date_from) && isset($request->date_to)) 
         {
-
-           
-
             $dateFrom = date('Y-m-d', strtotime($request['date_from']));
             $dateTo = date('Y-m-d', strtotime($request['date_to']));
-            $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
-
+            $extendedTo = date('Y-m-d', strtotime($dateTo . " +1 day"));
             $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");             
-
-
         } else {
             //Current date
             $dateFrom = date("Y-m-d");            
