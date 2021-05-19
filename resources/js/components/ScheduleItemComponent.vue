@@ -26,7 +26,7 @@
                 </div>
                 <div class="col-md-9">
                     <select name="status" ref="status" v-model="status" @change="setMemberListLock()"  class="form-control form-control-sm">
-                        <option value="">Please Select A Status</option>
+                        <!--<option value="">Please Select A Status</option>-->
                         <option value="TUTOR_SCHEDULED" v-show="checkSelectedSchedulStatus()">Tutor Scheduled</option>
                         <option value="CLIENT_RESERVED" v-show="checkSelectedSchedulStatus()">Client Reserved</option>
                         <option value="CLIENT_RESERVED_B" v-show="checkSelectedSchedulStatus()">Client Reserved B</option>
@@ -506,6 +506,10 @@ export default {
             //console.log("open schedule");
             this.$bvModal.show("schedulesModal");
             this.tutorData = tutorData;
+
+            //UPDATE (MAY 19, 2021): 
+            //Set the default status dropdown option  "TUTOR_SCHEDULED" default 
+            this.status = "TUTOR_SCHEDULED";
         },
         hideModal() {
             //console.log("hide modal");
@@ -535,17 +539,16 @@ export default {
         onChange (value) {
             //changing modal selection
             //console.log(value.id);
-
             try {                
                 this.currentSelectedID = value.id;
             }   
             catch(err) { 
-                console.log("no value");
+                //console.log("no value");
                 this.currentSelectedID = null; 
             }            
         },
         onSelect (option) {
-            console.log (option)
+            //console.log (option)
             
         },
         onTouch () {
