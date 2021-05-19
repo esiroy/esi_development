@@ -34,11 +34,11 @@
                         <div class="row">
                             <div class="col-lg-3 col-md-4 col-sm-12 pt-2">
                                 <label for="inputDate">From:</label>
-                                <input id="date_from" name="date_from" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm  d-inline-block col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12" value="{{ request()->has('date_from') ? request()->get('date_from') : $from  }}">
+                                <input id="date_from" name="date_from" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm  d-inline-block col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12" value="{{ request()->has('date_from') ? request()->get('date_from') : $dateFrom  }}">
                             </div>
                             <div class="col-lg-3 col-md-4 col-sm-12 pt-2">
                                 <label for="inputDate">To:</label>
-                                <input id="date_to" name="date_to" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12 d-inline-block" value="{{ request()->has('date_to') ? request()->get('date_to') : $to }}">
+                                <input id="date_to" name="date_to" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate hasDatepicker form-control form-control-sm col-xl-9 col-lg-8 col-md-7 col-sm-12 col-xs-12 d-inline-block" value="{{ request()->has('date_to') ? request()->get('date_to') : $dateTo }}">
                             </div>
                         </div>
 
@@ -82,8 +82,8 @@
 
                     <div id="schedule-report" class="card mt-3">
                         <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
-                            {{ date("Y年 m月 d日", strtotime($from)) }}
-                            @if(isset($to)) {{ " - " . date("Y年 m月 d日", strtotime($to)) }} @endif
+                            {{ date("Y年 m月 d日", strtotime($dateFrom)) }}
+                            @if(isset($dateTo)) {{ " - " . date("Y年 m月 d日", strtotime($dateTo)) }} @endif
                         </div>
                         <div class="card-body p-0 m-0 b-0">
                             <div class="table-responsive mb-0">
@@ -179,12 +179,12 @@
                     <div class="row mt-2">
                         <div class="col-md-5">
                             <span class="mr-4">
-                                <a href="/downloadSalaryReport?type=pdf&dateFrom={{$from}}&dateTo={{$to}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
+                                <a href="/downloadSalaryReport?type=pdf&dateFrom={{$dateFrom}}&dateTo={{$dateTo}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
                                     <img src="{{ url('images/pdf.gif') }}"> Download As PDF
                                 </a>
                             </span>
                             <span>
-                                <a href="/downloadSalaryReport?type=excel&dateFrom={{$from}}&dateTo={{$to}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
+                                <a href="/downloadSalaryReport?type=excel&dateFrom={{$dateFrom}}&dateTo={{$dateTo}}&tutorid={{ Request::get('tutor') }}&status={{ Request::get('status')}}">
                                     <img src="{{ url('images/excel.gif') }}"> Download As Excel
                                 </a> 
                             </span>

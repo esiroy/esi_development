@@ -870,6 +870,8 @@ class ExportController extends Controller
                     } else {
                         $cost = number_format(0, 1);
                     }
+                } else {
+                    $cost = number_format(0, 1);
                 }
 
                 $spreadsheet->getActiveSheet()->getStyle('A' . $ctr . ':I' . $ctr)->getAlignment()->setHorizontal('center');

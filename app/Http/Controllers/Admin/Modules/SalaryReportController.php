@@ -19,10 +19,7 @@ class SalaryReportController extends Controller
     {
         $per_page = Auth::user()->items_per_page;
 
-        //Current date
-        $from = date("Y-m-d");
-        $to = date('Y-m-d', strtotime($from . " +1 day"));
-        $extendedTo = date('Y-m-d', strtotime($from . " +2 day"));
+
 
         //tutor list
         $tutors = Tutor::select('tutors.id', 'tutors.user_id', 'tutors.is_terminated', 'users.firstname', 'users.lastname', 'users.valid')
@@ -39,10 +36,26 @@ class SalaryReportController extends Controller
 
         if (isset($request->date_from) && isset($request->date_to)) 
         {
+
+           
+
             $dateFrom = date('Y-m-d', strtotime($request['date_from']));
             $dateTo = date('Y-m-d', strtotime($request['date_to']));
+            $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
+
+            $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");             
+
+
+        } else {
+            //Current date
+            $dateFrom = date("Y-m-d");            
+            $dateTo = date('Y-m-d', strtotime($dateFrom . " +1 day"));
+            $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
+
             $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");             
         }
+
+
         
         if (isset($request->status)) {            
             $status = str_replace(' ', '_', strtoupper($request->status));
@@ -58,7 +71,7 @@ class SalaryReportController extends Controller
         //no request paramters
         if (!isset($request->date_from) && !isset($request->date_to) && !isset($request->status) && !isset($request->tutor)) 
         {
-            $schedules = $schedules->where('lesson_time', '>=', $from ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");                    
+            $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");                    
         }
 
         //valid only
@@ -66,10 +79,10 @@ class SalaryReportController extends Controller
         //add additional ordering
         $schedules = $schedules->orderBy('lesson_time', 'DESC')->orderBy('id', 'DESC');
         //1k only (@todo: ask if there is pagination?)
-        $schedules = $schedules->paginate(1000);
+        $schedules = $schedules->paginate(1000000);
         //$schedules = $schedules->paginate($per_page);
 
-        return view('admin.modules.salary.index', compact('schedules', 'tutors', 'from', 'to'));        
+        return view('admin.modules.salary.index', compact('schedules', 'tutors', 'dateFrom', 'dateTo'));
         
     }
 

@@ -15,10 +15,14 @@
             title="Schedule Lesson"
             button-size="sm"
             no-fade
-            :no-close-on-backdrop="true"            
+            :cancel-disabled="modalBusy"
+            :ok-disabled="modalBusy"
+            :no-close-on-backdrop="true"
             @show="resetModal"
             @hidden="hideModal"
-            @ok="handleOk"                    
+            @ok="handleOk"
+            
+            
         >
             <div class="row">
                 <div class="col-md-3">
@@ -217,8 +221,9 @@ export default {
     },
     data() {
         return {
+            showModal: false,
+            modalBusy: false,
             memberMemo: "",
-
             memberDataList: [],
             isFound : false,
             fromDay : this.scheduled_at,
@@ -501,6 +506,8 @@ export default {
         },        
         openSchedule(tutorData) 
         {
+            this.modalBusy = false;
+            
             this.modalType = "save";
             //console.log(tutorData);            
             //console.log("open schedule");
@@ -525,6 +532,8 @@ export default {
         },
         handleOk(bvModalEvt) 
         {
+            this.modalBusy = true;            
+            
             if (this.status === "NOTHING") this.confirmDelete(this.tutorData);
             else {
                 if (this.modalType === 'save') {
@@ -533,7 +542,7 @@ export default {
                 } else {
                     this.updateTutorSchedule();
                 }
-            }
+            }            
             bvModalEvt.preventDefault();
         }, 
         onChange (value) {
@@ -604,8 +613,11 @@ export default {
                 let lastname = memberData.lastname;  
                 memberIDFullName =  this.currentScheduledData.member_id + " " + firstname  + " " + lastname;  
                 this.memberSelectedID = { id: this.currentScheduledData.member_id , 'name': memberIDFullName };   
+
+                this.modalBusy = false;
             } else {
-                 this.memberSelectedID = { id: "" , 'name': "-- Select A Member --" };
+                this.modalBusy = false;
+                this.memberSelectedID = { id: "" , 'name': "-- Select A Member --" };
             }
             
            
@@ -629,15 +641,15 @@ export default {
             {                
                 if (this.memberSelectedID === "" || this.memberSelectedID === null) {
                     alert ("Please select Member");
+                    this.modalBusy = false;
                     return false;                
                 }
-            }    
-
-
+            }
             
             if (this.scheduleExists(this.tutorData)) 
             {                
                 alert ("this schedule is already booked");
+                this.modalBusy = false;
                 return false;
             } 
 
@@ -656,7 +668,9 @@ export default {
             {
                 
                 //hide schedule
+                this.modalBusy = false;
                 this.$bvModal.hide("schedulesModal");
+
 
                 if (response.data.success === true) 
                 {
@@ -727,7 +741,9 @@ export default {
                         this.$forceUpdate();
                     });
       
-                } else {                    
+                } else {           
+                    
+                    this.modalBusy = false;
                     alert (response.data.message);    
                 }
 
@@ -736,24 +752,28 @@ export default {
                 {
                     this.$nextTick(function()
                     {  
+                        this.modalBusy = false;
                         this.lessonsData = response.data.tutorLessonsData;
                         this.$forceUpdate(); 
                     });
                 }
                 
 			}).catch(function(error) {
+                this.modalBusy = false;
                 alert("Error: setTutorSchedule - " + error);                
 			});
         },        
         updateTutorSchedule() 
         {
-            console.log("check selected " + this.currentSelectedID);
+            //console.log("check selected " + this.currentSelectedID);
 
             if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
             { 
 
-                if (this.currentSelectedID === "" || this.currentSelectedID === null) {
+                if (this.currentSelectedID === "" || this.currentSelectedID === null) 
+                {
                     alert ("Please select Member");
+                    this.modalBusy = false;
                     return false;                
                 }
             }
@@ -778,6 +798,7 @@ export default {
             .then(response => 
             {
                 //hide schedule
+                this.modalBusy = false;
                 this.$bvModal.hide("schedulesModal");
 
                 if (response.data.success === true) 
@@ -830,10 +851,12 @@ export default {
                     this.getSchedules(this.scheduled_at, this.shiftDuration);
                     this.$forceUpdate();                    
                 } 
-                else {                    
+                else {            
+                    this.modalBusy = false;        
                     alert (response.data.message);                   
                 }
 			}).catch(function(error) {
+                this.modalBusy = false;
                 alert("Error : updateTutorSchedule - " + error);                
 			});            
         },
