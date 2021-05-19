@@ -41,7 +41,7 @@
                             </td>
                             <td style="width:150px">
                                 <input id="date_from" name="date_from" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm col-12"
-                                 value="{{ request()->has('date_from') ?  request()->get('date_from') : $from }}" style="min-width:120px">
+                                 value="{{ request()->has('date_from') ?  request()->get('date_from') : $dateFrom }}" style="min-width:120px">
                             </td>
 
                             <td>
@@ -49,7 +49,7 @@
                             </td>
                             <td style="width:150px">
                                 <input id="date_to" name="date_to" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate hasDatepicker form-control form-control-sm  col-12" 
-                                value="{{ request()->has('date_to') ? request()->get('date_to') : $to }}" style="min-width:120px">
+                                value="{{ request()->has('date_to') ? request()->get('date_to') : $dateTo }}" style="min-width:120px">
                            </td>
 
                             <td>                                
@@ -112,8 +112,8 @@
 
                     <div id="schedule-report" class="card mt-3">
                         <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold ">                        
-                            {{ date("Y年 m月 d日", strtotime($from)) }}
-                            @if(isset($to)) {{ " - " . date("Y年 m月 d日", strtotime($to)) }} @endif
+                            {{ date("Y年 m月 d日", strtotime($dateFrom)) }}
+                            @if(isset($dateTo)) {{ " - " . date("Y年 m月 d日", strtotime($dateTo)) }} @endif
                         </div>
                         <div class="card-body p-0 m-0 b-0">
                             <div class="table-responsive mb-0">
@@ -199,12 +199,12 @@
 
                         <div class="col-md-5">
                             <span class="mr-4">
-                                <a href="/downloadlessonReport?type=pdf&dateFrom={{$from}}&dateTo={{$to}}&status={{ Request::get('status')}}">
+                                <a href="/downloadlessonReport?type=pdf&dateFrom={{$dateFrom}}&dateTo={{$dateTo}}&status={{ Request::get('status')}}">
                                     <img src="{{ url('images/pdf.gif') }}"> Download As PDF
                                 </a>
                             </span>
                             <span>
-                                <a href="/downloadlessonReport?type=excel&dateFrom={{$from}}&dateTo={{$to}}&status={{ Request::get('status')}}">
+                                <a href="/downloadlessonReport?type=excel&dateFrom={{$dateFrom}}&dateTo={{$dateTo}}&status={{ Request::get('status')}}">
                                     <img src="{{ url('images/excel.gif') }}"> Download As Excel
                                 </a> 
                             </span>

@@ -17,12 +17,7 @@ class ReportController extends Controller
     public function index(Request $request)
     {
         $per_page = Auth::user()->items_per_page;
-
-        //Current date
-        $from = date("Y-m-d");
-        $to = date('Y-m-d', strtotime($from . " +1 day"));
-        $extendedTo = date('Y-m-d', strtotime($from . " +2 day"));
-
+        
         //initiatte schedule for reporting
         $schedules = new ScheduleItem();
 
@@ -32,6 +27,13 @@ class ReportController extends Controller
         {
             $dateFrom = date('Y-m-d', strtotime($request['date_from']));
             $dateTo = date('Y-m-d', strtotime($request['date_to']));
+            $extendedTo = date('Y-m-d', strtotime($dateTo . " +1 day"));
+            $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");          
+        } else {
+            //Current date
+            $dateFrom = date("Y-m-d");            
+            $dateTo = date('Y-m-d', strtotime($dateFrom . " +1 day"));
+            $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
             $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");             
         }
 
@@ -43,7 +45,7 @@ class ReportController extends Controller
         //no request paramters
         if (!isset($request->date_from) && !isset($request->date_to) && !isset($request->status)) 
         {
-            $schedules = $schedules->where('lesson_time', '>=', $from ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");                    
+            $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");                    
         }        
         
         //valid only
@@ -54,7 +56,7 @@ class ReportController extends Controller
         $schedules = $schedules->paginate(1000);
         //$schedules = $schedules->paginate($per_page);      
 
-        return view('admin.modules.report.index', compact('schedules', 'from', 'to'));
+        return view('admin.modules.report.index', compact('schedules', 'dateFrom', 'dateTo'));
     }
 
     /**

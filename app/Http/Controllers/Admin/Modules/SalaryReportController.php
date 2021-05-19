@@ -17,9 +17,7 @@ class SalaryReportController extends Controller
      */
     public function index(Request $request)
     {
-        $per_page = Auth::user()->items_per_page;
-
-
+        //$per_page = Auth::user()->items_per_page;
 
         //tutor list
         $tutors = Tutor::select('tutors.id', 'tutors.user_id', 'tutors.is_terminated', 'users.firstname', 'users.lastname', 'users.valid')
@@ -28,8 +26,7 @@ class SalaryReportController extends Controller
             ->where('tutors.is_terminated', 0)
             //->orderBy('sort', 'ASC')
             ->orderBy('users.firstname', 'ASC')
-            ->get();        
-
+            ->get();
 
         //START SCHEDULE SALARY
         $schedules = new ScheduleItem();
@@ -45,7 +42,6 @@ class SalaryReportController extends Controller
             $dateFrom = date("Y-m-d");            
             $dateTo = date('Y-m-d', strtotime($dateFrom . " +1 day"));
             $extendedTo = date('Y-m-d', strtotime($dateFrom . " +2 day"));
-
             $schedules = $schedules->where('lesson_time', '>=', $dateFrom ." 01:00:00")->where('lesson_time', '<=', $extendedTo . " 00:30:00");             
         }
 
