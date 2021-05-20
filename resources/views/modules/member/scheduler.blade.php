@@ -558,8 +558,8 @@
         //cloned row settings
         $cloned.insertBefore(".tr_clone_container");
         $cloned.find('td').css('background', 'none');
-        $cloned.find('td').css('background-color', 'yellow')
-        $cloned.find('td').css('background-color', 'yellow')
+        $cloned.find('td').css('background-color', '#EAF0DD')
+        //$cloned.find('td').css('background-color', 'yellow')
         
         $cloned.removeClass('tr_clone');
         $cloned.addClass('tr_cloned');    
