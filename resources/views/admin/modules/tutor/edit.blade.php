@@ -315,7 +315,7 @@
                                 <option value="">-- Select --</option>
                                 <option value="FLUENTLY" @if(old('japanese_fluency')=='FLUENTLY' || $tutor->fluency =='FLUENTLY' ) {{"selected"}} @endif>流暢に話す (Fluently)</option>
                                 <option value="DAILY_CONVERSATION" @if(old('japanese_fluency')=='DAILY_CONVERSATION' || $tutor->fluency =='DAILY_CONVERSATION') {{"selected"}} @endif>日常会話程度 (Daily Conversation)</option>
-                                <option value="LITTLE" @if(old('japanese_fluency')=='LITTLE' || $tutor->fluency =='FLUENTLY') {{"LITTLE"}} @endif>少し話せる (Little)</option>
+                                <option value="LITTLE" @if(old('japanese_fluency')=='LITTLE' || $tutor->fluency =='LITTLE') {{"LITTLE"}} @endif>少し話せる (Little)</option>
                                 <option value="CANT_SPEAK" @if(old('japanese_fluency')=='CANT_SPEAK' || $tutor->fluency =='CANT_SPEAK') {{"selected"}} @endif>話せない (Can't Speak)</option>
                             </select>
 
