@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Symfony\Component\HttpFoundation\Response;
 
-use Gate, Auth, Validator;
+use Gate, Auth, Validator, DB;
 
 class TutorController extends Controller
 {
@@ -275,7 +275,6 @@ class TutorController extends Controller
      */
     public function update($id, Request $request)
     {
-
         $tutor = Tutor::where('user_id', $id)->first();
 
         $validator = Validator::make($request->all(),
@@ -306,9 +305,9 @@ class TutorController extends Controller
                 $userData =
                     [
                     'firstname' => $request['name_en'],
-                    'lastname' => '',
+                    //'lastname' => '',
                     'japanese_firstname' => $request['name_jp'],
-                    'japanese_lastname' => '',
+                    //'japanese_lastname' => '',
                     'email' => $request['email'],
                     'username' => $request['email'],
                     //'password' => $request['password'],
@@ -365,7 +364,7 @@ class TutorController extends Controller
 
                 DB::rollback();
 
-                return redirect()->route('admin.tutor.index')->with('message', 'Error, Tutor was not updated due to an error please check back later. <p> ' . $e->getMessage() . " on Line " . $e->getLine());
+                return redirect()->route('admin.tutor.index')->with('error_message', 'Error, Tutor was not updated due to an error please check back later. <p> ' . $e->getMessage() . " on Line " . $e->getLine());
             }                
         }
     }
