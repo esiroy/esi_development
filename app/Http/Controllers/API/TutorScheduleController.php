@@ -13,6 +13,7 @@ use App\Models\ScheduleItem;
 use App\Models\Shift;
 use App\Models\Tutor;
 use DB;
+use App;
 
 
 class TutorScheduleController extends Controller
