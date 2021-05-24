@@ -310,7 +310,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-
+                           {{ $tutor->fluency  }}
                             <select name="japanese_fluency" class="form-control form-control-sm @error('japanese_fluency') is-invalid @enderror" required>
                                 <option value="">-- Select --</option>
                                 <option value="FLUENTLY" @if(old('japanese_fluency')=='FLUENTLY' || $tutor->fluency =='FLUENTLY' ) {{"selected"}} @endif>流暢に話す (Fluently)</option>
