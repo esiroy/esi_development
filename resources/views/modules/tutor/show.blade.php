@@ -21,7 +21,7 @@
                             <tr>
                                 <td colspan="3">
 
-                                    <div class="photo pt-1">
+                                    <div class="photo pt-1" style="width:147px">
                                         @php 
                                             $userImage = new App\Models\UserImage();
                                             $image =  $userImage->getTutorPhotobyID($tutor->user_id);
