@@ -22,11 +22,15 @@
                                 <td colspan="3">
 
                                     <div class="photo pt-1">
-                                        @if ($tutor->filename == null)
-                                        <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="145px">
-                                        @else
-                                        <img src="{{ Storage::url("$tutor->original") }}" class="img-fluid border" alt="profile photo" width="145px">
-                                        @endif
+                                        @php 
+                                            $userImage = new App\Models\UserImage();
+                                            $image =  $userImage->getTutorPhotobyID($tutor->user_id);
+                                        @endphp
+                                        @if ($image == null)
+                                            <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" width="145px">
+                                        @else 
+                                            <img src="{{ Storage::url("$image->original") }}" class="img-fluid border" alt="profile photo" width="145px">
+                                        @endif                                        
                                     </div>
 
                                 </td>
