@@ -53,6 +53,7 @@ class TableTutorImporterController extends Controller
             $data = [
                 //'id' => $item->id,
                 'fluency' => $item->fluency,
+                /*
                 'gender' => $item->gender,
                 'grade' => $item->grade,
                 'hobby' => $item->hobby,                
@@ -67,6 +68,7 @@ class TableTutorImporterController extends Controller
                 'lesson_shift_id' => $item->lesson_shift_id,
                 'is_default_main_tutor' => $item->is_default_main_tutor,
                 'is_default_support_tutor' => $item->is_default_support_tutor,
+                */
                 'major' => $item->major,
                 //'is_terminated' => $item->is_terminated,
             ];
