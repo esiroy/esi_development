@@ -257,6 +257,7 @@
     @include('modules.member.popup.questionnaire')
     @include('modules.member.popup.questionnaireReadOnly')
     @include('modules.member.popup.loading')
+    @include('modules.member.popup.msgbox')
 
 
 </div>
@@ -420,16 +421,19 @@
                 //hide questionnaire modals first
                 $('#questionnaireModal').modal('hide');
                 $('#questionnaireReadOnlyModal').modal('hide');   
-
                 $('#loadingModal').modal('show');
             },
             complete: function(){
                 $('#loadingModal').modal('hide');
+                $('#loadingModal').hide(); 
             },
             success: function() {
                 $('#loadingModal').modal('hide');
+                $('#loadingModal').hide();                 
             }
         });
+
+ 
 
         //Initiate Get Favorite Tutors
         this.getFavoriteTutors()
@@ -599,7 +603,10 @@
         input.setAttribute('min', date);
     }
 
-    function book(scheduleID, memberID) {      
+    function book(scheduleID, memberID) 
+    {
+        let response = "" ;
+
         if (confirm('予約してもいいですか？')) {
             $.ajax({
                 type: 'POST',
@@ -611,27 +618,39 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                success: function(data) {
-                    //$("#msg").html(data.msg);
-
+                success: function(data) {                    
                     if (data.success == true) {
                         console.log(scheduleID);
 
                         $('.button_' + scheduleID + ' .bookTutorSchedule').hide();
                         $('.button_' + scheduleID + ' .cancel').show();
 
+                        $('#loadingModal').modal('hide');
+                        $('#loadingModal').hide();   
+
                         $('#total_credits').text(data.credits)
                     } else {
-                        alert(data.message);
+                       
+                        $('#loadingModal').modal('hide');
+                        $('#loadingModal').hide();  
+                                                
+                        $('#msgboxModal').modal('show');
+                        $('#msgboxMessage').text(data.message)
+                       
                     }
-
-                }
+                },
+                complete: function(data) {              
+                   
+                }          
             });
         } else {
             return false;                        
         }
     }
 
+    function closeModal(id) {
+        $(id).modal('hide');
+    }
 
     function cancel(id) {
 
@@ -744,6 +763,13 @@
         });
     }
 
+    function wait(ms){
+        var start = new Date().getTime();
+        var end = start;
+        while(end < start + ms) {
+        end = new Date().getTime();
+        }
+    }    
 
     window.addEventListener('load', function() {
         disablePreviousDates();
@@ -761,7 +787,7 @@
         $('#loadingModal').hide();
     });
 
-   
+
 
 
 </script>

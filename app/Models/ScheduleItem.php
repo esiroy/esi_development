@@ -45,6 +45,26 @@ class ScheduleItem extends Model
 
         return $reserves;
     }
+    
+
+    /* @Added: MAY 21, 2021
+     * @Desc:  Returns total number count of Reserved (A & B ONLY), this is for the member schedule list limiter to 
+     * @Params: @MembeID - User ID of Member
+     * Returns: @total 
+    */
+    public function getTotalMemberReserved($member) 
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $total = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
+                $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+                ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+            })->where('lesson_time', ">=", $date)
+            ->orderby('lesson_time', 'ASC')
+            ->count();
+
+        return $total;
+    }
 
     /* Returns the Schedules based on Lesson Time, month, year */
     public function getTotalLessonReserved($memberID, $month, $year) 
@@ -118,7 +138,7 @@ class ScheduleItem extends Model
         return $reserveCount;
     }
 
-    /* Returns the Schedules based on Created Time */
+    /* Returns the Total Schedule Count for the current month based on lesson Time */
     public function getTotalReservedForCurrentMonth($memberID) 
     {
         //CLient rserve / Client reserve B / Completed /Client not available

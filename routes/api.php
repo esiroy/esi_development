@@ -67,6 +67,8 @@ Route::middleware('auth:api')->post('/sendMemo', 'API\MemberController@sendMemo'
 Route::middleware('auth:api')->post('/getMemo', 'API\MemberController@getMemo')->name('APIGetMemo');
 Route::middleware('auth:api')->post('/postComment', 'API\MemberController@postComment')->name('APIPostComment');
 Route::middleware('auth:api')->post('/viewComment', 'API\MemberController@viewComment')->name('APIViewComment');
+Route::middleware('auth:api')->post('/getBookScheduledCount', 'API\MemberController@getBookScheduledCount')->name('APIgetBookScheduledCount');
+
 
 //[start] Lesson Materials
 Route::middleware('auth:api')->post('/sortLessonMaterials', 'API\LessonMaterialsController@sortLessonMaterials')->name('APISortLessonMaterials');

@@ -246,6 +246,23 @@ class MemberController extends Controller
         }
     }
 
+
+    /* 
+        Returns @totalScheduledItem - the total count of scheduled A and B 
+    */
+    public function getBookScheduledCount(Request $request, ScheduleItem $scheduleItem, Member $member) 
+    {
+        $memberID = $request->memberID;
+        $member = $member->where('user_id', $memberID)->first();
+        $totalScheduledItem = $scheduleItem->getTotalMemberReserved($member);
+        return Response()->json([
+            "success" => false,
+            "totalScheduledItem" => $totalScheduledItem,
+            "message" => "Member has " . $totalScheduledItem,
+        ]);      
+    }
+
+
     /*
     Book a schedule
      */
@@ -258,13 +275,25 @@ class MemberController extends Controller
 
         $memberInfo = Member::where('user_id',  $memberID)->first();
 
+        //[UPDATE for MAY 15, 2022] 
+        //LIMIT SCHEDULE ITEM (15 ITEMS)
+        $totalScheduledItem = $scheduleItem->getTotalMemberReserved($memberInfo);
+        if ($totalScheduledItem >= 15) {
+            return Response()->json([
+                "success" => false,
+                "type"      => "msgbox",
+                "message" => "予約数が上限に達したため予約できません",                
+                "message_en" => "Cannot make a reservation because the number of reservations has reached the upper limit"
+            ]);
+        } 
+
         //check deactivated
         if ($memberInfo->user->is_activated == false) {
             return Response()->json([
-                "success" => false,
-                "message" => "エラー：スケジュールを予約できません。ユーザーは現在非アクティブ化されています",
+                "success"   => false,
+                "type"      => "msgbox",
+                "message"   => "エラー：スケジュールを予約できません。ユーザーは現在非アクティブ化されています",                
                 "message_en" => "Error: Unable to reserve schedule. User is currently deactivated"
-
             ]);
         }    
 
@@ -274,16 +303,18 @@ class MemberController extends Controller
         if (!$schedule) {
             //schedule time  not found
             return Response()->json([
-                "success" => false,           
-                //"message" => "スケジュールが見つからないか、もう存在しません",
-                "message_en" => "Schedule not found or no longer exists"
+                "success"       => false,
+                "type"          => "msgbox",
+                "message"       => "スケジュールが見つからないか、もう存在しません",
+                "message_en"    => "Schedule not found or no longer exists"
             ]);            
         } else {
             //found check if tutor is still available in this time slot
             if ($schedule->schedule_status !== 'TUTOR_SCHEDULED') {
                 return Response()->json([
                     "success" => false,
-                    "message" => "ご予約できません。　既に同じ時間にご予約があります。/ ページにアクセスしたときに撮影しました",
+                    "type"      => "msgbox",
+                    "message" => "ご予約できません。既に同じ時間にご予約があります。/ ページにアクセスしたときに撮影しました",
                     "message_en"    => "I cannot make a reservation. There is already a reservation at the same time / It was taken when you visited the page"
                 ]);
             }
@@ -299,8 +330,9 @@ class MemberController extends Controller
         $agentCredts = new AgentTransaction();
         if ($memberInfo->isMemberCreditExpired($memberID)) {
             return Response()->json([
-                "success" => false,
-                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
+                "success"   => false,
+                "type"      => "msgbox",
+                "message"   => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                 "message_en" => "You are out of points or your points have expired.",    
             ]);                  
         }
@@ -308,7 +340,8 @@ class MemberController extends Controller
         //2. CHECK IF MEMBER HAS ENOUGH POINTS
         if ($agentCredts->getCredits($memberID) <= 0) {
             return Response()->json([
-                "success" => false,           
+                "success" => false,
+                "type"      => "msgbox",           
                 "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                 "message_en" => "You are out of points or your points have expired.",   
             ]);              
@@ -317,8 +350,9 @@ class MemberController extends Controller
         //3. CHECK IF LESSON TIME IS INVALID
         if (!$memberInfo->isReservedLessonValid($memberID, $schedule->lesson_time)) {            
             return Response()->json([
-                "success" => false,
-                "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。/ reserved schedule exceeds expiration date",
+                "success"   => false,
+                "type"      => "msgbox",
+                "message"   => "ポイントが不足しているか、ポイントの有効期限が切れています。/ reserved schedule exceeds expiration date",
                 "message_en" => "You are out of points or your points have expired.",       
             ]); 
         }        
@@ -332,7 +366,8 @@ class MemberController extends Controller
         } else {
             //invalid time 
             return Response()->json([
-                "success" => false,           
+                "success" => false,
+                "type"      => "msgbox",
                 "message" => "レッスン予約は開始30分前まで可能です",
                 "message_en" => "Lesson reservations can be made up to 30 minutes before the start"
             ]);  
@@ -353,20 +388,20 @@ class MemberController extends Controller
             if ($totalReserved >= $limit) 
             {                
                 return Response()->json([
-                    "success" => false,           
+                    "success" => false,
+                    "type"      => "msgbox",         
                     //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                     //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
-
                     "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                     "message_en" => "You are out of points or your points have expired.",
                 ]);        
             }    
         } else {
             return Response()->json([
-                "success" => false,           
+                "success" => false,
+                "type"      => "msgbox",
                 //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                 //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
-
                 "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                 "message_en" => "You are out of points or your points have expired.",                     
             ]);
@@ -382,8 +417,9 @@ class MemberController extends Controller
 
         if ($isLessonExists) {
             return Response()->json([
-                "success" => false,
-                "message" => "ご予約できません。　既に同じ時間にご予約があります。",
+                "success"   => false,
+                "type"      => "msgbox",
+                "message"   => "ご予約できません。　既に同じ時間にご予約があります。",
                 "message_en"    => "I cannot make a reservation. There is already a reservation at the same time"
             ]);
         }
@@ -414,21 +450,23 @@ class MemberController extends Controller
         }                    
         
         /*******************************************               
-        *       [START] SEND MAIL
+        *       [START] SEND MAIL (PRODUCTION ONLY)
         *******************************************/      
         //initialize member, tutor and schedule items    
-        $scheduleItemObj = new scheduleItem();
-        $selectedSchedule = $scheduleItemObj->find($scheduleID);
-        if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
-        {            
-            $memberObj = new Member();
-            $tutorObj = new Tutor();
-            $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id )->first();
-            $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
-            
-            $lessonMailer = new LessonMailer();
-            $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
-        } 
+        if (App::environment(['prod', 'production'])) {
+            $scheduleItemObj = new scheduleItem();
+            $selectedSchedule = $scheduleItemObj->find($scheduleID);
+            if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
+            {            
+                $memberObj = new Member();
+                $tutorObj = new Tutor();
+                $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id )->first();
+                $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                
+                $lessonMailer = new LessonMailer();
+                $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
+            }             
+        }
         /*******************************************               
         *       [END] SEND MAIL 
         *******************************************/    
@@ -437,6 +475,7 @@ class MemberController extends Controller
 
         return Response()->json([
             "success" => true,
+            "type"      => "msgbox",
             "credits"  => "(". number_format($credits, 2) .")",
             "message" => "Member has been scheduled",
             "userData" => $request['user'],
@@ -495,17 +534,23 @@ class MemberController extends Controller
 
 
                     /*******************************************               
-                    *       [START] SEND MAIL
-                    *******************************************/      
-                    $scheduleItemObj = new scheduleItem();
-                    $selectedSchedule = $scheduleItemObj->find($scheduleID);
-                    $memberObj = new Member();
-                    $tutorObj = new Tutor();
-                    $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
-                    $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
-                    
-                    $lessonMailer = new LessonMailer();
-                    $lessonMailer->sendMemberCancellationEmail($memberInfo, $tutorInfo, $selectedSchedule);                       
+                    *       [START] SEND MAIL - RESERVATION A
+                    *******************************************/
+                    if (App::environment(['prod', 'production'])) 
+                    {                    
+                        $scheduleItemObj = new scheduleItem();
+                        $selectedSchedule = $scheduleItemObj->find($scheduleID);
+                        $memberObj = new Member();
+                        $tutorObj = new Tutor();
+                        $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
+                        $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                        
+                        $lessonMailer = new LessonMailer();
+                        $lessonMailer->sendMemberCancellationEmail($memberInfo, $tutorInfo, $selectedSchedule);
+                    }  
+                    /*******************************************               
+                    *       [END] SEND MAIL - RESERVATION A
+                    *******************************************/                                     
                 
                 } 
                 else if ($schedule->schedule_status == "CLIENT_RESERVED_B") 
@@ -517,19 +562,25 @@ class MemberController extends Controller
                     ];
 
                     /*******************************************               
-                    *       [START] SEND MAIL
-                    *******************************************/      
-                    $scheduleItemObj = new scheduleItem();
-                    $selectedSchedule = $scheduleItemObj->find($scheduleID);
-                    $memberObj = new Member();
-                    $tutorObj = new Tutor();
-                    $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
-                    $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
-                    
-                    $lessonMailer = new LessonMailer();
-                    $lessonMailer->sendMemberAbsentEmail($memberInfo, $tutorInfo, $selectedSchedule);   
-
+                    *       [START] SEND MAIL - RESERVATION B
+                    *******************************************/
+                    if (App::environment(['prod', 'production'])) 
+                    {                        
+                        $scheduleItemObj = new scheduleItem();
+                        $selectedSchedule = $scheduleItemObj->find($scheduleID);
+                        $memberObj = new Member();
+                        $tutorObj = new Tutor();
+                        $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id)->first();
+                        $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();  
+                        
+                        $lessonMailer = new LessonMailer();
+                        $lessonMailer->sendMemberAbsentEmail($memberInfo, $tutorInfo, $selectedSchedule);
+                    }
+                    /*******************************************               
+                    *       [END] SEND MAIL - RESERVATION B
+                    *******************************************/                      
                 }
+              
                 
                 //@todo: search delete questionnaire 
                 $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->where('valid', true)->first();
@@ -542,21 +593,12 @@ class MemberController extends Controller
                     $questionnaire->delete();
                 }
 
-            
-                
-                /*******************************************               
-                *       [END] SEND MAIL 
-                *******************************************/  
-
                 $credits = $agentCredts->getCredits(Auth::user()->id);
-
 
                 /*******************************************               
                     [START] UPDATE THE SCHEDULE
                 *******************************************/   
                 $schedule->update($data);
-
-
 
                 return Response()->json([
                     "success" => true,
@@ -565,8 +607,7 @@ class MemberController extends Controller
                     'buttonText' => '予約', //link for reserve
                     "message" => "Member schedule has been cancelled  and refunded " . $lessonTime . " >= " .  $valid_time,
                     "userData" => $request['user'],
-                ]);         
-                
+                ]);                       
                
             
             } else {

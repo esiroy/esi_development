@@ -79,8 +79,9 @@ class TutorScheduleController extends Controller
             "success" => true,
             "tutorLessonsData" => $tutorLessonsData,
         ]);
-
     }
+
+    
     /**
      * Update a resource in storage.
      *
@@ -285,11 +286,17 @@ class TutorScheduleController extends Controller
             $duration = $request['shiftDuration'];
 
             /****************************************************
-             *       SEND MAIL TO MEMBER AND TUTOR
+             *      [START] SEND MAIL TO MEMBER AND TUTOR
              *****************************************************/
-            $selectedSchedule = $scheduleItem->find($scheduledItemData['id']);
-            $lessonMailer = new LessonMailer();
-            $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
+            if (App::environment(['prod', 'production'])) 
+            {                
+                $selectedSchedule = $scheduleItem->find($scheduledItemData['id']);
+                $lessonMailer = new LessonMailer();
+                $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
+            }
+            /****************************************************
+             *      [END] SEND MAIL TO MEMBER AND TUTOR
+             *****************************************************/            
 
             if ($selectedSchedule->memo == null) {
                 $hasMemo = null;
@@ -518,9 +525,7 @@ class TutorScheduleController extends Controller
             $scheduleItem = ScheduleItem::create($lessonData);
             DB::commit();
 
-            /*******************************************
-             *       [END] SEND MAIL (JOB) RESERVED
-             *******************************************/
+
 
             //** ADD MEMBER TRANSACTION */
             if ($memberID != null) {
@@ -539,14 +544,20 @@ class TutorScheduleController extends Controller
             /*******************************************
              *  [START] SEND E-MAIL (JOB) RESERVED
              *******************************************/
-            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
-                $selectedSchedule = ScheduleItem::find($scheduleItem->id);
-                $lessonMailer = new LessonMailer();
-                $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
+            if (App::environment(['prod', 'production'])) 
+            {                
+                if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
+                    $selectedSchedule = ScheduleItem::find($scheduleItem->id);
+                    $lessonMailer = new LessonMailer();
+                    $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
+                }
             }
+            /*******************************************
+             *       [END] SEND MAIL (JOB) RESERVED
+             *******************************************/
 
-            //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
-            //@todo: email user
+            //$tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);            
+
             return Response()->json([
                 "success" => true,
                 "message" => "Lesson has been added",
