@@ -319,12 +319,12 @@ class TutorScheduleController extends Controller
 
         } catch (\Exception $e) {
 
+            DB::rollback();
+
             return Response()->json([
                 "success" => false,
                 "message" => "Exception Error Found in (Update Tutor Schedule) : " . $e->getMessage() . " on Line " . $e->getLine(),
             ]);
-
-            DB::rollback();
         }
 
     }
@@ -571,13 +571,13 @@ class TutorScheduleController extends Controller
             ]);
 
         } catch (\Exception $e) {
+            
+            DB::rollback();
 
             return Response()->json([
                 "success" => false,
                 "message" => "Exception Error Found (Create Tutor Schedule) : " . $e->getMessage() . " on Line " . $e->getLine(),
             ]);
-
-            DB::rollback();
         }
 
     }

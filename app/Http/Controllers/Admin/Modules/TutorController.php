@@ -142,60 +142,74 @@ class TutorController extends Controller
 
         } else {
 
-            $userData =
-                [
-                'firstname' => $request['name_en'],
-                'lastname' => '',
-                'japanese_firstname' => $request['name_jp'],
-                'japanese_lastname' => '',
-                'email' => $request['email'],
-                'username' => $request['email'],
-                'password' => Hash::make($request['password']),
-                'api_token' => Hash('sha256', Str::random(80)),
-                'user_type' => "TUTOR",
-                'valid' => ! ((boolean) $request['is_terminated']),
-            ];
-            $user = User::create($userData);
+            try
+            {
+                DB::beginTransaction();
+                                
+                $userData =
+                    [
+                    'firstname' => $request['name_en'],
+                    'lastname' => '',
+                    'japanese_firstname' => $request['name_jp'],
+                    'japanese_lastname' => '',
+                    'email' => $request['email'],
+                    'username' => $request['email'],
+                    'password' => Hash::make($request['password']),
+                    'api_token' => Hash('sha256', Str::random(80)),
+                    'user_type' => "TUTOR",
+                    'valid' => ! ((boolean) $request['is_terminated']),
+                ];
+                $user = User::create($userData);
 
-            //Add Role
-            $roles[] = Role::where('title', 'Tutor')->first()->id;
-            $user->roles()->sync($roles);
+                //Add Role
+                $roles[] = Role::where('title', 'Tutor')->first()->id;
+                $user->roles()->sync($roles);
 
-            //check if main tutor?
-            $isMainTutor = (boolean) $request['is_default_main_tutor'];
+                //check if main tutor?
+                $isMainTutor = (boolean) $request['is_default_main_tutor'];
 
-            if ($isMainTutor === true) {
-                $mainTutor = true;
-                $supportTutor = false;
-            } else {
-                $mainTutor = false;
-                $supportTutor = true;
+                if ($isMainTutor === true) {
+                    $mainTutor = true;
+                    $supportTutor = false;
+                } else {
+                    $mainTutor = false;
+                    $supportTutor = true;
+                }
+
+                $tutorData = [
+                    'sort' => $request['sort'],
+                    'user_id' => $user->id,
+                    'salary_rate' => $request['salary_rate'],
+                    'grade' => $request['grade'],
+                    'skype_id' => $request['skype_id'],
+                    'skype_name' => $request['skype_name'],
+                    'skype_password' => '',
+                    'gender' => $request['gender'],
+                    'hobby' => $request['hobby'],
+                    'birthday' => date('Y-m-d', strtotime($request['birthdate'])),
+                    'major' => $request['major_in'],
+                    'introduction' => $request['introduction'],
+                    'fluency' => $request['japanese_fluency'],
+                    'lesson_shift_id' => $request['shift'],
+                    'is_default_main_tutor' => $mainTutor,
+                    'is_default_support_tutor' => $supportTutor,
+                    'is_terminated' => (boolean) $request['is_terminated'],
+                ];
+
+                $tutor = Tutor::create($tutorData);
+                $user->tutors()->sync([$tutor->id], false);
+
+                DB::commit();
+
+                return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been added successfully!');
+
+            } catch (\Exception $e) {
+                
+                DB::rollback();
+
+                return redirect()->route('admin.tutor.index')->with('message', 'Error, Tutor was not updated due to an error please check back later. <p> ' . $e->getMessage() . " on Line " . $e->getLine());
+
             }
-
-            $tutorData = [
-                'sort' => $request['sort'],
-                'user_id' => $user->id,
-                'salary_rate' => $request['salary_rate'],
-                'grade' => $request['grade'],
-                'skype_id' => $request['skype_id'],
-                'skype_name' => $request['skype_name'],
-                'skype_password' => '',
-                'gender' => $request['gender'],
-                'hobby' => $request['hobby'],
-                'birthday' => date('Y-m-d', strtotime($request['birthdate'])),
-                'major' => $request['major_in'],
-                'introduction' => $request['introduction'],
-                'fluency' => $request['japanese_fluency'],
-                'lesson_shift_id' => $request['shift'],
-                'is_default_main_tutor' => $mainTutor,
-                'is_default_support_tutor' => $supportTutor,
-                'is_terminated' => (boolean) $request['is_terminated'],
-            ];
-
-            $tutor = Tutor::create($tutorData);
-            $user->tutors()->sync([$tutor->id], false);
-
-            return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been added successfully!');
         }
 
     }
@@ -227,15 +241,12 @@ class TutorController extends Controller
         $userImageObj = new UserImage();
         $userImage = $userImageObj->getMemberPhoto($tutor);
 
-       
-
         if (isset($tutor)) {
             $shifts = Shift::all();
             $grades = createGrades();
 
             return view('admin.modules.tutor.edit', compact('tutor', 'userImage', 'shifts', 'grades'));
         }
-
     }
 
     public function resetPassword($id, Request $request)
@@ -287,64 +298,75 @@ class TutorController extends Controller
         if ($validator->fails()) {
             return redirect()->route('admin.tutor.index')->withErrors($validator)->withInput();
         } else {
+            
+            try
+            {
+                DB::beginTransaction();
 
-            $userData =
-                [
-                'firstname' => $request['name_en'],
-                'lastname' => '',
-                'japanese_firstname' => $request['name_jp'],
-                'japanese_lastname' => '',
-                'email' => $request['email'],
-                'username' => $request['email'],
-                //'password' => $request['password'],
-                'api_token' => Hash('sha256', Str::random(80)),
-                //'user_type' => "TUTOR",
-                'valid' => ! ((boolean) $request['is_terminated']),
-            ];
-            $user = User::find($id);
-            $user->update($userData);
+                $userData =
+                    [
+                    'firstname' => $request['name_en'],
+                    'lastname' => '',
+                    'japanese_firstname' => $request['name_jp'],
+                    'japanese_lastname' => '',
+                    'email' => $request['email'],
+                    'username' => $request['email'],
+                    //'password' => $request['password'],
+                    'api_token' => Hash('sha256', Str::random(80)),
+                    //'user_type' => "TUTOR",
+                    'valid' => ! ((boolean) $request['is_terminated']),
+                ];
+                $user = User::find($id);
+                $user->update($userData);
 
-            //Add Role
-            $roles[] = Role::where('title', 'Tutor')->first()->id;
-            $user->roles()->sync($roles);
+                //Add Role
+                $roles[] = Role::where('title', 'Tutor')->first()->id;
+                $user->roles()->sync($roles);
 
-            //check if main tutor?
-            $isMainTutor = (boolean) $request['is_default_main_tutor'];
+                //check if main tutor?
+                $isMainTutor = (boolean) $request['is_default_main_tutor'];
 
-            if ($isMainTutor === true) {
-                $mainTutor = true;
-                $supportTutor = false;
-            } else {
-                $mainTutor = false;
-                $supportTutor = true;
-            }
+                if ($isMainTutor === true) {
+                    $mainTutor = true;
+                    $supportTutor = false;
+                } else {
+                    $mainTutor = false;
+                    $supportTutor = true;
+                }
 
-            $tutorData = [
-                'sort' => $request['sort'],
-                'user_id' => $user->id,
-                'salary_rate' => $request['salary_rate'],
-                'grade' => $request['grade'],
-                'skype_id' => $request['skype_id'],
-                'skype_name' => $request['skype_name'],
-                'skype_password' => '',
-                'gender' => $request['gender'],
-                'hobby' => $request['hobby'],
-                'birthday' => date('Y-m-d', strtotime($request['birthdate'])),
-                'major' => $request['major_in'],
-                'introduction' => $request['introduction'],
-                'fluency' => $request['japanese_fluency'],
-                'lesson_shift_id' => $request['shift'],
-                'is_default_main_tutor' => $mainTutor,
-                'is_default_support_tutor' => $supportTutor,
-                'is_terminated' => (boolean) $request['is_terminated'],
-            ];
+                $tutorData = [
+                    'sort' => $request['sort'],
+                    'user_id' => $user->id,
+                    'salary_rate' => $request['salary_rate'],
+                    'grade' => $request['grade'],
+                    'skype_id' => $request['skype_id'],
+                    'skype_name' => $request['skype_name'],
+                    'skype_password' => '',
+                    'gender' => $request['gender'],
+                    'hobby' => $request['hobby'],
+                    'birthday' => date('Y-m-d', strtotime($request['birthdate'])),
+                    'major' => $request['major_in'],
+                    'introduction' => $request['introduction'],
+                    'fluency' => $request['japanese_fluency'],
+                    'lesson_shift_id' => $request['shift'],
+                    'is_default_main_tutor' => $mainTutor,
+                    'is_default_support_tutor' => $supportTutor,
+                    'is_terminated' => (boolean) $request['is_terminated'],
+                ];
 
-            $tutor = Tutor::where("user_id", $id);
-            $tutor->update($tutorData);
+                $tutor = Tutor::where("user_id", $id)->first();
+                $tutor->update($tutorData);
+                //$user->tutors()->sync([$tutor->id], false);
+                DB::commit();
 
-            //$user->tutors()->sync([$tutor->id], false);
+                return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been updated successfully!');
 
-            return redirect()->route('admin.tutor.index')->with('message', 'Tutor has been updated successfully!');
+            } catch (\Exception $e) {
+
+                DB::rollback();
+
+                return redirect()->route('admin.tutor.index')->with('message', 'Error, Tutor was not updated due to an error please check back later. <p> ' . $e->getMessage() . " on Line " . $e->getLine());
+            }                
         }
     }
 
