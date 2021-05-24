@@ -253,8 +253,8 @@ class MemberController extends Controller
     public function getBookScheduledCount(Request $request, ScheduleItem $scheduleItem, Member $member) 
     {
         $memberID = $request->memberID;
-        $member = $member->where('user_id', $memberID)->first();
-        $totalScheduledItem = $scheduleItem->getTotalMemberReserved($member);
+        $memberInfo = $member->where('user_id', $memberID)->first();
+        $totalScheduledItem = $scheduleItem->getTotalMemberReserved($memberInfo);
         return Response()->json([
             "success" => false,
             "totalScheduledItem" => $totalScheduledItem,

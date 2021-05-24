@@ -539,66 +539,73 @@ export default {
 
                 console.log("the id selected => " + this.memberSelectedID.id)
 
-                //check if booked schedules is more than 15 items
-                axios.post("/api/getBookScheduledCount?api_token=" + this.api_token, 
-                {
-                    method              : "POST",               
-                    memberID          : this.memberSelectedID.id,
-                })
-                .then(response => 
-                {
-
-                    if (response.data.totalScheduledItem >= 15)  
+                if (this.currentStatus === 'CLIENT_RESERVED' || this.currentStatus === 'CLIENT_RESERVED_B') 
+                { 
+                    //check if booked schedules is more than 15 items
+                    axios.post("/api/getBookScheduledCount?api_token=" + this.api_token, 
                     {
-                        if (confirm('Attention! 15 reservations reached for this member, Are you sure you want override and save this schedule?')) {
-                            // Save it!
-                            console.log('Thing was saved to the database.');
+                        method              : "POST",               
+                        memberID          : this.memberSelectedID.id,
+                    })
+                    .then(response => 
+                    {
 
-                            if (this.modalType === 'save') 
-                            {
-                                console.log ("saving...")
-                                this.setTutorSchedule();
+                        if (response.data.totalScheduledItem >= 15)  
+                        {
+                            if (confirm('Attention! 15 reservations reached for this member, Are you sure you want override and save this schedule?')) {
+                                // Save it!
+                                console.log('Thing was saved to the database.');
+
+                                if (this.modalType === 'save') 
+                                {
+                                    console.log ("saving...")
+                                    this.setTutorSchedule();
+                                } else {
+                                    console.log ("updating...")                                
+                                    this.updateTutorSchedule();
+                                }
                             } else {
-                                console.log ("updating...")                                
-                                this.updateTutorSchedule();
+                                // Do nothing!
+                                console.log('Thing was not saved to the database.');
+
+                                //close
+                                this.$bvModal.hide("schedulesModal");
                             }
                         } else {
-                            // Do nothing!
-                            console.log('Thing was not saved to the database.');
-
-                            //close
-                            this.$bvModal.hide("schedulesModal");
+                            if (this.modalType === 'save') 
+                            {
+                                console.log ("saving...")                             
+                                this.setTutorSchedule();
+                            } else {                   
+                                console.log ("updating...")                            
+                                this.updateTutorSchedule();
+                            }                        
                         }
-                    } else {
-                        if (this.modalType === 'save') 
+
+                        /*
+                        this.$nextTick(function()
                         {
-                            console.log ("saving...")                             
-                            this.setTutorSchedule();
-                        } else {                   
-                            console.log ("updating...")                            
-                            this.updateTutorSchedule();
-                        }                        
-                    }
-                
-                    /*
-                    this.$nextTick(function()
+
+
+                        });*/
+                    });
+            
+                } else {
+                    if (this.modalType === 'save') 
                     {
-                        if (this.modalType === 'save') 
-                        {
-                            console.log ("saving...")   
-                            this.checkBookedScheduleLimit();
-                            this.setTutorSchedule();
+                        console.log ("saving...")   
+                        this.checkBookedScheduleLimit();
+                        this.setTutorSchedule();
 
-                        } else {                   
+                    } else {                   
 
-                            console.log ("updating...")
-                            this.checkBookedScheduleLimit();
-                            this.updateTutorSchedule();
-                        }
+                        console.log ("updating...")
+                        this.checkBookedScheduleLimit();
+                        this.updateTutorSchedule();
+                    }                        
+                }                    
 
-                    });*/
-
-                });
+              
 
 
             }            

@@ -286,12 +286,13 @@ class TutorScheduleController extends Controller
             $scheduled_at = $request['scheduled_at'];
             $duration = $request['shiftDuration'];
 
+            $selectedSchedule = $scheduleItem->find($scheduledItemData['id']);
+
             /****************************************************
              *      [START] SEND MAIL TO MEMBER AND TUTOR
              *****************************************************/
             if (App::environment(['prod', 'production'])) 
             {                
-                $selectedSchedule = $scheduleItem->find($scheduledItemData['id']);
                 $lessonMailer = new LessonMailer();
                 $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
             }
@@ -542,13 +543,14 @@ class TutorScheduleController extends Controller
                 $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
             }
 
+            $selectedSchedule = ScheduleItem::find($scheduleItem->id);
+
             /*******************************************
              *  [START] SEND E-MAIL (JOB) RESERVED
              *******************************************/
             if (App::environment(['prod', 'production'])) 
             {                
                 if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
-                    $selectedSchedule = ScheduleItem::find($scheduleItem->id);
                     $lessonMailer = new LessonMailer();
                     $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
                 }
