@@ -68,7 +68,7 @@ class TableTutorImporterController extends Controller
                 'is_default_main_tutor' => $item->is_default_main_tutor,
                 'is_default_support_tutor' => $item->is_default_support_tutor,
                 'major' => $item->major,
-                'is_terminated' => $item->is_terminated,
+                //'is_terminated' => $item->is_terminated,
             ];
 
             if (Tutor::where('user_id', $item->user_id)->exists()) 
@@ -92,8 +92,14 @@ class TableTutorImporterController extends Controller
 
             } else {
 
+                echo " new tutor found - not created (disabled)"
+
+                 /*
                 try
                 {
+
+                   
+                   
                     $tutor = Tutor::create($data);
 
                     //$tutor->tutors()->sync([$tutor->user_id], false);  
@@ -105,11 +111,13 @@ class TableTutorImporterController extends Controller
                     DB::commit();
 
                     echo "<div style='color:blue'>$ctr - added : " . $item->user_id  . "</div>";
+                    
 
                 } catch (\Exception $e) {
 
                     echo "<div style='color:red'>$ctr - Exception Error Found : " . $e->getMessage() . " on Line : " . $e->getLine() . " On Insert</div>";
                 }
+                */
 
             }
         }
