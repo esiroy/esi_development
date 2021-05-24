@@ -94,7 +94,7 @@ class TableTutorImporterController extends Controller
 
             } else {
 
-                echo " new tutor found - not created (disabled)"
+                echo " new tutor found - not created (disabled)";
 
                  /*
                 try
