@@ -54,7 +54,12 @@ class TutorController extends Controller
             if (isset($name)) {
                 //$tutors = $tutors->orWhere('tutors.name_en', 'like', '%' . $name . '%')->orWhere('tutors.name_en', 'like', '%' . $name . '%');
 
-                $tutors = $tutors->orWhereRaw("CONCAT(users.firstname,' ',users.lastname) like '%" . $name . "%'")->orWhereRaw("CONCAT(users.lastname,' ',users.firstname) like '%" . $name . "%'");                
+                $tutors = $tutors->orWhereRaw("CONCAT(users.firstname,' ',users.lastname) like '%" . $name . "%'")
+                                 ->orWhereRaw("CONCAT(users.lastname,' ',users.firstname) like '%" . $name . "%'");                
+
+
+                $tutors = $tutors->orWhereRaw("users.firstname like '%" . $name . "%'")
+                                 ->orWhereRaw("users.japanese_firstname like '%" . $name . "%'");              
 
             }
 
