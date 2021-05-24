@@ -258,6 +258,7 @@ class TutorScheduleController extends Controller
                 $emailType = null;
                 $lessonData = [
                     'schedule_status' => $request['status'],
+                    'member_id' => $memberID,                    
                     'email_type' => $emailType,
                     'valid' => 1,
                 ];
