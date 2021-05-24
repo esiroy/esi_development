@@ -542,7 +542,8 @@ export default {
                 if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
                 { 
 
-                    if (this.memberSelectedID.id === null || this.memberSelectedID.id === "") 
+                    if (this.memberSelectedID.id === null || this.memberSelectedID.id === "" 
+                        || this.memberSelectedID.id == undefined || this.memberSelectedID.id == "undefined") 
                     {
                         alert ("Please select member");
                         this.modalBusy = false;
