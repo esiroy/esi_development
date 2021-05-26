@@ -43,7 +43,7 @@ class TableUserExpiryUpdaterController extends Controller
                     $live_member_expiry = date('Y-m-d', strtotime($live_member->credits_expiration));
 
     
-                    if ($current_member_expiry != $live_member_expiry) 
+                    if ($current_member_expiry < $live_member_expiry) 
                     {    
 
                         $link = url('admin/member/account/'.$item->id);
@@ -51,7 +51,7 @@ class TableUserExpiryUpdaterController extends Controller
                         echo "<a href='$link' style='color:red'>". $current_member_expiry  ." !== ".  $live_member_expiry ."</a>";
 
                         echo "<br>";
-                        
+
                     } else {
     
                         //echo  $current_member_expiry  ." == ".  $live_member_expiry;
