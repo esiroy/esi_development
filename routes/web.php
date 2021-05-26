@@ -155,6 +155,7 @@ Route::resource('importCourseCategoryImage', 'TableCourseCategoryImageImporterCo
 Route::get('importCourseCategoryImage/index/{per_item}', 'TableCourseCategoryImageImporterController@index');
 Route::get('importCourseCategoryImage/{id}/{per_item}', 'TableCourseCategoryImageImporterController@show');
 
+Route::resource('updateMemberExpirty', 'TableUserExpiryUpdaterController');
 
 /*************** 
  *  ANNOUNCEMENTS
