@@ -22,6 +22,7 @@ class TableUserExpiryUpdaterController extends Controller
 
         $items = DB::connection('mysql_live')                    
                     ->table('users')
+                    ->where('user_type', "MEMBER")
                     //->where('last_login', '>=', $dateFrom ." 01:00:00")
                     ->get();
        
