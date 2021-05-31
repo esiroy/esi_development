@@ -30,6 +30,10 @@
 </head>
 <body>
 
+    <div>
+    <span id="a8sales"></span>
+    </div>
+
     <img src="https://advack.net/m/img.php?pcode=248&aid=14205" width="1" height="1" />   
 
     <!-- Google Code for &#20250;&#21729;&#30331;&#37682; Conversion Page -->
@@ -63,6 +67,7 @@
     </script>
     <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
 
+    <span id="a8sales"></span>        
     <script src="//statics.a8.net/a8sales/a8sales.js"></script>
     <script>
     a8sales({
