@@ -1,4 +1,4 @@
-@extends('layouts.esi-public')
+@extends('layouts.esi-public-activation')
 
 @section('content')
 <div class="container">
