@@ -148,7 +148,7 @@ class TutorScheduleController extends Controller
                         "success" => false,
                         "refresh" => true,
                         'tutorLessonsData' => $tutorLessonsData,
-                        "message" => "1. The Schedule $lessonTime is already booked or taken, press okay to refresh schedules.",
+                        "message" => "The Schedule $lessonTime is already booked or taken, press okay to refresh schedules.",
                     ]);                    
                 }
             } else if ($request['status'] == 'TUTOR_SCHEDULED' ||  $request['status'] == 'SUPPRESSED_SCHEDULE' || $request['status'] == 'CLIENT_NOT_AVAILABLE' || $request['status'] == 'COMPLETED') {
@@ -160,7 +160,7 @@ class TutorScheduleController extends Controller
                         "success" => false,
                         "refresh" => true,
                         'tutorLessonsData' => $tutorLessonsData,
-                        "message" => "2. The Schedule $lessonTime is already booked or was updated during page load, press okay to refresh schedules.",
+                        "message" => "The Schedule $lessonTime is already booked or was updated after the page load, press okay to refresh schedules.",
                     ]);                    
                 }
             }
