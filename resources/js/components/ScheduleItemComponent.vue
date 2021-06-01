@@ -33,8 +33,9 @@
                         <!--<option value="">Please Select A Status</option>-->
                         <option value="TUTOR_SCHEDULED" v-show="checkSelectedSchedulStatus()">Tutor Scheduled</option>
                         <option value="CLIENT_RESERVED" v-show="checkSelectedSchedulStatus()">Client Reserved</option>
-                        <option value="CLIENT_RESERVED_B" v-show="checkSelectedSchedulStatus()">Client Reserved B</option>
-                        <option value="SUPPRESSED_SCHEDULE" v-show="checkSelectedSchedulStatus()">Suppressed Schedule</option>
+                        <option value="CLIENT_RESERVED_B" v-show="checkSelectedSchedulStatus()">Client Reserved B</option>                        
+                        <!--<option value="SUPPRESSED_SCHEDULE" v-show="checkSelectedSchedulStatus()">Suppressed Schedule</option>-->
+                        <option value="SUPPRESSED_SCHEDULE">Suppressed Schedule</option>
                         <option value="CLIENT_NOT_AVAILABLE">Client Not Available</option>
                         <option value="TUTOR_CANCELLED">Tutor Cancelled</option>
                         <option value="COMPLETED">Completed</option>
@@ -645,15 +646,18 @@ export default {
         },
         checkSelectedSchedulStatus() 
         {
-            if (this.modalType == "edit") {
-                //edit schedule
-                //console.log("modal is ? " + this.modalType  + " , status : " + this.currentStatus);
+            if (this.modalType == "edit") 
+            {
 
                 if (this.currentStatus === "") {
                     return true;
                 }
 
-                if (this.currentStatus === 'CLIENT_RESERVED' || this.currentStatus === 'CLIENT_RESERVED_B') 
+                if (this.currentStatus === 'CLIENT_RESERVED' || this.currentStatus === 'CLIENT_RESERVED_B'
+                    || this.currentStatus === 'SUPPRESSED_SCHEDULE' 
+                    || this.currentStatus === 'CLIENT_NOT_AVAILABLE'
+                    || this.currentStatus === 'TUTOR_CANCELLED' || this.currentStatus === 'COMPLETED'
+                ) 
                 {                   
                     return false;
                 } else {                
@@ -935,6 +939,19 @@ export default {
                     this.modalBusy = false;        
                     alert (response.data.message);                   
                 }
+
+
+                //@note: auto refresh... (this is only used when there is duplicate)
+                if (response.data.refresh === true) 
+                {
+                    this.$nextTick(function()
+                    {  
+                        this.modalBusy = false;
+                        this.lessonsData = response.data.tutorLessonsData;
+                        this.$forceUpdate(); 
+                    });
+                }
+
 			}).catch(function(error) {
                 this.modalBusy = false;
                 alert("Error : updateTutorSchedule - " + error);                
@@ -1094,11 +1111,21 @@ export default {
                 this.$bvModal.hide("schedulesModal"); 
 			});              
         },
-        setMemberListLock() {            
-            if (this.status === "TUTOR_CANCELLED") {
+        setMemberListLock() {        
+            
+            if (this.modalType == "edit" &&  this.status === 'CLIENT_NOT_AVAILABLE') {
+                this.isStatusDisabled = true;  
+            } else if (this.status === "TUTOR_CANCELLED") {
                 this.membersSelection = 0;
                 this.isStatusDisabled = true;                
-            } else if (this.status === 'CLIENT_RESERVED' || this.status === "CLIENT_RESERVED_B" || this.status === "TUTOR_CANCELLED" || this.status === "NOTHING" || this.status === 'CLIENT_NOT_AVAILABLE'){
+            } else if (this.status === 'CLIENT_RESERVED' 
+                || this.status === "CLIENT_RESERVED_B" 
+                //|| this.status === "SUPPRESSED_SCHEDULE"                
+                //|| this.status === "TUTOR_CANCELLED"
+                || this.status === 'CLIENT_NOT_AVAILABLE'
+                || this.status === "NOTHING")
+            {
+                //the list of members with the status above will enabled for editing
                 this.isStatusDisabled = false;
             } else {
                 this.membersSelection = 0;

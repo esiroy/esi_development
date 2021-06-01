@@ -92,7 +92,9 @@ class TutorScheduleController extends Controller
     public function update(Request $request)
     {
         $lessonData = null;
-
+        $scheduled_at = $request['scheduled_at'];
+        $duration = $request['shiftDuration'];
+        
         try
         {
             DB::beginTransaction();
@@ -101,7 +103,7 @@ class TutorScheduleController extends Controller
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
             $tutorInfo = Tutor::find($tutor['tutorID']);
-            $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)
+            $lessonTime = date("Y-m-d H:i:s", strtotime($scheduled_at . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)
 
             //find schedule to update
             $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
@@ -129,7 +131,46 @@ class TutorScheduleController extends Controller
                 ];
             }
 
+
+            /****************************************************
+             * UPDATE (NEW) 
+             * DATE: JUNE 2021
+             * DESCRIPTION: CHECK IF LESSON EXIST
+             * NOTE: THIS WILL ONLY CHECK FOR CLIENT RESERVED A OR B AND SUPPRESSED SCHEDULE
+             ****************************************************/
+            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
+            {
+                //WHEN CLIENT IS RESERVED IT WILL NOT LET IT BOOK, IT WILL PROMPT TO REFRESH
+                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)->where('tutor_id', $tutorInfo->user_id)->where('schedule_status', '!=', 'TUTOR_SCHEDULED')->where('valid', 1)->exists();            
+                if ($isLessonExists) {                
+                    $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+                    return Response()->json([
+                        "success" => false,
+                        "refresh" => true,
+                        'tutorLessonsData' => $tutorLessonsData,
+                        "message" => "1. The Schedule $lessonTime is already booked or taken, press okay to refresh schedules.",
+                    ]);                    
+                }
+            } else if ($request['status'] == 'TUTOR_SCHEDULED' ||  $request['status'] == 'SUPPRESSED_SCHEDULE' || $request['status'] == 'CLIENT_NOT_AVAILABLE' || $request['status'] == 'COMPLETED') {
+
+                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)->where('tutor_id', $tutorInfo->user_id)->where('member_id', '!=', $memberID)->where('valid', 1)->exists();            
+                if ($isLessonExists) {                
+                    $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+                    return Response()->json([
+                        "success" => false,
+                        "refresh" => true,
+                        'tutorLessonsData' => $tutorLessonsData,
+                        "message" => "2. The Schedule $lessonTime is already booked or was updated during page load, press okay to refresh schedules.",
+                    ]);                    
+                }
+            }
+            
+                
+            /****************************************************
+             *  START UPDATING             
+             ****************************************************/
             if ($request['status'] == 'TUTOR_SCHEDULED') {
+
                 $emailType = null;
                 $lessonData = [
                     'member_id' => null,
@@ -139,8 +180,10 @@ class TutorScheduleController extends Controller
                 ];
 
             } else if ($request['status'] == 'TUTOR_CANCELLED') {
+
                 $emailType = $request['cancelationType'];
                 $lessonData = [
+                    'member_id' => $memberID,
                     'schedule_status' => $request['status'],
                     'email_type' => $emailType,
                     'valid' => 1,
@@ -165,15 +208,30 @@ class TutorScheduleController extends Controller
                     'valid' => 1,
                 ];
 
+
+                //CHECK IF LESSON EXIST ON SAME TIME AND SAME DATE, FLASH MESSAGE IF EXISTED ALREADY
+                /*
+                $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)->where('tutor_id', $tutorInfo->user_id)->where('valid', 1)->exists();
+                if ($isLessonExists) 
+                {
+                    $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+                    return Response()->json([
+                        "success" => false,
+                        "refresh" => true,
+                        'tutorLessonsData' => $tutorLessonsData,
+                        "message" => "The Schedule $lessonTime is already booked, press okay to refresh schedules."
+                    ]);
+                }*/                                
+
                 /****************************************************
-                 *       DUPLICATE MEMBER LESSON TIME CHECKER (UPDATE)
+                 *    DUPLICATE MEMBER LESSON TIME CHECKER (UPDATE)
                  *****************************************************/
                 $isTutorReserved = ScheduleItem::where('id', '!=', $scheduleItem->id)->where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED')->where('valid', 1)->exists();
                 $isTutorReserved_b = ScheduleItem::where('id', '!=', $scheduleItem->id)->where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED_B')->where('valid', 1)->exists();
                 if ($isTutorReserved || $isTutorReserved_b) {
                     return Response()->json([
                         "success" => false,
-                        "refresh" => false,
+                        "refresh" => true,
                         "message" => "Member already have a booked schedule for this  $lessonTime  time slot, try booking other time slot for this member.",
                     ]);
                 }
@@ -351,9 +409,12 @@ class TutorScheduleController extends Controller
         }
 
         try {
+
             DB::beginTransaction();
 
-            if ($request['status'] == 'TUTOR_CANCELLED') {
+            if ($request['status'] == 'TUTOR_CANCELLED') 
+            {
+
                 $emailType = $request['cancelationType'];
 
             } else if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
@@ -403,11 +464,14 @@ class TutorScheduleController extends Controller
                 'memo' => "",
             ];
 
-            //CHECK IF LESSON EXIST ON SAME TIME AND SAME DATE, FLASH MESSAGE IF EXISTED ALREADY
+            /****************************************************
+             * STORE (NEW) 
+             * DATE: JUNE 2021
+             * DESCRIPTION: CHECK IF LESSON EXIST ON SAME TIME AND SAME DATE, FLASH MESSAGE IF EXISTED ALREADY             
+             ****************************************************/
             $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)->where('tutor_id', $tutorInfo->user_id)->where('valid', 1)->exists();
             if ($isLessonExists) {
                 $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
-
                 return Response()->json([
                     "success" => false,
                     "refresh" => true,
@@ -415,10 +479,11 @@ class TutorScheduleController extends Controller
                     "message" => "The Schedule $lessonTime is already booked, press okay to refresh schedules.",
                 ]);
             }
-
-            //Check if member has other booked schedule on this time slot?
-            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') {
-                //check deactivated
+            
+            //CHECK IF MEMBER HAS OTHER BOOKED SCHEDULE ON THIS TIME SLOT?
+            if ($request['status'] == 'CLIENT_RESERVED' || $request['status'] == 'CLIENT_RESERVED_B') 
+            {
+                //CHECK IF USER IS DEACTIVATED
                 if ($memberInfo->user->is_activated == false) {
                     return Response()->json([
                         "success" => false,
@@ -514,11 +579,8 @@ class TutorScheduleController extends Controller
                         "success" => false,
                         //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                         //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
-
                         //"message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
                         //"message_en" => "No points / monthly limit or Credit Balance",
-
-
                         "message" => "Member Monthly Reservation limit Reached",
                         "message_en" => "Member Monthly Reservation limit Reached"                        
                     ]);
@@ -526,9 +588,8 @@ class TutorScheduleController extends Controller
             }
 
             $scheduleItem = ScheduleItem::create($lessonData);
+
             DB::commit();
-
-
 
             //** ADD MEMBER TRANSACTION */
             if ($memberID != null) {
