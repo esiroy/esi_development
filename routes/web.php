@@ -52,6 +52,14 @@ Route::get('importSchedules/import/{id}', 'TableScheduleItemImporterController@i
 Route::get('importSchedules/import/{id}/{per_item}', 'TableScheduleItemImporterController@importSchedules');
 
 /*************** 
+ * SCHEDULES UPDATE BY DATE
+ ****************/
+Route::get('scheduleUpdater/index/{date}', 'TableSchedulerUpdaterController@index');
+Route::resource('scheduleUpdater', 'TableSchedulerUpdaterController');
+
+
+
+/*************** 
  *  IMPORT QUESTIONNAIRES 
  ***************/
 Route::get('importQuestionnaire', 'TableQuestionnaireImporterController@index');
