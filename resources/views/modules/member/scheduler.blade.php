@@ -1,5 +1,7 @@
 @extends('layouts.esi-app')
 @section('content')
+
+
 <div class="container bg-light">
     <div class="esi-box mb-5 pb-4">
 
@@ -603,49 +605,89 @@
         input.setAttribute('min', date);
     }
 
-    function book(scheduleID, memberID) 
-    {
-        let response = "" ;
-
-        if (confirm('予約してもいいですか？')) {
-            $.ajax({
-                type: 'POST',
-                url: 'api/book?api_token=' + api_token,
-                data: {
-                    scheduleID: scheduleID,
-                    memberID: memberID
-                },
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(data) {                    
-                    if (data.success == true) {
-                        console.log(scheduleID);
-
-                        $('.button_' + scheduleID + ' .bookTutorSchedule').hide();
-                        $('.button_' + scheduleID + ' .cancel').show();
-
-                        $('#loadingModal').modal('hide');
-                        $('#loadingModal').hide();   
-
-                        $('#total_credits').text(data.credits)
+    function book(scheduleID, memberID) {
+        
+        $.ajax({
+            type: 'POST',
+            url: 'api/getTotalMemberDailyReserved?api_token=' + api_token,
+            data: {                    
+                memberID: memberID,
+                date: "{{ $dateToday }}"
+            },
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                $('#loadingModal').modal('show');
+                $('#loadingModal').show();  
+            },
+            success: function(data) {  
+                $('#loadingModal').modal('hide');
+                $('#loadingModal').hide(); 
+                if (data.success == true) {
+                    if (data.totalDailyReserved < 2) {
+                        setTimeout(() => {
+                            if (confirm('予約してもいいですか？')) {
+                                SaveMemberSchedule(scheduleID, memberID)
+                            }
+                        }, 100); 
                     } else {
-                       
-                        $('#loadingModal').modal('hide');
-                        $('#loadingModal').hide();  
-                                                
-                        $('#msgboxModal').modal('show');
-                        $('#msgboxMessage').text(data.message)
-                       
+                        setTimeout(() => {
+                            if (confirm('同日、同講師の予約上限2コマを超えています。こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
+                                SaveMemberSchedule(scheduleID, memberID)
+                            }                        
+                        }, 100);
                     }
-                },
-                complete: function(data) {              
-                   
-                }          
-            });
-        } else {
-            return false;                        
-        }
+                } else {
+                    $('#msgboxModal').modal('show');
+                    $('#msgboxMessage').text(data.message);
+                }           
+            }
+        });
+
+    }
+
+
+    function SaveMemberSchedule(scheduleID, memberID) 
+    {
+        let response = "";
+        $.ajax({
+            type: 'POST',
+            url: 'api/book?api_token=' + api_token,
+            data: {
+                scheduleID: scheduleID,
+                memberID: memberID
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                $('#loadingModal').modal('hide');
+                $('#loadingModal').hide();  
+            },
+            success: function(data) {                    
+                if (data.success == true) {
+                    console.log(scheduleID);
+
+                    $('.button_' + scheduleID + ' .bookTutorSchedule').hide();
+                    $('.button_' + scheduleID + ' .cancel').show();
+                    $('#total_credits').text(data.credits);
+
+                } else {
+                    
+                    $('#loadingModal').modal('hide');
+                    $('#loadingModal').hide();  
+                                            
+                    $('#msgboxModal').modal('show');
+                    $('#msgboxMessage').text(data.message)
+                    
+                }
+            },
+            complete: function(data) {              
+                $('#loadingModal').modal('hide');
+                $('#loadingModal').hide();                     
+            }          
+        });
     }
 
     function closeModal(id) {

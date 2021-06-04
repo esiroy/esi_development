@@ -32,108 +32,7 @@ class dummyController extends Controller
 
     }
 
-    public function test() {
-        return view('admin.test.index');
-
-    }
-
-    public function testUserPoints($memberID) {
-        //18153 - Kobayashi, Ryusei  
-
-    }
-
-    public function testExpiry(Member $member) 
-    {
-        $user_id =  Auth::user()->id;        
-    
-        $memberInfo = $member->where('user_id', 20372)->first();
-
-
-        $today = date("Y-m-d, H:i");
-        $expiry = date("Y-m-d, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));;
-
-        echo $today ." > ". $expiry;
-
-
-        
-        echo "<bR>";
-
-        
-        if ($today > $expiry) {
-            echo "hala expired<BR>";
-        } else {
-            echo "hala dili<BR>";
-        }
-
-        echo "<bR>";
-
-        if ($member->isMemberCreditExpired(20372)) {
-            echo "<p>expired</p>";
-        } else {
-            echo "not expired";
-        }
-
-
-    }
-
-
-    public function testGetMembers(Request $request) 
-    {
-        $today = Carbon::now();
-        $dateFrom = $request->get('from');
-        $dateTo = $request->get('to');
-
-        //get query with expiration null
-        $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
-        $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
-        $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
-        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
-        $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
-        $memberQuery = $memberQuery->groupby('members.user_id')->get()->toArray();
-
-        
-
-        $memberQueryOne = Member::join('users', 'users.id', '=', 'members.user_id');
-        $memberQueryOne = $memberQueryOne->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
-        $memberQueryOne = $memberQueryOne->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
-        $memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
-        $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
-        $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");        
-        $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
-
-        $memberQuery = array_merge($memberQuery, $memberQueryOne);
-
-
-
-        //get query with expiration null
-        $memberQueryThree = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
-        $memberQueryThree = $memberQueryThree->whereBetween('members.credits_expiration', array($dateFrom, $dateTo));
-        $memberQueryThree = $memberQueryThree->where('members.membership', "Point Balance");
-        $memberQueryThree = $memberQueryThree->groupby('members.user_id')->get()->toArray();
-
-        $memberQueryAll = array_merge($memberQuery, $memberQueryThree);
-
-        $memberQueryAll = unique_multidim_array($memberQueryAll, 'user_id');
-
-
-        foreach ($memberQueryAll as $memberItem) {
-            $member = Member::where('user_id', $memberItem['user_id'])->first();
-            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  Status: " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration
-             ." | Expired Added :  ". date('M-d-y', strtotime($memberItem['created_at']));
-            echo "<BR>";
-        }
-        
-        
-        /*
-        $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
-        ->select('members.user_id', 'members.nickname')
-        ->where('users.valid', 1)
-        ->get();
-
-        return view('admin.test.index');
-        */
-
-    }
+  
 
     public function index( LessonMailer $lessonMailer){
         
@@ -335,7 +234,110 @@ class dummyController extends Controller
 
     }
 
+    public function test() {
+        return view('admin.test.index');
+
+    }
+
+    public function testUserPoints($memberID) {
+        //18153 - Kobayashi, Ryusei  
+
+    }
+
+    public function testExpiry(Member $member) 
+    {
+        $user_id =  Auth::user()->id;        
+    
+        $memberInfo = $member->where('user_id', 20372)->first();
+
+
+        $today = date("Y-m-d, H:i");
+        $expiry = date("Y-m-d, 00:30", strtotime($memberInfo->credits_expiration ." + 1 day"));;
+
+        echo $today ." > ". $expiry;
+
+
         
+        echo "<bR>";
+
+        
+        if ($today > $expiry) {
+            echo "hala expired<BR>";
+        } else {
+            echo "hala dili<BR>";
+        }
+
+        echo "<bR>";
+
+        if ($member->isMemberCreditExpired(20372)) {
+            echo "<p>expired</p>";
+        } else {
+            echo "not expired";
+        }
+
+
+    }
+
+
+    public function testGetMembers(Request $request) 
+    {
+        $today = Carbon::now();
+        $dateFrom = $request->get('from');
+        $dateTo = $request->get('to');
+
+        //get query with expiration null
+        $memberQuery = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
+        $memberQuery = $memberQuery->whereBetween('agent_transaction.created_at', array($dateFrom, $dateTo));
+        $memberQuery = $memberQuery->where('agent_transaction.transaction_type', "LIKE", "EXPIRED");
+        $memberQuery = $memberQuery->where('members.membership', "Point Balance");
+        $memberQuery = $memberQuery->where('members.credits_expiration', null);  //expired
+        $memberQuery = $memberQuery->groupby('members.user_id')->get()->toArray();
+
+        
+
+        $memberQueryOne = Member::join('users', 'users.id', '=', 'members.user_id');
+        $memberQueryOne = $memberQueryOne->select("members.*", "users.id", "users.email", "users.firstname", 'users.lastname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as fullname"));
+        $memberQueryOne = $memberQueryOne->whereBetween(DB::raw('DATE(members.credits_expiration)'), array($dateFrom, $dateTo));
+        $memberQueryOne = $memberQueryOne->where('members.credits_expiration', ">=", $dateFrom);
+        $memberQueryOne = $memberQueryOne->whereDate('members.credits_expiration', '<=', $dateTo);
+        $memberQueryOne = $memberQueryOne->where('membership', "Point Balance");        
+        $memberQueryOne = $memberQueryOne->orderby('members.credits_expiration', 'ASC')->get()->toArray();
+
+        $memberQuery = array_merge($memberQuery, $memberQueryOne);
+
+
+
+        //get query with expiration null
+        $memberQueryThree = Member::join('agent_transaction', 'agent_transaction.member_id', '=', 'members.user_id');
+        $memberQueryThree = $memberQueryThree->whereBetween('members.credits_expiration', array($dateFrom, $dateTo));
+        $memberQueryThree = $memberQueryThree->where('members.membership', "Point Balance");
+        $memberQueryThree = $memberQueryThree->groupby('members.user_id')->get()->toArray();
+
+        $memberQueryAll = array_merge($memberQuery, $memberQueryThree);
+
+        $memberQueryAll = unique_multidim_array($memberQueryAll, 'user_id');
+
+
+        foreach ($memberQueryAll as $memberItem) {
+            $member = Member::where('user_id', $memberItem['user_id'])->first();
+            echo $member->user->id ." " .$member->user->firstname . " " . $member->user->lastname . "  Status: " .  $member->transaction_type . " | expiry:  " . $member->credits_expiration
+             ." | Expired Added :  ". date('M-d-y', strtotime($memberItem['created_at']));
+            echo "<BR>";
+        }
+        
+        
+        /*
+        $members =  DB::table('members')->join('users', 'users.id', '=', 'members.user_id')
+        ->select('members.user_id', 'members.nickname')
+        ->where('users.valid', 1)
+        ->get();
+
+        return view('admin.test.index');
+        */
+
+    }
+    
+    
 
     function excelExportTest() 
     {

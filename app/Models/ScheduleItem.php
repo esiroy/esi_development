@@ -50,7 +50,7 @@ class ScheduleItem extends Model
     /* @Added: MAY 21, 2021
      * @Desc:  Returns total number count of Reserved (A & B ONLY), this is for the member schedule list limiter to 
      * @Params: @MembeID - User ID of Member
-     * Returns: @total 
+     * Returns: @total (site wide number of reserved A and B)
     */
     public function getTotalMemberReserved($member) 
     {
@@ -62,6 +62,26 @@ class ScheduleItem extends Model
             })->where('lesson_time', ">=", $date)
             ->orderby('lesson_time', 'ASC')
             ->count();
+
+        return $total;
+    }
+
+    /**
+     * @Added: JUNE 3, 2021
+     * @Desc: Returns total number of reserve A and B for a particular day
+     * @Params: @membeID - User ID of Member
+     * @Params: @date (format Y, M, D)
+     * Returns: @total (number of reserved A and B in a particular day)
+    */
+    public function getTotalMemberDailyReserved($memberID, $date) 
+    {
+
+        $dateToExtended = date('Y-m-d', strtotime($date ." + 1 day"));                                                                                                    
+        $total = ScheduleItem::where('member_id', $memberID)->where('valid', 1)->where(function ($q) use ($memberID) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))
+        ->count();
 
         return $total;
     }

@@ -262,6 +262,23 @@ class MemberController extends Controller
         ]);      
     }
 
+    /* 
+        Returns @totalScheduledItem - the total count of scheduled A and B for the day
+    */
+    public function getTotalMemberDailyReserved(Request $request, ScheduleItem $scheduleItem, Member $member) 
+    {
+        $date = $request->date;
+        $memberID = $request->memberID;
+        $memberInfo = $member->where('user_id', $memberID)->first();
+        $totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $date);
+
+        return Response()->json([
+            "success" => true,
+            "totalDailyReserved" => $totalDailyReserved,
+            "message" => "Member has " . $totalDailyReserved,
+        ]);    
+    }
+
 
     /*
     Book a schedule
@@ -272,8 +289,17 @@ class MemberController extends Controller
         $scheduleID = $request->scheduleID;
         $memberID = $request->memberID;
         $schedule_status = 'CLIENT_RESERVED';
+        $schedule_status_b = 'CLIENT_RESERVED_B';
 
+        
         $memberInfo = Member::where('user_id',  $memberID)->first();
+
+        //find the schedule
+        $schedule = $scheduleItem->find($scheduleID);        
+
+        //total reservation for a day
+        $dateOfResevation = date("Y-m-d", strtotime($schedule->lesson_time));
+        $totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $dateOfResevation);
 
         //[UPDATE for MAY 15, 2022] 
         //LIMIT SCHEDULE ITEM (15 ITEMS)
@@ -297,8 +323,7 @@ class MemberController extends Controller
             ]);
         }    
 
-        //find the schedule
-        $schedule = $scheduleItem->find($scheduleID);
+
 
         if (!$schedule) {
             //schedule time  not found
@@ -424,12 +449,25 @@ class MemberController extends Controller
             ]);
         }
 
-        //@todo: save to database
-        $data = [
-            'member_id' => $memberID,
-            'schedule_status' => $schedule_status,
-        ];
-        $schedule->update($data);
+        /************************
+         * SAVE SCHEDULE STATUS 
+         * DESCRIPTION: WHEN SAVING, THE TOTAL DAILY RESERVED WILL BE SET TO RESERVED STATUS "B" 
+         *              IF YOU WILL BE RESERVED 2 OR MORE IN A DAY 
+         ************************/
+        if ($totalDailyReserved >= 2) 
+        {        
+            $data = [
+                'member_id' => $memberID,
+                'schedule_status' => $schedule_status_b,
+            ];
+            $schedule->update($data);
+        } else {
+            $data = [
+                'member_id' => $memberID,
+                'schedule_status' => $schedule_status,
+            ];
+            $schedule->update($data);            
+        }
 
 
         //** ADD MEMBER TRANSACTION */
@@ -473,16 +511,36 @@ class MemberController extends Controller
 
         $credits = $agentCredts->getCredits($memberID);
 
-        return Response()->json([
-            "success" => true,
-            "type"      => "msgbox",
-            "credits"  => "(". number_format($credits, 2) .")",
-            "message" => "Member has been scheduled",
-            "userData" => $request['user'],
-            "lesson_time" => $lessonTime,
-            "tutor_id" => $schedule->tutor_id,
-            "member_id" => Auth::user()->id,
-        ]);
+        if ($totalDailyReserved >= 2) 
+        {
+            return Response()->json([
+                "success" => true,
+                "type"      => "msgbox",
+                "credits"  => "(". number_format($credits, 2) .")",
+                "message"   => "同日、同講師の予約上限2コマを超えています。",
+                "message_en" => "On the same day, the instructor's reservation limit of 2 frames has been exceeded.",
+                "userData" => $request['user'],
+                "lesson_time" => $lessonTime,
+                "tutor_id" => $schedule->tutor_id,
+                "member_id" => Auth::user()->id,
+            ]);
+
+        } else {
+            return Response()->json([
+                "success" => true,
+                "type"      => "msgbox",
+                "credits"  => "(". number_format($credits, 2) .")",
+                "message" => "Member has been scheduled",
+                "message_en" => "Member has been scheduled.",
+                "userData" => $request['user'],
+                "lesson_time" => $lessonTime,
+                "tutor_id" => $schedule->tutor_id,
+                "member_id" => Auth::user()->id,
+            ]);
+        }
+        
+        
+
     }
 
     public function cancelSchedule(Request $request)
@@ -595,6 +653,13 @@ class MemberController extends Controller
 
                 $credits = $agentCredts->getCredits(Auth::user()->id);
 
+                //if client reserved B the booking link will not activate (this must be before update)
+                if ($schedule->schedule_status == "CLIENT_RESERVED") {
+                    $bookable = true;
+                } else {
+                    $bookable = false;
+                }
+
                 /*******************************************               
                     [START] UPDATE THE SCHEDULE
                 *******************************************/   
@@ -602,7 +667,7 @@ class MemberController extends Controller
 
                 return Response()->json([
                     "success" => true,
-                    'bookable' => true, //bookable(true) will add the link for booking
+                    'bookable' => $bookable, //bookable(true) will add the link for booking
                     "credits"  => "(". number_format($credits, 2) .")",
                     'buttonText' => '予約', //link for reserve
                     "message" => "Member schedule has been cancelled  and refunded " . $lessonTime . " >= " .  $valid_time,
