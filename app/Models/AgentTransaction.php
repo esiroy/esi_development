@@ -190,6 +190,7 @@ class AgentTransaction extends Model
             $q->orWhere('transaction_type', 'ADD')
                 ->orWhere('transaction_type', 'LESSON')
                 ->orWhere('transaction_type', 'CANCEL_LESSON')
+                ->orWhere('transaction_type', 'CANCEL_LESSON_B') //ADDED JUNE 9, 2021                
                 ->orWhere('transaction_type', 'MANUAL_ADD')
                 ->orWhere('transaction_type', 'FREE_CREDITS')                
                 ->orWhere('transaction_type', 'DISTRIBUTE')
@@ -207,6 +208,7 @@ class AgentTransaction extends Model
             $q->orWhere('transaction_type', 'ADD')
                 ->orWhere('transaction_type', 'LESSON')
                 ->orWhere('transaction_type', 'CANCEL_LESSON')
+                ->orWhere('transaction_type', 'CANCEL_LESSON_B') //ADDED JUNE 9, 2021
                 ->orWhere('transaction_type', 'MANUAL_ADD')
                 ->orWhere('transaction_type', 'FREE_CREDITS')                
                 ->orWhere('transaction_type', 'DISTRIBUTE')

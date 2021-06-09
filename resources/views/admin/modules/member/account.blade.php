@@ -158,10 +158,11 @@
                     <table width="100%" id="agentTableList" class="tablesorter  table-striped" cellspacing="0" cellpadding="5">
                         <tbody>
                             <tr>
-                                <th>Transaction Date</th>
+                                <th>Schedule <br/>ID</td>
+                                <th>Transaction<br>Date</th>
                                 <th>Transaction</th>
                                 <th>Lesson Date</th>
-                                <th>Lesson Status</th>
+ 
                                 <th>Name</th>
                                 <th>Points</th>
                                 <th>Original Credit Expiration Date</th>
@@ -174,25 +175,37 @@
                             @endphp
                             <tr>
                                 <td class="small">
+                                    {{ $scheduleItem->id ?? ''}}
+                                </td>
+                                <td class="small">
                                     {{ date('F d, Y', strtotime($transaction->created_at)) }} 
                                     <br/>
                                     {{ date('h:i:s a', strtotime($transaction->created_at)) }}                                    
                                 </td>
 
                                 <td class="small">
-                                    {{ str_replace("_", " ", ucwords(strtolower($transaction->transaction_type))) }}
+                                    @if ($transaction->transaction_type == "CANCEL_LESSON_B") 
+                                        <div class="text-danger">
+                                            <strong> {{ "CANCEL LESSON"}} - <br>  {{ "(CLIENT RESERVED B)" }}</strong>
+                                        </div> 
+                                    @else 
+                                        {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }}
+                                    @endif                                    
                                 </td>
 
 
-                                <td class="lesson_date small">
+                                <td class="small">
                                     @if (isset($scheduleItem->lesson_time)) 
                                         {{ date('F d, Y', strtotime($scheduleItem->lesson_time )) }} 
                                         <br/>
                                         {{ date('h:i:s a', strtotime($scheduleItem->lesson_time )) }}
                                     @endif
                                 </td>
+                                
+             
 
 
+                                <!--
                                 <td class="lesson_status small">
                                     @if (isset($scheduleItem->schedule_status)) 
                                         @if ($scheduleItem->schedule_status == "CLIENT_RESERVED_B") 
@@ -204,6 +217,7 @@
                                         {{ "-" }}
                                     @endif                                    
                                 </td>
+                                -->
 
                                 <td class="small">
                                     <!-- @note: get member name -->
@@ -221,13 +235,15 @@
                                         {{ "-" }} {{ $transaction->amount }}
                                     @elseif ($transaction->transaction_type ==  "MANUAL_ADD" || $transaction->transaction_type == "CANCEL_LESSON" || $transaction->transaction_type == "DISTRIBUTE" || $transaction->transaction_type == "FREE_CREDITS")
                                         {{ "+" }} {{ $transaction->amount }}
+                                    @elseif ($transaction->transaction_type == "CANCEL_LESSON_B") 
+                                        <span class="text-danger"> &nbsp; 0 </span>
                                     @else 
                                         {{ " " }}
                                     @endif
                                 </td>
 
 
-                                <td>
+                                <td class="small">
                                     <!-- original credit expiration -->
                                     @if (isset($transaction->old_credits_expiration))
                                         {{ date('m/d/y h:i:s a', strtotime($transaction->old_credits_expiration)) }}
@@ -235,7 +251,7 @@
                                 </td>
 
 
-                                <td>{{ $transaction->remarks }}</td>
+                                <td class="small">{{ $transaction->remarks }}</td>
                                 
                             </tr>
                             @endforeach

@@ -374,7 +374,7 @@ class MemberController extends Controller
                 "success"   => false,
                 "type"      => "msgbox",
                 "message"   => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                "message_en" => "You are out of points or your points have expired.",    
+                "message_en" => "You are out of points or your points have expired. (error code: 0001 - c.e)",    
             ]);                  
         }
 
@@ -384,7 +384,7 @@ class MemberController extends Controller
                 "success" => false,
                 "type"      => "msgbox",           
                 "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                "message_en" => "You are out of points or your points have expired.",   
+                "message_en" => "You are out of points or your points have expired. (error code: 002 - insuffecient point)",   
             ]);              
         }  
 
@@ -394,7 +394,7 @@ class MemberController extends Controller
                 "success"   => false,
                 "type"      => "msgbox",
                 "message"   => "ポイントが不足しているか、ポイントの有効期限が切れています。/ reserved schedule exceeds expiration date",
-                "message_en" => "You are out of points or your points have expired.",       
+                "message_en" => "You are out of points or your points have expired. (error code: 003 - lesson time invalid)",       
             ]); 
         }        
         
@@ -434,7 +434,7 @@ class MemberController extends Controller
                     //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                     //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
                     "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                    "message_en" => "You are out of points or your points have expired.",
+                    "message_en" => "You are out of points or your points have expired. (member total monthly reserved limit)",
                 ]);        
             }    
         } else {
@@ -444,7 +444,7 @@ class MemberController extends Controller
                 //"message" => "月間設定受講回数を超えているか、ポイントが足りないためレッスンの予約ができません",
                 //"message_en" => "I cannot book a lesson because I have exceeded the monthly set number of lessons or I do not have enough points",
                 "message" => "ポイントが不足しているか、ポイントの有効期限が切れています。",
-                "message_en" => "You are out of points or your points have expired.",                     
+                "message_en" => "You are out of points or your points have expired. (member total monthly is Zero)",                     
             ]);
         }
 
@@ -630,6 +630,16 @@ class MemberController extends Controller
                 else if ($schedule->schedule_status == "CLIENT_RESERVED_B") 
                 {
                     //[client reserved b] - no refund 
+                    $transaction = [
+                        'schedule_item_id' => $scheduleID,
+                        'member_id' => Auth::user()->id,
+                        'created_by_id' => Auth::user()->id,                   
+                        'transaction_type' => "CANCEL_LESSON_B", //<<--- this will NOT refund the transaction: NOTE: B TYPE CANCEL
+                        'amount' => 0,
+                        'valid' => true,
+                    ];        
+                    AgentTransaction::create($transaction); 
+
                     //turn the the status to not available since it is B
                     $data = [
                         'schedule_status' => 'CLIENT_NOT_AVAILABLE',                     
