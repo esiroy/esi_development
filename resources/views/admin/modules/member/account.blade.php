@@ -187,15 +187,19 @@
                                         <div class="text-danger">
                                             <strong> {{ "CANCEL LESSON"}} - <br>  {{ "(CLIENT RESERVED B)" }}</strong>
                                         </div> 
-                                    @else 
-                                        {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }}
-
+                                    @else          
                                         @if (isset($scheduleItem->schedule_status)) 
                                             @if ($scheduleItem->schedule_status === "CLIENT_RESERVED_B")
                                                 <div class="text-danger">
-                                                    <strong>{{ $scheduleItem->schedule_status ?? ''}}</strong>
+                                                    <strong> {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }} - <br>
+                                                    ({{ strtoupper(formatStatus($scheduleItem->schedule_status)) ?? ''}})
+                                                    </strong>
                                                 </div>
-                                            @endif
+                                            @else 
+                                                {{ formatStatus($transaction->transaction_type) }}
+                                            @endif                                      
+                                        @else  
+                                            {{ formatStatus($transaction->transaction_type) }}
                                         @endif
                                     @endif                                    
                                 </td>
