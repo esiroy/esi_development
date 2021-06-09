@@ -166,6 +166,7 @@
                                 <th>Original Credit Expiration Date</th>
                                 <th>Remarks</th>
                             </tr>
+                            
 
                             @foreach($transactions as $transaction)
                             @php 
