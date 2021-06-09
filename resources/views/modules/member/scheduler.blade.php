@@ -157,7 +157,7 @@
 
                                             <div class="button_{{ $scheduleID }}">
 
-                                                <a class="bookTutorSchedule" onclick="book('{{ $scheduleID }}', '{{ Auth::user()->id }}')" href="javascript:void(0)">予約</a>
+                                                <a class="bookTutorSchedule" onclick="book('{{ $scheduleID }}', '{{ Auth::user()->id }}', '{{ $tutor->user_id }}')" href="javascript:void(0)">予約</a>
 
                                                 <div class="doneTutorSchedule gen-med" style="display:none">済他</div>     
                                                 
@@ -588,7 +588,6 @@
     }
 
 
-
     function disablePreviousDates() {
         var input = document.getElementById("dateToday");
         var today = new Date();
@@ -605,13 +604,14 @@
         input.setAttribute('min', date);
     }
 
-    function book(scheduleID, memberID) {
+    function book(scheduleID, memberID, tutorID) {
         
         $.ajax({
             type: 'POST',
-            url: 'api/getTotalMemberDailyReserved?api_token=' + api_token,
+            url: 'api/getTotalTutorDailyReserved?api_token=' + api_token,
             data: {                    
                 memberID: memberID,
+                tutorID, tutorID,
                 date: "{{ $dateToday }}"
             },
             headers: {
@@ -625,16 +625,16 @@
                 $('#loadingModal').modal('hide');
                 $('#loadingModal').hide(); 
                 if (data.success == true) {
-                    if (data.totalDailyReserved < 2) {
+                    if (data.totalTutorDailyReserved < 2) {
                         setTimeout(() => {
                             if (confirm('予約してもいいですか？')) {
-                                SaveMemberSchedule(scheduleID, memberID)
+                                SaveMemberSchedule(scheduleID, memberID, tutorID)
                             }
                         }, 100); 
                     } else {
                         setTimeout(() => {
                             if (confirm('同日、同講師の予約上限2コマを超えています。こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
-                                SaveMemberSchedule(scheduleID, memberID)
+                                SaveMemberSchedule(scheduleID, memberID, tutorID)
                             }                        
                         }, 100);
                     }
@@ -648,7 +648,7 @@
     }
 
 
-    function SaveMemberSchedule(scheduleID, memberID) 
+    function SaveMemberSchedule(scheduleID, memberID, tutorID) 
     {
         let response = "";
         $.ajax({
@@ -656,7 +656,8 @@
             url: 'api/book?api_token=' + api_token,
             data: {
                 scheduleID: scheduleID,
-                memberID: memberID
+                memberID: memberID,
+                tutorID: tutorID
             },
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -694,7 +695,14 @@
         $(id).modal('hide');
     }
 
-    function cancel(id) {
+
+    function cancel($id) {
+        //get status if schedule A or B
+        
+    }
+
+    
+    function deleteMemberSchedule(id) {
 
         if (confirm('このレッスンをキャンセルしてもいいですか？')) {
 

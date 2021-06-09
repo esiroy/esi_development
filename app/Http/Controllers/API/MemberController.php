@@ -278,7 +278,21 @@ class MemberController extends Controller
             "message" => "Member has " . $totalDailyReserved,
         ]);    
     }
+    
+    public function getTotalTutorDailyReserved(Request $request, ScheduleItem $scheduleItem, Member $member) 
+    {
+        $date = $request->date;
+        $memberID = $request->memberID;
+        $tutorID = $request->tutorID;        
+        $memberInfo = $member->where('user_id', $memberID)->first();
+        $totalTutorDailyReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $date);
 
+        return Response()->json([
+            "success" => true,
+            "totalTutorDailyReserved" => $totalTutorDailyReserved,
+            "message" => "Tutor has " . $totalTutorDailyReserved ." for member " . $memberID,
+        ]);           
+    }
 
     /*
     Book a schedule
@@ -287,6 +301,7 @@ class MemberController extends Controller
     {        
         $scheduleItem = new ScheduleItem;
         $scheduleID = $request->scheduleID;
+        $tutorID = $request->tutorID;  
         $memberID = $request->memberID;
         $schedule_status = 'CLIENT_RESERVED';
         $schedule_status_b = 'CLIENT_RESERVED_B';
@@ -299,7 +314,8 @@ class MemberController extends Controller
 
         //total reservation for a day
         $dateOfResevation = date("Y-m-d", strtotime($schedule->lesson_time));
-        $totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $dateOfResevation);
+        //$totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $dateOfResevation);
+        $totalDailyTutorReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $dateOfResevation);
 
         //[UPDATE for MAY 15, 2022] 
         //LIMIT SCHEDULE ITEM (15 ITEMS)
@@ -454,7 +470,7 @@ class MemberController extends Controller
          * DESCRIPTION: WHEN SAVING, THE TOTAL DAILY RESERVED WILL BE SET TO RESERVED STATUS "B" 
          *              IF YOU WILL BE RESERVED 2 OR MORE IN A DAY 
          ************************/
-        if ($totalDailyReserved >= 2) 
+        if ($totalDailyTutorReserved >= 2) 
         {        
             $data = [
                 'member_id' => $memberID,
@@ -511,7 +527,7 @@ class MemberController extends Controller
 
         $credits = $agentCredts->getCredits($memberID);
 
-        if ($totalDailyReserved >= 2) 
+        if ($totalDailyTutorReserved >= 2) 
         {
             return Response()->json([
                 "success" => true,

@@ -69,6 +69,7 @@ Route::middleware('auth:api')->post('/postComment', 'API\MemberController@postCo
 Route::middleware('auth:api')->post('/viewComment', 'API\MemberController@viewComment')->name('APIViewComment');
 Route::middleware('auth:api')->post('/getBookScheduledCount', 'API\MemberController@getBookScheduledCount')->name('APIgetBookScheduledCount');
 Route::middleware('auth:api')->post('/getTotalMemberDailyReserved', 'API\MemberController@getTotalMemberDailyReserved')->name('APIGetTotalMemberDailyReserved');
+Route::middleware('auth:api')->post('/getTotalTutorDailyReserved', 'API\MemberController@getTotalTutorDailyReserved')->name('APIGetTotalTutorDailyReserved');
 
 
 

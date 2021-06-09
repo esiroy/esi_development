@@ -68,10 +68,10 @@ class ScheduleItem extends Model
 
     /**
      * @Added: JUNE 3, 2021
-     * @Desc: Returns total number of reserve A and B for a particular day
+     * @Desc: Returns total number of reserve A and B for a particular day for a particular member
      * @Params: @membeID - User ID of Member
      * @Params: @date (format Y, M, D)
-     * Returns: @total (number of reserved A and B in a particular day)
+     * Returns: @total (number of reserved A and B in a particular day for a particular member)
     */
     public function getTotalMemberDailyReserved($memberID, $date) 
     {
@@ -85,6 +85,46 @@ class ScheduleItem extends Model
 
         return $total;
     }
+
+    /**
+     * @Added: JUNE 7, 2021
+     * @Desc: Returns total number of reserve A and B for a particular day for a particular Tutor         
+     * @Params: @membeID - User ID of Member
+     * @Params: @tutor - Tutot ID of Teacher
+     * @Params: @date (format Y, M, D)
+     * Returns: @total (number of reserved A and B in a particular day)
+    */    
+    public function getTotalTutorDailyReserved($memberID, $tutorID, $date) {
+        $dateToExtended = date('Y-m-d', strtotime($date ." + 1 day"));       
+        
+        $totalA = ScheduleItem::where('member_id', $memberID)
+                    ->where('tutor_id', $tutorID)
+                    ->where('valid', 1)->where('schedule_status', 'CLIENT_RESERVED')
+                    ->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))
+                    ->count();
+
+
+        $totalB = ScheduleItem::where('member_id', $memberID)
+                    ->where('tutor_id', $tutorID)
+                    ->where('valid', 1)
+                    ->where('schedule_status', 'CLIENT_RESERVED_B')
+                    ->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))
+                    ->count();
+
+        $total = $totalA + $totalB;
+
+
+        /*
+        $total = ScheduleItem::where('member_id', $memberID)->where('tutor_id', $tutorID)->where('valid', 1)->where(function ($q) use ($memberID) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))        
+        ->count();
+        */
+
+        return $total;
+    }
+
 
     /* Returns the Schedules based on Lesson Time, month, year */
     public function getTotalLessonReserved($memberID, $month, $year) 
