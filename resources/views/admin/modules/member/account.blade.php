@@ -155,11 +155,12 @@
                     Member Transaction
                 </div>
                 <div class="card-body esi-card-body">
-                    <table width="100%" id="agentTableList" class="tablesorter" cellspacing="0" cellpadding="5">
+                    <table width="100%" id="agentTableList" class="tablesorter  table-striped" cellspacing="0" cellpadding="5">
                         <tbody>
                             <tr>
-                                <th>Date</th>
+                                <th>Transaction Date</th>
                                 <th>Transaction</th>
+                                <th>Lesson Date</th>
                                 <th>Lesson Status</th>
                                 <th>Name</th>
                                 <th>Points</th>
@@ -168,21 +169,31 @@
                             </tr>
 
                             @foreach($transactions as $transaction)
+                            @php 
+                                $scheduleItem = \App\Models\ScheduleItem::where('id', $transaction->schedule_item_id)->first();
+                            @endphp
                             <tr>
-                                <td>
-                                    {{ date('F d, Y h:i:s a', strtotime($transaction->created_at)) }}
+                                <td class="small">
+                                    {{ date('F d, Y', strtotime($transaction->created_at)) }} 
+                                    <br/>
+                                    {{ date('h:i:s a', strtotime($transaction->created_at)) }}                                    
                                 </td>
 
-                                <td>
+                                <td class="small">
                                     {{ str_replace("_", " ", ucwords(strtolower($transaction->transaction_type))) }}
                                 </td>
 
-                                <td class="lesson_status">
 
-                                    @php 
-                                        $scheduleItem = \App\Models\ScheduleItem::where('id', $transaction->schedule_item_id)->first();
-                                    @endphp
+                                <td class="lesson_date small">
+                                    @if (isset($scheduleItem->lesson_time)) 
+                                        {{ date('F d, Y', strtotime($scheduleItem->lesson_time )) }} 
+                                        <br/>
+                                        {{ date('h:i:s a', strtotime($scheduleItem->lesson_time )) }}
+                                    @endif
+                                </td>
 
+
+                                <td class="lesson_status small">
                                     @if (isset($scheduleItem->schedule_status)) 
                                         @if ($scheduleItem->schedule_status == "CLIENT_RESERVED_B") 
                                             <span class="text-danger">{{ formatStatus($scheduleItem->schedule_status) ?? '-' }}</span>
@@ -191,11 +202,10 @@
                                         @endif
                                     @else 
                                         {{ "-" }}
-                                    @endif
-                                    
+                                    @endif                                    
                                 </td>
 
-                                <td>
+                                <td class="small">
                                     <!-- @note: get member name -->
                                     @php 
                                         $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
@@ -205,7 +215,7 @@
                                 </td>
 
 
-                                <td>
+                                <td class="small">
                                     <!-- points -->
                                     @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON" || $transaction->transaction_type == "EXPIRED" )
                                         {{ "-" }} {{ $transaction->amount }}
