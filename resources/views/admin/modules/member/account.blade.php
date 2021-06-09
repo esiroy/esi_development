@@ -157,8 +157,8 @@
                     <table width="100%" id="agentTableList" class="tablesorter  table-striped" cellspacing="0" cellpadding="5">
                         <tbody>
                             <tr>
-                                <th>Schedule <br/>ID</td>
-                                <th>Transaction<br>Date</th>
+                                <!--<th>Schedule <br/>ID</td>-->
+                                <th>Transaction Date</th>
                                 <th>Transaction</th>
                                 <th>Lesson Date</th> 
                                 <th>Name</th>
@@ -173,25 +173,27 @@
                                 $scheduleItem = \App\Models\ScheduleItem::where('id', $transaction->schedule_item_id)->first();
                             @endphp
                             <tr>
+                                <!--
                                 <td class="small">
                                     {{ $scheduleItem->id ?? ''}}
                                 </td>
+                                -->
                                 <td class="small">
                                     {{ date('F d, Y', strtotime($transaction->created_at)) }} 
-                                    <br/>
+                                   
                                     {{ date('h:i:s a', strtotime($transaction->created_at)) }}                                    
                                 </td>
 
                                 <td class="small">
                                     @if ($transaction->transaction_type == "CANCEL_LESSON_B") 
                                         <div class="text-danger">
-                                            <strong> {{ "CANCEL LESSON"}} - <br>  {{ "(CLIENT RESERVED B)" }}</strong>
+                                            <strong> {{ "CANCEL LESSON"}} -   {{ "(CLIENT RESERVED B)" }}</strong>
                                         </div> 
                                     @else          
                                         @if (isset($scheduleItem->schedule_status)) 
                                             @if ($scheduleItem->schedule_status === "CLIENT_RESERVED_B")
                                                 <div class="text-danger">
-                                                    <strong> {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }} - <br>
+                                                    <strong> {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }} - 
                                                     ({{ strtoupper(formatStatus($scheduleItem->schedule_status)) ?? ''}})
                                                     </strong>
                                                 </div>
@@ -207,9 +209,22 @@
 
                                 <td class="small">
                                     @if (isset($scheduleItem->lesson_time)) 
-                                        {{ date('F d, Y', strtotime($scheduleItem->lesson_time )) }} 
-                                        <br/>
-                                        {{ date('h:i:s a', strtotime($scheduleItem->lesson_time )) }}
+                                            <!--{{ date('F d, Y', strtotime($scheduleItem->lesson_time )) }} -->
+
+                                            <!-- Date -->
+                                            @if ( date("H", strtotime($scheduleItem->lesson_time)) == "00")
+                                                {{ date("m/d/Y", strtotime($scheduleItem->lesson_time ." -1 day" )) }}    
+                                            @else 
+                                                {{ date("m/d/Y", strtotime($scheduleItem->lesson_time )) }}    
+                                            @endif
+                                                                                    
+                                       
+                                          <!-- Time -->      
+                                            @if (date("H", strtotime($scheduleItem->lesson_time)) == "00")
+                                                {{ date("24:i", strtotime($scheduleItem->lesson_time)) }}
+                                            @else 
+                                                {{ date("H:i", strtotime($scheduleItem->lesson_time)) }}
+                                            @endif
                                     @endif
                                 </td>
                                 
