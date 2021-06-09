@@ -696,13 +696,15 @@
     }
 
 
+    /*
     function cancel($id) {
         //get status if schedule A or B
         
     }
+    */
 
     
-    function deleteMemberSchedule(id) {
+    function cancel(id) {
 
         if (confirm('このレッスンをキャンセルしてもいいですか？')) {
 
