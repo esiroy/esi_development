@@ -160,6 +160,7 @@
                             <tr>
                                 <th>Date</th>
                                 <th>Transaction</th>
+                                <th>Lesson Status</th>
                                 <th>Name</th>
                                 <th>Points</th>
                                 <th>Original Credit Expiration Date</th>
@@ -171,8 +172,27 @@
                                 <td>
                                     {{ date('F d, Y h:i:s a', strtotime($transaction->created_at)) }}
                                 </td>
+
                                 <td>
                                     {{ str_replace("_", " ", ucwords(strtolower($transaction->transaction_type))) }}
+                                </td>
+
+                                <td class="lesson_status">
+
+                                    @php 
+                                        $scheduleItem = \App\Models\ScheduleItem::where('id', $transaction->schedule_item_id)->first();
+                                    @endphp
+
+                                    @if (isset($scheduleItem->schedule_status)) 
+                                        @if ($scheduleItem->schedule_status == "CLIENT_RESERVED_B") 
+                                            <span class="text-danger">{{ formatStatus($scheduleItem->schedule_status) ?? '-' }}</span>
+                                        @else                                         
+                                            {{ formatStatus($scheduleItem->schedule_status) ?? '-' }}
+                                        @endif
+                                    @else 
+                                        {{ "-" }}
+                                    @endif
+                                    
                                 </td>
 
                                 <td>
