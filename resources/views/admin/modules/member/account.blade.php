@@ -161,8 +161,7 @@
                                 <th>Schedule <br/>ID</td>
                                 <th>Transaction<br>Date</th>
                                 <th>Transaction</th>
-                                <th>Lesson Date</th>
- 
+                                <th>Lesson Date</th> 
                                 <th>Name</th>
                                 <th>Points</th>
                                 <th>Original Credit Expiration Date</th>
