@@ -189,6 +189,14 @@
                                         </div> 
                                     @else 
                                         {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }}
+
+                                        @if (isset($scheduleItem->schedule_status)) 
+                                            @if ($scheduleItem->schedule_status === "CLIENT_RESERVED_B")
+                                                <div class="text-danger">
+                                                    <strong>{{ $scheduleItem->schedule_status ?? ''}}</strong>
+                                                </div>
+                                            @endif
+                                        @endif
                                     @endif                                    
                                 </td>
 
