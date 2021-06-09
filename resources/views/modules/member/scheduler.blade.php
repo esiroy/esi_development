@@ -663,8 +663,8 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             beforeSend: function() {
-                //$('#loadingModal').modal('hide');
-                //$('#loadingModal').hide();  
+                $('#loadingModal').modal('show');
+                $('#loadingModal').show();  
             },
             success: function(data) {                    
                 if (data.success == true) {
