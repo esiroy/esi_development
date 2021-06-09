@@ -9,6 +9,8 @@
     <meta name="description" content="My Tutor">
     <meta name="keywords" content="Tutor, Japan, Lesson">
     <title>{{ config('app.name', 'My Tutor') }}</title>
+        
+    <script type='text/javascript' src="https://code.jquery.com/jquery-1.7.1.min.js" integrity="sha256-iBcUE/x23aI6syuqF7EeT/+JFBxjPs5zeFJEXxumwb0=" crossorigin="anonymous"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -48,11 +50,11 @@
 
     <!--<div id="new_member_ID"> {{ $user->id }} </div> -->
 
-    <img src="https://px.a8.net/cgi-bin/a8fly/sales?pid=s00000012345001&so={{ $user->id  ?? ''}}&si=926.1.926.a8" width="1" height="1" />
-	<img src="https://advack.net/m/img.php?pcode=248&aid={{ $user->id  ?? ''}}" width="1" height="1" />     
+    <img src="https://px.a8.net/cgi-bin/a8fly/sales?pid=s00000012345001&so={{ $user->id  ?? ''}}&si=926.1.926.a8" width="1" height="1" style="height: 1px;display: block;background-color:yellow"/>
+	<img src="https://advack.net/m/img.php?pcode=248&aid={{ $user->id  ?? ''}}" width="1" height="1" style="height: 1px;display: block;background-color:yellow"/>     
 
     <!-- Google Code for &#20250;&#21729;&#30331;&#37682; Conversion Page -->
-    <script type="text/javascript">
+    <script type="text/javascript" defer>
         / <![CDATA[ /
         var google_conversion_id = 1013785582;
         var google_conversion_language = "en";
@@ -81,7 +83,7 @@
     </script>
     
     <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"> </script>		
-    <span id="a8sales"></span>
+    <span id="a8sales" style="height: 1px;display: block;background-color:yellow"></span>
 
     <!--<script type='text/javascript' src='scripts/dan_test_script.js'></script>-->
     <!-- <script src="//statics.a8.net/a8sales/a8sales.js"></script>-->
@@ -545,10 +547,9 @@
     </script>
 
     <script>
-
         a8sales({
         "pid": "s00000012345001",
-        "order_number": "${new_memberid}",
+        "order_number": "{{ $user->id  ?? ''}}",
         "currency": "JPY",
         "items": [
         {
@@ -561,7 +562,9 @@
         "total_price": 926,
         });
     </script>
-    
+    <script>
+        console.log("member activated");
+    </script>
     @yield('scripts')
 </body>
 </html>
