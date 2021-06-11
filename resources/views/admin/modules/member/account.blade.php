@@ -204,10 +204,10 @@
                                                     </strong>
                                                 </div>
                                             @else
-                                               1-2 {{ strtoupper(formatStatus($transaction->transaction_type)) }} 
+                                              {{ strtoupper(formatStatus($transaction->transaction_type)) }} 
                                             @endif                                      
                                         @else  
-                                           11 {{ strtoupper(formatStatus($transaction->transaction_type)) }}
+                                           {{ strtoupper(formatStatus($transaction->transaction_type)) }}
                                         @endif
                                     @endif                                    
                                 </td>
@@ -253,11 +253,32 @@
 
                                 <td class="small">
                                     <!-- @note: get member name -->
+                                    
                                     @php 
                                         $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
                                     @endphp
+                                    Created By: {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
 
-                                    {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
+
+
+                                    <div>Member:{{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}</div>
+
+                                    @php 
+                                        $member = \App\Models\User::where('id', $transaction->member_id)->first();
+                                    @endphp
+
+
+
+                                    @if (isset($scheduleItem->tutor_id))
+
+                                        @php 
+                                            $tutor = \App\Models\User::where('id', $scheduleItem->tutor_id)->first();
+                                        @endphp
+
+
+                                        <div>Tutor: {{ $tutor->firstname ?? "-"  }}  {{ $tutor->lastname ?? ""  }}</div>
+                                    @endif
+
                                 </td>
 
 
