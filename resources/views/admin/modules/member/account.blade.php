@@ -185,23 +185,29 @@
                                 </td>
 
                                 <td class="small">
-                                    @if ($transaction->transaction_type == "CANCEL_LESSON_B") 
-                                        <div class="text-danger">
-                                            <strong> {{ "CANCEL LESSON"}} -   {{ "(CLIENT RESERVED B)" }}</strong>
-                                        </div> 
+
+                                    @if ($transaction->transaction_type == "CANCEL_LESSON") 
+                                        @if ($transaction->reservation_type == "CLIENT_RESERVED_B") 
+                                            <div class="text-danger">
+                                                <strong> {{ "CANCEL LESSON"}} -   {{ "(CLIENT RESERVED B)" }}</strong>
+                                            </div> 
+                                        @else 
+                                             <strong> {{ "CANCEL LESSON"}} </strong>                                    
+                                        @endif
                                     @else          
                                         @if (isset($scheduleItem->schedule_status)) 
-                                            @if ($scheduleItem->schedule_status === "CLIENT_RESERVED_B")
+                                            @if ($scheduleItem->schedule_status === "CLIENT_RESERVED_B" || $transaction->reservation_type == "CLIENT_RESERVED_B")
                                                 <div class="text-danger">
-                                                    <strong> {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }} - 
-                                                    ({{ strtoupper(formatStatus($scheduleItem->schedule_status)) ?? ''}})
+                                                    <strong>
+                                                        {{ str_replace("_", " ", ucwords($transaction->transaction_type)) }} - 
+                                                        {{ "(CLIENT RESERVED B)" }}
                                                     </strong>
                                                 </div>
-                                            @else 
-                                                {{ formatStatus($transaction->transaction_type) }}
+                                            @else
+                                               1-2 {{ strtoupper(formatStatus($transaction->transaction_type)) }} 
                                             @endif                                      
                                         @else  
-                                            {{ formatStatus($transaction->transaction_type) }}
+                                           11 {{ strtoupper(formatStatus($transaction->transaction_type)) }}
                                         @endif
                                     @endif                                    
                                 </td>

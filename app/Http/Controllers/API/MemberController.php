@@ -471,18 +471,21 @@ class MemberController extends Controller
          *              IF YOU WILL BE RESERVED 2 OR MORE IN A DAY 
          ************************/
         if ($totalDailyTutorReserved >= 2) 
-        {        
+        {   
+            $reservation_type = $schedule_status_b;      
             $data = [
                 'member_id' => $memberID,
                 'schedule_status' => $schedule_status_b,
             ];
             $schedule->update($data);
         } else {
+            $reservation_type = $schedule_status;
             $data = [
                 'member_id' => $memberID,
                 'schedule_status' => $schedule_status,
             ];
-            $schedule->update($data);            
+            $schedule->update($data);
+
         }
 
 
@@ -497,6 +500,7 @@ class MemberController extends Controller
                 'created_by_id' => Auth::user()->id,
                 'lesson_shift_id' => $shift->id,
                 'transaction_type' => "LESSON",
+                'reservation_type' => $reservation_type, 
                 'amount' => 1,
                 'valid' => true,
             ];
@@ -592,6 +596,7 @@ class MemberController extends Controller
                         'member_id' => Auth::user()->id,
                         'created_by_id' => Auth::user()->id,                   
                         'transaction_type' => "CANCEL_LESSON", //<<--- this will refund the transaction
+                        'reservation_type' => $schedule->schedule_status, //(update) June 10, 2021                        
                         'amount' => 1,
                         'valid' => true,
                     ];        
@@ -635,6 +640,7 @@ class MemberController extends Controller
                         'member_id' => Auth::user()->id,
                         'created_by_id' => Auth::user()->id,                   
                         'transaction_type' => "CANCEL_LESSON_B", //<<--- this will NOT refund the transaction: NOTE: B TYPE CANCEL
+                        'reservation_type' => $schedule->schedule_status, //(update) June 10, 2021
                         'amount' => 0,
                         'valid' => true,
                     ];        

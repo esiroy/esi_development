@@ -91,22 +91,28 @@ class TutorScheduleController extends Controller
      */
     public function update(Request $request)
     {
+ 
         $lessonData = null;
         $scheduled_at = $request['scheduled_at'];
         $duration = $request['shiftDuration'];
         
+        $scheduledItemData = $request['scheduledItemData'];
+        
+        //find schedule to update
+        $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
+        $reservationType = $scheduleItem->schedule_status; //previous reservation type
+
         try
         {
             DB::beginTransaction();
 
-            $scheduledItemData = $request['scheduledItemData'];
+
             $tutor = $request['tutorData'];
             $member = $request['memberData'];
             $tutorInfo = Tutor::find($tutor['tutorID']);
             $lessonTime = date("Y-m-d H:i:s", strtotime($scheduled_at . " " . $tutor['startTime'] . " + 1 hour")); //JAPANESE TIMIE (1 HOUR ADVANCE)
 
-            //find schedule to update
-            $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
+
 
             if (isset($member['id'])) {
                 $memberID = $member['id'];
@@ -326,14 +332,14 @@ class TutorScheduleController extends Controller
             $scheduleItem->update($lessonData);
             DB::commit();
 
-            //** ADD MEMBER TRANSACTION */
-            /**@todo: add transaction only when it exits? */
+            //** ADD MEMBER TRANSACTION */          
             if ($memberID != null) {
                 $memberTransactionData = [
                      //'scheduleItem'      => $scheduleItem,
                     'scheduleItemID'      => $scheduledItemData['id'],
                     'memberID' => $memberID,
                     'shiftDuration' => $request['shiftDuration'],
+                    'reservation_type' => $reservationType,
                     'status' => $request['status'],
                 ];
                 $transactionObj = new AgentTransaction();
@@ -597,6 +603,7 @@ class TutorScheduleController extends Controller
                     //'scheduleItem'      => $scheduleItem,
                     'scheduleItemID'      => $scheduleItem->id,
                     'memberID' => $memberID,
+                    'reservation_type' => $request['status'],
                     'shiftDuration' => $request['shiftDuration'],
                     'status' => $request['status'],
                 ];

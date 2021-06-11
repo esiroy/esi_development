@@ -22,6 +22,7 @@ class AgentTransaction extends Model
                 'member_id' => $memberTransactionData['memberID'],
                 'lesson_shift_id' => $shift->id,
                 'created_by_id' => Auth::user()->id,
+                'reservation_type' => $memberTransactionData['reservation_type'],                
                 'transaction_type' => "CANCEL_LESSON",
                 'amount' => 1,
                 'valid' => true,
@@ -36,6 +37,7 @@ class AgentTransaction extends Model
                 'member_id' => $memberTransactionData['memberID'],
                 'lesson_shift_id' => $shift->id,
                 'created_by_id' => Auth::user()->id,
+                'reservation_type' => $memberTransactionData['reservation_type'],
                 'transaction_type' => "LESSON",
                 'amount' => 1,
                 'valid' => true,
@@ -50,6 +52,7 @@ class AgentTransaction extends Model
                 'member_id' => $memberTransactionData['memberID'],
                 'lesson_shift_id' => $shift->id,
                 'created_by_id' => Auth::user()->id,
+                'reservation_type' => $memberTransactionData['reservation_type'],                
                 'transaction_type' => "LESSON",
                 'amount' => 1,
                 'valid' => true,
@@ -57,8 +60,18 @@ class AgentTransaction extends Model
 
             AgentTransaction::create($transaction);
 
-        } else {
-
+        } else if ($memberTransactionData['status'] == 'CLIENT_NOT_AVAILABLE') {
+            $transaction = [
+                'schedule_item_id' => $memberTransactionData['scheduleItemID'],
+                'member_id' => $memberTransactionData['memberID'],
+                'lesson_shift_id' => $shift->id,
+                'created_by_id' => Auth::user()->id,
+                'reservation_type' => $memberTransactionData['reservation_type'],                
+                'transaction_type' => "CANCEL_LESSON",
+                'amount' => 0,
+                'valid' => true,
+            ];
+            AgentTransaction::create($transaction);
         }
 
     }
