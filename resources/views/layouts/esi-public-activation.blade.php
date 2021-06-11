@@ -10,7 +10,7 @@
     <meta name="keywords" content="Tutor, Japan, Lesson">
     <title>{{ config('app.name', 'My Tutor') }}</title>
         
-    <script type='text/javascript' src="https://code.jquery.com/jquery-1.7.1.min.js" integrity="sha256-iBcUE/x23aI6syuqF7EeT/+JFBxjPs5zeFJEXxumwb0=" crossorigin="anonymous"></script>
+    <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js" crossorigin="anonymous"></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />

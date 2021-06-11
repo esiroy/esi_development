@@ -290,6 +290,7 @@ class MemberController extends Controller
         return Response()->json([
             "success" => true,
             "totalTutorDailyReserved" => $totalTutorDailyReserved,
+            "totalMemberReserved" => $scheduleItem->getTotalMemberReserved($memberInfo),
             "message" => "Tutor has " . $totalTutorDailyReserved ." for member " . $memberID,
         ]);           
     }
