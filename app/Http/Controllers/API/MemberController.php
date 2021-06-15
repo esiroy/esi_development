@@ -540,6 +540,7 @@ class MemberController extends Controller
                 "credits"  => "(". number_format($credits, 2) .")",
                 "message"   => "同日、同講師の予約上限2コマを超えています。",
                 "message_en" => "On the same day, the instructor's reservation limit of 2 frames has been exceeded.",
+                "status" => $selectedSchedule->schedule_status,
                 "userData" => $request['user'],
                 "lesson_time" => $lessonTime,
                 "tutor_id" => $schedule->tutor_id,
