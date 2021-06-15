@@ -81,9 +81,7 @@ class dummyController extends Controller
     public function testMailReservedB(LessonMailer $lessonMailer) {
         
         //*** TEMPLATE ***/
-        $details['template'] = "emails.client.reservedB";
-
-        
+        $details['template'] = "emails.client.reserved";        
 
         //email to:
         $details['email'] = 'emailroy2002@yahoo.com';
