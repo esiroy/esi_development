@@ -89,7 +89,7 @@ class LessonMailer extends Model
             $memberEmailData['subject'] = 'マイチューター：レッスン予約のご案内'; //My Tutor: Lesson Reservations
             $memberEmailData['email'] = $memberInfo->user->email; //recipient (mailto:)
 
-            self::dispatchEmail($memberEmailData, $memberInfo, $tutorInfo, $selectedSchedule);                   
+            $this->dispatchEmail($memberEmailData, $memberInfo, $tutorInfo, $selectedSchedule);                   
 
 
             /*******************************************
@@ -99,7 +99,7 @@ class LessonMailer extends Model
             $tutorEmaildata['subject'] = 'My Tutor: Lesson Schedule Reserved'; //reserved
             $tutorEmaildata['email'] = $tutorInfo->user->email; //recipient (mailto:)
 
-            self::dispatchEmail($tutorEmaildata, $memberInfo, $tutorInfo, $selectedSchedule); //Add to Queue
+            $this->dispatchEmail($tutorEmaildata, $memberInfo, $tutorInfo, $selectedSchedule); //Add to Queue
             
             
 
