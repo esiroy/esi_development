@@ -27,7 +27,7 @@
     <div style="margin-top:20px; font-size: 14px">
         <div>{{ "こちらのレッスン予約はキャンセルできません。" }}</div>
         <div>{{ "レッスンを受けられない場合にはマイページにある「欠席」" }}</div>
-        <div>{{ ボタンでお知らせください }}</div>
+        <div>{{ "ボタンでお知らせください" }}</div>
     </div>
     <div style="margin-top:20px; font-size: 14px">
         マイチューター カスタマーサポート
