@@ -21,6 +21,9 @@ Route::get('testMailReserved', 'dummyController@testMailReserved');
 Route::get('testMailCancelled', 'dummyController@testMailCancelled');
 Route::get('testExpiry', 'dummyController@testExpiry');
 
+Route::get('testMailReservedB', 'dummyController@testMailReservedB');
+
+
 //Route::get('test/{id}', 'TableImporterController@test')->name('test');
 //Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 

@@ -78,6 +78,31 @@ class dummyController extends Controller
 
     }
 
+    public function testMailReservedB(LessonMailer $lessonMailer) {
+        
+        //*** TEMPLATE ***/
+        $details['template'] = "emails.client.reservedB";
+
+        
+
+        //email to:
+        $details['email'] = 'emailroy2002@yahoo.com';
+        $details['subject'] = 'マイチューター：レッスン予約のご案内'; //reserved
+        
+        //initialize member, tutor and schedule items
+        $memberObj = new Member();
+        $tutorObj = new Tutor();
+        $scheduleItem = new scheduleItem();
+
+        $member = $memberObj->where('user_id',20372)->first();
+        $tutor = $tutorObj->where('user_id', 14253)->first();
+        $scheduleItem = $scheduleItem->find(879884);
+
+        $lessonMailer->sendMemberEmail($member, $tutor, $scheduleItem);
+
+        return view($details['template'], compact('member','tutor', 'scheduleItem'));
+
+    }
 
     /**
      * Display a listing of the resource.
