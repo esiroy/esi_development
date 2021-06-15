@@ -511,6 +511,7 @@ class MemberController extends Controller
         /*******************************************               
         *       [START] SEND MAIL (PRODUCTION ONLY)
         *******************************************/      
+        $mailStatus = "not send";
         //initialize member, tutor and schedule items    
         if (App::environment(['prod', 'production'])) {
             $scheduleItemObj = new scheduleItem();
@@ -524,6 +525,8 @@ class MemberController extends Controller
                 
                 $lessonMailer = new LessonMailer();
                 $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
+
+                $mailStatus = "sent...";
             }             
         }
         /*******************************************               
@@ -545,6 +548,7 @@ class MemberController extends Controller
                 "lesson_time" => $lessonTime,
                 "tutor_id" => $schedule->tutor_id,
                 "member_id" => Auth::user()->id,
+                "mail_status" =>  $mailStatus,
             ]);
 
         } else {
