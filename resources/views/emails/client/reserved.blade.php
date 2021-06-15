@@ -24,6 +24,8 @@
         ご予約のキャンセルについて
         <hr>
     </div>
+    {{$selectedSchedule->schedule_status}}
+
     @if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED')
         <div style="margin-top:20px; font-size: 14px">
             <div>レッスン開始3時間前までがキャンセル有効期限となります。</div>
@@ -36,8 +38,8 @@
         <div style="margin-top:20px; font-size: 14px">
             <div>こちらのレッスン予約はキャンセルできません。</div>
             <div>レッスンを受けられない場合にはマイページにある「欠席」</div>
-            <div>ボタンでお知らせください。</div>
-        </div>
+            <div>ボタンでお知らせください。2</div>
+        </div>        
     @endif
     <div style="margin-top:20px; font-size: 14px">
         マイチューター カスタマーサポート
