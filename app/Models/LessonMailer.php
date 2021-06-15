@@ -86,7 +86,7 @@ class LessonMailer extends Model
         } else if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED_B') {
 
             $memberEmailData['template'] = "emails.client.reserved_type_b";
-            $memberEmailData['subject'] = 'マイチューター：:レッスン予約のご案内'; //My Tutor: Lesson Reservations
+            $memberEmailData['subject'] = 'マイチューター：レッスン予約のご案内'; //My Tutor: Lesson Reservations
             $memberEmailData['email'] = $memberInfo->user->email; //recipient (mailto:)
 
             self::dispatchEmail($memberEmailData, $memberInfo, $tutorInfo, $selectedSchedule);                   
