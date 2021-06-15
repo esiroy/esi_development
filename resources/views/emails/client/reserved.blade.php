@@ -31,7 +31,7 @@
             <div>レッスンが消化されたものとみなされますのでご注意ください。</div>
             <div>キャンセルまたは欠席処理は、お客様マイページから行うことができます。</div>
         </div>
-    @else ($selectedSchedule->schedule_status == 'CLIENT_RESERVED_B')
+    @else 
         <div style="margin-top:20px; font-size: 14px">
             <div>こちらのレッスン予約はキャンセルできません。</div>
             <div>レッスンを受けられない場合にはマイページにある「欠席」</div>
