@@ -28,10 +28,9 @@
         <div style="margin-top:20px; font-size: 14px">
             <div>レッスン開始3時間前までがキャンセル有効期限となります。</div>
             <div>有効期限までにキャンセル処理されず、レッスンを欠席された場合は</div>
-            <br>
+            
             <div>レッスンが消化されたものとみなされますのでご注意ください。</div>
-            <div>キャンセルまたは欠席処理は、お客様マイページから行うことができます。</div>
-            {{ $selectedSchedule->schedule_status  }}
+            <div>キャンセルまたは欠席処理は、お客様マイページから行うことができます。1</div>
         </div>
     @else 
         <div style="margin-top:20px; font-size: 14px">
