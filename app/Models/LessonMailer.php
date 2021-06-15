@@ -83,7 +83,25 @@ class LessonMailer extends Model
 
             $this->dispatchEmail($tutorEmaildata, $memberInfo, $tutorInfo, $selectedSchedule); //Add to Queue
 
+        } else if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED_B') {
 
+            $memberEmailData['template'] = "emails.manager.clientReserved_b";
+            $memberEmailData['subject'] = 'マイチューター：レッスン予約のご案内'; //My Tutor: Lesson Reservations
+            $memberEmailData['email'] = $memberInfo->user->email; //recipient (mailto:)
+
+            self::dispatchEmail($memberEmailData, $memberInfo, $tutorInfo, $selectedSchedule);                   
+
+
+            /*******************************************
+             *       SEND MAIL TO TUTOR
+             *******************************************/
+            $tutorEmaildata['template'] = "emails.tutor.tutorNotifyReserved";
+            $tutorEmaildata['subject'] = 'My Tutor: Lesson Schedule Reserved'; //reserved
+            $tutorEmaildata['email'] = $tutorInfo->user->email; //recipient (mailto:)
+
+            self::dispatchEmail($tutorEmaildata, $memberInfo, $tutorInfo, $selectedSchedule); //Add to Queue
+            
+            
 
         } else if ($selectedSchedule->schedule_status == 'CLIENT_NOT_AVAILABLE') {
 
