@@ -102,6 +102,25 @@ class TutorScheduleController extends Controller
         $scheduleItem = ScheduleItem::find($scheduledItemData['id']);
         $reservationType = $scheduleItem->schedule_status; //previous reservation type
 
+        //added JUN 18, 2021
+        if ($request['status'] == 'CLIENT_NOT_AVAILABLE') 
+        {            
+            $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+
+            if ($scheduleItem->schedule_status == 'CLIENT_RESERVED' || $scheduleItem->schedule_status == 'CLIENT_RESERVED_B' || $scheduleItem->schedule_status == 'SUPPRESSED_SCHEDULE' || $scheduleItem->schedule_status == 'COMPLETED' ) {
+
+            } else {
+            
+                return Response()->json([
+                    "success" => false,
+                    "refresh" => true,
+                    "schedulestatus" => $scheduleItem->schedule_status,
+                    'tutorLessonsData' => $tutorLessonsData,
+                    "message" => "ERROR: cannot process request due to outdated schedule, press okay to refresh schedules",
+                ]);    
+            }
+        }
+
         try
         {
             DB::beginTransaction();

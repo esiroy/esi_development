@@ -736,7 +736,11 @@
                     }
 
                     //total credits
-                    $('#total_credits').text(data.credits)        
+                    $('#total_credits').text(data.credits);
+
+                    if (data.refresh == true) {
+                        location.reload();
+                    }
                 }
             });
         } else {

@@ -675,6 +675,14 @@ class MemberController extends Controller
                     /*******************************************               
                     *       [END] SEND MAIL - RESERVATION B
                     *******************************************/                      
+                } else {
+                    //schedule was updated and is now either deleted or completed or back to tutotr schedule, user must refresh
+                    return Response()->json([
+                        "success" => false,
+                        "refresh" => true,
+                        "message_jp"   => "スケジュールが見つかりません。すでに削除されている可能性があります",
+                        "message" => "Schedule not found, it may have already been deleted",
+                    ]);                       
                 }
               
                 
