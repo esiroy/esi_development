@@ -116,7 +116,7 @@ class TutorScheduleController extends Controller
                     "refresh" => true,
                     "schedulestatus" => $scheduleItem->schedule_status,
                     'tutorLessonsData' => $tutorLessonsData,
-                    "message" => "ERROR: cannot process request due to outdated schedule, press okay to refresh schedules",
+                    "message" => "ERROR: cannot process request due to outdated schedule or schedule is not valid client reservation, press okay to refresh schedules",
                 ]);    
             }
         }
