@@ -103,6 +103,10 @@
                                     <span class="px-2 text-success">|</span>
                                 @endif
 
+                                <span><a id="inbox" class="blue" href="{{ url('#inbox') }}">受信トレイ</a></span>
+                                
+                                <span class="px-2 text-success">|</span>
+
                                 <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>
                                 <span class="px-2 text-success">|</span>
 
@@ -146,9 +150,19 @@
     </div>
 
     <script type="text/javascript">
-        window.addEventListener('load', function () {
+        window.addEventListener('load', function () 
+        {            
+            //Inbox
+            if(window.location.hash) {
+                console.log("hash found");
+            } else {
+                // Fragment doesn't exist
+            }
 
-            //events here
+            $('#inbox').click(function(){
+                console.log("show inbox");
+            })
+
         });
 
         function newPopup(url) {
@@ -169,12 +183,12 @@
 
             // Puts focus on the newWindow  
             if (window.focus) {  
-            newWindow.focus();  
+                newWindow.focus();  
             }  
-        }  
-
-
+        }
     </script>
+
+  
 
     @yield('scripts')
 </body>

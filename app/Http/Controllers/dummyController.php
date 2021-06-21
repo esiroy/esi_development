@@ -36,20 +36,12 @@ class dummyController extends Controller
 
     public function index( LessonMailer $lessonMailer){
         
-        //initialize member, tutor and schedule items
-        $memberObj = new Member();
-        $tutorObj = new Tutor();
-        $scheduleItem = new scheduleItem();
+        $date = date('Y-m-d');
 
-        $memberInfo = $memberObj->where('user_id',20372)->first();
-        $tutorInfo = $tutorObj->where('user_id', 21809)->first();
-        $scheduleItem = $scheduleItem->find(879884);
+        $dateToExtended = date('Y-m-d', strtotime($date ." + 1 hour"));
         
+        echo $date . " till " . $dateToExtended;
         
-        $lessonMailer->send($memberInfo, $tutorInfo, $scheduleItem);
-
-        dd('Send Email Successfully');
-
     }
     
 

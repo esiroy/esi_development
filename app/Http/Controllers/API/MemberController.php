@@ -316,7 +316,8 @@ class MemberController extends Controller
         //total reservation for a day
         $dateOfResevation = date("Y-m-d", strtotime($schedule->lesson_time));
         //$totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $dateOfResevation);
-        //$totalDailyTutorReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $dateOfResevation);
+
+        $totalDailyTutorReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $dateOfResevation);
 
         //[UPDATE for MAY 15, 2022] 
         //LIMIT SCHEDULE ITEM (15 ITEMS)
@@ -471,7 +472,7 @@ class MemberController extends Controller
          * DESCRIPTION: WHEN SAVING, THE TOTAL DAILY RESERVED WILL BE SET TO RESERVED STATUS "B" 
          *              IF YOU WILL BE RESERVED 2 OR MORE IN A DAY 
          ************************/
-        /*
+        
         if ($totalDailyTutorReserved >= 2) 
         {   
             $reservation_type = $schedule_status_b;      
@@ -488,15 +489,10 @@ class MemberController extends Controller
             ];
             $schedule->update($data);
 
-        }*/
+        }
 
 
-        $reservation_type = $schedule_status;
-        $data = [
-            'member_id' => $memberID,
-            'schedule_status' => $schedule_status,
-        ];
-        $schedule->update($data);        
+       
 
         //** ADD MEMBER TRANSACTION */
         if ($memberID != null) 
@@ -519,16 +515,17 @@ class MemberController extends Controller
         /*******************************************               
         *       [START] SEND MAIL (PRODUCTION ONLY)
         *******************************************/                    
-        if (App::environment(['prod', 'production'])) {
-            $scheduleItemObj = new scheduleItem();
-            $selectedSchedule = $scheduleItemObj->find($scheduleID);
+        $scheduleItemObj = new scheduleItem();
+        $selectedSchedule = $scheduleItemObj->find($scheduleID);
+
+        if (App::environment(['prod', 'production'])) 
+        {
             if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
             {            
                 $memberObj = new Member();
                 $tutorObj = new Tutor();
                 $memberInfo = $memberObj->where('user_id', $selectedSchedule->member_id )->first();
-                $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();                  
-                
+                $tutorInfo = $tutorObj->where('user_id', $selectedSchedule->tutor_id)->first();                                  
                 //send Member Email
                 $lessonMailer = new LessonMailer();
                 $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
@@ -541,7 +538,7 @@ class MemberController extends Controller
 
         $credits = $agentCredts->getCredits($memberID);
 
-        /*
+       
         if ($totalDailyTutorReserved >= 2) 
         {
             return Response()->json([
@@ -557,22 +554,22 @@ class MemberController extends Controller
                 "member_id" => Auth::user()->id
             ]);
 
-        } else {  } */
+        } else { 
 
-        return Response()->json([
-            "success" => true,
-            "type"      => "msgbox",
-            "credits"  => "(". number_format($credits, 2) .")",
-            "message" => "Member has been scheduled",
-            "message_en" => "Member has been scheduled.",
-            "userData" => $request['user'],
-            "lesson_time" => $lessonTime,
-            "tutor_id" => $schedule->tutor_id,
-            "member_id" => Auth::user()->id,
-        ]);
+            return Response()->json([
+                "success" => true,
+                "type"      => "msgbox",
+                "credits"  => "(". number_format($credits, 2) .")",
+                "message" => "Member has been scheduled",
+                "message_en" => "Member has been scheduled.",
+                "userData" => $request['user'],
+                "lesson_time" => $lessonTime,
+                "tutor_id" => $schedule->tutor_id,
+                "member_id" => Auth::user()->id,
+            ]);
         
         
-        
+         } 
 
     }
 
@@ -791,6 +788,14 @@ class MemberController extends Controller
         }
     }
 
+    public function getScheduleDetails(Request $request) 
+    {
+        $scheduleID = $request->ScheduleItemID;
+        $schedule = ScheduleItem::where('id', $scheduleID)->where('member_id', Auth::user()->id)->first();
+        return $schedule;
+    }
+
+
 
     //get member memo
     public function getMemo(Request $request)
@@ -811,6 +816,7 @@ class MemberController extends Controller
             ]);
         }
     }
+    
 
     public function sendMemo(Request $request)
     {

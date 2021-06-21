@@ -604,7 +604,7 @@
         input.setAttribute('min', date);
     }
 
-    /* Book with lmit to 2, and 3 above will be CLIENT RESERVED B
+    /* Book with lmit to 2, and 3 above will be CLIENT RESERVED B with notification message box (yes or no) */
     function book(scheduleID, memberID, tutorID) 
     {
         
@@ -656,13 +656,14 @@
         });
 
     }
-    */
+    
 
+    /*
     function book(scheduleID, memberID, tutorID) {
         if (confirm('予約してもいいですか？')) {
             SaveMemberSchedule(scheduleID, memberID, tutorID)
         }
-    }
+    }*/
 
 
     function SaveMemberSchedule(scheduleID, memberID, tutorID) 
@@ -713,17 +714,59 @@
     }
 
 
-    /*
-    function cancel($id) {
-        //get status if schedule A or B
+    
+    function cancel(id) 
+    {       
         
+        $.ajax({
+            type: 'POST',
+            url: 'api/getScheduleDetails?api_token=' + api_token,
+            data: {             
+                ScheduleItemID: id      
+            },
+            headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() {
+                $('#loadingModal').modal('show');
+                $('#loadingModal').show();  
+            },
+            success: function(data) 
+            {
+                setTimeout(() => {                
+                    if (data.schedule_status == "CLIENT_RESERVED_B")
+                    {
+                        setTimeout(() => {                        
+                            if (confirm('こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
+                                removeSchedule(id);
+                            } else {
+                                return false;
+                            }
+                        }, 100);
+                    } else {
+                        setTimeout(() => {
+                            if (confirm('このレッスンをキャンセルしてもいいですか？')) {
+                                removeSchedule(id);
+                            } else {
+                                return false;
+                            }
+                        }, 100);                            
+                    }
+                }, 100);
+            }
+        });
+
+
+
+
+
     }
-    */
+    
 
     
-    function cancel(id) {
+    function removeSchedule(id) {
 
-        if (confirm('このレッスンをキャンセルしてもいいですか？')) {
+        //if (confirm('このレッスンをキャンセルしてもいいですか？')) {
 
             $.ajax({
                 type: 'POST',
@@ -752,9 +795,9 @@
                     }
                 }
             });
-        } else {
-            return false;
-        }
+        //} else {
+          //  return false;
+        //}
     }
 
     //Start Comments for Questionnaire

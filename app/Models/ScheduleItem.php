@@ -76,12 +76,17 @@ class ScheduleItem extends Model
     public function getTotalMemberDailyReserved($memberID, $date) 
     {
 
-        $dateToExtended = date('Y-m-d', strtotime($date ." + 1 day"));                                                                                                    
-        $total = ScheduleItem::where('member_id', $memberID)->where('valid', 1)->where(function ($q) use ($memberID) {                
-            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
-        })->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))
-        ->count();
+        $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
+
+        $total = ScheduleItem::where('member_id', $memberID)                            
+                            ->where(function ($q) use ($memberID) {       
+                                $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+                                  ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                            })->whereDate('lesson_time', '=', $date)                            
+                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
+                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")                            
+                            ->where('valid', 1)                            
+                            ->count();
 
         return $total;
     }
@@ -94,33 +99,27 @@ class ScheduleItem extends Model
      * @Params: @date (format Y, M, D)
      * Returns: @total (number of reserved A and B in a particular day)
     */    
-    public function getTotalTutorDailyReserved($memberID, $tutorID, $date) {
-        $dateToExtended = date('Y-m-d', strtotime($date ." + 1 day"));       
-        
-        $totalA = ScheduleItem::where('member_id', $memberID)
-                    ->where('tutor_id', $tutorID)
-                    ->where('valid', 1)->where('schedule_status', 'CLIENT_RESERVED')
-                    ->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))
-                    ->count();
+    public function getTotalTutorDailyReserved($memberID, $tutorID, $date) 
+    {
+        $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
 
+        $reserved = ScheduleItem::whereRaw("(lesson_time > ? AND lesson_time <= ?)", [$date." 00:30:00", $nextDay." 00:30:00"])
+                        ->where('member_id', $memberID)
+                        ->where('tutor_id', $tutorID)  
+                        ->where('valid', 1)          
+                        ->where('schedule_status', 'CLIENT_RESERVED')
+                        ->count();                           
 
-        $totalB = ScheduleItem::where('member_id', $memberID)
-                    ->where('tutor_id', $tutorID)
-                    ->where('valid', 1)
-                    ->where('schedule_status', 'CLIENT_RESERVED_B')
-                    ->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))
-                    ->count();
-
-        $total = $totalA + $totalB;
-
-
-        /*
-        $total = ScheduleItem::where('member_id', $memberID)->where('tutor_id', $tutorID)->where('valid', 1)->where(function ($q) use ($memberID) {                
-            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
-            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
-        })->whereBetween(DB::raw('DATE(lesson_time)'), array($date, $dateToExtended))        
-        ->count();
-        */
+        $reserved_b = ScheduleItem::whereRaw("(lesson_time > ? AND lesson_time <= ?)", [$date." 00:30:00", $nextDay." 00:30:00"])
+                        ->where('member_id', $memberID)
+                        ->where('tutor_id', $tutorID)  
+                        ->where('valid', 1)          
+                        ->where('schedule_status', 'CLIENT_RESERVED_B')                                                    
+                        ->count();                           
+                    
+              
+              
+        $total = $reserved + $reserved_b;
 
         return $total;
     }
