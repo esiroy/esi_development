@@ -604,7 +604,9 @@
         input.setAttribute('min', date);
     }
 
-    function book(scheduleID, memberID, tutorID) {
+    /* Book with lmit to 2, and 3 above will be CLIENT RESERVED B
+    function book(scheduleID, memberID, tutorID) 
+    {
         
         $.ajax({
             type: 'POST',
@@ -653,6 +655,13 @@
             }
         });
 
+    }
+    */
+
+    function book(scheduleID, memberID, tutorID) {
+        if (confirm('予約してもいいですか？')) {
+            SaveMemberSchedule(scheduleID, memberID, tutorID)
+        }
     }
 
 
