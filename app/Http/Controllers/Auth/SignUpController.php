@@ -36,10 +36,7 @@ class SignUpController extends Controller
 
     public function activation($activation_code, $tracking_code)
     {
-
-        echo $tracking_code ." this is the tracking code";
-
-
+        //echo $tracking_code ." this is the tracking code";
 
         $user = User::where('activation_code', $activation_code)->first();
 
