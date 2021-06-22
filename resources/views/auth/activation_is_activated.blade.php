@@ -1,4 +1,4 @@
-@extends('layouts.esi-public-activation')
+@extends('layouts.esi-public')
 
 @section('content')
 <!-- note:
