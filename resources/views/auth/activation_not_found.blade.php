@@ -1,13 +1,7 @@
 @extends('layouts.esi-public')
 
 @section('content')
-<div class="container">
-
-    <!-- note:
-
-    ACTIVATION HASH NOT FOUND
-    
-    -->
+<div id="activation_hash_not_found" class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 py-2">
 

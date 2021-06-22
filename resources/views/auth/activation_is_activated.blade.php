@@ -1,16 +1,9 @@
 @extends('layouts.esi-public')
 
 @section('content')
-<div class="container">
-    <!-- note:
-
-    MEMBER OR USER IS ALREADY ACTIVATED.
-    
-    -->
-    already activated
+<div id="member_already_activated" class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 py-2">
-
             <div class="card">
                 <div class="text-center">
                     <a href="{{ url('/') }}">
