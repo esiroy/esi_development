@@ -1,6 +1,11 @@
-@extends('layouts.esi-public')
+@extends('layouts.esi-public-activation')
 
 @section('content')
+<!-- note:
+
+  MEMBER OR USER IS  ACTIVATED HERE
+ 
+ -->
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-12 py-2">
