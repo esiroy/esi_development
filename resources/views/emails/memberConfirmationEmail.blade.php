@@ -13,7 +13,7 @@
 </div>
 
 <div style="margin-top:5px; font-size: 12px">
-    <a href="{{ url('activation/'. $data['activation_code']) }}">{{ url('activation/'. $data['activation_code'] ."?a8=". $data['a8']) }}</a>
+    <a href="{{ url('activation/'. $data['activation_code']) }}">{{ url('activation/'. $data['activation_code'] ."/". $data['a8']) }}</a>
 </div>
 
 <div style="margin-top:5px; font-size: 12px">

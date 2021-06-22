@@ -34,7 +34,7 @@ class SignUpController extends Controller
         return view('auth.signup');
     }
 
-    public function activation($activation_code)
+    public function activation($activation_code, $tracking_code)
     {
 
         $user = User::where('activation_code', $activation_code)->first();

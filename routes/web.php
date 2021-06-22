@@ -396,7 +396,9 @@ Route::get('/signup.do', 'Auth\SignUpController@showSignUpForm')->name('signup_d
 Route::post('/validateSignUpForm', 'Auth\SignUpController@validateSignUpForm')->name('validateSignUp');
 Route::get('/confirmation', 'Auth\SignUpController@showConfirmationForm')->name('signUpConfirmation');
 Route::post('/createMember','Auth\SignUpController@store')->name('createMember');
-Route::get('/activation/{code}', 'Auth\SignUpController@activation')->name('activation');
+//Route::get('/activation/{code}', 'Auth\SignUpController@activation')->name('activation');
+Route::get('/activation/{code}/{trackingNumber}', 'Auth\SignUpController@activation')->name('activation');
+
 
 //step 3 (user has been emailed and waiting for verification)
 Route::get('/saveuser','Auth\SignUpController@step3')->name('step3');
