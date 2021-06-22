@@ -27,6 +27,8 @@ Route::get('testMailReservedB', 'dummyController@testMailReservedB');
 //Route::get('test/{id}', 'TableImporterController@test')->name('test');
 //Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
 
+/* REVERSE TRANSACTION B*/
+
 
 /*************** 
  * AGENT IMPORTER
