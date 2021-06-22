@@ -50,7 +50,7 @@
 
     <!--<div id="new_member_ID"> {{ $user->id }} </div> -->
 
-    <!--<img src="https://px.a8.net/a8fly/earnings?a8={識別パラメータ}&pid=s00000012345001&so={注文番号}&si=1200-1-1200-a8&currency=JPY" width="1" height="1"  style="height: 1px;display: block;background-color:yellow">-->
+    <!-- tracking code is {{ $tracking_code }} -->
 
 
 	<img src="https://px.a8.net/a8fly/earnings?a8fly/earnings?a8=<<{{ $tracking_code ??''}}>>&pid=s00000012345001&so=<<{{ $user->id?? ''}}>>&si=1200-1-1200-a8&currency=JPY" width="1" height="1"  style="height: 1px;display: block;background-color:yellow">
