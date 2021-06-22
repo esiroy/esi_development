@@ -7,6 +7,7 @@
     MEMBER OR USER IS ALREADY ACTIVATED.
     
     -->
+    already activated
     <div class="row justify-content-center">
         <div class="col-md-12 py-2">
 
