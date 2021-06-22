@@ -103,9 +103,9 @@
                                     <span class="px-2 text-success">|</span>
                                 @endif
 
-                                <span><a id="inbox" class="blue" href="{{ url('#inbox') }}">受信トレイ</a></span>
+                                <!--<span><a id="inbox" class="blue" href="{{ url('#inbox') }}">受信トレイ</a></span>
                                 
-                                <span class="px-2 text-success">|</span>
+                                <span class="px-2 text-success">|</span>-->
 
                                 <span><a class="blue" href="{{ url('/settings') }}">設定</a></span>
                                 <span class="px-2 text-success">|</span>
