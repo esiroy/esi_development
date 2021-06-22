@@ -47,9 +47,14 @@ class SignUpController extends Controller
                 //already activated 
                 //@todo: show activated
 
+                echo "1";
+
                 return view('auth.activation_is_activated', compact('user'));
 
             } else {
+
+                echo "2";
+
                 //activate user
 
                 $user->update([
@@ -97,6 +102,8 @@ class SignUpController extends Controller
             }
 
         } else {
+
+            echo "3";
 
             //activation code invalid or not found
             return view('auth.activation_not_found', compact('user'));           
