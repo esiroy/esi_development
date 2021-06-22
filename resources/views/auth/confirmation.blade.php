@@ -34,15 +34,20 @@
             
                 <form method="POST" action="{{ route('createMember') }}">
                     @csrf
+
+                    
+                    <!-- A8 PARAMETER HERE -->
+                    <input type="hidden" name="a8" value="app('request')->input('a8')">
+
                     <div class="row m-2 blueSolidBorderBox">
                             <table border="0" cellspacing="9" cellpadding="0" align="center" class="tblRegister" width="100%">
-                                
-                            <tbody><tr>
+                            <tbody>
+                            <tr>
                                 <th colspan="13">Personal Information</th>
                             </tr>
                         
                             <tr valign="top">
-                                <td class="red">&nbsp;</td>
+                                <td class="red">&nbsp;</td>                                
                                 <td align="left" style="padding-left: 15px;">氏名　(漢字)<em>(Japanese)</em></td>
                                 <td>:</td>
                                 <td colspan="5" style="width: 20%;">

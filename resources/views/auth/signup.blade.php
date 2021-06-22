@@ -62,7 +62,7 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('validateSignUp') }}">
+                    <form method="POST" action="{{ route('validateSignUp') .'?a8='. app('request')->input('a8') }}">
                         @csrf
 
                         <div class="form-group row mb-0">

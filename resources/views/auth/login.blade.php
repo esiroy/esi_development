@@ -21,7 +21,7 @@
 
                                     <h2 class="heading"> 会員ログイン</h2>
 
-                                    <form method="POST" action="{{ route('login') }}">
+                                    <form method="POST" action="{{ route('login') .'?a8='. app('request')->input('a8') }}">
                                         @csrf
 
                                         <div class="form-group row mb-1 mt-1">
@@ -73,7 +73,7 @@
                                         <div class="form-group row mb-0 mt-0 mr-0 pr-0">
                                             <div class="col-md-12">
                                                 @if (Route::has('password.request'))
-                                                <a class="btn btn-link float-right" href="{{ route('password.request') }}">
+                                                <a class="btn btn-link float-right" href="{{ route('password.request') .'?a8='. app('request')->input('a8')  }}">
                                                     {{ __('パスワードを忘れた方') }}
                                                 </a>
                                                 @endif
@@ -93,7 +93,7 @@
                     <div id="register" class="col-5">
                         <!--[start] regsiter button -->
                         <div class="btn-register">
-                            <a href="{{ url('signup') }}"><img src="{{ url("images/btnRegister.png") }}" alt="my-tutor administratrion panel" class="img-fluid"></a>
+                            <a href="{{ url('signup') .'?a8='. app('request')->input('a8') }}"><img src="{{ url("images/btnRegister.png") }}" alt="my-tutor administratrion panel" class="img-fluid"></a>
                         </div>
                     </div>
                 </div>

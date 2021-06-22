@@ -130,10 +130,10 @@ class SignUpController extends Controller
             ]);
 
         if ($validator->fails()) {
-            return redirect()->route('signup')->withErrors($validator)->withInput();
+            return redirect()->route('signup', ['a8' => $request->a8])->withErrors($validator)->withInput();
 
         } else {
-            return redirect()->route('signUpConfirmation')->withInput();
+            return redirect()->route('signUpConfirmation', ['a8' => $request->a8])->withInput();
         }
     }
 
@@ -248,6 +248,7 @@ class SignUpController extends Controller
                 'name' => $request['first_name'] . " " . $request['last_name'],
                 'nickname' => $request['nickname'],
                 'email' => $request['email'],
+                'a8' => $request['a8'],
                 'activation_code' => $activation_code,
             ];
 
