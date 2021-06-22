@@ -3,7 +3,7 @@
 @section('content')
 <!-- note:
 
-  MEMBER OR USER IS  ACTIVATED HERE
+  MEMBER OR USER IS ALREADY ACTIVATED.
  
  -->
 <div class="container">
