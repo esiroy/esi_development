@@ -3,7 +3,7 @@
 @section('content')
 <!-- note:
 
-  A MEMBER OR USER ALREADY ACTIVATED
+  ACTIVATION HASH NOT FOUND
  
  -->
 <div class="container">
