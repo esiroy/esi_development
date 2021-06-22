@@ -34,7 +34,7 @@ class SignUpController extends Controller
         return view('auth.signup');
     }
 
-    public function activation($activation_code, $tracking_code)
+    public function activation($activation_code)
     {
         //echo $tracking_code ." this is the tracking code";
 
