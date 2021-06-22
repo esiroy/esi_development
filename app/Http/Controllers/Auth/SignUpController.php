@@ -46,7 +46,7 @@ class SignUpController extends Controller
                 //already activated 
                 //@todo: show activated
 
-                return view('auth.activation_is_activated', compact('user'));
+                return view('auth.activation_is_activated', compact('user', 'tracking_code'));
 
             } else {
                 //activate user
