@@ -626,32 +626,46 @@
             success: function(data) {  
                 $('#loadingModal').modal('hide');
                 $('#loadingModal').hide(); 
-                if (data.success == true) {
 
-                    setTimeout(() => {
-                        if (data.totalMemberReserved >= 15) 
-                        {
-                            $('#msgboxModal').modal('show');
-                            $('#msgboxMessage').text(" 予約数が上限に達したため予約できません");
-
-                        } else if (data.totalTutorDailyReserved < 2) {
-                            setTimeout(() => {
-                                if (confirm('予約してもいいですか？')) {
-                                    SaveMemberSchedule(scheduleID, memberID, tutorID)
-                                }
-                            }, 100); 
-                        } else {
-                            setTimeout(() => {
-                                if (confirm('同日、同講師の予約上限2コマを超えています。こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
-                                    SaveMemberSchedule(scheduleID, memberID, tutorID)
-                                }                        
-                            }, 100);
+            
+                if (data.success == true && data.memberReservedActive == false) 
+                {                
+                    //default
+                    setTimeout(() => {                    
+                        if (confirm('予約してもいいですか？')) {
+                            SaveMemberSchedule(scheduleID, memberID, tutorID)
                         }
                     }, 100);
+
                 } else {
-                    $('#msgboxModal').modal('show');
-                    $('#msgboxMessage').text(data.message);
-                }           
+                    //With reserved limiter
+                    if (data.success == true) 
+                    {
+                        setTimeout(() => {
+                            if (data.totalMemberReserved >= 15) 
+                            {
+                                $('#msgboxModal').modal('show');
+                                $('#msgboxMessage').text(" 予約数が上限に達したため予約できません");
+                            } else if (data.totalTutorDailyReserved < 2) {
+                                setTimeout(() => {
+                                    if (confirm('予約してもいいですか？')) {
+                                        SaveMemberSchedule(scheduleID, memberID, tutorID)
+                                    }
+                                }, 100); 
+                            } else {
+                                setTimeout(() => {
+                                    if (confirm('同日、同講師の予約上限2コマを超えています。こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
+                                        SaveMemberSchedule(scheduleID, memberID, tutorID)
+                                    }                        
+                                }, 100);
+                            }
+                        }, 100);
+                    } else {
+                        $('#msgboxModal').modal('show');
+                        $('#msgboxMessage').text(data.message);
+                    }                        
+                }
+       
             }
         });
 

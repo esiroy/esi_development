@@ -289,6 +289,7 @@ class MemberController extends Controller
 
         return Response()->json([
             "success" => true,
+            "memberReservedActive" => env('MEMBER_RESERVE_LIMIT_ACTIVE', false),
             "totalTutorDailyReserved" => $totalTutorDailyReserved,
             "totalMemberReserved" => $scheduleItem->getTotalMemberReserved($memberInfo),
             "message" => "Tutor has " . $totalTutorDailyReserved ." for member " . $memberID,
@@ -472,26 +473,37 @@ class MemberController extends Controller
          * DESCRIPTION: WHEN SAVING, THE TOTAL DAILY RESERVED WILL BE SET TO RESERVED STATUS "B" 
          *              IF YOU WILL BE RESERVED 2 OR MORE IN A DAY 
          ************************/
-        
-        if ($totalDailyTutorReserved >= 2) 
-        {   
-            $reservation_type = $schedule_status_b;      
-            $data = [
-                'member_id' => $memberID,
-                'schedule_status' => $schedule_status_b,
-            ];
-            $schedule->update($data);
+
+        $MEMBER_RESERVE_LIMIT_ACTIVE = env('MEMBER_RESERVE_LIMIT_ACTIVE', false);
+
+        if ($MEMBER_RESERVE_LIMIT_ACTIVE == true) 
+        {
+            if ($totalDailyTutorReserved >= 2) 
+            {   
+                $reservation_type = $schedule_status_b;      
+                $data = [
+                    'member_id' => $memberID,
+                    'schedule_status' => $schedule_status_b,
+                ];
+                $schedule->update($data);
+            } else {
+                $reservation_type = $schedule_status;
+                $data = [
+                    'member_id' => $memberID,
+                    'schedule_status' => $schedule_status,
+                ];
+                $schedule->update($data);
+            }
         } else {
+
+            //default to A
             $reservation_type = $schedule_status;
             $data = [
                 'member_id' => $memberID,
                 'schedule_status' => $schedule_status,
             ];
-            $schedule->update($data);
-
+            $schedule->update($data);            
         }
-
-
        
 
         //** ADD MEMBER TRANSACTION */
@@ -539,23 +551,41 @@ class MemberController extends Controller
         $credits = $agentCredts->getCredits($memberID);
 
        
-        if ($totalDailyTutorReserved >= 2) 
-        {
-            return Response()->json([
-                "success" => true,
-                "type"      => "msgbox",
-                "credits"  => "(". number_format($credits, 2) .")",
-                "message"   => "同日、同講師の予約上限2コマを超えています。",
-                "message_en" => "On the same day, the instructor's reservation limit of 2 frames has been exceeded.",
-                "status" => $selectedSchedule->schedule_status,
-                "userData" => $request['user'],
-                "lesson_time" => $lessonTime,
-                "tutor_id" => $schedule->tutor_id,
-                "member_id" => Auth::user()->id
-            ]);
+        if ($MEMBER_RESERVE_LIMIT_ACTIVE == true) 
+        {                
+            if ($totalDailyTutorReserved >= 2) 
+            {
+                return Response()->json([
+                    "success" => true,
+                    "type"      => "msgbox",
+                    "credits"  => "(". number_format($credits, 2) .")",
+                    "message"   => "同日、同講師の予約上限2コマを超えています。",
+                    "message_en" => "On the same day, the instructor's reservation limit of 2 frames has been exceeded.",
+                    "status" => $selectedSchedule->schedule_status,
+                    "userData" => $request['user'],
+                    "lesson_time" => $lessonTime,
+                    "tutor_id" => $schedule->tutor_id,
+                    "member_id" => Auth::user()->id
+                ]);
 
-        } else { 
+            } else { 
 
+                return Response()->json([
+                    "success" => true,
+                    "type"      => "msgbox",
+                    "credits"  => "(". number_format($credits, 2) .")",
+                    "message" => "Member has been scheduled",
+                    "message_en" => "Member has been scheduled.",
+                    "userData" => $request['user'],
+                    "lesson_time" => $lessonTime,
+                    "tutor_id" => $schedule->tutor_id,
+                    "member_id" => Auth::user()->id,
+                ]);
+            
+            } 
+        } else {
+
+            //defauult
             return Response()->json([
                 "success" => true,
                 "type"      => "msgbox",
@@ -566,10 +596,12 @@ class MemberController extends Controller
                 "lesson_time" => $lessonTime,
                 "tutor_id" => $schedule->tutor_id,
                 "member_id" => Auth::user()->id,
-            ]);
-        
-        
-         } 
+            ]);            
+
+        }
+
+
+
 
     }
 
