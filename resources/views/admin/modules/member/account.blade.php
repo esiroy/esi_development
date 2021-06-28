@@ -179,6 +179,9 @@
                                 </td>
                                 -->
                                 <td class="small">
+
+                                    <input type="hidden" value="{{ $scheduleItem->id ?? ''}}">
+                                    
                                     {{ date('F d, Y', strtotime($transaction->created_at)) }} 
                                    
                                     {{ date('h:i:s a', strtotime($transaction->created_at)) }}                                    
