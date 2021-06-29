@@ -174,21 +174,19 @@
 
                                             @php                                                
                                                 $date_now =  date("Y-m-d H:i:s");
-
-                                                //updated time since it is now japanese
-                                                $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." +  2 hours")); 
-                                                $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));                                                                                               
+                                                $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 3 hours"));
+                                                $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));
                                             @endphp
 
                                             
                                             
-                                            @if ($reserve->schedule_status == "CLIENT_RESERVED_B")                                                 
+                                            @if ($reserve->schedule_status == "CLIENT_RESERVED_B")
                                                 <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
                                             @else 
-                                                @if ($valid_time <= $lessonTime)                                                 
+                                                @if ($valid_time <= $lessonTime) 
                                                     <!--valid time here since it is greater that 3 hours) -->
                                                     <a href="javascript:void(0)" onClick="deleteSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnRed3.gif') }}" alt="取り消し" title="取り消し"></a>
-                                                @else                                                 
+                                                @else 
                                                     <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                
                                                 @endif
                                             @endif
