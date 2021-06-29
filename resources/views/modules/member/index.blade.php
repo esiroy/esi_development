@@ -177,8 +177,7 @@
 
                                                 //updated time since it is now japanese
                                                 $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." +  2 hours")); 
-                                                $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));                                               
-                                                
+                                                $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));                                                                                               
                                             @endphp
 
                                             
