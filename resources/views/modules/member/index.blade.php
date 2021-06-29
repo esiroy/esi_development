@@ -174,7 +174,7 @@
 
                                             @php                                                
                                                 $date_now =  date("Y-m-d H:i:s");
-                                                $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 3 hours"));
+                                                $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 2 hours"));
                                                 $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));
                                             @endphp
 
