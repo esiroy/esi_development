@@ -747,24 +747,35 @@
             },
             success: function(data) 
             {
-                setTimeout(() => {                
-                    if (data.schedule_status == "CLIENT_RESERVED_B")
-                    {
-                        setTimeout(() => {                        
-                            if (confirm('こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
-                                removeSchedule(id);
-                            } else {
-                                return false;
-                            }
-                        }, 100);
+                setTimeout(() => {            
+
+                    if (data.success == false) {
+
+                        if (confirm(data.message_jp)) {
+                            removeSchedule(id);
+                        } else {
+                            return false;
+                        }
+
                     } else {
-                        setTimeout(() => {
-                            if (confirm('このレッスンをキャンセルしてもいいですか？')) {
-                                removeSchedule(id);
-                            } else {
-                                return false;
-                            }
-                        }, 100);                            
+                        if (data.schedule_status == "CLIENT_RESERVED_B")
+                        {
+                            setTimeout(() => {                        
+                                if (confirm('こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
+                                    removeSchedule(id);
+                                } else {
+                                    return false;
+                                }
+                            }, 100);
+                        } else {
+                            setTimeout(() => {
+                                if (confirm('このレッスンをキャンセルしてもいいですか？')) {
+                                    removeSchedule(id);
+                                } else {
+                                    return false;
+                                }
+                            }, 100);                            
+                        }
                     }
                 }, 100);
             }

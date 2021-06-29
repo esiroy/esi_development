@@ -824,7 +824,24 @@ class MemberController extends Controller
     {
         $scheduleID = $request->ScheduleItemID;
         $schedule = ScheduleItem::where('id', $scheduleID)->where('member_id', Auth::user()->id)->first();
-        return $schedule;
+
+        $date_now =  date("Y-m-d H:i:s");
+        $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 2 hours"));
+        $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
+        
+        if ($valid_time <= $lessonTime) 
+        {
+            //valid time            
+            return $schedule;
+
+        } else {
+            return Response()->json([
+                "success" => false,
+                "message_jp"    => "このレッスンをキャンセル（欠席）されるとポイントは消化されます。キャンセル(欠席）しますか？",
+                "message"       => "If you cancel (absent) this lesson, your points will be consumed. Do you want to cancel (absent)?",
+            ]);             
+        }        
+        
     }
 
 
