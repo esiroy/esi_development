@@ -830,11 +830,20 @@ class MemberController extends Controller
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
         
         if ($valid_time <= $lessonTime) 
-        {
-            //valid time
-            
-            return $schedule;
+        {           
 
+            if ($schedule->schedule_status == "CLIENT_RESERVED_B") 
+            {                
+                //valid time, check if schedule b           
+                return Response()->json([
+                    "success" => false,
+                    "message_jp"    => "こちらの予約はキャンセルができませんがよろしいでしょうか？",
+                    "message"       => "This reservation cannot be canceled, is that okay?",
+                ]);   
+            } else {
+                //valid time, check if schedule a           
+                return $schedule;
+            }
         } else {
             return Response()->json([
                 "success" => false,
@@ -842,7 +851,6 @@ class MemberController extends Controller
                 "message"       => "If you cancel (absent) this lesson, your points will be consumed. Do you want to cancel (absent)?",
             ]);             
         }        
-        
     }
 
 

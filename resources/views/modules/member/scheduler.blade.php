@@ -749,14 +749,13 @@
             {
                 setTimeout(() => {            
 
-                    if (data.success == false) {
-
+                    if (data.success == false) 
+                    {
                         if (confirm(data.message_jp)) {
                             removeSchedule(id);
                         } else {
                             return false;
                         }
-
                     } else {
                         if (data.schedule_status == "CLIENT_RESERVED_B")
                         {
