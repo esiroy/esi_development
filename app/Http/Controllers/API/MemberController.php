@@ -826,12 +826,13 @@ class MemberController extends Controller
         $schedule = ScheduleItem::where('id', $scheduleID)->where('member_id', Auth::user()->id)->first();
 
         $date_now =  date("Y-m-d H:i:s");
-        $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 2 hours"));
+        $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 3 hours"));
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
         
         if ($valid_time <= $lessonTime) 
         {
-            //valid time            
+            //valid time
+            
             return $schedule;
 
         } else {
