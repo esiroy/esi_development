@@ -166,7 +166,7 @@
                                         <td style="text-align: center;">
                                             <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">-->
 
-                                            <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-id="{{ $reserve->id }}">
+                                            <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
                                                 <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
                                             </a>
                                         </td>
@@ -219,9 +219,10 @@
 
  @include('modules.member.popup.content')
  @include('modules.member.popup.memo')
+ @include('modules.member.popup.memoReply')
  @include('modules.member.popup.loading')
  @include('modules.member.popup.memoSent')
-
+ 
 @endsection
 
 
@@ -254,6 +255,7 @@
                 $('#loadingModal').modal('hide');
             }
         });
+
     });
 
     function cancelSchedule(id)
@@ -345,7 +347,17 @@
                 $('#message').val(data.memo);
                 $('#scheduleID').val(scheduleID);
                 $('#loadingModal').modal('hide');
-                $('#tutorMemoModal').modal('show')      
+
+                $('#teacherImage').attr('src', data.tutorImage)
+
+                if (data.memo) {
+                    $('#tutorMemoReplyModal #scheduleID').val(scheduleID);
+                    $('#tutorMemoReplyModal #message').html(data.memo);                    
+                    $('#tutorMemoReplyModal').modal('show')    
+                } else {
+                    //this is where they create a new thread                    
+                    $('#tutorMemoModal').modal('show')    
+                }  
             },
         });
     }
@@ -378,9 +390,138 @@
         $('#writingServiceModal').modal('hide');
         window.open(url,'popUpWindow','height=600,width=720,left=50,top=50,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no, status=yes')
         return false;
-
     }
 
+    /* FUNCTIONS */
+    function getMemoConversations(scheduleID) 
+    {
+        $.ajax({
+         
+            type: 'POST',
+            dataType: 'json',
+            cache : false,
+            url: "{{ url('api/getMemoConversations?api_token=') }}" + api_token,
+            data: {
+                'scheduleID': scheduleID,
+                'tutorID': {{ Auth::user()->id }},
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found while getting memo conversations: " + error);
+            },            
+            success: function(data) 
+            {
+               let replies = data.conversations;
+               replies.forEach(createReplyBubble);
+            },
+        });
+    }
+
+    function createReplyBubble(item, index) 
+    {       
+        let teacherProfileImage = $('#teacherProfile').html();
+
+        if (item.message_type === "MEMBER") {
+            addMemberReplyBubble(teacherProfileImage, item.message);
+        } else {
+            addTeacherReplyBubble(teacherProfileImage, item.message);
+        }    
+        
+    }
+      
+          
+
+    /*[START] MODAL  */  
+    function addTeacherReplyBubble(image, message) 
+    {
+        if (message) {        
+            $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  message + " </div> </div> </div>");         
+            setTimeout(() => {  
+                    var element = document.getElementById("teacherReplies");
+                    element.scrollTop = element.scrollHeight;
+            },100);
+        }
+    }
+
+    function addMemberReplyBubble(image, message) 
+    {
+        if (message) {        
+            $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-9'> <div class='member-speech-bubble'>"+ message +" </div></div>    <div class='col-md-3'>  " +  image + "  </div> </div>");         
+            setTimeout(() => {  
+                    var element = document.getElementById("teacherReplies");
+                    element.scrollTop = element.scrollHeight;
+            },100);
+        }
+    }    
+    /*[END MODAL] */
+
+
+  
+
+    function sendMemberReply(scheduleID, message) 
+    {
+
+        console.log(scheduleID, message);
+
+        $.ajax({         
+            type: 'POST',
+            dataType: 'json',
+            cache : false,
+            url: "{{ url('api/sendMemberReply?api_token=') }}" + api_token,
+            data: {
+                'scheduleID': scheduleID,
+                'memberID': {{ Auth::user()->id }},
+                'message': message,
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found while getting teacher unread memo replies: " + error);
+            },      
+            beforeSend: function() {   
+                $('#loadingModal').modal('hide');
+            },               
+            success: function(data) 
+            {
+                let teacherProfileImage = $('#memberProfile').html();
+
+                addMemberReplyBubble(teacherProfileImage, message) 
+            },
+        });
+                
+    }
+
+    function getUnreadTeacherMessages(scheduleID) 
+    {
+        //console.log("heartbeat! " + scheduleID);
+        $.ajax({         
+            type: 'POST',
+            dataType: 'json',
+            cache : false,
+            url: "{{ url('api/getUnreadTeacherMessages?api_token=') }}" + api_token,
+            data: {
+                'scheduleID': scheduleID,
+                'memberID': {{ Auth::user()->id }},
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found while getting teacher unread memo replies: " + error);
+            },      
+            beforeSend: function() {   
+                $('#loadingModal').modal('hide');
+            },               
+            success: function(data) 
+            {
+                let replies = data.conversations;
+                replies.forEach(createReplyBubble);             
+                console.log(data.message)
+            },
+        });
+    }
 
 
 
@@ -388,15 +529,120 @@
     {
         var button;        
         var modal;
+        var intervalId;
 
+        //Save to Schedule Item Memo
         $('#saveTutorMemo').on('click', function() 
         {           
             let scheduleID =  $('#scheduleID').val();
-            let message = $('#message').val();
-            console.log(message);
+            let message = $('#message').val();           
             sendMemo(scheduleID, message);
+        });
+
+        $('#btnReply').on('click', function(){
+            let scheduleID =  $('#scheduleID').val();
+            let message = $('#memberTextReply').val()
+            sendMemberReply(scheduleID, message);
+
+            $('#memberTextReply').val("");
+        });
+
+
+        //Detect Memo Reply Modal
+        $('#tutorMemoReplyModal').on('show.bs.modal', function (event) 
+        {            
+            let scheduleID =  $('#scheduleID').val();               
+            //clear teacher replies 
+            $( "#teacherReplies" ).text(""); 
+            //get all memo replies
+            getMemoConversations(scheduleID);
+
+            //interval unread message fetching
+            intervalId = window.setInterval(function(){
+                getUnreadTeacherMessages(scheduleID)
+            }, 3000);
+        });
+
+        $('#tutorMemoReplyModal').on('hide.bs.modal', function (event) 
+        {            
+            clearInterval(intervalId);
+           // console.log("closed heaertbeat")
         });
     });
 
 </script>
+@endsection
+
+
+
+@section('styles')
+@parent
+<style>
+.member-speech-bubble {
+	position: relative;
+	background: #00ff91;
+	border-radius: .4em;
+    padding-right:30px;
+    position: relative;
+    background: #00ff91;
+    border-radius: .4em;
+    padding: 10px 20px 10px;
+    float: right;
+    margin: 20px -10px 0px;
+    text-align: right;
+}
+
+.member-speech-bubble:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 18px solid transparent;
+	border-left-color: #00ff91;
+	border-right: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-right: -14px;
+}
+
+#teacherReplies .row 
+{
+    /*border: 1px dotted rgb(0, 132, 255);*/
+    margin: 5px 0px 15px;
+    padding: 3px 0px 8px;
+}
+
+
+.teacher-speech-bubble {
+	position: relative;
+	background: #3e4042;
+	border-radius: .4em;
+    color: #fff;
+    position: relative;
+    border-radius: .4em;
+    padding-right: 30px;
+    margin: 5px 0px 5px;
+    padding: 10px;
+    display: inline-block;      
+}
+
+.teacher-speech-bubble:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-right-color: #3e4042;
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-left: -15px;
+}
+
+
+</style>
 @endsection

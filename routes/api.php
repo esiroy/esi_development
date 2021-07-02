@@ -72,6 +72,15 @@ Route::middleware('auth:api')->post('/getTotalMemberDailyReserved', 'API\MemberC
 Route::middleware('auth:api')->post('/getTotalTutorDailyReserved', 'API\MemberController@getTotalTutorDailyReserved')->name('APIGetTotalTutorDailyReserved');
 Route::middleware('auth:api')->post('/getScheduleDetails', 'API\MemberController@getScheduleDetails')->name('APIGetScheduleDetails');
 
+//[start](MEMBER CONTROL PANEL) 
+Route::middleware('auth:api')->post('/sendMemberReply', 'API\MemberController@sendMemberReply')->name('APIsendMemberReply');
+Route::middleware('auth:api')->post('/getUnreadTeacherMessages', 'API\MemberController@getUnreadTeacherMessages')->name('APIGetUnreadTeacherMessages');
+
+
+//[start](TUTOR CONTROL PANEL)  memo chat system 
+Route::middleware('auth:api')->post('/getMemoConversations', 'API\TutorController@getMemoConversations')->name('APIGetMemoConversationsy');
+Route::middleware('auth:api')->post('/sendMemoReply', 'API\TutorController@sendMemoReply')->name('APISendMemoReply');
+Route::middleware('auth:api')->post('/getUnreadMemberMessages', 'API\TutorController@getUnreadMemberMessages')->name('APIgetUnreadMemberMessages');
 
 
 //[start] Lesson Materials

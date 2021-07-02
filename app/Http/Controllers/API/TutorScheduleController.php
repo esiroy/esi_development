@@ -10,6 +10,7 @@ use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 use App\Models\ReportCard;
 use App\Models\ScheduleItem;
+use App\Models\MemoReply;
 use App\Models\Shift;
 use App\Models\Tutor;
 use DB;
@@ -707,7 +708,16 @@ class TutorScheduleController extends Controller
                 }
                 $questionnaire->delete();
             }
+
+            //[updated - July 1] remove replies when removing a schedule
+            $memoReplies =  MemoReply::where('schedule_item_id', $scheduleID)->get();
+            foreach ($memoReplies as $memoReply) {
+                $memoReply->delete();
+            }
+
             $schedule->delete();
+
+           
 
             //refetch schedule items
             $scheduleItem = new ScheduleItem();
