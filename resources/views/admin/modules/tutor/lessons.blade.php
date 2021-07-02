@@ -496,7 +496,7 @@
 #teacherReplies .row 
 {
     /*border: 1px dotted rgb(0, 132, 255);*/
-    margin: 5px 0px 15px;
+    
     padding: 3px 0px 8px;
 }
 

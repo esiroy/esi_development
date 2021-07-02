@@ -1,6 +1,7 @@
 <div class="modal fade" id="tutorMemoModal" tabindex="-1" role="dialog" aria-labelledby="tutorMemoLabel" aria-hidden="true">
     <div class="modal-dialog " role="document">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h5 class="modal-title" id="tutorMemoLabel">Memo</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -8,33 +9,38 @@
                 </button>
             </div>
            
-                <div class="modal-body">
+            <div class="modal-body">
+
+                <input id="scheduleID" type="hidden" value="">
                     <div class="container">
 
-                        <input id="scheduleID" type="hidden" value="">
-
-
                         <div class="row">
-                            <div class="col-md-8">
-                                <div id="message" class="member-speech-bubble"></div>                                
-                            </div>
                             <div class="col-md-3">
-                                <div id="teacherProfile">
-                                    <div class="profile-image text-center mt-2">
-                                        @php      
-                                            $userImageObj = new \App\Models\UserImage;
-                                            $userImage = $userImageObj->getTutorPhotobyID(Auth::user()->id); 
-                                        @endphp
-
-                                        @if ($userImage == null)
-                                            <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" >
-                                        @else 
-                                            <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
-                                        @endif
-                                    </div>
-                                </div>                                              
+                                <div id="memberProfile" class="text-center">
+                                    <img id="memberImage" src="" class="img-fluid border" alt="profile photo" style="max-width: 77px;float: left;">
+                                </div>
+                                  
+                                                                                             
+                            </div>
+                            <div class="col-md-9">
+                                <div id="message" class="teacher-speech-bubble"></div>
                             </div>
                         </div>
+
+                        <div id="teacherProfile" style="display:none">
+                            <div class="profile-image text-center mt-2 mr-3">
+                                @php      
+                                    $userImageObj = new \App\Models\UserImage;
+                                    $userImage = $userImageObj->getTutorPhotobyID(Auth::user()->id); 
+                                @endphp
+
+                                @if ($userImage == null)
+                                    <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" >
+                                @else 
+                                    <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
+                                @endif
+                            </div>
+                        </div>                           
                        
 
                         <div class="row">
@@ -43,7 +49,7 @@
                             </div>
                         </div>
 
-                        <div id="teacherReplies" style="height:220px; overflow:auto; padding-right:25px"></div>
+                        <div id="teacherReplies" style="height:220px; overflow:auto;"></div>
                     </div>
                 </div>
 
