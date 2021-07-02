@@ -28,13 +28,16 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
-                                @php /*済他＝　講師キャンセル又は他の受講生が予約済みです*/ @endphp
+
+                        
+                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2019/0806115335.html', '予約は30分前まで、キャンセルは3時間前まで可能', 900, 720);" style="color:#212529">
+                            <div style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">                                
                                 <div>予約は30分前まで、キャンセルは3時間前まで可能</div>
                             </div>
+                        </a>
 
                             
-                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html', '最大15コマまで予約可能です', 900, 720);" style="color:#212529">                            
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html', '最大15コマまで予約可能です', 900, 720);" style="color:#212529">
                                 <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
                                     <div>予約数制限：　最大15コマまで予約可能です</div>
                                 </div>
