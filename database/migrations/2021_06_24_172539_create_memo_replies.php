@@ -20,7 +20,7 @@ class CreateMemoReplies extends Migration
             $table->unsignedBigInteger('recipient_id');
             $table->string("message_type", 10);
             $table->text('message')->nullable();
-            $table->string('is_read')->nullable();
+            $table->boolean('is_read')->default(false);
             $table->timestamps();
         });
 
