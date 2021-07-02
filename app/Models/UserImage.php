@@ -22,6 +22,17 @@ class UserImage extends Model
         return $userImage;
     }
 
+
+    public function getMemberPhotoByID($memberID) {
+        if (isset($memberID)) {
+            $userImage = UserImage::where('user_id', $memberID)->where('valid', 1)->first();
+        } else {
+            $userImage = null;
+        }
+        return $userImage;
+    }
+    
+    
     /**
      * @param tutorID - id of tutor 
      */    
