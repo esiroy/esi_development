@@ -51,22 +51,23 @@
 
                         <div id="teacherReplies" style="height:220px; overflow:auto;"></div>
                     </div>
-                </div>
+                
 
-                <div class="modal-footer">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-md-9">
-                                <div class="reply">
-                                    <textarea class="form-control" id="teacherTextReply" rows="1" cols="1" style="min-height:70px"></textarea>
+                    <div class="modal-footer">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <div class="reply">
+                                        <textarea class="form-control" id="teacherTextReply" rows="1" cols="1" style="min-height:70px"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <button id="btnReply" type="button" class="btn btn-primary" style="height:70px; width:100%">Reply</button>
+                                    <!--<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>-->
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <button id="btnReply" type="button" class="btn btn-primary" style="height:70px; width:100%">Reply</button>
-                                <!--<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>-->
-                            </div>
-                        </div>
-                    </div>                        
+                        </div>                        
+                    </div>
                 </div>
             </form>
         </div>

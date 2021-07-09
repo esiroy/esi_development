@@ -232,7 +232,6 @@
 
     </div>
 </div>
-<<<<<<< HEAD
 @endsection
 
 @section('scripts')
@@ -547,6 +546,4 @@
 
 
 </style>
-=======
->>>>>>> chatsystem
 @endsection

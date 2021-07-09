@@ -226,7 +226,7 @@ class TutorController extends Controller
         $data = [
                 'schedule_item_id' => $scheduleID,
                 'sender_id' => $tutorID,
-                'recipient_id' => $scheduleItem->member_id,
+                'recipient_id' => $scheduleID->member_id,
                 'message_type' => "TUTOR",
                 'message' => $message,
                 'is_read' => false,
