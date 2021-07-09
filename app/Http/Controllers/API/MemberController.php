@@ -897,15 +897,61 @@ class MemberController extends Controller
     }
 
 
+    public function getMemoConversations(Request $request) 
+    {
+        $scheduleID = $request->scheduleID;
+        $tutorID = $request->tutorID;
+        $message = $request->message;
+
+        //check if the schedule is available , if not send an error message
+        $scheduleItem = ScheduleItem::find($scheduleID);
+        
+        $memoReply = new MemoReply();
+        $conversations = $memoReply->where('schedule_item_id', $scheduleID)
+                        ->orderBy("created_at", 'ASC')
+                        ->get();
+
+        if ($conversations) 
+        {            
+           //$memoReply->where('schedule_item_id', $scheduleID)->update(array('is_read' => true));
+
+           $memoReply->where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->update(array('is_read' => true));
+
+            return Response()->json([
+                "success" => true,  
+                "message"   => "conversations succesfully fetched",
+                "conversations" => $conversations,            
+            ]); 
+        } else {
+            return Response()->json([
+                "success" => false,  
+                "message"   => "no conversation found"                
+            ]);             
+        }
+    }    
+
     public function sendMemberReply(Request $request)    
     {
+
+
 
         $scheduleID = $request->scheduleID;
         $memberID = $request->member_id;
         $message = $request->message;
 
+
         //check if the schedule is available , if not send an error message
         $scheduleItem = ScheduleItem::find($scheduleID);
+
+        //update the schedule Memo if this is the first message from user, so it will become a thread starter
+        if (isset($scheduleItem->memo))
+        {            
+            $data = [
+                'memo' => $request->message,
+            ];
+            $scheduleItem->update($data);
+        }
+
 
         if ($scheduleItem) {
 
@@ -952,7 +998,7 @@ class MemberController extends Controller
 
         $memoReply = new MemoReply();
         $conversations = $memoReply->where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->get();   
-
+        
         MemoReply::where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->update(array('is_read' => true));
 
         return Response()->json([
@@ -960,6 +1006,67 @@ class MemberController extends Controller
             "conversations" => $conversations,
             "message" => "Teacher memo replies has been fetched.",
         ]);
+    }
+
+
+    public function getMemberInbox(Request $request) 
+    {
+
+        $memberID = $request->memberID;
+        $memberInfo = Member::where('user_id',  $memberID)->first();
+
+        $scheduleItems = new ScheduleItem();
+        $memoReply = new MemoReply();     
+
+        $reservations = $scheduleItems->getMemberAllActiveLessons($memberInfo);
+
+        $unread = 0;
+        
+        $inbox = array();
+
+        foreach($reservations as $reservation) 
+        {              
+            
+            if (isset($reservation->id)) 
+            {
+                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)
+                                          ->where('is_read', false)
+                                          ->where('message_type', "TUTOR")
+                                          ->orderBy('created_at', 'DESC')->first();
+            
+                if ($latestReply) 
+                {
+                    $unread++;
+
+                    //get teacher profile pic
+                    $userImageObj = new UserImage;
+                    $tutorImage = $userImageObj->getTutorPhotoByID($reservation->tutor_id);         
+
+                    if ($tutorImage == null) {
+                        $tutorOrignalImage = Storage::url('user_images/noimage.jpg');
+                    } else {
+                        $tutorOrignalImage = Storage::url($tutorImage->original);
+                    }
+    
+        
+
+                    $inbox[] =  array(
+                        "schedule_item_id" => $reservation->id,
+                        "latestReply" => $latestReply->message,
+                        "tutorOrignalImage" => $tutorOrignalImage
+                    );
+                }
+            }            
+        }    
+
+        return Response()->json([
+            "success" => true,    
+            "inbox" => $inbox,
+            "unread" => $unread,
+            "message" => "Teacher memo replies has been fetched.",
+        ]);
+        
+
     }
 
     /**
@@ -1401,5 +1508,8 @@ class MemberController extends Controller
         }
 
     }
+
+
+    
 
 }

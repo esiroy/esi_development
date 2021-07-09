@@ -249,6 +249,8 @@ a.red:hover {
     display: block;
 }
 
+
+/* old toggle without a send a message button
 .toggleHide .hide {
     display: none;
     border: 1px solid #d0cbcb;
@@ -258,6 +260,17 @@ a.red:hover {
     left: 34px;
     width: 87px;
     padding: 3px;
+}
+*/
+.toggleHide .hide {
+    display: none;
+    border: 1px solid #d0cbcb;
+    background-color: #fff;
+    position: relative;
+    top: -42px;
+    left: 0px;
+    width: 150px;
+    padding: 8px;
 }
 
 //write report

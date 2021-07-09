@@ -13,7 +13,7 @@
 
                         <input id="scheduleID" type="hidden" value="">
 
-
+                        <!--
                         <div class="row">
                             <div class="col-md-8">
                                 <div id="message" class="member-speech-bubble"></div>                                
@@ -35,7 +35,24 @@
                                 </div>                                              
                             </div>
                         </div>
+                        -->
                        
+                        <div class="row">
+                            <div id="teacherProfile" style="display:none">
+                                <div class="profile-image text-center mt-2">
+                                    @php      
+                                        $userImageObj = new \App\Models\UserImage;
+                                        $userImage = $userImageObj->getTutorPhotobyID(Auth::user()->id); 
+                                    @endphp
+
+                                    @if ($userImage == null)
+                                        <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" >
+                                    @else 
+                                        <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="row">
                             <div id="memberProfile" style="display:none">

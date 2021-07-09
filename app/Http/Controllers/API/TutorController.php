@@ -9,6 +9,17 @@ use App\Models\Tutor;
 use App\Models\FavoriteTutor;
 use App\Models\ScheduleItem;
 use App\Models\MemoReply;
+use App\Models\UserImage;
+
+
+
+use Auth, App;
+use DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
+use Validator;
 
 
 
@@ -102,12 +113,15 @@ class TutorController extends Controller
         $scheduleItem = ScheduleItem::find($scheduleID);
         
         $memoReply = new MemoReply();
-        $conversations = $memoReply->where('schedule_item_id', $scheduleID)->get();     
+        $conversations = $memoReply->where('schedule_item_id', $scheduleID)
+                        ->orderBy("created_at", 'ASC')
+                        ->get();
 
         if ($conversations) 
         {            
-           $memoReply->where('schedule_item_id', $scheduleID)->update(array('is_read' => true));
+           //$memoReply->where('schedule_item_id', $scheduleID)->update(array('is_read' => true));
 
+           $memoReply->where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "MEMBER")->update(array('is_read' => true));
 
             return Response()->json([
                 "success" => true,  
@@ -120,6 +134,66 @@ class TutorController extends Controller
                 "message"   => "no conversation found"                
             ]);             
         }
+    }
+
+    public function getTutorInbox(Request $request) 
+    {
+
+        $tutorID = $request->tutorID;
+        $tutorInfo = Tutor::where('user_id',  $tutorID)->first();
+
+        $scheduleItems = new ScheduleItem();
+        $memoReply = new MemoReply();     
+
+        $reservations = $scheduleItems->getTutotAllActiveLessons($tutorInfo);
+
+        $unread = 0;
+        
+        $inbox = array();
+
+        foreach($reservations as $reservation) 
+        {              
+            
+            if (isset($reservation->id)) 
+            {
+                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)
+                                          ->where('is_read', false)
+                                          ->where('message_type', "MEMBER")
+                                          ->orderBy('created_at', 'DESC')->first();
+            
+                if ($latestReply) 
+                {
+                    $unread++;
+
+                    //get teacher profile pic
+                    $userImageObj = new UserImage;
+                    $memberImage = $userImageObj->getMemberPhotoByID($reservation->member_id);         
+
+                    if ($memberImage == null) {
+                        $memberOrignalImage = Storage::url('user_images/noimage.jpg');
+                    } else {
+                        $memberOrignalImage = Storage::url($memberImage->original);
+                    }
+    
+        
+
+                    $inbox[] =  array(
+                        "schedule_item_id" => $reservation->id,
+                        "latestReply" => $latestReply->message,
+                        "memberOrignalImage" => $memberOrignalImage
+                    );
+                }
+            }            
+        }    
+
+        return Response()->json([
+            "success" => true,    
+            "inbox" => $inbox,
+            "unread" => $unread,
+            "message" => "Member memo replies has been fetched.",
+        ]);
+        
+
     }
 
 
