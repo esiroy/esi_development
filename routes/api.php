@@ -75,12 +75,23 @@ Route::middleware('auth:api')->post('/getScheduleDetails', 'API\MemberController
 //[start](MEMBER CONTROL PANEL) 
 Route::middleware('auth:api')->post('/sendMemberReply', 'API\MemberController@sendMemberReply')->name('APIsendMemberReply');
 Route::middleware('auth:api')->post('/getUnreadTeacherMessages', 'API\MemberController@getUnreadTeacherMessages')->name('APIGetUnreadTeacherMessages');
+Route::middleware('auth:api')->post('/getMemberMemoConversations', 'API\MemberController@getMemoConversations')->name('APIGetMemberMemoConversations');
+
+
+//[notifier] or member inbox messages realtime notifier
+Route::middleware('auth:api')->post('/getMemberInbox', 'API\MemberController@getMemberInbox')->name('APIGetMemberInbox');
+
 
 
 //[start](TUTOR CONTROL PANEL)  memo chat system 
 Route::middleware('auth:api')->post('/getMemoConversations', 'API\TutorController@getMemoConversations')->name('APIGetMemoConversationsy');
 Route::middleware('auth:api')->post('/sendMemoReply', 'API\TutorController@sendMemoReply')->name('APISendMemoReply');
 Route::middleware('auth:api')->post('/getUnreadMemberMessages', 'API\TutorController@getUnreadMemberMessages')->name('APIgetUnreadMemberMessages');
+
+//[notifier] TUTOR inbox messages realtime notifier
+Route::middleware('auth:api')->post('/getTutorInbox', 'API\TutorController@getTutorInbox')->name('APIGetTutorInbox');
+
+
 
 
 //[start] Lesson Materials
