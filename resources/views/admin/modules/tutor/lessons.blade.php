@@ -171,6 +171,22 @@
                                                     </a>
                                                 </div>
                                                 <div class="hide">
+
+                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' )
+
+                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                        <div id="memoContent" style="display:none">
+                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                        </div>
+                                                        <!-- <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle"> -->
+                                                        Send A Message
+                                                    </a>
+
+                                                    <span class="text-secondary"> | </span>
+
+                                                @endif
+
+
                                                     <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
                                                 </div>
                                                 @endif
@@ -182,19 +198,19 @@
 
                                             @if (isset($lessons[$dateView][$timeSlot['startTime']]['memo']))
 
-                                            @if ($lessons[$dateView][$timeSlot['startTime']]['memo'] != '')
+                                                @if ($lessons[$dateView][$timeSlot['startTime']]['memo'] != '')
 
-                                            <div id="memoContainer" class="btn-container2 pt-2">
-                                                <!-- open memo -->
-                                                <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                    <div id="memoContent" style="display:none">
-                                                        {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
-                                                    </div>
-                                                    <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
-                                                </a>
-                                            </div>
+                                                <div id="memoContainer" class="btn-container2 pt-2">
+                                                    <!-- open memo -->
+                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                        <div id="memoContent" style="display:none">
+                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                        </div>
+                                                        <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
+                                                    </a>
+                                                </div>
 
-                                            @endif
+                                                @endif
                                             @endif
 
                                         </div>
@@ -215,8 +231,8 @@
         </div>
 
     </div>
-    @include('admin.modules.tutor.includes.memo')
 </div>
+<<<<<<< HEAD
 @endsection
 
 @section('scripts')
@@ -531,4 +547,6 @@
 
 
 </style>
+=======
+>>>>>>> chatsystem
 @endsection
