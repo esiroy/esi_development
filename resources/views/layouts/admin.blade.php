@@ -241,8 +241,8 @@
                 },            
                 success: function(data) 
                 {
-                let replies = data.conversations;
-                replies.forEach(createReplyBubble);
+                    let replies = data.conversations;
+                    replies.forEach(createReplyBubble);
                 },
             });
         }
@@ -408,7 +408,13 @@
                 
 
                 getMemo(scheduleID)
-                getMemoConversations(scheduleID);
+
+                setTimeout(() => {  
+                    
+                    getMemoConversations(scheduleID);
+
+                }, 200);                
+                
 
                 //interval unread message fetching
                 intervalId = window.setInterval(function(){

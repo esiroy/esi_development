@@ -55,7 +55,7 @@
                         </div>
 
                         <div class="row">
-                            <div id="memberProfile" style="display:none">
+                            <div id="memberProfile" >
                                 <img id="memberImage" src="" class="img-fluid border" alt="profile photo">
                             </div>
                         </div>
