@@ -219,10 +219,182 @@
 </div>
 @endsection
 
+@section('scripts')
+@parent
+<script type="text/javascript">
+    var api_token = "{{ Auth::user()->api_token }}";
+
+    function getMemo(scheduleID) {
+        $.ajax({
+            type: 'POST', 
+            url: "{{ url('api/getMemo?api_token=') }}" + api_token,
+            data: {
+                'scheduleID': scheduleID,
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found getting memo: " + error);
+            },            
+            success: function(data) 
+            {            
+                $('#tutorMemoModal #scheduleID').val(scheduleID);
+                $('#tutorMemoModal #message').html(data.memo);
+
+                $('#memberImage').attr('src', data.memberImage)
+            },
+        });
+    }
+
+    /* FUNCTIONS */
+    function getMemoConversations(scheduleID) 
+    {
+        $.ajax({
+         
+            type: 'POST',
+            dataType: 'json',
+            cache : false,
+            url: "{{ url('api/getMemoConversations?api_token=') }}" + api_token,
+            data: {
+                'scheduleID': scheduleID,
+                'tutorID': {{ Auth::user()->id }},
+            }, headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found while sending memo: " + error);
+            },            
+            success: function(data) 
+            {
+               let replies = data.conversations;
+               replies.forEach(createReplyBubble);
+            },
+        });
+    }
+
+
+
+    function getUnreadMemberMessages(scheduleID) 
+    {
+        //console.log("heartbeat! " + scheduleID);
+        $.ajax({         
+            type: 'POST',
+            dataType: 'json',
+            cache : false,
+            url: "{{ url('api/getUnreadMemberMessages?api_token=') }}" + api_token,
+            data: {
+                'scheduleID': scheduleID,
+                'memberID': {{ Auth::user()->id }},
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            error: function (data, error) {             
+                alert("Error Found while getting Member unread memo replies: " + error);
+            },      
+            beforeSend: function() {   
+                $('#loadingModal').modal('hide');
+            },               
+            success: function(data) 
+            {
+                let replies = data.conversations;
+                replies.forEach(createReplyBubble);             
+                console.log(data.message)
+            },
+        });
+    }    
+
+
+
+
+    /*[START] MODAL  */  
+    function addTeacherReplyBubble(image, message) 
+    {
+        $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-9'><div class='member-speech-bubble'>"+ message +"</div></div><div class='col-md-3'>" + image + "</div> </div>");         
+        setTimeout(() => {  
+                var element = document.getElementById("teacherReplies");
+                element.scrollTop = element.scrollHeight;
+        },100);
+
+    }
+
+    function addMemberReplyBubble(image, message) 
+    {
+        if (message) {        
+            $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  message + " </div> </div> </div>");         
+            setTimeout(() => {  
+                    var element = document.getElementById("teacherReplies");
+                    element.scrollTop = element.scrollHeight;
+            },100);
+        }
+    } 
+
+    /*[END MODAL] */
+
+
+    function createReplyBubble(item, index) 
+    { 
+        if (item.message_type === "MEMBER") {
+            let memberProfileImage = $('#memberProfile').html();
+            addMemberReplyBubble(memberProfileImage, item.message);
+        } else {
+            let teacherProfileImage = $('#teacherProfile').html();
+            addTeacherReplyBubble(teacherProfileImage, item.message);
+        }    
+    }
+    
+
+    window.addEventListener('load', function () 
+    {
+        var button;
+        var id;
+        var modal;
+        var intervalId;
+
+        $('#tutorMemoModal').on('show.bs.modal', function (event) 
+        {   
+            button = $(event.relatedTarget) // Button that triggered the modal
+            let scheduleID = button.data('id') // Extract info from data-* attributes
+
+            //clear teacher replies 
+            $( "#teacherReplies" ).text("");
+            $('#tutorMemoModal #message').html("");
+            
+
+            getMemo(scheduleID)
+            getMemoConversations(scheduleID);
+
+            //interval unread message fetching
+            intervalId = window.setInterval(function(){
+                getUnreadMemberMessages(scheduleID)
+            }, 3000);            
+            
+        });
+
+        $('#tutorMemoModal').on('hide.bs.modal', function (event) 
+        {
+            clearInterval(intervalId);
+        });
+
+        $("textarea").keydown(function(e) {
+            var code = e.keyCode ? e.keyCode : e.which;
+            if (code == 13) {  // Enter keycode
+                $("#btnReply").click();
+            }
+        });
+
+    });
+
+
+</script>
+@endsection
+
+
+
 @section('styles')
 @parent
-
 <style>
+
 .table-tutor-schedules {
     background: #ffffff;
     border: 1px solid #0076be;
@@ -291,50 +463,72 @@
     font-size: 10px;
 }
 
+/*Modal Memo Reply*/
+.member-speech-bubble {
+	position: relative;
+	background: #00ff91;
+	border-radius: .4em;
+    padding-right:30px;
+    position: relative;
+    background: #00ff91;
+    border-radius: .4em;
+    padding: 10px 20px 10px;
+    float: right;
+    margin: 20px -10px 0px;
+    text-align: right;
+}
+
+.member-speech-bubble:after {
+	content: '';
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 18px solid transparent;
+	border-left-color: #00ff91;
+	border-right: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-right: -14px;
+}
+
+#teacherReplies .row 
+{
+    /*border: 1px dotted rgb(0, 132, 255);*/
+    
+    padding: 3px 0px 8px;
+}
+
+
+.teacher-speech-bubble {
+	position: relative;
+	background: #3e4042;
+	border-radius: .4em;
+    color: #fff;
+    position: relative;
+    border-radius: .4em;
+    padding-right: 30px;
+    margin: 5px 0px 5px;
+    padding: 10px;
+    display: inline-block;      
+}
+
+.teacher-speech-bubble:after {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 50%;
+	width: 0;
+	height: 0;
+	border: 20px solid transparent;
+	border-right-color: #3e4042;
+	border-left: 0;
+	border-bottom: 0;
+	margin-top: -10px;
+	margin-left: -15px;
+}
+
 
 </style>
-@endsection
-
-@section('scripts')
-@parent
-<script type="text/javascript">
-    var api_token = "{{ Auth::user()->api_token }}";
-
-    function getMemo(scheduleID) {
-        $.ajax({
-            type: 'POST', 
-            url: "{{ url('api/getMemo?api_token=') }}" + api_token,
-            data: {
-                'scheduleID': scheduleID,
-            }, headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            error: function (data, error) {             
-                alert("Error Found getting memo: " + error);
-            },            
-            success: function(data) {            
-                $('#tutorMemoModal #message').html(data.memo);
-            },
-        });
-    }
-
-
-    window.addEventListener('load', function () 
-    {
-        var button;
-        var id;
-        var modal;
-
-        $('#tutorMemoModal').on('show.bs.modal', function (event) 
-        {
-            $('#tutorMemoModal #message').html("");
-            button = $(event.relatedTarget) // Button that triggered the modal
-            id = button.data('id') // Extract info from data-* attributes            
-            modal = $(this); 
-            getMemo(id)
-        });
-    });
-
-
-</script>
 @endsection
