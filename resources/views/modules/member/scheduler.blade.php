@@ -415,7 +415,7 @@
 
 <script type="text/javascript">
 
-    var api_token = "{{ Auth::user()->api_token }}";
+    //var api_token = "{{ Auth::user()->api_token }}";
 
     window.addEventListener('load', function() 
     {   

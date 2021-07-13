@@ -12,6 +12,7 @@
                     <div class="container">
                         <input id="scheduleID" type="hidden" value="">
 
+                        <!--
                         <div class="row">
                             <div class="col-md-8">
                                 <div id="message" class="member-speech-bubble"></div>                                
@@ -36,8 +37,30 @@
                                 </div>                                              
                             </div>
                         </div>
+                        -->
+                        
 
                         <div class="row">
+
+                            <div id="memberProfile" style="display:none">
+                                <div class="profile-image text-center mt-2">
+                                    @php      
+                                        $memberObj = new \App\Models\Member; 
+                                        $memberInfo = $memberObj->where('user_id', Auth::user()->id)->first();
+
+                                        $userImageObj = new \App\Models\UserImage;
+                                        $userImage = $userImageObj->getMemberPhoto($memberInfo); 
+                                    @endphp
+
+                                    @if ($userImage == null)
+                                        <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" >
+                                    @else 
+                                        <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
+                                    @endif
+                                </div>
+                            </div>     
+
+
                             <div id="teacherProfile" style="display:none">
                                 <img id="teacherImage" src="" class="img-fluid border" alt="profile photo">
                             </div>
