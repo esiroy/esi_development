@@ -16,7 +16,7 @@
 
                      @if (strtolower($member->communication_app) == 'zoom') 
 
-                     <a href="https://us02web.zoom.us/j/4671382877" style="padding-top:100px;" target="_blank">
+                     <a href="https://us02web.zoom.us/j/4671382877?pwd=VmdYOXZ2Y2FKWWEva3U1MGR6VnFDUT09" style="padding-top:100px;" target="_blank">
 
                          <img src="{{ url('images/zoom_logo.jpg') }}" style="width:20px">
                          <span style="font-size:12px;color:#0099CC;line-height:39px;">セブ・マネジャー</span>

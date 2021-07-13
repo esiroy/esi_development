@@ -126,23 +126,23 @@
             </div>
 
             @if (strtolower($memberInfo->communication_app) == "skype")
-            <div class="col-md-12">
-                <div class="text-secondary pt-1">Skype ID:</div>
-            </div>
-            <div class="col-md-12">
-                <div class="text-dark">                 
-                    {{ "スカイプ名 (". $memberInfo->getSkype() .")"}}
+                <div class="col-md-12">
+                    <div class="text-secondary pt-1">Skype ID:</div>
                 </div>
-            </div>
+                <div class="col-md-12">
+                    <div class="text-dark">                 
+                        {{ "スカイプ名 (". $memberInfo->getSkype() .")"}}
+                    </div>
+                </div>
             @elseif (strtolower($memberInfo->communication_app) == "zoom")
-            <div class="col-md-12">
-                <div class="text-secondary pt-1">Zoom ID:</div>
-            </div>
-            <div class="col-md-12">
-                <div class="text-dark pt-1">                 
-                    {{ "スカイプ名 (". $memberInfo->getZoom() .")"}}
+                <div class="col-md-12">
+                    <div class="text-secondary pt-1">Zoom ID:</div>
                 </div>
-            </div>
+                <div class="col-md-12">
+                    <div class="text-dark pt-1">                 
+                        {{  $memberInfo->getZoom() }}
+                    </div>
+                </div>
             @endif
 
 
