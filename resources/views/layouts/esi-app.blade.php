@@ -124,37 +124,27 @@
 
                                         <div class="dropdown-menu" style="overflow:auto; min-height:50px; max-height:450px; left: -265px; width:400px">
                                             @foreach ($reservations as $reserve)
-
                                                 @php      
                                                     $ctr++;
                                                     $userImageObj = new \App\Models\UserImage;
                                                     $memoReply = new \App\Models\MemoReply;
-
                                                     $userImage = $userImageObj->getTutorPhotobyID($reserve->tutor_id); 
                                                     $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "TUTOR")->count();   
-
                                                     $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->where('message_type', "TUTOR")->orderBy('created_at', 'DESC')->first();  
-
-
                                                 @endphp
 
                                                 @if ($latestReplyCount == 0)  
                                                     @php 
                                                         $display = "none"; 
-                                                     
-                                                    
                                                     @endphp
                                                 @else 
                                                     @php 
                                                         $display = "all"; 
                                                         $undreadMessages = $undreadMessages + $latestReplyCount;
-
-
-
                                                     @endphp                                                
                                                 @endif
 
-                                                <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0">
+                                                <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0" >
                                                     @if ($ctr > 1)
                                                         <hr>
                                                     @endif
@@ -170,21 +160,36 @@
                                                     </div>
                                                     <div class="col-md-9">
                                                         <span id="inbox-message-{{ $reserve->id }}">
-                                                                <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
-                                                                    講師への連絡
-                                                                </a>
-                                                                <br>
-                                                                <span class="message small">
-                                                                    {{ $latestReply->message ?? ""}}
-                                                                </span>
+                                                            <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
+                                                                @if (date('H', strtotime($reserve->lesson_time)) == '00') 
+                                                                    {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                                                @else 
+                                                                    {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                                                @endif                                                                
+                                                            </a>
+                                                            <br>
+                                                            <span class="message small">
+                                                                {{ $latestReply->message ?? ""}}
+                                                            </span>
                                                         </span>
                                                     </div>
                                                 </div>
                                             @endforeach
                                             
-                                            @if ($undreadMessages == 0)
-                                            <div id="unreadMessages" class="text-center small pt-3 pb-3 "> No Unread Message(s) </div>
+                                            @if ($undreadMessages >=  1) 
+                                                @php 
+                                                    $messageDisplay = "none"; 
+                                                @endphp
+                                            @else 
+                                                @php 
+                                                    $messageDisplay = "all"; 
+                                                    $undreadMessages = $undreadMessages + $latestReplyCount;
+                                                @endphp                                                
+                                                                                      
                                             @endif
+
+                                            <div id="unreadMessages" class="text-center small pt-3 pb-3 " style="display: {{ $messageDisplay }}"> No Unread Message(s) </div>
+
                                         </div>
 
                                         
@@ -403,12 +408,12 @@
 
                     if (data.memo) {
                         $('#tutorMemoReplyModal #scheduleID').val(scheduleID);
-                        $('#tutorMemoReplyModal #message').html(data.memo);                    
+                        $('#tutorMemoReplyModal #message').html(data.memo);
+                        $('#tutorMemoReplyModal #lessonTime').html(data.lesson_time);
                         $('#tutorMemoReplyModal').modal('show')    
                     } else {
                         //***[old] this is where they create a new thread 
                         //$('#tutorMemoModal').modal('show')    
-
                         $('#tutorMemoReplyModal').modal('show')  
                     }  
                 },

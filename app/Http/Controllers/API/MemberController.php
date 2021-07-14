@@ -859,12 +859,21 @@ class MemberController extends Controller
         } else {
             $tutorOrignalImage = Storage::url($tutorImage->original);
         }
+
+        if (date('H', strtotime($schedule->lesson_time)) == '00') {
+            $lessonTime = date('Y年 m月 d日 24:i', strtotime($schedule->lesson_time ." - 1 day"))  ." - " .  date('24:i', strtotime($schedule->lesson_time." + 25 minutes "));
+        } else {
+            $lessonTime = date('Y年 m月 d日 H:i', strtotime($schedule->lesson_time)) ." - " . date('H:i', strtotime($schedule->lesson_time." + 25 minutes "));
+        }
+            
+        
     
 
         if ($schedule) {
             return Response()->json([
                 "success" => true,
                 "memo" => $schedule->memo,
+                "lesson_time" => $lessonTime,
                 "message" => "Memo has been found",
                 "memberImage" => $memberOrignalImage,
                 "tutorImage" => $tutorOrignalImage
@@ -932,9 +941,6 @@ class MemberController extends Controller
 
     public function sendMemberReply(Request $request)    
     {
-
-
-
         $scheduleID = $request->scheduleID;
         $memberID = $request->member_id;
         $message = $request->message;
@@ -944,7 +950,7 @@ class MemberController extends Controller
         $scheduleItem = ScheduleItem::find($scheduleID);
 
         //update the schedule Memo if this is the first message from user, so it will become a thread starter
-        if (isset($scheduleItem->memo))
+        if (!isset($scheduleItem->memo))
         {            
             $data = [
                 'memo' => $request->message,
