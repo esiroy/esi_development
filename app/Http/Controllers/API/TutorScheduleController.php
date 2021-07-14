@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AgentTransaction;
 use App\Models\LessonMailer;
 use App\Models\Member;
+use App\Models\UserImage;
 use App\Models\MemberAttribute;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
@@ -13,9 +14,7 @@ use App\Models\ScheduleItem;
 use App\Models\MemoReply;
 use App\Models\Shift;
 use App\Models\Tutor;
-use DB;
-use App;
-
+use DB, Storage, App;
 
 class TutorScheduleController extends Controller
 {
@@ -736,5 +735,60 @@ class TutorScheduleController extends Controller
             ]);
         }
 
+    }
+
+
+    public function getAllMemoConversations(Request $request, UserImage $userImageObj) 
+    {
+        $scheduleID = $request->scheduleID;
+
+        //check if the schedule is available , if not send an error message
+        $scheduleItem = ScheduleItem::find($scheduleID);
+        
+        $memoReply = new MemoReply();
+        $conversations = $memoReply->where('schedule_item_id', $scheduleID)->orderBy("created_at", 'ASC')->get();        
+     
+        //get teacher profile pic
+        $memberImage = $userImageObj->getMemberPhotoByID($scheduleItem->member_id);         
+
+        if ($memberImage == null) {
+            $memberOrignalImage = Storage::url('user_images/noimage.jpg');
+        } else {
+            $memberOrignalImage = Storage::url($memberImage->original);
+        }
+
+        //get teacher profile pic       
+        $tutorImage = $userImageObj->getTutorPhotoByID($scheduleItem->tutor_id);         
+
+        if ($tutorImage == null) {
+            $tutorOrignalImage = Storage::url('user_images/noimage.jpg');
+        } else {
+            $tutorOrignalImage = Storage::url($tutorImage->original);
+        }
+
+        if ($conversations) 
+        {
+
+            if (date('H', strtotime($scheduleItem->lesson_time)) == '00') {
+                $lessonTime = date('Y年 m月 d日 24:i', strtotime($scheduleItem->lesson_time ." - 1 day")) ." - ".   date('24:i', strtotime($scheduleItem->lesson_time." + 25 minutes "));
+            } else {  
+                $lessonTime = date('Y年 m月 d日 H:i', strtotime($scheduleItem->lesson_time)) ." - ".  date('H:i', strtotime($scheduleItem->lesson_time." + 25 minutes "));
+            }
+            
+
+            return Response()->json([
+                "success"       => true,  
+                "message"       => "conversations succesfully fetched",
+                "lessonTime"    => $lessonTime,
+                "memberPhoto"   => $memberOrignalImage,
+                "tutorPhoto"    => $tutorOrignalImage,
+                "conversations" => $conversations,            
+            ]); 
+        } else {
+            return Response()->json([
+                "success" => false,  
+                "message"   => "no conversation found"                
+            ]);             
+        }
     }
 }

@@ -7,8 +7,10 @@
     <div id="scheduleItemModal">
 
 
-        <b-modal id="memberMemoModal" title="Member Memo"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade>
-            <p class="my-2">{{ memberMemo }}</p>
+        <b-modal id="memberMemoModal" v-bind:title="'Member Memo - ' + this.selectedlessonTime"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade class="small">
+            <div style="height: 420px;scroll-behavior: smooth;overflow-y: scroll;overflow-x: hidden;">
+                <p class="my-2" v-html="memberMemo"></p>
+            </div>
         </b-modal>
 
         <b-modal id="schedulesModal" 
@@ -224,6 +226,7 @@ export default {
         return {
             showModal: false,
             modalBusy: false,
+            selectedlessonTime: "",
             memberMemo: "",
             memberDataList: [],
             isFound : false,
@@ -415,12 +418,50 @@ export default {
             catch(err) { return false; } 
         },
         getMemberMemo(scheduleData) 
-        {          
+        {  
             //get current schedule data
             let memoData = this.getScheduleData(scheduleData);
-            this.$bvModal.show('memberMemoModal');                     
-            this.memberMemo = memoData.member_memo;
+
+            //check if booked scheduleItemID has conversations 
+            axios.post("/api/getAllMemoConversations?api_token=" + this.api_token, 
+            {
+                method            : "POST",
+                scheduleID          : memoData.id,
+            })
+            .then(response => 
+            {                
+                this.$bvModal.show('memberMemoModal');    
+                
+                this.selectedlessonTime = response.data.lessonTime;
+                
+                let replies = response.data.conversations;                
+                let memberPhoto = response.data.memberPhoto;
+                let tutorPhoto = response.data.tutorPhoto;
+
+                replies.forEach((item, index) => {
+                   this.createReplyBubble(item, memberPhoto, tutorPhoto) 
+                });                
+
+            });
         },
+        createReplyBubble(item, memberPhoto, tutorPhoto) 
+        { 
+            if (item.message_type === "MEMBER") {
+                let memberProfileImage = "<img src='"+memberPhoto+"' class='img-fluid border'>";
+                this.addMemberReplyBubble(memberProfileImage, item.message);
+            } else {
+                let teacherProfileImage =  "<img src='"+tutorPhoto+"' class='img-fluid border'>";
+                this.addTeacherReplyBubble(teacherProfileImage, item.message);
+            }    
+        },
+        addMemberReplyBubble(image, message) 
+        {
+            this.memberMemo += "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  message + " </div> </div> </div>";
+        },    
+        addTeacherReplyBubble(image, message) 
+        {
+            this.memberMemo += "<div class='row'> <div class='col-md-9'><div class='member-speech-bubble'>"+ message +"</div></div><div class='col-md-3'>" + image + "</div> </div>"
+        },            
         getMember(data) 
         {          
             try {
@@ -1138,6 +1179,9 @@ export default {
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style>
+    .modal-title {
+        font-size: 15px;
+    }
 
     #preloader {
         position: absolute;
@@ -1404,4 +1448,70 @@ export default {
         padding: 0px;
         margin: 0px;
     }
+
+    /*Modal Memo Reply*/
+    .member-speech-bubble {
+        position: relative;
+        background: #00ff91;
+        border-radius: .4em;
+        padding-right:30px;
+        position: relative;
+        background: #00ff91;
+        border-radius: .4em;
+        padding: 10px 20px 10px;
+        float: right;
+        margin: 20px -10px 0px;
+        text-align: right;
+    }
+
+    .member-speech-bubble:after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border: 18px solid transparent;
+        border-left-color: #00ff91;
+        border-right: 0;
+        border-bottom: 0;
+        margin-top: -10px;
+        margin-right: -14px;
+    }
+
+    #teacherReplies .row 
+    {
+        /*border: 1px dotted rgb(0, 132, 255);*/
+        margin: 5px 0px 15px;
+        padding: 3px 0px 8px;
+    }
+
+
+    .teacher-speech-bubble {
+        position: relative;
+        background: #3e4042;
+        border-radius: .4em;
+        color: #fff;
+        position: relative;
+        border-radius: .4em;
+        padding-right: 30px;
+        margin: 5px 0px 5px;
+        padding: 10px;
+        display: inline-block;      
+    }
+
+    .teacher-speech-bubble:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border: 20px solid transparent;
+        border-right-color: #3e4042;
+        border-left: 0;
+        border-bottom: 0;
+        margin-top: -10px;
+        margin-left: -15px;
+    }    
 </style>
