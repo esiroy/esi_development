@@ -177,6 +177,8 @@
                                                 $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 3 hours"));
                                                 $lessonTime = date("Y-m-d H:i:s", strtotime($reserve->lesson_time));
                                             @endphp
+
+                                            
                                             
                                             @if ($reserve->schedule_status == "CLIENT_RESERVED_B")
                                                 <a href="javascript:void(0)" onClick="cancelSchedule('{{$reserve->id}}')"><img src="{{ url('images/btnBlue2.gif') }}" alt="欠席する" title="欠席する"></a>                                                

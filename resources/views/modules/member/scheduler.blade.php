@@ -33,9 +33,12 @@
                                 <div>予約は30分前まで、キャンセルは3時間前まで可能</div>
                             </div>
 
-                            <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
-                                <div>予約数制限：　最大15コマまで予約可能です</div>
-                            </div>
+                            
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html', '最大15コマまで予約可能です', 900, 720);" style="color:#212529">                            
+                                <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">
+                                    <div>予約数制限：　最大15コマまで予約可能です</div>
+                                </div>
+                            </a>
                             
                             
                             <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0519152155.html', 'お気に入り講師の設定方法', 900, 720);" style="color:#212529">                            
@@ -747,24 +750,34 @@
             },
             success: function(data) 
             {
-                setTimeout(() => {                
-                    if (data.schedule_status == "CLIENT_RESERVED_B")
+                setTimeout(() => {            
+
+                    if (data.success == false) 
                     {
-                        setTimeout(() => {                        
-                            if (confirm('こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
-                                removeSchedule(id);
-                            } else {
-                                return false;
-                            }
-                        }, 100);
+                        if (confirm(data.message_jp)) {
+                            removeSchedule(id);
+                        } else {
+                            return false;
+                        }
                     } else {
-                        setTimeout(() => {
-                            if (confirm('このレッスンをキャンセルしてもいいですか？')) {
-                                removeSchedule(id);
-                            } else {
-                                return false;
-                            }
-                        }, 100);                            
+                        if (data.schedule_status == "CLIENT_RESERVED_B")
+                        {
+                            setTimeout(() => {                        
+                                if (confirm('こちらの予約はキャンセルができませんがよろしいでしょうか？')) {
+                                    removeSchedule(id);
+                                } else {
+                                    return false;
+                                }
+                            }, 100);
+                        } else {
+                            setTimeout(() => {
+                                if (confirm('このレッスンをキャンセルしてもいいですか？')) {
+                                    removeSchedule(id);
+                                } else {
+                                    return false;
+                                }
+                            }, 100);                            
+                        }
                     }
                 }, 100);
             }

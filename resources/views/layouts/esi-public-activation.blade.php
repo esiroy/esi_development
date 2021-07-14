@@ -53,7 +53,7 @@
     <!-- tracking code is {{ app('request')->input('a8')  }} -->
 
 
-	<img src="https://px.a8.net/a8fly/earnings?a8fly/earnings?a8=<<{{ app('request')->input('a8') ??''}}>>&pid=s00000012345001&so=<<{{ $user->id?? ''}}>>&si=1200-1-1200-a8&currency=JPY" width="1" height="1"  style="height: 1px;display: block;background-color:yellow">
+	<img src="https://px.a8.net/a8fly/earnings?a8={{ app('request')->input('a8') ??''}}&pid=s00000012345001&so={{ $user->id?? ''}}&si=1200-1-1200-a8&currency=JPY" width="1" height="1"  style="height: 1px;display: block;background-color:yellow">
     <img src="https://advack.net/m/img.php?pcode=248&aid={{ $user->id  ?? ''}}" width="1" height="1" style="height: 1px;display: block;background-color:yellow"/>     
 
     <!-- Google Code for &#20250;&#21729;&#30331;&#37682; Conversion Page -->

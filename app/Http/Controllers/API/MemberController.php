@@ -104,14 +104,14 @@ class MemberController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_1',
+                    'question' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_1',
+                    'question' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
                 ]);
@@ -131,14 +131,14 @@ class MemberController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_2',
+                    'question' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_2',
+                    'question' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
                 ]);
@@ -158,14 +158,14 @@ class MemberController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_3',
+                    'question' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_3',
+                    'question' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
                 ]);
@@ -184,14 +184,14 @@ class MemberController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_4',
+                    'question' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_4',
+                    'question' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
                 ]);
@@ -827,7 +827,33 @@ class MemberController extends Controller
     {
         $scheduleID = $request->ScheduleItemID;
         $schedule = ScheduleItem::where('id', $scheduleID)->where('member_id', Auth::user()->id)->first();
-        return $schedule;
+
+        $date_now =  date("Y-m-d H:i:s");
+        $valid_time = date("Y-m-d H:i:s", strtotime($date_now ." + 3 hours"));
+        $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
+        
+        if ($valid_time <= $lessonTime) 
+        {           
+
+            if ($schedule->schedule_status == "CLIENT_RESERVED_B") 
+            {                
+                //valid time, check if schedule b           
+                return Response()->json([
+                    "success" => false,
+                    "message_jp"    => "こちらの予約はキャンセルができませんがよろしいでしょうか？",
+                    "message"       => "This reservation cannot be canceled, is that okay?",
+                ]);   
+            } else {
+                //valid time, check if schedule a           
+                return $schedule;
+            }
+        } else {
+            return Response()->json([
+                "success" => false,
+                "message_jp"    => "このレッスンをキャンセル（欠席）されるとポイントは消化されます。キャンセル(欠席）しますか？",
+                "message"       => "If you cancel (absent) this lesson, your points will be consumed. Do you want to cancel (absent)?",
+            ]);             
+        }        
     }
 
 
