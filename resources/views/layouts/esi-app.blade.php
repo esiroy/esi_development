@@ -123,6 +123,10 @@
                                         <a href="#" class="dropdown-toggle blue" data-toggle="dropdown">INBOX <span id="total_unread_message" class="text-success">({{ $undreadMessages }})</span></a>
 
                                         <div class="dropdown-menu" style="overflow:auto; min-height:50px; max-height:450px; left: -265px; width:400px">
+                                            @php                                             
+                                                $latestReplyCount = 0;
+                                            @endphp
+
                                             @foreach ($reservations as $reserve)
                                                 @php      
                                                     $ctr++;

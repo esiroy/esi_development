@@ -161,7 +161,7 @@
                                         document.getElementById('logout-form').submit();">
                             {{ __('Logout') }}
                         </a>
-                    <br/>
+                    <br/>           
 
                     <div class="text-right w-100 pr-4 pt-2">
                       <a class="red pr-2" href="skype:netenglish.cebumanager?call"><span class="flag-ph pr-2"></span> 
