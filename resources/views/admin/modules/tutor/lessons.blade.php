@@ -187,7 +187,8 @@
                                             @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b')
 
                                             <div id="tutor-lesson-memoBox-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                @if (isset($lessons[$dateView][$timeSlot['startTime']]['memo']))
+                                                @if ( $lessons[$dateView][$timeSlot['startTime']]['memo'] )
+                                                
                                                     <div id="memoContainer" class="btn-container2 pt-2">
                                                         <!-- open memo -->
                                                         <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
@@ -197,7 +198,10 @@
                                                             <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
                                                         </a>
                                                     </div>
+
                                                 @else
+
+                                                
                                                     <div id="memoContainer" class="btn-container2 pt-2" style="display:none" >
                                                         <!-- open memo -->
                                                         <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
