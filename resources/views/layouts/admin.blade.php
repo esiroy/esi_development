@@ -81,9 +81,9 @@
                                                 $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->where('message_type', "MEMBER")->orderBy('created_at', 'DESC')->first();  
                                             @endphp
 
-                                            @if ($latestReplyCount == 0)  
+                                            @if ($reserve->memo == null && $latestReplyCount == 0)  
                                                 @php 
-                                                    $display = "inline-flex";
+                                                    $display = "none";
                                                 @endphp
                                             @else 
                                                 @php 
@@ -91,6 +91,8 @@
                                                     $undreadMessages = $undreadMessages + $latestReplyCount;
                                                 @endphp                                                
                                             @endif
+
+
 
                                             <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0">
                                                 
