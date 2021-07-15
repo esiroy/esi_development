@@ -48,7 +48,7 @@ class ScheduleItem extends Model
     }
     
 
-    public function getTutotAllActiveLessons($tutor) 
+    public function getTutorAllActiveLessons($tutor) 
     {
         $date = date('Y-m-d H:i:s');
 
