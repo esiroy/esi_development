@@ -72,6 +72,8 @@
 
                                     <div class="dropdown-menu" style="overflow:auto; min-height:50px; max-height:450px; left: -265px; width:400px">
                                         @foreach ($reservations as $reserve)
+
+                                            
                                             @php      
                                                 $ctr++;
                                                 $userImageObj = new \App\Models\UserImage;
@@ -83,7 +85,7 @@
 
                                             @if ($reserve->memo == null && $latestReplyCount == 0)  
                                                 @php 
-                                                    $display = "none";
+                                                    $display = "inline-flex";
                                                 @endphp
                                             @else 
                                                 @php 
@@ -96,11 +98,13 @@
 
                                             <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0">
                                                 
+                                            <!--
                                                 @if ($ctr > 1)
                                                     <div class="col-md-12">
                                                         <hr>
                                                     </div>
                                                 @endif
+                                            -->
 
                                                 
                                                 <div class="col-md-3">                                               
@@ -366,9 +370,12 @@
                 //show
                 if(document.getElementById('inbox-message-'+ item.schedule_item_id))
                 {  
-                    $(".tutor-inbox #inbox-"+item.schedule_item_id).show();
+                    $(".tutor-inbox").find("#inbox-"+item.schedule_item_id).remove();
 
-                } else {
+
+                    
+                    let row  = "<div id='inbox-"+ item.schedule_item_id +"' class='row px-0 mx-0'>";
+
                     let col1 = '<div class="col-md-3">';
                         col1 += '<a href="#" class="dropdown-item small p-0">';
                         col1 += '<img src="'+ item.memberOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
@@ -379,21 +386,54 @@
                     let col2 = '<div class="col-md-9">';
                         col2 += '<span id="inbox-message-'+ item.schedule_item_id +'">';
                         col2 += '<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="'+item.schedule_item_id+'">';                        
-                        //col2 += '<a href="javascript:void(0)" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id='+ item.schedule_item_id+'>講師への連絡</a> <br>';
+                        col2 += item.lessonTime;
+                        col2 += '</a><br/>';
+                        col2 += '<span class="message small">'+  item.latestReply + '</span></span>';
+                        col2 += '</div>';
+
+                    let hr = "<div class='col-md-12'><hr/></div>";
+
+                    let rowend = "</div>";
+
+
+                    $( ".dropdown-menu" ).append(row + col1 + col2 + rowend);
+                    
+                    
+                    
+                } else {
+
+                    let row  = "<div id='inbox-"+ item.schedule_item_id +"' class='row px-0 mx-0'>";
+
+                    let col1 = '<div class="col-md-3">';
+                        col1 += '<a href="#" class="dropdown-item small p-0">';
+                        col1 += '<img src="'+ item.memberOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
+                        col1 += '</a></div>';
+                        
+                        
+                    //new added schedule, after loaded
+                    let col2 = '<div class="col-md-9">';
+                        col2 += '<span id="inbox-message-'+ item.schedule_item_id +'">';
+                        col2 += '<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="'+item.schedule_item_id+'">';                        
+                        col2 += item.lessonTime;
+                        col2 += '</a><br/>';
                         col2 += '<span class="message small">'+ item.latestReply + '</span></span>';
                         col2 += '</div>';
 
-                    $( ".dropdown-menu" ).prepend(col1 + col2);       
+                    let rowend = "</div>";
 
-                    location.reload();
+                    let hr = "<div class='col-md-12'><hr/></div>";
+
+                    $( ".dropdown-menu" ).prepend(row + col1 + col2 + rowend + hr);
+
+                    //location.reload();
                 }
                 
                 //update message
-                $(".tutor-inbox #inbox-"+item.schedule_item_id+" .message").text(item.latestReply);
+                //$(".tutor-inbox #inbox-"+item.schedule_item_id+" .message").text(item.latestReply);
 
-                $("#tutor-lesson-memoBox-"+item.schedule_item_id).find( ".btn-container2" ).show();
+                //$("#tutor-lesson-memoBox-"+item.schedule_item_id).find( ".btn-container2" ).show();
 
-                console.log("#tutor-lesson-memoBox-"+item.schedule_item_id+ " .memoContainer")
+                //console.log("#tutor-lesson-memoBox-"+item.schedule_item_id+ " .memoContainer")
 
                 $("#unreadMessages").hide();        
             }

@@ -187,6 +187,7 @@
                                             @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b')
 
                                             <div id="tutor-lesson-memoBox-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                
                                                 @if ( $lessons[$dateView][$timeSlot['startTime']]['memo'] )
                                                 
                                                     <div id="memoContainer" class="btn-container2 pt-2">

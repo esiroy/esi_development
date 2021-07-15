@@ -22,6 +22,18 @@ if (! function_exists('limit')) {
 }
 
 
+if (! function_exists('sortByDate')) {    
+    function sortByDate($key)
+    {
+        return function ($a, $b) use ($key) {
+            $t1 = strtotime($a[$key]);
+            $t2 = strtotime($b[$key]);
+            return $t2-$t1;
+        };
+
+    }
+}
+
 if (! function_exists('formatGrade')) {
     function formatGrade($grade) {
        $str = str_replace('_', ' ', $grade);

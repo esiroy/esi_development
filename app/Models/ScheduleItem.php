@@ -47,8 +47,49 @@ class ScheduleItem extends Model
         return $reserves;
     }
     
-
     public function getTutorAllActiveLessons($tutor) 
+    {
+        $date = date('Y-m-d H:i:s');
+
+        $schedules = ScheduleItem::where('tutor_id', $tutor->user_id)->where('valid', 1)->where(function ($q) use ($tutor) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->where('lesson_time', ">=", $date)
+        ->orderby('lesson_time', 'ASC')
+        ->get();
+
+        $results = array();
+
+        foreach ($schedules as $schedule) 
+        {
+           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->where('message_type', "MEMBER")->orderBy('updated_at', 'DESC')->first();           
+            
+           if ($latestReply) {
+                $results[] = array(
+                    'id' => $schedule->id,
+                    "memo" => $schedule->memo,
+                    "lesson_time" => $schedule->lesson_time,
+                    'message' => $latestReply->message,
+                    "member_id" => $latestReply->sender_id,
+                    'updated_at' => $latestReply->updated_at ,
+                );
+           }
+
+        }               
+        usort($results, sortByDate('updated_at'));
+
+        $results = (object) $results;
+
+
+        $object = json_decode(json_encode($results));
+
+        
+        
+        return $object;
+    }  
+
+
+    public function getTutorAllActiveLessons_standard($tutor) 
     {
         $date = date('Y-m-d H:i:s');
 

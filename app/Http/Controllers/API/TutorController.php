@@ -136,6 +136,7 @@ class TutorController extends Controller
         }
     }
 
+
     public function getTutorInbox(Request $request) 
     {
 
@@ -159,7 +160,74 @@ class TutorController extends Controller
                 $latestReply = $memoReply->where('schedule_item_id', $reservation->id)
                                           ->where('is_read', false)
                                           ->where('message_type', "MEMBER")
-                                          ->orderBy('created_at', 'DESC')->first();
+                                          ->orderBy('updated_at', 'DESC')->first();
+            
+                if ($latestReply) 
+                {
+                    $unread++;
+
+                    //get teacher profile pic
+                    $userImageObj = new UserImage;
+                    $memberImage = $userImageObj->getMemberPhotoByID($reservation->member_id);         
+
+                    if ($memberImage == null) {
+                        $memberOrignalImage = Storage::url('user_images/noimage.jpg');
+                    } else {
+                        $memberOrignalImage = Storage::url($memberImage->original);
+                    }
+    
+                    if (date('H', strtotime($reservation->lesson_time)) == '00') {
+                        $lessonTime = date('Y年 m月 d日 24:i', strtotime($reservation->lesson_time ." - 1 day")) ." - ".   date('24:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    } else {  
+                        $lessonTime = date('Y年 m月 d日 H:i', strtotime($reservation->lesson_time)) ." - ".  date('H:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    }                    
+        
+
+                    $inbox[] =  array(
+                        "schedule_item_id" => $reservation->id,
+                        "lessonTime" => $lessonTime,
+                        "latestReply" => $latestReply->message,
+                        "memberOrignalImage" => $memberOrignalImage
+                    );
+                }
+            }            
+        }    
+
+        return Response()->json([
+            "success" => true,    
+            "inbox" => $inbox,
+            "unread" => $unread,
+            "message" => "Member memo replies has been fetched.",
+        ]);
+        
+
+    }
+    
+    
+    public function getTutorInbox_standard(Request $request) 
+    {
+
+        $tutorID = $request->tutorID;
+        $tutorInfo = Tutor::where('user_id',  $tutorID)->first();
+
+        $scheduleItems = new ScheduleItem();
+        $memoReply = new MemoReply();     
+
+        $reservations = $scheduleItems->getTutorAllActiveLessons($tutorInfo);
+
+        $unread = 0;
+        
+        $inbox = array();
+
+        foreach($reservations as $reservation) 
+        {              
+            
+            if (isset($reservation->id)) 
+            {
+                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)
+                                          ->where('is_read', false)
+                                          ->where('message_type', "MEMBER")
+                                          ->orderBy('updated_at', 'DESC')->first();
             
                 if ($latestReply) 
                 {
