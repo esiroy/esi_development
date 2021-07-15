@@ -43,8 +43,9 @@ mix.js(
             "resources/js/app.js"
         ],
         "public/js/admin.js"
-    )  
+    )    
     .copy("resources/images/*.*", "public/images/")
+    .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .sass("resources/sass/app.scss", "public/css/app.css")

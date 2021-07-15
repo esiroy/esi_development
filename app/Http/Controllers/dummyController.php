@@ -34,14 +34,11 @@ class dummyController extends Controller
 
   
 
-    public function index( LessonMailer $lessonMailer){
+    public function index(){
         
-        $date = date('Y-m-d');
+       
+        return view("dummy/index", ['title'=> "TEST"]);
 
-        $dateToExtended = date('Y-m-d', strtotime($date ." + 1 hour"));
-        
-        echo $date . " till " . $dateToExtended;
-        
     }
     
 

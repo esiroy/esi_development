@@ -14,36 +14,7 @@
                 <input id="scheduleID" type="hidden" value="">
                     <div class="container">
 
-                        <!--
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div id="memberProfile" class="text-center">
-                                    <img id="memberImage" src="" class="img-fluid border" alt="profile photo" style="max-width: 77px;float: left;">
-                                </div>
-                                  
-                                                                                             
-                            </div>
-                            <div class="col-md-9">
-                                <div id="message" class="teacher-speech-bubble"></div>
-                            </div>
-                        </div>
-
-                        <div id="teacherProfile" style="display:none">
-                            <div class="profile-image text-center mt-2 mr-3">
-                                @php      
-                                    $userImageObj = new \App\Models\UserImage;
-                                    $userImage = $userImageObj->getTutorPhotobyID(Auth::user()->id); 
-                                @endphp
-
-                                @if ($userImage == null)
-                                    <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" >
-                                @else 
-                                    <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo">
-                                @endif
-                            </div>
-                        </div>                           
-                        -->
-                       
+                        
                         <div class="row">
                             <div id="teacherProfile" style="display:none">
                                 <div class="profile-image text-center mt-2">
@@ -73,10 +44,14 @@
 
                 <div class="modal-footer">
                     <div class="container">
+                        <div class="row">                           
+                            @include('admin.modules.tutor.includes.uploadPreview')                            
+                        </div>
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="reply">
                                     <textarea class="form-control" id="teacherTextReply" rows="1" cols="1" style="min-height:70px"></textarea>
+                                    @include('admin.modules.tutor.includes.uploader')    
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -93,10 +68,10 @@
 
 @section('scripts')
 @parent
+<script src="{{ url('js/dropzone/dropzone.min.js') }}"></script>
 <script type="text/javascript">
     window.addEventListener('load', function()     
     {
-
         let teacherProfileImage = $('#teacherProfile').html();
 
         /*MEMO REPLY BUTTON ACTIONS */
@@ -151,5 +126,93 @@
         }
     });
 </script>
-@endsection        
+
+<script>
+    window.addEventListener('load', function () 
+    {
+        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+        var previewNode = document.querySelector("#template");
+        previewNode.id = "";
+        var previewTemplate = previewNode.parentNode.innerHTML;
+        previewNode.parentNode.removeChild(previewNode);
+
+        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+            maxFiles: 20,
+            maxFilesize: 10,
+            url: "/target-url", // Set the url
+            thumbnailWidth: 80,
+            thumbnailHeight: 80,
+            parallelUploads: 1,
+            uploadMultiple: false,
+            previewTemplate: previewTemplate,
+            autoQueue: false, // Make sure the files aren't queued until manually added
+            previewsContainer: "#previews", // Define the container to display the previews
+            clickable: ".fileinput-button",// Define the element that should be used as click trigger to select files.,
+            init: function() {
+                this.on("addedfile", function() 
+                {
+                    /*
+                    if (this.files.length >= 1) {
+                        $('.fileinput-button').hide();
+                    } */                
+
+                    /*
+                    if (this.files[1]!=null) {
+                        this.removeFile(this.files[1]);
+                    }
+                    */
+                });
+            }            
+        });
+
+        myDropzone.on("addedfile", function(file) {
+            // Hookup the start button
+            file.previewElement.querySelector(".start").onclick = function() { myDropzone.enqueueFile(file); };
+        });
+
+        // Update the total progress bar
+        myDropzone.on("totaluploadprogress", function(progress) {
+            document.querySelector("#total-progress .progress-bar").style.width = progress + "%";
+        });
+
+        myDropzone.on("sending", function(file) {
+            // Show the total progress bar when upload starts
+            document.querySelector("#total-progress").style.opacity = "1";
+            // And disable the start button
+            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
+        });
+
+        // Hide the total progress bar when nothing's uploading anymore
+        myDropzone.on("queuecomplete", function(progress) {
+            document.querySelector("#total-progress").style.opacity = "0";
+        });
+
+        // Setup the buttons for all transfers
+        // The "add files" button doesn't need to be setup because the config
+        // `clickable` has already been specified.
+        document.querySelector("#btnReply").onclick = function() {
+            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
+        };
+
+        document.querySelector("#actions .cancel").onclick = function() 
+        {
+            myDropzone.removeAllFiles(true);
+        };      
+        
+    });
+</script>
+@endsection      
+
+
+@section('styles')
+@parent
+<style>
+
+.file-row {
+    background: #ffffff;
+   
+}
+
+</style>
+@endsection
 

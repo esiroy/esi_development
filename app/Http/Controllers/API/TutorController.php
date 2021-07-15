@@ -218,7 +218,7 @@ class TutorController extends Controller
     {        
         $scheduleID = $request->scheduleID;
         $tutorID = $request->tutorID;
-        $message = $request->message;
+        $message = linkify($request->message);
 
         //check if the schedule is available , if not send an error message
         $scheduleItem = ScheduleItem::find($scheduleID);

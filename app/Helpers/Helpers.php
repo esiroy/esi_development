@@ -157,4 +157,17 @@ if (! function_exists('unique_multidim_array'))
     }
 }
 
+
+if (! function_exists('linkify')) 
+{
+    function linkify($string) {
+        $string = preg_replace(
+            "~[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]~",
+            "<a href=\"\\0\" class='blue' target='_blank'>\\0</a>", 
+            $string);
+        return $string;
+    }
+}
+
+
 ?>

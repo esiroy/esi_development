@@ -274,7 +274,7 @@
                 {
                     let replies = data.conversations;
                     replies.forEach(createReplyBubble);             
-                    console.log(data.message)
+                    //console.log(data.message)
                 },
             });
         }    
@@ -353,7 +353,7 @@
                     let inbox = data.inbox;
                     inbox.forEach(updateTutorInboxList);
 
-                    console.log(data.message);              
+                    //console.log(data.message);              
                 },
             });
         }        
@@ -449,7 +449,7 @@
 
     <style>
 
-        .table-tutor-schedules {
+        .table-tutor-schedules {ile-row
             background: #ffffff;
             border: 1px solid #0076be;
         }
@@ -473,7 +473,7 @@
         }
 
         .table-tutor-schedules tbody td {
-            padding: 0px;    
+            padding: 0px;    ile-row
             padding-top: 8px;
             padding-left: 1px;
             padding-right: 4px;
