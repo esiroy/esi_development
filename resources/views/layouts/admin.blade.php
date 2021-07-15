@@ -126,7 +126,11 @@
                                             <div class="col-md-9">
                                                 <span id="inbox-message-{{ $reserve->id }}">
                                                         <a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">
-                                                            講師への連絡
+                                                            @if (date('H', strtotime($reserve->lesson_time)) == '00') 
+                                                                {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                                            @else 
+                                                                {{  date('Y年 m月 d日 H:i', strtotime($reserve->lesson_time)) }} - {{  date('H:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
+                                                            @endif
                                                         </a>
                                                         <br>
                                                         <span class="message small">
@@ -215,7 +219,7 @@
                 {            
                     $('#tutorMemoModal #scheduleID').val(scheduleID);
                     $('#tutorMemoModal #message').html(data.memo);
-
+                    $('#tutorMemoModal #lessonTime').html(data.lesson_time);
                     $('#memberImage').attr('src', data.memberImage)
                 },
             });
@@ -345,6 +349,11 @@
                     });
 
                     if (data.unread == 0) {
+                        console.log("zero messages 1");
+                    }
+
+                    if (data.unread === 0) {
+                        console.log("zero messages");
                         $("#unreadMessages").show();
                     }                    
 
@@ -384,6 +393,10 @@
             
             //update message
             $(".tutor-inbox #inbox-"+item.schedule_item_id+" .message").text(item.latestReply);
+
+            $("#tutor-lesson-memoBox-"+item.schedule_item_id).find( ".btn-container2" ).show();
+
+            console.log("#tutor-lesson-memoBox-"+item.schedule_item_id+ " .memoContainer")
 
             $("#unreadMessages").hide();        
         }

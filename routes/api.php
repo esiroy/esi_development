@@ -84,14 +84,15 @@ Route::middleware('auth:api')->post('/getMemberInbox', 'API\MemberController@get
 
 
 //[start](TUTOR CONTROL PANEL)  memo chat system 
-Route::middleware('auth:api')->post('/getMemoConversations', 'API\TutorController@getMemoConversations')->name('APIGetMemoConversationsy');
+Route::middleware('auth:api')->post('/getMemoConversations', 'API\TutorController@getMemoConversations')->name('APIGetMemoConversations');
 Route::middleware('auth:api')->post('/sendMemoReply', 'API\TutorController@sendMemoReply')->name('APISendMemoReply');
 Route::middleware('auth:api')->post('/getUnreadMemberMessages', 'API\TutorController@getUnreadMemberMessages')->name('APIgetUnreadMemberMessages');
 
 //[notifier] TUTOR inbox messages realtime notifier
 Route::middleware('auth:api')->post('/getTutorInbox', 'API\TutorController@getTutorInbox')->name('APIGetTutorInbox');
 
-
+//(all memo)
+Route::middleware('auth:api')->post('/getAllMemoConversations', 'API\TutorScheduleController@getAllMemoConversations')->name('APIGetAllMemoConversations');
 
 
 //[start] Lesson Materials

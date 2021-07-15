@@ -99,7 +99,7 @@ class FileUploadController extends Controller
         }
     }
 
-    public tutorUpload() 
+    public function tutorUpload() 
     {
 
         if ($files = $request->file('file')) {
