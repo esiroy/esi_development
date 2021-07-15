@@ -4,7 +4,7 @@
 
             <div class="modal-header">
                 <h5 class="modal-title" id="tutorMemoLabel">
-                    <span class="small">Memo</span> - <span id="lessonTime" class="small"> test </span>
+                    <span class="small">Memo</span> - <span id="lessonTime" class="small"> </span>
                 </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -46,7 +46,7 @@
 
                 <div class="modal-footer">
                     <div class="container">
-                        <div class="row">                           
+                        <div class="d-row">                           
                             @include('admin.modules.tutor.includes.uploadPreview')                            
                         </div>
                         <div class="row">
@@ -132,74 +132,106 @@
 <script>
     window.addEventListener('load', function () 
     {
-        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
-        var previewNode = document.querySelector("#template");
-        previewNode.id = "";
-        var previewTemplate = previewNode.parentNode.innerHTML;
-        previewNode.parentNode.removeChild(previewNode);
+       
 
-        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-            maxFiles: 20,
-            maxFilesize: 10,
-            url: "/target-url", // Set the url
-            thumbnailWidth: 80,
-            thumbnailHeight: 80,
-            parallelUploads: 1,
-            uploadMultiple: false,
-            previewTemplate: previewTemplate,
-            autoQueue: false, // Make sure the files aren't queued until manually added
-            previewsContainer: "#previews", // Define the container to display the previews
-            clickable: ".fileinput-button",// Define the element that should be used as click trigger to select files.,
-            init: function() {
-                this.on("addedfile", function() 
-                {
-                    /*
-                    if (this.files.length >= 1) {
-                        $('.fileinput-button').hide();
-                    } */                
+        $('#tutorMemoModal').on('show.bs.modal', function (event) 
+        { 
 
-                    /*
-                    if (this.files[1]!=null) {
-                        this.removeFile(this.files[1]);
-                    }
-                    */
+            setTimeout(() => {             
+
+                button = $(event.relatedTarget) // Button that triggered the modal
+                let scheduleID = button.data('id') // Extract info from data-* attributes            
+
+                // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
+                var previewNode = document.querySelector("#template");                
+
+                if (previewNode !== null) {
+                    previewNode.id = "";
+                    var previewTemplate = previewNode.parentNode.innerHTML;
+                    previewNode.parentNode.removeChild(previewNode);                    
+                }             
+
+                    var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
+                        autoDiscover: false,
+                        maxFiles: 20,
+                        maxFilesize: 10,
+                        url: "/api/uploadTutorFile?api_token={{ Auth::user()->api_token }}", // Set the url
+                        params: {
+                                    'scheduleID':  scheduleID,
+                                    'tutorID': {{ Auth::user()->id }},
+                                },
+                        thumbnailWidth: 150,
+                        thumbnailHeight: 150,
+                        parallelUploads: 2,
+                        uploadMultiple: false,
+                        previewTemplate: previewTemplate,
+                        autoQueue: false, // Make sure the files aren't queued until manually added
+                        previewsContainer: "#previews", // Define the container to display the previews
+                        clickable: ".fileinput-button",// Define the element that should be used as click trigger to select files.,
+                        init: function() {
+                        this.on("addedfile", function() 
+                        {
+                            /*
+                            if (this.files.length >= 1) {
+                                $('.fileinput-button').hide();
+                            } */                
+
+                            /*
+                            if (this.files[1]!=null) {
+                                this.removeFile(this.files[1]);
+                            }
+                            */
+                        });
+                    }            
                 });
-            }            
+
+                myDropzone.on("addedfile", function(file) {
+                    // Hookup the start button
+                    file.previewElement.querySelector(".start").onclick = function() { myDropzone.enqueueFile(file); };
+                });
+
+                // Update the total progress bar
+                myDropzone.on("totaluploadprogress", function(progress) {
+                    document.querySelector("#total-progress .progress-bar").style.width = progress + "%";
+                });
+
+                myDropzone.on("sending", function(file) {
+                    // Show the total progress bar when upload starts
+                    document.querySelector("#total-progress").style.opacity = "1";
+                    // And disable the start button
+                    file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
+                });
+
+                // Hide the total progress bar when nothing's uploading anymore
+                myDropzone.on("queuecomplete", function(progress) 
+                {
+                    document.querySelector("#total-progress").style.opacity = "0";
+                    console.log("upload complete");
+
+                    this.removeAllFiles();
+                });
+
+
+
+                // Setup the buttons for all transfers
+                // The "add files" button doesn't need to be setup because the config
+                // `clickable` has already been specified.
+                document.querySelector("#btnReply").onclick = function() {
+                    myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
+                };
+
+                document.querySelector("#actions .cancel").onclick = function() 
+                {
+                    myDropzone.removeAllFiles(true);
+                };      
+            }, 1000);
+
         });
-
-        myDropzone.on("addedfile", function(file) {
-            // Hookup the start button
-            file.previewElement.querySelector(".start").onclick = function() { myDropzone.enqueueFile(file); };
-        });
-
-        // Update the total progress bar
-        myDropzone.on("totaluploadprogress", function(progress) {
-            document.querySelector("#total-progress .progress-bar").style.width = progress + "%";
-        });
-
-        myDropzone.on("sending", function(file) {
-            // Show the total progress bar when upload starts
-            document.querySelector("#total-progress").style.opacity = "1";
-            // And disable the start button
-            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled");
-        });
-
-        // Hide the total progress bar when nothing's uploading anymore
-        myDropzone.on("queuecomplete", function(progress) {
-            document.querySelector("#total-progress").style.opacity = "0";
-        });
-
-        // Setup the buttons for all transfers
-        // The "add files" button doesn't need to be setup because the config
-        // `clickable` has already been specified.
-        document.querySelector("#btnReply").onclick = function() {
-            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
-        };
-
-        document.querySelector("#actions .cancel").onclick = function() 
+        
+        $('#tutorMemoModal').on('hide.bs.modal', function (event) 
         {
-            myDropzone.removeAllFiles(true);
-        };      
+            //myDropzone.destroy();
+        });
         
     });
 </script>
@@ -211,8 +243,12 @@
 <style>
 
 .file-row {
-    background: #ffffff;
-   
+    background: #ffffff;   
+}
+
+.fileupload-process {
+    margin-top: 10px;
+    display: block;
 }
 
 </style>

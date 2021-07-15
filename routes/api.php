@@ -87,6 +87,7 @@ Route::middleware('auth:api')->post('/getMemberInbox', 'API\MemberController@get
 Route::middleware('auth:api')->post('/getMemoConversations', 'API\TutorController@getMemoConversations')->name('APIGetMemoConversations');
 Route::middleware('auth:api')->post('/sendMemoReply', 'API\TutorController@sendMemoReply')->name('APISendMemoReply');
 Route::middleware('auth:api')->post('/getUnreadMemberMessages', 'API\TutorController@getUnreadMemberMessages')->name('APIgetUnreadMemberMessages');
+Route::middleware('auth:api')->post('/uploadTutorFile', 'API\TutorController@uploadTutorFile')->name('APIuploadTutorFile');
 
 //[notifier] TUTOR inbox messages realtime notifier
 Route::middleware('auth:api')->post('/getTutorInbox', 'API\TutorController@getTutorInbox')->name('APIGetTutorInbox');

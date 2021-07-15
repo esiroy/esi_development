@@ -253,5 +253,63 @@ class TutorController extends Controller
         }       
     }
 
+    public function uploadTutorFile(Request $request)     
+    {
+
+        $scheduleID = $request->scheduleID;
+        $tutorID = $request->tutorID;               
+
+
+        //check if the schedule is available , if not send an error message
+        $scheduleItem = ScheduleItem::find($scheduleID);
+        
+        
+        if ($files = $request->file('file')) 
+        {
+
+            //file path
+            $originalPath = 'storage/uploads/';
+
+            $newFilename = time()."_". preg_replace('/\s+/', '_', $files->getClientOriginalName());
+
+            $newFilename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $newFilename);
+            
+            // Remove any runs of periods (thanks falstro!)
+            $newFilename = mb_ereg_replace("([\.]{2,})", '', $newFilename);
+
+            //save in storage -> storage/public/uploads/
+            $path = $request->file('file')->storeAs(
+                'public/uploads/memo/', $newFilename
+            );
+
+            $imageURL =  url(Storage::url('uploads/memo/'. $newFilename));
+
+            $imageLink = "<a href='$imageURL' target='_blank'><img src='$imageURL' alt='$newFilename' class='img-fluid'></a>";
+
+
+
+            $data = [
+                'schedule_item_id' => $scheduleID,
+                'sender_id' => $tutorID,
+                'recipient_id' => $scheduleItem->member_id,
+                'message_type' => "TUTOR",
+                'message' => $imageLink,
+                'is_read' => false,
+            ];
+
+            $memoReply = new MemoReply();
+            $memoResponse = $memoReply->create($data);
+        
+        
+        }        
+        
+        
+        return Response()->json([
+            "success" => true, 
+            "fileName" => $newFilename,
+            "path" => $path,
+            "message" => "Teacher file has been uploaded.",
+        ]);        
+    }
 
 }

@@ -5,23 +5,24 @@
 <div class="row" class="files" id="previews">
 
 
-    <div id="template" class="file-row col-md-4">
+    <div id="template" class="file-row col-md-4 mb-4">
         <!-- This is used as the file preview template -->
         <div>
             <span class="preview"><img data-dz-thumbnail /></span>
         </div>
 
         <div>
-            <p class="name small" data-dz-name></p>
+            <div class="name small" data-dz-name></div>
+            <div class="size small" data-dz-size></div>
+            <div class="item-progress-bar">            
+                <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
+                </div>
+            </div>
             <strong class="error text-danger" data-dz-errormessage></strong>
         </div>
 
-        <div class="item-progress-bar">
-            <p class="size" data-dz-size></p>
-            <div class="progress progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
-            </div>
-        </div>
+
 
        
         <div class="item-buttons" style="display:none">
