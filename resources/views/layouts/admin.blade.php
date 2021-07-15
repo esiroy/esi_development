@@ -75,7 +75,7 @@
                                             @php      
                                                 $ctr++;
                                                 $userImageObj = new \App\Models\UserImage;
-                                                $userImage = $userImageObj->getTutorPhotobyID($reserve->tutor_id); 
+                                                $userImage = $userImageObj->getMemberPhotobyID($reserve->member_id); 
                                                 $memoReply = new \App\Models\MemoReply;
                                                 $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "MEMBER")->count();   
                                                 $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->where('message_type', "MEMBER")->orderBy('created_at', 'DESC')->first();  
@@ -122,7 +122,7 @@
                                                             <br>
                                                             <span class="message small">
                                                                 @if (isset($latestReply->message)) 
-                                                                    {{ limit($latestReply->message, 20) }}
+                                                                    {{ limit($latestReply->message, 120) }}
                                                                 @endif                                                                
                                                             </span>
                                                     </span>
@@ -365,21 +365,25 @@
                 if(document.getElementById('inbox-message-'+ item.schedule_item_id))
                 {  
                     $(".tutor-inbox #inbox-"+item.schedule_item_id).show();
+
                 } else {
                     let col1 = '<div class="col-md-3">';
                         col1 += '<a href="#" class="dropdown-item small p-0">';
-                        col1 += '<img src="'+ item.tutorOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
+                        col1 += '<img src="'+ item.memberOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
                         col1 += '</a></div>';
                         
                         
                     //new added schedule, after loaded
                     let col2 = '<div class="col-md-9">';
                         col2 += '<span id="inbox-message-'+ item.schedule_item_id +'">';
-                        col2 += '<a href="javascript:void(0)" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id='+ item.schedule_item_id+'>講師への連絡</a> <br>';
+                        col2 += '<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="'+item.schedule_item_id+'">';                        
+                        //col2 += '<a href="javascript:void(0)" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id='+ item.schedule_item_id+'>講師への連絡</a> <br>';
                         col2 += '<span class="message small">'+ item.latestReply + '</span></span>';
                         col2 += '</div>';
 
-                    $( ".dropdown-menu" ).append(col1 + col2);       
+                    $( ".dropdown-menu" ).prepend(col1 + col2);       
+
+                    location.reload();
                 }
                 
                 //update message

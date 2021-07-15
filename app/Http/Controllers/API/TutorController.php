@@ -175,10 +175,16 @@ class TutorController extends Controller
                         $memberOrignalImage = Storage::url($memberImage->original);
                     }
     
+                    if (date('H', strtotime($reservation->lesson_time)) == '00') {
+                        $lessonTime = date('Y年 m月 d日 24:i', strtotime($reservation->lesson_time ." - 1 day")) ." - ".   date('24:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    } else {  
+                        $lessonTime = date('Y年 m月 d日 H:i', strtotime($reservation->lesson_time)) ." - ".  date('H:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    }                    
         
 
                     $inbox[] =  array(
                         "schedule_item_id" => $reservation->id,
+                        "lessonTime" => $lessonTime,
                         "latestReply" => $latestReply->message,
                         "memberOrignalImage" => $memberOrignalImage
                     );

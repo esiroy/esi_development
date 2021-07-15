@@ -696,6 +696,12 @@ class MemberController extends Controller
                         'schedule_status' => 'CLIENT_NOT_AVAILABLE',                     
                     ];
 
+                    //remove
+                    $memoReplies = MemoReply::where('schedule_item_id', $scheduleID)->get();
+                    foreach($memoReplies as $memoReply) {
+                        $memoReply->delete();
+                    }
+
                     /*******************************************               
                     *       [START] SEND MAIL - RESERVATION B
                     *******************************************/
@@ -976,7 +982,7 @@ class MemberController extends Controller
         $scheduleItem = ScheduleItem::find($scheduleID);
 
         //update the schedule Memo if this is the first message from user, so it will become a thread starter
-        if (!isset($scheduleItem->memo))
+        if ($scheduleItem->memo == null)
         {            
             $data = [
                 'memo' => $request->message,
