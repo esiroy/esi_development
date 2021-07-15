@@ -32,10 +32,6 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                            
-
-
-
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
@@ -87,21 +83,24 @@
 
                                             @if ($latestReplyCount == 0)  
                                                 @php 
-                                                    $display = "none";                                                
-                                                
+                                                    $display = "inline-flex";
                                                 @endphp
                                             @else 
                                                 @php 
-                                                    $display = "all"; 
+                                                    $display = "inline-flex"; 
                                                     $undreadMessages = $undreadMessages + $latestReplyCount;
                                                 @endphp                                                
                                             @endif
 
                                             <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0">
+                                                
                                                 @if ($ctr > 1)
-                                                    <hr>
+                                                    <div class="col-md-12">
+                                                        <hr>
+                                                    </div>
                                                 @endif
 
+                                                
                                                 <div class="col-md-3">                                               
                                                     <a href="#" class="dropdown-item small p-0">
                                                         @if ($userImage == null)
@@ -122,7 +121,9 @@
                                                             </a>
                                                             <br>
                                                             <span class="message small">
-                                                                {{ $latestReply->message ?? ""}}
+                                                                @if (isset($latestReply->message)) 
+                                                                    {{ limit($latestReply->message, 20) }}
+                                                                @endif                                                                
                                                             </span>
                                                     </span>
                                                 </div>
@@ -337,18 +338,15 @@
                     success: function(data) 
                     {
                         //clean this inbox
+                        /*
                         $('.dropdown-menu').children('div').each(function () {
                             $(this).css("display", "none");
                         });
 
-                        if (data.unread == 0) {
-                            console.log("zero messages 1");
-                        }
-
                         if (data.unread === 0) {
-                            console.log("zero messages");
+
                             $("#unreadMessages").show();
-                        }                    
+                        } */                   
 
                         $("#total_unread_message").text("("+ data.unread + ")");
 

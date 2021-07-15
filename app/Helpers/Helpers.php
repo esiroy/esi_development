@@ -11,6 +11,17 @@ Autoload this in composer.json file,
     ...
 */
 
+use Illuminate\Support\Str;
+
+
+if (! function_exists('limit')) {
+    function limit($string, $number) {
+        $truncated = Str::of($string)->limit($number, ' (...)');
+        return $truncated;
+    }
+}
+
+
 if (! function_exists('formatGrade')) {
     function formatGrade($grade) {
        $str = str_replace('_', ' ', $grade);

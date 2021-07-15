@@ -46,14 +46,11 @@
 
                 <div class="modal-footer">
                     <div class="container">
-                        <div class="d-row">                           
-                            @include('admin.modules.tutor.includes.uploadPreview')                            
-                        </div>
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="reply">
                                     <textarea class="form-control" id="teacherTextReply" rows="1" cols="1" style="min-height:70px"></textarea>
-                                    @include('admin.modules.tutor.includes.uploader')    
+                                  
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -133,7 +130,7 @@
     window.addEventListener('load', function () 
     {
        
-
+        /*
         $('#tutorMemoModal').on('show.bs.modal', function (event) 
         { 
 
@@ -171,16 +168,16 @@
                         init: function() {
                         this.on("addedfile", function() 
                         {
-                            /*
+                           
                             if (this.files.length >= 1) {
                                 $('.fileinput-button').hide();
-                            } */                
+                            }               
 
-                            /*
+                           
                             if (this.files[1]!=null) {
                                 this.removeFile(this.files[1]);
                             }
-                            */
+
                         });
                     }            
                 });
@@ -227,11 +224,8 @@
             }, 1000);
 
         });
-        
-        $('#tutorMemoModal').on('hide.bs.modal', function (event) 
-        {
-            //myDropzone.destroy();
-        });
+        */
+      
         
     });
 </script>
