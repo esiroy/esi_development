@@ -131,31 +131,40 @@
                                                 @php      
                                                     $ctr++;
                                                     $userImageObj = new \App\Models\UserImage;
+
                                                     $memoReply = new \App\Models\MemoReply;
+
                                                     $userImage = $userImageObj->getTutorPhotobyID($reserve->tutor_id); 
+
                                                     $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "TUTOR")->count();   
-                                                    $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->where('message_type', "TUTOR")->orderBy('created_at', 'DESC')->first();  
+                                                    $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('created_at', 'DESC')->first();  
+                                                    $display = "inline-flex";
                                                 @endphp
 
-                                                @if ($latestReplyCount == 0)  
+                                                <!--
+                                                @if ($reserve->memo == null && $latestReplyCount == 0)  
                                                     @php 
-                                                        $display = "none"; 
+                                                        $display = "inline-flex";
                                                     @endphp
                                                 @else 
                                                     @php 
-                                                        $display = "all"; 
+                                                        $display = "inline-flex"; 
                                                         $undreadMessages = $undreadMessages + $latestReplyCount;
                                                     @endphp                                                
                                                 @endif
+                                                -->
 
                                                 <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0" >
+
+                                                    <!--
                                                     @if ($ctr > 1)
                                                         <hr>
                                                     @endif
+                                                    -->
 
                                                     <div class="col-md-3">                                               
-                                                        <a href="#" class="dropdown-item small p-0">
-                                                            @if ($userImage == null)
+                                                        <a href="#" class="dropdown-item small p-0">                                                        
+                                                            @if ($userImage == null)                                                                
                                                                 <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" style="width:100%">
                                                             @else 
                                                                 <img src="{{ Storage::url("$userImage->original") }}" class="img-fluid border" alt="profile photo"  style="width:100%">
@@ -180,19 +189,11 @@
                                                 </div>
                                             @endforeach
                                             
-                                            @if ($undreadMessages >=  1) 
-                                                @php 
-                                                    $messageDisplay = "none"; 
-                                                @endphp
-                                            @else 
-                                                @php 
-                                                    $messageDisplay = "all"; 
-                                                    $undreadMessages = $undreadMessages + $latestReplyCount;
-                                                @endphp                                                
-                                                                                      
+                                            <!--
+                                            @if ($undreadMessages == 0)
+                                            <div id="unreadMessages" class="text-center small pt-3 pb-3 "> No Unread Message(s) </div>
                                             @endif
-
-                                            <div id="unreadMessages" class="text-center small pt-3 pb-3 " style="display: {{ $messageDisplay }}"> No Unread Message(s) </div>
+                                            --> 
 
                                         </div>
 
@@ -613,25 +614,79 @@
                 success: function(data) 
                 {
                     //clean this inbox
+                    /*
                     $('.dropdown-menu').children('div').each(function () {
                         $(this).css("display", "none");
                     });
 
                     if (data.unread == 0) {
                         $("#unreadMessages").show();
-                    }                    
+                    } 
+                    */                   
 
                     $("#total_unread_message").text("("+ data.unread + ")");
 
                     let inbox = data.inbox;
                     inbox.forEach(updateInboxList);
 
-                    console.log(data.message);              
+                    //console.log(data.message);              
                 },
             });
         }
 
         function updateInboxList(item, index) 
+        {
+            //show
+            if(document.getElementById('inbox-message-'+ item.schedule_item_id))
+            {  
+                $(".member-inbox").find("#inbox-"+item.schedule_item_id).remove();
+                
+                let row  = "<div id='inbox-"+ item.schedule_item_id +"' class='row px-0 mx-0'>";
+
+                let col1 = '<div class="col-md-3">';
+                    col1 += '<a href="#" class="dropdown-item small p-0">';
+                    col1 += '<img src="'+ item.tutorOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
+                    col1 += '</a></div>';
+                    
+                    
+                //new added schedule, after loaded
+                let col2 = '<div class="col-md-9">';
+                    col2 += '<span id="inbox-message-'+ item.schedule_item_id +'">';
+                    col2 += '<a href="javascript:void(0)" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="'+ item.schedule_item_id+'">';
+                    col2 += item.lessonTime;
+                    col2 += '</a><br/>';
+                    col2 += '<span class="message small">'+ item.latestReply + '</span></span>';
+                    col2 += '</div>';
+
+                let rowend = "</div>";                    
+
+                $( ".dropdown-menu" ).append(row + col1 + col2 + rowend); 
+
+            } else {
+                let col1 = '<div class="col-md-3">';
+                    col1 += '<a href="#" class="dropdown-item small p-0">';
+                    col1 += '<img src="'+ item.tutorOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
+                    col1 += '</a></div>';
+                    
+                    
+                //new added schedule, after loaded
+                let col2 = '<div class="col-md-9">';
+                    col2 += '<span id="inbox-message-'+ item.schedule_item_id +'">';
+                    col2 += '<a href="javascript:void(0)" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id='+ item.schedule_item_id+'>講師への連絡</a> <br>';
+                    col2 += '<span class="message small">'+ item.latestReply + '</span></span>';
+                    col2 += '</div>';
+
+                $( ".dropdown-menu" ).append(col1 + col2);       
+            }
+
+            //update message
+            $(".member-inbox #inbox-"+item.schedule_item_id+" .message").text(item.latestReply);
+
+            $("#unreadMessages").hide();        
+        }
+
+
+        function updateInboxList_standard(item, index) 
         {
             //show
             if(document.getElementById('inbox-message-'+ item.schedule_item_id))

@@ -72,8 +72,6 @@
 
                                     <div class="dropdown-menu" style="overflow:auto; min-height:50px; max-height:450px; left: -265px; width:400px">
                                         @foreach ($reservations as $reserve)
-
-                                            
                                             @php      
                                                 $ctr++;
                                                 $userImageObj = new \App\Models\UserImage;
@@ -81,8 +79,10 @@
                                                 $memoReply = new \App\Models\MemoReply;
                                                 $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "MEMBER")->count();   
                                                 $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('updated_at', 'DESC')->first();  
+                                                $display = "inline-flex";
                                             @endphp
 
+                                            <!--
                                             @if ($reserve->memo == null && $latestReplyCount == 0)  
                                                 @php 
                                                     $display = "inline-flex";
@@ -93,8 +93,7 @@
                                                     $undreadMessages = $undreadMessages + $latestReplyCount;
                                                 @endphp                                                
                                             @endif
-
-
+                                            -->
 
                                             <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0">
                                                 
@@ -141,7 +140,7 @@
                                         <div id="unreadMessages" class="text-center small pt-3 pb-3 "> No Unread Message(s) </div>
                                         @endif
                                         --> 
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -373,17 +372,14 @@
                 //show
                 if(document.getElementById('inbox-message-'+ item.schedule_item_id))
                 {  
-                    $(".tutor-inbox").find("#inbox-"+item.schedule_item_id).remove();
+                    $(".tutor-inbox").find("#inbox-"+item.schedule_item_id).remove();               
 
-
-                    
                     let row  = "<div id='inbox-"+ item.schedule_item_id +"' class='row px-0 mx-0'>";
 
                     let col1 = '<div class="col-md-3">';
                         col1 += '<a href="#" class="dropdown-item small p-0">';
                         col1 += '<img src="'+ item.memberOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
-                        col1 += '</a></div>';
-                        
+                        col1 += '</a></div>';                        
                         
                     //new added schedule, after loaded
                     let col2 = '<div class="col-md-9">';
@@ -395,13 +391,8 @@
                         col2 += '</div>';
 
                     let hr = "<div class='col-md-12'><hr/></div>";
-
                     let rowend = "</div>";
-
-
                     $( ".dropdown-menu" ).append(row + col1 + col2 + rowend);
-                    
-                    
                     
                 } else {
 
@@ -426,7 +417,7 @@
 
                     let hr = "<div class='col-md-12'><hr/></div>";
 
-                    $( ".dropdown-menu" ).prepend(row + col1 + col2 + rowend + hr);
+                    $( ".dropdown-menu" ).prepend(row + col1 + col2 + rowend);
 
                     //location.reload();
                 }

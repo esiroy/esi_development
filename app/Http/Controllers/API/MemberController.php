@@ -1067,15 +1067,18 @@ class MemberController extends Controller
             
             if (isset($reservation->id)) 
             {
-                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)
-                                          ->where('is_read', false)
-                                          ->where('message_type', "TUTOR")
-                                          ->orderBy('created_at', 'DESC')->first();
+                //$latestReply = $memoReply->where('schedule_item_id', $reservation->id)->where('is_read', false)->where('message_type', "TUTOR")->orderBy('created_at', 'DESC')->first();
+
+                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)->orderBy('updated_at', 'DESC')->first();
             
                 if ($latestReply) 
                 {
-                    $unread++;
+                    //GET THE MEMBER COUNT OF UNREAD REPLIES
+                    $unreadTutorReplyCount = MemoReply::where('schedule_item_id', $reservation->id)->where('is_read', false)->where('message_type', "TUTOR")->count();
 
+                    //TRACK TOTAL UNREAD
+                    $unread = $unread + $unreadTutorReplyCount;
+                    
                     //get teacher profile pic
                     $userImageObj = new UserImage;
                     $tutorImage = $userImageObj->getTutorPhotoByID($reservation->tutor_id);         
@@ -1086,12 +1089,18 @@ class MemberController extends Controller
                         $tutorOrignalImage = Storage::url($tutorImage->original);
                     }
     
-        
+                    if (date('H', strtotime($reservation->lesson_time)) == '00') {
+                        $lessonTime = date('Y年 m月 d日 24:i', strtotime($reservation->lesson_time ." - 1 day")) ." - ".   date('24:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    } else {  
+                        $lessonTime = date('Y年 m月 d日 H:i', strtotime($reservation->lesson_time)) ." - ".  date('H:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    }          
 
                     $inbox[] =  array(
                         "schedule_item_id" => $reservation->id,
+                        "lessonTime" => $lessonTime,                        
                         "latestReply" => $latestReply->message,
-                        "tutorOrignalImage" => $tutorOrignalImage
+                        "tutorOrignalImage" => $tutorOrignalImage,
+                        "unreadMessageCount" => $unreadTutorReplyCount                        
                     );
                 }
             }            
