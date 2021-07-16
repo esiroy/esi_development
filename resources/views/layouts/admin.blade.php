@@ -80,7 +80,7 @@
                                                 $userImage = $userImageObj->getMemberPhotobyID($reserve->member_id); 
                                                 $memoReply = new \App\Models\MemoReply;
                                                 $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "MEMBER")->count();   
-                                                $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->where('message_type', "MEMBER")->orderBy('created_at', 'DESC')->first();  
+                                                $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('updated_at', 'DESC')->first();  
                                             @endphp
 
                                             @if ($reserve->memo == null && $latestReplyCount == 0)  
@@ -136,9 +136,12 @@
                                             </div>
                                         @endforeach
                                         
+                                        <!--
                                         @if ($undreadMessages == 0)
                                         <div id="unreadMessages" class="text-center small pt-3 pb-3 "> No Unread Message(s) </div>
                                         @endif
+                                        --> 
+                                        
                                     </div>
                                 </div>
                             </div>

@@ -62,7 +62,7 @@ class ScheduleItem extends Model
 
         foreach ($schedules as $schedule) 
         {
-           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->where('message_type', "MEMBER")->orderBy('updated_at', 'DESC')->first();           
+           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->orderBy('updated_at', 'DESC')->first();           
             
            if ($latestReply) {
                 $results[] = array(

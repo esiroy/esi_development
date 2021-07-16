@@ -113,6 +113,8 @@ class TutorController extends Controller
         $scheduleItem = ScheduleItem::find($scheduleID);
         
         $memoReply = new MemoReply();
+
+
         $conversations = $memoReply->where('schedule_item_id', $scheduleID)
                         ->orderBy("created_at", 'ASC')
                         ->get();
@@ -157,14 +159,16 @@ class TutorController extends Controller
             
             if (isset($reservation->id)) 
             {
-                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)
-                                          ->where('is_read', false)
-                                          ->where('message_type', "MEMBER")
-                                          ->orderBy('updated_at', 'DESC')->first();
-            
+                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)->orderBy('updated_at', 'DESC')->first();
+
                 if ($latestReply) 
                 {
-                    $unread++;
+
+                    //GET THE MEMBER COUNT OF UNREAD REPLIES
+                    $unreadMemberReplyCount = MemoReply::where('schedule_item_id', $reservation->id)->where('is_read', false)->where('message_type', "MEMBER")->count();
+
+                    //TRACK TOTAL UNREAD
+                    $unread = $unread + $unreadMemberReplyCount;
 
                     //get teacher profile pic
                     $userImageObj = new UserImage;
@@ -187,7 +191,8 @@ class TutorController extends Controller
                         "schedule_item_id" => $reservation->id,
                         "lessonTime" => $lessonTime,
                         "latestReply" => $latestReply->message,
-                        "memberOrignalImage" => $memberOrignalImage
+                        "memberOrignalImage" => $memberOrignalImage,
+                        "unreadMessageCount" => $unreadMemberReplyCount
                     );
                 }
             }            

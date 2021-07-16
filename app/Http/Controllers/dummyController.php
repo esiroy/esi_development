@@ -34,19 +34,43 @@ class dummyController extends Controller
                
     }
 
-    public function index() {
-        $tutor = App\Models\Tutor::where('user_id', Auth::user()->id )->first();
-        $ctr = 0;
-        $undreadMessages = 0;
-        $scheduleItems = new \App\Models\ScheduleItem;
-        $reservations = $scheduleItems->getTutorAllActiveLessons($tutor);  
+    public function index() 
+    {
+
+        $date = date('Y-m-d H:i:s');
+
+        $schedules = MemoReply::where('schedule_item.tutor_id', 21809)
+        ->join('schedule_item', 'schedule_item.id', '=', 'memo_replies.schedule_item_id')
+        ->groupBy('memo_replies.schedule_item_id')
+        ->where(function ($q) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })         
+        ->select('memo_replies.id', 'memo_replies.schedule_item_id', 'memo_replies.updated_at', 'memo_replies.message')
+        ->where('schedule_item.lesson_time', ">=", $date)
+        ->get();
+
+        print_r ($schedules);
+        
+        foreach ($schedules as $schedule) 
+        {
+           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->where('is_read', false)->where('message_type', "MEMBER")->orderBy('updated_at', 'DESC')->first();           
+            
+           $results[] = array(
+                            'schedule_id' => $latestReply->schedule_item_id, 
+                            'message' => $latestReply->message,
+                            'updated_at' => $latestReply->updated_at ,
+                        );
+        }               
+        usort($results, sortByDate('updated_at'));
+
         echo "<pre>";
-        print_R ($reservations);
-        foreach ($reservations as $reserve) {
 
-    
+        $object = (object) $results;
 
-        }
+        print_R ($object);
+        
+        
     }
   
     public function index2() {
