@@ -1,6 +1,6 @@
 {
-  "name": "project-name",
-  "version": "0.1.1",  
+  "name": "esi-reservation-system-with-chat",
+  "version": "0.2.0",  
   "private": true,
   "scripts": {
     "dev": "npm run development",
