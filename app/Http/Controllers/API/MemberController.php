@@ -657,6 +657,11 @@ class MemberController extends Controller
                     ];
 
 
+                    $memoReplies = MemoReply::where('schedule_item_id', $scheduleID)->get();
+                    foreach($memoReplies as $memoReply) {
+                        $memoReply->delete();
+                    }
+
                     /*******************************************               
                     *       [START] SEND MAIL - RESERVATION A
                     *******************************************/
@@ -989,6 +994,9 @@ class MemberController extends Controller
             ];
             $scheduleItem->update($data);
         }
+
+        //check if member schedule is book by me!!
+        
 
 
         if ($scheduleItem) {
