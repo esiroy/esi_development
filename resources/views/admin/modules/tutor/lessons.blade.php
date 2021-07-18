@@ -136,18 +136,14 @@
 
                                     @php
                                     if ($timeSlot['startTime'] == "23:00" || $timeSlot['startTime'] == "23:30") {
-                                    //next day view
-                                    $nextDayCtr = $ctr + 1;
-                                    $dateView = date('m/d/Y', strtotime($dateFrom ." + $nextDayCtr day"));
+                                        //next day view
+                                        $nextDayCtr = $ctr + 1;
+                                        $dateView = date('m/d/Y', strtotime($dateFrom ." + $nextDayCtr day"));
                                     } else {
-                                    $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
+                                        $dateView = date('m/d/Y', strtotime($dateFrom ." + $ctr day"));
                                     }
                                     @endphp
-
-                                    <!--@PLOTTER
-                                            {{ date('m/d/Y', strtotime($dateFrom ." + $ctr day"))}} - {{ $timeSlot['startTime'] }}
-                                            {{  $dateView  }}
-                                        -->
+                  
 
                                     @if(isset($lessons[$dateView][$timeSlot['startTime']]['status']))
 
@@ -165,37 +161,62 @@
 
                                                 <!--@note: get member profile link / name -->
                                                 @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id']))
-                                                <div class="text-dark">
-                                                    <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
-                                                        {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
+                                                    <div class="text-dark">
+                                                        <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
+                                                            {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
+                                                        </a>
+                                                    </div>
+                                                    <div class="hide">
+
+                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' )
+                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                        <div id="memoContent" style="display:none">
+                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                        </div>
+                                                        <!-- <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle"> -->
+                                                        Send A Message
                                                     </a>
-                                                </div>
-                                                <div class="hide">
+                                                    <span class="text-secondary"> | </span>
+                                                @endif
                                                     <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
                                                 </div>
                                                 @endif
 
-                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == 'completed')
+                                            </div>
 
+                                            @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b')
+
+                                            <div id="tutor-lesson-memoBox-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                
+                                                @if ( $lessons[$dateView][$timeSlot['startTime']]['memo'] )
+                                                
+                                                    <div id="memoContainer" class="btn-container2 pt-2">
+                                                        <!-- open memo -->
+                                                        <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                            <div id="memoContent" style="display:none">
+                                                                {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                            </div>
+                                                            <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
+                                                        </a>
+                                                    </div>
+
+                                                @else
+                                                
+                                                    <div id="memoContainer" class="btn-container2 pt-2" style="display:none" >
+                                                        <!-- open memo -->
+                                                        <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                            <div id="memoContent">
+                                                             {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                            </div>
+                                                            <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
+                                                        </a>
+                                                    </div>
                                                 @endif
                                             </div>
 
-                                            @if (isset($lessons[$dateView][$timeSlot['startTime']]['memo']))
-
-                                            @if ($lessons[$dateView][$timeSlot['startTime']]['memo'] != '')
-
-                                            <div id="memoContainer" class="btn-container2 pt-2">
-                                                <!-- open memo -->
-                                                <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                    <div id="memoContent" style="display:none">
-                                                        {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
-                                                    </div>
-                                                    <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
-                                                </a>
-                                            </div>
-
                                             @endif
-                                            @endif
+
+
 
                                         </div>
                                     </div>
@@ -215,126 +236,5 @@
         </div>
 
     </div>
-    @include('admin.modules.tutor.includes.memo')
 </div>
-@endsection
-
-@section('styles')
-@parent
-
-<style>
-.table-tutor-schedules {
-    background: #ffffff;
-    border: 1px solid #0076be;
-}
-
-.table-tutor-schedules thead td.scheduleTimeList {
-    border-bottom: 3px solid #72add2;
-}
-
-.table-tutor-schedules .tutorSchedules {
-    border-left: 1px solid #7dbae0;
-}
-
-.table-tutor-schedules .dateContainer {
-    width: 100%; 
-    background-color: #f0ebc1;
-}
-
-.table-tutor-schedules .dateContainer .day {
-    background-color: #f0ebc1;
-    background-color: #f3e77f;
-}
-
-.table-tutor-schedules tbody td {
-    padding: 0px;    
-    padding-top: 8px;
-    padding-left: 1px;
-    padding-right: 4px;
-}
-
-.table-tutor-schedules td.scheduleTimeList {
-    min-width: 75px;
-    width: 75px;
-    padding: 0px;
-}
-
-.table-tutor-schedules td.scheduleTimeList .class-schedule-container {
-    padding: 10px 2px 0px;
-   
-}
-
-.table-tutor-schedules td.scheduleTimeList .class-schedule-container .class-schedule-start,
-.table-tutor-schedules td.scheduleTimeList .class-schedule-container .class-schedule-end
- {  
-    font-size:11px;
-    font-weight:bold;
-    line-height: 1em;
-}
-
-.table-tutor-schedules td.schedules {
-    min-width: 142px;
-    padding: 0px;
-    background-color:#f3e77f; 
-    border: 1px solid #d0e8f7;
-    border-bottom: 3px solid #72add2; 
-    border-right: 1px solid #ffffff;
-    vertical-align: top;    
-}
-
-.table-tutor-schedules .client 
-{
-    width: 142px;
-}
-
-.table-tutor-schedules .client a{
-    font-size: 10px;
-}
-
-
-</style>
-@endsection
-
-@section('scripts')
-@parent
-<script type="text/javascript">
-    var api_token = "{{ Auth::user()->api_token }}";
-
-    function getMemo(scheduleID) {
-        $.ajax({
-            type: 'POST', 
-            url: "{{ url('api/getMemo?api_token=') }}" + api_token,
-            data: {
-                'scheduleID': scheduleID,
-            }, headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            error: function (data, error) {             
-                alert("Error Found getting memo: " + error);
-            },            
-            success: function(data) {            
-                $('#tutorMemoModal #message').html(data.memo);
-            },
-        });
-    }
-
-
-    window.addEventListener('load', function () 
-    {
-        var button;
-        var id;
-        var modal;
-
-        $('#tutorMemoModal').on('show.bs.modal', function (event) 
-        {
-            $('#tutorMemoModal #message').html("");
-            button = $(event.relatedTarget) // Button that triggered the modal
-            id = button.data('id') // Extract info from data-* attributes            
-            modal = $(this); 
-            getMemo(id)
-        });
-    });
-
-
-</script>
 @endsection

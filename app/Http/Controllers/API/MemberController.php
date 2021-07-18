@@ -10,8 +10,10 @@ use App\Models\MemberAttribute;
 use App\Models\MemberDesiredSchedule;
 use App\Models\Role;
 use App\Models\ScheduleItem;
+use App\Models\MemoReply;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Models\UserImage;
 use App\Models\Shift;
 use App\Models\AgentTransaction;
 use App\Models\ReportCard;
@@ -19,6 +21,7 @@ use App\Models\ReportCardDate;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 use App\Models\LessonMailer;
+
 use Auth, App;
 use DB;
 use Illuminate\Http\Request;
@@ -654,6 +657,11 @@ class MemberController extends Controller
                     ];
 
 
+                    $memoReplies = MemoReply::where('schedule_item_id', $scheduleID)->get();
+                    foreach($memoReplies as $memoReply) {
+                        $memoReply->delete();
+                    }
+
                     /*******************************************               
                     *       [START] SEND MAIL - RESERVATION A
                     *******************************************/
@@ -692,6 +700,12 @@ class MemberController extends Controller
                     $data = [
                         'schedule_status' => 'CLIENT_NOT_AVAILABLE',                     
                     ];
+
+                    //remove
+                    $memoReplies = MemoReply::where('schedule_item_id', $scheduleID)->get();
+                    foreach($memoReplies as $memoReply) {
+                        $memoReply->delete();
+                    }
 
                     /*******************************************               
                     *       [START] SEND MAIL - RESERVATION B
@@ -858,14 +872,48 @@ class MemberController extends Controller
     //get member memo
     public function getMemo(Request $request)
     {
-        $scheduleID = $request->scheduleID;
-        $schedule = ScheduleItem::find($scheduleID);
+        $scheduleID = $request->scheduleID;        
+        $schedule = ScheduleItem::find($scheduleID);  
+        
+        //get member Image
+        $userImageObj = new UserImage;
+        $memberImage = $userImageObj->getMemberPhotoByID($schedule->member_id); 
+
+
+        if ($memberImage == null) {
+            $memberOrignalImage = Storage::url('user_images/noimage.jpg');
+        } else {
+            $memberOrignalImage = Storage::url($memberImage->original);
+        }
+        
+        
+        //get teacher profile pic
+        $userImageObj = new UserImage;
+        $tutorImage = $userImageObj->getTutorPhotoByID($schedule->tutor_id);         
+
+        if ($tutorImage == null) {
+            $tutorOrignalImage = Storage::url('user_images/noimage.jpg');
+        } else {
+            $tutorOrignalImage = Storage::url($tutorImage->original);
+        }
+
+        if (date('H', strtotime($schedule->lesson_time)) == '00') {
+            $lessonTime = date('Y年 m月 d日 24:i', strtotime($schedule->lesson_time ." - 1 day"))  ." - " .  date('24:i', strtotime($schedule->lesson_time." + 25 minutes "));
+        } else {
+            $lessonTime = date('Y年 m月 d日 H:i', strtotime($schedule->lesson_time)) ." - " . date('H:i', strtotime($schedule->lesson_time." + 25 minutes "));
+        }
+            
+        
+    
 
         if ($schedule) {
             return Response()->json([
                 "success" => true,
                 "memo" => $schedule->memo,
+                "lesson_time" => $lessonTime,
                 "message" => "Memo has been found",
+                "memberImage" => $memberOrignalImage,
+                "tutorImage" => $tutorOrignalImage
             ]);
         } else {
             return Response()->json([
@@ -892,6 +940,191 @@ class MemberController extends Controller
             "memo" => $message,
             "message" => "Memo has been saved",
         ]);
+    }
+
+
+    public function getMemoConversations(Request $request) 
+    {
+        $scheduleID = $request->scheduleID;
+        $tutorID = $request->tutorID;
+        $message = $request->message;
+
+        //check if the schedule is available , if not send an error message
+        $scheduleItem = ScheduleItem::find($scheduleID);
+        
+        $memoReply = new MemoReply();
+        $conversations = $memoReply->where('schedule_item_id', $scheduleID)
+                        ->orderBy("created_at", 'ASC')
+                        ->get();
+
+        if ($conversations) 
+        {            
+           //$memoReply->where('schedule_item_id', $scheduleID)->update(array('is_read' => true));
+
+           $memoReply->where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->update(array('is_read' => true));
+
+            return Response()->json([
+                "success" => true,  
+                "message"   => "conversations succesfully fetched",
+                "conversations" => $conversations,            
+            ]); 
+        } else {
+            return Response()->json([
+                "success" => false,  
+                "message"   => "no conversation found"                
+            ]);             
+        }
+    }    
+
+    public function sendMemberReply(Request $request)    
+    {
+        $scheduleID = $request->scheduleID;
+        $memberID = $request->member_id;
+        $message = $request->message;
+
+
+        //check if the schedule is available , if not send an error message
+        $scheduleItem = ScheduleItem::find($scheduleID);
+
+        //update the schedule Memo if this is the first message from user, so it will become a thread starter
+        if ($scheduleItem->memo == null)
+        {            
+            $data = [
+                'memo' => $request->message,
+            ];
+            $scheduleItem->update($data);
+        }
+
+        //check if member schedule is book by me!!
+        
+
+
+        if ($scheduleItem) {
+
+            $data = [
+                'schedule_item_id' => $scheduleID,
+                'sender_id' => $scheduleItem->member_id,
+                'recipient_id' => $scheduleItem->tutor_id,
+                'message_type' => "MEMBER",
+                'message' => $message,
+                'is_read' => false,
+            ];
+
+            $memoReply = new MemoReply();
+            $memoResponse = $memoReply->create($data);
+
+            if ($memoResponse) 
+            {
+                return Response()->json([
+                    "success"   => true,
+                    "response"  => "message has been sent!",
+                    "message"   => $message,            
+                    "date"      => date('m-d-y'),
+                ]);
+            } else {
+                return Response()->json([
+                    "success"   => false,
+                    "response"  => "Error has was not sent due to an error, please check back later.",
+                    "date"      => date('m-d-y'),
+                ]);
+            } 
+        } else {
+            return Response()->json([
+                "success"   => false,
+                "response"  => "Error schedule was not found, it may have been already removed.",
+                "date"      => date('m-d-y'),
+            ]);
+        }
+       
+    }
+
+    public function getUnreadTeacherMessages(Request $request) 
+    {
+        $scheduleID = $request->scheduleID;
+
+        $memoReply = new MemoReply();
+        $conversations = $memoReply->where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->get();   
+        
+        MemoReply::where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->update(array('is_read' => true));
+
+        return Response()->json([
+            "success" => true,    
+            "conversations" => $conversations,
+            "message" => "Teacher memo replies has been fetched.",
+        ]);
+    }
+
+
+    public function getMemberInbox(Request $request) 
+    {
+
+        $memberID = $request->memberID;
+        $memberInfo = Member::where('user_id',  $memberID)->first();
+
+        $scheduleItems = new ScheduleItem();
+        $memoReply = new MemoReply();     
+
+        $reservations = $scheduleItems->getMemberAllActiveLessons($memberInfo);
+
+        $ctr = 0;
+        $unread = 0;        
+        $inbox = array();
+
+        foreach($reservations as $reservation) 
+        {   
+            if (isset($reservation->id)) 
+            {
+
+                $ctr++;
+
+                //$latestReply = $memoReply->where('schedule_item_id', $reservation->id)->where('is_read', false)->where('message_type', "TUTOR")->orderBy('created_at', 'DESC')->first();
+
+                $latestReply = $memoReply->where('schedule_item_id', $reservation->id)->orderBy('updated_at', 'DESC')->first();
+            
+                if ($latestReply) 
+                {
+                    //GET THE MEMBER COUNT OF UNREAD REPLIES
+                    $unreadTutorReplyCount = MemoReply::where('schedule_item_id', $reservation->id)->where('is_read', false)->where('message_type', "TUTOR")->count();
+
+                    //TRACK TOTAL UNREAD
+                    $unread = $unread + $unreadTutorReplyCount;
+                    
+                    //get teacher profile pic
+                    $userImageObj = new UserImage;
+                    $tutorImage = $userImageObj->getTutorPhotoByID($reservation->tutor_id);         
+
+                    if ($tutorImage == null) {
+                        $tutorOrignalImage = Storage::url('user_images/noimage.jpg');
+                    } else {
+                        $tutorOrignalImage = Storage::url($tutorImage->original);
+                    }
+    
+                    if (date('H', strtotime($reservation->lesson_time)) == '00') {
+                        $lessonTime = date('Y年 m月 d日 24:i', strtotime($reservation->lesson_time ." - 1 day")) ." - ".   date('24:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    } else {  
+                        $lessonTime = date('Y年 m月 d日 H:i', strtotime($reservation->lesson_time)) ." - ".  date('H:i', strtotime($reservation->lesson_time." + 25 minutes "));
+                    }          
+
+                    $inbox[] =  array(                       
+                        "schedule_item_id" => $reservation->id,
+                        "lessonTime" => $lessonTime,                        
+                        "latestReply" => $latestReply->message,
+                        "tutorOrignalImage" => $tutorOrignalImage,
+                        "unreadMessageCount" => $unreadTutorReplyCount                        
+                    );
+                }
+            }            
+        }    
+
+        return Response()->json([
+            "success" => true,    
+            "inbox" => $inbox,
+            "inboxCount" => $ctr,
+            "unread" => $unread,
+            "message" => "Teacher memo replies has been fetched.",
+        ]);
+        
+
     }
 
     /**
@@ -1333,5 +1566,8 @@ class MemberController extends Controller
         }
 
     }
+
+
+    
 
 }

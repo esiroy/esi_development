@@ -11,6 +11,7 @@ use App\Models\Tutor;
 use App\Models\MemberAttribute;
 use App\Models\ScheduleItem;
 use App\Mail\SendEmailDemo;
+use App\Models\MemoReply;
 use App;
 use Gate;
 use DB;
@@ -30,18 +31,98 @@ class dummyController extends Controller
     public function __construct()
     {
 
+               
     }
 
+    public function index() 
+    {
+
+        $date = date('Y-m-d H:i:s');
+
+        $schedules = MemoReply::where('schedule_item.tutor_id', 21809)
+        ->join('schedule_item', 'schedule_item.id', '=', 'memo_replies.schedule_item_id')
+        ->groupBy('memo_replies.schedule_item_id')
+        ->where(function ($q) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })         
+        ->select('memo_replies.id', 'memo_replies.schedule_item_id', 'memo_replies.updated_at', 'memo_replies.message')
+        ->where('schedule_item.lesson_time', ">=", $date)
+        ->get();
+
+        print_r ($schedules);
+        
+        foreach ($schedules as $schedule) 
+        {
+           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->where('is_read', false)->where('message_type', "MEMBER")->orderBy('updated_at', 'DESC')->first();           
+            
+           $results[] = array(
+                            'schedule_id' => $latestReply->schedule_item_id, 
+                            'message' => $latestReply->message,
+                            'updated_at' => $latestReply->updated_at ,
+                        );
+        }               
+        usort($results, sortByDate('updated_at'));
+
+        echo "<pre>";
+
+        $object = (object) $results;
+
+        print_R ($object);
+        
+        
+    }
   
+    public function index2() {
+        $date = date('Y-m-d H:i:s');
+        
+       //get schedule unique
+       /*
+        $schedules = MemoReply::where('schedule_item.tutor_id', 21809)
+                ->join('schedule_item', 'schedule_item.id', '=', 'memo_replies.schedule_item_id')
+                ->groupBy('memo_replies.schedule_item_id')
+                ->where(function ($q) {                
+                    $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+                    ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                })         
+                ->select('memo_replies.id', 'memo_replies.schedule_item_id', 'memo_replies.updated_at', 'memo_replies.message')
+                ->where('schedule_item.lesson_time', ">=", $date)
+                ->get();
 
-    public function index( LessonMailer $lessonMailer){
-        
-        $date = date('Y-m-d');
+        */
 
-        $dateToExtended = date('Y-m-d', strtotime($date ." + 1 hour"));
+        $schedules = ScheduleItem::where('tutor_id', 21809)->where('valid', 1)->where(function ($q) {                
+            $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+            ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+        })->where('lesson_time', ">=", $date)
+        ->orderby('lesson_time', 'ASC')
+        ->get();        
+
+                
+        foreach ($schedules as $schedule) 
+        {
+           $latestReply = MemoReply::where('schedule_item_id', $schedule->id)->where('is_read', false)->where('message_type', "MEMBER")->orderBy('updated_at', 'DESC')->first();           
+            
+           $results[] = array(
+                            'schedule_id' => $latestReply->schedule_item_id, 
+                            'message' => $latestReply->message,
+                            'updated_at' => $latestReply->updated_at ,
+                        );
+        }               
+        usort($results, sortByDate('updated_at'));
+
+        echo "<pre>";
+
+        $object = (object) $results;
+
+        print_R ($object);
+    }
+
+    public function uploader(){
         
-        echo $date . " till " . $dateToExtended;
-        
+       
+        return view("dummy/index", ['title'=> "TEST"]);
+
     }
     
 

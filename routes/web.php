@@ -230,6 +230,9 @@ Route::resource('/questionnaire', 'Members\QuestionnaireController');
 /*Upload Controller */
 //Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
+Route::post('upload/tutor/file', 'FileUploadController@tutorUpload');
+
+
 /* Download Controller*/
 //Route::resource('download', 'DownloadController');
 Route::get('download/{path}', 'DownloadController@downloadLessonMaterial');

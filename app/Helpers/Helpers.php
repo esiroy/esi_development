@@ -11,6 +11,29 @@ Autoload this in composer.json file,
     ...
 */
 
+use Illuminate\Support\Str;
+
+
+if (! function_exists('limit')) {
+    function limit($string, $number) {
+        $truncated = Str::of($string)->limit($number, ' (...)');
+        return $truncated;
+    }
+}
+
+
+if (! function_exists('sortByDate')) {    
+    function sortByDate($key)
+    {
+        return function ($a, $b) use ($key) {
+            $t1 = strtotime($a[$key]);
+            $t2 = strtotime($b[$key]);
+            return $t2-$t1;
+        };
+
+    }
+}
+
 if (! function_exists('formatGrade')) {
     function formatGrade($grade) {
        $str = str_replace('_', ' ', $grade);
@@ -156,5 +179,18 @@ if (! function_exists('unique_multidim_array'))
         return $temp_array;
     }
 }
+
+
+if (! function_exists('linkify')) 
+{
+    function linkify($string) {
+        $string = preg_replace(
+            "~[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]~",
+            "<a href=\"\\0\" class='blue' target='_blank'>\\0</a>", 
+            $string);
+        return $string;
+    }
+}
+
 
 ?>

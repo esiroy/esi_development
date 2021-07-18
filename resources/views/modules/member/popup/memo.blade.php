@@ -8,18 +8,19 @@
                 </button>
             </div>
 
+            
             <div class="modal-body">
                 <div class="form-group">
                     <input type="hidden" id="scheduleID" value="">
                     <label for="messsage" class="col-form-label">Message:</label>
                     <textarea class="form-control" id="message" name="message"></textarea>
                 </div>
-
             </div>
+
             <div class="modal-footer">
                 <button id="saveTutorMemo" type="submit" class="btn btn-light">Send</button>
             </div>
-            </form>
+           
         </div>
     </div>
 </div>
