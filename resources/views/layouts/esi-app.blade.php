@@ -120,7 +120,8 @@
                                 
                                 <div class="member-inbox">
                                     <div class="dropdown">
-                                        <a href="#" class="dropdown-toggle blue" data-toggle="dropdown">INBOX <span id="total_unread_message" class="text-success">({{ $undreadMessages }})</span></a>
+                                        <a href="#" class="dropdown-toggle blue" data-toggle="dropdown">{{ "受信トレイ" }}
+                                        <span id="total_unread_message" class="text-success">({{ $undreadMessages }})</span></a>
 
                                         <div class="dropdown-menu" style="overflow:auto; min-height:50px; max-height:450px; left: -265px; width:400px">
                                             @php                                             
@@ -136,22 +137,24 @@
                                                     $userImage = $userImageObj->getTutorPhotobyID($reserve->tutor_id); 
 
                                                     $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "TUTOR")->count();   
-                                                    $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('created_at', 'DESC')->first();  
+                                                    $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('created_at', 'DESC')->first(); 
 
-                                                    $display = "inline-flex";
+                                                    if ($latestReplyCount >= 1)
+                                                    {
+                                                        $readStatus = "message-read";
+                                                        $colorClass = "blue font-weight-bold";
+                                                        $undreadMessages =  $undreadMessages + $latestReplyCount;
+                                                    }
+                                                    else {
+                                                        $readStatus = "message-unread";
+                                                        $colorClass = "text-muted font-weight-light";
+                                                    }
+                                                    
                                                 @endphp
-
-                                                @if ($latestReplyCount >= 1)
-                                                <div id="inbox-{{$reserve->id }}" style="display:{{$display}}"  class="row px-0 mx-0" >
-
-                                                    <!--
-                                                    @if ($ctr > 1)
-                                                        <hr>
-                                                    @endif
-                                                    -->
-
+                                                
+                                                <div id="inbox-{{$reserve->id }}" class="row px-0 mx-0 {{$readStatus}} {{$colorClass}}">
                                                     <div class="col-md-3">                                               
-                                                        <a href="#" class="dropdown-item small p-0">                                                        
+                                                        <a href="#" class="dropdown-item small p-0 {{$colorClass}}">                                                        
                                                             @if ($userImage == null)                                                                
                                                                 <img src="{{ Storage::url('user_images/noimage.jpg') }}" class="img-fluid border" alt="no photo uploaded" style="width:100%">
                                                             @else 
@@ -161,7 +164,7 @@
                                                     </div>
                                                     <div class="col-md-9">
                                                         <span id="inbox-message-{{ $reserve->id }}">
-                                                            <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
+                                                            <a href="javascript:void(0)" class="{{$colorClass}}" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
                                                                 @if (date('H', strtotime($reserve->lesson_time)) == '00') 
                                                                     {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
                                                                 @else 
@@ -175,14 +178,21 @@
                                                         </span>
                                                     </div>
                                                 </div>
-                                                @endif
+                                                
                                             @endforeach
-                                            
-                                            <!--
-                                            @if ($undreadMessages == 0)
-                                            <div id="unreadMessages" class="text-center small pt-3 pb-3 "> No Unread Message(s) </div>
-                                            @endif
-                                            --> 
+
+                                            @php
+                                                if ($ctr == 0)
+                                                    $display = "block";
+                                                else
+                                                   $display = "none";                                                
+                                            @endphp
+
+                                             
+
+                                            <div id="noInboxMessages" class="text-center small pt-3 pb-3" style="display:{{$display}}"> 
+                                                No Inbox Message(s) 
+                                            </div>
 
                                         </div>
 
@@ -391,7 +401,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 error: function (data, error) {             
-                    alert("Error Found getting memo: " + error);
+                   //alert("Error Found getting memo: " + error);
                 },            
                 success: function(data) { 
                     $('#message').val(data.memo);
@@ -425,7 +435,8 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 error: function (data, error) {             
-                    alert("Error Found getting memo: " + error);    
+                    //alert("Error Found getting memo: " + error);    
+                    console.log("cant send memo")
                 },
                 success: function(data) {
                     $('#tutorMemoModal').modal('hide')   
@@ -471,18 +482,13 @@
         }
 
         function createReplyBubble(item, index) 
-        {       
-
-            if (item.message_type === "MEMBER") {
-
+        {
+            if (item.message_type === "MEMBER") 
+            {
                 let teacherProfileImage = $('#memberProfile').html();
-
-
                 addMemberReplyBubble(teacherProfileImage, item.message);
             } else {
-
                 let teacherProfileImage = $('#teacherProfile').html();
-
                 addTeacherReplyBubble(teacherProfileImage, item.message);
             }    
             
@@ -519,7 +525,6 @@
 
         function sendMemberReply(scheduleID, message) 
         {
-
             console.log(scheduleID, message);
 
             $.ajax({         
@@ -536,7 +541,8 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 error: function (data, error) {             
-                    alert("Error Found while getting teacher unread memo replies: " + error);
+                    //alert("Error Found while getting teacher unread memo replies: " + error);
+                    console.log("Error Found while getting teacher unread memo replies");
                 },      
                 beforeSend: function() {   
                     $('#loadingModal').modal('hide');
@@ -581,8 +587,11 @@
             });
         }
 
-        function getMemberInbox() {
-            //console.log("heartbeat! " + scheduleID);
+        function getMemberInbox() 
+        {
+            //Output this message when you have no inbox (no read, no unread)   
+            let noInbox = '<div id="noInboxMessages" class="text-center small pt-3 pb-3"> No Inbox Message(s) </div>';
+
             $.ajax({         
                 type: 'POST',
                 dataType: 'json',
@@ -595,52 +604,47 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 error: function (data, error) {             
-                    alert("Error Found while getting teacher unread memo replies: " + error);
+                   // alert("Error Found while getting teacher unread memo replies: " + error);
+                   console.log("(getMemberInbox) Error Found while getting teacher unread memo replies")
                 },      
                 beforeSend: function() {   
                     $('#loadingModal').modal('hide');
                 },               
                 success: function(data) 
                 {
-                    //clean this inbox
-                    /*
-                    $('.dropdown-menu').children('div').each(function () {
-                        $(this).css("display", "none");
-                    });
-
-                    if (data.unread == 0) {
-                        $("#unreadMessages").show();
-                    } 
-                    */                   
-
                     $("#total_unread_message").text("("+ data.unread + ")");
-
-                    $( ".dropdown-menu" ).children().remove();
+                    $( ".dropdown-menu" ).children().remove();                    
                     
-                    let inbox = data.inbox;
-                    inbox.forEach(updateInboxList);
+                    if (data.inboxCount == 0){                                             
+                        $( ".dropdown-menu" ).append(noInbox); 
+                    } else {
+                        let inbox = data.inbox;
+                        inbox.forEach(updateInboxList);
+                    }
 
-                    //console.log(data.message);              
+                    
                 },
             });
         }
 
         function updateInboxList(item, index) 
         {
-            
-            
-            /*
-            //show
-            if(document.getElementById('inbox-message-'+ item.schedule_item_id))
-            {  
-                $(".member-inbox").find("#inbox-"+item.schedule_item_id).remove();
-            }
-            */
+            let readMessage = "";
+            let colorClass = "";
 
-            let row  = "<div id='inbox-"+ item.schedule_item_id +"' class='row px-0 mx-0'>";
+            if (item.unreadMessageCount >= 1)  {
+                 readStatus = "message-read";
+                 colorClass = "blue font-weight-bold";
+            } else {
+                 readStatus = "message-unread";
+                 colorClass = "text-muted font-weight-light";
+            }
+            
+
+            let row  = "<div id='inbox-"+ item.schedule_item_id +"' class='row px-0 mx-0 "+ readStatus + " " + colorClass +"'>";
 
             let col1 = '<div class="col-md-3">';
-                col1 += '<a href="#" class="dropdown-item small p-0">';
+                col1 += '<a href="#" class="dropdown-item small p-0 ' + colorClass + '">';
                 col1 += '<img src="'+ item.tutorOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
                 col1 += '</a></div>';
                 
@@ -648,7 +652,7 @@
             //new added schedule, after loaded
             let col2 = '<div class="col-md-9">';
                 col2 += '<span id="inbox-message-'+ item.schedule_item_id +'">';
-                col2 += '<a href="javascript:void(0)" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="'+ item.schedule_item_id+'">';
+                col2 += '<a href="javascript:void(0)" class="' + colorClass + '" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="'+ item.schedule_item_id+'">';
                 col2 += item.lessonTime;
                 col2 += '</a><br/>';
                 col2 += '<span class="message small">'+ item.latestReply + '</span></span>';

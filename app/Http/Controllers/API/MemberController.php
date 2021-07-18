@@ -1066,15 +1066,17 @@ class MemberController extends Controller
 
         $reservations = $scheduleItems->getMemberAllActiveLessons($memberInfo);
 
-        $unread = 0;
-        
+        $ctr = 0;
+        $unread = 0;        
         $inbox = array();
 
         foreach($reservations as $reservation) 
-        {              
-            
+        {   
             if (isset($reservation->id)) 
             {
+
+                $ctr++;
+
                 //$latestReply = $memoReply->where('schedule_item_id', $reservation->id)->where('is_read', false)->where('message_type', "TUTOR")->orderBy('created_at', 'DESC')->first();
 
                 $latestReply = $memoReply->where('schedule_item_id', $reservation->id)->orderBy('updated_at', 'DESC')->first();
@@ -1103,7 +1105,7 @@ class MemberController extends Controller
                         $lessonTime = date('Y年 m月 d日 H:i', strtotime($reservation->lesson_time)) ." - ".  date('H:i', strtotime($reservation->lesson_time." + 25 minutes "));
                     }          
 
-                    $inbox[] =  array(
+                    $inbox[] =  array(                       
                         "schedule_item_id" => $reservation->id,
                         "lessonTime" => $lessonTime,                        
                         "latestReply" => $latestReply->message,
@@ -1117,6 +1119,7 @@ class MemberController extends Controller
         return Response()->json([
             "success" => true,    
             "inbox" => $inbox,
+            "inboxCount" => $ctr,
             "unread" => $unread,
             "message" => "Teacher memo replies has been fetched.",
         ]);

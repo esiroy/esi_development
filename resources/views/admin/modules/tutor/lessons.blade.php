@@ -201,7 +201,6 @@
                                                     </div>
 
                                                 @else
-
                                                 
                                                     <div id="memoContainer" class="btn-container2 pt-2" style="display:none" >
                                                         <!-- open memo -->
