@@ -766,7 +766,7 @@
             //interval unread message fetching
             intervalInbox = window.setInterval(function(){
                 getMemberInbox()
-            }, 3000);
+            }, 5000);
             
 
         });
