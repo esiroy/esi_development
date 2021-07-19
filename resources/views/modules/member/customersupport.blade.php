@@ -101,9 +101,9 @@
 
                                 <p>講師からコールがなかったり、レッスン中のトラブルなど、緊急な対応については、 
                                     <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','スカイプ又はZOOM',900,720);">「講師への連絡」</a> からチャットをご利用ください。チャットが繋がらない場合はセブマネジャー
-                                </span class="red">（スカイプ又はZOOM）</span>までご連絡ください。</p>
+                                <span class="text-danger">（スカイプ又はZOOM）</span>までご連絡ください。</p>
 
-                                <p>マイページ左側「管理人」の中にある「スカイプ<span style="color:red;">(ZOOM)</span>のアイコン」をクリックするとセブマネジャーへつながります</p>
+                                <p>マイページ左側「管理人」の中にある「スカイプ<span class="text-danger">(ZOOM)</span>のアイコン」をクリックするとセブマネジャーへつながります</p>
                             </div>
 
                         </div>

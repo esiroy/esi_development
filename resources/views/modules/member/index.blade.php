@@ -133,7 +133,7 @@
                             初めての講師の場合、講師からSkype(ZOOM)コンタクトリクエストがあります。 レッスン時間の15分前にSkype(ZOOM)を立ち上げ承認してコールをお待ちください。
 
                             <br/>
-                            講師からコールがない場合は、「講師への連絡」からご連絡ください。
+                            講師からコールがない場合は、<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','講師への連絡　チャット」とは',900,720);">「講師への連絡」</a>からご連絡ください。
 
                             <table id="memberReservations" cellspacing="0" cellpadding="9" class="tblRegister mt-3" width="100%">
                                 <tbody>
