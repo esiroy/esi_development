@@ -430,6 +430,8 @@ export default {
             })
             .then(response => 
             {                
+                this.memberMemo = "";
+                
                 this.$bvModal.show('memberMemoModal');    
                 
                 this.selectedlessonTime = response.data.lessonTime;
@@ -437,10 +439,18 @@ export default {
                 let replies = response.data.conversations;                
                 let memberPhoto = response.data.memberPhoto;
                 let tutorPhoto = response.data.tutorPhoto;
+                let memo = response.data.memo;
 
-                replies.forEach((item, index) => {
-                   this.createReplyBubble(item, memberPhoto, tutorPhoto) 
-                });                
+                if (replies.length >= 1) 
+                {
+                    replies.forEach((item, index) => {
+                    this.createReplyBubble(item, memberPhoto, tutorPhoto) 
+                    });    
+                } else {
+                    let memberProfileImage = "<img src='"+memberPhoto+"' class='img-fluid border'>";
+                    this.addMemberReplyBubble(memberProfileImage, memo) 
+                }
+            
 
             });
         },

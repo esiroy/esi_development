@@ -766,6 +766,12 @@ class TutorScheduleController extends Controller
             $tutorOrignalImage = Storage::url($tutorImage->original);
         }
 
+        if (isset($scheduleItem->memo)) {
+            $memo = $scheduleItem->memo;
+        } else {
+            $memo = null;
+        }
+
         if ($conversations) 
         {
 
@@ -782,6 +788,7 @@ class TutorScheduleController extends Controller
                 "lessonTime"    => $lessonTime,
                 "memberPhoto"   => $memberOrignalImage,
                 "tutorPhoto"    => $tutorOrignalImage,
+                "memo"          => $memo,
                 "conversations" => $conversations,            
             ]); 
         } else {

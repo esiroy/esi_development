@@ -394,7 +394,8 @@
         {
             $.ajax({
                 type: 'POST', 
-                url: 'api/getMemo?api_token=' + api_token,
+                //url: 'api/getMemo?api_token=' + api_token,
+                url: "{{ url('api/getMemo?api_token=') }}" + api_token,
                 data: {
                     'scheduleID': scheduleID,
                 }, headers: {
@@ -427,7 +428,8 @@
         function sendMemo(scheduleID, message) {
             $.ajax({
                 type: 'POST', 
-                url: 'api/sendMemo?api_token=' + api_token,
+                //url: 'api/sendMemo?api_token=' + api_token,
+                url: "{{ url('api/sendMemo?api_token=') }}" + api_token,
                 data: {
                     'scheduleID': scheduleID,
                     'message': message
