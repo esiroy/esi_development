@@ -471,7 +471,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 error: function (data, error) {             
-                    alert("Error Found while getting memo conversations: " + error);
+                    //alert("Error Found while getting memo conversations: " + error);
                 },            
                 success: function(data) 
                 {
@@ -573,7 +573,7 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 error: function (data, error) {             
-                    alert("Error Found while getting teacher unread memo replies: " + error);
+                    //alert("Error Found while getting teacher unread memo replies: " + error);
                 },      
                 beforeSend: function() {   
                     $('#loadingModal').modal('hide');
