@@ -119,6 +119,12 @@ class TutorController extends Controller
                         ->orderBy("created_at", 'ASC')
                         ->get();
 
+        if (isset($scheduleItem->memo)) {
+            $memo = $scheduleItem->memo;
+        } else {
+            $memo = null;
+        }
+
         if ($conversations) 
         {            
            //$memoReply->where('schedule_item_id', $scheduleID)->update(array('is_read' => true));
@@ -127,12 +133,15 @@ class TutorController extends Controller
 
             return Response()->json([
                 "success" => true,  
+                "memo"          => $memo,
                 "message"   => "conversations succesfully fetched",
                 "conversations" => $conversations,            
             ]); 
+
         } else {
             return Response()->json([
                 "success" => false,  
+                "memo"          => $memo,
                 "message"   => "no conversation found"                
             ]);             
         }

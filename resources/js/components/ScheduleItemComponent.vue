@@ -444,7 +444,7 @@ export default {
                 if (replies.length >= 1) 
                 {
                     replies.forEach((item, index) => {
-                    this.createReplyBubble(item, memberPhoto, tutorPhoto) 
+                        this.createReplyBubble(item, memberPhoto, tutorPhoto) 
                     });    
                 } else {
                     let memberProfileImage = "<img src='"+memberPhoto+"' class='img-fluid border'>";

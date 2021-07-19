@@ -248,7 +248,15 @@
                     success: function(data) 
                     {
                         let replies = data.conversations;
-                        replies.forEach(createReplyBubble);
+                        let memo = data.memo;
+
+                        if (replies.length >= 1) 
+                        {
+                            replies.forEach(createReplyBubble);
+                        } else {
+                            $memberProfileImage = $('#memberProfile').html();
+                            addMemberReplyBubble($memberProfileImage, memo);
+                        }                        
                     },
                 });
             }
