@@ -215,7 +215,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     error: function (data, error) {             
-                        alert("Error Found getting memo: " + error);
+                        //alert("Error Found getting memo: " + error);
                     },            
                     success: function(data) 
                     {            
@@ -243,7 +243,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     error: function (data, error) {             
-                        alert("Error Found while sending memo: " + error);
+                       // alert("Error Found while sending memo: " + error);
                     },            
                     success: function(data) 
                     {
@@ -271,7 +271,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     error: function (data, error) {             
-                        alert("Error Found while getting Member unread memo replies: " + error);
+                        //alert("Error Found while getting Member unread memo replies: " + error);
                     },      
                     beforeSend: function() {   
                         $('#loadingModal').modal('hide');
@@ -338,7 +338,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     error: function (data, error) {             
-                        alert("Error Found while getting teacher unread memo replies: " + error);
+                        //alert("Error Found while getting teacher unread memo replies: " + error);
                     },      
                     beforeSend: function() {   
                         $('#loadingModal').modal('hide');
@@ -482,7 +482,7 @@
                 //interval unread message fetching
                 intervalInbox = window.setInterval(function(){
                     getTutorInbox()
-                }, 3000);
+                }, 5000);
                 
                 
 
