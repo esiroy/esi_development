@@ -95,7 +95,7 @@
                                                         <strong>{{ date('d', strtotime($dateFrom ." + $ctr day"))}}</strong>
                                                     </div>
                                                 </div>
-                                                <div class="text-left col-md-8">{{ date('l', strtotime($dateFrom ." + $ctr day"))}}</div>
+                                                <div class="text-left col-md-8 px-0">{{ date('l', strtotime($dateFrom ." + $ctr day"))}}</div>
                                             </div>
                                         </div>
                                         <div class="text-center" style="background-color:#d0e8f7">Member</div>
@@ -150,8 +150,7 @@
                                     <div class="toggleHide">
 
 
-                                        <div class="@php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp" style="width:100%; padding:5px">
-
+                                        <div class="reservation-box @php echo str_replace(' ', '_', strtolower($lessons[$dateView][$timeSlot['startTime']]['status'])) @endphp">
                                             <div class="client text-center text-white">
 
                                                 @php
@@ -160,32 +159,41 @@
                                                 @endphp
 
                                                 <!--@note: get member profile link / name -->
-                                                @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id']))
+                                                @if(isset( $lessons[$dateView][$timeSlot['startTime']]['member_id'] ))
+                                                    @php 
+                                                        $memberID = $lessons[$dateView][$timeSlot['startTime']]['member_id'];
+                                                    @endphp
                                                     <div class="text-dark">
+                                                        <!--
                                                         <a href="{{ route('admin.member.show', $lessons[$dateView][$timeSlot['startTime']]['member_id']) }}">
                                                             {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
                                                         </a>
+                                                        -->
+                                                        <a id="{{$memberID}}" name="{{$memberID}}" onclick="openUrlTab('{{ route('admin.member.show',  $memberID) }}')" href="#">
+                                                            {{$lessons[$dateView][$timeSlot['startTime']]['nickname']}}
+                                                        </a>
+                                                        
                                                     </div>
                                                     <div class="hide">
+                                                        @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' )
+                                                            <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                                <div id="memoContent" style="display:none">
+                                                                    {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                                </div>
+                                                                <!-- <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle"> -->
+                                                                Send A Message
+                                                            </a>
+                                                            <span class="text-secondary"> | </span>
+                                                        @endif
 
-                                                @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' )
-                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                        <div id="memoContent" style="display:none">
-                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
-                                                        </div>
-                                                        <!-- <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle"> -->
-                                                        Send A Message
-                                                    </a>
-                                                    <span class="text-secondary"> | </span>
-                                                @endif
-                                                    <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
-                                                </div>
+                                                        <a href="{{ route('admin.reportcard.index', ['scheduleitemid' => $lessons[$dateView][$timeSlot['startTime']]['id'] ]) }}">Grade</a>
+                                                     </div>
                                                 @endif
 
                                             </div>
 
-                                            @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b')
-
+                                            @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == "completed" ||  
+                                                    $checkStatus ==  'client_not_available' || $checkStatus ==  'tutor_cancelled')
                                             <div id="tutor-lesson-memoBox-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
                                                 
                                                 @if ( $lessons[$dateView][$timeSlot['startTime']]['memo'] )
@@ -213,11 +221,7 @@
                                                     </div>
                                                 @endif
                                             </div>
-
                                             @endif
-
-
-
                                         </div>
                                     </div>
 
@@ -237,4 +241,30 @@
 
     </div>
 </div>
+@endsection
+
+@section('styles')
+@parent
+<script type="text/javascript">
+    function openUrlTab(url) {
+        window.open(url, 'memberTab');
+    }
+</script>
+@endsection
+
+@section('styles')
+@parent
+<style>
+#memoContainer {
+    margin-top: 7px;
+    padding-left:10px;   
+}
+
+.reservation-box {
+    margin-top: 10px;
+    width: 100%;
+    padding: 20px 0px 20px;    
+    height: 70px;
+}
+</style>
 @endsection

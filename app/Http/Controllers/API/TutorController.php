@@ -159,15 +159,17 @@ class TutorController extends Controller
 
         $reservations = $scheduleItems->getTutorAllActiveLessons($tutorInfo);
 
-        $unread = 0;
-        
+        $ctr = 0;
+        $unread = 0;        
         $inbox = array();
 
         foreach($reservations as $reservation) 
         {              
             
             if (isset($reservation->id)) 
-            {
+            { 
+                $ctr++;
+
                 $latestReply = $memoReply->where('schedule_item_id', $reservation->id)->orderBy('updated_at', 'DESC')->first();
 
                 if ($latestReply) 
@@ -210,6 +212,7 @@ class TutorController extends Controller
         return Response()->json([
             "success" => true,    
             "inbox" => $inbox,
+            "inboxCount" => $ctr,            
             "unread" => $unread,
             "message" => "Member memo replies has been fetched.",
         ]);

@@ -123,7 +123,7 @@
                                         <a href="#" class="dropdown-toggle blue" data-toggle="dropdown">{{ "受信トレイ" }}
                                         <span id="total_unread_message" class="text-success">({{ $undreadMessages }})</span></a>
 
-                                        <div class="dropdown-menu" style="overflow:auto; min-height:50px; max-height:450px; left: -265px; width:400px">
+                                        <div class="dropdown-menu dropdown-menu-custom">
                                             @php                                             
                                                 $latestReplyCount = 0;
                                             @endphp
@@ -133,9 +133,7 @@
                                                     $ctr++;
                                                     $userImageObj = new \App\Models\UserImage;
                                                     $memoReply = new \App\Models\MemoReply;
-
                                                     $userImage = $userImageObj->getTutorPhotobyID($reserve->tutor_id); 
-
                                                     $latestReplyCount = $memoReply->where('schedule_item_id', $reserve->id)->where('is_read', false)->where('message_type', "TUTOR")->count();   
                                                     $latestReply = $memoReply->where('schedule_item_id', $reserve->id)->orderBy('created_at', 'DESC')->first(); 
 
@@ -172,8 +170,10 @@
                                                                 @endif                                                                
                                                             </a>
                                                             <br>
-                                                            <span class="message small">
-                                                                {{ $latestReply->message ?? ""}}
+                                                            <span class="message small">                                                               
+                                                                @if (isset($latestReply->message)) 
+                                                                    {{ limit($latestReply->message, 120) }}
+                                                                @endif                                                                    
                                                             </span>
                                                         </span>
                                                     </div>
@@ -191,7 +191,7 @@
                                              
 
                                             <div id="noInboxMessages" class="text-center small pt-3 pb-3" style="display:{{$display}}"> 
-                                                No Inbox Message(s) 
+                                                No New Inbox Message(s) 
                                             </div>
 
                                         </div>
@@ -615,6 +615,7 @@
                 success: function(data) 
                 {
                     $("#total_unread_message").text("("+ data.unread + ")");
+
                     $( ".dropdown-menu" ).children().remove();                    
                     
                     if (data.inboxCount == 0){                                             
@@ -663,30 +664,7 @@
             let rowend = "</div>";                    
 
             $( ".dropdown-menu" ).append(row + col1 + col2 + rowend); 
-
-            /*
-                let col1 = '<div class="col-md-3">';
-                    col1 += '<a href="#" class="dropdown-item small p-0">';
-                    col1 += '<img src="'+ item.tutorOrignalImage  +'" alt="profile photo" class="img-fluid border" style="width: 100%;">';
-                    col1 += '</a></div>';
-                    
-                    
-                //new added schedule, after loaded
-                let col2 = '<div class="col-md-9">';
-                    col2 += '<span id="inbox-message-'+ item.schedule_item_id +'">';
-                    col2 += '<a href="javascript:void(0)" onclick="openMemo('+item.schedule_item_id+')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id='+ item.schedule_item_id+'>講師への連絡</a> <br>';
-                    col2 += '<span class="message small">'+ item.latestReply + '</span></span>';
-                    col2 += '</div>';
-
-                $( ".dropdown-menu" ).append(col1 + col2);       
             
-            
-
-            //update message
-            $(".member-inbox #inbox-"+item.schedule_item_id+" .message").text(item.latestReply);
-            */
-
-            $("#unreadMessages").hide();        
         }
 
 
@@ -784,10 +762,6 @@
 </html>
 
 
-
-
-
-
 <style>
 .member-speech-bubble {
 	position: relative;
@@ -852,5 +826,14 @@
 	border-bottom: 0;
 	margin-top: -10px;
 	margin-left: -15px;
+}
+
+.dropdown-menu-custom 
+{   
+    overflow:auto; 
+    min-height:50px; 
+    max-height:450px; 
+    left: -230px; 
+    width:400px;
 }
 </style>

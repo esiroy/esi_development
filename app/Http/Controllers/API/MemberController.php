@@ -913,7 +913,8 @@ class MemberController extends Controller
                 "lesson_time" => $lessonTime,
                 "message" => "Memo has been found",
                 "memberImage" => $memberOrignalImage,
-                "tutorImage" => $tutorOrignalImage
+                "tutorImage" => $tutorOrignalImage,
+                "schedule_status" => $schedule->schedule_status
             ]);
         } else {
             return Response()->json([
