@@ -44,12 +44,12 @@
                     </div>
                 </div>
 
-                <div class="modal-footer">
+                <div class="modal-footer" style="display:none">
                     <div class="container">
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="reply">
-                                    <textarea class="form-control" id="teacherTextReply" rows="1" cols="1" style="min-height:70px"></textarea>
+                                    <textarea class="form-control" id="teacherTextReply" rows="1" cols="1" style="min-height:70px;"></textarea>
                                   
                                 </div>
                             </div>
