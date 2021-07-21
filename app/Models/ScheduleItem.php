@@ -5,6 +5,7 @@ namespace App\Models;
 use Auth;
 use DB;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MemoReply;
 
 class ScheduleItem extends Model
 {
@@ -503,7 +504,8 @@ class ScheduleItem extends Model
         return $schedules;
     }
 
-    public function getSchedules($date, $duration)
+    /* live version*/
+    public function getSchedules_version1($date, $duration)
     {
         $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
 
@@ -562,6 +564,83 @@ class ScheduleItem extends Model
 
         return $schedules;
     }
+
+    public function getSchedules($date, $duration)
+    {
+        $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
+
+        //$scheduleItems = ScheduleItem::whereBetween(DB::raw('DATE(lesson_time)'), array($date, $nextDay))->where('valid', 1)->get();
+
+        $scheduleItems = ScheduleItem::whereDate('lesson_time', '=', $date)
+                            ->where('valid', 1)
+                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:30:00")
+                            ->orWhereDate('lesson_time', '=',  $nextDay . " 00:00:00")                            
+                            ->get();
+
+        $reportCard = new ReportCard();
+
+        $schedules = [];
+        foreach ($scheduleItems as $item) 
+        {
+           
+
+            //add questionnair marker
+            $questionnaire = Questionnaire::where('schedule_item_id', $item->id)->first();
+            if ($questionnaire) {
+                $hasQuestionnaire = true;
+            } else {
+                $hasQuestionnaire = false;
+            }
+
+
+            //add report card marker
+            $memberReportCard = $reportCard->getReportbyScheduleItemID($item->id);
+            if ($memberReportCard) {
+                $hasReportCard = true;
+            } else {
+                $hasReportCard = false;
+            }
+
+           
+
+            if ($item->valid === 1 || $item->valid === '1') 
+            {                
+                $userMemoValid = null;
+
+                //the memo from schedule is null, letst take a look at the memo replies if there are sent by teacher
+                if ($item->memo) {
+                    $userMemoValid = true;
+                } else {
+                    $memoReplies = MemoReply::where('schedule_item_id', $item->id)->count();
+                    if ($memoReplies >= 1) {
+                        $userMemoValid = true;
+                    } 
+                }
+
+                $schedules[$item->tutor_id][date('Y-m-d', strtotime($item->lesson_time))][date("H:i", strtotime($item->lesson_time . " -1 hour"))] = [
+                    'valid' => $item->valid,
+                    'id' => $item->id,
+                    'status' => $item->schedule_status,
+                    'startTime' => date("H:i", strtotime($item->lesson_time . " -1 hour")),
+                    'endTime' => date("H:i", strtotime($item->lesson_time)),
+                    'scheduled_at' => date('Y-m-d', strtotime($item->lesson_time)),
+                    'email_type' => $item->email_type,
+                    'duration' => $item->duration,                
+                    'member_id' => $item->member_id,
+                    'member_memo' => $userMemoValid,
+                    'hasReportCard' => $hasReportCard,
+                    'hasQuestionnaire' => $hasQuestionnaire
+                    //'questionnaire' => $questionnaire,
+                ];
+            }
+
+
+        }
+
+        return $schedules;
+    }
+
+
 
     //List ALL specific Member schedules
     public function getMemberScheduledLesson($memberID)

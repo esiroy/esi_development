@@ -280,6 +280,10 @@
         background-color: #0009;
     }
 
+    .table-schedules tbody th {
+        height: 130px !important;
+    }
+
     
     input.inputDate {
         overflow: hidden;

@@ -298,7 +298,10 @@ export default {
         this.fromDay = this.scheduled_at;    
         this.setMemberListLock(); //disabler of additoinal options 
     },
-    async mounted() {
+    async mounted() 
+    {
+        let intervalId;
+
         this.nextDay  = this.schedule_next_day;
         this.fromDay = this.scheduled_at;       
         //@hide table 
@@ -311,9 +314,18 @@ export default {
 
         //preloader
         let preloader = document.getElementById("preloader");
-        preloader.style.display  = "block";                
+        preloader.style.display  = "block";
+
+       this.startInterval();
+
     },
     methods: {
+        startInterval: function () {
+            setInterval(() => {
+                 this.updateSchedules(this.scheduled_at, this.shiftDuration);
+                 
+            }, 10000);
+        },
         getScheduleData(data) {            
            try {
                 //23:00 - will be 1 hour advance in japan (00:00) is the time will midnight.
@@ -1095,6 +1107,35 @@ export default {
                 console.log("Error: Get Member List - " + error);                
 			});               
         },
+        updateSchedules(scheduled_at, shiftDuration) 
+        {
+            let preloader = document.getElementById("preloader");  
+
+            axios.post("/api/get_schedules?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+                scheduled_at        : scheduled_at,
+                shift_duration      : shiftDuration
+
+            }).then(response => {
+                if (response.data.success === true) 
+                {
+                    this.$nextTick(function()
+                    {                          
+                        //tableSchedules.style.display = "block";
+                        preloader.style.display = "none";
+                        this.lessonsData = response.data.tutorLessonsData;
+                        //this.tutorList = response.data.tutorLessonsData.tutors;
+                        this.$forceUpdate(); 
+                    });
+                } 
+                else {                    
+                    alert (response.data.message);                   
+                }
+			}).catch(function(error) {
+                console.log("Error " + error);                
+			}); 
+        },        
         getSchedules(scheduled_at, shiftDuration) 
         {
             let tableSchedules = document.getElementById("tableSchedules");

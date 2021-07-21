@@ -54,6 +54,9 @@ Route::middleware('auth:api')->post('/get_schedules', 'API\TutorScheduleControll
 Route::middleware('auth:api')->post('/get_members', 'API\TutorScheduleController@getMembers')->name('APIGetMemberList');
 Route::middleware('auth:api')->post('/get_members_dropdown_options', 'API\TutorScheduleController@getMembersDropdownOptions')->name('APIGetMemberDropdownOptionList');
 
+Route::middleware('auth:api')->post('/update_schedules', 'API\TutorScheduleController@updateSchedules')->name('APIUpdateSchedules');
+
+
 //[start] favorite tutor
 Route::middleware('auth:api')->post('/getFavoriteTutors', 'API\TutorController@getFavoriteTutors')->name('APIGetFavoriteTutors');
 Route::middleware('auth:api')->post('/saveFavoriteTutor', 'API\TutorController@saveFavoriteTutor')->name('APISaveFavoriteTutor');
