@@ -523,7 +523,7 @@
                     //interval unread message fetching
                     intervalId = window.setInterval(function(){
                         getUnreadMemberMessages(scheduleID)
-                    }, 3000);            
+                    }, 10000);            
                     
                 });
 
@@ -542,7 +542,7 @@
                 //interval unread message fetching
                 intervalInbox = window.setInterval(function(){
                     getTutorInbox()
-                }, 10000);
+                }, 30000);
                 
                 
 
