@@ -324,7 +324,7 @@ export default {
             setInterval(() => {
                  this.updateSchedules(this.scheduled_at, this.shiftDuration);
                  
-            }, 10000);
+            }, 30000);
         },
         getScheduleData(data) {            
            try {
