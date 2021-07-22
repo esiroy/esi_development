@@ -542,7 +542,7 @@
                 //interval unread message fetching
                 intervalInbox = window.setInterval(function(){
                     getTutorInbox()
-                }, 5000);
+                }, 10000);
                 
                 
 
