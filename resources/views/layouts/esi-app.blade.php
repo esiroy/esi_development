@@ -733,7 +733,7 @@
                 //interval unread message fetching
                 intervalId = window.setInterval(function(){
                     getUnreadTeacherMessages(scheduleID)
-                }, 3000);
+                }, 5000);
             });
 
             $('#tutorMemoReplyModal').on('hide.bs.modal', function (event) 
@@ -746,7 +746,7 @@
             //interval unread message fetching
             intervalInbox = window.setInterval(function(){
                 getMemberInbox()
-            }, 15000);
+            }, 30000);
             
 
         });
