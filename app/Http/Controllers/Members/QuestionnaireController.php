@@ -104,14 +104,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_1',
+                    'question' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_1',
+                    'question' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
                 ]);
@@ -131,14 +131,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_2',
+                    'question' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_2',
+                    'question' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
                 ]);
@@ -158,14 +158,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_3',
+                    'question' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_3',
+                    'question' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
                 ]);
@@ -184,14 +184,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_4',
+                    'question' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_4',
+                    'question' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
                 ]);
@@ -314,14 +314,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_1',
+                    'question' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_1',
+                    'question' => 'QUESTION_1',
                     'grade' =>  $request->QUESTION_1grade,
                     'valid' => true,
                 ]);
@@ -341,14 +341,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_2',
+                    'question' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_2',
+                    'question' => 'QUESTION_2',
                     'grade' =>  $request->QUESTION_2grade,
                     'valid' => true,
                 ]);
@@ -368,14 +368,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_3',
+                    'question' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_3',
+                    'question' => 'QUESTION_3',
                     'grade' =>  $request->QUESTION_3grade,
                     'valid' => true,
                 ]);
@@ -394,14 +394,14 @@ class QuestionnaireController extends Controller
             if (isset($questionnaireItem->id)) {
                 $questionnaireItem->update([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_4',
+                    'question' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
                 ]);
             } else {
                 $data = QuestionnaireItem::create([
                     'questionnaire_id' =>  $questionnaireID,
-                    'QUESTION' => 'QUESTION_4',
+                    'question' => 'QUESTION_4',
                     'grade' =>  $request->QUESTION_4grade,
                     'valid' => true,
                 ]);
