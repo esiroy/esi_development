@@ -227,12 +227,17 @@ class MemberController extends Controller
             $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)->where('QUESTION', "QUESTION_3")->first();
             $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)->where('QUESTION', "QUESTION_4")->first();            
 
+            $grade_item1 = isset($questionnaireItem1->grade)? $questionnaireItem1->grade : ' - ';
+            $grade_item2 = isset($questionnaireItem2->grade)? $questionnaireItem2->grade : " - ";
+            $grade_item3 = isset($questionnaireItem3->grade)? $questionnaireItem3->grade : " - ";
+            $grade_item4 = isset($questionnaireItem4->grade)? $questionnaireItem4->grade : " - ";
+
             $data = [
                 'remarks' => $questionnaire->remarks,
-                'questionnaireItem1' => getQuestionnnaireGradeTranslation($questionnaireItem1->grade),
-                'questionnaireItem2' => getQuestionnnaireGradeTranslation($questionnaireItem2->grade),
-                'questionnaireItem3' => getQuestionnnaireGradeTranslation($questionnaireItem3->grade),
-                'questionnaireItem4' => getQuestionnnaireGradeTranslation($questionnaireItem4->grade),
+                'questionnaireItem1' => getQuestionnnaireGradeTranslation($grade_item1),
+                'questionnaireItem2' => getQuestionnnaireGradeTranslation($grade_item2),
+                'questionnaireItem3' => getQuestionnnaireGradeTranslation($grade_item3),
+                'questionnaireItem4' => getQuestionnnaireGradeTranslation($grade_item4),
             ];
 
             return Response()->json([

@@ -203,17 +203,19 @@
                                                             <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')"><img src="{{ url('/images/btnDelete.png') }}"></a>
                                                         </div>
                                                         <br />
-
+                                                        <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')">済</a>
+                                                        <!--
                                                         <div class="comment_tooltip">
                                                             <a href="javascript:void(0)" onClick="cancel('{{$scheduleID}}')">済</a>
 
+                                                           
                                                             @php 
-                                                                //@todo: check if there  is already a comment in questionnaire, if there is then view mode only
+                                                                //@comment: check if there  is already a comment in questionnaire, if there is then view mode only
                                                                 $questionnaire = App\Models\Questionnaire::where('schedule_item_id', $scheduleID)->first();
                                                             @endphp
 
                                                             @if ($questionnaire)
-                                                              <!--@todo: viewer for submitted comment -->
+                                                                //@comment: 
                                                                 <div class="comment_tooltiptext">
                                                                     <a href="javascript:void(0)" onClick="viewCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">View</a>
                                                                 </div>                                                              
@@ -222,8 +224,8 @@
                                                                     <a href="javascript:void(0)" onClick="addCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
                                                                 </div>
                                                             @endif 
-
-                                                        </div>
+                                                        </div> 
+                                                            -->
 
                                                     </div>
                                                 @else 
@@ -240,8 +242,33 @@
                                             <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{'済他'}}</div>	
                                         @elseif($status == 'TUTOR_CANCELLED')
                                             <div id="scheduleID_{{$scheduleID}}"  class="gen-med">{{ "済他" }}</div>
-                                        @elseif ($status == "COMPLETED")                                         
-                                            <div id="scheduleID_{{$scheduleID}}" class="gen-med">{{ "済他" }}</div>
+                                        @elseif ($status == "COMPLETED")
+                                            <div class="button_{{$scheduleID}}">                                          
+                                                @if ($member->user_id == $scheduleMemberID)                                                    
+                                                    <div class="comment_tooltip">
+                                                        <a href="javascript:void(0)" class="text-dark"><strong>済他</strong></a>
+                                                        
+                                                        @php 
+                                                            //@comment: check if there  is already a comment in questionnaire, if there is then view mode only
+                                                            $questionnaire = App\Models\Questionnaire::where('schedule_item_id', $scheduleID)->first();
+                                                        @endphp
+
+                                                        @if ($questionnaire)
+                                                            <div class="comment_tooltiptext">
+                                                                <a href="javascript:void(0)" onClick="viewCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">View</a>
+                                                            </div>                                                              
+                                                        @else
+                                                            <div class="comment_tooltiptext">
+                                                                <a href="javascript:void(0)" onClick="addCommentModal('{{$scheduleID}}', '{{$tutor->user_id}}')">Comment</a>
+                                                            </div>
+                                                        @endif 
+                                                    </div>                                                    
+                                                @else 
+                                                    <div id="scheduleID_{{$scheduleID}}" class="gen-med">済他</div>
+                                                @endif
+                                            </div>
+                                            
+                                            
                                         @endif
 
                                     @endif
