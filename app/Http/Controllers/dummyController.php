@@ -43,7 +43,7 @@ class dummyController extends Controller
 
             foreach ($items as $item) {
 
-                echo $item->id;
+                echo $item->id ."<BR>";
 
                 $data = [
                             'question' => 'QUESTION_'.$ctr
