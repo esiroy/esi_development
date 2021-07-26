@@ -12,6 +12,8 @@ use App\Models\MemberAttribute;
 use App\Models\ScheduleItem;
 use App\Mail\SendEmailDemo;
 use App\Models\MemoReply;
+use App\Models\Questionnaire;
+use App\Models\QuestionnaireItem;
 use App;
 use Gate;
 use DB;
@@ -30,11 +32,40 @@ class dummyController extends Controller
 
     public function __construct()
     {
+        
+        $questions = Questionnaire::where('created_at', '>=', date('2021-05-10'))->get();
+        foreach ($questions as $q) 
+        {
+            echo $q->id ."<BR>";
+            
+            $items = QuestionnaireItem::where('questionnaire_id', $q->id)->where('question', "")->get();
+            $ctr = 1;
+
+            foreach ($items as $item) {
+
+                echo $item->id;
+
+                $data = [
+                            'question' => 'QUESTION_'.$ctr
+                ];
+                
+                $item->update($data);               
+
+                $ctr ++;
+            }
+        }
+
+
+
 
                
     }
 
-    public function index() 
+    public function index() {
+        
+    }
+
+    public function memoReply() 
     {
 
         $date = date('Y-m-d H:i:s');
