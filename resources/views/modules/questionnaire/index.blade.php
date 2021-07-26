@@ -123,7 +123,13 @@
 
                                         </td>
                                         <td class="text-center">
-                                            <a href="questionnaire/{{$scheduleItem->id}}">» アンケート</a>
+                                            
+                                            @if ($scheduleItem->schedule_status  == "COMPLETED") 
+                                                <a href="questionnaire/{{$scheduleItem->id}}">» アンケート</a>
+                                            @else 
+                                                » アンケート
+                                            @endif
+                                           
                                         </td>
                                     </tr>
                                     @endforeach

@@ -216,47 +216,58 @@ class QuestionnaireController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id, ReportCard $reportcards)
-    {      
-        $user = Auth::user();
-        $member = Member::where('user_id', $user->id)->first();
-        $latestReportCard = $reportcards->getLatest($member->user_id);
+    {   
+        $schedule = \App\Models\ScheduleItem::find($id);
 
+        if ($schedule) 
+        {
+            if ($schedule->schedule_status == "COMPLETED") 
+            {
+                $user = Auth::user();
+                $member = Member::where('user_id', $user->id)->first();
+                $latestReportCard = $reportcards->getLatest($member->user_id);
 
-        if ($member) {
-
-            $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+                if ($member) {
     
-            if (isset($questionnaire->id)) {
-
-                //EDIT : found the questionnaire 
-                $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_1")->first();
-                $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_2")->first();
-                $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
-                $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();
-                
-                return view('modules.questionnaire.edit', compact('member', 'latestReportCard', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
-
-            } else {  
-                //CREATE: new questionnaire 
-                $scheduleItem = ScheduleItem::find($id);
-
-                if ($scheduleItem) {
-
-
-                    $questionnaireItem1 = null;
-                    $questionnaireItem2 = null;
-                    $questionnaireItem3 = null;
-                    $questionnaireItem4 = null;
-                    
-                    return view('modules.questionnaire.create', compact('member', 'latestReportCard', 'scheduleItem'));
-
-                } else {
-                    
-                    abort(404);
-                }
-
-
-            }          
+                    $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+            
+                    if (isset($questionnaire->id)) {
+    
+                        //EDIT : found the questionnaire 
+                        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_1")->first();
+                        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_2")->first();
+                        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
+                        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();
+                        
+                        return view('modules.questionnaire.edit', compact('member', 'latestReportCard', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+    
+                    } else {  
+                        //CREATE: new questionnaire 
+                        $scheduleItem = ScheduleItem::find($id);
+    
+                        if ($scheduleItem) {
+    
+    
+                            $questionnaireItem1 = null;
+                            $questionnaireItem2 = null;
+                            $questionnaireItem3 = null;
+                            $questionnaireItem4 = null;
+                            
+                            return view('modules.questionnaire.create', compact('member', 'latestReportCard', 'scheduleItem'));
+    
+                        } else {
+                            
+                            abort(404);
+                        }
+    
+    
+                    }          
+                }                
+            } else {
+                echo "schedule has not been completed yet.";
+            }
+        } else {
+            abort(404, 'schedule not found');
         }
     }
 

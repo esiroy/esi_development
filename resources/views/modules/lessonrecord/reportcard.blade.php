@@ -62,16 +62,14 @@
                                         <td>:</td>
                                         <td>
                                             @php
-                                                $schedule = \App\Models\ScheduleItem::find($reportcard->schedule_item_id);
-                                                if (isset($schedult->tutor_id))
-                                                {
-                                                    $tutor = \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();  
-                                                }
+                                                $schedule = \App\Models\ScheduleItem::find($reportcard->schedule_item_id);                                               
                                             @endphp
 
-                                            @if (isset($tutor->user->firstname))
-                                                {{ $tutor->user->firstname ?? ' - ' }}                                            
-                                            @endif
+                                            @php
+                                                $tutor = \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first(); 
+                                            @endphp
+
+                                            {{ $tutor->user->firstname }}
 
                                         </td>
                                     </tr>
