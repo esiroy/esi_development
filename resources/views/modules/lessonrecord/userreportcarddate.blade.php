@@ -46,51 +46,53 @@
                                 <tbody>
                                     <tr>
                                         <td>Lesson Date</td>
-                                        <td>:</td>
+                                        <td class="px-3"> : </td>
                                         <td>
-                                            {{ $userreportcard->lesson_date }}
+                                            @php 
+                                                echo ESIDateFormat($userreportcard->lesson_date);
+                                            @endphp
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Course</td>
-                                        <td>:</td>
+                                        <td class="px-3"> : </td>
                                         <td>
                                             {{ $userreportcard->lesson_course }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Material</td>
-                                        <td>:</td>
+                                        <td class="px-3"> : </td>
                                         <td>{{ $userreportcard->lesson_material }}</td>
                                     </tr>
                                     <tr>
                                         <td>Subject</td>
-                                        <td>:</td>
+                                        <td class="px-3"> : </td>
                                         <td>{{ $userreportcard->lesson_subject }}</td>
                                     </tr>
                                     <tr>
                                         <td>Tutor</td>
-                                        <td>:</td>
+                                        <td class="px-3"> : </td>
                                         <td>
                                             @php
-                                            $tutor = \App\Models\Tutor::find($userreportcard->tutor_id);
+                                                $tutor = \App\Models\Tutor::where('user_id', $userreportcard->tutor_id)->first();
                                             @endphp
-                                            {{ $tutor['name_en'] }}
+                                            {{ $tutor->user->firstname ?? " - " }}
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>Grade</td>
-                                        <td>:</td>
+                                        <td class="px-3"> : </td>
                                         <td>{{ $userreportcard->grade }}</td>
                                     </tr>
                                     <tr>
                                         <td>Comment</td>
-                                        <td>:</td>
+                                        <td class="px-3"> : </td>
                                         <td>{{ $userreportcard->comment }}</td>
                                     </tr>
                                     <tr>
-                                        <td>Uploaded File</td>
-                                        <td></td>
+                                        <td>Uploaded File </td>
+                                        <td class="px-3"> : </td>
                                         <td><a href="{{ Storage::url("uploads/report_files/". basename($userreportcard->file_path)) }}" download>DOWNLOAD</a></td>
                                     </tr>
 
