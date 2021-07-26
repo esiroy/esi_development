@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-const server = app.listen(2053, function() {
-    console.log('server running on port 3001');
+const server = app.listen(443, function() {
+    console.log('server running on port 443');
 });
 const io = require('socket.io')(server);
 
