@@ -98,7 +98,7 @@ class QuestionnaireController extends Controller
 
             $questionnaireItem = QuestionnaireItem::
                                 where('questionnaire_id',  $questionnaireID)
-                                ->where('QUESTION', "QUESTION_1")
+                                ->where('question', "QUESTION_1")
                                 ->first();
 
             if (isset($questionnaireItem->id)) {
@@ -124,7 +124,7 @@ class QuestionnaireController extends Controller
 
             $questionnaireItem = QuestionnaireItem::
                                 where('questionnaire_id', $questionnaireID)
-                                ->where('QUESTION', "QUESTION_2")
+                                ->where('question', "QUESTION_2")
                                 ->first();
 
 
@@ -151,7 +151,7 @@ class QuestionnaireController extends Controller
 
             $questionnaireItem = QuestionnaireItem::
                                 where('questionnaire_id', $questionnaireID)
-                                ->where('QUESTION', "QUESTION_3")
+                                ->where('question', "QUESTION_3")
                                 ->first();
 
 
@@ -177,7 +177,7 @@ class QuestionnaireController extends Controller
 
             $questionnaireItem = QuestionnaireItem::
                                 where('questionnaire_id', $questionnaireID)
-                                ->where('QUESTION', "QUESTION_4")
+                                ->where('question', "QUESTION_4")
                                 ->first();
 
 
