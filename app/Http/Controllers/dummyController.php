@@ -53,6 +53,8 @@ class dummyController extends Controller
                 //$item->update($data);               
 
                 $ctr ++;
+
+                echo "==============<BR>";
             }
         }
 
