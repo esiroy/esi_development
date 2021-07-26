@@ -40,7 +40,7 @@ class dummyController extends Controller
             echo $q->id .  " - " . $q->created_at . "<BR>";
             echo "===============================<BR>";
             
-            $items = QuestionnaireItem::where('questionnaire_id', $q->id)->where('question', "")->get();
+            $items = QuestionnaireItem::where('questionnaire_id', $q->id)->where('question', "")->where('valid', true)->get();
             $ctr = 1;
 
             foreach ($items as $item) {
@@ -52,7 +52,7 @@ class dummyController extends Controller
                 ];
                 
 
-                //$item->update($data);               
+                $item->update($data);               
 
                 $ctr ++;
                
