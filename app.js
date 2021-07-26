@@ -7,6 +7,6 @@ app.get('/', (req, res) => {
   res.send('<h1>Hello world</h1>');
 });
 
-server.listen(4343, () => {
-  console.log('listening on *:4343');
+server.listen(3001, () => {
+  console.log('listening on *:3001');
 });
