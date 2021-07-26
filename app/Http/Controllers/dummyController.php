@@ -36,7 +36,9 @@ class dummyController extends Controller
         $questions = Questionnaire::where('created_at', '>=', date('2021-05-10'))->get();
         foreach ($questions as $q) 
         {
+            echo "===============================<BR>";
             echo $q->id .  " - " . $q->created_at . "<BR>";
+            echo "===============================<BR>";
             
             $items = QuestionnaireItem::where('questionnaire_id', $q->id)->where('question', "")->get();
             $ctr = 1;
@@ -53,8 +55,7 @@ class dummyController extends Controller
                 //$item->update($data);               
 
                 $ctr ++;
-
-                echo "==============<BR>";
+               
             }
         }
 
