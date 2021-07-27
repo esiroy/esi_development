@@ -141,12 +141,14 @@ class ScheduleItem extends Model
  
     public function getMemberActiveLessons($member) 
     {
-        $date = date('Y-m-d H:i:s');
+        $date_now = date('Y-m-d H:i:s');
+        //
+        $date_30minutes_validity = date("Y-m-d H:i:s", strtotime($date_now ." - 30 minutes"));
 
         $reserves = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
             $q->orWhere('schedule_status', 'CLIENT_RESERVED')
             ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
-        })->where('lesson_time', ">=", $date)
+        })->where('lesson_time', ">=", $date_30minutes_validity)
         ->orderby('lesson_time', 'ASC')
         ->paginate(5);
 
