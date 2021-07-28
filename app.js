@@ -1,19 +1,12 @@
 const express = require('express');
 const app = express();
 const http = require('http');
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
 
-app.get('/', (req, res) => {
-    res.send('<h1>Hello world</h1>');
+const server = app.listen(30001, function() {
+    console.log('server running on port 30001');
 });
 
-
-
-server.listen(30001, () => {
-    console.log('listening on *:3000');
-  });
+const io = require('socket.io')(server);
 
 
 var users = [];
@@ -22,7 +15,7 @@ io.on('connection', function(socket)
 {
     //console.log("user connected, with id " + socket.id)
 
- 
+    
 
     /*Register connected user*/
     socket.on('REGISTER',function(user)
