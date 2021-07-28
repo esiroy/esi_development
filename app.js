@@ -1,6 +1,11 @@
 const express = require('express');
 const app = express();
 
+app.get('/', (req, res) => {
+    res.send('<h1>Hello world</h1>');
+  });
+
+  
 const server = app.listen(30001, function() {
     console.log('server running on port 30001');
 });
@@ -14,6 +19,7 @@ io.on('connection', function(socket)
 {
     //console.log("user connected, with id " + socket.id)
 
+ 
 
     /*Register connected user*/
     socket.on('REGISTER',function(user)
