@@ -7,14 +7,13 @@ const io = new Server(server);
 
 app.get('/', (req, res) => {
     res.send('<h1>Hello world</h1>');
-  });
-
-
-const server = app.listen(30001, function() {
-    console.log('server running on port 30001');
 });
 
 
+
+server.listen(30001, () => {
+    console.log('listening on *:3000');
+  });
 
 
 var users = [];
