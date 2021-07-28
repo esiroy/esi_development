@@ -1,5 +1,7 @@
 /vendor/
 node_modules/
+bootstrap/
+storage/
 npm-debug.log
 yarn-error.log
 
