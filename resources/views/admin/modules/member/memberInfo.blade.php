@@ -89,14 +89,21 @@
 
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
-                                        <td>{{ $memberInfo->communication_app ?? "-" }}</td>
+                                        <td>
+                                            @if (strtolower($memberInfo->communication_app) == "skype") 
+                                                @php $color = "red" @endphp
+                                            @else 
+                                                @php $color = "orange" @endphp                                                
+                                            @endif
+                                            <span style="font-size:18px; color: {{ $color }}"><strong>{{ $memberInfo->communication_app ?? "-" }}</strong></span>
+                                        </td>
                                         <td>:</td>
                                         
                                         <td>
                                             @if (strtolower($memberInfo->communication_app) == "skype") 
-                                                {{ $memberInfo->skype_account ?? "-" }}
+                                                <span style="font-size:18px; color: {{ $color }}"><strong>{{ $memberInfo->skype_account ?? "-" }}</strong></span>
                                             @else
-                                                {{ $memberInfo->zoom_account ?? "-" }}
+                                                <span style="font-size:18px; color: {{ $color }}"><strong>{{ $memberInfo->zoom_account ?? "-" }}</strong></span>
                                             @endif
                                         </td>
                                     </tr>
