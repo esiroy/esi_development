@@ -95,15 +95,15 @@
                                             @else 
                                                 @php $color = "orange" @endphp                                                
                                             @endif
-                                            <span style="font-size:18px; color: {{ $color }}"><strong>{{ $memberInfo->communication_app ?? "-" }}</strong></span>
+                                            <span style="font-size:20px; color: {{ $color }}"><strong>{{ $memberInfo->communication_app ?? "-" }}</strong></span>
                                         </td>
                                         <td>:</td>
                                         
                                         <td>
                                             @if (strtolower($memberInfo->communication_app) == "skype") 
-                                                <span style="font-size:18px; color: {{ $color }}"><strong>{{ $memberInfo->skype_account ?? "-" }}</strong></span>
+                                                <span style="font-size:20px; color: {{ $color }}"><strong>{{ $memberInfo->skype_account ?? "-" }}</strong></span>
                                             @else
-                                                <span style="font-size:18px; color: {{ $color }}"><strong>{{ $memberInfo->zoom_account ?? "-" }}</strong></span>
+                                                <span style="font-size:20px; color: {{ $color }}"><strong>{{ $memberInfo->zoom_account ?? "-" }}</strong></span>
                                             @endif
                                         </td>
                                     </tr>
