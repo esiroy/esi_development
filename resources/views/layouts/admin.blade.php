@@ -178,6 +178,8 @@
         </main>
         
         <footer class="container py-4 px-0 bg-light">
+
+
             <div class="container border-top">
                 <div class="row">
                     <div class="col-12 text-center py-3">
@@ -185,16 +187,17 @@
                             {{ config('app.name', 'My Tutor') }}
                         </a>
                     </div>
+                    
+
                 </div>
-            </div>
-        </footer>
+            </div>            
+        </footer>        
     </div>
 
-    
-
-
+    <chat-component userid="{{ Auth::user()->id }}" username="{{ Auth::user()->username }}"></chat-component>
+                    
+                    
     <script type="text/javascript" src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
-
 
     @if (Auth::user()->user_type == 'TUTOR')
         @include('admin.modules.tutor.includes.memo')
