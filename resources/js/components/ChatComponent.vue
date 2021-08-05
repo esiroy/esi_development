@@ -71,6 +71,8 @@ export default {
 
       if (found == false) {
           this.chatboxes.push(user);
+
+          //inititte chat log for when send message logs it does not empty out
           this.chatlog[user.userid] = [];
       }
     },
@@ -78,17 +80,14 @@ export default {
     {
       console.log(index)
 
+      let id = chatbox.id;
       let userid = chatbox.userid;
       let username = chatbox.username;
-      let message = this.message[index];
+      let message = this.message[index];     
 
-      let msgcount = this.chatlog[chatbox.userid].length;
+      this.chatlog[chatbox.userid].push(message);
 
-     this.chatlog[chatbox.userid].push(message);
-
-      
-
-      socket.emit("SEND_USER_MESSAGE", { userid, username, message });   
+      socket.emit("SEND_USER_MESSAGE", { id, userid, username, message });   
 
       this.message[index] = "";
       this.$forceUpdate();
@@ -114,6 +113,10 @@ export default {
 
     socket.on('update_user_list', users => {
       this.updateUserList(users); 
+    });
+
+    socket.on('PRIVATE_MESSAGE', data => {
+      console.log("private message recieved", data)
     });
 
 
