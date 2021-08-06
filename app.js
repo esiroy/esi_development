@@ -2,12 +2,12 @@ const express = require('express');
 const app = express();
 const https = require('https');
 
-const io = require('socket.io')(server);
 
 const server = app.listen(30001, "https://chatserver.mytutor-jpn.info/", function() {
     console.log('server running on port 30001');
 });
 
+const io = require('socket.io')(server);
 
 app.get('/', (req, res) => {
     //res.sendFile(__dirname + '/index.html');
