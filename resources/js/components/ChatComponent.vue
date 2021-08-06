@@ -16,12 +16,21 @@
 
     <div class="chatboxes">
       <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="chatbox.id">
+
+        <div style="text-align:right">
+          <button v-on:click="deleteChatbox(index)" style="border:none">X</button>
+        </div>
+
+
         <form :name="chatbox.userid" onsubmit="return false;">
           <div class="user-chatlog">
-
-            {{ chatlog[chatbox.userid] }}
+              <div v-for="chatlog in chatlogs[chatbox.userid]" :key="chatlog.id">
+                <strong>{{ chatlog.sender.username }}: : </strong>
+                {{ chatlog.sender.message }}
+              </div>
 
           </div>
+
           <div>
             <input type="text" v-model="message[index]" class="user-input-message"/>
           </div>
@@ -36,8 +45,8 @@
 
 <script>
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:30001");
-//const socket = io.connect("http://chatserver.mytutor-jpn.info:30001");
+//const socket = io.connect("http://localhost:30001");
+const socket = io.connect("http://chatserver.mytutor-jpn.info:30001");
 
 export default {
   name: "chat-component",
@@ -48,7 +57,7 @@ export default {
 
       //chat boxes
       chatboxes: [],
-      chatlog: [],
+      chatlogs: [],
       message_count: 0,
       test: 0,
     };
@@ -58,6 +67,9 @@ export default {
     username: String
   },
   methods: {
+    deleteChatbox: function(index) {
+      this.chatboxes.splice(index, 1)
+    },
     openChatBox: function(user) 
     {
       let found = false;
@@ -71,23 +83,37 @@ export default {
 
       if (found == false) {
           this.chatboxes.push(user);
-
           //inititte chat log for when send message logs it does not empty out
-          this.chatlog[user.userid] = [];
+          this.chatlogs[user.userid] = [];
       }
     },
     sendMessage: function(chatbox, index) 
     {
-      console.log(index)
+     
+      //recipient
+      let id = chatbox.id;     
+  
+      //get the sender from props (user)
+      let recipient = {
+        'id': chatbox.id,
+        'userid': chatbox.userid,
+        'username':  chatbox.username,
+      };
 
-      let id = chatbox.id;
-      let userid = chatbox.userid;
-      let username = chatbox.username;
-      let message = this.message[index];     
 
-      this.chatlog[chatbox.userid].push(message);
+      //get the sender from props  (admin)
+      let sender = {
+          'userid': this.userid,
+          'username': this.username,          
+          'message': this.message[index]                     
+      };
 
-      socket.emit("SEND_USER_MESSAGE", { id, userid, username, message });   
+      this.chatlogs[chatbox.userid].push({
+            sender: sender,
+            message: this.message[index]
+        });
+
+      socket.emit("SEND_USER_MESSAGE", { id, recipient, sender });   
 
       this.message[index] = "";
       this.$forceUpdate();
@@ -104,19 +130,40 @@ export default {
   },
   mounted: function () 
   {
+
+    //register as user
     let user = {
       userid: this.$props.userid ,
       username: this.username,
+      type: "support"
     }
-
     socket.emit('REGISTER', user);
 
+
+    //update the list
     socket.on('update_user_list', users => {
       this.updateUserList(users); 
     });
 
+
     socket.on('PRIVATE_MESSAGE', data => {
-      console.log("private message recieved", data)
+      //console.log("private message", data)
+      //console.log(data.sender.message);
+
+      this.openChatBox(data.sender)
+
+      let sender = {
+          'userid': data.sender.userid,
+          'username': data.sender.username,          
+          'message': data.sender.message
+      };
+
+      this.chatlogs[data.sender.userid].push({
+            sender: sender,
+            message: data.sender.message        
+      });      
+
+      this.$forceUpdate();
     });
 
 

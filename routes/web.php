@@ -242,6 +242,10 @@ Route::get('download/{path}', 'DownloadController@downloadLessonMaterial');
 Route::resource('customersupport', 'CustomerSupportController');
 Route::resource('faq', 'FAQController');
 
+/*Chat support */
+Route::resource('customerchatsupport', 'CustomerChatSupportController');
+
+
 /*Lesson Support */
 Route::resource('lessonmaterials', 'LessonMaterialsController');
 

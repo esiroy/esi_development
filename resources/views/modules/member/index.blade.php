@@ -22,7 +22,7 @@
                     </div>
 
                     <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.customersupport')
+                        @include('modules.member.sidebar.customerchatsupport')
                     </div>
 
                     <div class="mt-3 mb-4">
@@ -232,5 +232,5 @@
 
  @include('modules.member.popup.loading')
  @include('modules.member.popup.memoSent')
- 
+ @include('modules.member.popup.customerchat')
 @endsection
