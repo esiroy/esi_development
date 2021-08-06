@@ -22,7 +22,7 @@
 <script>
 function prepareFrame() {
     var ifrm = document.createElement("iframe");
-    ifrm.setAttribute("src", "{{ url('http://localhost:8000/customerchatsupport') }}");
+    ifrm.setAttribute("src", "{{ url('customerchatsupport') }}");
     ifrm.style.width = "100%";
     ifrm.style.height = "285px";
     ifrm.style.border = "none";
