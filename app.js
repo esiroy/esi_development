@@ -1,26 +1,18 @@
 const express = require('express');
 const app = express();
 const https = require('https');
-//const io = require('socket.io')(server);
 
-/*
+const io = require('socket.io')(server);
+
 const server = app.listen(30001, "https://chatserver.mytutor-jpn.info/", function() {
     console.log('server running on port 30001');
 });
-*/
+
 
 app.get('/', (req, res) => {
     //res.sendFile(__dirname + '/index.html');
     res.send('<h1>Chat server</h1>');
 });
-
-https.createServer({
-    key: fs.readFileSync('server.key'),
-    cert: fs.readFileSync('server.cert')
-  }, app)
-  .listen(30001, function () {
-    console.log('Example app listening on port 30001! Go to https://localhost:30001/')
-  })
   
 
 var users = [];
