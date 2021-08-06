@@ -41,7 +41,7 @@ io.on('connection', function(socket)
             if (data.recipient.username == users[i].username) 
             {              
                 io.sockets.connected[users[i].id].emit("PRIVATE_MESSAGE", data);
-                break;
+                //break;
             }            
         }
         
