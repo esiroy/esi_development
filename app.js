@@ -54,12 +54,13 @@ io.on('connection', function(socket)
         console.log("user connected, with id " + socket.id + " " + user.username)
 
         //remove if ever there is same userid
+        /*
         for (var i in users) {
             if (users[i].userid === user.userid) {
                 delete users[i];
                 break;
             }
-        }
+        }*/
 
         users = users.filter(function( element ) {
           return element !== undefined;
