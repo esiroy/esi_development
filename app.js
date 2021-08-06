@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const https = require('https');
-const io = require('socket.io')(server);
+//const io = require('socket.io')(server);
 
 /*
 const server = app.listen(30001, "https://chatserver.mytutor-jpn.info/", function() {
