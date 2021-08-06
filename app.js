@@ -20,16 +20,30 @@ io.on('connection', function(socket)
 {
     //console.log("user connected, with id " + socket.id)
 
-    
+    socket.on("SEND_USER_MESSAGE", function (data){
+
+        console.log("send user ", data.recipient.username);
+
+        //io.sockets.connected[data.id].emit("PRIVATE_MESSAGE", data);
+
+        for (var i in users) {
+
+            if (data.recipient.username == users[i].username) 
+            {              
+                io.sockets.connected[users[i].id].emit("PRIVATE_MESSAGE", data);
+                break;
+            }            
+        }
+        
+        //this.handleUserPrivateMsg(data);
+    });
 
     /*Register connected user*/
     socket.on('REGISTER',function(user)
-    {                        
-
+    {
         console.log("user connected, with id " + socket.id + " " + user.username)
 
         //remove if ever there is same userid
-
         for (var i in users) {
             if (users[i].userid === user.userid) {
                 delete users[i];
@@ -39,8 +53,7 @@ io.on('connection', function(socket)
 
         users = users.filter(function( element ) {
           return element !== undefined;
-        });
-        
+        });        
         
         users.push({
                         'id': socket.id, 
