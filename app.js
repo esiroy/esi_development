@@ -10,7 +10,7 @@ const io = require('socket.io')(server);
 
 app.get('/', (req, res) => {
     //res.sendFile(__dirname + '/index.html');
-    res.send('<h1>Hello world</h1>');
+    res.send('<h1>Chat server</h1>');
 });
   
 
