@@ -46,7 +46,7 @@
 <script>
 import io from "socket.io-client";
 //const socket = io.connect("http://localhost:30001");
-const socket = io.connect("http://chatserver.mytutor-jpn.info:30001");
+const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 export default {
   name: "chat-component",
