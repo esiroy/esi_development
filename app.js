@@ -3,7 +3,7 @@ const app = express();
 const https = require('https');
 
 
-const server = app.listen(30001, "https://chatserver.mytutor-jpn.info/", function() {
+const server = app.listen(30001, "https://chatserver.mytutor-jpn.info", function() {
     console.log('server running on port 30001');
 });
 
