@@ -17,10 +17,11 @@
 
     <div class="chatboxes">
 
-      <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="chatbox.id">
+      <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="'chatbox_' + chatbox.id">
         <form :name="chatbox.userid" onsubmit="return false;">
+        
           <div id="chatlogs" class="user-chatlog">
-              <div v-for="chatlog in chatlogs[chatbox.userid]" :key="chatlog.id">
+              <div v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+ chatlogIndex">
                 <strong>{{ chatlog.sender.username }}:</strong>
                 <span>{{ chatlog.sender.message }}</span>
               </div>
@@ -40,6 +41,7 @@
 
         </form>
       </div>
+
     </div>
 
 
@@ -48,8 +50,8 @@
 
 <script>
 import io from "socket.io-client";
-//const socket = io.connect("http://localhost:30001");
-const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
+const socket = io.connect("http://localhost:30001");
+//const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 export default {
   name: "customer-chat-component",
@@ -67,7 +69,9 @@ export default {
   },
   props: {
     userid: String,
-    username: String
+    username: String,
+    nickname: String,
+    user_image: String,
   },
   methods: {
     openChatBox: function(user) 
@@ -95,8 +99,13 @@ export default {
      
       if (this.message[index] !== "") 
       {
+
+        var currentTime = new Date();
+      
+      
         //recipient
         let id = chatbox.id;     
+        let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
 
         //get the sender from props (user)
         let recipient = {
@@ -109,16 +118,19 @@ export default {
         //get the sender from props  (admin)
         let sender = {
             'userid': this.userid,
-            'username': this.username,          
-            'message': this.message[index]                     
+            'username': this.username,        
+            'nickname': this.nickname,
+            'message': this.message[index],
+            'user_image': this.user_image,    
         };
 
         this.chatlogs[chatbox.userid].push({
               sender: sender,
-              message: this.message[index]
+              message: this.message[index],
+              time: time,
         });
 
-        socket.emit("SEND_USER_MESSAGE", { id, recipient, sender });   
+        socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });   
 
         this.message[index] = "";
 
@@ -155,6 +167,7 @@ export default {
   mounted: function () 
   {
   
+    //automatically open for admin when popup is created.
     let admin = {
       userid: 1,
       username: "admin",
@@ -166,9 +179,29 @@ export default {
     let user = {
       userid: this.$props.userid ,
       username: this.username,
+      nickname: this.nickname,
+      user_image: this.user_image,      
     }
+    console.log(user);
     socket.emit('REGISTER', user);
+    //dummy
 
+    
+
+
+
+    for (let i = 0; i < 100; i++) {
+      //register as user
+      let user = {
+        userid: "user_" + i,
+        username: "username_" + i,
+        type: "support"
+      }
+      socket.emit('REGISTER', user);      
+    }
+
+
+    
 
     //update the list
     socket.on('update_user_list', users => {

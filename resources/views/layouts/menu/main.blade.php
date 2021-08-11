@@ -13,6 +13,14 @@
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/lessons') }}">Report</a>
                 @endcan
 
+
+                @if (Auth::user()->user_type == 'ADMINISTRATOR')
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/customerchatsupport') }}">
+                  Customer Chat Support
+                </a>
+                @endif
+
+
             </nav>
           </div>
         </div>

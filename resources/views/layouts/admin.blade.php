@@ -194,8 +194,7 @@
         </footer>        
     </div>
 
-    <chat-component userid="{{ Auth::user()->id }}" username="{{ Auth::user()->username }}"></chat-component>
-                    
+    <chat-component userid="{{ Auth::user()->id }}" username="{{ Auth::user()->username }}"></chat-component>                   
                     
     <script type="text/javascript" src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
 
@@ -556,7 +555,7 @@
 
         <style>
 
-            .table-tutor-schedules {ile-row
+            .table-tutor-schedules {
                 background: #ffffff;
                 border: 1px solid #0076be;
             }

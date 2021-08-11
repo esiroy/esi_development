@@ -5,7 +5,8 @@
     <div class="memberlist-panel">
         <div class="list-group">
           <div v-for="user in this.users" :key="user.id">
-            <div v-if="user.userid !== userid" v-on:click="openChatBox(user)" class="member">              
+            <div v-if="user.userid !== userid" v-on:click="openChatBox(user)" class="member">                            
+              <img :src="user.user_image" width="25">
                <a  class="list-group-item list-group-item-action">{{ user.username }}</a> 
             </div>
           </div>
@@ -17,7 +18,7 @@
     <div class="chatboxes">
       <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="chatbox.id">
 
-        <div style="text-align:right">
+        <div style="text-align:right">          
           <button v-on:click="deleteChatbox(index)" style="border:none">X</button>
         </div>
 
@@ -25,6 +26,7 @@
         <form :name="chatbox.userid" onsubmit="return false;">
           <div class="user-chatlog">
               <div v-for="chatlog in chatlogs[chatbox.userid]" :key="chatlog.id">
+                <img :src="chatlog.sender.user_image" width="25">
                 <strong>{{ chatlog.sender.username }}: : </strong>
                 {{ chatlog.sender.message }}
               </div>
@@ -45,8 +47,8 @@
 
 <script>
 import io from "socket.io-client";
-//const socket = io.connect("http://localhost:30001");
-const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
+const socket = io.connect("http://localhost:30001");
+//const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 export default {
   name: "chat-component",
@@ -105,13 +107,14 @@ export default {
       let sender = {
           'userid': this.userid,
           'username': this.username,          
-          'message': this.message[index]                     
+          'message': this.message[index],
+          'user_image': "http://localhost:8000/storage/user_images/noimage.jpg", //@todo: make this for customer support                
       };
 
       this.chatlogs[chatbox.userid].push({
             sender: sender,
-            message: this.message[index]
-        });
+            message: this.message[index],           
+      });
 
       socket.emit("SEND_USER_MESSAGE", { id, recipient, sender });   
 
@@ -121,6 +124,9 @@ export default {
     updateUserList: function(users) 
     {
       this.users = users;
+
+      console.log(this.users);
+
       this.$forceUpdate();
     }  
   },

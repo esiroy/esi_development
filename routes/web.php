@@ -182,6 +182,7 @@ Route::resource('updateMemberExpirty', 'TableUserExpiryUpdaterController');
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
+
 /*STATIC PAGES */
 Route::get('/stagelevel', 'PageController@stageLevel')->name('stagelevel');
 Route::get('/user', 'MemberDashboard@index')->name('user');
@@ -300,7 +301,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/reportcarddate', 'Modules\ReportCardDateController');
         Route::get('/reportcarddatelist/{id}', 'Modules\ReportCardController@reportcarddatelist');
 
-        
+        //Member Chat Support
+        Route::resource('customerchatsupport', 'Modules\CustomerChatSupportController');        
 
         //Member
         Route::delete('/member/destroy', 'Modules\MemberController@massDestroy')->name('member.massDestroy');

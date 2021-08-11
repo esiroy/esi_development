@@ -17,7 +17,7 @@
 </div>
 
 
-@section('scripts')
+@section('scripts')                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ti
 @parent
 <script>
 function prepareFrame() {
