@@ -198,7 +198,6 @@ Route::put('settings', 'Members\MemberSettingController@updatePassword')->name('
 //Image upload
 Route::resource('image-upload', 'Admin\imageUploadController');
 
-
 //User Reservation
 Route::resource('/reservation', 'Members\ReservationController');
 Route::get('/memberschedule', 'Members\ReservationController@create');
@@ -228,8 +227,8 @@ Route::resource('/questionnaire', 'Members\QuestionnaireController');
 /* Folder Manager Controllers */
 //Route::resource('uploader', 'FolderCreatorController');
 
-/*Upload Controller */
-//Route::post('uploader/fileUploader', 'FileUploadController@upload');
+/*Upload Controller, Customer Support Upload Controller   */
+Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
 Route::post('upload/tutor/file', 'FileUploadController@tutorUpload');
 

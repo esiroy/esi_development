@@ -22,10 +22,40 @@
         
           <div id="chatlogs" class="user-chatlog">
               <div v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+ chatlogIndex">
-                <strong>{{ chatlog.sender.username }}:</strong>
-                <span>{{ chatlog.sender.message }}</span>
+
+                <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">
+                  <div class="col-md-9 pl-4">
+                    <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                           
+                      <span class="small">{{ chatlog.sender.nickname }}, {{ chatlog.time  }}</span>                              
+                    </div>
+                    <div class="chat-support-message" v-html="chatlog.sender.message"></div>
+                  </div>
+                  <div class="col-md-3">&nbsp;</div>
+                </div>
+
+                <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >
+
+                  <div class="col-md-4">&nbsp;</div>
+                  <div class="col-md-7">
+
+                    <div class="member-info" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">    
+                      <span class="small">{{ chatlog.sender.nickname }}, {{ chatlog.time  }}</span>                       
+                    </div>
+
+                    <div class="member-message-container">
+                      <div class="member-message" v-html="chatlog.sender.message"></div>
+                    </div>
+                  </div>
+                  <div class="col-md-1">
+                    <div class="member-info" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">
+                      <img :src="chatlog.sender.user_image" class="img-fluid member-image" width="50"  style='float:right; border-radius:50%; margin-left:30px'/> 
+                    </div>
+                  </div>
+
+                </div>
               </div>
           </div>
+          
 
           <div class="input-group mb-3">
             <input type="text" class="form-control" v-model="message[index]"  
@@ -50,8 +80,8 @@
 
 <script>
 import io from "socket.io-client";
-const socket = io.connect("http://localhost:30001");
-//const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
+//const socket = io.connect("http://localhost:30001");
+const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 export default {
   name: "customer-chat-component",
@@ -72,46 +102,45 @@ export default {
     username: String,
     nickname: String,
     user_image: String,
+    api_token: String,
   },
-  methods: {
+  methods: 
+  {
     openChatBox: function(user) 
-    {
+    {       
 
-      console.log(user);
-
-      let found = false;
-
-      //add new to array if not present
-      for (var i in this.chatboxes) {
-        if (user.username == this.chatboxes[i].username) {
-          found = true;
+        let found = false;
+        //add new to array if not present
+        for (var i in this.chatboxes) {
+            if (user.username == this.chatboxes[i].username) {
+                found = true;
+            }
         }
-      }
 
-      if (found == false) {
-          this.chatboxes.push(user);
-          //inititte chat log for when send message logs it does not empty out
-          this.chatlogs[user.userid] = [];
-      }
+        if (found == false) {
+            this.chatboxes.push(user);
+            //instantiate chat log for when send message logs it does not empty out
+            this.chatlogs[user.userid] = [];
+        }
     },
     sendMessage: function(chatbox, index) 
     {
      
-      if (this.message[index] !== "") 
-      {
+        if (this.message[index] == "") {
+            return false;
+        }
 
-        var currentTime = new Date();
-      
-      
+        var currentTime = new Date();    
+
         //recipient
         let id = chatbox.id;     
         let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
 
         //get the sender from props (user)
         let recipient = {
-          'id': chatbox.id,
-          'userid': chatbox.userid,
-          'username':  chatbox.username,
+            'id': chatbox.id,
+            'userid': chatbox.userid,
+            'username':  chatbox.username,
         };
 
 
@@ -121,29 +150,52 @@ export default {
             'username': this.username,        
             'nickname': this.nickname,
             'message': this.message[index],
-            'user_image': this.user_image,    
+            'user_image': this.user_image,  
+            'type': "MEMBER"
         };
 
         this.chatlogs[chatbox.userid].push({
-              sender: sender,
-              message: this.message[index],
-              time: time,
+            sender: sender,
+            message: this.message[index],
+            time: time,
         });
 
-        socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });   
+        socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender }); 
 
+        let userMessage = this.message[index]
+
+        //scroll to end then save to table
+        this.$nextTick(() => {           
+            axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+                sender_id           : this.userid,
+                recipient_id        : chatbox.userid,
+                message             : userMessage,
+                is_read             : false,
+                valid               : true,
+                message_type        : "MEMBER",
+            }).then(response => {
+                if (response.data.success === true) {
+
+                } else {
+                    //@todo: HIGHLIGHT error
+                }
+            }).catch(function(error) {
+                console.log("Error " + error);                
+            });                     
+        });
+
+        //clear (always at bottom)
         this.message[index] = "";
-
-        this.$forceUpdate();
-
+        this.$forceUpdate();   
+        
         this.$nextTick(function()
         {
-          this.scrollToEnd();
-        });
-      }
-      
+            this.scrollToEnd();
+        });          
 
-
+ 
     },
     updateUserList: function(users) 
     {
@@ -187,18 +239,18 @@ export default {
     //dummy
 
     
-
-
-
+    /*
     for (let i = 0; i < 100; i++) {
       //register as user
       let user = {
         userid: "user_" + i,
-        username: "username_" + i,
+        nickname: "dummy " + i,
+        username: "dummy only - username_" + i,
         type: "support"
       }
       socket.emit('REGISTER', user);      
     }
+    */
 
 
     
@@ -218,13 +270,16 @@ export default {
 
       let sender = {
           'userid': data.sender.userid,
-          'username': data.sender.username,          
-          'message': data.sender.message
+          'username': data.sender.username,   
+          'nickname': data.sender.nickname,
+          'message': data.sender.message,
+          'type': data.sender.type,
       };
 
       this.chatlogs[data.sender.userid].push({
+            time: data.time,
             sender: sender,
-            message: data.sender.message        
+            //message: data.sender.message        
       });      
      
       this.$forceUpdate();  
@@ -244,10 +299,44 @@ export default {
   .user-chatlog {
     border: 1px solid #ececec;
     padding: 5px;
-    min-height: 225px;
-    max-height: 225px;
+    min-height: 360px;
+    max-height: 360px;
     margin-bottom: 3px;
     overflow-x: hidden;
     overflow-y: scroll;
+  }
+
+  .member-info {
+    text-align: right;
+  }
+
+ 
+
+  .chat-support-message {   
+    color: #242322;
+    background-color: #F2F6F9;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    display: block;
+    margin-top: 3px;
+    position: relative;
+    padding: 7px 12px 7px;  
+  }
+
+  .member-message-container {    
+    position: relative;
+    float:right
+  }
+
+   .member-message {
+    color: #242322;
+    background-color: #DBF4FC;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
+    width: fit-content;
+    display: block;
+    margin-top: 5px;
+    padding: 7px 22px 7px;
   }
 </style>

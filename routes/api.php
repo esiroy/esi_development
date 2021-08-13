@@ -84,6 +84,9 @@ Route::middleware('auth:api')->post('/getMemberMemoConversations', 'API\MemberCo
 //[notifier] or member inbox messages realtime notifier
 Route::middleware('auth:api')->post('/getMemberInbox', 'API\MemberController@getMemberInbox')->name('APIGetMemberInbox');
 
+//[start](CHAT SUPPORT)
+Route::middleware('auth:api')->post('/getChathistory', 'API\ChatSupportController@getChathistory')->name('APIGetChathistory');
+Route::middleware('auth:api')->post('/saveCustomerSupportChat', 'API\ChatSupportController@saveCustomerSupportChat')->name('APISaveCustomerSupportChat');
 
 
 //[start](TUTOR CONTROL PANEL)  memo chat system 
@@ -97,6 +100,7 @@ Route::middleware('auth:api')->post('/getTutorInbox', 'API\TutorController@getTu
 
 //(all memo)
 Route::middleware('auth:api')->post('/getAllMemoConversations', 'API\TutorScheduleController@getAllMemoConversations')->name('APIGetAllMemoConversations');
+
 
 
 //[start] Lesson Materials

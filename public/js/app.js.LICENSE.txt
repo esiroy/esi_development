@@ -13,6 +13,12 @@
  */
 
 /*!
+ * Name: vue-upload-component
+ * Version: 2.8.21
+ * Author: Marco Lang
+ */
+
+/*!
  * Sizzle CSS Selector Engine v2.3.5
  * https://sizzlejs.com/
  *

@@ -24,7 +24,7 @@ function prepareFrame() {
     var ifrm = document.createElement("iframe");
     ifrm.setAttribute("src", "{{ url('customerchatsupport') }}");
     ifrm.style.width = "100%";
-    ifrm.style.height = "285px";
+    ifrm.style.height = "420px";
     ifrm.style.border = "none";
     ifrm.style.scrolling = "no";
     //appendChild(ifrm);

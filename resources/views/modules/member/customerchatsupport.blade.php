@@ -27,6 +27,7 @@
             username="{{ Auth::user()->username }}"
             user_image="{{ $memberProfileImage }}"
             nickname="{{ $nickname }}"
+            api_token="{{ Auth::user()->api_token }}"
         >
     </chat-component>     
 </div>
