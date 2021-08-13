@@ -69,7 +69,9 @@ io.on('connection', function(socket)
         users.push({
                         'id': socket.id, 
                         'userid': user.userid,
-                        'username': user.username
+                        'username': user.username,
+                        'user_image': user.user_image,
+                        'nickname': user.nickname,
                     });
 
                     
