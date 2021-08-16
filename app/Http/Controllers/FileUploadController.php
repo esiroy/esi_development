@@ -35,7 +35,7 @@ class FileUploadController extends Controller
     public function upload(Request $request, ChatSupportHistory $chatSupportHistory) 
     {
 
-        abort_if(Gate::denies('filemanager_upload'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::denies('filemanager_upload'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($files = $request->file('file')) {
 

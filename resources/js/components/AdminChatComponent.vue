@@ -10,7 +10,7 @@
                   Users
                 </div>
                 <div class="card-body">
-                    <div :id="'member-'+user.userid" class="member-information-container" v-show="user.userid !== userid" v-for="user in this.users" :key="'user_'+ user.userid"  v-on:click="openChatBox(user)" >
+                    <div :id="'member-'+user.userid" class="member-information-container" v-show="user.userid !== userid" v-for="(user, index) in this.users" :key="'user_'+ index"  v-on:click="openChatBox(user)" >
                       <div class="member" v-if="user.userid !== userid">
                         <div class="profile-photo">
                           <img :src="user.user_image"  class="img-fluid">
@@ -164,8 +164,8 @@
         <file-upload
             name="file"
             class="btn btn-primary"
-            extensions="jpeg,jpg,gif,pdf,mp3,wav,png,webp,mpeg"
-            accept="image/png, application/pdf, image/gif, audio/mpeg, audio/mpeg3, audio/x-mpeg-3, video/mpeg, image/jpeg, image/webp"
+            extensions="jpeg,jpg,gif,pdf,png,webp"
+            accept="image/png, application/pdf, image/gif, image/jpeg, image/webp"
             v-model="files"
             post-action="/uploader/fileUploader"            
             :data="{ 
@@ -278,7 +278,7 @@ export default {
                         });
 
                         this.$forceUpdate(); 
-                        this.scrollToEnd();
+                      
 
                         //get the sender from props (user)                        
                         let id = newFile.response.id
@@ -286,7 +286,7 @@ export default {
                         let recipient = {
                             'id': newFile.response.id,
                             'userid': newFile.response.recipient_id,
-                            'username':  'emailroy2002@yahoo.com',
+                            'username': newFile.response.recipient_username,
                         };
 
                         socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });   
@@ -297,6 +297,8 @@ export default {
             if (this.$refs.upload.uploaded) {
                // console.log("all queue uploaded");
                 this.files = [];
+
+                this.scrollToEnd();
             }
         },
         /**
@@ -309,7 +311,7 @@ export default {
         inputFilter: function(newFile, oldFile, prevent) {
             if (newFile && !oldFile) {
                 // Filter non-image file
-                if (!/\.(jpeg|jpe|jpg|gif|png|webp|pdf|mp3|mp4|doc|docx)$/i.test(newFile.name)) {
+                if (!/\.(jpeg|jpe|jpg|gif|png|webp|pdf|doc|docx)$/i.test(newFile.name)) {
                 return prevent();
                 }
             }
@@ -362,13 +364,26 @@ export default {
                 if (response.data.success === true) 
                 {
                     //{ LOOP HERE FOR CHAT HISTORY }
+                    let chatboxUsername = null;
+                    let chatboxNickname = null;
+                    
                     response.data.chatHistoryItems.forEach(data => {
+
+                        if (data.message_type == "MEMBER") {
+                            chatboxUsername = user.username;
+                            chatboxNickname = user.nickname
+                        } else {
+                            chatboxUsername = this.username;
+                            chatboxNickname = this.nickname
+                        }
+
+
                         //console.log(data);                
                         let sender = {
                             'msgCtr': 0,
                             'userid': data.userid,
-                            'nickname': this.nickname,
-                            'username': this.username,          
+                            'nickname': chatboxNickname,
+                            'username': chatboxUsername,          
                             'message': data.message,
                             'user_image': "http://localhost:8000/storage/user_images/noimage.jpg", //@todo: make this for customer support 
                             'type': data.message_type
@@ -581,11 +596,7 @@ export default {
     });
 
 
-    socket.on('PRIVATE_MESSAGE', data => {
-       //console.log("private message", data)
-      //console.log(data.sender.message);
-
-      
+    socket.on('PRIVATE_MESSAGE', data => {      
       //this.openChatBox(data.sender)
       this.prepareChatBox(data.sender);
 

@@ -28,6 +28,7 @@
             user_image="{{ $memberProfileImage }}"
             nickname="{{ $nickname }}"
             api_token="{{ Auth::user()->api_token }}"
+            csrf_token="{{ csrf_token() }}"            
         >
     </chat-component>     
 </div>
