@@ -37,7 +37,8 @@
                           <div class="card-header">
                             <div style="float:left">                            
                               <h5>{{ chatbox.nickname }}</h5>
-                              <div class="small">{{ chatbox.username }}</div>
+                              <!--<div class="small">{{ chatbox.username }}</div>-->
+                              <div class="small">ID Number: {{ chatbox.userid }}</div>
                             </div>
 
                             <div style="float:right">          
@@ -56,6 +57,7 @@
                                         <div class="col-md-9">
                                           <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                                                                                      
                                             <chatsupport-info-component 
+                                              :userid="chatlog.sender.userid"
                                               :image="chatlog.sender.user_image"
                                               :nickname="chatlog.sender.nickname" 
                                               :time="chatlog.time">
@@ -72,6 +74,7 @@
                                         <div class="col-md-9">
                                           <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">                                                                                      
                                             <member-info-component 
+                                              :userid="chatlog.sender.userid"
                                               :image="chatlog.sender.user_image"
                                               :nickname="chatlog.sender.nickname" 
                                               :time="chatlog.time">
@@ -267,7 +270,7 @@ export default {
                             'nickname': this.nickname,
                             'username': this.username,          
                             'message': newFile.response.image,
-                            'user_image': "http://localhost:8000/storage/user_images/noimage.jpg", //@todo: make this for customer support 
+                            'user_image': "https://mypage.mytutor-jpn.com/storage/user_images/noimage.jpg", //no image for sending image (optional)
                             'type': "CHAT_SUPPORT"
                         };
                     
@@ -366,15 +369,18 @@ export default {
                     //{ LOOP HERE FOR CHAT HISTORY }
                     let chatboxUsername = null;
                     let chatboxNickname = null;
+                    let chatboxImage = null;
                     
                     response.data.chatHistoryItems.forEach(data => {
 
                         if (data.message_type == "MEMBER") {
                             chatboxUsername = user.username;
-                            chatboxNickname = user.nickname
+                            chatboxNickname = user.nickname   
+                            chatboxImage = user.user_image;                         
                         } else {
                             chatboxUsername = this.username;
                             chatboxNickname = this.nickname
+                            chatboxImage = this.user_image;
                         }
 
 
@@ -384,15 +390,16 @@ export default {
                             'userid': data.userid,
                             'nickname': chatboxNickname,
                             'username': chatboxUsername,          
-                            'message': data.message,
-                            'user_image': "http://localhost:8000/storage/user_images/noimage.jpg", //@todo: make this for customer support 
+                            'user_image': chatboxImage,
+                            'message': data.message,                            
                             'type': data.message_type
                         };
 
                         this.chatlogs[user.userid].push({
-                                sender: sender,
-                                //message: "?????????????",
                                 time: data.created_at,
+                                sender: sender,
+                                //message: "",
+                                
                         });
                     }); 
                 
@@ -416,14 +423,11 @@ export default {
         openChatBox: function(user) 
         {        
             //@note: user is the sender
-            this.current_chatbox_userid = user.userid;        
+            this.current_chatbox_userid = user.userid;
 
             //this.chatboxes.push(user); /* {this will open new window} */
             this.chatboxes = [user];
             this.prepareChatBox(user);
-
-            
-                
 
             //reset bg color      
             var elements = document.getElementsByClassName("member-information-container");
@@ -435,18 +439,15 @@ export default {
             document.getElementById("member-"+user.userid).style.background = "#C7EDFB";    
 
             this.getChatHistory(user);
-
             this.$forceUpdate();
 
             this.$nextTick(function()
             {
                 this.scrollToEnd();
-
                 this.prepareButtons(); 
             });
 
             this.chatCount[user.userid] = 0;
-
         },
         prepareChatBox: function(user) 
         {
@@ -648,9 +649,7 @@ export default {
 Vue.component("member-info-component", {
   props: ['image', 'nickname', 'time'],
   data: function () {
-    return {
-      count: 0,
-    };
+    return {};
   },
   template:
     `<div style='text-align:left'>      
@@ -664,9 +663,7 @@ Vue.component("member-info-component", {
 Vue.component("chatsupport-info-component", {
   props: ['image', 'nickname', 'time'],
   data: function () {
-    return {
-      count: 0,
-    };
+    return {};
   },
   template:
     `<div style='text-align:right'>      
@@ -676,16 +673,6 @@ Vue.component("chatsupport-info-component", {
     ,    
 });
 
-
-Vue.component("button-counter", {
-  data: function () {
-    return {
-      count: 0,
-    };
-  },
-  template:
-    '<button v-on:click="count++">You clicked me {{ count }} times.</button>',
-});
 </script>
 
 
