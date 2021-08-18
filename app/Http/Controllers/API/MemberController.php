@@ -1213,7 +1213,7 @@ class MemberController extends Controller
                     $birthday = date('Y-m-d', strtotime($data->ubirthday));
                 }
 
-                if ($data->age == null || $date->age == '') {
+                if ($data->age == null || $data->age == '') {
                     $age = null;
                 } else {
                     $age = $data->age;

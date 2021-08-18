@@ -866,8 +866,8 @@
                                         <div id="scheduleDay" class="col-3 col-md-3 text-center">
                                             {{ schedule.day }}
                                         </div>
-                                        <div id="scheduleMonth" class="col-3 col-md-3 text-center">                                            
-                                            {{ schedule.time }}
+                                        <div id="scheduleMonth" class="col-3 col-md-3 text-center">  
+                                            {{ schedule.time | formatDate}}
                                         </div>
 										<div class="col-3 col-md-3 text-center">
 											<button class="btn btn-danger btn-sm col-4" @click.prevent="removeDesiredSchedule(index)">X</button>                                            
@@ -898,6 +898,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import Vuelidate from "vuelidate";
 import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
 Vue.use(Vuelidate);
@@ -1343,9 +1344,24 @@ export default {
             const year = new Date().getFullYear()
             return Array.from({length: (year - 2000) + 1}, (value, index) => 2010 + index)
         }
-    },      
-  
+    },       
+
 };
+
+Vue.filter('formatDate', function(value) {
+  if (value) {
+    var H = moment(value, ["HH"]).format("HH");
+    var M = moment(value, ["HH:m"]).format("mm");
+
+
+    if (H == 24 || H == "00") {
+        return "24" + ":" + M;
+    } else {
+        return moment(value, ["HH:mm"]).format("HH:mm");
+    }
+    
+  }
+});
 </script>
 
 <style>

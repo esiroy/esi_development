@@ -829,8 +829,8 @@
                                     <div id="scheduleDayr" class="col-3 col-md-3 text-center">
                                         {{ schedule.day }}
                                     </div>
-                                    <div id="scheduleMo" class="col-3 col-md-3 text-center">                                            
-                                        {{ schedule.desired_time }}
+                                    <div id="scheduleMo" class="col-3 col-md-3 text-center">                                                                                    
+                                        {{ schedule.desired_time | formatDate}}
                                     </div>        
                                     <div class="col-3 col-md-3 text-center">
                                         <button class="btn btn-danger btn-sm col-4" @click.prevent="removeDesiredSchedule(index)">X</button>                                            
@@ -1461,6 +1461,22 @@ export default {
     },      
   
 };
+
+Vue.filter('formatDate', function(value) {
+  if (value) {
+    var H = Moment(value, ["HH"]).format("HH");
+    var M = Moment(value, ["HH:m"]).format("mm");
+
+
+    if (H == 24 || H == "00") {
+        return "24" + ":" + M;
+    } else {
+        return Moment(value, ["HH:mm"]).format("HH:mm");
+    }
+    
+  }
+});
+
 </script>
 
 <style>
