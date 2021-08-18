@@ -193,8 +193,6 @@
             </div>            
         </footer>        
     </div>
-
-    <chat-component userid="{{ Auth::user()->id }}" username="{{ Auth::user()->username }}"></chat-component>                   
                     
     <script type="text/javascript" src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
 
