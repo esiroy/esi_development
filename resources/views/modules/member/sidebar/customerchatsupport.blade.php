@@ -16,7 +16,9 @@
                     <div class="cs-speech-bubble">
                         <a href="javascript:void(0)" data-toggle="modal" data-target="#customerChatSupportModal">Chat Support</a>
                     </div>
-                    <div class="small pt-1 pb-1">Chat Support ご利用方法</a>
+                    <div class="small pt-1 pb-1">                        
+                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0816220249.html','Chat Support ご利用方法',900,820);">Chat Support ご利用方法</a>
+                    </a>
                  </td>
              </tr>
 

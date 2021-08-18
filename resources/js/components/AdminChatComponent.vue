@@ -364,6 +364,8 @@ export default {
                 recipient_id        : this.userid,                        
             }).then(response => {
 
+                this.chatlogs[user.userid] = [];
+
                 if (response.data.success === true) 
                 {
                     //{ LOOP HERE FOR CHAT HISTORY }
