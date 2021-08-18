@@ -11,12 +11,26 @@ window.Vue = require('vue');
 /* Components Javascript Import*/
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
+//socket server
+import io from "socket.io-client";
+
+//const socket = io.connect("http://localhost:30001");
+const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
+
+
+
+ 
+
+
+    
+//css
 //import 'bootstrap/dist/css/bootstrap.css'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // Optionally install the BootstrapVue icon components plugin
 Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
+
 
 /**
  * The following block of code may be used to automatically register your
@@ -28,7 +42,6 @@ Vue.use(IconsPlugin);
 
 const files = require.context('./', true, /\.vue$/i)
 files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
-
 
 
 //Vue.component('example-component', require('./components/ExampleComponent.vue').default);

@@ -182,6 +182,7 @@ Route::resource('updateMemberExpirty', 'TableUserExpiryUpdaterController');
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
+
 /*STATIC PAGES */
 Route::get('/stagelevel', 'PageController@stageLevel')->name('stagelevel');
 Route::get('/user', 'MemberDashboard@index')->name('user');
@@ -196,7 +197,6 @@ Route::put('settings', 'Members\MemberSettingController@updatePassword')->name('
 
 //Image upload
 Route::resource('image-upload', 'Admin\imageUploadController');
-
 
 //User Reservation
 Route::resource('/reservation', 'Members\ReservationController');
@@ -227,8 +227,8 @@ Route::resource('/questionnaire', 'Members\QuestionnaireController');
 /* Folder Manager Controllers */
 //Route::resource('uploader', 'FolderCreatorController');
 
-/*Upload Controller */
-//Route::post('uploader/fileUploader', 'FileUploadController@upload');
+/*Upload Controller, Customer Support Upload Controller   */
+Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
 Route::post('upload/tutor/file', 'FileUploadController@tutorUpload');
 
@@ -241,6 +241,10 @@ Route::get('download/{path}', 'DownloadController@downloadLessonMaterial');
 /*Customer Support */
 Route::resource('customersupport', 'CustomerSupportController');
 Route::resource('faq', 'FAQController');
+
+/*Chat support */
+Route::resource('customerchatsupport', 'CustomerChatSupportController');
+
 
 /*Lesson Support */
 Route::resource('lessonmaterials', 'LessonMaterialsController');
@@ -296,7 +300,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/reportcarddate', 'Modules\ReportCardDateController');
         Route::get('/reportcarddatelist/{id}', 'Modules\ReportCardController@reportcarddatelist');
 
-        
+        //Member Chat Support
+        Route::resource('customerchatsupport', 'Modules\CustomerChatSupportController');        
 
         //Member
         Route::delete('/member/destroy', 'Modules\MemberController@massDestroy')->name('member.massDestroy');

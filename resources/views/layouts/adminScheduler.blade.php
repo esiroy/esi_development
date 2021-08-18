@@ -91,7 +91,12 @@
                         </a>
                     </div>
                 </div>
-            </div>
+                <chat-component 
+                        userid="{{ Auth::user()->id }}"
+                        username="{{ Auth::user()->username }}"
+                    >
+                </chat-component>
+            </div>            
         </footer>
     </div>
 

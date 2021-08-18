@@ -32,7 +32,20 @@ class dummyController extends Controller
 
     public function __construct()
     {
-        
+    }
+
+    public function index() {
+        return view("dummy/index", ['title'=> "TEST"]);
+
+    }
+
+
+
+    public function dropzone() {
+        return view("dummy/index", ['title'=> "TEST"]);
+    }
+
+    public function updateQuestionnaire() {
         $questions = Questionnaire::where('created_at', '>=', date('2021-05-10'))->get();
         foreach ($questions as $q) 
         {
@@ -58,14 +71,6 @@ class dummyController extends Controller
                
             }
         }
-
-
-
-
-               
-    }
-
-    public function index() {
         
     }
 

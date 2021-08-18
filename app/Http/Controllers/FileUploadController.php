@@ -12,8 +12,10 @@ use Input;
 use Gate;
 
 use App\Models\User;
-use App\Models\Folder;
-use App\Models\File;
+use App\Models\ChatSupportHistory;
+
+//use App\Models\Folder;
+//use App\Models\File;
 
 class FileUploadController extends Controller
 {
@@ -22,21 +24,23 @@ class FileUploadController extends Controller
     {
         $this->middleware('auth');
 
+        /*
         $this->data = [
             'folders' => Folder::get()
         ];
+        */
 
     }
 
-    public function upload(Request $request) 
+    public function upload(Request $request, ChatSupportHistory $chatSupportHistory) 
     {
 
-        abort_if(Gate::denies('filemanager_upload'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //abort_if(Gate::denies('filemanager_upload'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($files = $request->file('file')) {
 
             //file path
-            $originalPath = 'storage/uploads/';
+            $originalPath = 'storage/uploads/chatsupport';
 
             $newFilename = time()."_". preg_replace('/\s+/', '_', $files->getClientOriginalName());
 
@@ -53,13 +57,14 @@ class FileUploadController extends Controller
 
                 //save in storage -> storage/public/uploads/
                 $path = $request->file('file')->storeAs(
-                    'public/uploads/'.$request->folder_id , $newFilename
+                    'public/uploads/chatsupport/'.$request->folder_id , $newFilename
                 );
 
                 //create public path -> public/storage/uploads/{folder_id}
                 $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
 
                 // Save to file
+                /*
                 $file = File::create([
                     'user_id'       => Auth::user()->id,
                     'folder_id'     => $request->folder_id,
@@ -68,17 +73,47 @@ class FileUploadController extends Controller
                     'size'          => $request->file('file')->getSize(),
                     'path'          => $public_file_path,
                 ]);
+                */
+                $url = url(Storage::url($path));                
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+
+                if ($ext == 'jpg' || $ext == 'png' || $ext == 'gif' || $ext == 'jpeg') {
+                    $file = "<a target='_blank' href='$url'><img src='$url' class='img_preview'></a>";
+                } else {
+                    $file = "<a target='_blank' href='$url'><i class='fas fa-file-pdf custom-pdf'></i></a> ";
+                    $file .= "<div>". $request->file('file')->getClientOriginalName() ."</div>";
+                }
+                
+
+                $data = [
+                    'sender_id'     =>  Auth::user()->id,
+                    'recipient_id'  => $request->current_chatbox_userid,
+                    'message'       => $file,
+                    'message_type'  => $request->message_type,
+                    'is_read'       => false,
+                    'valid'         => true,
+                ];      
+        
+                $chatSupportItem = $chatSupportHistory->create($data);
+
+                $recipient = User::find($request->current_chatbox_userid);
 
                 //Output JSON reply
                 return Response()->json([
-                    "success"       => true,
-                    'id'            => $file->id,
+                    "success"       => true,                    
                     'user_id'       => Auth::user()->id,
-                    'folder_id'     => $request->folder_id,
+                    'recipient_id'  => $request->current_chatbox_userid,
+                    'recipient_username'      => $recipient->username,
+                    //'id'            => $file->id,
+                    //'folder_id'     => $request->folder_id,
                     "file"          => $request->file('file')->getClientOriginalName(), //original filename
                     "upload_name"   => $request->file('file')->getFileName(),  //generated filename
                     'size'          => $request->file('file')->getSize(),
                     "path"          => $path,
+                    "image"         => $file,
+                    "url"           => $url,
+                    "ext"           => $ext,
+                    'current_chatbox_userid' =>  $request->current_chatbox_userid,
                     "owner"         => Auth::user()
                 ]);
 
