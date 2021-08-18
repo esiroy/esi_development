@@ -192,7 +192,7 @@
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
 
-//const socket = io.connect("http://localhost:30001");
+
 const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 export default {
