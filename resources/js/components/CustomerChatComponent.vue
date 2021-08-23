@@ -17,7 +17,7 @@
 
     <div class="chatboxes">
 
-      <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="'chatbox_' + chatbox.id">
+      <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="'chatbox_' + index">
         <form :name="chatbox.userid" onsubmit="return false;">
         
           <div id="chatlogs" class="user-chatlog">
@@ -155,7 +155,7 @@
 <script>
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
-
+//const socket = io.connect("http://localhost:30001");
 const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 export default {
@@ -210,18 +210,12 @@ export default {
             if (newFile.xhr) {
                 if ( newFile.xhr.status === 200) 
                 {
-                    //Add to the $ref='folderComponent' - uploader/show.blade.php
+                    //file information
                     let file = [{
                                 'id'        : newFile.response.id,
                                 'file_name' : newFile.response.file,
                                 'size'      : newFile.response.size,
-                            }]
-
-
-
-                    // let files = this.$root.$refs.folderComponent.files.push(...file);
-                    //console.log("file uploaded " + newFile.response.image)
-
+                            }];
 
                     var currentTime = new Date();
                     let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
@@ -254,7 +248,7 @@ export default {
                         'username':  newFile.response.recipient_username,
                     };
 
-                    socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });   
+                    socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
                 }               
 
             }
@@ -315,7 +309,7 @@ export default {
     },    
     openChatBox: function(user) 
     {   
-        //@note: user is the sender
+	    //@note: user is the sender
         this.current_chatbox_userid = user.userid;    
 
         let found = false;
@@ -323,11 +317,15 @@ export default {
         for (var i in this.chatboxes) {
             if (user.username == this.chatboxes[i].username) {
                 found = true;
+				//console.log(this.chatboxes[i])
             }
         }
 
         if (found == false) {
-            this.chatboxes.push(user);
+
+            //this.chatboxes.push(user);			
+			this.chatboxes = [user];
+
             //instantiate chat log for when send message logs it does not empty out
             this.chatlogs[user.userid] = [];
 
@@ -339,7 +337,7 @@ export default {
 
                 this.prepareButtons(); 
             });            
-        }
+        }    
     },
     sendMessage: function(chatbox, index) 
     {
@@ -357,8 +355,6 @@ export default {
             //No message just upload
 
         } else {
-            
-        
 
 
             var currentTime = new Date();    
@@ -367,11 +363,13 @@ export default {
             let id = chatbox.id;     
             let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
 
-            //get the sender from props (user)
+
+            //@NOTE: WE ARE ON MEMBER AREA, AUTOMATIC TYPE IS CHAT SUPPORT AND SENDER TYPE IS MEMBER
             let recipient = {
                 'id': chatbox.id,
                 'userid': chatbox.userid,
                 'username':  chatbox.username,
+                'type': "CHAT_SUPPORT",
             };
 
 
@@ -385,15 +383,47 @@ export default {
                 'type': "MEMBER"
             };
 
+			/*
             this.chatlogs[chatbox.userid].push({
                 sender: sender,
                 message: this.message[index],
                 time: time,
             });
+			*/
+
+            console.log(recipient);
 
             socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender }); 
 
-            let userMessage = this.message[index]
+
+            //get the sender from props (user)
+            let broadcast_recipient = {
+                'id': this.id,
+                'userid': this.userid,
+                'username':  this.username,
+            };
+
+
+            //get the sender from props  (admin)
+            //console.log("sender chat --- > "+ chatbox.userid);
+
+            let broadcast_sender = {
+                'msgCtr': 0,
+                'userid': chatbox.userid,
+                'nickname': chatbox.nickname,
+                'username': chatbox.username,          
+                'message': this.message[index],
+                'user_image': chatbox.user_image, //@todo: make this for customer support 
+                'type': "MEMBER"
+            };
+
+             console.log("own message", broadcast_sender);
+
+             socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender }); 
+
+             
+
+            let userMessage = this.message[index];
 
             //scroll to end then save to table
             this.$nextTick(() => {           
@@ -426,11 +456,13 @@ export default {
                 this.scrollToEnd();
                 this.prepareButtons();            
             });
+
+        
         } 
     },
     updateUserList: function(users) 
     {
-      this.users = users;
+      this.users = users;      
       this.$forceUpdate();
     },
   	scrollToEnd: function() 
@@ -455,7 +487,9 @@ export default {
     {
         this.prepareButtons();       
     });
+    
 
+    
     //automatically open for admin when popup is created.
     let admin = {
       userid: 1,
@@ -481,30 +515,71 @@ export default {
 
 
     socket.on('PRIVATE_MESSAGE', data => {      
-      this.openChatBox(data.sender)
+        
+        //console.log(data.sender.username  + "|"  + this.username)
 
-      let sender = {
-          'userid': data.sender.userid,
-          'username': data.sender.username,   
-          'nickname': data.sender.nickname,
-          'message': data.sender.message,
-          'type': data.sender.type,
-      };
+        //this.openChatBox(data.sender)
 
-      this.chatlogs[data.sender.userid].push({
-            time: data.time,
-            sender: sender,
-            //message: data.sender.message        
-      });      
-     
-      this.$forceUpdate();  
-      
-      this.$nextTick(function()
-      {
-        this.scrollToEnd();
-      }); 
+        let admin = {
+            userid: 1,
+            username: "admin",
+        }
+        this.openChatBox(admin);
+            
+        if (data.sender.username  == this.username) {
+            console.log("my own message")
+
+            let sender = {
+                'userid': data.sender.userid,
+                'username': data.sender.username,   
+                'nickname': data.sender.nickname,
+                'message': data.sender.message,
+                'type': data.sender.type,
+                'user_image': this.user_image,
+            };
+
+
+            this.chatlogs[admin.userid].push({
+                    time: data.time,
+                    sender: sender            
+            });   
+
+            this.$forceUpdate();  
+            this.$nextTick(function()
+            {
+                this.scrollToEnd();        
+            });             
+        }
+
+        if (data.recipient.userid == this.userid) 
+        {
+            console.log("sent from support")
+
+            let sender_customer_support = {
+                'userid': data.sender.userid,
+                'username': data.sender.username,   
+                'nickname': data.sender.nickname,
+                'message': data.sender.message,
+                'type': data.sender.type,
+            };
+
+            this.chatlogs[admin.userid].push({
+                    time: data.time,
+                    sender: sender_customer_support,
+                    //message: data.sender.message        
+            });      
+            this.$forceUpdate();  
+            this.$nextTick(function()
+            {
+                this.scrollToEnd();        
+            });
+        
+            //play audio
+            let audio = new Audio("/mp3/message-sent.mp3");
+            audio.play();            
+        }  
+
     });
-
 
   },
 };

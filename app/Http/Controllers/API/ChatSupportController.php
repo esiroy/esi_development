@@ -11,9 +11,39 @@ use App\Models\ChatSupportHistory;
 class ChatSupportController extends Controller
 {
 
-    public function getChathistory(Request $request, ChatSupportHistory $chatSupportHistory) 
-    {
-      
+    public function getChathistory(Request $request, ChatSupportHistory $chatSupportHistory) {
+
+        $page = $request->page;
+        $sender_id = $request->sender_id;
+        $recipient_id = $request->recipient_id;
+
+        if ($page == null) {
+            $page = 1;
+        }
+
+        $itemsPerPage = 15;
+
+        
+        $chatHistoryItems = $chatSupportHistory->where('sender_id', $sender_id)->orWhere('recipient_id', $sender_id)
+                            ->orderby('id', "DESC")
+                            ->paginate($itemsPerPage, ['*'], 'page', $page);
+
+        if ($chatHistoryItems->count() > 0)  {
+            return Response()->json([
+                "success"           => true,                
+                "chatHistoryItems"  => $chatHistoryItems,                
+            ]);
+        } else {
+            return Response()->json([
+                "success"           => false,                
+                "message"           => "no more history found"
+            ]);            
+        }
+
+
+    }
+
+    public function getAllChathistory(Request $request, ChatSupportHistory $chatSupportHistory) {      
         $sender_id = $request->sender_id;
         $recipient_id = $request->recipient_id;
                  
@@ -21,14 +51,10 @@ class ChatSupportController extends Controller
             ->where('sender_id', $sender_id)
             ->orWhere('recipient_id', $sender_id)
             ->get();
-
-              
-    
         return Response()->json([
             "success"           => true,
             "chatHistoryItems"  => $chatHistoryItems            
         ]);
-
     }
 
     //Save Customer Chat Chat

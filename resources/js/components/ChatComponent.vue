@@ -136,7 +136,8 @@ export default {
   },
   mounted: function () 
   {
-
+    console.log("chat component mounted");
+    
     //register as user
     let user = {
       userid: this.$props.userid ,

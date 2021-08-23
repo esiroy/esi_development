@@ -45,6 +45,7 @@ mix.js(
         "public/js/admin.js"
     )    
     .copy("resources/images/*.*", "public/images/")
+    .copy("resources/mp3/*.*", "public/mp3/")
     .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
