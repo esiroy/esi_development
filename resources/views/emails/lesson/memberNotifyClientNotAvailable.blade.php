@@ -18,7 +18,7 @@
 </div>
 
 <div style="margin-top:20px; font-size: 14px">
-    予約日時　： {{ date("F j, Y, H:i", strtotime($scheduleItem->lesson_time)) }}
+    予約日時　： {{ ESIMailDateTimeFormat($scheduleItem->lesson_time) }}
     担当講師　： {{ $tutor->user->firstname }} {{ $tutor->user->lastname }}
 </div>
 

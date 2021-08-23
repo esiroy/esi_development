@@ -13,14 +13,14 @@ Autoload this in composer.json file,
 
 use Illuminate\Support\Str;
 
-if (! function_exists('limit')) {
+if (! function_exists('ESIDateFormat')) {
     function ESIDateFormat($date) 
     {        
         return  date('Y年 m月 d日 ', strtotime($date));
     }
 }
 
-if (! function_exists('limit')) {
+if (! function_exists('ESIDateTimeFormat')) {
     function ESIDateTimeFormat($date) 
     {        
         if (date('H', strtotime($date)) == '00') 
@@ -31,6 +31,19 @@ if (! function_exists('limit')) {
         }
     }
 }
+
+if (! function_exists('ESIMailDateTimeFormat')) {
+    function ESIMailDateTimeFormat($date) 
+    {        
+        if (date('H', strtotime($date)) == '00') 
+        {  
+            return date('F j, Y, 24:i', strtotime($date ." - 1 day"));
+        } else {
+            return  date('F j, Y, H:i', strtotime($date));
+        }
+    }
+}
+
 
 if (! function_exists('limit')) {
     function limit($string, $number) {

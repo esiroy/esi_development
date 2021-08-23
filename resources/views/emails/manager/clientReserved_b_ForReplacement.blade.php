@@ -13,7 +13,7 @@
 
 
     <div style="margin-top:20px; font-size: 14px">
-        予約日時 : {{ date("F j, Y, H:i", strtotime($scheduleItem->lesson_time)) }}
+        予約日時 : {{ ESIMailDateTimeFormat($scheduleItem->lesson_time) }}
     </div>
 
     <div style="margin-top:20px; font-size: 14px">

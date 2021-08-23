@@ -34,8 +34,13 @@ class dummyController extends Controller
     {
     }
 
-    public function index() {
-        return view("dummy/index", ['title'=> "TEST"]);
+    public function index(ScheduleItem $scheduleItem) {
+
+        $scheduleItem = $scheduleItem->find(912532);
+
+        echo ESIMailDateTimeFormat($scheduleItem->lesson_time);
+
+        //return view("dummy/index", ['title'=> "TEST"]);
 
     }
 

@@ -5,7 +5,7 @@ Hi {{ $tutor->user->firstname ?? '' }}
 </div>
 
 <div style="margin-top:20px; font-size: 14px">
-    Cancelled lesson Schedule for {{ date("F j, Y, H:i", strtotime($scheduleItem->lesson_time)) }}
+    Cancelled lesson Schedule for {{ ESIMailDateTimeFormat($scheduleItem->lesson_time) }}
 </div>
 
 <div style="margin-top:20px; font-size: 14px">

@@ -231,11 +231,12 @@ export default {
                         'type': "MEMBER"
                     };
                 
+                    /*
                     this.chatlogs[newFile.response.recipient_id].push({
                         sender: sender,
                         message: newFile.response.image,
                         time: time
-                    });
+                    });*/
 
                     this.$forceUpdate(); 
 
@@ -391,10 +392,8 @@ export default {
             });
 			*/
 
-            console.log(recipient);
-
-            socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender }); 
-
+            //console.log(recipient);
+            //socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender }); 
 
             //get the sender from props (user)
             let broadcast_recipient = {
@@ -417,11 +416,8 @@ export default {
                 'type': "MEMBER"
             };
 
-             console.log("own message", broadcast_sender);
-
-             socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender }); 
-
-             
+            //console.log("own message", broadcast_sender);
+            //socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });              
 
             let userMessage = this.message[index];
 
@@ -527,7 +523,7 @@ export default {
         this.openChatBox(admin);
             
         if (data.sender.username  == this.username) {
-            console.log("my own message")
+            //console.log("my own message")
 
             let sender = {
                 'userid': data.sender.userid,
@@ -553,7 +549,7 @@ export default {
 
         if (data.recipient.userid == this.userid) 
         {
-            console.log("sent from support")
+            //console.log("sent from support")
 
             let sender_customer_support = {
                 'userid': data.sender.userid,

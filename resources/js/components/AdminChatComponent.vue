@@ -403,7 +403,7 @@ export default {
                 if (this.chatFetchStatus == "ACTIVE") {
                     this.getPaginatedHistory();
                 } else {
-                    console.log("unable to fetch chat history result still busy, please try again")
+                    //console.log("unable to fetch chat history result still busy, please try again")
                 }
                 
             });
@@ -440,7 +440,7 @@ export default {
                     console.log("compute precentage : " + shot + " " + total + " : "  + percent)
                     //this.page[this.current_chatbox_userid] = +this.page[this.current_chatbox_userid] + 1;
 
-                    console.log(this.page[this.current_chatbox_userid]);
+                    //console.log(this.page[this.current_chatbox_userid]);
 
                     let user = {
                         'userid': this.current_chatbox_userid,
@@ -578,11 +578,11 @@ export default {
             //@note: user is the sender     
             if (isNaN(this.page[user.userid])) {
                 this.page[user.userid] = 1;
-                console.log("page initialized")
+                //console.log("page initialized")
             }
 
             if (this.current_chatbox_userid !== user.userid) {
-                console.log("new chatbox")
+                //console.log("new chatbox")
                 this.chatlogs[user.userid] = []
                 this.page[user.userid] = 1;
                 this.getChatHistory(user, true);
@@ -783,7 +783,7 @@ export default {
             }            
         },
         enterAdminChat: function() {
-            console.log("chat activated");
+            //console.log("chat activated");
             //(force TYPE as CHAT_SUPPORT) register as user
             let user = {            
                 userid: this.userid,
@@ -848,7 +848,7 @@ export default {
 
                 this.prepareChatBox(data.broadcast_recipient);
 
-                console.log("owner message", data);
+                //console.log("owner message", data);
 
                 let sender = {
                     'msgCtr': 1,
@@ -872,7 +872,7 @@ export default {
                     this.scrollToEnd();
 			    }); 			
             } else {
-                console.log("this is from member");
+                //console.log("this is from member");
             }	
 	    });
 
@@ -925,7 +925,8 @@ export default {
                 //console.log("window status ", this.windowStatus);                
             }
             
-            console.log("private MSG", data);
+            //console.log("private MSG", data);
+            
             if (data.recipient.userid == this.userid || data.recipient.type == "CHAT_SUPPORT") {                
                 //play audio
                 let audio = new Audio("/mp3/message-sent.mp3");               

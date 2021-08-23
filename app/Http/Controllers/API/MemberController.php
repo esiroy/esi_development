@@ -479,7 +479,7 @@ class MemberController extends Controller
         /************************
          * SAVE SCHEDULE STATUS 
          * DESCRIPTION: WHEN SAVING, THE TOTAL DAILY RESERVED WILL BE SET TO RESERVED STATUS "B" 
-         *              IF YOU WILL BE RESERVED 2 OR MORE IN A DAY 
+         *              IF YOU WILL RESERVE 2 OR MORE IN A DAY 
          ************************/
 
         $MEMBER_RESERVE_LIMIT_ACTIVE = env('MEMBER_RESERVE_LIMIT_ACTIVE', false);
