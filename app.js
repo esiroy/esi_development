@@ -35,7 +35,7 @@ io.on('connection', function(socket)
         console.log("send user ", data.recipient.username);
 
         //io.sockets.connected[data.id].emit("PRIVATE_MESSAGE", data);
-
+        /*
         for (var i in users) {
 
             if (data.recipient.username == users[i].username) 
@@ -43,10 +43,18 @@ io.on('connection', function(socket)
                 io.sockets.connected[users[i].id].emit("PRIVATE_MESSAGE", data);
                 //break;
             }            
-        }
+        }*/
+
+        io.sockets.emit("PRIVATE_MESSAGE", data);
         
         //this.handleUserPrivateMsg(data);
     });
+
+    socket.on("SEND_OWNER_MESSAGE", function (data){
+
+        io.emit('OWNER_MESSAGE', data);
+        //this.handleUserPrivateMsg(data);
+    });    
 
     /*Register connected user*/
     socket.on('REGISTER',function(user)
@@ -72,6 +80,7 @@ io.on('connection', function(socket)
                         'username': user.username,
                         'user_image': user.user_image,
                         'nickname': user.nickname,
+                        'type': user.type,
                     });
 
                     
@@ -101,17 +110,11 @@ io.on('connection', function(socket)
         });
 
         update_user_list();
-    });        
-
-
+    });    
 
     //default (public)
     socket.on('SEND_MESSAGE', function(data) {
         io.emit('MESSAGE', data)
     });
-
-
-
-    
     
 });
