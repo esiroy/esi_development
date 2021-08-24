@@ -48,7 +48,7 @@ if (! function_exists('ESIMailDateTimeFormat')) {
 
 
 if (! function_exists('ESIDate')) {
-    function ESIDate($time, $format) 
+    function ESIDate($time) 
     {        
         if (date('H', strtotime($time)) == '00') 
         {  
