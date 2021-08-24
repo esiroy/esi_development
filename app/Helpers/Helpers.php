@@ -13,6 +13,7 @@ Autoload this in composer.json file,
 
 use Illuminate\Support\Str;
 
+//japanese date only formatter
 if (! function_exists('ESIDateFormat')) {
     function ESIDateFormat($date) 
     {        
@@ -20,6 +21,7 @@ if (! function_exists('ESIDateFormat')) {
     }
 }
 
+//japanese date time formatter
 if (! function_exists('ESIDateTimeFormat')) {
     function ESIDateTimeFormat($date) 
     {        
@@ -43,6 +45,20 @@ if (! function_exists('ESIMailDateTimeFormat')) {
         }
     }
 }
+
+
+if (! function_exists('ESIDate')) {
+    function ESIDate($time, $format) 
+    {        
+        if (date('H', strtotime($time)) == '00') 
+        {  
+            return date('F d, Y', strtotime($time ." - 1 day")) ;
+        } else {
+            return  date('F d, Y', strtotime($time));
+        }
+    }
+}
+
 
 if (! function_exists('ESIFormatTime')) {
     function ESIFormatTime($time) 

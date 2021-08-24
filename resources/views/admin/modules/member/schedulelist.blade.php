@@ -88,7 +88,9 @@
                             <tbody>
                                 @foreach($schedules as $key => $schedule)
                                 <tr>
-                                    <td>{{  date('F d, Y', strtotime($schedule->lesson_time)) }}</td>
+                                    <td>
+                                        {{ ESIDate($schedule->lesson_time) }}
+                                    </td>
                                     <td>
                                         {{ ESIFormatTime($schedule->lesson_time) }}
                                         -
