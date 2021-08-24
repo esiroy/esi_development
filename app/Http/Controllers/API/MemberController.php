@@ -472,7 +472,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success"   => false,
                 "type"      => "msgbox",
-                "message"   => "ご予約できません。　既に同じ時間にご予約があります。(1)",
+                "message"   => "ご予約できません。　既に同じ時間にご予約があります。",
                 "message_en"    => "I cannot make a reservation. There is already a reservation at the same time"
             ]);
         }
