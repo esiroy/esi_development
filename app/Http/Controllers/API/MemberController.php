@@ -463,7 +463,8 @@ class MemberController extends Controller
 
         //check if duplicate schedule if exists
         $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
-            ->where('member_id', Auth::user()->id)          
+            ->where('member_id', Auth::user()->id)
+            ->where('schedule_status', "!=", 'TUTOR_CANCELLED')      
             ->where('valid', 1)
             ->exists();
 
@@ -471,7 +472,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success"   => false,
                 "type"      => "msgbox",
-                "message"   => "ご予約できません。　既に同じ時間にご予約があります。",
+                "message"   => "ご予約できません。　既に同じ時間にご予約があります。(1)",
                 "message_en"    => "I cannot make a reservation. There is already a reservation at the same time"
             ]);
         }

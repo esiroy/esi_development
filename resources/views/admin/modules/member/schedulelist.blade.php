@@ -90,9 +90,9 @@
                                 <tr>
                                     <td>{{  date('F d, Y', strtotime($schedule->lesson_time)) }}</td>
                                     <td>
-                                        {{ date('H:i',strtotime($schedule->lesson_time)) }}
+                                        {{ ESIFormatTime($schedule->lesson_time) }}
                                         -
-                                        {{ date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes")) }}                                        
+                                        {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes"))) }}
                                     </td>
                                     <td>{{ ucwords(str_replace('_', ' ', strtolower($schedule->schedule_status))) }}</td>
 

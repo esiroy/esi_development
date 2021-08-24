@@ -44,6 +44,19 @@ if (! function_exists('ESIMailDateTimeFormat')) {
     }
 }
 
+if (! function_exists('ESIFormatTime')) {
+    function ESIFormatTime($time) 
+    {        
+        if (date('H', strtotime($time)) == '00') 
+        {  
+            return date('24:i', strtotime($time ." - 1 day")) ;
+        } else {
+            return  date('H:i', strtotime($time));
+        }
+    }
+}
+
+
 
 if (! function_exists('limit')) {
     function limit($string, $number) {
