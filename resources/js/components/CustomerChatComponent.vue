@@ -393,7 +393,7 @@ export default {
 			*/
 
             //console.log(recipient);
-            //socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender }); 
+            socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender }); 
 
             //get the sender from props (user)
             let broadcast_recipient = {
@@ -417,7 +417,7 @@ export default {
             };
 
             //console.log("own message", broadcast_sender);
-            //socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });              
+            socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });              
 
             let userMessage = this.message[index];
 
