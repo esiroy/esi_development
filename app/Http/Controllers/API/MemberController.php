@@ -427,7 +427,14 @@ class MemberController extends Controller
      
         //5. compare current lesson limit and total month total reserved schedules (storing)
         $memberAttribute = new MemberAttribute();
-        $check_month_limit = date("M", strtotime($schedule->lesson_time));
+
+        if (date("H", strtotime($schedule->lesson_time)) == "00" ) {
+            $check_month_limit = date('M', strtotime($schedule->lesson_time ." - 1 day"));
+        } else {
+            $check_month_limit = date("M", strtotime($schedule->lesson_time));
+        }
+        
+
         $check_year_limit = date("Y", strtotime($schedule->lesson_time));
         $attribute = $memberAttribute->getLessonLimit($memberID, $check_month_limit, $check_year_limit);
         if ($attribute) {

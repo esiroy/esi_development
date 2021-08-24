@@ -48,13 +48,13 @@ if (! function_exists('ESIMailDateTimeFormat')) {
 
 
 if (! function_exists('ESIDate')) {
-    function ESIDate($time) 
+    function ESIDate($date) 
     {        
-        if (date('H', strtotime($time)) == '00') 
+        if (date('H', strtotime($date)) == '00') 
         {  
-            return date('F d, Y', strtotime($time ." - 1 day")) ;
+            return date('F d, Y', strtotime($date ." - 1 day")) ;
         } else {
-            return  date('F d, Y', strtotime($time));
+            return  date('F d, Y', strtotime($date));
         }
     }
 }
