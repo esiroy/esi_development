@@ -375,11 +375,11 @@ class TutorScheduleController extends Controller
             /****************************************************
              *      [START] SEND MAIL TO MEMBER AND TUTOR
              *****************************************************/
-            if (App::environment(['prod', 'production'])) 
-            {                
+            //if (App::environment(['prod', 'production'])) 
+            //{                
                 $lessonMailer = new LessonMailer();
                 $lessonMailer->send($memberInfo, $tutorInfo, $selectedSchedule);
-            }
+            //}
             /****************************************************
              *      [END] SEND MAIL TO MEMBER AND TUTOR
              *****************************************************/            

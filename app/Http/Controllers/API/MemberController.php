@@ -539,8 +539,8 @@ class MemberController extends Controller
         $scheduleItemObj = new scheduleItem();
         $selectedSchedule = $scheduleItemObj->find($scheduleID);
 
-        if (App::environment(['prod', 'production'])) 
-        {
+        //if (App::environment(['prod', 'production'])) 
+        //{
             if ($selectedSchedule->schedule_status == 'CLIENT_RESERVED' || $selectedSchedule->schedule_status  == 'CLIENT_RESERVED_B') 
             {            
                 $memberObj = new Member();
@@ -552,7 +552,7 @@ class MemberController extends Controller
                 $lessonMailer->sendMemberEmail($memberInfo, $tutorInfo, $selectedSchedule);    
                 
             }             
-        }
+        //}
         /*******************************************               
         *       [END] SEND MAIL 
         *******************************************/    
