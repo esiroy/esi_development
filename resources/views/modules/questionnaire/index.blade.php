@@ -62,7 +62,7 @@
                                             <td class="text-center">
                                                 @php
                                                     $schedule = \App\Models\ScheduleItem::where('id', $reportcard->schedule_item_id)->first();
-
+ @include('modules.member.popup.customerchat')
                                                     if ($schedule) {
                                                         $tutor =  \App\Models\Tutor::where('user_id', $schedule->tutor_id)->first();
                                                     }                                                
