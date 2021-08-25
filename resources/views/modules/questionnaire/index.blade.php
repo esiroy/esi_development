@@ -101,11 +101,11 @@
                                     @foreach ($scheduleItems as $scheduleItem)
                                     <tr>
                                         <td class="text-center">
-                                            {{ date('Y年 m月 d日', strtotime($scheduleItem->lesson_time)) }}
 
-                                            {{ date('H:i', strtotime($scheduleItem->lesson_time)) }}
-                                            -
-                                            {{ date('H:i', strtotime($scheduleItem->lesson_time . " +25 minutes")) }}
+                                            {{ ESIDateFormat($scheduleItem->lesson_time) }}
+
+                                            {{ ESILessonTimeRange($scheduleItem->lesson_time) }}
+
                                         </td>
 
                                         <td class="text-center">
