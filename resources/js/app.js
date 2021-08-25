@@ -12,8 +12,8 @@ window.Vue = require('vue');
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
 //socket server
-import io from "socket.io-client";
-const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
+//import io from "socket.io-client";
+//const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 
 

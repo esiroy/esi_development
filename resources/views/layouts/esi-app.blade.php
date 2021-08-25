@@ -755,7 +755,7 @@
 
     @include('modules.member.popup.memo')
     @include('modules.member.popup.memoReply')
-
+    @include('modules.member.popup.customerchat')
     @yield('scripts')
 </body>
 

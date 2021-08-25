@@ -236,5 +236,5 @@
 
  @include('modules.member.popup.loading')
  @include('modules.member.popup.memoSent')
- @include('modules.member.popup.customerchat')
+
 @endsection
