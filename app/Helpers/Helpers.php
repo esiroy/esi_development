@@ -17,7 +17,12 @@ use Illuminate\Support\Str;
 if (! function_exists('ESIDateFormat')) {
     function ESIDateFormat($date) 
     {        
-        return  date('Y年 m月 d日 ', strtotime($date));
+        if (date('H', strtotime($date)) == '00') 
+        {  
+           return date('Y年 m月 d日', strtotime($date ." - 1 day"));
+        } else {
+            return  date('Y年 m月 d日', strtotime($date));
+        }
     }
 }
 
@@ -71,6 +76,19 @@ if (! function_exists('ESIFormatTime')) {
         }
     }
 }
+
+if (! function_exists('ESILessonTimeRange')) {
+    function ESILessonTimeRange($time) 
+    {   
+        if (date('H', strtotime($time)) == '00') 
+        {  
+            return date('24:i', strtotime($time)) ." - " . date('24:i', strtotime($time . " +25 minutes"));
+        } else {
+            return date('H:i', strtotime($time)) ." - ". date('H:i', strtotime($time . " +25 minutes"));
+        }
+    }
+}
+    
 
 
 

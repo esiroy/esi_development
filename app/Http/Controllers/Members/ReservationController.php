@@ -63,7 +63,7 @@ class ReservationController extends Controller
             ['id' => 25, 'startTime' => '23:00', 'endTime' => '23:25'],
             ['id' => 26, 'startTime' => '23:30', 'endTime' => '23:55'],
 
-            ['id' => 27, 'startTime' => '24:00', 'endTime' => '23:25'],
+            ['id' => 27, 'startTime' => '24:00', 'endTime' => '24:25'],
             ['id' => 28, 'startTime' => '24:30', 'endTime' => '24:55'],
 
         );
