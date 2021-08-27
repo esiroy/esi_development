@@ -40,7 +40,7 @@
                             </div>
                         </div>
 
-                        <div id="teacherReplies" style="height:220px; overflow:auto;"></div>
+                        <div id="teacherReplies" style="height:420px; overflow:hidden scroll;"></div>
                     </div>
                 </div>
 
@@ -117,7 +117,7 @@
                     },            
                     success: function(data) 
                     {
-                        addTeacherReplyBubble(teacherProfileImage, data.message) 
+                        addTeacherReplyBubble(teacherProfileImage, data) 
                     
                     }
                 });

@@ -782,6 +782,16 @@ class TutorScheduleController extends Controller
             }
             
 
+            $items = [];
+            foreach($conversations as $item) {
+                $items[] = [
+                    "message"       => $item->message, 
+                    "message_type"  => $item->message_type,
+                    "created_at"    => ESIDateTimeSecondsFormat($item->created_at)
+                ];
+            }
+
+
             return Response()->json([
                 "success"       => true,  
                 "message"       => "conversations succesfully fetched",
@@ -789,7 +799,7 @@ class TutorScheduleController extends Controller
                 "memberPhoto"   => $memberOrignalImage,
                 "tutorPhoto"    => $tutorOrignalImage,
                 "memo"          => $memo,
-                "conversations" => $conversations,            
+                "conversations" => $items,            
             ]); 
         } else {
             return Response()->json([

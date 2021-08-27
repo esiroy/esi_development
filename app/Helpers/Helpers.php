@@ -39,6 +39,32 @@ if (! function_exists('ESIDateTimeFormat')) {
     }
 }
 
+//japanese date time with seconds formatter
+if (! function_exists('ESIDateTimeSecondsFormat')) {
+    function ESIDateTimeSecondsFormat($date) 
+    {        
+        if (date('H', strtotime($date)) == '00') 
+        {  
+           return date('Y年 m月 d日 24:i:s', strtotime($date ." - 1 day"));
+        } else {
+            return  date('Y年 m月 d日 H:i:s', strtotime($date));
+        }
+    }
+}
+
+//english date time with seconds formatter
+if (! function_exists('ESIDateTimeSecondsENFormat')) {
+    function ESIDateTimeSecondsENFormat($date) 
+    {        
+        if (date('H', strtotime($date)) == '00') 
+        {  
+           return date('Y, m-d 24:i:s', strtotime($date ." - 1 day"));
+        } else {
+            return  date('Y, m-d H:i:s', strtotime($date));
+        }
+    }
+}
+
 if (! function_exists('ESIMailDateTimeFormat')) {
     function ESIMailDateTimeFormat($date) 
     {        

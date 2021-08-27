@@ -255,14 +255,13 @@
                     success: function(data) 
                     {
                         let replies = data.conversations;
-                        let memo = data.memo;
 
                         if (replies.length >= 1) 
                         {
                             replies.forEach(createReplyBubble);
                         } else {
                             $memberProfileImage = $('#memberProfile').html();
-                            addMemberReplyBubble($memberProfileImage, memo);
+                            addMemberReplyBubble($memberProfileImage, data);
                         }                        
                     },
                 });
@@ -304,20 +303,61 @@
 
 
             /*[START] MODAL  */  
-            function addTeacherReplyBubble(image, message) 
+            function addTeacherReplyBubble(image, data) 
             {
-                $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-9'><div class='member-speech-bubble'>"+ message +"</div></div><div class='col-md-3'>" + image + "</div> </div>");         
-                setTimeout(() => {  
-                        var element = document.getElementById("teacherReplies");
-                        element.scrollTop = element.scrollHeight;
-                },100);
+                //$( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-9'><div class='member-speech-bubble'>"+ message +"</div></div><div class='col-md-3'>" + image + "</div> </div>");         
+
+                if (data.message) {
+                    
+                    let content ="<div class='row'>"
+                        + "<div class='col-md-3'>&nbsp;</div>"
+                        + "<div class='col-md-6 text-right'>"
+                        + "<div class='time-stamp'><span class='small'> " + data.created_at +"</span></div> "
+                        + "<div class='member-message-container'>"
+                        + "     <div class='member-speech-bubble'>  "+ data.message +"</div>"
+                        + " </div>"
+                        + "</div> "
+                        + "<div class='col-md-3'>"
+                        + " <div class='member-info'>"
+                        + image
+                        + " </div>"
+                        + "</div>"                    
+                        + "</div>";
+
+                    $( "#teacherReplies" ).append(content);
+
+
+                    setTimeout(() => {  
+                            var element = document.getElementById("teacherReplies");
+                            element.scrollTop = element.scrollHeight;
+                    },100);
+                }
 
             }
 
-            function addMemberReplyBubble(image, message) 
+            function addMemberReplyBubble(image, data) 
             {
-                if (message) {        
-                    $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  message + " </div> </div> </div>");         
+                console.log(data.message);
+
+                if (data.message) {
+                  
+
+                    let content = "<div class='row'>"
+                                + "<div class='col-md-3'>"+ image +" </div>"
+                                + "<div class='col-md-6 pl-4'>"
+                                    + "<div>"
+                                    + "<span class='small'>"+  data.created_at +"</span>"
+                                    + "</div> "
+                                    + "<div class='teacher-speech-bubble'>" + data.message + "</div>"
+                                + "</div> "
+                                + "<div class='col-md-3'>&nbsp;</div>"
+                              + "</div>";
+
+                    $( "#teacherReplies" ).append( content);   
+                    
+                    //$( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  message + " </div> </div> </div>");         
+
+
                     setTimeout(() => {  
                             var element = document.getElementById("teacherReplies");
                             element.scrollTop = element.scrollHeight;
@@ -332,10 +372,10 @@
             { 
                 if (item.message_type === "MEMBER") {
                     let memberProfileImage = $('#memberProfile').html();
-                    addMemberReplyBubble(memberProfileImage, item.message);
+                    addMemberReplyBubble(memberProfileImage, item);
                 } else {
                     let teacherProfileImage = $('#teacherProfile').html();
-                    addTeacherReplyBubble(teacherProfileImage, item.message);
+                    addTeacherReplyBubble(teacherProfileImage, item);
                 }    
             }
             
@@ -632,8 +672,10 @@
                 border-radius: .4em;
                 padding: 10px 20px 10px;
                 float: right;
-                margin: 20px -10px 0px;
+                margin: 0px -10px 0px;
                 text-align: right;
+                max-width: 280px;
+                overflow-wrap: break-word;                    
             }
 
             .member-speech-bubble:after {
@@ -670,6 +712,8 @@
                 margin: 5px 0px 5px;
                 padding: 10px;
                 display: inline-block;      
+                max-width: 280px;
+                overflow-wrap: break-word;                    
             }
 
             .teacher-speech-bubble:after {

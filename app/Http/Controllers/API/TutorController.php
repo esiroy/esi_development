@@ -127,6 +127,17 @@ class TutorController extends Controller
 
         if ($conversations) 
         {            
+
+            $items = [];
+            foreach($conversations as $item) {
+                $items[] = [
+                    "message"       => $item->message, 
+                    "message_type"  => $item->message_type,
+                    "created_at"    => ESIDateTimeSecondsFormat($item->created_at)
+                ];
+            }
+            
+            
            //$memoReply->where('schedule_item_id', $scheduleID)->update(array('is_read' => true));
 
            $memoReply->where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "MEMBER")->update(array('is_read' => true));
@@ -134,8 +145,7 @@ class TutorController extends Controller
             return Response()->json([
                 "success" => true,  
                 "memo"          => $memo,
-                "message"   => "conversations succesfully fetched",
-                "conversations" => $conversations,            
+                "conversations" => $items,            
             ]); 
 
         } else {
@@ -297,9 +307,19 @@ class TutorController extends Controller
 
         MemoReply::where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "MEMBER")->update(array('is_read' => true));
 
+
+        $items = [];
+        foreach($conversations as $item) {
+            $items[] = [
+                "message"       => $item->message,  
+                "message_type"  => "MEMBER",          
+                "created_at"    => ESIDateTimeSecondsFormat($item->created_at)
+            ];
+        }
+
         return Response()->json([
             "success" => true,    
-            "conversations" => $conversations,
+            "conversations" => $items,
             "message" => "Teacher memo replies has been fetched.",
         ]);
     }    
@@ -328,17 +348,20 @@ class TutorController extends Controller
 
         if ($memoResponse) 
         {
+
+            $memo = $memoReply->find($memoResponse->id);
+
             return Response()->json([
                 "success"   => true,
                 "response"  => "message has been sent!",
                 "message"   => $message,            
-                "date"      => date('m-d-y'),
+                 "created_at"      => ESIDateTimeSecondsFormat($memo->created_at),
             ]);
         } else {
             return Response()->json([
                 "success"   => false,
                 "response"  => "Error has was not sent due to an error, please check back later.",
-                "date"      => date('m-d-y'),
+                "created_at"      => date('m-d-y H:i:s'),
             ]);
 
         }       

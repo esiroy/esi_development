@@ -973,6 +973,16 @@ class MemberController extends Controller
 
         if ($conversations) 
         {            
+
+            $items = [];
+            foreach($conversations as $item) {
+                $items[] = [
+                    "message"       => $item->message, 
+                    "message_type"  => $item->message_type,
+                    "created_at"    => ESIDateTimeSecondsFormat($item->created_at)
+                ];
+            }
+            
            //$memoReply->where('schedule_item_id', $scheduleID)->update(array('is_read' => true));
 
            $memoReply->where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->update(array('is_read' => true));
@@ -980,7 +990,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success" => true,  
                 "message"   => "conversations succesfully fetched",
-                "conversations" => $conversations,            
+                "conversations" => $items,            
             ]); 
         } else {
             return Response()->json([
@@ -1025,28 +1035,30 @@ class MemberController extends Controller
             ];
 
             $memoReply = new MemoReply();
-            $memoResponse = $memoReply->create($data);
+            $memoResponse = $memoReply->create($data);            
 
             if ($memoResponse) 
             {
+                $memo = $memoReply->find($memoResponse->id);
+
                 return Response()->json([
                     "success"   => true,
                     "response"  => "message has been sent!",
                     "message"   => $message,            
-                    "date"      => date('m-d-y'),
+                    "created_at"      => ESIDateTimeSecondsFormat($memo->created_at),
                 ]);
             } else {
                 return Response()->json([
                     "success"   => false,
                     "response"  => "Error has was not sent due to an error, please check back later.",
-                    "date"      => date('m-d-y'),
+                    "created_at"      => date('m-d-y H:i:s'),
                 ]);
             } 
         } else {
             return Response()->json([
                 "success"   => false,
                 "response"  => "Error schedule was not found, it may have been already removed.",
-                "date"      => date('m-d-y'),
+                "created_at"      => date('m-d-y H:i:s'),
             ]);
         }
        
@@ -1061,9 +1073,17 @@ class MemberController extends Controller
         
         MemoReply::where('schedule_item_id', $scheduleID)->where('is_read', false)->where('message_type', "TUTOR")->update(array('is_read' => true));
 
+        $items = [];
+        foreach($conversations as $item) {
+            $items[] = [
+                "message"       => $item->message,            
+                "created_at"    => ESIDateTimeSecondsFormat($item->created_at)
+            ];
+        }
+
         return Response()->json([
             "success" => true,    
-            "conversations" => $conversations,
+            "conversations" => $items,
             "message" => "Teacher memo replies has been fetched.",
         ]);
     }

@@ -68,7 +68,7 @@
                             </div>
                         </div>
 
-                        <div id="teacherReplies" style="height:220px; overflow:auto; padding-right:25px">                                                                               
+                        <div id="teacherReplies" style="height:420px; overflow: hidden scroll; padding-right:25px">                                                                               
                         </div>
                     </div>
                 </div>

@@ -477,21 +477,22 @@
                 },            
                 success: function(data) 
                 {
-                let replies = data.conversations;
-                replies.forEach(createReplyBubble);
+                    let replies = data.conversations;
+                    replies.forEach(createReplyBubble);
                 },
             });
         }
 
-        function createReplyBubble(item, index) 
+        function createReplyBubble(data, index) 
         {
-            if (item.message_type === "MEMBER") 
+            if (data.message_type === "MEMBER") 
             {
                 let teacherProfileImage = $('#memberProfile').html();
-                addMemberReplyBubble(teacherProfileImage, item.message);
+                addMemberReplyBubble(teacherProfileImage, data);
+               
             } else {
                 let teacherProfileImage = $('#teacherProfile').html();
-                addTeacherReplyBubble(teacherProfileImage, item.message);
+                addTeacherReplyBubble(teacherProfileImage, data);
             }    
             
         }
@@ -499,10 +500,28 @@
             
 
         /*[START] MODAL  */  
-        function addTeacherReplyBubble(image, message) 
+        function addTeacherReplyBubble(image, data) 
         {
-            if (message) {        
-                $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  message + " </div> </div> </div>");         
+            if (data.message) {        
+
+                //let img = "<div class='col-md-3'> "+ image +" </div>";
+                //let msg = "<div class='teacher-speech-bubble'>" +  message + " </div> ";
+                //$( "#teacherReplies" ).append( "<div class='row'>" + img +"<div class='col-md-9'> " + msg + "</div> </div>");         
+
+                let content = "<div class='row'>"
+                                + "<div class='col-md-3'>"+ image +" </div>"
+                                + "<div class='col-md-6 pl-4'>"
+                                    + "<div>"
+                                    + "<span class='small'>"+  data.created_at +"</span>"
+                                    + "</div> "
+                                    + "<div class='teacher-speech-bubble'>" + data.message + "</div>"
+                                + "</div> "
+                                + "<div class='col-md-3'>&nbsp;</div>"
+                              + "</div>";
+
+                $( "#teacherReplies" ).append( content);               
+       
+
                 setTimeout(() => {  
                         var element = document.getElementById("teacherReplies");
                         element.scrollTop = element.scrollHeight;
@@ -510,10 +529,31 @@
             }
         }
 
-        function addMemberReplyBubble(image, message) 
+        function addMemberReplyBubble(image, data) 
         {
-            if (message) {        
-                $( "#teacherReplies" ).append( "<div class='row'> <div class='col-md-9'> <div class='member-speech-bubble'>"+ message +" </div></div>    <div class='col-md-3'>  " +  image + "  </div> </div>");         
+            if (data.message) {                   
+                
+                //let msg = "<div class='col-md-9'> <div class='member-speech-bubble'> "+ message +" </div>";
+                //let img = image;
+                //$( "#teacherReplies" ).append( "<div class='row'>"+ msg +"</div> <div class='col-md-3'>  " + img  + " </div> </div>");            
+
+                let content ="<div class='row'>"
+                    + "<div class='col-md-3'>&nbsp;</div>"
+                    + "<div class='col-md-6 text-right'>"
+                    + "<div class='time-stamp'><span class='small'> " + data.created_at +"</span></div> "
+                    + "<div class='member-message-container'>"
+                    + "     <div class='member-speech-bubble'>  "+ data.message +"</div>"
+                    + " </div>"
+                    + "</div> "
+                    + "<div class='col-md-3'>"
+                    + " <div class='member-info'>"
+                    + image
+                    + " </div>"
+                    + "</div>"                    
+                    + "</div>";
+
+                $( "#teacherReplies" ).append(content);
+
                 setTimeout(() => {  
                         var element = document.getElementById("teacherReplies");
                         element.scrollTop = element.scrollHeight;
@@ -552,8 +592,10 @@
                 success: function(data) 
                 {
                     let teacherProfileImage = $('#memberProfile').html();
+                    let date = data.date;
+                    console.log(date);
 
-                    addMemberReplyBubble(teacherProfileImage, message) 
+                    addMemberReplyBubble(teacherProfileImage, data) 
                 },
             });
                     
@@ -773,8 +815,10 @@
     border-radius: .4em;
     padding: 10px 20px 10px;
     float: right;
-    margin: 20px -10px 0px;
+    margin: 0px -10px 0px;
     text-align: right;
+    max-width: 280px;
+    overflow-wrap: break-word;    
 }
 
 .member-speech-bubble:after {
@@ -810,7 +854,9 @@
     padding-right: 30px;
     margin: 5px 0px 5px;
     padding: 10px;
-    display: inline-block;      
+    display: inline-block;
+    max-width: 280px;
+    overflow-wrap: break-word;      
 }
 
 .teacher-speech-bubble:after {

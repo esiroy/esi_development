@@ -7,9 +7,9 @@
     <div id="scheduleItemModal">
 
 
-        <b-modal id="memberMemoModal" v-bind:title="'Member Memo - ' + this.selectedlessonTime"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade class="small">
-            <div style="height: 420px;scroll-behavior: smooth;overflow-y: scroll;overflow-x: hidden;">
-                <p class="my-2" v-html="memberMemo"></p>
+        <b-modal id="memberMemoModal" ref="memberMemoModal"  v-bind:title="'Member Memo - ' + this.selectedlessonTime"  @show="retrieveMemo()" ok-only ok-variant="secondary" ok-title="Close" no-fade class="small">
+            <div id="user-chatlog" ref="userChatlog" style="height: 420px;overflow-y: scroll;overflow-x: hidden;">
+                <p class="my-2 " v-html="memberMemo"></p>
             </div>
         </b-modal>
 
@@ -224,6 +224,8 @@ export default {
     },
     data() {
         return {
+            scrollInterval: false,
+
             showModal: false,
             modalBusy: false,
             selectedlessonTime: "",
@@ -319,12 +321,26 @@ export default {
        this.startInterval();
 
     },
-    methods: {
+    methods: {      
         startInterval: function () {
             setInterval(() => {
                  this.updateSchedules(this.scheduled_at, this.shiftDuration);
                  
             }, 30000);
+        },
+        scrollToEnd: function() 
+        {              
+            this.scrollInterval = setInterval(() => {
+
+                let chatlog  = document.getElementById('user-chatlog')
+                let x = chatlog.scrollHeight;
+                chatlog.scrollTop = chatlog.scrollHeight
+
+                if (x > 0)  {
+                    clearInterval(this.scrollInterval);
+                }               
+                console.log("finding interval");
+            }, 100);                
         },
         getScheduleData(data) {            
            try {
@@ -340,9 +356,10 @@ export default {
             }
             catch(err) { return ""; }
         },
-        retrieveMemo() {
+        retrieveMemo(bvModal) {
             //@todo : clean up memo
             //@todo: add loading
+         
         },
         showReportCard(data) {
             try {
@@ -451,7 +468,7 @@ export default {
                 let replies = response.data.conversations;                
                 let memberPhoto = response.data.memberPhoto;
                 let tutorPhoto = response.data.tutorPhoto;
-                let memo = response.data.memo;
+                let data = response.data;
 
                 if (replies.length >= 1) 
                 {
@@ -460,9 +477,14 @@ export default {
                     });    
                 } else {
                     let memberProfileImage = "<img src='"+memberPhoto+"' class='img-fluid border'>";
-                    this.addMemberReplyBubble(memberProfileImage, memo) 
+                    this.addMemberReplyBubble(memberProfileImage, data) 
                 }
             
+                this.$forceUpdate();      
+                this.$nextTick(function()
+                {     
+                    this.scrollToEnd();
+                });
 
             });
         },
@@ -470,19 +492,51 @@ export default {
         { 
             if (item.message_type === "MEMBER") {
                 let memberProfileImage = "<img src='"+memberPhoto+"' class='img-fluid border'>";
-                this.addMemberReplyBubble(memberProfileImage, item.message);
+                this.addMemberReplyBubble(memberProfileImage, item);
             } else {
                 let teacherProfileImage =  "<img src='"+tutorPhoto+"' class='img-fluid border'>";
-                this.addTeacherReplyBubble(teacherProfileImage, item.message);
+                this.addTeacherReplyBubble(teacherProfileImage, item);
             }    
         },
-        addMemberReplyBubble(image, message) 
+        addMemberReplyBubble(image, data) 
         {
-            this.memberMemo += "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  message + " </div> </div> </div>";
+            let content = "<div class='row mt-1'>"
+                            + "<div class='col-md-3'>"+ image +" </div>"
+                            + "<div class='col-md-6 pl-4'>"
+                                + "<div>"
+                                + "<span class='small'>"+  data.created_at +"</span>"
+                                + "</div> "
+                                + "<div class='teacher-speech-bubble'>" + data.message + "</div>"
+                            + "</div> "
+                            + "<div class='col-md-3'>&nbsp;</div>"
+                            + "</div>";
+
+     
+            //this.memberMemo += "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  data.message + " </div> </div> </div>";
+
+            this.memberMemo += content;
+
+         
         },    
-        addTeacherReplyBubble(image, message) 
+        addTeacherReplyBubble(image, data) 
         {
-            this.memberMemo += "<div class='row'> <div class='col-md-9'><div class='member-speech-bubble'>"+ message +"</div></div><div class='col-md-3'>" + image + "</div> </div>"
+            let content ="<div class='row mt-1'>"
+                + "<div class='col-md-3'>&nbsp;</div>"
+                + "<div class='col-md-6 text-right'>"
+                + "<div class='time-stamp'><span class='small'> " + data.created_at +"</span></div> "
+                + "<div class='member-message-container'>"
+                + "     <div class='member-speech-bubble'>  "+ data.message +"</div>"
+                + " </div>"
+                + "</div> "
+                + "<div class='col-md-3'>"
+                + " <div class='member-info'>"
+                + image
+                + " </div>"
+                + "</div>"                    
+                + "</div>";
+
+            this.memberMemo += content;
+     
         },            
         getMember(data) 
         {          
@@ -1511,8 +1565,10 @@ export default {
         border-radius: .4em;
         padding: 10px 20px 10px;
         float: right;
-        margin: 20px -10px 0px;
+        margin: 0px -10px 0px;
         text-align: right;
+        max-width: 280px;
+        overflow-wrap: break-word;           
     }
 
     .member-speech-bubble:after {
@@ -1546,9 +1602,11 @@ export default {
         position: relative;
         border-radius: .4em;
         padding-right: 30px;
-        margin: 5px 0px 5px;
+        margin: 0px 0px 5px;
         padding: 10px;
-        display: inline-block;      
+        display: inline-block;  
+        max-width: 280px;
+        overflow-wrap: break-word;               
     }
 
     .teacher-speech-bubble:after {
