@@ -52,6 +52,34 @@ if (! function_exists('ESIDateTimeSecondsFormat')) {
     }
 }
 
+//Standard Date format
+if (! function_exists('ESIDate')) {
+    function ESIDate($date) 
+    {        
+        if (date('H', strtotime($date)) == '00') 
+        {  
+            return date('F d, Y', strtotime($date ." - 1 day")) ;
+        } else {
+            return  date('F d, Y', strtotime($date));
+        }
+    }
+}
+
+
+//english ESI date formatter
+if (! function_exists('ESIDateTimeENFormat')) {
+    function ESIDateTimeENFormat($date) 
+    {        
+        if (date('H', strtotime($date)) == '00') 
+        {  
+           return date('Y, m-d 24:i', strtotime($date ." - 1 day"));
+        } else {
+            return  date('Y, m-d H:i', strtotime($date));
+        }
+    }
+}
+
+
 //english date time with seconds formatter
 if (! function_exists('ESIDateTimeSecondsENFormat')) {
     function ESIDateTimeSecondsENFormat($date) 
@@ -65,6 +93,9 @@ if (! function_exists('ESIDateTimeSecondsENFormat')) {
     }
 }
 
+
+
+//Mailer Date EN format
 if (! function_exists('ESIMailDateTimeFormat')) {
     function ESIMailDateTimeFormat($date) 
     {        
@@ -77,15 +108,15 @@ if (! function_exists('ESIMailDateTimeFormat')) {
     }
 }
 
-
-if (! function_exists('ESIDate')) {
-    function ESIDate($date) 
+//Lesson Time format
+if (! function_exists('ESILessonTimeENFormat')) {
+    function ESILessonTimeENFormat($date) 
     {        
         if (date('H', strtotime($date)) == '00') 
         {  
-            return date('F d, Y', strtotime($date ." - 1 day")) ;
+           return date('Y-m-d 24:i', strtotime($date ." - 1 day"));
         } else {
-            return  date('F d, Y', strtotime($date));
+            return  date('Y-m-d H:i', strtotime($date));
         }
     }
 }
