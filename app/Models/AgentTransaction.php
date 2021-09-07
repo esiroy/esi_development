@@ -72,7 +72,32 @@ class AgentTransaction extends Model
                 'valid' => true,
             ];
             AgentTransaction::create($transaction);
-        }
+        } else if ($memberTransactionData['status'] == 'OVERRIDE') {
+            $transaction = [
+                'schedule_item_id' => $memberTransactionData['scheduleItemID'],
+                'member_id' => $memberTransactionData['memberID'],
+                'lesson_shift_id' => $shift->id,
+                'created_by_id' => Auth::user()->id,
+                'reservation_type' => $memberTransactionData['reservation_type'],                
+                'transaction_type' => "OVERRIDE",
+                'amount' => 0,
+                'valid' => true,
+            ];
+            AgentTransaction::create($transaction);
+
+        } else if ($memberTransactionData['status'] == 'DELETE' || $memberTransactionData['status'] == 'DELETED') {
+            $transaction = [
+                'schedule_item_id' => $memberTransactionData['scheduleItemID'],
+                'member_id' => $memberTransactionData['memberID'],
+                'lesson_shift_id' => $shift->id,
+                'created_by_id' => Auth::user()->id,
+                'reservation_type' => $memberTransactionData['reservation_type'],                
+                'transaction_type' => "DELETE",
+                'amount' => 0,
+                'valid' => true,
+            ];
+            AgentTransaction::create($transaction);
+        }           
 
     }
 
@@ -227,7 +252,10 @@ class AgentTransaction extends Model
                 ->orWhere('transaction_type', 'DISTRIBUTE')
                 ->orWhere('transaction_type', 'AGENT_SUBTRACT')
                 ->orWhere('transaction_type', 'CREDITS_EXPIRATION')
-                ->orWhere('transaction_type', 'EXPIRED');
+                ->orWhere('transaction_type', 'EXPIRED')
+                ->orWhere('transaction_type', 'OVERRIDE')
+                ->orWhere('transaction_type', 'DELETE')
+                ->orWhere('transaction_type', 'DELETED');
         })->get();
         return $transactions;
     }

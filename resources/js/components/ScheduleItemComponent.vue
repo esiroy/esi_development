@@ -41,7 +41,8 @@
                         <option value="CLIENT_NOT_AVAILABLE">Client Not Available</option>
                         <option value="TUTOR_CANCELLED">Tutor Cancelled</option>
                         <option value="COMPLETED">Completed</option>
-                        <option value="NOTHING">Nothing</option>
+                        <option value="OVERRIDE">Override</option>
+                        <option value="NOTHING">Delete</option>
                     </select>
                 </div>
             </div>
@@ -653,9 +654,9 @@ export default {
             this.modalBusy = true;            
             
             if (this.status === "NOTHING") this.confirmDelete(this.tutorData);
+            else if(this.status === "OVERRIDE") this.confirmOverride(this.tutorData);
             else {
-
-                console.log("the id selected => " + this.memberSelectedID.id)
+                //console.log("the id selected => " + this.memberSelectedID.id)
 
                 if (this.status === 'CLIENT_RESERVED' || this.status === 'CLIENT_RESERVED_B') 
                 { 
@@ -721,22 +722,16 @@ export default {
             
                 } else {
                     if (this.modalType === 'save') 
-                    {
-                        console.log ("saving...")   
+                    {                       
                         //this.checkBookedScheduleLimit();
                         this.setTutorSchedule();
 
                     } else {                   
-
-                        console.log ("updating...")
+                     
                         //this.checkBookedScheduleLimit();
                         this.updateTutorSchedule();
                     }                        
-                }                    
-
-              
-
-
+                }
             }            
             bvModalEvt.preventDefault();
         }, 
@@ -1224,14 +1219,46 @@ export default {
 			});            
 
         },
+        confirmOverride(scheduleData) {
+            if (confirm('This will mark the schedule inactive, Are you sure you want to override this reservation?')) {
+                this.overrideSchedule(this.currentScheduledData);
+            } else {
+                // Do nothing!
+            }
+        },        
         confirmDelete(scheduleData) 
         {
             if (confirm('Are you sure you want to delete this reservation?')) {
                 this.deleteSchedule(scheduleData);
             } else {
-            // Do nothing!
+                // Do nothing!
             }
         },
+        overrideSchedule(scheduleData) 
+        {           
+            axios.post("/api/override_tutor_schedule?api_token=" + this.api_token,             
+            {
+                method             : "POST",             
+                scheduled_at       : this.scheduled_at,
+                shiftDuration      : this.shiftDuration,                  
+                scheduleData       : scheduleData,
+            })
+            .then(response => 
+            {
+                if (response.data.success === true) 
+                {
+                    this.lessonsData = response.data.tutorLessonsData;
+                    this.$bvModal.hide("schedulesModal");
+                } else {                   
+                    alert (response.data.message);
+                    this.$bvModal.hide("schedulesModal"); 
+                }
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                this.$bvModal.hide("schedulesModal"); 
+			});              
+        },        
         deleteSchedule(scheduleData) 
         {           
             axios.post("/api/delete_tutor_schedule?api_token=" + this.api_token,             

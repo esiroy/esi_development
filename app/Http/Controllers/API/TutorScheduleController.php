@@ -540,10 +540,6 @@ class TutorScheduleController extends Controller
                 $isTutorReserved = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED')->where('valid', 1)->exists();
                 $isTutorReserved_b = ScheduleItem::where('lesson_time', $lessonTime)->where('member_id', $memberID)->where('schedule_status', 'CLIENT_RESERVED_B')->where('valid', 1)->exists();
                 if ($isTutorReserved || $isTutorReserved_b) {
-
-                    
-
-
                     return Response()->json([
                         "success" => false,
                         "refresh" => false,
@@ -692,6 +688,71 @@ class TutorScheduleController extends Controller
 
     }
 
+
+
+    public function overrideTutorSchedule(Request $request)
+    {
+        $data = $request['scheduleData'];
+        $scheduleID = $request['scheduleData']['id'];
+        $startTime = $data['startTime'];
+        $endTime = $data['endTime'];
+        $scheduled_at = $request['scheduled_at'];
+        $duration = $request['shiftDuration'];
+
+        //change to schedule item for max compatibility
+        $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $startTime . " + 1 hour"));
+
+     
+        
+        $schedule = ScheduleItem::find($scheduleID);
+
+        if ($schedule) {
+            //set the deleted schedule id
+            $scheduleID = $schedule->id;
+
+            $memberTransactionData = [               
+                'scheduleItemID'        => $schedule->id,
+                'memberID'              => $schedule->member_id,
+                'reservation_type'      =>  $schedule->schedule_status,
+                'shiftDuration'         => $schedule->duration,
+                'status'                => "OVERRIDE",
+            ];
+
+            $transactionObj = new AgentTransaction();
+            $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+
+
+            //update schedule validity to false 
+            $schedule->update([
+                'valid' => false
+            ]);
+
+
+
+            //refetch schedule items
+            $scheduleItem = new ScheduleItem();
+
+            $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+
+            return Response()->json([
+                "success" => true,
+                "refresh" => true,
+                'scheduleItemID'    => $schedule->id,
+                "message" => "lesson has been overrided and records related to this schedule has been archived",
+                "tutorData" => $data,
+                "tutorLessonsData" => $tutorLessonsData,
+            ]);
+
+        } else {
+            return Response()->json([
+                "success" => false,
+                "message" => "Can not find the lesson, it may have been already been deleted",
+            ]);
+        }
+
+    }
+
+
     public function deleteTutorSchedule(Request $request)
     {
         $data = $request['scheduleData'];
@@ -730,12 +791,24 @@ class TutorScheduleController extends Controller
                 $questionnaire->delete();
             }
 
-            //[updated - July 1] remove replies when removing a schedule
+            //[updated - July 1, 2021] remove replies when removing a schedule
             $memoReplies =  MemoReply::where('schedule_item_id', $scheduleID)->get();
             foreach ($memoReplies as $memoReply) {
                 $memoReply->delete();
             }
 
+            //[Update - Sept 1, 2021] Add a deleted on member transaction
+            $memberTransactionData = [               
+                'scheduleItemID'        => $schedule->id,
+                'memberID'              => $schedule->member_id,
+                'reservation_type'      => $schedule->schedule_status,
+                'shiftDuration'         => $schedule->duration,
+                'status'                => "DELETE",
+            ];
+            $transactionObj = new AgentTransaction();
+            $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
+            
+            
             $schedule->delete();
 
            
@@ -743,6 +816,8 @@ class TutorScheduleController extends Controller
             //refetch schedule items
             $scheduleItem = new ScheduleItem();
             $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+
+
             return Response()->json([
                 "success" => true,
                 "message" => "lesson deleted",

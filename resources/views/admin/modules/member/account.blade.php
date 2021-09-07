@@ -196,6 +196,12 @@
                                         @else 
                                              <strong> {{ "CANCEL LESSON"}} </strong>                                    
                                         @endif
+                                    @elseif ($transaction->transaction_type == "OVERRIDE")  
+                                        <p class="text-muted">{{ strtoupper(formatStatus($transaction->transaction_type)) }}</p>
+
+                                    @elseif ($transaction->transaction_type == "DELETE" || $transaction->transaction_type == "DELETED")
+                                        <p class="text-danger"><i>{{ strtoupper(formatStatus($transaction->transaction_type)) }}</i></p>
+
                                     @else          
                                         @if (isset($scheduleItem->schedule_status)) 
                                             @if ($scheduleItem->schedule_status === "CLIENT_RESERVED_B" || $transaction->reservation_type == "CLIENT_RESERVED_B")
@@ -254,30 +260,26 @@
                                 -->
 
                                 <td class="small">
-                                    <!-- @note: get member name -->
-                                    
+                                    <!-- @note: get member name -->                                    
                                     @php 
                                         $user = \App\Models\User::where('id', $transaction->created_by_id)->first();
                                     @endphp
                                     Created By: {{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}
 
 
-
-                                    <div>Member:{{ $user->firstname ?? "-"  }}  {{ $user->lastname ?? ""  }}</div>
-
+                                    
                                     @php 
-                                        $member = \App\Models\User::where('id', $transaction->member_id)->first();
+                                        $member = \App\Models\Member::where('user_id', $transaction->member_id)->first();
                                     @endphp
+
+                                    <div>Member: {{ $member->nickname ?? "-" }}</div>
 
 
 
                                     @if (isset($scheduleItem->tutor_id))
-
                                         @php 
                                             $tutor = \App\Models\User::where('id', $scheduleItem->tutor_id)->first();
                                         @endphp
-
-
                                         <div>Tutor: {{ $tutor->firstname ?? "-"  }}  {{ $tutor->lastname ?? ""  }}</div>
                                     @endif
 
@@ -288,10 +290,18 @@
                                     <!-- points -->
                                     @if ($transaction->transaction_type == "AGENT_SUBTRACT" || $transaction->transaction_type == "LESSON" || $transaction->transaction_type == "EXPIRED" )
                                         {{ "-" }} {{ $transaction->amount }}
+
                                     @elseif ($transaction->transaction_type ==  "MANUAL_ADD" || $transaction->transaction_type == "CANCEL_LESSON" || $transaction->transaction_type == "DISTRIBUTE" || $transaction->transaction_type == "FREE_CREDITS")
                                         {{ "+" }} {{ $transaction->amount }}
+
                                     @elseif ($transaction->transaction_type == "CANCEL_LESSON_B") 
                                         <span class="text-danger"> &nbsp; 0 </span>
+
+                                    @elseif ($transaction->transaction_type == "DELETE" || $transaction->transaction_type == "DELETED")
+                                        <p class="text-danger">{{ strtoupper(formatStatus($transaction->amount)) }}</p>
+
+                                    @elseif ($transaction->transaction_type == "OVERRIDE")
+                                        <p class="text-muted"> {{ $transaction->amount }}   </p>
                                     @else 
                                         {{ " " }}
                                     @endif

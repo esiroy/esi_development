@@ -49,6 +49,8 @@ Route::post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->
 Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@getTutors')->name('APIGetTutors');
 Route::middleware('auth:api')->post('/create_tutor_schedule', 'API\TutorScheduleController@store')->name('APICreateTutorSchedule');
 Route::middleware('auth:api')->post('/update_tutor_schedule', 'API\TutorScheduleController@update')->name('APIUpdateTutorSchedule');
+Route::middleware('auth:api')->post('/override_tutor_schedule', 'API\TutorScheduleController@overrideTutorSchedule')->name('APIOverrideTutorSchedule');
+
 Route::middleware('auth:api')->post('/delete_tutor_schedule', 'API\TutorScheduleController@deleteTutorSchedule')->name('APIDeleteTutorSchedule');
 Route::middleware('auth:api')->post('/get_schedules', 'API\TutorScheduleController@getSchedules')->name('APIGetSchedules');
 Route::middleware('auth:api')->post('/get_members', 'API\TutorScheduleController@getMembers')->name('APIGetMemberList');
