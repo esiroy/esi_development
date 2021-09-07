@@ -259,6 +259,8 @@ Route::get('exportSoonToExpireXLS', 'ExportController@exportSoonToExpireXLS')->n
 Route::get('downloadlessonReport', 'ExportController@downloadlessonReport')->name('downloadlessonReport');
 Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->name('downloadSalaryReport');
 
+Route::get('/writing', 'Writing\WritingController@index')->name('writing');
+Route::get('/writing/ielts', 'Writing\WritingController@ielts')->name('writing-ielts');
 
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
@@ -277,6 +279,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
+
+        Route::resource('/writing', 'Modules\WritingController');
 
         //upload photo
         Route::resource('image-upload', 'imageUploadController');
