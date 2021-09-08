@@ -305,7 +305,7 @@ class MemberController extends Controller
     }
 
     /*
-    Book a schedule
+    Book a schedule for a member
      */
     public function bookSchedule(Request $request)
     {        
@@ -359,7 +359,16 @@ class MemberController extends Controller
                 "type"          => "msgbox",
                 "message"       => "スケジュールが見つからないか、もう存在しません",
                 "message_en"    => "Schedule not found or no longer exists"
-            ]);            
+            ]);      
+        } else if ($schedule->valid == false) {      
+
+            return Response()->json([
+                "success"       => false,
+                "type"          => "msgbox",
+                "message"       => "スケジュールが見つからないか、もう存在しません",
+                "message_en"    => "Schedule is aleady invalid or archived"
+            ]);  
+
         } else {
             //found check if tutor is still available in this time slot
             if ($schedule->schedule_status !== 'TUTOR_SCHEDULED') {
@@ -632,6 +641,16 @@ class MemberController extends Controller
 
         if ($schedule) {
            
+            //IF SCHEDULE IS INVALID SHOW NOTIFY ERROR
+            if ($schedule->valid == FALSE) {
+                return Response()->json([
+                    "success" => false,
+                    "refresh" => true,
+                    "message_jp"   => "スケジュールが見つかりません。すでに削除されている可能性があります",
+                    "message" => "Schedule not found, it may have already been deleted",
+                ]);                              
+            }
+
             $reportCard = ReportCard::where('schedule_item_id', $scheduleID)->first();
 
             if ($reportCard) {
@@ -1162,7 +1181,7 @@ class MemberController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * API - create a new registered member .
      *
      * @param  \Illuminate\Http\Request  $request
      */

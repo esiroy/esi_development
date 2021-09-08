@@ -96,11 +96,20 @@
                                         -
                                         {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes"))) }}
                                     </td>
-                                    <td>{{ ucwords(str_replace('_', ' ', strtolower($schedule->schedule_status))) }}</td>
+                                    <td>
+                                        @if ($schedule->valid == false) 
+                                            <div class="text-danger">
+                                                {{ ucwords(str_replace('_', ' ', strtolower($schedule->schedule_status))) }}
+                                                (OVERRIDED)
+                                            </div>
+                                        @else 
+                                            {{ ucwords(str_replace('_', ' ', strtolower($schedule->schedule_status))) }}
+                                        @endif                                        
+                                    </td>
 
                                     <td>{{ $schedule->firstname }}</td>
 
-                                    <td>{{ $schedule->memo }}</td>
+                                    <td style="width:320px">{{ $schedule->memo }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>

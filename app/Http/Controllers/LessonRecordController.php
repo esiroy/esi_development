@@ -32,9 +32,6 @@ class LessonRecordController extends Controller
     //lessonRecords landing page
     public function index(Request $request, ReportCard $reportcards) 
     {
-     
-      
-
         $user = Auth::user();
         $member = Member::where('user_id', $user->id)->first();
 
@@ -52,19 +49,21 @@ class LessonRecordController extends Controller
             ];  
             
             $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');    
-
-            //$latestReportCard = ReportCard::where('member_id', $member->user_id)->OrderBy('created_at', 'DESC')->first();
-
             $latestReportCard = $reportcards->getLatest($member->user_id);
 
 
             if ($request->display == 'none') 
             {
-                $reportcards = Questionnaire::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
-
-                //@todo: fetch all schedules that needed for the member to give a answer for the question
+                //@todo: (update to model)
+                $reportcards = Questionnaire::where('member_id',  $member->user_id)
+                                ->orderBy('created_at', 'DESC')
+                                ->where('valid', true)
+                                ->paginate(30,['*'], 'reportcards');
+                
+                //@todo: (update to model)
                 $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
                             ->where('schedule_status', '!=', 'TUTOR_CANCELLED')
+                            ->where('valid', true)
                             ->orderBy('lesson_time', 'DESC')
                             ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');
 
@@ -76,6 +75,7 @@ class LessonRecordController extends Controller
 
                 $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
                                 ->where('schedule_status', '!=', 'TUTOR_CANCELLED')
+                                ->where('valid', true)
                                 ->orderBy('lesson_time', 'DESC')                                
                                 ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');                
 
@@ -92,11 +92,11 @@ class LessonRecordController extends Controller
     {
         $user = Auth::user();        
         $member = Member::where('user_id', $user->id)->first();
-      
-
-        $reportcards = ReportCardDate::where('id', $reportcardid)->orderBy('created_at', 'DESC')->paginate(30);
-
-        //$latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
+        
+        $reportcards = ReportCardDate::where('id', $reportcardid)
+                        ->where('valid', true)
+                        ->orderBy('created_at', 'DESC')
+                        ->paginate(30);
 
         $latestReportCard = $reportcards->getLatest($member->user_id);
 

@@ -767,7 +767,7 @@ class TutorScheduleController extends Controller
 
         $tutor = Tutor::find($tutorID);
 
-        $schedule = ScheduleItem::where('tutor_id', $tutor->user_id)->where('duration', $duration)->where('lesson_time', $lessonTime)->first();
+        $schedule = ScheduleItem::where('tutor_id', $tutor->user_id)->where('duration', $duration)->where('valid', true)->where('lesson_time', $lessonTime)->first();
 
         if ($schedule) {
             //set the deleted schedule id

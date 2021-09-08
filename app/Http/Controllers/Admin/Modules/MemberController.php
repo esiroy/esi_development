@@ -16,6 +16,7 @@ use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
 use App\Models\UserImage;
+use App\Models\ChatSupportHistory;
 
 
 use Auth, Hash;
@@ -629,6 +630,10 @@ class MemberController extends Controller
         MemberAttribute::where('member_id', $user->id)->delete();
         MemberDesiredSchedule::where('member_id', $user->id)->delete();
 
+        //clear all chat support history
+        ChatSupportHistory::where('sender_id', $user->id)->delete();
+        ChatSupportHistory::where('recipient_id', $user->id)->delete();
+
         $member->delete();
         $user->forceDelete();
 
@@ -641,6 +646,10 @@ class MemberController extends Controller
 
         Tutor::whereIn('user_id', request('ids'))->delete();
         User::whereIn('user_id', request('ids'))->forceDelete();
+
+        //clear all chat support history
+        ChatSupportHistory::whereIn('sender_id',request('ids'))->forceDelete();
+        ChatSupportHistory::whereIn('recipient_id',request('ids'))->forceDelete();
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
