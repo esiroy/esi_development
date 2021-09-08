@@ -3,17 +3,21 @@
 namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\Response;
+
 use App\Models\Member;
 use App\Models\Role;
 use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
 use App\Models\UserImage;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Symfony\Component\HttpFoundation\Response;
+use App\Models\MemoReply;
+use App\Models\ChatSupportHistory;
+
 
 use Gate, Auth, Validator, DB;
 
@@ -386,6 +390,14 @@ class TutorController extends Controller
 
         $user   = User::find($id);
         $tutor  = Tutor::where('user_id', $id)->first();
+
+
+        //clear all chat support history
+        ChatSupportHistory::where('sender_id', $id)->delete();
+        ChatSupportHistory::where('recipient_id', $id)->delete();
+
+        MemoReply::where('sender_id', $id)->delete();
+        MemoReply::where('recipient_id', $id)->delete();
 
         //delete tutor if there is still added
         $tutor->delete();

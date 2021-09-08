@@ -635,8 +635,8 @@ class MemberController extends Controller
         ChatSupportHistory::where('sender_id', $user->id)->delete();
         ChatSupportHistory::where('recipient_id', $user->id)->delete();
 
-        MemoReplies::where('sender_id', $user->id)->delete();
-        MemoReplies::where('recipient_id', $user->id)->delete();
+        MemoReply::where('sender_id', $user->id)->delete();
+        MemoReply::where('recipient_id', $user->id)->delete();
 
         $member->delete();
         $user->forceDelete();
