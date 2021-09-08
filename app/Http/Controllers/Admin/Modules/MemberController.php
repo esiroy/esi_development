@@ -16,6 +16,7 @@ use App\Models\Shift;
 use App\Models\Tutor;
 use App\Models\User;
 use App\Models\UserImage;
+use App\Models\MemoReply;
 use App\Models\ChatSupportHistory;
 
 
@@ -634,6 +635,9 @@ class MemberController extends Controller
         ChatSupportHistory::where('sender_id', $user->id)->delete();
         ChatSupportHistory::where('recipient_id', $user->id)->delete();
 
+        MemoReplies::where('sender_id', $user->id)->delete();
+        MemoReplies::where('recipient_id', $user->id)->delete();
+
         $member->delete();
         $user->forceDelete();
 
@@ -651,7 +655,9 @@ class MemberController extends Controller
         ChatSupportHistory::whereIn('sender_id',request('ids'))->forceDelete();
         ChatSupportHistory::whereIn('recipient_id',request('ids'))->forceDelete();
 
+        MemoReplies::whereIn('sender_id', request('ids'))->delete();
+        MemoReplies::whereIn('recipient_id', request('ids'))->delete();
+
         return response(null, Response::HTTP_NO_CONTENT);
     }
-
 }
