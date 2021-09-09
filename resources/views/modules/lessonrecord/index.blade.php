@@ -55,9 +55,10 @@
                                     @foreach ($scheduleItems as $scheduleItem)
                                     <tr>
                                         <td class="text-center">
-                                            {{ ESIDateFormat($scheduleItem->lesson_time) }}
 
-                                            {{ ESILessonTimeRange($scheduleItem->lesson_time) }}
+                                           {{ ESIDateFormat($scheduleItem->lesson_time) }} {{ ESILessonTimeRange($scheduleItem->lesson_time) }}
+                                           
+
                                         </td>
 
                                         <td class="text-center">
@@ -81,8 +82,8 @@
                                                 $gradedReportcard = $reportcard->where('schedule_item_id', $scheduleItem->id)->first();
                                             @endphp
 
-                                            @if ($gradedReportcard)
-                                                <a href="reportcard/{{$gradedReportcard->id}}">» 評価</a>
+                                            @if ($gradedReportcard)                                                
+                                                <a href="reportcard/{{$gradedReportcard->id}}">» 評価</a>                                                
                                             @else 
                                                 » 評価
                                             @endif
@@ -98,11 +99,9 @@
                                     {{ $scheduleItems->appends(request()->query())->links() }}
                                 </ul>
                             </div>
-
-                        </div>                        
-
-
+                        </div>
                     </div>
+
 
                     <div class="card esi-card mt-4">
                         <div class="card-header esi-card-header">
@@ -120,11 +119,8 @@
                                 <tbody id="reportCardBody">
                                     @foreach ($datereportcards as $datereportcard)
                                     <tr>
-                                        <td class="text-center">                                           
-                                            <!--{{ date('Y年 m月 d日', strtotime($datereportcard->lesson_date)) }}-->
-
+                                        <td class="text-center">
                                             {{ ESIDateFormat($datereportcard->lesson_date) }}
-
                                         </td>
                                         <td class="text-center">
                                           <!-- Tutor -->                                            
