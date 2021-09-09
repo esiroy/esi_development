@@ -41,7 +41,7 @@
                         <option value="CLIENT_NOT_AVAILABLE">Client Not Available</option>
                         <option value="TUTOR_CANCELLED">Tutor Cancelled</option>
                         <option value="COMPLETED">Completed</option>
-                        <option value="OVERRIDE">Override</option>
+                        <option value="OVERRIDE" v-show="checkOverrideStatus()">Override</option>
                         <option value="NOTHING">Delete</option>
                     </select>
                 </div>
@@ -460,16 +460,16 @@ export default {
             })
             .then(response => 
             {                
-                this.memberMemo = "";
-                
-                this.$bvModal.show('memberMemoModal');    
-                
+                this.memberMemo = "";                
+                this.$bvModal.show('memberMemoModal');                    
                 this.selectedlessonTime = response.data.lessonTime;
                 
                 let replies = response.data.conversations;                
                 let memberPhoto = response.data.memberPhoto;
                 let tutorPhoto = response.data.tutorPhoto;
-                let data = response.data;
+
+                let data = response.data.scheduleItemMemo;
+
 
                 if (replies.length >= 1) 
                 {
@@ -510,10 +510,7 @@ export default {
                                 + "<div class='teacher-speech-bubble'>" + data.message + "</div>"
                             + "</div> "
                             + "<div class='col-md-3'>&nbsp;</div>"
-                            + "</div>";
-
-     
-            //this.memberMemo += "<div class='row'> <div class='col-md-3'>"+ image +"</div>    <div class='col-md-9'><div class='teacher-speech-bubble'>" +  data.message + " </div> </div> </div>";
+                            + "</div>";    
 
             this.memberMemo += content;
 
@@ -756,6 +753,14 @@ export default {
         onTouch () {
            // console.log("touched")
         },
+        checkOverrideStatus() {
+            //disable if the status is not client not available
+             if (this.currentStatus != 'CLIENT_NOT_AVAILABLE') {
+                 return false;
+             } else {
+                 return true;
+             }
+        },
         checkSelectedSchedulStatus() 
         {
             if (this.modalType == "edit") 
@@ -769,12 +774,13 @@ export default {
                     || this.currentStatus === 'SUPPRESSED_SCHEDULE' 
                     || this.currentStatus === 'CLIENT_NOT_AVAILABLE'
                     || this.currentStatus === 'TUTOR_CANCELLED' || this.currentStatus === 'COMPLETED'
-                ) 
-                {                   
+                ) {
                     return false;
                 } else {                
                     return true;
-                }  
+                }
+                
+                
             } else {
                 //modal is create new schedule
                 return true;

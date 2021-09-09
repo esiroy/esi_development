@@ -691,18 +691,22 @@ class TutorScheduleController extends Controller
 
 
     public function overrideTutorSchedule(Request $request)
-    {
-        $data = $request['scheduleData'];
+    {        
+
+        //schedue item id
         $scheduleID = $request['scheduleData']['id'];
-        $startTime = $data['startTime'];
-        $endTime = $data['endTime'];
+
+        //request schedule data
+        $data = $request['scheduleData'];
+
+        //schedule data and ruation
         $scheduled_at = $request['scheduled_at'];
         $duration = $request['shiftDuration'];
-
-        //change to schedule item for max compatibility
+        /*
+        $startTime = $data['startTime'];
+        $endTime = $data['endTime'];        
         $lessonTime = date("Y-m-d H:i:s", strtotime($request['scheduled_at'] . " " . $startTime . " + 1 hour"));
-
-     
+        */     
         
         $schedule = ScheduleItem::find($scheduleID);
 
@@ -713,7 +717,7 @@ class TutorScheduleController extends Controller
             $memberTransactionData = [               
                 'scheduleItemID'        => $schedule->id,
                 'memberID'              => $schedule->member_id,
-                'reservation_type'      =>  $schedule->schedule_status,
+                'reservation_type'      => $schedule->schedule_status,
                 'shiftDuration'         => $schedule->duration,
                 'status'                => "OVERRIDE",
             ];
@@ -727,12 +731,9 @@ class TutorScheduleController extends Controller
                 'valid' => false
             ]);
 
-
-
             //refetch schedule items
             $scheduleItem = new ScheduleItem();
-
-            $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $duration);
+            $tutorLessonsData = $scheduleItem->getSchedules($scheduled_at, $schedule->duration);
 
             return Response()->json([
                 "success" => true,
@@ -744,6 +745,7 @@ class TutorScheduleController extends Controller
             ]);
 
         } else {
+            
             return Response()->json([
                 "success" => false,
                 "message" => "Can not find the lesson, it may have been already been deleted",
@@ -888,10 +890,15 @@ class TutorScheduleController extends Controller
                 ];
             }
 
+            //schedule item memo (when replies is empty and teacher replies is empty but schedule item has it) (old memo)
+            $scheduleItemData = [
+                "created_at" => ESIDateTimeSecondsFormat($scheduleItem->created_at),
+                'message' => $memo,
+            ];
 
             return Response()->json([
                 "success"       => true,  
-                "message"       => "conversations succesfully fetched",
+                "scheduleItemMemo" => $scheduleItemData,
                 "lessonTime"    => $lessonTime,
                 "memberPhoto"   => $memberOrignalImage,
                 "tutorPhoto"    => $tutorOrignalImage,
