@@ -416,8 +416,10 @@
 
 <script>
     CKEDITOR.replace('introduction', {
+        
+        allowedContent: 'object param embed a p b i; a[!href]; object[data]; object[width]; object[height]; param[name]; param[value]',
         toolbarGroups: [
-            { name: 'document', groups: ['mode', 'document', 'doctools'] },
+            { name: 'document', groups: ['mode', 'document', 'doctools', 'Html5audio', 'object'] },
             { name: 'clipboard', groups: ['clipboard', 'undo']},
             {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
             {name: 'forms', groups: ['forms']},
@@ -425,7 +427,11 @@
             {name: 'paragraph', groups: ['list', 'links', 'indent', 'blocks', 'styles', 'align', 'bidi', 'paragraph']},
         ],
         removePlugins: 'easyimage, exportpdf, cloudservices',
-        removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Preview,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks'
+        removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks',
+
+        
+        extraAllowedContent: 'object(*)'
+
     });
 </script>
 
