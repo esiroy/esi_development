@@ -417,7 +417,7 @@
 <script>
     CKEDITOR.replace('introduction', {
         
-        allowedContent: 'object param embed a p b i; a[!href]; object[data]; object[width]; object[height]; param[name]; param[value]',
+        allowedContent: 'object param embed a p b i; a[!href]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',
         toolbarGroups: [
             { name: 'document', groups: ['mode', 'document', 'doctools', 'Html5audio', 'object'] },
             { name: 'clipboard', groups: ['clipboard', 'undo']},
