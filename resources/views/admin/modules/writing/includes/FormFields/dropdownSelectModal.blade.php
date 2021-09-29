@@ -1,10 +1,10 @@
     <!-- Modal -->
-    <div id="modal_simpleText" class="modal fade" role="dialog">
+    <div id="modal_dropdownSelect" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title">Create Simple Input Text</h4>
+                    <h4 class="modal-title">Create Dropdown Select</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
 
@@ -22,24 +22,28 @@
                             <div class="row">
                                 <div class="col">
                                     <label class="form-label">Description</label>
-                                    <textarea id="description" name="description" class="form-control"></textarea>
+                                    <textarea id="description" name="description" class="form-control" style="height:30px"></textarea>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col">
-                                    <label class="form-label">Maximum Characters</label>
-                                    <input type="text" id="maximum_characters" name="maximum_characters" class="form-control col-md-2">
+                                    <label class="form-label">Choices</label>
+                                    <div id="select_choices" class="container border p-2">
+                                    </div>
                                 </div>
                             </div>
+
 
                             <div class="row">
                                 <div class="col">
                                     <label class="form-label">Rules</label>
                                     <br/>
-                                    <input id="required" name="required" type="checkbox" > <label class="form-label">Required</label>                                
+                                    <input id="required" name="required" type="checkbox" value="true"> <label class="form-label">Required</label>                                
                                 </div>
                             </div>
+
+
                         </div>
 
                     </form>
@@ -49,11 +53,8 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-                    <button id="btnSimpleTextSave" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
+                    <button id="btnDropdownSelectSave" type="button" class="btn btn-primary" data-dismiss="modal">Save</button>
                 </div>
-
-
             </div>
-
         </div>
     </div>

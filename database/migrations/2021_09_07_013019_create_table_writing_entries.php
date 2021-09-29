@@ -13,8 +13,12 @@ class CreateTableWritingEntries extends Migration
      */
     public function up()
     {
-        Schema::create('table_writing_entries', function (Blueprint $table) {
+        Schema::create('writing_entries', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('form_id');
+            $table->unsignedBigInteger('field_id');
+            $table->text('name')->nullable();
+            $table->text('value')->nullable();            
             $table->timestamps();
         });
     }

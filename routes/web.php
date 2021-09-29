@@ -259,8 +259,7 @@ Route::get('exportSoonToExpireXLS', 'ExportController@exportSoonToExpireXLS')->n
 Route::get('downloadlessonReport', 'ExportController@downloadlessonReport')->name('downloadlessonReport');
 Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->name('downloadSalaryReport');
 
-Route::get('/writing', 'Writing\WritingController@index')->name('writing');
-Route::get('/writing/ielts', 'Writing\WritingController@ielts')->name('writing-ielts');
+
 
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
@@ -371,6 +370,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/lessons', 'Modules\ReportController');
         Route::resource('/salary', 'Modules\SalaryReportController');
 
+        /* Writing (ADMIN BACKEND) */
+        Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');
+        Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.update');
+               
+        
+               
+
+
         /* Administrator Module Lists */
         Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 
         {
@@ -384,6 +391,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
             **
             */
         });
+
+ 
+        
+        
            
         //User Management - Admin Area
         Route::group(['prefix' => 'user-management'], function() {

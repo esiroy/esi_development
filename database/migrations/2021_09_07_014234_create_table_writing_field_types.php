@@ -13,7 +13,7 @@ class CreateTableWritingFieldTypes extends Migration
      */
     public function up()
     {
-        Schema::create('table_writing_field_types', function (Blueprint $table) {
+        Schema::create('writing_field_types', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
         });

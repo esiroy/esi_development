@@ -44,24 +44,35 @@
                     <div class="card-header esi-card-header">
                         Form
                     </div>
-                    <div class="card-body esi-card-body">
-                        Field(s) Here
-                    </div>
+
+                    <!--[START DYNAMIC FORMS]-->
+                    <form id="dynamicForms" name="dynamicForms" method="POST"  action="{{ route('admin.writing.update', 1) }}">                                       
+                     @csrf
+                        <div id="form-content" class="card-body esi-card-body">
+                            @foreach($formFieldHTML as $HTML) 
+                                {!! $HTML !!}
+                            @endforeach
+                        </div>
+                    </form>
+                    <!--[START DYNAMIC FORMS]-->
+
                 </div>
 
             </div>
 
             <div class="col-md-4">
                 @include('admin.modules.writing.includes.fieldButtons')
+                
+                <input type="button" value="Cancel" class="btn btn-danger mt-4" onclick="window.location.href='{{  url('admin/writing') }}' ">
+                <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault();document.getElementById('dynamicForms').submit();">               
 
             </div>
         </div>
     </div>
 
+
     @include('admin.modules.writing.includes.FormFields.simpleTextModal')
-
-
-
+    @include('admin.modules.writing.includes.FormFields.dropdownSelectModal')
 
 @endsection
 
@@ -82,8 +93,45 @@
 
 @section('scripts')
 
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" defer></script>
+
     <script type="text/javascript">
-        window.addEventListener('load', function() {
+        var api_token = "{{ Auth::user()->api_token }}";
+
+
+        function addNewSelectionChoise(id, ctr)
+        {            
+            let addButton = '<a class="field_choice_add"><i class="fas fa-plus-circle pt-2"></i></a> ';
+            let removeButton = '<a class="field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a> ';
+
+            let leftColumn = '<div id="newdropdown_'+ ctr +'" class="col-md-10 pr-0"><input id="select_choice_text_'+ ctr +'" type="text" value="" class="form-control mb-1"> </div>';
+            let rightColumn = '<div class="col-md-2 pl-1">'+ addButton + ' ' +  removeButton + '</div>'
+
+            $("#"+ id).after('<div id="choice_'+ ctr +'" class="row mb-1">'+ leftColumn + rightColumn +"</div>");
+        }
+
+        window.addEventListener('load', function() 
+        {
+            $( ".tabs" ).tabs();
+
+            let ctr = 1;
+
+            //Show Field Options, Activate Field Container on click 
+            $(".field_container").on("click", function() {
+                let id = $(this).find('#id').val();
+                $("#dynamicForms").find('.tab-container').addClass('d-none');
+                $(this).find('.tab-container').removeClass('d-none');                        
+            });
+
+            $(document).on("click", '.field_container', function() 
+            {
+               let id = $(this).find('#id').val();
+                $("#dynamicForms").find('.tab-container').addClass('d-none');
+                $(this).find('.tab-container').removeClass('d-none');     
+            });
+
 
             //Show SimpleText
             $("#btn_simpleInputText").on("click", function() {
@@ -91,35 +139,83 @@
                 $('#form_simpleText').trigger("reset");
             });
 
-            $("#btn_simpleText_Save").on("click", function() {
-                alert('saving...');
-               
+            /* DROPDOWN SELECT */           
+            $("#btn_dropdownSelect").on("click", function() 
+            {
+                $("#select_choices").html("");
+                $("#select_choices").append("<div id='select_choice_start'></div>");
+                addNewSelectionChoise('select_choice_start', 1);                
+                $("#modal_dropdownSelect").modal();
+                $('#modal_dropdownSelect').trigger("reset");
+            });           
 
+        
+            $(document).on("click", '.field_choice_add', function() 
+            {
+                ctr = ctr + 1;
+                let id = $(this).parent().parent().attr('id');
+                addNewSelectionChoise(id, ctr);
+            });
+
+
+
+            
+            //Save
+            $("#btnSimpleTextSave").on("click", function() 
+            {              
                 $.ajax({
                     type: 'POST',
-                    url: 'api/saveField?api_token=' + api_token,
+                    url: "{{ url('api/saveSimpleTextField?api_token=') }}" + api_token,
                     data: {
-                        formID: formID,
-                        id:id,
-
-                        parent: parentid,
+                        formID      : 1,
+                        label       :  $('#modal_simpleText').find('input#label').val(),
+                        description :  $('#modal_simpleText').find('textarea#description').val(),
+                        maximum_characters :  $('#modal_simpleText').find('input#maximum_characters').val(),
+                        required :  $('#modal_simpleText').find('input#required').prop("checked")
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
-                    success: function(data) {
-                        //total credits
-                        $('#total_credits').text(data.credits);
-
-                        if (data.refresh == true) {
-                            location.reload();
-                        }
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field );
+                        $( ".tabs" ).tabs();
                     }
                 });
 
-
             });
-            //Add to Table SimpleText
+            
+
+
+            $("#btnDropdownSelectSave").on("click", function() 
+            {              
+                let choices = [];
+
+                $("#select_choices :input").each(function(elem) {
+                    choices.push($(this).val());
+                });
+           
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveDropDownSelect?api_token=') }}" + api_token,
+                    data: {
+                        formID              :    1,
+                        name                :  $('#modal_dropdownSelect').find('input#label').val(),
+                        description         :  $('#modal_dropdownSelect').find('textarea#description').val(),
+                        maximum_characters  :  $('#modal_dropdownSelect').find('input#maximum_characters').val(),                        
+                        selected_choices    :  choices,
+                        required            :  $('#modal_dropdownSelect').find('input#required').val()
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field );
+                        $( ".tabs" ).tabs();
+                    }
+                });
+            });
+            
 
         });
     </script>

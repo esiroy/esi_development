@@ -13,17 +13,13 @@ class CreateTableWritingFields extends Migration
      */
     public function up()
     {
-        Schema::create('table_writing_fields', function (Blueprint $table) {
+        Schema::create('writing_fields', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('form_id');
-            $table->integer('parent_id');
-            $table->text('field_key')->nullable();
             $table->text('type')->nullable();
             $table->text('name')->nullable();
-            $table->text('default_value')->nullable();            
-            $table->text('field_options')->nullable();
-               
-            $table->timestamps();
+            $table->longText('display_meta')->nullable();
+            $table->integer('sequence_number')->nullable();          
         });
     }
 

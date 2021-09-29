@@ -26,17 +26,80 @@
     color: #0eadd9;
 }
 
+
+/* ESI CARD WRITING*/
+
+.esi-card-writing {
+    border: 2px solid #D2E0EB;
+    .card-title {
+        font-size: 14px;
+    }
+    .card-body {
+        background-color: #F6FBFD;
+    }
+}
+
+.esi-card-header-writing {
+    background-color: #D2E0EB;
+    border-color: #D2E0EB;
+    color: #47749A;
+    font-weight: 700;
+    font-size: 11px;
+}
+
 .esi-box {
     .esi-table {
         tr {
             th {
-                background-color: #e6e6e6;
+                background-color: #ffffff;
             }
             th,
             td {
                 font-size: 11px;
                 text-align: center;
             }
+        }
+    }
+}
+
+.esi-tab-container {
+    .ui-widget.ui-widget-content {
+        border: 0px !important;
+        background-color: transparent !important;
+    }
+}
+
+.esi-tabs {
+    .ui-tabs-nav {
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+    .ui-widget-header {
+        background-color: transparent !important;
+        border: none;
+        border-bottom: 0px;
+    }
+    .ui-tabs-panel {
+        border-width: 1px !important;
+        border: 1px solid #D2E0EB;
+        background-color: #fff !important;
+        padding: 18px;
+        margin: 0px;
+    }
+    .ui-tabs-tab {
+        border-top: 1px solid #d2e0eb !important;
+        border-left: 1px solid #d2e0eb !important;
+        border-right: 1px solid #d2e0eb !important;
+        background-color: #D2E0EB !important;
+    }
+    .ui-tabs-active {
+        border-top: 1px solid #d2e0eb !important;
+        border-left: 1px solid #d2e0eb !important;
+        border-right: 1px solid #d2e0eb !important;
+        border-bottom: 0px;
+        background-color: #fff !important;
+        a {
+            color: #000 !important
         }
     }
 }
