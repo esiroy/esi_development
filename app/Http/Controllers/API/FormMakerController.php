@@ -87,11 +87,12 @@ class FormMakerController extends Controller
             'sequence_number'   => $max_seq + 1
         ])->id;   
         
-        $data = view('admin.forms.dropdownSelect', compact('id', 'label', 'description', 'maximum_characters', 'required' ))->render();
+        $data = view('admin.forms.dropdownSelect', compact('id', 'label', 'description', 'maximum_characters', 'selected_choices', 'required' ))->render();
 
         return Response()->json([
             "success"       => true,
             "field"          => $data,
+            "selected_choices" => $selected_choices
         ]);         
     }
 }

@@ -101,16 +101,39 @@
         var api_token = "{{ Auth::user()->api_token }}";
 
 
-        function addNewSelectionChoise(id, ctr)
+        function addNewSelectionChoice(id, ctr)
         {            
+            console.log(id);
+
             let addButton = '<a class="field_choice_add"><i class="fas fa-plus-circle pt-2"></i></a> ';
             let removeButton = '<a class="field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a> ';
 
-            let leftColumn = '<div id="newdropdown_'+ ctr +'" class="col-md-10 pr-0"><input id="select_choice_text_'+ ctr +'" type="text" value="" class="form-control mb-1"> </div>';
+            let leftColumn = '<div class="col-md-10 pr-0"><input id="select_choice_text_'+ ctr +'" type="text" value="" class="form-control mb-1"> </div>';
             let rightColumn = '<div class="col-md-2 pl-1">'+ addButton + ' ' +  removeButton + '</div>'
 
             $("#"+ id).after('<div id="choice_'+ ctr +'" class="row mb-1">'+ leftColumn + rightColumn +"</div>");
         }
+
+
+        function appendSelectionChoice(id, ctr)
+        {            
+            
+            let element = $("#"+ id).attr('id');
+            let elementName = element.split("_");
+            let fieldID = elementName[0];
+
+            console.log(id);
+
+            let addButton = '<a class="selected_field_choice_add"><i class="fas fa-plus-circle pt-2"></i></a> ';
+            let removeButton = '<a class="selected_field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a> ';
+
+            let leftColumn = '<div id="dropdown_'+ ctr +'" class="col-md-10 pr-0"><input name="'+fieldID+'_selected_choice_text[]" type="text"  class="form-control mb-1 appendedSelection"> </div>';
+            let rightColumn = '<div class="col-md-2 pl-1">'+ addButton + ' ' +  removeButton + '</div>'
+
+
+            $("#"+ id).after('<div id="'+fieldID+'_new_selected_choice_'+ ctr +'" class="row mb-1">'+ leftColumn + rightColumn +"</div>");
+        }        
+
 
         window.addEventListener('load', function() 
         {
@@ -144,7 +167,7 @@
             {
                 $("#select_choices").html("");
                 $("#select_choices").append("<div id='select_choice_start'></div>");
-                addNewSelectionChoise('select_choice_start', 1);                
+                addNewSelectionChoice('select_choice_start', 1);                
                 $("#modal_dropdownSelect").modal();
                 $('#modal_dropdownSelect').trigger("reset");
             });           
@@ -154,9 +177,19 @@
             {
                 ctr = ctr + 1;
                 let id = $(this).parent().parent().attr('id');
-                addNewSelectionChoise(id, ctr);
+                addNewSelectionChoice(id, ctr);
             });
 
+            //append from previous
+            $(document).on("click", '.selected_field_choice_add', function() 
+            {
+                ctr = ctr + 1;
+                let id = $(this).parent().parent().attr('id');
+                appendSelectionChoice(id, ctr);
+                //update value when see changes              
+            });
+
+           
 
 
             
@@ -200,11 +233,11 @@
                     url: "{{ url('api/saveDropDownSelect?api_token=') }}" + api_token,
                     data: {
                         formID              :    1,
-                        name                :  $('#modal_dropdownSelect').find('input#label').val(),
+                        label               :  $('#modal_dropdownSelect').find('input#label').val(),
                         description         :  $('#modal_dropdownSelect').find('textarea#description').val(),
                         maximum_characters  :  $('#modal_dropdownSelect').find('input#maximum_characters').val(),                        
                         selected_choices    :  choices,
-                        required            :  $('#modal_dropdownSelect').find('input#required').val()
+                        required :  $('#modal_simpleText').find('input#required').prop("checked")
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

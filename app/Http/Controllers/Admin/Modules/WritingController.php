@@ -44,8 +44,51 @@ class WritingController extends Controller
 
     public function update(Request $request) 
     {
-        echo "<pre>";
+        //go through the field iD
+        foreach($request->id as $id) {
 
-        return print_r ($request->all());
+            //FORM ID
+            $form_id = 1;
+
+            if (strtolower($request[$id.'_fieldType']) == "dropdownselect") {
+
+                $type = 'dropdownSelect';
+
+                //REQUEST FIELDS (STANDARD)
+                $required = $request[$id.'_required'];
+                $label = $request[$id.'_label'];
+                $description = $request[$id.'_description'];
+                $maximum_characters = $request[$id.'_maximum_characters'];                
+                $default_value = $request[$id.'_default_value'];
+
+                //SELECTION
+                $selected_choices = $request[$id.'_selected_choice_text'];
+               
+                
+                $display_meta = [
+                    'required'              =>  $required,
+                    'label'                 => str_replace(' ', '_',  $label),
+                    'description'           => $description,
+                    'selected_choices'      => $selected_choices, 
+                    'type'                  => $type,
+                    'default_value'         => $default_value
+                ];
+
+
+                $id = FormFields::find($id)->update([
+                    'form_id'           => $form_id,
+                    'name'              => $label,
+                    'description'       => $description,
+                    'type'              => $type,
+                    'display_meta'      => json_encode($display_meta),
+                    
+                ]);      
+
+            }
+        }
+
+        return redirect()->route('admin.writing.index', $id)->with('message', 'Form updated successfully!');
+
+
     }
 }
