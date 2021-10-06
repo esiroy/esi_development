@@ -20,6 +20,8 @@ class WritingController extends Controller
             $display_meta = (array) json_decode($formField->display_meta, true);
             $id     = $formField->id;                
             $label  = $formField->name;
+            $maximum_characters  = $formField->maximum_characters;
+            
 
             if (isset($display_meta['description'])) {
                 $description = $display_meta['description'];
