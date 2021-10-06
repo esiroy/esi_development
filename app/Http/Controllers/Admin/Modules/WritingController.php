@@ -27,6 +27,7 @@ class WritingController extends Controller
             $display_meta = (array) json_decode($formField->display_meta, true);
             $id     = $formField->id;                
             $label  = $formField->name;
+            $maximum_characters = $formField->maximum_characters;
 
             if (isset($display_meta['description'])) {
                 $description = $display_meta['description'];
@@ -45,7 +46,7 @@ class WritingController extends Controller
            } else if (strtolower($formField->type) == "dropdown" || strtolower($formField->type) == "dropdownselect") {
 
                 $type   = 'dropdownselect';                               
-                $formFieldHTML[] = view('admin.forms.dropdownSelect', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
+                $formFieldHTML[] = view('admin.forms.dropdownSelect', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
 
             } else if (strtolower($formField->type) == "html" || strtolower($formField->type) == "htmlcontent") {
 
