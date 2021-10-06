@@ -126,7 +126,11 @@
                                 @php                                
                                     $writingFields = new \App\Models\WritingFields;
                                     $fields = $writingFields->where('id', $item->selected_option_id)->first();
-                                    $fieldInfo =  json_decode($fields->display_meta, true);
+
+                                    if (isset($fields->display_meta)) {
+                                        $fieldInfo =  json_decode($fields->display_meta, true);
+                                    }
+                                    
                                 @endphp
 
                                 <div id="{{ $item->field_id }}_conditional_fields_{{ $ctr + 1 }}" class="row {{ $item->field_id }}_conditional_fields_{{ $ctr + 1 }} mb-2">
@@ -158,6 +162,7 @@
                                                     <option value="{{ $choice }}" @if($item->field_value == $choice) {{ 'selected'}} @endif>{{ $choice }}</option>
                                                 @endforeach
                                             @endif
+                                            
                                         </select>                                         
                                     </div>
 
