@@ -13,6 +13,8 @@ class WritingController extends Controller
         $form_id = 1; //all forms are 1(for now)
         $formFields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
         $formFieldHTML[] = "";
+
+        $cfields = $formFields;
         
         foreach ($formFields as $formField) 
         {
