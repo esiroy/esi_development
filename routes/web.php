@@ -259,6 +259,11 @@ Route::get('exportSoonToExpireXLS', 'ExportController@exportSoonToExpireXLS')->n
 Route::get('downloadlessonReport', 'ExportController@downloadlessonReport')->name('downloadlessonReport');
 Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->name('downloadSalaryReport');
 
+Route::get('writing/ielts', 'Writing\WritingController@ielts')->name('ielts');
+
+Route::get('writing', 'Writing\WritingController@index')->name('writing');
+
+
 
 
 /* Admin Panel */
@@ -373,10 +378,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         /* Writing (ADMIN BACKEND) */
         Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');
         Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.update');
-               
-        
-               
-
+      
 
         /* Administrator Module Lists */
         Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 

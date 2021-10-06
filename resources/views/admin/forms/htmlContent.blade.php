@@ -5,7 +5,7 @@
     <div class="card-header esi-card-header-writing">
 
         <input type="hidden" id="id" name="id[]" value="{{ $id }}">
-        Simple Input Text : Field ID ({{ $id }})
+            HTML Block : Field ID ({{ $id }})
         
         <!--RIGHT BUTTON CONTAINER-->
         <div class="float-right">
@@ -20,7 +20,7 @@
 
     <div class="card-body">    
 
-        <input type="hidden" id="{{ $id }}_fieldType" name="{{ $id }}_fieldType" value="SimpleTextField">           
+        <input type="hidden" id="{{ $id }}_fieldType" name="{{ $id }}_fieldType" value="html">           
         <input type="hidden" id="{{ $id }}_label" name="{{ $id }}_label" value="{{ $label ?? '' }}">
 
         <!--LABEL-->
@@ -30,12 +30,21 @@
                     <span class="text-danger">*</span>
                 @endif
             @endif
-            {{ $label }}
+            <!--{{ $label }}-->
+            HTML Block
         </h5>
 
         <div class="card-text">
+            
             <input type="text" id="label" class="form-control form-control-sm bg-white" disabled="disabled" >
-            <div class="small">{{ $description ?? "" }}</div>
+            
+            <div class="esi-html-container mt-2">
+                <span class="esi_blockheader">
+                    <i class="fa fa-code fa-lg"></i> HTML Content
+                </span>
+                <span>This is a content placeholder. HTML content is not displayed in the form admin. Preview this form to view the content.</span>
+            </div>
+
         </div>
 
         <div id="{{ $id }}_tab_container" class="tab-container esi-tab-container" style='display:none'>
@@ -55,30 +64,10 @@
 
                         <div class="row">
                             <div class="col">
-                                <label class="form-label">Description</label>
-                                <textarea id="description" name="{{ $id }}_description" class="form-control">{{ $description ?? "" }}</textarea>
+                                <label class="form-label">Content</label>
+                                <textarea id="content" name="{{ $id }}_content" class="form-control">{{ $display_meta['content'] ?? '' }}</textarea>
                             </div>
                         </div>
-
-                        
-                       
-                        <div class="row">
-                            <div class="col">                                                                   
-                                <label class="form-label">Maximum Characters</label>
-                                <input type="text" id="maximum_characters" name="{{ $id }}_maximum_characters" value="{{ $display_meta['maximum_characters'] ?? '' }}" class="form-control col-md-2">
-                            </div>
-                        </div>
-                       
-                       
-                        <div class="row">
-                            <div class="col">
-                                <label class="form-label">Rules</label>
-                                <br/>
-                                <input id="required" name="{{ $id }}_required" type="checkbox" @if($display_meta['required'] == "true") {{ "checked='checked" }} @endif> <label class="form-label">Required</label>                                
-                            </div>
-                        </div>
-                       
-
                     </div>
                 </div>
 
@@ -89,13 +78,13 @@
                             <br/>
                             <input type="text" id="default_value" name="{{ $id }}_default_value" value="{{ $display_meta['default_value'] ?? '' }}" class="form-control col-md-6">
                         </div>        
-                    </div>
+                    </div>  
 
 
                     <!--[start] cLogic -->
                     <div class="row">
                         <div class="col">
-                            <label class="form-label">Conditional Logic</label>                            
+                            <label class="form-label">Conditional Logic</label>
                         </div>
                     </div>
 
@@ -111,7 +100,6 @@
                                 type="checkbox" class="pt-1" style="vertical-align:middle">
                         </div>
                     </div>
-
 
                     <div class="row">
                         <div class="col conditional_fields">
@@ -160,21 +148,59 @@
 
                                     <div id="{{ $item->field_id }}_cfield_btn_container" class="col-md-2 pl-1">
                                         <a id="{{ $item->field_id }}_cfield_add_{{ $ctr + 1 }}" class="cfield_add"><i class="fas fa-plus-circle pt-2"></i></a> 
-                                        <a id="{{ $item->field_id }}_cfield_add_{{ $ctr + 1 }}" class="selected_field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a>
+                                        <a id="{{ $item->field_id }}_cfield_remove_{{ $ctr + 1 }}" class="cfield_remove"><i class="fas fa-minus-circle pt-2"></i></a>
                                     </div>
 
                                 </div>
 
 
                             @endforeach
-                        
                         </div>                        
                     </div>
                     <!--[end] cLogid -->
 
-               
+                    @php
+                            /*
+                            $ctr = 1;                          
+
+                            <div id="{{ $id }}_conditional_fields_{{ $ctr }}" class="row {{ $id }}_conditional_fields_{{ $ctr }}">
+
+                            
+                                <div class="col-4">
+                                    <select id="{{ $id }}_cfield_id_{{ $ctr }}" name="{{ $id }}_cfield_id[]" class="form-control form-control-sm cfield_id_select">
+                                        @foreach($cfields as $key => $field) 
+                                            @if ($field->type == "simpletextfield" || $field->type == "dropdownSelect")
+                                                <option value="{{ $field->id }}">{{ $field->name }}</option>
+                                            @endif
+                                        @endforeach                                            
+                                    </select>
+                                </div>
+
+                                <div class="col-3">                                        
+                                    <select id="{{ $id }}_cfield_rule_{{ $ctr }}" name="{{ $id }}_cfield_rule" class="form-control form-control-sm cfield_rule_select">
+                                        <option value="is" selected="selected">is</option>
+                                        <option value="isnot">is not</option>
+                                        <option value="contains">contains</option>                                        
+                                    </select>                                        
+                                </div>
+
+                                <div id="{{ $id }}_cfield_value_container_{{ $ctr }}" class="col-3">
+                                    <select id="{{ $id }}_cfield_value_{{ $ctr }}" name="{{ $id }}_cfield_value[]" class="form-control form-control-sm cfield_value_select">
+                                    </select>                                         
+                                </div>
+
+                                <div id="{{ $id }}_cfield_btn_container" class="col-md-2 pl-1">
+                                    <a id="{{ $id }}_cfield_add_{{ $ctr }}" class="cfield_add"><i class="fas fa-plus-circle pt-2"></i></a> 
+                                    <a id="{{ $id }}_cfield_add_{{ $ctr }}" class="selected_field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a>
+                                </div>
+
+                            </div>
+
+                            */
+                        @endphp
 
                 </div>
+
             </div>
         </div>        
     </div>

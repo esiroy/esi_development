@@ -2,6 +2,19 @@
 
 .esi-card {
     border: 2px solid #cbe5ee;
+    .esi-html-container {
+        border: 1px solid #E4E4E4;
+        padding: 20px;
+        background-color: #F6F6F6;
+    }
+    .esi_blockheader {
+        font-weight: 700;
+        display: block;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        font-size: 16px;
+        line-height: 16px;
+    }
 }
 
 .esi-card-grey {
@@ -66,6 +79,19 @@
     .ui-widget.ui-widget-content {
         border: 0px !important;
         background-color: transparent !important;
+        .ui-tabs-nav {
+            a {
+                font-size: 12px;
+            }
+        }
+        .ui-tabs-panel {
+            a {
+                color: #c60000;
+            }
+            a:hover {
+                color: #6e0000
+            }
+        }
     }
 }
 
@@ -99,7 +125,8 @@
         border-bottom: 0px;
         background-color: #fff !important;
         a {
-            color: #000 !important
+            color: #000 !important;
+            font-weight: bold
         }
     }
 }

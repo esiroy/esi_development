@@ -29950,6 +29950,19 @@ div.dt-button-collection .dt-button.active {
 .esi-card {
   border: 2px solid #cbe5ee;
 }
+.esi-card .esi-html-container {
+  border: 1px solid #E4E4E4;
+  padding: 20px;
+  background-color: #F6F6F6;
+}
+.esi-card .esi_blockheader {
+  font-weight: 700;
+  display: block;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-size: 16px;
+  line-height: 16px;
+}
 
 .esi-card-grey {
   max-width: 750px;
@@ -30003,6 +30016,15 @@ div.dt-button-collection .dt-button.active {
   border: 0px !important;
   background-color: transparent !important;
 }
+.esi-tab-container .ui-widget.ui-widget-content .ui-tabs-nav a {
+  font-size: 12px;
+}
+.esi-tab-container .ui-widget.ui-widget-content .ui-tabs-panel a {
+  color: #c60000;
+}
+.esi-tab-container .ui-widget.ui-widget-content .ui-tabs-panel a:hover {
+  color: #6e0000;
+}
 
 .esi-tabs .ui-tabs-nav {
   margin: 0px !important;
@@ -30035,6 +30057,7 @@ div.dt-button-collection .dt-button.active {
 }
 .esi-tabs .ui-tabs-active a {
   color: #000 !important;
+  font-weight: bold;
 }
 
 /*background*/
