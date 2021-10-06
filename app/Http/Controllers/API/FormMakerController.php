@@ -16,6 +16,7 @@ class FormMakerController extends Controller
         $form_id = 1;
 
         $label = $request->label;
+        $required = $request->required;
         $description = $request->description;
         $maximum_characters = $request->maximum_characters;
         $type = 'simpletextfield';
@@ -117,7 +118,7 @@ class FormMakerController extends Controller
         $type = 'htmlContent';
 
         $display_meta = [
-            'required'              => $request->required,
+            //'required'              => $request->required,
             'label'                 => str_replace(' ', '_', $request->label),
             'content'               => $request->content,
             'maximum_characters'    => $request->maximum_characters,
@@ -143,7 +144,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();        
         
-        $data = view('admin.forms.htmlContent', compact('id', 'label', 'required', 'display_meta', 'cfields'))->render();
+        $data = view('admin.forms.htmlContent', compact('id', 'label', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             "success"       => true,
