@@ -30,7 +30,6 @@ class WritingController extends Controller
             
             $required = $formField->required;
             $maximum_characters = $formField->maximum_characters;
-
             $description = $formField->description;
 
 
@@ -41,7 +40,9 @@ class WritingController extends Controller
 
             if (isset($display_meta['content'])) {
                 $content = $display_meta['content'];
-            }            
+            } else {
+                $content = "";
+            }      
 
            if ( strtolower($formField->type) == "simpletext" || strtolower($formField->type) == "simpletextfield") 
            {
