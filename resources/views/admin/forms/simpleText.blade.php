@@ -152,9 +152,12 @@
 
                                     <div id="{{ $item->field_id }}_cfield_value_container_{{ $ctr + 1 }}" class="col-3">
                                         <select id="{{ $item->field_id }}_cfield_value_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_value[]" class="form-control form-control-sm cfield_value_select">
-                                            @foreach($fieldInfo['selected_choices'] as $choice)
-                                                <option value="{{ $choice }}" @if($item->field_value == $choice) {{ 'selected'}} @endif>{{ $choice }}</option>
-                                            @endforeach
+
+                                            @if (isset($fieldInfo['selected_choices']))
+                                                @foreach($fieldInfo['selected_choices'] as $choice)
+                                                    <option value="{{ $choice }}" @if($item->field_value == $choice) {{ 'selected'}} @endif>{{ $choice }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>                                         
                                     </div>
 
