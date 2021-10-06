@@ -39,18 +39,22 @@ mix.js(
     .js(
         [
             "resources/js/croppie/croppie.js",
-            "resources/js/datatables/jquery.dataTables.js",            
+            "resources/js/datatables/jquery.dataTables.js",
             "resources/js/app.js"
         ],
         "public/js/admin.js"
-    )    
+    )
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/mp3/*.*", "public/mp3/")
     .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
-    .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
+    .copy("resources/js/steps/*.*", "public/js/steps/")
+    .copy("resources/js/validation/*.*", "public/js/validation/")
+
+.copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .sass("resources/sass/app.scss", "public/css/app.css")
     .sass("resources/sass/admin.scss", "public/css/admin.css")
+    .sass("resources/sass/steps/steps.scss", "public/css/steps/steps.css")
     .version()
     .options({
         processCssUrls: false
