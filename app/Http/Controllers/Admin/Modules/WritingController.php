@@ -31,6 +31,9 @@ class WritingController extends Controller
             $required = $formField->required;
             $maximum_characters = $formField->maximum_characters;
 
+            $description = $formField->description;
+
+
             if (isset($display_meta['description'])) {
                 $description = $display_meta['description'];
             }
