@@ -1,20 +1,14 @@
 {
-<<<<<<< HEAD
     "/js/admin.js": "/js/admin.js?id=33aada9a9d262832f359",
-    "/js/admin.js.map": "/js/admin.js.map?id=ddadcf0b1ecaf052b1d6",
-    "/js/app.js": "/js/app.js?id=08fbed01cee13389ece8",
-    "/css/app.css": "/css/app.css?id=c7b5be8ded143efed6f3",
+    "/js/admin.js.map": "/js/admin.js.map?id=1310411c8224b7d604e1",
+    "/js/app.js": "/js/app.js?id=121779fccd0d2b41030b",
+    "/css/app.css": "/css/app.css?id=10cbcfb9521b7b47470e",
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
-    "/js/app.js.map": "/js/app.js.map?id=c004c0e600efe6ca04d1",
-    "/css/app.css.map": "/css/app.css.map?id=2dc97a6e72f7f064d555",
+    "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
+    "/js/app.js.map": "/js/app.js.map?id=bbbecf09104476352167",
+    "/css/app.css.map": "/css/app.css.map?id=b81316b7c958f0445945",
     "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
-=======
-    "/js/admin.js": "/js/admin.js?id=63388dd5d031f4ae957d",
-    "/js/app.js": "/js/app.js?id=316f2bc4dfe363cceeb6",
-    "/css/app.css": "/css/app.css?id=2bd0608f84b2854d8854",
-    "/css/admin.css": "/css/admin.css?id=f9dd8ae646cb32556d7b",
-    "/css/steps/steps.css": "/css/steps/steps.css?id=ad4cf4455be97223e3f3",
->>>>>>> writing
+    "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",
     "/images/arrowActive.png": "/images/arrowActive.png?id=7c5d0d33bdc56abf8e4b",
     "/images/audio.png": "/images/audio.png?id=53c9d5a92c61e5e2e771",
