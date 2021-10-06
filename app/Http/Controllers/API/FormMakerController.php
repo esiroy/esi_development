@@ -65,7 +65,9 @@ class FormMakerController extends Controller
         $label = $request->label;
         $description = $request->description;
         $maximum_characters = $request->maximum_characters;
+        $required = $request->required;
         $selected_choices = $request->selected_choices;
+
         $type = 'dropdownSelect';
 
         $display_meta = [
