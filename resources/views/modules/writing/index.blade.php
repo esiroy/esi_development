@@ -76,20 +76,6 @@
                          //alert ("test page" + currentIndex + " - prior Index " + priorIndex)
 
                         adjustIframeHeight();
-
-
-                        if (input === false || input === null) {
-                            // Do not jump to the next step
-                            return false;
-                        }                         
-
-                        /*
-                        if (isValidStep === false || isValidStep === null) {
-                            // Do not jump to the next step
-                            return false;
-                        }
-                        */
-
                         return true;
 
                     },
