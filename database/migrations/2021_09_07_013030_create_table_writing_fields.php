@@ -16,6 +16,7 @@ class CreateTableWritingFields extends Migration
         Schema::create('writing_fields', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('form_id');
+            $table->unsignedBigInteger('page_id');
             $table->text('type')->nullable();
             $table->text('name')->nullable();
             $table->longText('display_meta')->nullable();

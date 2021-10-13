@@ -2,13 +2,14 @@
 
 <div id="{{ $id }}_field" class="card esi-card-writing mb-2 field_container">
 
-    <div class="card-header esi-card-header-writing">
+    <div class="card-header esi-card-header-writing handle">
 
         <input type="hidden" id="id" name="id[]" value="{{ $id }}">
             HTML Block : Field ID ({{ $id }})
         
         <!--RIGHT BUTTON CONTAINER-->
         <div class="float-right">
+            <span class="ui-icon ui-icon-arrowthick-2-n-s text-secondary handle"></span>        
             <a id="{{ $id }}_showFieldOptions" href="#" class="text-secondary btnShowFieldOptions"><i class="fa fa-caret-down fa-lg"></i></a>            
             <a id="{{ $id }}_hideFieldOptions" href="#" class="text-secondary btnHideFieldOptions d-none"><i class="fa fa-caret-up fa-lg"></i></a>
             <span id="{{ $id }}_removeField" class="btnRemoveField pl-2">         
@@ -22,6 +23,7 @@
 
         <input type="hidden" id="{{ $id }}_fieldType" name="{{ $id }}_fieldType" value="html">           
         <input type="hidden" id="{{ $id }}_label" name="{{ $id }}_label" value="{{ $label ?? '' }}">
+        <input type="hidden" id="{{ $id }}_page" name="{{ $id }}_page"  class="page" value="page-{{ $page_id ?? '0' }}">
 
         <!--LABEL-->
         <h5 class="card-title font-weight-bold">            
@@ -140,9 +142,11 @@
 
                                     <div id="{{ $item->field_id }}_cfield_value_container_{{ $ctr + 1 }}" class="col-3">
                                         <select id="{{ $item->field_id }}_cfield_value_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_value[]" class="form-control form-control-sm cfield_value_select">
-                                            @foreach($fieldInfo['selected_choices'] as $choice)
-                                                <option value="{{ $choice }}" @if($item->field_value == $choice) {{ 'selected'}} @endif>{{ $choice }}</option>
-                                            @endforeach
+                                            @if (isset($fieldInfo['selected_choices']))
+                                                @foreach($fieldInfo['selected_choices'] as $choice)
+                                                    <option value="{{ $choice }}" @if($item->field_value == $choice) {{ 'selected'}} @endif>{{ $choice }}</option>
+                                                @endforeach
+                                            @endif
                                         </select>                                         
                                     </div>
 
@@ -158,47 +162,6 @@
                         </div>                        
                     </div>
                     <!--[end] cLogid -->
-
-                    @php
-                            /*
-                            $ctr = 1;                          
-
-                            <div id="{{ $id }}_conditional_fields_{{ $ctr }}" class="row {{ $id }}_conditional_fields_{{ $ctr }}">
-
-                            
-                                <div class="col-4">
-                                    <select id="{{ $id }}_cfield_id_{{ $ctr }}" name="{{ $id }}_cfield_id[]" class="form-control form-control-sm cfield_id_select">
-                                        @foreach($cfields as $key => $field) 
-                                            @if ($field->type == "simpletextfield" || $field->type == "dropdownSelect")
-                                                <option value="{{ $field->id }}">{{ $field->name }}</option>
-                                            @endif
-                                        @endforeach                                            
-                                    </select>
-                                </div>
-
-                                <div class="col-3">                                        
-                                    <select id="{{ $id }}_cfield_rule_{{ $ctr }}" name="{{ $id }}_cfield_rule" class="form-control form-control-sm cfield_rule_select">
-                                        <option value="is" selected="selected">is</option>
-                                        <option value="isnot">is not</option>
-                                        <option value="contains">contains</option>                                        
-                                    </select>                                        
-                                </div>
-
-                                <div id="{{ $id }}_cfield_value_container_{{ $ctr }}" class="col-3">
-                                    <select id="{{ $id }}_cfield_value_{{ $ctr }}" name="{{ $id }}_cfield_value[]" class="form-control form-control-sm cfield_value_select">
-                                    </select>                                         
-                                </div>
-
-                                <div id="{{ $id }}_cfield_btn_container" class="col-md-2 pl-1">
-                                    <a id="{{ $id }}_cfield_add_{{ $ctr }}" class="cfield_add"><i class="fas fa-plus-circle pt-2"></i></a> 
-                                    <a id="{{ $id }}_cfield_add_{{ $ctr }}" class="selected_field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a>
-                                </div>
-
-                            </div>
-
-                            */
-                        @endphp
-
                 </div>
 
             </div>

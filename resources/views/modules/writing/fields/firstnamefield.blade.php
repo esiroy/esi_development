@@ -6,15 +6,9 @@
                 <span class='text-danger'>*</span>                            
             @endif
         </label>
-
-        <input type="text" id="{{ $id ."_textfield" }}" 
-                        name="{{ $id ."_textfield" }}" 
-                        placeholder="{{ $label ?? '' }}" 
-                        class="form-control"
-                        @if ($display_meta['required']) {{ "required" }} @endif
-                        >
-
+        <input type="text" id="{{ $id ."_firstname" }}" 
+                           name="{{ $id ."_firstname" }}" 
+                           placeholder="{{ $label ?? '' }}"class="form-control firstnamefield" @if ($display_meta['required']) {{ "required" }} @endif>
         <div class="small">{{ $display_meta['description'] ?? "" }}</div>
-
     </div>
 </div>

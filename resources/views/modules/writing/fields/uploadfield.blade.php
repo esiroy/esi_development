@@ -5,16 +5,12 @@
             @if ($display_meta['required']) 
                 <span class='text-danger'>*</span>                            
             @endif
-        </label>
-
-        <input type="text" id="{{ $id ."_textfield" }}" 
-                        name="{{ $id ."_textfield" }}" 
-                        placeholder="{{ $label ?? '' }}" 
-                        class="form-control"
-                        @if ($display_meta['required']) {{ "required" }} @endif
-                        >
-
+        </label>       
+        <input type="file" 
+                id="{{ $id ."_file" }}" name="{{ $id ."_file" }}" 
+                class="form-control pt-3 pb-5" id="customFile" 
+                @if ($display_meta['required']) {{ "required" }} @endif
+                />
         <div class="small">{{ $display_meta['description'] ?? "" }}</div>
-
     </div>
 </div>

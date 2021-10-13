@@ -9,12 +9,18 @@
             @endif
         </label>
 
-        <select name="{{  str_replace(' ', '_', strtolower($label) ) }}" id="{{ $id }}" class="form-control" @if ($display_meta['required']) required @endif>
+        <select id="{{ $id ."_" }}{{  str_replace(' ', '_', strtolower($label) ) }}" 
+                name="{{ $id ."_" }}{{  str_replace(' ', '_', strtolower($label) ) }}"  
+                class="form-control" @if ($display_meta['required']) {{ "required" }} @endif>
             <option value="">Please Select</option>
             @foreach($display_meta['selected_choices'] as $choice)
                 <option value="{{ $choice }}">{{ $choice }}</option>
             @endforeach                        
         </select>
+
+        <div class="small">{{ $display_meta['description'] ?? "" }}</div>
+
+
     </div>
 </div>
 

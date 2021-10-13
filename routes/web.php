@@ -259,9 +259,9 @@ Route::get('exportSoonToExpireXLS', 'ExportController@exportSoonToExpireXLS')->n
 Route::get('downloadlessonReport', 'ExportController@downloadlessonReport')->name('downloadlessonReport');
 Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->name('downloadSalaryReport');
 
-Route::get('writing/ielts', 'Writing\WritingController@ielts')->name('ielts');
 
-Route::get('writing', 'Writing\WritingController@index')->name('writing');
+Route::get('writing', 'Writing\WritingController@index')->name('writing.index');
+Route::post('writing', 'Writing\WritingController@store')->name('writingSaveEntry.store');
 
 
 

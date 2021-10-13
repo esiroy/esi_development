@@ -49,9 +49,30 @@
                     <form id="dynamicForms" name="dynamicForms" method="POST"  action="{{ route('admin.writing.update', 1) }}">                                       
                      @csrf
                         <div id="form-content" class="card-body esi-card-body">
-                            @foreach($formFieldHTML as $HTML) 
-                                {!! $HTML !!}
-                            @endforeach
+
+                            <div class="sortable">
+
+                                @foreach ($pages as $page)
+                                    <div id="page-{{ $page->page_id }}" class="card-header esi-card-header-page mb-4 droptrue handle ui-sortable">
+                                        {{ "Page : ".  $page->page_id }}
+
+                                        @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                            @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                                {!! $formFieldChildHTML !!}
+                                            @endforeach
+                                        @endif
+
+
+                                    </div>
+                                @endforeach
+
+                                @foreach($formFieldHTML as $HTML) 
+                                    {!! $HTML !!}
+                                @endforeach
+                            </div>
+
+
+
                         </div>
                     </form>
                     <!--[START DYNAMIC FORMS]-->
@@ -61,12 +82,11 @@
             </div>
 
             <div class="col-md-4">
-                @include('admin.modules.writing.includes.fieldButtons')
-                
+                @include('admin.modules.writing.includes.fieldButtons')                
                 <input type="button" value="Cancel" class="btn btn-danger mt-4" onclick="window.location.href='{{  url('admin/writing') }}' ">
                 <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault();document.getElementById('dynamicForms').submit();">               
-
             </div>
+
         </div>
     </div>
 
@@ -74,6 +94,13 @@
     @include('admin.modules.writing.includes.FormFields.simpleTextModal')
     @include('admin.modules.writing.includes.FormFields.dropdownSelectModal')
     @include('admin.modules.writing.includes.FormFields.htmlModal')
+
+    <!-- ADVANCE FIELDS -->
+    @include('admin.modules.writing.includes.FormFields.firstnameModal')
+    @include('admin.modules.writing.includes.FormFields.lastnameModal')
+    @include('admin.modules.writing.includes.FormFields.emailModal')
+    @include('admin.modules.writing.includes.FormFields.uploadModal')
+
 
     <!--image gallery-->
     @include('admin.modules.writing.includes.ImageGallery.galleryModal')
@@ -104,62 +131,29 @@
     <script type="text/javascript">
         var api_token = "{{ Auth::user()->api_token }}";
 
-        //GET FIELD ID (eg.  123_fieldname_ctr - returns 123)
-        function getFieldID(fid) {
-
-            let element = $("#"+ fid).attr('id');
-            if (element) {           
-                let elementName = element.split("_");
-                let fieldID = elementName[0];
-                return fieldID;
-            } 
-        }
-
-        //ADD A NEW DROPDOWN SELECTION CHOICES
-        function addNewSelectionChoice(id, ctr)
-        {
-            let addButton = '<a class="field_choice_add"><i class="fas fa-plus-circle pt-2"></i></a> ';
-            let removeButton = '<a class="field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a> ';
-            let leftColumn = '<div class="col-md-10 pr-0"><input id="select_choice_text_'+ ctr +'" type="text" value="" class="form-control mb-1"> </div>';
-            let rightColumn = '<div class="col-md-2 pl-1">'+ addButton + ' ' +  removeButton + '</div>';
-            $("#"+ id).after('<div id="choice_'+ ctr +'" class="row mb-1">'+ leftColumn + rightColumn +"</div>");
-        }
-
-         //APPEND ANOTHER CHOICE DROPDOWN SELECTION CHOICES
-        function appendSelectionChoice(id, ctr)
-        {    
-            let fieldID = getFieldID(id);
-
-            let addButton = '<a class="selected_field_choice_add"><i class="fas fa-plus-circle pt-2"></i></a> ';
-            let removeButton = '<a class="selected_field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a> ';
-            let leftColumn = '<div id="dropdown_'+ ctr +'" class="col-md-10 pr-0"><input name="'+fieldID+'_selected_choice_text[]" type="text"  class="form-control mb-1 appendedSelection"> </div>';
-            let rightColumn = '<div class="col-md-2 pl-1">'+ addButton + ' ' +  removeButton + '</div>';
-
-            $("#"+ id).after('<div id="'+fieldID+'_new_selected_choice_'+ ctr +'" class="row mb-1">'+ leftColumn + rightColumn +"</div>");
-        }        
-
-        //HIDE REMOVE IF CHOICES IS ONLY 1
-        function updateChoicesButtons() {
-            let choicesCount = $('#select_choices').find('.row');
-            if (choicesCount.length <= 1) {
-                $('.field_choice_remove').hide();
-            } else {
-                $('.field_choice_remove').show();
-            }            
-        }
-
-        function updateSelectedChoicesButtons(fieldID) {
-            let choicesCount = $('#'+fieldID+"_field").find('#'+ fieldID +'_selected_choices').find('.row');
-            if (choicesCount.length <= 1) {
-                $('#'+fieldID+"_field").find('.selected_field_choice_remove').hide();
-            } else {
-                $('#'+fieldID+"_field").find('.selected_field_choice_remove').css('display', '')
-            }            
-        }        
-
         window.addEventListener('load', function() 
         {            
+
+            let pageCtr = {{ $pageCounter ?? '1' }};
+
             $( ".tabs" ).tabs();
+
+            $( ".sortable" ).sortable({ 
+                connectWith: "div", 
+                handle: '.handle'
+            });
+
+            $( ".droptrue" ).sortable({ 
+                connectWith: "div", 
+                handle: '.handle',
+                update: function( event, ui) {
+                    console.log($(this).attr('id'));
+                    let page = $(this).attr('id');
+                    $('#'+page).find('.page').val(page)
+                }                
+            });
+
+
             let ctr = 1;
             /***************************************************************
                             [START] - (TAB) [SHOW, HIDE - TAB OPTIONS]
@@ -202,8 +196,7 @@
             *****************************************************************/
             init_conditionalFields(false);
 
-            function init_conditionalFields(addNewCFields) 
-            {
+            function init_conditionalFields(addNewCFields) {
                 let cfields = $(document).find('.field_container');
                 Array.from(cfields, (cfield, findex) => {
                    let cfieldID = $('#'+cfield.id).find('#id').val();
@@ -217,7 +210,6 @@
             function getLargest(array) {
                return Math.max(...array)
             }
-
 
             function getNewID(fieldID) {
                 //GET MAX ID
@@ -260,46 +252,30 @@
                     btnRow += "<div class='col-md-3'>"+ cfield_rule + "</div>";
                     btnRow += "<div id='"+ fieldID +"_cfield_value_container_"+ insCtr +"' class='col-md-3'>"+ cfield_value + "</div>";
                     btnRow += "<div class='col-md-2 pl-1'>"+ btns + "</div>";
-
-
                 
                 if (insCtr == 1) {
-
                    // console.log("test 1");                    
                     $("#"+ fieldID +'_tab_container').find(".conditional_fields").append("<div class='row "+fieldID+"_conditional_fields_"+insCtr+" mt-2'>"+ btnRow +"</div>");
 
-                } else {                   
-
+                } else {
                     //console.log("test 2")
                     $("#"+ fieldID +'_tab_container').find(".conditional_fields").find("."+ fieldID + "_conditional_fields_"+ btnIndex).after("<div class='row "+fieldID+"_conditional_fields_"+insCtr+" mt-2'>"+ btnRow +"</div>");
                 }
-                 
-                 //generateCField(fieldID, insCtr)
 
                 populateFieldIDOptions(fieldID, insCtr);
                 populateRulesOptions(fieldID, insCtr)
 
                  //[TARGET]clean and populate
-                let targetFieldType = $('#'+fieldID+"_fieldType").val(); 
-                
-                if (targetFieldType == "dropdownSelect") 
-                {
+                let targetFieldType = $('#'+fieldID+"_fieldType").val();
+                if (targetFieldType == "dropdownSelect") {
                     let selectedOptionID = $('#'+fieldID+"_cfield_id_"+insCtr).find(":selected").val();
                     populateValuesDropdownOptions(selectedOptionID, fieldID, insCtr)
-
-                } else {
-
-                    console.log("here!")
+                } else {                    
                     createNewTextField(fieldID, fieldID, insCtr)
                 }
-              
-
-            }
-
-          
+            }          
 
             $(document).on('click', '.activate_coditional_logic', (elem) => {
-
                 let elementID = elem.currentTarget.id;
                 let cfieldID = getFieldID(elementID);                               
                 let btnIndex = getFieldCtr(elem.currentTarget.id);
@@ -327,18 +303,11 @@
                             createNewTextField(selectedOptionID, cfieldID, 1)
                         }   
                     }
-
                 } else {
-                    console.log("not checked")
-
+                    //console.log("not checked")
                     $('#'+cfieldID+'_tab_container').find('.conditional_fields').hide();
-                }
-
-      
-
-                 
-            })
-
+                }                 
+            });
 
             $(document).on('change', '.cfield_id_select', (elem) => { 
 
@@ -362,8 +331,6 @@
                     createNewTextField(selectedOptionID, targetFieldID, index)
                 }
             });
-
-
      
 
             function populateFieldIDOptions(targetFieldID, insCtr) {
@@ -385,13 +352,8 @@
                 $('#'+ targetFieldID +'_cfield_rule_'+ insCtr).append('<option value="contains">contains</option>');
             }
 
-
-
-            function populateValuesDropdownOptions(selectedOptionID, targetFieldID, index) 
-            {
-
+            function populateValuesDropdownOptions(selectedOptionID, targetFieldID, index) {
                 let selectValueOption = "<select id='"+ targetFieldID +"_cfield_value_"+ index +"' name='"+ targetFieldID +"_cfield_value[]' class='"+ targetFieldID +"_cfield_value form-control form-control-sm'></select>"
-
                 $('#'+ targetFieldID + '_cfield_value_container_'+index).html('');  
                 $('#'+ targetFieldID + '_cfield_value_container_'+index).append(selectValueOption);
 
@@ -404,8 +366,7 @@
             }
 
 
-            function createNewTextField(selectedOptionID, targetFieldID, index) 
-            {
+            function createNewTextField(selectedOptionID, targetFieldID, index) {
                 $('#'+ targetFieldID + '_cfield_value_container_'+index).html('');
                 let inputHTML = "<input id='"+ targetFieldID +"_cfield_value"+ index +"' name='"+targetFieldID+"_cfield_value[]' class='"+ targetFieldID +"_cfield_value form-control form-control-sm'>";
                 $('#'+ targetFieldID + '_cfield_value_container_'+index).append(inputHTML);
@@ -418,20 +379,15 @@
                 let targetFieldType = $('#'+selectedID+"_fieldType").val(); 
 
         
-                if (targetFieldType == "dropdownSelect") 
-                {                    
+                if (targetFieldType == "dropdownSelect") {                    
                     $('#'+ targetID + '_cfield_value_container').html('');
                     $('#'+ targetID + '_cfield_value_container').append("<select id='"+ targetID +"_cfield_value' class='"+ targetID +"_cfield_value form-control form-control-sm'></select>");
-
-
                     activeChoices = $('#'+selectedID+'_tab_container').find('#selected_choices').find("input");                                                  
-
                     Array.from(activeChoices, (choice, index) => {
                         //let coptID = $(choice).attr('id');
                         let coptvalue = $(choice).val();
                         $('#'+ targetID + '_cfield_value').append('<option value="'+coptvalue+'">'+coptvalue+'</option>');
-                    });   
-
+                    });
                 } else if (targetFieldType == "SimpleTextField") {
                     $('#'+ targetID + '_cfield_value_container_1').html('');
                     $('#'+ targetID + '_cfield_value_container_1').append("<input id='"+ targetID +"_cfield_value' class='"+ targetID +"_cfield_value form-control form-control-sm'>");
@@ -556,6 +512,47 @@
 
 
             /***************************************************************
+                            [START] - (BUTTON) [FIRSTNAME]
+            *****************************************************************/            
+            $("#btn_firstname").on("click", function() {
+                $("#modal_firstname").modal();
+                $('#form_firstname').trigger("reset");
+            });
+
+
+
+            /***************************************************************
+                            [START] - (BUTTON) [LASTNAME]
+            *****************************************************************/  
+
+            $("#btn_lastname").on("click", function() {
+                $("#modal_lastname").modal();
+                $('#form_lastname').trigger("reset");
+            });
+
+
+
+            /***************************************************************
+                            [START] - (BUTTON) [EMAIL]
+            *****************************************************************/  
+
+            $("#btn_email").on("click", function() {
+                $("#modal_email").modal();
+                $('#form_email').trigger("reset");
+            });
+
+
+
+            /***************************************************************
+                            [START] - (BUTTON) [UPLOAD]
+            *****************************************************************/  
+
+            $("#btn_upload").on("click", function() {
+                $("#modal_upload").modal();
+                $('#form_upload').trigger("reset");
+            });
+
+            /***************************************************************
                             [START] - (BUTTON) [DROPDOWN SELECT]
             *****************************************************************/
             
@@ -604,7 +601,123 @@
                 let fieldID   = getFieldID(elementID);
                 $(this).parent().parent().remove();               
                 updateSelectedChoicesButtons(fieldID);
-            });           
+            });          
+
+
+
+            
+            /***************************************************************
+                            [START] - [SAVE ACTIONS - ADVANCE FIELDS]
+            *****************************************************************/
+            //[START] - [FIRSTNAME TEXT]
+            $("#btnFirstNameSave").on("click", function() 
+            {         
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveFirstNameField?api_token=') }}" + api_token,
+                    data: {
+                        formID              : 1,
+                        label               : $('#modal_firstname').find('input#label').val(),
+                        description         : $('#modal_firstname').find('textarea#description').val(),
+                       //maximum_characters  : $('#modal_firstname').find('input#maximum_characters').val(),
+                        required            : $('#modal_firstname').find('input#required').prop("checked"),
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
+                        $( ".tabs" ).tabs();
+                        //addCField(data.id, 1);
+                    }
+                });
+            });
+
+
+            //[START] - [Last TEXT]
+            $("#btnLastNameSave").on("click", function() 
+            {         
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveLastNameField?api_token=') }}" + api_token,
+                    data: {
+                        formID              : 1,
+                        label               : $('#modal_lastname').find('input#label').val(),
+                        description         : $('#modal_lastname').find('textarea#description').val(),
+                       //maximum_characters  : $('#modal_lastname').find('input#maximum_characters').val(),
+                        required            : $('#modal_lastname').find('input#required').prop("checked"),
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
+                        $( ".tabs" ).tabs();
+                        //addCField(data.id, 1);
+                    }
+                });
+            });
+
+
+            //[START] - [Email TEXT]
+            $("#btnEmailSave").on("click", function() 
+            {         
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveEmailField?api_token=') }}" + api_token,
+                    data: {
+                        formID              : 1,
+                        label               : $('#modal_email').find('input#label').val(),
+                        description         : $('#modal_email').find('textarea#description').val(),
+                       //maximum_characters  : $('#modal_email').find('input#maximum_characters').val(),
+                        required            : $('#modal_email').find('input#required').prop("checked"),
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
+                        $( ".tabs" ).tabs();
+                        //addCField(data.id, 1);
+                    }
+                });
+            });
+
+            $('#btnUploadFieldSave').on("click", function() 
+            {         
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveUploadField?api_token=') }}" + api_token,
+                    data: {
+                        formID              : 1,
+                        label               : $('#modal_upload').find('input#label').val(),
+                        description         : $('#modal_upload').find('textarea#description').val(),
+                       //maximum_characters  : $('#modal_upload').find('input#maximum_characters').val(),
+                        required            : $('#modal_upload').find('input#required').prop("checked"),
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
+                        $( ".tabs" ).tabs();
+                        //addCField(data.id, 1);
+                    }
+                });
+            });
+
 
 
 
@@ -630,7 +743,10 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(data) {                       
-                        $( "#form-content" ).append( data.field );
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
                     }
@@ -663,12 +779,17 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(data) {                       
-                        $( "#form-content" ).append( data.field );
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
                     }
                 });
             });
+
+
 
             $('#btnHTMLSave').on("click", function() 
             {  
@@ -684,12 +805,53 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(data) {                       
-                        $( "#form-content" ).append( data.field );
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
                         $( ".tabs" ).tabs(); 
                         //addCField(data.id, 1);
                     }
                 });
             });
+
+
+         
+
+
+
+            
+            /***************************************************************
+                            [START] - [NEW PAGE]
+            *****************************************************************/
+
+            //[start] - ADD Button AUTO SAVE
+            $("#btn_page").click(function () {
+
+                var $div = $("<div>", { 
+                        "id": "page-"+ pageCtr +"",
+                        "class": "card-header esi-card-header-page mb-4 droptrue handle", 
+                        "style": "min-height:200px",
+                        "text":' Page :' + pageCtr
+                }).sortable();
+
+                $("#form-content .sortable").append($div);
+
+                pageCtr = pageCtr + 1;
+
+                $( ".droptrue" ).sortable({ 
+                    connectWith: "div", 
+                    handle: '.handle',
+                    update: function( event, ui) {
+                        console.log($(this).attr('id'));
+                        let page = $(this).attr('id');
+                        $('#'+page).find('.page').val(page)
+                    }                
+                });
+
+            });
+
+
 
             /***************************************************************
                             [START] - [REMOVE ACTIONS - INPUT FIELDS]
@@ -723,6 +885,64 @@
                 return false;
             });
 
+
         });
+
+
+
+        //GET FIELD ID (eg.  123_fieldname_ctr - returns 123)
+        function getFieldID(fid) {
+
+            let element = $("#"+ fid).attr('id');
+            if (element) {           
+                let elementName = element.split("_");
+                let fieldID = elementName[0];
+                return fieldID;
+            } 
+        }
+
+        //ADD A NEW DROPDOWN SELECTION CHOICES
+        function addNewSelectionChoice(id, ctr)
+        {
+            let addButton = '<a class="field_choice_add"><i class="fas fa-plus-circle pt-2"></i></a> ';
+            let removeButton = '<a class="field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a> ';
+            let leftColumn = '<div class="col-md-10 pr-0"><input id="select_choice_text_'+ ctr +'" type="text" value="" class="form-control mb-1"> </div>';
+            let rightColumn = '<div class="col-md-2 pl-1">'+ addButton + ' ' +  removeButton + '</div>';
+            $("#"+ id).after('<div id="choice_'+ ctr +'" class="row mb-1">'+ leftColumn + rightColumn +"</div>");
+        }
+
+         //APPEND ANOTHER CHOICE DROPDOWN SELECTION CHOICES
+        function appendSelectionChoice(id, ctr)
+        {    
+            let fieldID = getFieldID(id);
+
+            let addButton = '<a class="selected_field_choice_add"><i class="fas fa-plus-circle pt-2"></i></a> ';
+            let removeButton = '<a class="selected_field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a> ';
+            let leftColumn = '<div id="dropdown_'+ ctr +'" class="col-md-10 pr-0"><input name="'+fieldID+'_selected_choice_text[]" type="text"  class="form-control mb-1 appendedSelection"> </div>';
+            let rightColumn = '<div class="col-md-2 pl-1">'+ addButton + ' ' +  removeButton + '</div>';
+
+            $("#"+ id).after('<div id="'+fieldID+'_new_selected_choice_'+ ctr +'" class="row mb-1">'+ leftColumn + rightColumn +"</div>");
+        }        
+
+        //HIDE REMOVE IF CHOICES IS ONLY 1
+        function updateChoicesButtons() {
+            let choicesCount = $('#select_choices').find('.row');
+            if (choicesCount.length <= 1) {
+                $('.field_choice_remove').hide();
+            } else {
+                $('.field_choice_remove').show();
+            }            
+        }
+
+        function updateSelectedChoicesButtons(fieldID) {
+            let choicesCount = $('#'+fieldID+"_field").find('#'+ fieldID +'_selected_choices').find('.row');
+            if (choicesCount.length <= 1) {
+                $('#'+fieldID+"_field").find('.selected_field_choice_remove').hide();
+            } else {
+                $('#'+fieldID+"_field").find('.selected_field_choice_remove').css('display', '')
+            }            
+        }        
+
+
     </script>
 @endsection

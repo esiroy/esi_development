@@ -27,6 +27,7 @@ class FormMakerController extends Controller
             'description'           => $request->description,
             'maximum_characters'    => $request->maximum_characters,
             'type'                  => $type,
+            'conditional_logic'     => false,
         ];
 
         array_walk_recursive($display_meta, function(&$item){
@@ -77,6 +78,7 @@ class FormMakerController extends Controller
             'maximum_characters'    => $request->maximum_characters,
             'selected_choices'      => $request->selected_choices, 
             'type'                  => $type,
+            'conditional_logic'     => false,            
         ];
 
         array_walk_recursive($display_meta, function(&$item){
@@ -126,6 +128,7 @@ class FormMakerController extends Controller
             'maximum_characters'    => $request->maximum_characters,
             'selected_choices'      => $request->selected_choices, 
             'type'                  => $type,
+            'conditional_logic'     => false,            
         ];
         
         array_walk_recursive($display_meta, function(&$item){
@@ -157,6 +160,202 @@ class FormMakerController extends Controller
 
     }
   
+
+    /** advance field */
+    public function saveFirstNameField(Request $request) 
+    {
+        //FORM ID
+        $form_id = 1;
+
+        $label = $request->label;
+        $required = $request->required;
+        $description = $request->description;
+        //$maximum_characters = $request->maximum_characters;
+        $type = 'firstnamefield';
+
+        $display_meta = [
+            'required'              => $request->required,
+            'label'                 => str_replace(' ', '_', $request->label),
+            'description'           => $request->description,
+            //'maximum_characters'    => $request->maximum_characters,
+            'type'                  => $type,
+            'conditional_logic'     => false,            
+        ];
+
+        array_walk_recursive($display_meta, function(&$item){
+            if(is_null($item)) $item = '';
+        });
+
+        $max_seq = WritingFields::where('form_id', $form_id)->max('sequence_number');
+
+       
+        $id = WritingFields::Create([
+            'form_id'           => $form_id,
+            'name'              => $request->label,
+            'description'       => $request->description,
+            'type'              => $type,
+            'display_meta'      => json_encode($display_meta),
+            'sequence_number'   => $max_seq + 1
+        ])->id;       
+        
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();            
+
+        $data = view('admin.forms.firstname', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+        return Response()->json([
+            'id'            => $id,
+            "success"       => true,
+            "field"         => $data,
+        ]); 
+    }    
+
+    
+    public function saveLastNameField(Request $request) 
+    {
+        //FORM ID
+        $form_id = 1;
+
+        $label = $request->label;
+        $required = $request->required;
+        $description = $request->description;
+        //$maximum_characters = $request->maximum_characters;
+        $type = 'lastnamefield';
+
+        $display_meta = [
+            'required'              => $request->required,
+            'label'                 => str_replace(' ', '_', $request->label),
+            'description'           => $request->description,
+            //'maximum_characters'    => $request->maximum_characters,
+            'type'                  => $type,
+            'conditional_logic'     => false,            
+        ];
+
+        array_walk_recursive($display_meta, function(&$item){
+            if(is_null($item)) $item = '';
+        });
+
+        $max_seq = WritingFields::where('form_id', $form_id)->max('sequence_number');
+
+       
+        $id = WritingFields::Create([
+            'form_id'           => $form_id,
+            'name'              => $request->label,
+            'description'       => $request->description,
+            'type'              => $type,
+            'display_meta'      => json_encode($display_meta),
+            'sequence_number'   => $max_seq + 1
+        ])->id;       
+        
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();            
+
+        $data = view('admin.forms.lastname', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+        return Response()->json([
+            'id'            => $id,
+            "success"       => true,
+            "field"         => $data,
+        ]); 
+    }
+        
+    public function saveEmailField(Request $request) 
+    {
+        //FORM ID
+        $form_id = 1;
+
+        $label = $request->label;
+        $required = $request->required;
+        $description = $request->description;
+        //$maximum_characters = $request->maximum_characters;
+        $type = 'emailfield';
+
+        $display_meta = [
+            'required'              => $request->required,
+            'label'                 => str_replace(' ', '_', $request->label),
+            'description'           => $request->description,
+            //'maximum_characters'    => $request->maximum_characters,
+            'type'                  => $type,
+            'conditional_logic'     => false,            
+        ];
+
+        array_walk_recursive($display_meta, function(&$item){
+            if(is_null($item)) $item = '';
+        });
+
+        $max_seq = WritingFields::where('form_id', $form_id)->max('sequence_number');
+
+       
+        $id = WritingFields::Create([
+            'form_id'           => $form_id,
+            'name'              => $request->label,
+            'description'       => $request->description,
+            'type'              => $type,
+            'display_meta'      => json_encode($display_meta),
+            'sequence_number'   => $max_seq + 1
+        ])->id;       
+        
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();            
+
+        $data = view('admin.forms.email', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+        return Response()->json([
+            'id'            => $id,
+            "success"       => true,
+            "field"         => $data,
+        ]); 
+    }    
+
+    public function saveUploadField(Request $request) 
+    {
+        //FORM ID
+        $form_id = 1;
+
+        $label = $request->label;
+        $required = $request->required;
+        $description = $request->description;
+        //$maximum_characters = $request->maximum_characters;
+        $type = 'uploadfield';
+
+        $display_meta = [
+            'required'              => $request->required,
+            'label'                 => str_replace(' ', '_', $request->label),
+            'description'           => $request->description,
+            //'maximum_characters'    => $request->maximum_characters,
+            'type'                  => $type,
+            'conditional_logic'     => false,            
+        ];
+
+        array_walk_recursive($display_meta, function(&$item){
+            if(is_null($item)) $item = '';
+        });
+
+        $max_seq = WritingFields::where('form_id', $form_id)->max('sequence_number');
+
+       
+        $id = WritingFields::Create([
+            'form_id'           => $form_id,
+            'name'              => $request->label,
+            'description'       => $request->description,
+            'type'              => $type,
+            'display_meta'      => json_encode($display_meta),
+            'sequence_number'   => $max_seq + 1
+        ])->id;       
+        
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();            
+
+        $data = view('admin.forms.upload', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+        return Response()->json([
+            'id'            => $id,
+            "success"       => true,
+            "field"         => $data,
+        ]); 
+    }    
+    
+    
     public function removeField(Request $request)
     {
         $field = WritingFields::where('form_id', $request->formID)->where('id', $request->id)->first();

@@ -1,20 +1,14 @@
 <div id="{{ $id }}_field_row" class="row @if($display_meta['conditional_logic'] == 'true') {{ "cfLogic" }} @endif" style='@if($display_meta['conditional_logic'] == 'true') {{ "display:none" }} @endif'>
     <div class="mb-3 text-left col-md-6 {{ $id }}_field_content">
-        <label for="firstname" class="form-label">
+        <label for="email" class="form-label">
             {{ $label }}  : 
             @if ($display_meta['required']) 
                 <span class='text-danger'>*</span>                            
             @endif
         </label>
-
-        <input type="text" id="{{ $id ."_textfield" }}" 
-                        name="{{ $id ."_textfield" }}" 
-                        placeholder="{{ $label ?? '' }}" 
-                        class="form-control"
-                        @if ($display_meta['required']) {{ "required" }} @endif
-                        >
-
+        <input type="text" name="{{ $id ."_email" }}" 
+                            id="{{ $id ."_email" }}" 
+                            placeholder="{{ $label ?? '' }}" class="form-control emailfield" @if ($display_meta['required']) {{ "required" }} @endif>
         <div class="small">{{ $display_meta['description'] ?? "" }}</div>
-
     </div>
 </div>

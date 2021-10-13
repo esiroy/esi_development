@@ -67,8 +67,8 @@
     </div>
 
 
-    <script type="text/javascript">   
-      let api_token = "{{ Auth::user()->api_token }}";    
+    <script type="text/javascript">
+        let api_token = "{{ Auth::user()->api_token }}";
     </script>
     
     @yield('scripts')

@@ -2,13 +2,14 @@
 
 <div id="{{ $id }}_field" class="card esi-card-writing mb-2 field_container">
 
-    <div class="card-header esi-card-header-writing">
+    <div class="card-header esi-card-header-writing handle">
 
         <input type="hidden" id="id" name="id[]" value="{{ $id }}">
         Simple Input Text : Field ID ({{ $id }})
         
         <!--RIGHT BUTTON CONTAINER-->
         <div class="float-right">
+            <span class="ui-icon ui-icon-arrowthick-2-n-s text-secondary handle"></span>        
             <a id="{{ $id }}_showFieldOptions" href="#" class="text-secondary btnShowFieldOptions"><i class="fa fa-caret-down fa-lg"></i></a>            
             <a id="{{ $id }}_hideFieldOptions" href="#" class="text-secondary btnHideFieldOptions d-none"><i class="fa fa-caret-up fa-lg"></i></a>
             <span id="{{ $id }}_removeField" class="btnRemoveField pl-2">         
@@ -22,6 +23,8 @@
 
         <input type="hidden" id="{{ $id }}_fieldType" name="{{ $id }}_fieldType" value="SimpleTextField">           
         <input type="hidden" id="{{ $id }}_label" name="{{ $id }}_label" value="{{ $label ?? '' }}">
+        <input type="hidden" id="{{ $id }}_page" name="{{ $id }}_page"  class="page" value="page-{{ $page_id ?? '0' }}">
+
 
         <!--LABEL-->
         <h5 class="card-title font-weight-bold">            
@@ -35,8 +38,12 @@
 
         <div class="card-text">
             <input type="text" id="label" class="form-control form-control-sm bg-white" disabled="disabled" >
-            <div class="small">{{ $description ?? "" }}</div>
+            <div class="small">
+                {{ $display_meta['description'] ?? "" }}
+            </div>
         </div>
+
+        
 
         <div id="{{ $id }}_tab_container" class="tab-container esi-tab-container" style='display:none'>
             <div id="tabs" class="tabs esi-tabs mt-2">
@@ -112,7 +119,6 @@
                         </div>
                     </div>
 
-
                     <div class="row">
                         <div class="col conditional_fields">
 
@@ -126,11 +132,7 @@
                                 @php                                
                                     $writingFields = new \App\Models\WritingFields;
                                     $fields = $writingFields->where('id', $item->selected_option_id)->first();
-
-                                    if (isset($fields->display_meta)) {
-                                        $fieldInfo =  json_decode($fields->display_meta, true);
-                                    }
-                                    
+                                    $fieldInfo =  json_decode($fields->display_meta, true);
                                 @endphp
 
                                 <div id="{{ $item->field_id }}_conditional_fields_{{ $ctr + 1 }}" class="row {{ $item->field_id }}_conditional_fields_{{ $ctr + 1 }} mb-2">
@@ -155,27 +157,27 @@
                                     </div>
 
                                     <div id="{{ $item->field_id }}_cfield_value_container_{{ $ctr + 1 }}" class="col-3">
-                                        <select id="{{ $item->field_id }}_cfield_value_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_value[]" class="form-control form-control-sm cfield_value_select">
 
+                                        @if ($fields->type == "dropdownSelect")
+                                        <select id="{{ $item->field_id }}_cfield_value_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_value[]" class="form-control form-control-sm cfield_value_select">
                                             @if (isset($fieldInfo['selected_choices']))
                                                 @foreach($fieldInfo['selected_choices'] as $choice)
                                                     <option value="{{ $choice }}" @if($item->field_value == $choice) {{ 'selected'}} @endif>{{ $choice }}</option>
                                                 @endforeach
                                             @endif
-                                            
-                                        </select>                                         
+                                        </select>
+                                        @else                                            
+                                            <input id="{{ $item->field_id }}_cfield_value_{{ $ctr + 1 }}" type="text" name="{{ $item->field_id }}_cfield_value[]" value="{{ $item->field_value }}" class="form-control form-control-sm cfield_value_select">
+                                        @endif
                                     </div>
 
                                     <div id="{{ $item->field_id }}_cfield_btn_container" class="col-md-2 pl-1">
                                         <a id="{{ $item->field_id }}_cfield_add_{{ $ctr + 1 }}" class="cfield_add"><i class="fas fa-plus-circle pt-2"></i></a> 
-                                        <a id="{{ $item->field_id }}_cfield_add_{{ $ctr + 1 }}" class="selected_field_choice_remove"><i class="fas fa-minus-circle pt-2"></i></a>
+                                        <a id="{{ $item->field_id }}_cfield_remove_{{ $ctr + 1 }}" class="cfield_remove"><i class="fas fa-minus-circle pt-2"></i></a>
                                     </div>
 
                                 </div>
-
-
                             @endforeach
-                        
                         </div>                        
                     </div>
                     <!--[end] cLogid -->
