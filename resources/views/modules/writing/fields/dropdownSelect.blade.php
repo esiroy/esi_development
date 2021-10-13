@@ -9,7 +9,7 @@
             @endif
         </label>
 
-        <select id="{{ $id ."_" }}{{  str_replace(' ', '_', strtolower($label) ) }}" 
+        <select id="{{ $id }}" 
                 name="{{ $id ."_" }}{{  str_replace(' ', '_', strtolower($label) ) }}"  
                 class="form-control" @if ($display_meta['required']) {{ "required" }} @endif>
             <option value="">Please Select</option>

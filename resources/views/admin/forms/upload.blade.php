@@ -144,7 +144,12 @@
                                     <div class="col-4">
                                         <select id="{{ $item->field_id }}_cfield_id_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_id[]" class="form-control form-control-sm cfield_id_select">
                                             @foreach($cfields as $key => $field) 
-                                                @if ($field->type == "simpletextfield" || $field->type == "dropdownSelect")
+                                                @if ($field->type == "simpletextfield" || 
+                                                     $field->type == "dropdownSelect"  ||
+                                                     $field->type == "emailfield"  ||
+                                                     $field->type == "firstnamefield"  ||
+                                                     $field->type == "lastnamefield" 
+                                                     )
                                                     <option value="{{ $field->id }}"  @if($field->id ==  $item->selected_option_id) {{ 'selected'}} @endif>{{ $field->name }}</option>
                                                 @endif
                                             @endforeach                                            

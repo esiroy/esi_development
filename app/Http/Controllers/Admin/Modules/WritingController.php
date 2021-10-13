@@ -22,7 +22,7 @@ class WritingController extends Controller
         $formFieldHTML[] = "";
 
         //CONDITIONAL FIELDS (init)
-        $cfields = $formFields;
+        $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
         foreach ($formFields as $formField) 
         {
@@ -84,8 +84,8 @@ class WritingController extends Controller
 
             $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
 
-            $child_cfields = $formChildFields;
-
+            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+           
             foreach ($formChildFields as $formChildField) 
             {
                 $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFormFieldHTML($formChildField, $child_cfields);

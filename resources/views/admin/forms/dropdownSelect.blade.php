@@ -166,7 +166,12 @@
                                     <div class="col-4">
                                         <select id="{{ $item->field_id }}_cfield_id_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_id[]" class="form-control form-control-sm cfield_id_select">
                                             @foreach($cfields as $key => $field) 
-                                                @if ($field->type == "simpletextfield" || $field->type == "dropdownSelect")
+                                                @if ($field->type == "simpletextfield" || 
+                                                     $field->type == "dropdownSelect"  ||
+                                                     $field->type == "emailfield"  ||
+                                                     $field->type == "firstnamefield"  ||
+                                                     $field->type == "lastnamefield" 
+                                                     )
                                                     <option value="{{ $field->id }}"  @if($field->id ==  $item->selected_option_id) {{ 'selected'}} @endif>{{ $field->name }}</option>
                                                 @endif
                                             @endforeach                                            
@@ -198,10 +203,7 @@
 
                                     <div id="{{ $item->field_id }}_cfield_btn_container" class="col-md-2 pl-1">
                                         <a id="{{ $item->field_id }}_cfield_add_{{ $ctr + 1 }}" class="cfield_add"><i class="fas fa-plus-circle pt-2"></i></a> 
-
                                         <a id="{{ $item->field_id }}_cfield_remove_{{ $ctr + 1 }}" class="cfield_remove"><i class="fas fa-minus-circle pt-2"></i></a>
-
-
                                     </div>
 
                                 </div>

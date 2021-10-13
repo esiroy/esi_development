@@ -123,21 +123,6 @@
                         } else{
                             return false;
                         }
-                        
-
-                        /*
-                        if ( (input1 === false || input1 === null)) {
-                            // Do not jump to the next step
-                            return false;
-                        }   
-
-
-                        if ( (input2 === false || input2 === null)) {
-                            // Do not jump to the next step
-                            return false;
-                        }   
-
-                        */
 
                     },
                     // Triggered when clicking the Finish button
@@ -146,7 +131,7 @@
                     },
                     onFinished: function(e, currentIndex) {
 
-                        alert ("finished");
+                        //alert ("finished");
 
                         // Uncomment the following line to submit the form using the defaultSubmit() method
                         // $('#writing-form').formValidation('defaultSubmit');
