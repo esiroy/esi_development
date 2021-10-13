@@ -98,18 +98,7 @@ class WritingController extends Controller
     }
 
 
-
-
-
-
-    public function update(Request $request) 
-    {
-
-        echo "<pre>";
-
-        print_r ($request->all());
-
-        echo "</pre>";
+    public function update(Request $request) {
 
        // exit();
 
