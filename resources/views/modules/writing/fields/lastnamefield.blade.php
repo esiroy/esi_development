@@ -9,9 +9,11 @@
         <input type="text" 
                     id="{{ $id ."_lastname" }}" 
                     name="{{ $id ."_lastname" }}" 
-                    placeholder="{{ $label ?? '' }}" 
+                    placeholder="{{ $label ?? '' }}"
+                    class="form-control lastnamefield"
+                    value="{{ Auth::user()->lastname ?? '' }}"
                     @if ($display_meta['required']) {{ "required" }} @endif
-                    class="form-control lastnamefield">
+                    >
                     
         <div class="small">{{ $display_meta['description'] ?? "" }}</div>
     </div>

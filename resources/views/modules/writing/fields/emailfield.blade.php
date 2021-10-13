@@ -8,7 +8,10 @@
         </label>
         <input type="text" name="{{ $id ."_email" }}" 
                             id="{{ $id ."_email" }}" 
-                            placeholder="{{ $label ?? '' }}" class="form-control emailfield" @if ($display_meta['required']) {{ "required" }} @endif>
+                            placeholder="{{ $label ?? '' }}" 
+                            class="form-control emailfield" 
+                            value="{{ Auth::user()->email ?? '' }}"
+                            @if ($display_meta['required']) {{ "required" }} @endif>
         <div class="small">{{ $display_meta['description'] ?? "" }}</div>
     </div>
 </div>
