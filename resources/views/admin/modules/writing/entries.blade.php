@@ -25,8 +25,6 @@
                 <div>Writing Entries</div>
 
                 @foreach ($entries as $entry)
-                    
-
                     @php 
                         $values = json_decode($entry->value, true);
                     @endphp
@@ -34,11 +32,9 @@
                     @foreach ($values as $index => $value)                                             
                         @php
                             $numIndex = explode("_", $index);
-                            $fieldValue[$numIndex[0]] = $value;
+                            $fieldValue[$entry->id][$numIndex[0]] = $value;
                         @endphp
-                    @endforeach
-
-                  
+                    @endforeach                  
                 @endforeach
 
                 <div class="table-responsive ">
@@ -55,8 +51,8 @@
                             <tr>
                                 @foreach ($formFields as $formField)
                                 <td id="{{$formField->id}}" class="small text-center bg-light text-dark font-weight-bold">
-                                    @if (isset($fieldValue[$formField->id]))
-                                        {{ $fieldValue[$formField->id]  }}
+                                    @if (isset($fieldValue[$entry->id][$formField->id]))
+                                        {{ $fieldValue[$entry->id][$formField->id]  }}
                                     @endif                                    
                                 </td>
                                 @endforeach                               
