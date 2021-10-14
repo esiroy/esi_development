@@ -22,8 +22,7 @@
         <div class="row">
             <div class="col-md-12">
                 
-                <div>Writing Entries</div>
-
+               
                 @foreach ($entries as $entry)
                     @php 
                         $values = json_decode($entry->value, true);
@@ -37,32 +36,39 @@
                     @endforeach                  
                 @endforeach
 
-                <div class="table-responsive ">
-                    <table class="table table-bordered table-sm table-striped">
-                        <thead>
-                            <tr>
-                                @foreach ($formFields as $formField)
-                                    <th class="small text-center bg-light text-dark font-weight-bold">{{ $formField->name }}</th>
-                                @endforeach    
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($entries as $entry)
-                            <tr>
-                                @foreach ($formFields as $formField)
-                                <td id="{{$formField->id}}" class="small text-center bg-light text-dark font-weight-bold">
-                                    @if (isset($fieldValue[$entry->id][$formField->id]))
-                                        {{ $fieldValue[$entry->id][$formField->id]  }}
-                                    @endif                                    
-                                </td>
-                                @endforeach                               
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
 
-                   
+                <div class="card">
+                    <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
+                         Writing Entries
+                    </div>
 
+                    <div class="card-body p-0 m-0 b-0">
+
+                        <div class="table-responsive mb-0">
+                            <table class="table esi-table table-bordered table-striped  ">
+                                <thead>
+                                    <tr>
+                                        @foreach ($formFields as $formField)
+                                            <td class>{{ $formField->name }}</td>
+                                        @endforeach    
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($entries as $entry)
+                                    <tr>
+                                        @foreach ($formFields as $formField)
+                                        <td id="{{$formField->id}}" class=" text-center bg-light text-dark">
+                                            @if (isset($fieldValue[$entry->id][$formField->id]))
+                                                {{ $fieldValue[$entry->id][$formField->id]  }}
+                                            @endif                                    
+                                        </td>
+                                        @endforeach                               
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
 
