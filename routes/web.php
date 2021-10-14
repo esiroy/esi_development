@@ -284,7 +284,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::group(['middleware' => 'admin.auth'], function()
     {
 
+        //Admin Writing
         Route::resource('/writing', 'Modules\WritingController');
+        Route::get('writing/entries/{id}', 'Modules\WritingController@entries')->name('writing.entries');
+
 
         //upload photo
         Route::resource('image-upload', 'imageUploadController');

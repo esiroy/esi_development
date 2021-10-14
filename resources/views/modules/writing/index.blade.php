@@ -31,7 +31,7 @@
                     @foreach($formFieldHTML as $HTML) 
                         {!! $HTML !!}
                     @endforeach
-                @endif              
+                @endif
             </section>
         @endforeach
         <input type="submit" style="display:none">
@@ -41,9 +41,19 @@
 @section('styles')
     @parent
 <style>
+.wizard>.content>.body label.error {
+    font-weight: bold;    
+    margin-left: 0px !important;    
+}
+
 .steps {
     display: none !important
 }
+.label-error {
+    color: #8a1f11 !important;
+    font-weight: bold
+}
+
 </style>
 @endsection
 
@@ -51,9 +61,8 @@
     <script src="{{ url('js/steps/jquery.steps.min.js') }}" defer></script>
     <script src="{{ url('js/validation/jquery.validation.min.js') }}" defer></script>
     <script>
-        window.addEventListener('load', function() {
-
-
+        window.addEventListener('load', function() 
+        {
             $('#writing-form').show(300);
 
             function adjustIframeHeight() {
@@ -61,6 +70,65 @@
                 if ($iframe) {
                     // Adjust the height of iframe
                     $iframe.height($body.height());
+                }
+            }
+            
+            function highlightFieldRow(fieldID) 
+            {
+                if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                    
+                    console.log(fieldID + " is hidden, we will not highlight");
+                } else {
+
+                    if ($('#'+fieldID).attr( "required" )) 
+                    {
+                        let isValid = $('#'+fieldID).valid();
+
+                        if (isValid === false || isValid === null) {
+                            console.log(fieldID +"_field_row is invalid")
+                            $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
+                            $('#'+fieldID+"_field_row").css({
+                                'background-color': 'rgba(255,223,224,.25)',
+                                'margin-bottom': '6px!important',
+                                'border-top': '1px solid #C89797',
+                                'border-bottom': '1px solid #C89797',
+                                'padding-bottom': '6px',
+                                'padding-top': '8px',
+                                'margin-top': '16px',
+                                'margin-bottom': '16px',
+                                'box-sizing': 'border-box',
+                            });
+                        } else {
+                            $('.'+fieldID+"_field_content").find('label.form-label').removeClass('label-error')
+                            $('#'+fieldID+"_field_row").removeAttr("style");
+                        }
+                    }
+
+                    if ($('#'+fieldID).hasClass('emailfield')) {
+                        var email = $('#'+fieldID).val();
+                        if(email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
+                            // valid email
+                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                        }
+                        else 
+                        {
+                            // not valid
+                            $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
+                            $('#'+fieldID+"_field_row").css({
+                                'background-color': 'rgba(255,223,224,.25)',
+                                'margin-bottom': '6px!important',
+                                'border-top': '1px solid #C89797',
+                                'border-bottom': '1px solid #C89797',
+                                'padding-bottom': '6px',
+                                'padding-top': '8px',
+                                'margin-top': '16px',
+                                'margin-bottom': '16px',
+                                'box-sizing': 'border-box',
+                            });
+                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                            $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This field only accepts E-Mail Address.</label>');
+                            console.log("error in email");                            
+                        }
+                    }
                 }
             }
 
@@ -72,56 +140,86 @@
                     onStepChanged: function(e, currentIndex, priorIndex) {
                         // You don't need to care about it
                         // It is for the specific demo
-
-                         //alert ("test page" + currentIndex + " - prior Index " + priorIndex)
-
+                        //alert ("test page" + currentIndex + " - prior Index " + priorIndex)
                         adjustIframeHeight();
                         return true;
-
                     },
                     // Triggered when clicking the Previous/Next buttons
-                    onStepChanging: function(e, currentIndex, newIndex) {
-
-                        let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
-
-                        let requiredFieldsArr = [];
-
-                        Array.from(inputs).forEach(field => 
+                    onStepChanging: function(e, currentIndex, newIndex) 
+                    {
+                        //Validate only when next step, you are free to go back anytime
+                        if (currentIndex < newIndex)
                         {
-                            let fieldID =  $(field).attr('id');
+                            //alert(currentIndex + " " + newIndex)                            
+                            let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
+                            let requiredFieldsArr = [];
 
-                            if ($('#'+fieldID).attr( "required" )) 
+                            Array.from(inputs).forEach(field => 
                             {
-                                console.log(fieldID + " is required")
-                                let isValid = $('#'+fieldID).valid();
+                                 let fieldID =  $(field).attr('id');                                 
+                                 highlightFieldRow(fieldID);
 
-                                requiredFieldsArr.push({
-                                    'id': fieldID,
-                                    'isValid': isValid
-                                })
-                            }
-                        });
+                                 $('#'+fieldID+"_field_row").on('keyup change', function() 
+                                 {
+                                    highlightFieldRow(fieldID)                                     
+                                 });
+                                 
+                               
+                                //check all has required in Array
+                                if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {
+                                    
+                                    console.log(fieldID + " is hidden, we will not verify");
 
-                        let goToNextStep = true;
+                                } else {
+                                    if ($('#'+fieldID).attr( "required" )) 
+                                    {
+                                        //console.log(fieldID + " is required")
+                                        let isValid = $('#'+fieldID).valid();
+                                        requiredFieldsArr.push({
+                                            'id': fieldID,
+                                            'isValid': isValid
+                                        });
+                                    }
 
-                        Array.from(requiredFieldsArr).forEach(requiredField => {
-                            if (requiredField.isValid === false || requiredField.isValid === null) {
-                                console.log(requiredField.isValid + " 1")
+                                    //check if field is an email field and validate manually (since we cant validate it in section)
+                                    if ($('#'+fieldID).hasClass('emailfield')) 
+                                    {
+                                        
+                                        var email = $('#'+fieldID).val();
+                                        if(email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
+                                            // valid email
+                                        } else {
+                                            requiredFieldsArr.push({
+                                                'id': fieldID,
+                                                'isValid': false
+                                            });                                                                           
+                                        }
+                                    }
+                                }
 
-                                goToNextStep = false;
+                            });
 
+
+
+                            let goToNextStep = true;
+                            Array.from(requiredFieldsArr).forEach(requiredField => {
+                                if (requiredField.isValid === false || requiredField.isValid === null) {
+                                    goToNextStep = false;
+                                    return false;
+                                }
+                            });                        
+
+                            if (goToNextStep == true) {
+                                console.log("Go to step next page")
+                                return true;
+                            } else{
+                                console.log("stay on current page")
                                 return false;
-
-                            } else {
-                                console.log(requiredField.isValid + " 2")
                             }
-                        });
-                     
+                        } else {
 
-                        if (goToNextStep == true) {
+                            //console.log("User")
                             return true;
-                        } else{
-                            return false;
                         }
 
                     },
@@ -152,7 +250,6 @@
             @foreach ($items as $item) 
 
                 $('{{ '#' . $item->selected_option_id }}').on('change', function() {
-
                     let cflogic = $(document).find('.cfLogic');
 
                     @php                
@@ -160,14 +257,10 @@
                     @endphp
 
                     @foreach ($options as $option) 
-
-                        if ($(this).val() == "{{ $option->field_value }}") {
-                          
+                        if ($(this).val() == "{{ $option->field_value }}") 
+                        {                          
                             console.log(" fied {{ $item->selected_option_id }} " + ", show : {{$option->field_id}} ");
-
                             $('{{ '#'. $option->field_id ."_field_row"  }}').show();   
-
-
                             //Get the html field content
                             $.ajax({
                                     type: 'POST',
@@ -182,17 +275,12 @@
                                     success: function(data) {                       
                                         $( "#form-content" ).append( data.field );                                       
                                         $('{{ '.'. $option->field_id ."_field_content"  }}').html(data.content);   
-
                                         $('{{ '#'. $option->field_id ."_field_row"  }}').show();   
-
                                     }
                                 });
-
                         } else {
-
                              $('{{ '#'. $option->field_id ."_field_row"  }}').hide();   
                         }
-
                         //console.log(" fied {{ $item->selected_option_id }} " + ", show : {{$option->field_id}} ");
                     @endforeach
 

@@ -7,7 +7,7 @@
             @endif
         </label>
         <input type="text" 
-                id="{{ $id ."_lastname" }}" 
+                id="{{ $id }}" 
                 name="{{ $id ."_lastname" }}" 
                 placeholder="{{ $label ?? '' }}"
                 class="form-control lastnamefield"

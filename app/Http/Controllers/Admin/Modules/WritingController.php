@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\FormFields;
 use App\Models\ConditionalFieldLogic;
+use App\Models\WritingEntries;
+
 
 class WritingController extends Controller
 {
@@ -95,6 +97,21 @@ class WritingController extends Controller
         
 
         return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+    }
+
+
+    public function entries($id) {
+
+        $formFields  = FormFields::where('form_id', $id)->orderBy('sequence_number', 'ASC')->get();
+
+        $entries = WritingEntries::where('form_id', $id)->get();
+
+        
+
+       
+
+        return view('admin.modules.writing.entries', compact('id', 'entries', 'formFields'));
+
     }
 
 

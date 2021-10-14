@@ -7,7 +7,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb bg-light ">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Tutor</li>
+                        <li class="breadcrumb-item active" aria-current="page">Writing</li>
                     </ol>
                 </nav>
             </div>
@@ -17,7 +17,6 @@
     <div class="container bg-light">
         <div class="row">
             <div class="col-md-8">
-
 
                 @if ($errors->any())
                     <div class="alert alert-danger">
@@ -40,6 +39,27 @@
                 @endif
 
 
+                <div class="card esi-card mb-2">
+                    <div id="form-navigation" class="card-body esi-card-body">              
+                        <div class="form-inline">
+                            <a class='text-success' href="{{ url('admin/writing/'.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-success mr-2" type="button">
+                                    Edit
+                                </button>
+                            </a>
+                            <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">Entries</button>
+                            </a>
+                            <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">                                
+                                    Preview
+                                </button>
+                            </a>                            
+                        </div>                                                
+                    </div>
+                </div>
+
+
                 <div class="card esi-card">
                     <div class="card-header esi-card-header">
                         Form
@@ -49,30 +69,23 @@
                     <form id="dynamicForms" name="dynamicForms" method="POST"  action="{{ route('admin.writing.update', 1) }}">                                       
                      @csrf
                         <div id="form-content" class="card-body esi-card-body">
+                            @foreach ($pages as $page)
+                                <div id="page-{{ $page->page_id }}" class="card-header esi-card-header-page mb-4 droptrue  ">
+                                    {{ "Page : ".  $page->page_id }}
 
-                            <div class="sortable">
-
-                                @foreach ($pages as $page)
-                                    <div id="page-{{ $page->page_id }}" class="card-header esi-card-header-page mb-4 droptrue handle ui-sortable">
-                                        {{ "Page : ".  $page->page_id }}
-
-                                        @if(isset($formFieldChildrenHTML[$page->page_id]))
-                                            @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
-                                                {!! $formFieldChildHTML !!}
-                                            @endforeach
-                                        @endif
+                                    @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                        @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                            {!! $formFieldChildHTML !!}
+                                        @endforeach
+                                    @endif
 
 
-                                    </div>
-                                @endforeach
+                                </div>
+                            @endforeach
 
-                                @foreach($formFieldHTML as $HTML) 
-                                    {!! $HTML !!}
-                                @endforeach
-                            </div>
-
-
-
+                            @foreach($formFieldHTML as $HTML) 
+                                {!! $HTML !!}
+                            @endforeach
                         </div>
                     </form>
                     <!--[START DYNAMIC FORMS]-->
@@ -126,7 +139,7 @@
 
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js" defer></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js" defer></script>
 
     <script type="text/javascript">
         var api_token = "{{ Auth::user()->api_token }}";
@@ -137,6 +150,7 @@
             let pageCtr = {{ $pageCounter ?? '1' }};
 
             $( ".tabs" ).tabs();
+
 
             $( ".sortable" ).sortable({ 
                 connectWith: "div", 

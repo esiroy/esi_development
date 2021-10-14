@@ -31,9 +31,8 @@
                 @if ($display_meta['required'] == "true")
                     <span class="text-danger">*</span>
                 @endif
-            @endif
-            <!--{{ $label }}-->
-            HTML Block
+            @endif                        
+            <div>{{ $label ?? 'HTML Block' }}</div>
         </h5>
 
         <div class="card-text">
