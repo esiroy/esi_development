@@ -13,7 +13,7 @@ class WritingController extends Controller
 {
     //
 
-    public function indeX(FormFields $formFieldModel) 
+    public function index(FormFields $formFieldModel) 
     {
 
         $form_id = 1; //all forms are 1(for now)
@@ -105,8 +105,6 @@ class WritingController extends Controller
         $formFields  = FormFields::where('form_id', $id)->orderBy('sequence_number', 'ASC')->get();
 
         $entries = WritingEntries::where('form_id', $id)->get();
-
-        
 
        
 

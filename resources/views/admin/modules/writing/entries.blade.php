@@ -10,7 +10,7 @@
                     <ol class="breadcrumb bg-light ">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active"><a href="{{ url('admin/writing') }}">Writing</a></li>
-                        <li class="breadcrumb-item " aria-current="page">Writing</li>
+                        <li class="breadcrumb-item " aria-current="page">Entries</li>
                     </ol>
                 </nav>
             </div>
@@ -58,8 +58,14 @@
                                     <tr>
                                         @foreach ($formFields as $formField)
                                         <td id="{{$formField->id}}" class=" text-center bg-light text-dark">
-                                            @if (isset($fieldValue[$entry->id][$formField->id]))
-                                                {{ $fieldValue[$entry->id][$formField->id]  }}
+                                            @if ($formField->type == 'uploadfield')
+                                                @if (isset($fieldValue[$entry->id][$formField->id]))
+                                                    <img src="{{ Storage::url($fieldValue[$entry->id][$formField->id])  }}"/>
+                                                @endif
+                                            @else 
+                                                @if (isset($fieldValue[$entry->id][$formField->id]))
+                                                    {!! $fieldValue[$entry->id][$formField->id]  !!}
+                                                @endif
                                             @endif                                    
                                         </td>
                                         @endforeach                               

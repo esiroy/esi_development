@@ -7,7 +7,7 @@
             @endif
         </label>       
         <input type="file" 
-                id="{{ $id ."_file" }}" 
+                id="{{ $id  }}" 
                 name="{{ $id ."_file" }}" 
                 class="form-control pt-3 pb-5"                
                 @if ($display_meta['required']) {{ "required" }} @endif

@@ -17,7 +17,7 @@
             </div>
 
             
-    <form id="writing-form" method="POST"  action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
         @csrf
         @foreach($pages as $page) 
             <h2>{{ $page->page_id }}</h2>
@@ -71,6 +71,70 @@
                     // Adjust the height of iframe
                     $iframe.height($body.height());
                 }
+            }
+
+            function validateFields(currentIndex) 
+            {
+                let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
+                let requiredFieldsArr = [];
+
+                Array.from(inputs).forEach(field => 
+                {
+                    let fieldID =  $(field).attr('id');                                 
+                    highlightFieldRow(fieldID);
+
+                    $('#'+fieldID+"_field_row").on('keyup change', function() 
+                    {
+                        highlightFieldRow(fieldID)                                     
+                    });
+                    
+                    
+                    //check all has required in Array
+                    if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                        
+                        console.log(fieldID + " is hidden, we will not verify");
+                    } else {
+                        if ($('#'+fieldID).attr( "required" )) 
+                        {
+                            //console.log(fieldID + " is required")
+                            let isValid = $('#'+fieldID).valid();
+                            requiredFieldsArr.push({
+                                'id': fieldID,
+                                'isValid': isValid
+                            });
+                        }
+
+                        //check if field is an email field and validate manually (since we cant validate it in section)
+                        if ($('#'+fieldID).hasClass('emailfield')) 
+                        {                            
+                            var email = $('#'+fieldID).val();
+                            if(email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
+                                // valid email
+                            } else {
+                                requiredFieldsArr.push({
+                                    'id': fieldID,
+                                    'isValid': false
+                                });                                                                           
+                            }
+                        }
+                    }
+
+                });
+
+                let goToNextStep = true;
+                Array.from(requiredFieldsArr).forEach(requiredField => {
+                    if (requiredField.isValid === false || requiredField.isValid === null) {
+                        goToNextStep = false;
+                        return false;
+                    }
+                });                        
+
+                if (goToNextStep == true) {
+                    console.log("Go to step next page")
+                    return true;
+                } else{
+                    console.log("stay on current page")
+                    return false;
+                }                
             }
             
             function highlightFieldRow(fieldID) 
@@ -151,71 +215,10 @@
                         if (currentIndex < newIndex)
                         {
                             //alert(currentIndex + " " + newIndex)                            
-                            let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
-                            let requiredFieldsArr = [];
+                            let isValid = validateFields(currentIndex);
 
-                            Array.from(inputs).forEach(field => 
-                            {
-                                 let fieldID =  $(field).attr('id');                                 
-                                 highlightFieldRow(fieldID);
-
-                                 $('#'+fieldID+"_field_row").on('keyup change', function() 
-                                 {
-                                    highlightFieldRow(fieldID)                                     
-                                 });
-                                 
-                               
-                                //check all has required in Array
-                                if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {
-                                    
-                                    console.log(fieldID + " is hidden, we will not verify");
-
-                                } else {
-                                    if ($('#'+fieldID).attr( "required" )) 
-                                    {
-                                        //console.log(fieldID + " is required")
-                                        let isValid = $('#'+fieldID).valid();
-                                        requiredFieldsArr.push({
-                                            'id': fieldID,
-                                            'isValid': isValid
-                                        });
-                                    }
-
-                                    //check if field is an email field and validate manually (since we cant validate it in section)
-                                    if ($('#'+fieldID).hasClass('emailfield')) 
-                                    {
-                                        
-                                        var email = $('#'+fieldID).val();
-                                        if(email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
-                                            // valid email
-                                        } else {
-                                            requiredFieldsArr.push({
-                                                'id': fieldID,
-                                                'isValid': false
-                                            });                                                                           
-                                        }
-                                    }
-                                }
-
-                            });
-
-
-
-                            let goToNextStep = true;
-                            Array.from(requiredFieldsArr).forEach(requiredField => {
-                                if (requiredField.isValid === false || requiredField.isValid === null) {
-                                    goToNextStep = false;
-                                    return false;
-                                }
-                            });                        
-
-                            if (goToNextStep == true) {
-                                console.log("Go to step next page")
-                                return true;
-                            } else{
-                                console.log("stay on current page")
-                                return false;
-                            }
+                            return isValid;
+                            
                         } else {
 
                             //console.log("User")
@@ -225,12 +228,20 @@
                     },
                     // Triggered when clicking the Finish button
                     onFinishing: function(e, currentIndex) {
-                        $('#writing-form').find('[type="submit"]').trigger('click');
+
+                        let isValid = validateFields(currentIndex);
+
+                        if (isValid === "true" || isValid === false || isValid === null ) 
+                        {                          
+                            console.log("not valid field detected");
+
+                        } else {                            
+                            $('#writing-form').find('[type="submit"]').trigger('click');
+                        }
+                        
                     },
                     onFinished: function(e, currentIndex) {
-
-                        //alert ("finished");
-
+                     
                         // Uncomment the following line to submit the form using the defaultSubmit() method
                         // $('#writing-form').formValidation('defaultSubmit');
                     }

@@ -1,14 +1,20 @@
-<div class="card esi-card">
+
+<div class="card esi-card fieldButtons">
     <div class="card-header esi-card-header">
         Fields
     </div>
     <div class="card-body esi-card-body">
 
-        <div class="text-center">
-            <button id="btn_simpleInputText" type="button" class="btn btn-light border col-md-5 mb-2">Simple Input Text</button>
-            <button id="btn_dropdownSelect" type="button" class="btn btn-light border col-md-5 mb-2">Dropdown</button>
-            <button id="btn_html" type="button" class="btn btn-light border col-md-5 mb-2">HTML</button>
-            <button id="btn_upload" type="button" class="btn btn-light border col-md-5 mb-2">File Upload</button>
+        <div class="text-center ">
+
+    
+                <div id="btn_simpleInputText" type="button" class="draggable btn btn-light border col-md-5 mb-2 ">Simple Input Text</div>
+            
+        
+
+            <button id="btn_dropdownSelect" type="button" class="draggable btn btn-light border col-md-5 mb-2 ">Dropdown</button>
+            <button id="btn_html" type="button" class="btn btn-light border col-md-5 mb-2 ">HTML</button>
+            <button id="btn_upload" type="button" class="btn btn-light border col-md-5 mb-2 ">File Upload</button>
 
             <button id="btn_page" type="button" class="btn btn-light border col-md-5 mb-2">Page</button>
 
@@ -20,7 +26,7 @@
     </div>
 </div>
 
-<div class="card esi-card mt-2">
+<div class="card esi-card mt-2 advanceFieldButtons">
     <div class="card-header esi-card-header">
         Advance Fields
     </div>
@@ -33,3 +39,4 @@
         </div>
     </div>
 </div>
+

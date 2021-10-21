@@ -59,7 +59,6 @@
                     </div>
                 </div>
 
-
                 <div class="card esi-card">
                     <div class="card-header esi-card-header">
                         Form
@@ -67,25 +66,32 @@
 
                     <!--[START DYNAMIC FORMS]-->
                     <form id="dynamicForms" name="dynamicForms" method="POST"  action="{{ route('admin.writing.update', 1) }}">                                       
-                     @csrf
+                        @csrf
                         <div id="form-content" class="card-body esi-card-body">
+                            
                             @foreach ($pages as $page)
-                                <div id="page-{{ $page->page_id }}" class="card-header esi-card-header-page mb-4 droptrue  ">
+                            <div id="page-{{ $page->page_id }}" class="card esi-card-header-page mb-4">
+                                <div class='card-header'>
                                     {{ "Page : ".  $page->page_id }}
-
+                                </div>
+                                <div class='card-body droptrue'>
                                     @if(isset($formFieldChildrenHTML[$page->page_id]))
                                         @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
                                             {!! $formFieldChildHTML !!}
                                         @endforeach
                                     @endif
 
-
                                 </div>
+                            </div>
                             @endforeach
+                           
 
-                            @foreach($formFieldHTML as $HTML) 
-                                {!! $HTML !!}
-                            @endforeach
+                            <div class="sortable">
+                                @foreach($formFieldHTML as $HTML) 
+                                    {!! $HTML !!}
+                                @endforeach
+                            </div>
+
                         </div>
                     </form>
                     <!--[START DYNAMIC FORMS]-->
@@ -95,9 +101,11 @@
             </div>
 
             <div class="col-md-4">
-                @include('admin.modules.writing.includes.fieldButtons')                
-                <input type="button" value="Cancel" class="btn btn-danger mt-4" onclick="window.location.href='{{  url('admin/writing') }}' ">
-                <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault();document.getElementById('dynamicForms').submit();">               
+                <div id="righ-sidebar" style="position: -webkit-sticky;position: sticky; top: 20px;">
+                    @include('admin.modules.writing.includes.fieldButtons')                
+                    <input type="button" value="Cancel" class="btn btn-danger mt-4" onclick="window.location.href='{{  url('admin/writing') }}' ">
+                    <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault();document.getElementById('dynamicForms').submit();">               
+                </div>
             </div>
 
         </div>
@@ -132,40 +140,113 @@
             font-size: 12px;
         }
 
+        .ui-sortable-placeholder 
+        {            
+            border: 1px dotted #ff0099;
+            visibility: visible !important;
+            height: 40px;
+            margin-bottom: 10px;
+
+        }
+
+        .esi-card-header-page {
+            font-weight: bold;
+            font-size: 12px;
+            border-color: #28a745;            
+            margin-bottom: 130px
+        }
+
+        .esi-card-header-page >.card-header {
+            background-color: #28a745; 
+            text-align: center;
+            color: #fff;
+        }
+        
+        
+        .ui-draggable-dragging {
+            z-index: 999999999;
+        }
+        
+        #dynamicForms .ui-sortable-helper {
+           display: none;
+        }
+
+        #dynamicForms .ui-draggable-dragging {
+            
+        }
     </style>
 @endsection
 
 @section('scripts')
-
-  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js" defer></script>
-
     <script type="text/javascript">
         var api_token = "{{ Auth::user()->api_token }}";
-
         window.addEventListener('load', function() 
-        {            
+        {
 
-            let pageCtr = {{ $pageCounter ?? '1' }};
+            $('.fa-caret-up').hide();
+
+            let currentMousePos = { x: -1, y: -1 };
+            let pageCtr = '{{ $pageCounter ?? 1 }}';            
 
             $( ".tabs" ).tabs();
 
-
-            $( ".sortable" ).sortable({ 
-                connectWith: "div", 
-                handle: '.handle'
-            });
-
-            $( ".droptrue" ).sortable({ 
+            //sortable with no page
+            $( ".sortable" ).sortable({               
                 connectWith: "div", 
                 handle: '.handle',
+                sort: function(e) {
+                    //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                    $('#dynamicForms').find('.field_container').show();                    
+                },
+            });
+           
+            //this is for the sortable in the page area
+            $( ".droptrue" ).sortable({        
+                connectWith: "div", 
+                handle: '.handle',              
+                sort: function(e) {
+                    //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                    $('#dynamicForms').find('.field_container').show();                   
+                },               
                 update: function( event, ui) {
-                    console.log($(this).attr('id'));
-                    let page = $(this).attr('id');
+                    console.log($(this).parent().attr('id'));
+                    let page = $(this).parent().attr('id');
                     $('#'+page).find('.page').val(page)
                 }                
             });
+
+
+
+            $( ".draggable" ).draggable({
+                
+                distance : 1,
+                connectToSortable: ".droptrue",
+                revert: "invalid",
+                placeholder: 'ui-state-highlight',
+                over: function(event, ui) {
+                    let cl = ui.item.attr('class');
+                    $('.ui-state-highlight').addClass(cl);
+                },
+                helper: function(event, ui) {
+                    return "<div style='width:100%; margin:10px 0px; padding:0px'><div class='handle'>(Component Drag Test)</div></diV>"
+                },            
+                stop: function() {
+                    $('#container_drop').removeClass('highlight_container');
+                    //$('.field_container').css("display", "block");
+                },                   
+                drag: function(e, ui) {
+
+                    $('.ui-draggable-dragging').css("background-color", "yellow");
+                    $('.ui-sortable-helper').css("background-color", "yellow");
+                    $('.ui-sortable-placeholder').text("test"); 
+                    
+                   
+                }                
+            });
+              
+
 
 
             let ctr = 1;
@@ -173,7 +254,7 @@
                             [START] - (TAB) [SHOW, HIDE - TAB OPTIONS]
             *****************************************************************/
 
-            //SHOW FIELD WHEN FIELD CONTAINER IS CLICKED
+            //SHOW TAB WHEN FIELD CONTAINER IS CLICKED
             $(document).on("click", '.field_container', function() {
                 let id = $(this).find('#id').val();
                 let tabContainers = $(document).find('.tab-container');
@@ -191,10 +272,43 @@
                     }
                 });                
 
-                if (!$(this).find('.tab-container').hasClass('open')) {                    
+                if (!$(this).find('.tab-container').hasClass('open')) 
+                {
                     $(this).find('.tab-container').addClass('open');
                     $(this).find('.tab-container').slideToggle('slow');
-                }
+                    $(this).find('.fa-caret-up').show();
+                    $(this).find('.fa-caret-down').hide();   
+                    
+                } else {
+                    //$(this).find('.tab-container').removeClass('open');
+                    //$(this).find('.tab-container').slideToggle('slow');
+                }               
+            });
+
+            $(document).on('click', '.btnShowFieldOptions', function() {
+                let element = $(this).parent().parent().parent().find('.tab-container');
+                
+                if (!element.hasClass('open')) {
+                   
+                    $(element).addClass('open');  
+                    $(element).slideToggle('slow');                  
+                }                                
+                $(this).parent().find('.fa-caret-up').show();
+                $(this).parent().find('.fa-caret-down').hide();  
+                return false;               
+            });
+
+
+            $(document).on('click', '.btnHideFieldOptions', function() {
+                let element = $(this).parent().parent().parent().find('.tab-container');
+                
+                if (element.hasClass('open')) {
+                    element.slideToggle('slow');
+                    element.removeClass('open');                    
+                }                                
+                $(this).parent().find('.fa-caret-up').hide(); 
+                $(this).parent().find('.fa-caret-down').show(); 
+                return false;               
             });
             
 
@@ -239,6 +353,7 @@
                 return getLargest(elementCtrArr);
             }
 
+            //ADD Custom Field
             function addCField(fieldID, btnIndex) 
             {                
                 let fieldsCtr = $("#"+ fieldID +"_field").find('.conditional_fields').find('.row').length;
@@ -261,29 +376,34 @@
                 let removeButton    = "<a id='"+fieldID+"_cfield_remove_"+insCtr+"' class='cfield_remove'><i class='fas fa-minus-circle pt-2'></i></a>";
                 let btns            = "<div id='"+fieldID+"_cfield_btn_container_"+insCtr+"'>"+ addButton +" " + removeButton +"</div>";
  
-
+                /*Columns Actually*/
                 let btnRow = "<div class='col-md-4'>"+ cfield_id + "</div>";
                     btnRow += "<div class='col-md-3'>"+ cfield_rule + "</div>";
-                    btnRow += "<div id='"+ fieldID +"_cfield_value_container_"+ insCtr +"' class='col-md-3'>"+ cfield_value + "</div>";
-                    btnRow += "<div class='col-md-2 pl-1'>"+ btns + "</div>";
+                    btnRow += "<div id='"+ fieldID +"_cfield_value_container_"+ insCtr +"' class='col-md-4'>"+ cfield_value + "</div>";
+                    btnRow += "<div class='col-md-1 pl-1'>"+ btns + "</div>";
                 
                 if (insCtr == 1) {
-                   // console.log("test 1");                    
+                   // console.log("you added the first instance field");                    
                     $("#"+ fieldID +'_tab_container').find(".conditional_fields").append("<div class='row "+fieldID+"_conditional_fields_"+insCtr+" mt-2'>"+ btnRow +"</div>");
-
+    
                 } else {
-                    //console.log("test 2")
-                    $("#"+ fieldID +'_tab_container').find(".conditional_fields").find("."+ fieldID + "_conditional_fields_"+ btnIndex).after("<div class='row "+fieldID+"_conditional_fields_"+insCtr+" mt-2'>"+ btnRow +"</div>");
+                    // console.log("you added the instance field 2 and above");
+                    $("#"+ fieldID +'_tab_container').find(".conditional_fields").find("."+ fieldID + "_conditional_fields_"+ btnIndex)
+                    .after("<div class='row "+fieldID+"_conditional_fields_"+insCtr+" my-2'>"+ btnRow +"</div>");
                 }
 
                 populateFieldIDOptions(fieldID, insCtr);
                 populateRulesOptions(fieldID, insCtr)
 
                  //[TARGET]clean and populate
-                let targetFieldType = $('#'+fieldID+"_fieldType").val();
+
+                let selectedOptionID = $('#'+fieldID +"_cfield_id_"+ insCtr).find(":selected").val();
+                let targetFieldType = $('#'+selectedOptionID+"_fieldType").val();
                 if (targetFieldType == "dropdownSelect") {
-                    let selectedOptionID = $('#'+fieldID+"_cfield_id_"+insCtr).find(":selected").val();
-                    populateValuesDropdownOptions(selectedOptionID, fieldID, insCtr)
+                   
+                    populateValuesDropdownOptions(selectedOptionID, fieldID, insCtr);
+
+                    console.log("hi created here!")
                 } else {                    
                     createNewTextField(fieldID, fieldID, insCtr)
                 }
@@ -297,6 +417,7 @@
                 if ($('#'+elementID).is(':checked')) {
                     console.log("checked")
 
+               
                     $('#'+cfieldID+'_tab_container').find('.conditional_fields').show();
 
                     let fieldsCtr = $("#"+ cfieldID +"_field").find('.conditional_fields').find('.row').length;                
@@ -334,17 +455,62 @@
                 $('#'+targetID).css('border', '1px solid red');
                 $('#'+targetID).find(":selected").val();
 
-
                 let selectedOptionID = $('#'+targetID).find(":selected").val();
-                let targetFieldType = $('#'+selectedOptionID+"_fieldType").val(); 
+                let targetFieldType = $('#'+selectedOptionID+"_fieldType").val();
 
                 //[TARGET]clean and populate
-                if (targetFieldType == "dropdownSelect") {   
-                    populateValuesDropdownOptions(selectedOptionID, targetFieldID, index)
+                if (targetFieldType == "dropdownSelect") 
+                {
+
+                    let selectedRuleValue = $('#'+targetFieldID+"_cfield_rule_"+index).find(":selected").val();
+
+                    console.log(selectedRuleValue)
+
+                    if (selectedRuleValue === 'contains') 
+                    {    
+
+                        createNewTextField(selectedOptionID, targetFieldID, index)
+
+                    } else {
+                        populateValuesDropdownOptions(selectedOptionID, targetFieldID, index)
+                    }
+                    
                 } else {
                     createNewTextField(selectedOptionID, targetFieldID, index)
                 }
             });
+
+            //on change of select
+            $(document).on('change', '.cfield_rule_select', (elem) => {
+                //GET ARGET FIELD TO UPDATE
+                let targetID = elem.currentTarget.id;
+                let targetFieldID = getFieldID(targetID);
+                let index = getFieldCtr(targetID)              
+
+                //[@note] target id is the full id of an element
+                $('#'+targetID).css('border', '1px solid red');
+                $('#'+targetID).find(":selected").val();
+
+                let selectedRuleValue= $('#'+targetID).find(":selected").val();
+
+                if (selectedRuleValue === 'contains') 
+                {              
+                    /*Currend field ir (Rule)  */
+                    createNewTextField(targetID, targetFieldID, index);
+                } else {                  
+                     /*Get the selected Field Option dropdown*/
+                     let selectedOptionID = $('#'+targetFieldID +"_cfield_id_"+ index).find(":selected").val();
+                     let targetFieldType = $('#'+selectedOptionID+"_fieldType").val();
+
+                    if (targetFieldType == "dropdownSelect") {   
+                        populateValuesDropdownOptions(selectedOptionID, targetFieldID, index)
+                    } else {
+                        createNewTextField(selectedOptionID, targetFieldID, index)
+                    }
+                }
+            }); 
+
+            
      
 
             function populateFieldIDOptions(targetFieldID, insCtr) {
@@ -642,7 +808,11 @@
                     success: function(data) {                       
                         $( "#form-content" ).append( data.field ).sortable({ 
                             connectWith: "div", 
-                            handle: '.handle'
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
@@ -670,7 +840,11 @@
                     success: function(data) {                       
                         $( "#form-content" ).append( data.field ).sortable({ 
                             connectWith: "div", 
-                            handle: '.handle'
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
@@ -698,7 +872,11 @@
                     success: function(data) {                       
                         $( "#form-content" ).append( data.field ).sortable({ 
                             connectWith: "div", 
-                            handle: '.handle'
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
@@ -724,7 +902,11 @@
                     success: function(data) {                       
                         $( "#form-content" ).append( data.field ).sortable({ 
                             connectWith: "div", 
-                            handle: '.handle'
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
@@ -759,7 +941,11 @@
                     success: function(data) {                       
                         $( "#form-content" ).append( data.field ).sortable({ 
                             connectWith: "div", 
-                            handle: '.handle'
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
@@ -795,7 +981,11 @@
                     success: function(data) {                       
                         $( "#form-content" ).append( data.field ).sortable({ 
                             connectWith: "div", 
-                            handle: '.handle'
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
@@ -830,9 +1020,6 @@
             });
 
 
-         
-
-
 
             
             /***************************************************************
@@ -844,25 +1031,26 @@
 
                 var $div = $("<div>", { 
                         "id": "page-"+ pageCtr +"",
-                        "class": "card-header esi-card-header-page mb-4 droptrue handle", 
+                        "class": "card esi-card-header-page mb-4 handle", 
                         "style": "min-height:200px",
-                        "text":' Page :' + pageCtr
-                }).sortable();
-
-                $("#form-content .sortable").append($div);
-
-                pageCtr = pageCtr + 1;
-
+                        //"text":' Page :' + pageCtr
+                });
+                //.sortable();
+                $("#form-content").append($div);
+                $("#form-content").find('#page-'+pageCtr).append("<div class='card-header'>Page : "+ pageCtr +"</div>");
+                $("#form-content").find('#page-'+pageCtr).append("<div class='card-body droptrue'> </div>");
                 $( ".droptrue" ).sortable({ 
                     connectWith: "div", 
                     handle: '.handle',
                     update: function( event, ui) {
-                        console.log($(this).attr('id'));
-                        let page = $(this).attr('id');
+                        console.log($(this).parent().attr('id'));
+                        let page = $(this).parent().attr('id');
                         $('#'+page).find('.page').val(page)
                     }                
                 });
 
+
+                pageCtr = parseInt(pageCtr) + 1;
             });
 
 
