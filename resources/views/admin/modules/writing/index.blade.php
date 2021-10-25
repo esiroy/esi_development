@@ -656,18 +656,25 @@
             //INSERT THE IMAGE ON ADDED FIELD
 
 
-            $('.insertToMediaAddedField').on('click', function() {
+            $('.insertToMediaAddedField').on('click', function() 
+            {
                 newField = false;
                 targetFieldID = $(this).parent().find('.addedContentFieldID').val();
+
+                let test = $('.'+targetFieldID+"_content").val();
+                $('.'+targetFieldID+"_content").text(" ");
+                $('.'+targetFieldID+"_content").text(test);
 
                 $("#modal_gallery").modal();
                 $('#form_gallery').trigger("reset");
                 $( ".tabs" ).tabs();                
             });
 
+
             //INSERT THE IMAGE ON NEW
             $('#btnGalleryInsert').on('click', function()
             {               
+
 
                 let selectedFilename = $('#selectedFilename').val();
 
@@ -687,39 +694,23 @@
                         $("#modal_html").find('#content').val(updatedContent);                
                         $("#modal_gallery").modal('toggle');   
                     } else {
-                        let updatedContent =  $('#'+targetFieldID+"_tab_container").find('#content').html() + " " + formattedHTML + " ";
-
-                        $('#'+targetFieldID+"_tab_container").find('#content').html("");
-
-
-                        $('#'+targetFieldID+"_tab_container").find('#content').html(updatedContent);
-                        $("#modal_gallery").modal('toggle');   
+                        let formattedHTML = "<img src='"+selectedFilename+"'>";
+                        let oldContent = $('.'+targetFieldID+"_content").val();
+                        $('.'+targetFieldID+"_content").val("" + oldContent +  " " + formattedHTML);
+                        $("#modal_gallery").modal('toggle');  
                     }
 
                 } else {
-
-                    console.log("image");
-
-                    //THIS WILL ADD IMAGE
-
-                    let formattedHTML = "<img src='"+selectedFilename+"'>";
-                    let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";                    
-
-
                     if (newField === true) {
-
-                        console.log("1");
-
+                        // the new field is coming from a modal
+                        let formattedHTML = "<img src='"+selectedFilename+"'>";
                         let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";
                         $("#modal_html").find('#content').html(updatedContent);                
                         $("#modal_gallery").modal('toggle');   
                     } else {
-
-                        console.log("2");
-
-                        let updatedContent =  $('#'+targetFieldID+"_tab_container").find('#content').html() + " " + formattedHTML + " ";
-                        $('#'+targetFieldID+"_tab_container").find('#content').html("");
-                        $('#'+targetFieldID+"_tab_container").find('#content').html(updatedContent);
+                        let formattedHTML = "<img src='"+selectedFilename+"'>";
+                        let oldContent = $('.'+targetFieldID+"_content").val();
+                        $('.'+targetFieldID+"_content").val("" + oldContent +  " " + formattedHTML);
                         $("#modal_gallery").modal('toggle');   
                     }     
                 }
