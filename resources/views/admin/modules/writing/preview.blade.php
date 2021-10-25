@@ -1,45 +1,113 @@
-@extends('layouts.writing.template')
+
+@extends('layouts.admin')
 
 @section('content')
 
-    <div class="row">
-        <div class="col-12">
-            @if (session('message'))
-            <div class="alert alert-success">
-                {{ session('message') }}
+    <div class="container bg-light px-0">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-light ">
+                        <li class="breadcrumb-item"><a href="#">Home</a></li>                        
+                        <li class="breadcrumb-item"><a href="{{ url('admin/writing') }}">Writing</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Preview</li>
+                        
+                    </ol>
+                </nav>
             </div>
-            @elseif (session('error_message'))
-            <div class="alert alert-danger">
-                {{ session('error_message') }}
-            </div>
-            @endif
         </div>
     </div>
-            
-    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
-        @csrf
-        @foreach($pages as $page) 
-            <h2>{{ $page->page_id }}</h2>
-            <section data-step="{{ $page->page_id }}">
-                @if(isset($formFieldChildrenHTML[$page->page_id]))
-                    @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
-                        {!! $formFieldChildHTML !!}
-                    @endforeach
+
+    <div class="container bg-light">
+        <div class="row">
+            <div class="col-md-12">
+
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
-                @if( $page->page_id == 1 )
-                    @foreach($formFieldHTML as $HTML) 
-                        {!! $HTML !!}
-                    @endforeach
+
+                @if (session('message'))
+                    <div class="alert alert-success">
+                        {{ session('message') }}
+                    </div>
+                @elseif (session('error_message'))
+                    <div class="alert alert-danger">
+                        {{ session('error_message') }}
+                    </div>
                 @endif
-            </section>
-        @endforeach
-         <textarea id="data" name="data" style="display:none" ></textarea>
-        <input type="submit" style="display:none">
-    </form>
+
+
+                <div class="card esi-card mb-2">
+                    <div id="form-navigation" class="card-body esi-card-body">              
+                        <div class="form-inline">
+                            <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">
+                                    Edit
+                                </button>
+                            </a>
+                            <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">Entries</button>
+                            </a>
+                            <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-success mr-2" type="button">                                
+                                    Preview
+                                </button>
+                            </a>                            
+                        </div>                                                
+                    </div>
+                </div>
+
+                <div class="card esi-card">
+                    <div class="card-header esi-card-header">
+                        Form
+                    </div>
+
+                    <!--[START DYNAMIC FORMS]-->
+                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                        @csrf
+                        @foreach($pages as $page) 
+                            <h2>{{ $page->page_id }}</h2>
+                            <section data-step="{{ $page->page_id }}">
+                                @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                    @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                        {!! $formFieldChildHTML !!}
+                                    @endforeach
+                                @endif
+                                @if( $page->page_id == 1 )
+                                    @foreach($formFieldHTML as $HTML) 
+                                        {!! $HTML !!}
+                                    @endforeach
+                                @endif
+                            </section>
+                        @endforeach
+                        <textarea id="data" name="data" style="display:none" ></textarea>
+                        <input type="submit" style="display:none">
+                    </form>
+                    <!--[START DYNAMIC FORMS]-->
+
+                </div>
+
+            </div>
+
+
+        </div>
+    </div>
+
 @endsection
+
+
 
 @section('styles')
     @parent
+    <!--steps-->
+    <link rel="stylesheet" href="{{ asset('css/steps/steps.css') }}">
+
     <style>
         .wizard>.content>.body label.error {
             font-weight: bold;    

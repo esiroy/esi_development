@@ -634,27 +634,54 @@
                 resetModalGallery();             
 
                 let filename = $(this).find('.img-filename-container').find('.img-filename').text();
-                fileURL = $(this).find('.img-url-container').find('.img-url').text();
+                imageURL = $(this).find('.img-url-container').find('.img-url').text();
+                fileURL = $(this).find('.img-filename-container').find('.img-filename').text();
+
+                
+
                 $(this).find('.img-wrapper').css("border-color", "#0072A8");
+
                 $(this).find('.img-filename-container').css("background-color", "#0072A8");
                 $(this).find('.img-filename-container').find('.img-filename').css("color", "#fff !important");
 
                 $('#preview').removeClass('d-none');
-                $('#mediaImgPreview').attr('src', fileURL);
-                $('#selectedFilename').val(filename)
+                $('#mediaImgPreview').attr('src', imageURL);
+
+                $('#selectedFilename').val("{{ url('storage/uploads/writing_materials') }}" + "/" + fileURL)
                 $('#btnGalleryInsert').prop('disabled', false)
             });
             
             //INSERT THE IMAGE
             $('#btnGalleryInsert').on('click', function()
             {
-                //@TODO: DETECT FILE (IMAGE OR AUDIO)
-                let formattedHTML = "<img src='"+fileURL+"'>";
 
-                let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";
-                $("#modal_html").find('#content').val(updatedContent);                
-                $("#modal_gallery").modal('toggle');
-                return false;              
+                
+                let selectedFilename = $('#selectedFilename').val();
+
+                let fileURLArray = selectedFilename.split(".");
+                let extension = fileURLArray[1];
+
+                console.log(selectedFilename + " --> " + extension);
+
+                if (extension === 'mp3') {
+                     let formattedHTML = '<audio controls>'+                                         
+                                         '<source src="'+selectedFilename+'" type="audio/ogg">' +
+                                         '<source src="'+selectedFilename+'" type="audio/mpeg">' +
+                                         'Your browser does not support the audio element.' +
+                                        '</audio>';
+
+                    let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";
+                    $("#modal_html").find('#content').val(updatedContent);                
+                    $("#modal_gallery").modal('toggle');   
+                                     
+                } else {
+
+                    let formattedHTML = "<img src='"+selectedFilename+"'>";
+                    let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";                    
+                    $("#modal_html").find('#content').val(updatedContent);                
+                    $("#modal_gallery").modal('toggle');                    
+                }
+                return false;
             });
 
             function resetModalGallery() {

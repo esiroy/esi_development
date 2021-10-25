@@ -378,8 +378,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/lessons', 'Modules\ReportController');
         Route::resource('/salary', 'Modules\SalaryReportController');
 
-        /* Writing (ADMIN BACKEND) */
+        /* Writing (ADMIN BACKEND) */        
         Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');
+        Route::get('/writing/preview/{id}', 'Modules\WritingController@preview')->name('writing.previewFormCreator');
         Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.updateFields');
       
 

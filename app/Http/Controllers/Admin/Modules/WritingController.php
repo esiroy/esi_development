@@ -7,20 +7,15 @@ use Illuminate\Http\Request;
 use App\Models\FormFields;
 use App\Models\ConditionalFieldLogic;
 use App\Models\WritingEntries;
+use App\Models\UploadFile;
 
 
 class WritingController extends Controller
 {
-    //
-
     public function index(FormFields $formFieldModel) 
     {
-
         $form_id = 1; //all forms are 1(for now)
         $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-
-        //$formFields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
         $formFieldHTML[] = "";
 
         //CONDITIONAL FIELDS (init)
@@ -29,53 +24,9 @@ class WritingController extends Controller
         foreach ($formFields as $formField) 
         {
             $formFieldHTML[] = $formFieldModel->generateFormFieldHTML($formField, $cfields);
-
-            /*
-            //covert json objec to array                
-            $display_meta = (array) json_decode($formField->display_meta, true);
-            $id     = $formField->id;                
-            $label  = $formField->name;
-            
-            $required = $formField->required;
-            $maximum_characters = $formField->maximum_characters;
-            $description = $formField->description;
-
-
-            if (isset($display_meta['description'])) {
-                $description = $display_meta['description'];
-            }
-            
-
-            if (isset($display_meta['content'])) {
-                $content = $display_meta['content'];
-            } else {
-                $content = "";
-            }
-
-           
-
-           if ( strtolower($formField->type) == "simpletext" || strtolower($formField->type) == "simpletextfield") 
-           {
-                $type   = 'simpletextfield';                               
-                $formFieldHTML[] = view('admin.forms.simpleText', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
-
-           } else if (strtolower($formField->type) == "dropdown" || strtolower($formField->type) == "dropdownselect") {
-
-                $type   = 'dropdownselect';                               
-                $formFieldHTML[] = view('admin.forms.dropdownSelect', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
-
-            } else if (strtolower($formField->type) == "html" || strtolower($formField->type) == "htmlcontent") {
-
-                $type   = 'html';                               
-                $formFieldHTML[] = view('admin.forms.htmlContent', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
-            }*/
-
-           
-
         }
 
-
-        /************ GET CHILDREN HTML ************/
+        // GET CHILDREN HTML
         $formFieldChildrenHTML[] = "";
 
         $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
@@ -83,47 +34,64 @@ class WritingController extends Controller
 
         foreach ($pages as $page) 
         {           
-
             $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-
-            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-           
+            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();           
             foreach ($formChildFields as $formChildField) 
             {
                 $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFormFieldHTML($formChildField, $child_cfields);
             }
         }
 
-        
-
         return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
     }
 
 
-    public function entries($id) {
-
+    public function entries($id) 
+    {
         $formFields  = FormFields::where('form_id', $id)->orderBy('sequence_number', 'ASC')->get();
-
         $entries = WritingEntries::where('form_id', $id)->get();
-
-       
-
         return view('admin.modules.writing.entries', compact('id', 'entries', 'formFields'));
+    }
+
+    public function preview($id, FormFields $formFieldModel) 
+    {        
+        $form_id = $id; 
+        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+        $formFieldHTML[] = "";
+
+        $cfields = $formFields;        
+        foreach ($formFields as $formField) 
+        {
+            $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
+        }
+
+        /************ GET CHILDREN HTML ************/
+        $formFieldChildrenHTML[] = "";
+        //Get Pages
+        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+        $pageCounter =  $pages->count() + 1;
+
+        foreach ($pages as $page) 
+        {           
+            $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+            foreach ($formChildFields as $formChildField) 
+            {
+                $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+            }
+        }
+        return view('admin.modules.writing.preview', compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
 
     }
 
 
-    public function update(Request $request) {
-
-       // exit();
-
-        //FORM ID
+    public function update(Request $request) 
+    {
         $form_id = 1;
 
         if (is_array($request->id) == false) {
             return redirect()->route('admin.writing.index', $form_id)->with('error_message', "Form can't be updated, please add a field from fields menu");
         }
-
 
         $ids = ConditionalFieldLogic::where('form_id', $form_id)->delete();
 
@@ -205,15 +173,10 @@ class WritingController extends Controller
                         'field_rule'            =>  $cfRule,
                         'field_value'           => $cfValue,
                     ]);
-
-                    //echo $cfID . " | " . $cfRule . " | " .$cfValue;
-                    //echo "<BR>";
                 }
             }
-            
 
-
-            //get the page array number for the page
+            //GET the page array number for the page
             if (isset($request[$id.'_page'])) {
                 $formPageArr = explode("-", $request[$id.'_page']);            
                 $page = $formPageArr[1];          
