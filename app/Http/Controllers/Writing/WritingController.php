@@ -120,8 +120,44 @@ class WritingController extends Controller
 
         $storagePath = 'public/uploads/writing/';
 
-        //create a array for the upload
-        foreach ($request->all() as $key => $value) 
+        $dataArray = json_decode($request->get('data'), true);
+
+        foreach ($dataArray as $key => $value)         
+        {
+
+            $fkey = explode("_", $key);
+            $id = $fkey[0];
+
+            $formField = formFields::find($id);
+
+            if ($formField) 
+            { 
+                if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
+                {                    
+                    $file = $request->file($key);
+                    $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+                    if ($uploadFileName) {
+                        echo "uploaded $uploadFileName : $file <BR>" ;
+                    }
+
+                    $fields[$key] = $uploadFileName;
+                } else {
+                
+                    $fields[$key] = $value;
+                }
+            } else {
+                
+                echo $key ." not found in form field <BR>";
+            }
+
+        }
+   
+     
+        
+
+        //create a array for the upload request
+        /*
+        foreach ($request->all() as $key => $value)         
         {
             if ($key != '_token') {
 
@@ -153,20 +189,24 @@ class WritingController extends Controller
                         $fields[$key] = $value;
                     }
                 } else {
+
+                    
                     echo $key ." not found in form field <BR>";
 
                 }
                 
             }
-        }
 
-        /*
+
         echo "<pre>";
         print_r (json_encode($fields));
         echo "</pre>";
-
         exit();
-        */
+
+        }*/
+
+    
+        
 
        WritingEntries::create([
             'form_id'   => $request->get('form_id'),

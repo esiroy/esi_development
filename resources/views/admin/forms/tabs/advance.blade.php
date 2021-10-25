@@ -39,7 +39,13 @@
                                 @php                                
                                     $writingFields = new \App\Models\WritingFields;
                                     $fields = $writingFields->where('id', $item->selected_option_id)->first();
-                                    $fieldInfo =  json_decode($fields->display_meta, true);
+
+                                    if (isset($fields->display_meta)) {
+                                        $fieldInfo =  json_decode($fields->display_meta, true);
+                                    } else {
+                                        $fieldInfo = null;
+                                    }
+                                    
                                 @endphp
 
                                 <div id="{{ $item->field_id }}_conditional_fields_{{ $ctr + 1 }}" class="row {{ $item->field_id }}_conditional_fields_{{ $ctr + 1 }} mb-2">
@@ -63,16 +69,16 @@
                                     <div class="col-3">                                        
                                         <select id="{{ $item->field_id }}_cfield_rule_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_rule[]" class="form-control form-control-sm cfield_rule_select">
                                             <option value="is" @if($item->field_rule == 'is')  {{ 'selected'}} @endif>is</option>
-                                            <option value="isnot" @if($item->field_rule == 'is not')  {{ 'selected'}} @endif>is not</option>
+                                            <option value="isnot" @if($item->field_rule == 'isnot')  {{ 'selected'}} @endif>is not</option>
                                             <option value="contains" @if($item->field_rule == 'contains') {{ 'selected'}} @endif>contains</option>                                        
                                         </select>                                        
                                     </div>
 
                                     <div id="{{ $item->field_id }}_cfield_value_container_{{ $ctr + 1 }}" class="col-4">
-
-                                        @if($item->field_rule == 'contains')
+                                        
+                                        @if(isset($fields->field_rule) && $item->field_rule == 'contains')
                                             <input id="{{ $item->field_id }}_cfield_value_{{ $ctr + 1 }}" type="text" name="{{ $item->field_id }}_cfield_value[]" value="{{ $item->field_value }}" class="form-control form-control-sm cfield_value_select">
-                                        @elseif ($fields->type == "dropdownSelect")
+                                        @elseif (isset($fields->type) && $fields->type == "dropdownSelect")
                                             <select id="{{ $item->field_id }}_cfield_value_{{ $ctr + 1 }}" name="{{ $item->field_id }}_cfield_value[]" class="form-control form-control-sm cfield_value_select">
                                                 @if (isset($fieldInfo['selected_choices']))
                                                     @foreach($fieldInfo['selected_choices'] as $choice)

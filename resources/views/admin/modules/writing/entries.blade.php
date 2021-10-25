@@ -49,7 +49,7 @@
                                 <thead>
                                     <tr>
                                         @foreach ($formFields as $formField)
-                                            <td class>{{ $formField->name }}</td>
+                                            <td class="{{ $formField->name }}_head" style="max-width:40px">{{ $formField->name }}</td>
                                         @endforeach    
                                     </tr>
                                 </thead>
@@ -57,10 +57,10 @@
                                     @foreach($entries as $entry)
                                     <tr>
                                         @foreach ($formFields as $formField)
-                                        <td id="{{$formField->id}}" class=" text-center bg-light text-dark">
+                                        <td id="{{$formField->id}}" class="text-center bg-light text-dark {{ $formField->name }}_data" style="max-width:40px">
                                             @if ($formField->type == 'uploadfield')
                                                 @if (isset($fieldValue[$entry->id][$formField->id]))
-                                                    <img src="{{ Storage::url($fieldValue[$entry->id][$formField->id])  }}"/>
+                                                    <img src="{{ Storage::url($fieldValue[$entry->id][$formField->id])  }}" class="img-fluid"/>
                                                 @endif
                                             @else 
                                                 @if (isset($fieldValue[$entry->id][$formField->id]))
@@ -81,4 +81,15 @@
             </div>
         </div>
     </div>   
+@endsection
+
+
+@section('styles')
+    @parent
+    <style>
+        .esi-table img {
+            width: 100%;
+            padding: 10px;
+        }
+    </style>
 @endsection

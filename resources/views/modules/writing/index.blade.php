@@ -2,20 +2,19 @@
 
 @section('content')
 
-            <div class="row">
-                <div class="col-12">
-                    @if (session('message'))
-                    <div class="alert alert-success">
-                        {{ session('message') }}
-                    </div>
-                    @elseif (session('error_message'))
-                    <div class="alert alert-danger">
-                        {{ session('error_message') }}
-                    </div>
-                    @endif
-                </div>
+    <div class="row">
+        <div class="col-12">
+            @if (session('message'))
+            <div class="alert alert-success">
+                {{ session('message') }}
             </div>
-
+            @elseif (session('error_message'))
+            <div class="alert alert-danger">
+                {{ session('error_message') }}
+            </div>
+            @endif
+        </div>
+    </div>
             
     <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
         @csrf
@@ -34,6 +33,7 @@
                 @endif
             </section>
         @endforeach
+         <textarea id="data" name="data" style="display:none" ></textarea>
         <input type="submit" style="display:none">
     </form>
 @endsection
@@ -53,7 +53,6 @@
     color: #8a1f11 !important;
     font-weight: bold
 }
-
 </style>
 @endsection
 
@@ -71,6 +70,41 @@
                     // Adjust the height of iframe
                     $iframe.height($body.height());
                 }
+            }
+
+            function encodeData() 
+            {
+                let inputs = $('#writing-form').find('.form-control');
+                let fieldsArr = new Object;
+
+                var itemsProcessed = 0;
+
+                Array.from(inputs).forEach( (field, index) => 
+                {
+                    itemsProcessed++;
+                    let id = $(field).attr('id') 
+                    let name = $(field).attr('name');
+                    let value = $(field).val();
+
+                    if ($('#'+id+"_field_row").css( "display" ) == 'none' ) {                        
+                       //field is not showed, we will not include it to post
+                    } else {                        
+                        console.log( id + " : "  + $(field).attr('name') + " " + $(field).val() );
+                        fieldsArr[name] = value;
+                    }
+
+                    if (itemsProcessed == inputs.length) {
+                        console.log(fieldsArr);
+                        convertToJSON(fieldsArr);
+                    }
+                });      
+            };
+            
+
+            function convertToJSON(data) {
+                let JSON_data = JSON.stringify(data);
+                $('#data').text(JSON_data);
+                return 
             }
 
             function validateFields(currentIndex) 
@@ -196,6 +230,53 @@
                 }
             }
 
+            function getHTMLContent(formID, FieldID) 
+            {
+                //Get the html field content
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/getHTMLFieldContent?api_token=') }}" + api_token,
+                    data: {
+                        formID              :  1,
+                        field_id            :  FieldID,                                                           
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) 
+                    {
+                        $('.'+ FieldID +'_field_content').html(data.content);   
+                        $('#'+ FieldID +'_field_row').show();  
+                        $('.'+ FieldID +'_field_content').find('#'+ FieldID).val(data.content);
+                    }
+                });                
+            }
+
+            function isLogicTrue(formFieldValue, rule, recordFeldValue) 
+            {
+                if (rule == "is") 
+                {
+                    if (eval (formFieldValue == recordFeldValue) ) {
+                        return true
+                    }
+                }
+                else if (rule == "isnot") 
+                {
+                    if (formFieldValue !== recordFeldValue) {
+                        return true
+                    }
+                } else if (rule == "contains") {
+
+                    if (formFieldValue.includes(recordFeldValue)) {
+                        return true
+                    }
+
+                } else {
+                    return false;
+                }
+
+            }
+
             // IMPORTANT: You must call .steps() before calling .formValidation()
             $('#writing-form')
                 .steps({
@@ -216,32 +297,26 @@
                         {
                             //alert(currentIndex + " " + newIndex)                            
                             let isValid = validateFields(currentIndex);
-
-                            return isValid;
-                            
+                            return isValid;                            
                         } else {
-
                             //console.log("User")
                             return true;
                         }
 
                     },
                     // Triggered when clicking the Finish button
-                    onFinishing: function(e, currentIndex) {
-
+                    onFinishing: function(e, currentIndex) 
+                    {
                         let isValid = validateFields(currentIndex);
-
                         if (isValid === "true" || isValid === false || isValid === null ) 
                         {                          
                             console.log("not valid field detected");
-
-                        } else {                            
+                        } else {         
+                            encodeData();
                             $('#writing-form').find('[type="submit"]').trigger('click');
-                        }
-                        
+                        }                        
                     },
-                    onFinished: function(e, currentIndex) {
-                     
+                    onFinished: function(e, currentIndex) {                     
                         // Uncomment the following line to submit the form using the defaultSubmit() method
                         // $('#writing-form').formValidation('defaultSubmit');
                     }
@@ -249,61 +324,50 @@
 
             @php
                 $cfLogic = new \App\Models\ConditionalFieldLogic;
-                $items = $cfLogic->where('form_id', $form_id)->distinct()->get(['selected_option_id']);
+                $items = $cfLogic->where('form_id', $form_id)->groupby(['selected_option_id'])->get();
             @endphp
 
-            /*
-            @foreach ($items as $item) 
-                console.log("{{$item->selected_option_id}}");
-            @endforeach
-            */
-
             @foreach ($items as $item) 
 
-                $('{{ '#' . $item->selected_option_id }}').on('change', function() {
-                    let cflogic = $(document).find('.cfLogic');
+                $('{{ '#' . $item->selected_option_id }}').on('change keyup blur', function() 
+                {
+                    //let cflogic = $(document).find('.cfLogic');
 
-                    @php                
-                        $options = $cfLogic->where('selected_option_id', $item->selected_option_id)->get();
+                    @php 
+                        $showFields = $cfLogic->where('form_id', $form_id)->where('selected_option_id', $item->selected_option_id)->groupby(['field_id'])->get();
                     @endphp
 
-                    @foreach ($options as $option) 
-                        if ($(this).val() == "{{ $option->field_value }}") 
-                        {                          
-                            console.log(" fied {{ $item->selected_option_id }} " + ", show : {{$option->field_id}} ");
-                            $('{{ '#'. $option->field_id ."_field_row"  }}').show();   
-                            //Get the html field content
-                            $.ajax({
-                                    type: 'POST',
-                                    url: "{{ url('api/getHTMLFieldContent?api_token=') }}" + api_token,
-                                    data: {
-                                        formID              :  1,
-                                        field_id               :  {{$option->field_id}},                                                           
-                                    },
-                                    headers: {
-                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                                    },
-                                    success: function(data) {                       
-                                        $( "#form-content" ).append( data.field );                                       
-                                        $('{{ '.'. $option->field_id ."_field_content"  }}').html(data.content);   
-                                        $('{{ '#'. $option->field_id ."_field_row"  }}').show();   
-                                    }
-                                });
-                        } else {
-                             $('{{ '#'. $option->field_id ."_field_row"  }}').hide();   
-                        }
-                        //console.log(" fied {{ $item->selected_option_id }} " + ", show : {{$option->field_id}} ");
-                    @endforeach
+                     @foreach ($showFields as $field)
+                        //"{{ $field->field_id }}"
+                        //@todo: search if conditional logic is activated
+                        @php 
+                            $writingModel = new \App\Models\WritingFields;
+                            $writingField = $writingModel->where('form_id', $form_id)->where('id', $field->field_id)->first();
 
+                            $displayMeta = json_decode($writingField->display_meta, true);
+                            $conditionalLogic = $displayMeta['conditional_logic'];
+                        @endphp            
 
+                        @if ($conditionalLogic == true)
+
+                            //@todo: value condtionals rule logic
+                            @php 
+                                $conditionals = $cfLogic->where('form_id', $form_id)->where('field_id', $field->field_id)->get();
+                                $fieldCtr = 0;
+                            @endphp
+
+                            if (@foreach($conditionals as $conditional) @php $fieldCtr++; @endphp isLogicTrue($('#{{$item->selected_option_id}}').val(), "{{ $conditional->field_rule}}", "{{$conditional->field_value}}") @if ( $fieldCtr < count($conditionals)) || @endif @endforeach)
+                            {
+                                
+                                $('{{ '#' . $field->field_id }}_field_row').show();
+                            } else {
+                                 $('{{ '#' . $field->field_id }}_field_row').hide();
+                            }
+                        @endif
+                     @endforeach
                 });
-
+                $('{{ '#' . $item->selected_option_id }}').trigger('change', 'keypress');
             @endforeach
-
-
-
         });
     </script>
-
-
 @endsection

@@ -172,7 +172,7 @@
         }
 
         #dynamicForms .ui-draggable-dragging {
-            
+            z-index: 99999999;
         }
     </style>
 @endsection
@@ -237,11 +237,9 @@
                     //$('.field_container').css("display", "block");
                 },                   
                 drag: function(e, ui) {
-
                     $('.ui-draggable-dragging').css("background-color", "yellow");
                     $('.ui-sortable-helper').css("background-color", "yellow");
-                    $('.ui-sortable-placeholder').text("test"); 
-                    
+                    $('.ui-sortable-placeholder').text("test");                    
                    
                 }                
             });
