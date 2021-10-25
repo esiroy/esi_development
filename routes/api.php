@@ -114,7 +114,7 @@ Route::middleware('auth:api')->post('/saveHTMLContent', 'API\FormMakerController
 
 //Advance Fields
 Route::middleware('auth:api')->post('/saveFirstNameField', 'API\FormMakerController@saveFirstNameField')->name('APISaveFirstNameField');
-Route::middleware('auth:api')->post('/saveFirstEmailField', 'API\FormMakerController@saveFirstEmailField')->name('APISaveEmailField');
+Route::middleware('auth:api')->post('/saveFirstEmailField', 'API\FormMakerController@saveFirstEmailField')->name('APISaveFirstEmailField');
 Route::middleware('auth:api')->post('/saveLastNameField', 'API\FormMakerController@saveLastNameField')->name('APISaveLastNameField');
 Route::middleware('auth:api')->post('/saveEmailField', 'API\FormMakerController@saveEmailField')->name('APISaveEmailField');
 Route::middleware('auth:api')->post('/saveUploadField', 'API\FormMakerController@saveUploadField')->name('APISaveUploadField');
