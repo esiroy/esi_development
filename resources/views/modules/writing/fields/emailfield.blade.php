@@ -10,8 +10,9 @@
                id="{{ $id }}" 
                 name="{{ $id ."_email" }}"                            
                 placeholder="{{ $label ?? '' }}" 
-                class="form-control emailfield" 
+                class="form-control emailfield bg-white" 
                 value="{{ Auth::user()->email ?? '' }}"
+                readonly="readonly"
                 @if ($display_meta['required']) {{ "required" }} @endif>
         <div class="small">{{ $display_meta['description'] ?? "" }}</div>
     </div>

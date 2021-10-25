@@ -10,8 +10,9 @@
                 id="{{ $id }}" 
                 name="{{ $id ."_lastname" }}" 
                 placeholder="{{ $label ?? '' }}"
-                class="form-control lastnamefield"
+                class="form-control lastnamefield bg-white"
                 value="{{ Auth::user()->lastname ?? '' }}"
+                readonly="readonly"
                 @if ($display_meta['required']) {{ "required" }} @endif
                 >
                     

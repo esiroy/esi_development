@@ -135,12 +135,16 @@ class WritingController extends Controller
                 if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
                 {                    
                     $file = $request->file($key);
-                    $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
-                    if ($uploadFileName) {
-                        echo "uploaded $uploadFileName : $file <BR>" ;
+
+                    if ($file) {
+                        $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+                        if ($uploadFileName) {
+                            echo "uploaded $uploadFileName : $file <BR>" ;
+                        }
+    
+                        $fields[$key] = $uploadFileName;
                     }
 
-                    $fields[$key] = $uploadFileName;
                 } else {
                 
                     $fields[$key] = $value;

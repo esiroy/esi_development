@@ -141,7 +141,7 @@
                         if ($('#'+fieldID).hasClass('emailfield')) 
                         {                            
                             var email = $('#'+fieldID).val();
-                            if(email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
+                            if(email.match(/([+\w0-9._-]+@[\w0-9._-]+\.[\w0-9_-]+)/)) {
                                 // valid email
                             } else {
                                 requiredFieldsArr.push({
@@ -203,7 +203,7 @@
 
                     if ($('#'+fieldID).hasClass('emailfield')) {
                         var email = $('#'+fieldID).val();
-                        if(email.match(/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/)) {
+                        if(email.match(/([+\w0-9._-]+@[\w0-9._-]+\.[\w0-9_-]+)/)) {
                             // valid email
                             $('.'+fieldID+"_field_content").find('.error2').remove();
                         }
