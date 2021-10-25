@@ -380,7 +380,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
         /* Writing (ADMIN BACKEND) */
         Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');
-        Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.update');
+        Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.updateFields');
       
 
         /* Administrator Module Lists */
