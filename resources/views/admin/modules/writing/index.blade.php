@@ -42,7 +42,7 @@
                 <div class="card esi-card mb-2">
                     <div id="form-navigation" class="card-body esi-card-body">              
                         <div class="form-inline">
-                            <a class='text-success' href="{{ url('admin/writing/'.$form_id) }}">
+                            <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
                                 <button class="btn btn-sm btn-outline-success mr-2" type="button">
                                     Edit
                                 </button>
