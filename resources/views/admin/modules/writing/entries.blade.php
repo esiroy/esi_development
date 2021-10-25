@@ -22,6 +22,27 @@
         <div class="row">
             <div class="col-md-12">
                 
+
+                <div class="card esi-card mb-2">
+                    <div id="form-navigation" class="card-body esi-card-body">              
+                        <div class="form-inline">
+                            <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">
+                                    Edit
+                                </button>
+                            </a>
+                            <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-success btn-outline-secondary mr-2" type="button">Entries</button>
+                            </a>
+                            <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
+                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">                                
+                                    Preview
+                                </button>
+                            </a>                            
+                        </div>                                                
+                    </div>
+                </div>
+
                
                 @foreach ($entries as $entry)
                     @php 

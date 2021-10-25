@@ -48,9 +48,11 @@ class WritingController extends Controller
 
     public function entries($id) 
     {
+        $form_id = $id; 
+
         $formFields  = FormFields::where('form_id', $id)->orderBy('sequence_number', 'ASC')->get();
         $entries = WritingEntries::where('form_id', $id)->get();
-        return view('admin.modules.writing.entries', compact('id', 'entries', 'formFields'));
+        return view('admin.modules.writing.entries', compact('id', 'form_id','entries', 'formFields'));
     }
 
     public function preview($id, FormFields $formFieldModel) 
