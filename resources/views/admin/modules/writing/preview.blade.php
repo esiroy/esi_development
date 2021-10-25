@@ -69,7 +69,7 @@
                     </div>
 
                     <!--[START DYNAMIC FORMS]-->
-                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('admin.writing.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                         @csrf
                         @foreach($pages as $page) 
                             <h2>{{ $page->page_id }}</h2>

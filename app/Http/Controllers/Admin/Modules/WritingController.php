@@ -201,4 +201,9 @@ class WritingController extends Controller
 
         return redirect()->route('admin.writing.index', $form_id)->with('message', 'Form updated successfully!');
     }
+
+
+    public function store(Request $request) {
+        echo "admin writing store";
+    }
 }
