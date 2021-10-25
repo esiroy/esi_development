@@ -70,6 +70,12 @@
                             <div class="col">
                                 <label class="form-label">Content</label>
                                 <textarea id="content" name="{{ $id }}_content" class="form-control">{{ $display_meta['content'] ?? '' }}</textarea>
+
+                                <div id="insertImage" class="mt-2">
+                                    <input type="text" class="addedContentFieldID" value="{{ $id }}">
+                                    <input type="button" value="Insert Media File" class="btn btn-light insertToMediaAddedField">
+                                </div>
+
                             </div>
                         </div>
                     </div>
