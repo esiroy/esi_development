@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('dump', 'dummyController');
 Route::get('test', 'dummyController@test');
+Route::get('test/dropzone', 'dummyController@dropzone');
+Route::get('test/dropzoneComponent', 'dummyController@dropzone');
 Route::get('testGetMembers', 'dummyController@testGetMembers');
 Route::get('sendTestMail', 'dummyController@sendTestMail');
 Route::get('testDispatch', 'dummyController@testDispatch');

@@ -1,14 +1,9 @@
 {
-    "/js/admin.js": "/js/admin.js?id=33aada9a9d262832f359",
-    "/js/admin.js.map": "/js/admin.js.map?id=1310411c8224b7d604e1",
-    "/js/app.js": "/js/app.js?id=121779fccd0d2b41030b",
-    "/css/app.css": "/css/app.css?id=10cbcfb9521b7b47470e",
-    "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
-    "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
-    "/js/app.js.map": "/js/app.js.map?id=bbbecf09104476352167",
-    "/css/app.css.map": "/css/app.css.map?id=b81316b7c958f0445945",
-    "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
-    "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
+    "/js/admin.js": "/js/admin.js?id=f63c9b1bbc0ee8b2da46",
+    "/js/app.js": "/js/app.js?id=de8f9ad46788f7f9b280",
+    "/css/app.css": "/css/app.css?id=2bd0608f84b2854d8854",
+    "/css/admin.css": "/css/admin.css?id=f9dd8ae646cb32556d7b",
+    "/css/steps/steps.css": "/css/steps/steps.css?id=ad4cf4455be97223e3f3",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",
     "/images/arrowActive.png": "/images/arrowActive.png?id=7c5d0d33bdc56abf8e4b",
     "/images/audio.png": "/images/audio.png?id=53c9d5a92c61e5e2e771",
@@ -71,5 +66,6 @@
     "/js/steps/jquery.steps.js": "/js/steps/jquery.steps.js?id=f42e2573c9d5aa23443a",
     "/js/steps/jquery.steps.min.js": "/js/steps/jquery.steps.min.js?id=4c5e9f4e84d32b7df69a",
     "/js/validation/jquery.validation.min.js": "/js/validation/jquery.validation.min.js?id=014e81dd1a31bde533eb",
-    "/css/croppie.css": "/css/croppie.css?id=537c93ed28fd3291621c"
+    "/css/croppie.css": "/css/croppie.css?id=537c93ed28fd3291621c",
+    "/css/dropzone/dropzone.min.css": "/css/dropzone/dropzone.min.css?id=a7b0ef1d7c2016826a3e"
 }

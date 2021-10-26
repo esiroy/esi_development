@@ -87,7 +87,7 @@ class WritingController extends Controller
     }
 
 
-    public function update(Request $request) 
+    public function update(Request $request,  UploadFile $uploadFile) 
     {
         $form_id = 1;
 
@@ -206,6 +206,51 @@ class WritingController extends Controller
 
 
     public function store(Request $request) {
-        echo "admin writing store";
+        $fields = array();
+
+        $storagePath = 'public/uploads/writing/';
+
+        $dataArray = json_decode($request->get('data'), true);
+
+        foreach ($dataArray as $key => $value)         
+        {
+
+            $fkey = explode("_", $key);
+            $id = $fkey[0];
+
+            $formField = formFields::find($id);
+
+            if ($formField) 
+            { 
+                if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
+                {                    
+                    $file = $request->file($key);
+
+                    if ($file) {
+                        $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+                        if ($uploadFileName) {
+                            echo "uploaded $uploadFileName : $file <BR>" ;
+                        }
+    
+                        $fields[$key] = $uploadFileName;
+                    }
+
+                } else {
+                
+                    $fields[$key] = $value;
+                }
+            } else {
+                
+                echo $key ." not found in form field <BR>";
+            }
+
+        }
+
+       WritingEntries::create([
+            'form_id'   => $request->get('form_id'),
+            'value'     => json_encode($fields)
+       ]);
+
+       return redirect()->route('admin.writing.index')->with('message', 'Writing entry has been added successfully!');
     }
 }

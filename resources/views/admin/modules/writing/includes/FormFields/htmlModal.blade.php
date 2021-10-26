@@ -29,7 +29,7 @@
                             <div class="row">
                                 <div class="col">                    
                                     <div id="insertImage" class="mb-2">
-                                        <input id="btnInsertImage" type="button" class="btn btn-light" value="Insert Media File">
+                                        <input id="btnInsertImage" type="button" class="btn btn-sm btn-primary" value="Insert Media File">
                                     </div>
                                     <!--
                                     <div id="insertAudio" class="mb-2">

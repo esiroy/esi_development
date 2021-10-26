@@ -693,8 +693,7 @@
                         let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";
                         $("#modal_html").find('#content').val(updatedContent);                
                         $("#modal_gallery").modal('toggle');   
-                    } else {
-                        let formattedHTML = "<img src='"+selectedFilename+"'>";
+                    } else {                        
                         let oldContent = $('.'+targetFieldID+"_content").val();
                         $('.'+targetFieldID+"_content").val("" + oldContent +  " " + formattedHTML);
                         $("#modal_gallery").modal('toggle');  
@@ -1202,6 +1201,8 @@
                 $('#'+fieldID+"_field").find('.selected_field_choice_remove').css('display', '')
             }            
         }        
+
+        $("div#dropzone").dropzone({ url: "/file/post" });
 
 
     </script>

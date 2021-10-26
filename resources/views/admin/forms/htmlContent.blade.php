@@ -72,8 +72,8 @@
                                 <textarea id="content" name="{{ $id }}_content" class="form-control {{ $id }}_content">{{ $display_meta['content'] ?? '' }}</textarea>
 
                                 <div id="insertImage" class="mt-2">
-                                    <input type="text" class="addedContentFieldID" value="{{ $id }}">
-                                    <input type="button" value="Insert Media File" class="btn btn-light insertToMediaAddedField">
+                                    <input type="hidden" class="addedContentFieldID" value="{{ $id }}">
+                                    <input type="button" value="Insert Media File" class="btn btn-sm btn-primary insertToMediaAddedField">
                                 </div>
 
                             </div>

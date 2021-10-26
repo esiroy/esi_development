@@ -63,8 +63,14 @@
                                         </div>
 
                                         <div id="tabs-uploader">
-                                            uploader
+                                            
+                                            <div id="dropzone">
+                                                Drop files here to upload to gallery
+                                            </div>
+                                            
                                         </div>
+
+
                                     </div>
                                 </div> 
                             </form>

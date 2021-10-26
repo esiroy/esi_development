@@ -44,9 +44,11 @@ class dummyController extends Controller
 
     }
 
-
-
     public function dropzone() {
+        return view("dummy/dropzoneSimple", ['title'=> "TEST"]);
+    }
+
+    public function simpleuploader() {
         return view("dummy/index", ['title'=> "TEST"]);
     }
 
