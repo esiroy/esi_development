@@ -123,3 +123,5 @@ Route::middleware('auth:api')->post('/saveUploadField', 'API\FormMakerController
 Route::middleware('auth:api')->post('/getHTMLFieldContent', 'API\FormMakerController@getHTMLFieldContent')->name('APISGetHTMLFieldContent');
 Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@removeField')->name('APIRemoveField');
 
+//writing api
+Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIRemoveField');

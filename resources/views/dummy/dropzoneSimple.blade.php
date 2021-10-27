@@ -2,7 +2,18 @@
 
 
 @section('content')
- <form action="upload.php" class="dropzone" id="dropzonewidget"></form> 
+
+<form action="admin/writing/upload" class="dropzone" id="dropzonewidget">
+    <div id="template"></div>
+</form> 
+
+<div id="previews"></div>
+
+<a href="#" class="fileinput-button">Select Files </a>
+
+
+
+  
 @endsection
 
 
@@ -21,8 +32,8 @@
     {
         // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
         var previewNode = document.querySelector("#template");
-        previewNode.id = "";
-        var previewTemplate = previewNode.parentNode.innerHTML;
+        //previewNode.id = "";
+       var previewTemplate = previewNode.parentNode.innerHTML;
         previewNode.parentNode.removeChild(previewNode);
 
         var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
@@ -71,12 +82,13 @@
         // Setup the buttons for all transfers
         // The "add files" button doesn't need to be setup because the config
         // `clickable` has already been specified.
+        /*
         document.querySelector("#actions .start").onclick = function() {
             myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED));
         };
         document.querySelector("#actions .cancel").onclick = function() {
             myDropzone.removeAllFiles(true);
-        };      
+        };      */
         
     });
 </script>

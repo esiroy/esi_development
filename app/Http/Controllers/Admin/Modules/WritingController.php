@@ -253,4 +253,6 @@ class WritingController extends Controller
 
        return redirect()->route('admin.writing.index')->with('message', 'Writing entry has been added successfully!');
     }
+
+
 }

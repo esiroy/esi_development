@@ -4,7 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\UploadFile;
 use App\Models\WritingFields;
 
 class FormMakerController extends Controller
@@ -387,4 +387,27 @@ class FormMakerController extends Controller
             ]);          }
 
     }
+
+
+    public function upload(Request $request,  UploadFile $uploadFile) 
+    {
+        $file = $request->file('file');
+
+        $storagePath = 'public/uploads/writing_materials/';
+
+        $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+
+        if ($uploadFileName) {
+            echo "uploaded $uploadFileName : $file <BR>" ;
+
+            return Response()->json([
+                "success"               => true,
+                "filenameuploaded"      => $uploadFileName,
+                "file"                  => $file,
+                "message"               => "uploaded"
+            ]);    
+
+        }
+    }
+
 }

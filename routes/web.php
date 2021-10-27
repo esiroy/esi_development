@@ -385,7 +385,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.updateFields');
         Route::get('/writing/preview/{id}', 'Modules\WritingController@preview')->name('writing.previewFormCreator');        
         Route::post('/writing', 'Modules\WritingController@store')->name('writing.store');
-      
+        Route::post('/writing/upload', 'Modules\WritingController@upload')->name('writing.upload');
+
 
         /* Administrator Module Lists */
         Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 

@@ -18,12 +18,12 @@
                                 $images = [];
                             @endphp
 
-                            <form id="form_gallery" name="form_gallery">
+                      
                                 <div class="tab-container esi-tab-container">
                                     <div id="tabs" class="tabs esi-tabs mt-2">
                                         <ul>
                                             <li><a href="#tabs-library">Media Libray</a></li>                
-                                            <li><a href="#tabs-uploader">Upload Files</a></li>
+                                            <li><a href="#tabs-uploader" id="btnUploadTab">Upload Files</a></li>
                                         </ul>
                                         <div id="tabs-library" style="overflow-x:scroll; height:520px">
                                             <div class="row">                                        
@@ -63,17 +63,26 @@
                                         </div>
 
                                         <div id="tabs-uploader">
-                                            
-                                            <div id="dropzone">
-                                                Drop files here to upload to gallery
-                                            </div>
-                                            
+                        
+                                            @php
+                                              $api_token =  Auth::user()->api_token;
+                                              $url = url("api/writing/upload?api_token=$api_token");
+                                            @endphp
+                                            <form action="{{ $url }}" method="POST"class="dropzone" id="dropzonewidget">
+                                                {{ csrf_field() }}
+                                                <div id="template"></div>
+                                            </form> 
+
+                                            <div id="previews my-2"></div>
+
+                                            <a href="#" class="fileinput-button btn btn-primary my-2">Select Files</a>
+
                                         </div>
 
 
                                     </div>
                                 </div> 
-                            </form>
+                        
                         </div>
                         <div class="col-md-3">
                             <!-- CONTROL MEDIA INFORMATION -->
