@@ -13,12 +13,12 @@ class DatabaseSeeder extends Seeder
     {
         // $this->call(UserSeeder::class);
         $this->call([
-            PermissionsTableSeeder::class,
-            RolesTableSeeder::class,
-            PermissionRoleTableSeeder::class,
-           //UsersTableSeeder::class,
+            //PermissionsTableSeeder::class,
+            //RolesTableSeeder::class,
+            //PermissionRoleTableSeeder::class,
+            //UsersTableSeeder::class,
             //RoleUserTableSeeder::class,
-            ShiftsTableSeeder::class,
+            //ShiftsTableSeeder::class,
         ]);
     }
 }

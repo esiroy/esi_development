@@ -111,7 +111,7 @@
         </div>
     </div>
 
-
+    <!-- STANDARD FIELDS -->
     @include('admin.modules.writing.includes.FormFields.simpleTextModal')
     @include('admin.modules.writing.includes.FormFields.dropdownSelectModal')
     @include('admin.modules.writing.includes.FormFields.htmlModal')
@@ -122,9 +122,8 @@
     @include('admin.modules.writing.includes.FormFields.emailModal')
     @include('admin.modules.writing.includes.FormFields.uploadModal')
 
-
     <!--image gallery-->
-    @include('admin.modules.writing.includes.ImageGallery.galleryModal')
+    @include('admin.modules.writing.includes.imageGallery.galleryModal')
 
 @endsection
 
@@ -133,6 +132,11 @@
     <link rel="stylesheet" href="{{ url('css/dropzone/dropzone.min.css') }}"></link>
 
     <style>
+
+        .handle {
+            cursor: move;
+        } 
+
         .fields .row {
             margin-bottom: 15px;
         }
@@ -634,20 +638,23 @@
                 $("#modal_gallery").modal();
                 $('#form_gallery').trigger("reset");
                 $( ".tabs" ).tabs();
+                $('#btnMediaLibraryTab').trigger('click');
             });
 
-            //MAKE THE IMAGE INFORMATION
-            $('.img-container').on('click', function()
-            {   
-                resetModalGallery();             
+            //ADD THE IMAGE INFORMATION FOR GALLERY
+            $(document).on('click', '.img-container', (elem, id) => {       
 
-                let filename = $(this).find('.img-filename-container').find('.img-filename').text();
-                imageURL = $(this).find('.img-url-container').find('.img-url').text();
-                fileURL = $(this).find('.img-filename-container').find('.img-filename').text();
-                $(this).find('.img-wrapper').css("border-color", "#0072A8");
+                resetModalGallery();
+                
+                let filename = $(elem.currentTarget).find('.img-filename-container').find('.img-filename').text();
 
-                $(this).find('.img-filename-container').css("background-color", "#0072A8");
-                $(this).find('.img-filename-container').find('.img-filename').css("color", "#fff !important");
+                imageURL = $(elem.currentTarget).find('.img-url-container').find('.img-url').text();
+                fileURL = $(elem.currentTarget).find('.img-filename-container').find('.img-filename').text();
+                $(elem.currentTarget).find('.img-wrapper').css("border-color", "#0072A8");
+                
+
+                $(elem.currentTarget).find('.img-filename-container').css("background-color", "#0072A8");
+                $(elem.currentTarget).find('.img-filename-container').find('.img-filename').css("color", "#fff !important");
 
                 $('#preview').removeClass('d-none');
                 $('#mediaImgPreview').attr('src', imageURL);
@@ -656,9 +663,12 @@
                 $('#btnGalleryInsert').prop('disabled', false)
             });
             
+            $('.fileinput-button').on('click', function(){
+                $('.dropzone').trigger('click');
+            })
+            
+
             //INSERT THE IMAGE ON ADDED FIELD
-
-
             $('.insertToMediaAddedField').on('click', function() 
             {
                 newField = false;
@@ -676,9 +686,7 @@
 
             //INSERT THE IMAGE ON NEW
             $('#btnGalleryInsert').on('click', function()
-            {               
-
-
+            {
                 let selectedFilename = $('#selectedFilename').val();
 
                 let fileURLArray = selectedFilename.split(".");
@@ -731,10 +739,14 @@
 
 
             /***************************************************************
-                            [START] - (BUTTON) [SIMPLE INPUT TEXT]
+                        [START] - WRITING IMAGES
             *****************************************************************/
+     
+                            
 
-            //Show SimpleText Modal
+            /***************************************************************
+                            [START] - (BUTTON) [SIMPLE INPUT TEXT]
+            *****************************************************************/            
             $("#btn_simpleInputText").on("click", function() {
                 $("#modal_simpleText").modal();
                 $('#form_simpleText').trigger("reset");
@@ -744,7 +756,6 @@
             /***************************************************************
                             [START] - (BUTTON) [HTML]
             *****************************************************************/
-
             $("#btn_simpleInputText").on("click", function() {
                 $("#modal_HTML").modal();
                 $('#form_HTML').trigger("reset");
@@ -759,34 +770,25 @@
                 $('#form_firstname').trigger("reset");
             });
 
-
-
             /***************************************************************
                             [START] - (BUTTON) [LASTNAME]
-            *****************************************************************/  
-
+            *****************************************************************/
             $("#btn_lastname").on("click", function() {
                 $("#modal_lastname").modal();
                 $('#form_lastname').trigger("reset");
             });
 
-
-
             /***************************************************************
                             [START] - (BUTTON) [EMAIL]
             *****************************************************************/  
-
             $("#btn_email").on("click", function() {
                 $("#modal_email").modal();
                 $('#form_email').trigger("reset");
             });
 
-
-
             /***************************************************************
                             [START] - (BUTTON) [UPLOAD]
-            *****************************************************************/  
-
+            *****************************************************************/
             $("#btn_upload").on("click", function() {
                 $("#modal_upload").modal();
                 $('#form_upload').trigger("reset");
@@ -795,8 +797,6 @@
             /***************************************************************
                             [START] - (BUTTON) [DROPDOWN SELECT]
             *****************************************************************/
-            
-            //ON CLICK        
             $("#btn_dropdownSelect").on("click", function() {
                 $("#select_choices").html("");
                 $("#select_choices").append("<div id='select_choice_start'></div>");
@@ -944,6 +944,7 @@
                 });
             });
 
+
             $('#btnUploadFieldSave').on("click", function() 
             {         
                 $.ajax({
@@ -975,8 +976,30 @@
             });
 
 
-
-
+           
+            $('#btnMediaLibraryTab').on('click', function()
+            {
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/writing/getWritingImages?api_token=') }}" + api_token,
+                    data: {
+                        formID              : 1,
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) 
+                    {
+                        if (data.success == true) 
+                        {                            
+                            $('#modal_gallery').find('#tabs-media-library').find('.media-content').html(data.imageHTML);
+                        } else {
+                            alert ("Sorry, Can't fetch writing images.")
+                        }                         
+                    }                
+                });
+             
+            });
             
             /***************************************************************
                             [START] - [SAVE ACTIONS - INPUT FIELDS]
@@ -1144,9 +1167,9 @@
                         
                     }
                 });
+
                 return false;
             });
-
 
         });
 
@@ -1219,6 +1242,7 @@
 @endsection
 
 
+
 @section('scripts')
 <script src="{{ url('js/dropzone/dropzone.min.js') }}"></script>
 
@@ -1229,7 +1253,7 @@
         // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
         var previewNode = document.querySelector("#template");
         //previewNode.id = "";
-       var previewTemplate = previewNode.parentNode.innerHTML;
+        var previewTemplate = previewNode.parentNode.innerHTML;
         previewNode.parentNode.removeChild(previewNode);
 
 
@@ -1286,8 +1310,8 @@
         };
         document.querySelector("#actions .cancel").onclick = function() {
             myDropzone.removeAllFiles(true);
-        };      */
-        
+        };      
+        */
     });
 </script>
 @endsection

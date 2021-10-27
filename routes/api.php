@@ -124,4 +124,5 @@ Route::middleware('auth:api')->post('/getHTMLFieldContent', 'API\FormMakerContro
 Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@removeField')->name('APIRemoveField');
 
 //writing api
-Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIRemoveField');
+Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
+Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');

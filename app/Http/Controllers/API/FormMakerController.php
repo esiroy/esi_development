@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\UploadFile;
 use App\Models\WritingFields;
 
+
 class FormMakerController extends Controller
 {
     
@@ -397,8 +398,9 @@ class FormMakerController extends Controller
 
         $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
 
-        if ($uploadFileName) {
-            echo "uploaded $uploadFileName : $file <BR>" ;
+        if ($uploadFileName) 
+        {
+            //echo "uploaded $uploadFileName : $file <BR>" ;
 
             return Response()->json([
                 "success"               => true,
@@ -408,6 +410,18 @@ class FormMakerController extends Controller
             ]);    
 
         }
+    }
+
+    public function getWritingImages(Request $request) 
+    {
+        $mp3Image = url('images/audio.png');    
+        $imageHTML = view('admin.modules.writing.includes.imageGallery.images', compact('mp3Image'))->render();
+        
+        return Response()->json([
+            "success"       => true,
+            "imageHTML"     => $imageHTML
+        ]);
+
     }
 
 }
