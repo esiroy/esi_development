@@ -12,6 +12,13 @@ use App\Models\UploadFile;
 
 class WritingController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');        
+    }
+    
+    
     public function index(FormFields $formFieldModel) 
     {
         $form_id = 1; //all forms are 1(for now)
