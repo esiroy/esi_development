@@ -133,6 +133,10 @@
 
     <style>
 
+        .img {
+            width: 100%
+        }
+        
         .handle {
             cursor: move;
         } 
