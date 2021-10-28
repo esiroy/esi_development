@@ -162,8 +162,12 @@
         .esi-card-header-page {
             font-weight: bold;
             font-size: 12px;
-            border-color: #28a745;            
-            margin-bottom: 130px
+            border-color: #28a745;                        
+            border: 3px solid #28a745;
+        }
+
+        .esi-card-header-page >.card-body {
+            background-color: #e9f1ec;
         }
 
         .esi-card-header-page >.card-header {
