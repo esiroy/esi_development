@@ -685,6 +685,8 @@
                 $("#modal_gallery").modal();
                 $('#form_gallery').trigger("reset");
                 $( ".tabs" ).tabs();                
+
+                $('#btnMediaLibraryTab').trigger('click');
             });
 
 
