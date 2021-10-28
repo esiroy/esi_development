@@ -34,7 +34,100 @@ class dummyController extends Controller
     {
     }
 
-    public function index(ScheduleItem $scheduleItem) {
+    public function index(ScheduleItem $scheduleItemObj) 
+    {
+        $memberID = 4;
+
+
+        //TOTAL RESERVED
+        
+        //$totalReserved =  $scheduleItemObj->getTotalLessonReserved($memberID, '11', '01'); 
+
+
+        //start date
+        $startDate = date('Y-m-d H:i:s', strtotime(date("2021-11-01 09:00:00")));
+
+        //temporary end date since we need to get 12:30 which is the next date
+        $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));
+        $endDateNextDay = date("Y-m-d", strtotime($tempEndDate . " + 1 day"));
+
+        //final end date
+        $endDate = $endDateNextDay . " 00:30:00";
+        
+        
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")  
+                    ->get();
+                    
+        echo "<Br>";
+        echo $startDate . " - " . $endDate;
+        echo "<Br>";                    
+        echo "<pre>";
+        foreach ($reserved as $item) {
+            echo $item->lesson_time;
+            echo "<BR>";
+        }        
+        echo "</pre>";
+
+       
+        
+        echo $scheduleItemObj->getTotalLessonForCurrentMonth($memberID); 
+
+        echo " - ";
+
+        echo $scheduleItemObj->getTotalReservedForCurrentMonth($memberID);
+
+
+        //start date
+        $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-01 09:00:00')));
+
+        //temporary end date since we need to get 12:30 which is the next date
+        $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));
+        $endDateNextDay = date("Y-m-d", strtotime($tempEndDate . " + 1 day"));
+
+        //final end date
+        $endDate = $endDateNextDay . " 00:30:00";
+
+        echo "<Br>";
+        echo $startDate . " - " . $endDate;
+        echo "<Br>";
+
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")
+                    ->get();
+
+        echo "<pre>";
+        foreach ($reserved as $item) {
+            echo $item->lesson_time;
+            echo "<BR>";
+        }        
+        echo "</pre>";
+
+
+        /* test old code (buggy)*/
+        $currentYear = date('Y');
+        $currentMonth = date('m');
+                
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereYear('lesson_time', '=', $currentYear)
+                    ->whereMonth('lesson_time','=', $currentMonth)
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")                       
+                    //->where('valid', 1)
+                    ->get();
+
+
+            echo "<pre>";
+            foreach ($reserved as $item) {
+                echo $item->lesson_time;
+                echo "<BR>";
+            }        
+            echo "</pre>";                    
+
+    }
+    
+    public function mailDateFormat(ScheduleItem $scheduleItem) {
 
         $scheduleItem = $scheduleItem->find(912532);
 

@@ -235,7 +235,8 @@ class ScheduleItem extends Model
 
 
     /* Returns the Schedules based on Lesson Time, month, year */
-    public function getTotalLessonReserved($memberID, $month, $year) 
+    /*
+    public function getTotalLessonReserved_version1($memberID, $month, $year) 
     {
         $reserved = ScheduleItem::where('member_id', $memberID)
                     ->whereYear('lesson_time', '=', $year)
@@ -269,9 +270,11 @@ class ScheduleItem extends Model
 
         return $reserveCount;        
     }
+    */
 
     /* Returns the Schedules based on Lesson Time for current month*/
-    public function getTotalLessonForCurrentMonth($memberID) 
+    /*
+    public function getTotalLessonForCurrentMonth_version1($memberID) 
     {
         $currentYear = date('Y');
         $currentMonth = date('m');
@@ -308,9 +311,11 @@ class ScheduleItem extends Model
 
         return $reserveCount;
     }
+    */
 
     /* Returns the Total Schedule Count for the current month based on lesson Time (active or inactive will) */
-    public function getTotalReservedForCurrentMonth($memberID) 
+    /*
+    public function getTotalReservedForCurrentMonth_version1($memberID) 
     {
         //CLient rserve / Client reserve B / Completed /Client not available
         $currentYear = date('Y');
@@ -342,6 +347,142 @@ class ScheduleItem extends Model
         $not_available = ScheduleItem::where('member_id', $memberID)
                         ->whereYear('lesson_time', '=', $currentYear)
                         ->whereMonth('lesson_time','=', $currentMonth)
+                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
+                        //->where('valid', 1)
+                        ->count();
+
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available;   
+                    
+        return $reserveCount;
+    }
+    */
+
+
+    /*
+        Description: This will check how many reserved for a specific month and year for a client
+        Parameters:
+            @month - the month of the schedule
+            @year  - the year of the schedule
+            @memberID - member ID of user        
+    */
+    public function getTotalLessonReserved($memberID, $month, $year) 
+    {
+
+        //start date
+        $startDate = date('Y-m-d H:i:s', strtotime(date("$year-$month-01 09:00:00")));
+
+        //temporary end date since we need to get 12:30 which is the next date
+        $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));
+        $endDateNextDay = date("Y-m-d", strtotime($tempEndDate . " + 1 day"));
+
+        //final end date
+        $endDate = $endDateNextDay . " 00:30:00";
+        
+        
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")      
+                    //->where('valid', 1)
+                    ->count();
+
+        $reserved_b = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
+                    //->where('valid', 1)
+                    ->count();                       
+
+        $completed = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "COMPLETED")                       
+                    ->where('valid', 1)
+                    ->count();
+
+        $not_available = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
+                        //->where('valid', 1)
+                        ->count();            
+
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+
+        return $reserveCount;        
+    }    
+
+    public function getTotalLessonForCurrentMonth($memberID) 
+    {
+        //start date
+        $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-01 09:00:00')));
+
+        //temporary end date since we need to get 12:30 which is the next date
+        $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));
+        $endDateNextDay = date("Y-m-d", strtotime($tempEndDate . " + 1 day"));
+
+        //final end date
+        $endDate = $endDateNextDay . " 00:30:00";
+
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")                       
+                    //->where('valid', 1)
+                    ->count();
+        
+        $reserved_b = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
+                    //->where('valid', 1)
+                    ->count();                    
+                    
+        $completed = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "COMPLETED")                       
+                    //->where('valid', 1)
+                    ->count();
+
+        $not_available = ScheduleItem::where('member_id', $memberID)
+                        ->whereBetween('lesson_time', [$startDate, $endDate])
+                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
+                        //->where('valid', 1)
+                        ->count();
+                        
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+
+        return $reserveCount;
+    }
+    
+    
+    public function getTotalReservedForCurrentMonth($memberID) 
+    {
+        //start date
+        $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-1 09:00:00')));
+
+        //temporary end date since we need to get 12:30 which is the next date
+        $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));
+        $endDateNextDay = date("Y-m-d", strtotime($tempEndDate . " + 1 day"));
+
+        //final end date
+        $endDate = $endDateNextDay . " 00:30:00";
+
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")
+                    //->where('valid', 1)
+                    ->count();                    
+
+        
+        $reserved_b = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
+                    //->where('valid', 1)
+                    ->count();                    
+                    
+        $completed = ScheduleItem::where('member_id', $memberID)
+                        ->whereBetween('lesson_time', [$startDate, $endDate])
+                        ->where('schedule_status', '=', "COMPLETED")                       
+                        //->where('valid', 1)
+                        ->count();
+
+        $not_available = ScheduleItem::where('member_id', $memberID)
+                        ->whereBetween('lesson_time', [$startDate, $endDate])
                         ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
                         //->where('valid', 1)
                         ->count();
