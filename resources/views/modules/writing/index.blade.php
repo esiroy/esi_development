@@ -53,6 +53,10 @@
             color: #8a1f11 !important;
             font-weight: bold
         }
+
+        #writing-form img {
+            width: 100%
+        }        
     </style>
 @endsection
 
