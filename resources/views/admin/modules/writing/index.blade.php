@@ -133,10 +133,10 @@
 
     <style>
 
-        .img {
+        #writing-form img {
             width: 100%
         }
-        
+
         .handle {
             cursor: move;
         } 
