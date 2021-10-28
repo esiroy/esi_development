@@ -220,7 +220,7 @@ class WritingController extends Controller
     }
 
 
-    public function store(Request $request) {
+    public function store(Request $request, UploadFile $uploadFile) {
         $fields = array();
 
         $storagePath = 'public/uploads/writing/';

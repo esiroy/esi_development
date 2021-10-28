@@ -81,7 +81,11 @@
                                         <td id="{{$formField->id}}" class="text-center bg-light text-dark {{ $formField->name }}_data" style="max-width:40px">
                                             @if ($formField->type == 'uploadfield')
                                                 @if (isset($fieldValue[$entry->id][$formField->id]))
-                                                    <img src="{{ Storage::url($fieldValue[$entry->id][$formField->id])  }}" class="img-fluid"/>
+                                                    @php 
+                                                        $writingFields = new \App\Models\WritingEntries;
+                                                        $writingFields->generateFileAnchorLink( $fieldValue[$entry->id][$formField->id] );
+                                                    @endphp
+                                                    
                                                 @endif
                                             @else 
                                                 @if (isset($fieldValue[$entry->id][$formField->id]))
