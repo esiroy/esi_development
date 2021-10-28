@@ -469,7 +469,7 @@ class TutorScheduleController extends Controller
             }
 
             //Member Info
-            $memberInfo = Member::where('user_id', $member['id'])->first();
+            $memberInfo = Member::where('user_id', $memberID )->first();
             //check memberInfo
             if ($memberInfo) {
                 $memberData = [
@@ -499,7 +499,7 @@ class TutorScheduleController extends Controller
                 'duration' => $request['shiftDuration'],
                 'email_type' => $emailType,
                 'tutor_id' => $tutorInfo->user_id,
-                'member_id' => $member['id'],
+                'member_id' => $memberID,
                 'schedule_status' => $schedule_status,
                 'duration' => $request['shiftDuration'],
                 'lesson_shift_id' => $shift->id,

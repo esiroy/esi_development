@@ -297,7 +297,7 @@ class MemberController extends Controller
 
         return Response()->json([
             "success" => true,
-            "memberReservedActive" => env('MEMBER_RESERVE_LIMIT_ACTIVE', false),
+            "memberReservedActive" => env('MEMBER_RESERVE_LIMIT_ACTIVE', true),
             "totalTutorDailyReserved" => $totalTutorDailyReserved,
             "totalMemberReserved" => $scheduleItem->getTotalMemberReserved($memberInfo),
             "message" => "Tutor has " . $totalTutorDailyReserved ." for member " . $memberID,
