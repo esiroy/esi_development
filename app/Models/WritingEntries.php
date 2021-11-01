@@ -34,13 +34,6 @@ class WritingEntries extends Model
             default:
               echo "<a href='$fileURL'>$basename</a>";
         }
-
-        
-
-
-
-
-
     }
 
 }

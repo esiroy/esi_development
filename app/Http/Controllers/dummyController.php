@@ -27,6 +27,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 
+use App\Jobs\SendAutoReplyJob;
+
 class dummyController extends Controller
 {
 
@@ -312,6 +314,40 @@ class dummyController extends Controller
         $lessonMailer->sendMemberEmail($member, $tutor, $scheduleItem);
 
         return view($details['template'], compact('member','tutor', 'scheduleItem'));
+
+    }
+
+    public function testemailWriting() 
+    {
+        
+        $user = Auth::user();
+
+        //E-Mail Recipient
+        $emailTo['name'] = $user->firstname ." ". $user->lastname;
+        $emailTo['email'] = $user->email; 
+
+        //Email Reply To
+        $emailFrom['name']   = Config::get('mail.from.name');
+        $emailFrom['email']  = Config::get('mail.from.address');
+
+        
+        $subject = "test is a localhost test";
+        $message = "this is a test message";
+
+        //set template
+        $template = 'emails.writing.autoreply';
+
+        try {
+
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $subject, $message, $template);
+            dispatch($job);
+
+        } catch (Throwable $e) {
+            report($e);
+    
+            return false;
+        }        
+
 
     }
 

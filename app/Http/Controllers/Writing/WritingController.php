@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\FormFields;
 use App\Models\WritingEntries;
 use App\Models\UploadFile;
+use Auth, Config;
 
 class WritingController extends Controller
 {
@@ -20,6 +21,7 @@ class WritingController extends Controller
     public function index(FormFields $formFieldModel) 
     {
         /* FRONT END WRITING FORM */
+
         $form_id = 1; //all forms are 1(for now)
         $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
         $formFieldHTML[] = "";
@@ -60,7 +62,6 @@ class WritingController extends Controller
 
         foreach ($dataArray as $key => $value)         
         {
-
             $fkey = explode("_", $key);
             $id = $fkey[0];
 
@@ -74,90 +75,70 @@ class WritingController extends Controller
 
                     if ($file) {
                         $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+
                         if ($uploadFileName) {
-                            echo "uploaded $uploadFileName : $file <BR>" ;
+                            //echo "uploaded $uploadFileName : $file <BR>" ;
+
+                            $fields[$key] = $uploadFileName;
                         }
-    
-                        $fields[$key] = $uploadFileName;
+
+                        //Add A Key value pair for Email Template
+                        $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];                        
                     }
 
-                } else {
-                
-                    $fields[$key] = $value;
-                }
+
+
+                } else {                
+                    $fields[$key] = $value;                   
+
+                    //Add A Key value pair for Email Template
+                    $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];
+                }               
+
             } else {
                 
                 echo $key ." not found in form field <BR>";
             }
+        }        
 
-        }
-   
-     
-        
-
-        //create a array for the upload request
-        /*
-        foreach ($request->all() as $key => $value)         
-        {
-            if ($key != '_token') {
-
-                $fkey = explode("_", $key);
-                $id = $fkey[0];
-
-                $formField = formFields::find($id);
-
-                if ($formField) {
-                    //echo $id ."<BR> ";
-                    //echo $formField->type ." <BR>";
-
-                    if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') {
-                        
-                        $file = $request->file($key);
-
-                        $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
-
-                        if ($uploadFileName) {
-                            echo "uploaded $uploadFileName : $file <BR>" ;
-                        }
-
-                        $fields[$key] = $uploadFileName;
-
-
-                    } else {
-
-                        //standad field
-                        $fields[$key] = $value;
-                    }
-                } else {
-
-                    
-                    echo $key ." not found in form field <BR>";
-
-                }
-                
-            }
-
-
-        echo "<pre>";
-        print_r (json_encode($fields));
-        echo "</pre>";
-        exit();
-
-        }*/
-
-    
-        
-
-       WritingEntries::create([
+        $entry = WritingEntries::create([
             'form_id'   => $request->get('form_id'),
             'value'     => json_encode($fields)
-       ]);
+        ]);
+
+        
+        //render the fields
+        $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
+
+       // print_r ($fieldsArray);
+        echo $formatEntryHTML;
+        exit();
+       
+        if ($entry) {
+            //send the authenticated user the email, since the Authenticated user  cant update email
+
+            $user = Auth::user();
+
+            //E-Mail Template
+            $emailTemplate = 'emails.writing.autoreply';           
+
+            //E-Mail Recipient
+            $emailTo['name'] = $user->firstname ." ". $user->lastname;
+            $emailTo['email'] = $user->email; 
+
+            //Email Reply To
+            $emailFrom['name']   = Config::get('mail.from.name');
+            $emailFrom['email']  = Config::get('mail.from.address');
+
+            $emailSubject =  '添削サービス受付のご案内'; //Information on correction service reception
+            $emailMessage =  $formatEntryHTML;
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job);                    
+        }
 
        return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
-
-
     }
-
+    
 
     public function ielts() {
         return vieW('modules.writing.ielts');
