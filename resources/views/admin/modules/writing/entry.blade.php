@@ -175,6 +175,10 @@
             width: 100%;
             padding: 10px;
         }
+        .entry-container img {
+            width: 100%;
+            padding: 10px;            
+        }
     </style>
 @endsection
 
