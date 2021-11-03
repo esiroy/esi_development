@@ -1,6 +1,6 @@
 <div id="{{ $id }}_field_row" class="row @if($display_meta['conditional_logic'] == 'true') {{ "cfLogic" }} @endif" style='@if($display_meta['conditional_logic'] == 'true') {{ "display:none" }} @endif'>
     <div class="mb-3 text-left col-md-6 {{ $id }}_field_content">
-        <label for="firstname" class="form-label">
+        <label for="{{ $id .'_lastname' }}" class="form-label">
             {{ $label }}  : 
             @if ($display_meta['required']) 
                 <span class='text-danger'>*</span>                            
@@ -8,7 +8,7 @@
         </label>
         <input type="text" 
                 id="{{ $id }}" 
-                name="{{ $id ."_lastname" }}" 
+                name="{{ $id .'_lastname' }}" 
                 placeholder="{{ $label ?? '' }}"
                 class="form-control lastnamefield bg-white"
                 value="{{ Auth::user()->lastname ?? '' }}"

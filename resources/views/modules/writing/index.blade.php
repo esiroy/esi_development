@@ -154,6 +154,30 @@
                                 });                                                                           
                             }
                         }
+
+                        if ($('#'+fieldID).hasClass('uploadfield')) 
+                        {
+                            const oFile = document.getElementById(fieldID).files[0]; // <input type="file" id="fileUpload" accept=".jpg,.png,.gif,.jpeg"/>
+                            if (oFile.size <= 2097152) // 2 MiB for bytes.
+                            {
+                                //less than 2mb (its okay)
+                                
+                                $('.'+fieldID+"_field_content").find('.error2').remove();                                
+                            } else {
+
+                                colorHighlight(fieldID)
+
+                                $('.'+fieldID+"_field_content").find('.error2').remove();
+                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
+                                requiredFieldsArr.push({
+                                    'id': fieldID,
+                                    'isValid': false
+                                });
+                                //alert("File size must under 2MiB!");
+                                //return;
+                            }
+                        }
+                        
                     }
 
                 });
@@ -186,19 +210,9 @@
                         let isValid = $('#'+fieldID).valid();
 
                         if (isValid === false || isValid === null) {
-                            console.log(fieldID +"_field_row is invalid")
-                            $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
-                            $('#'+fieldID+"_field_row").css({
-                                'background-color': 'rgba(255,223,224,.25)',
-                                'margin-bottom': '6px!important',
-                                'border-top': '1px solid #C89797',
-                                'border-bottom': '1px solid #C89797',
-                                'padding-bottom': '6px',
-                                'padding-top': '8px',
-                                'margin-top': '16px',
-                                'margin-bottom': '16px',
-                                'box-sizing': 'border-box',
-                            });
+                            //console.log(fieldID +"_field_row is invalid")
+                            colorHighlight(fieldID)
+
                         } else {
                             $('.'+fieldID+"_field_content").find('label.form-label').removeClass('label-error')
                             $('#'+fieldID+"_field_row").removeAttr("style");
@@ -213,19 +227,9 @@
                         }
                         else 
                         {
-                            // not valid
-                            $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
-                            $('#'+fieldID+"_field_row").css({
-                                'background-color': 'rgba(255,223,224,.25)',
-                                'margin-bottom': '6px!important',
-                                'border-top': '1px solid #C89797',
-                                'border-bottom': '1px solid #C89797',
-                                'padding-bottom': '6px',
-                                'padding-top': '8px',
-                                'margin-top': '16px',
-                                'margin-bottom': '16px',
-                                'box-sizing': 'border-box',
-                            });
+                              //console.log(fieldID +"_field_row is invalid")
+                            colorHighlight(fieldID)
+
                             $('.'+fieldID+"_field_content").find('.error2').remove();
                             $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This field only accepts E-Mail Address.</label>');
                             console.log("error in email");                            
@@ -233,6 +237,23 @@
                     }
                 }
             }
+
+
+            function colorHighlight(fieldID) {
+                $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
+                $('#'+fieldID+"_field_row").css({
+                    'background-color': 'rgba(255,223,224,.25)',
+                    'margin-bottom': '6px!important',
+                    'border-top': '1px solid #C89797',
+                    'border-bottom': '1px solid #C89797',
+                    'padding-bottom': '6px',
+                    'padding-top': '8px',
+                    'margin-top': '16px',
+                    'margin-bottom': '16px',
+                    'box-sizing': 'border-box',
+                });                
+            }
+
 
             function getHTMLContent(formID, FieldID) 
             {
