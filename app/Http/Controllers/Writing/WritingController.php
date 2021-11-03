@@ -60,6 +60,8 @@ class WritingController extends Controller
 
         $dataArray = json_decode($request->get('data'), true);
 
+      
+
         foreach ($dataArray as $key => $value)         
         {
             $fkey = explode("_", $key);
@@ -69,24 +71,22 @@ class WritingController extends Controller
 
             if ($formField) 
             { 
+
                 if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
                 {                    
-                    $file = $request->file($key);
+                    $file = $request->file($key);                  
 
                     if ($file) {
                         $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
-
-                        if ($uploadFileName) {
-                            //echo "uploaded $uploadFileName : $file <BR>" ;
-
-                            $fields[$key] = $uploadFileName;
+                        if ($uploadFileName) 
+                        {
+                            echo "uploaded $uploadFileName : $file <BR>" ;                            
                         }
+                        $fields[$key] = $uploadFileName;
 
                         //Add A Key value pair for Email Template
                         $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];                        
                     }
-
-
 
                 } else {                
                     $fields[$key] = $value;                   
@@ -99,24 +99,25 @@ class WritingController extends Controller
                 
                 echo $key ." not found in form field <BR>";
             }
-        }        
+        }       
 
-        $entry = WritingEntries::create([
-            'form_id'   => $request->get('form_id'),
-            'value'     => json_encode($fields)
-        ]);
-
+        $entryID = WritingEntries::create([
+            'form_id'               => $request->get('form_id'),
+            'user_id'               => Auth::user()->id,
+            'appointed_tutor_id'    => null,
+            'value'                 => json_encode($fields)
+       ]);        
         
         //render the fields
         $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
 
        // print_r ($fieldsArray);
-        echo $formatEntryHTML;
-        exit();
+        //echo $formatEntryHTML;
+       // exit();
        
-        if ($entry) {
-            //send the authenticated user the email, since the Authenticated user  cant update email
-
+        if ($entryID) 
+        {
+            //send the authenticated user the email, since the Authenticated user
             $user = Auth::user();
 
             //E-Mail Template
@@ -136,11 +137,9 @@ class WritingController extends Controller
             dispatch($job);                    
         }
 
+     
        return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
     }
     
 
-    public function ielts() {
-        return vieW('modules.writing.ielts');
-    }
 }

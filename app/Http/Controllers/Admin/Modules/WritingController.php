@@ -8,8 +8,8 @@ use App\Models\FormFields;
 use App\Models\ConditionalFieldLogic;
 use App\Models\WritingEntries;
 use App\Models\UploadFile;
-
-use Gate;
+use App\Models\Tutor;
+use Gate, Auth;
 
 class WritingController extends Controller
 {
@@ -61,15 +61,32 @@ class WritingController extends Controller
     }
 
 
-    public function entries($id) 
+    public function entries($form_id, Tutor $tutor) 
     {
-        $form_id = $id; 
+        //get form fields for name of header
+        $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-       
-        $formFields  = FormFields::where('form_id', $id)->orderBy('sequence_number', 'ASC')->get();
-        $entries = WritingEntries::where('form_id', $id)->get();
-        return view('admin.modules.writing.entries', compact('id', 'form_id','entries', 'formFields'));
+        //Get Entry of data
+        $entries     = WritingEntries::where('form_id', $form_id)->get();
+
+        $tutors      = $tutor->getTutors();
+        
+        return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
     }
+
+    public function entry($form_id, $entry_id, Tutor $tutor)  {
+
+        //get form fields for name of header
+        $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+
+        //Get Entry of data
+        $entries     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->get();
+
+        $tutors      = $tutor->getTutors();
+
+        return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors'));
+    }
+
 
     public function preview($id, FormFields $formFieldModel) 
     {        
@@ -263,8 +280,10 @@ class WritingController extends Controller
         }
 
        WritingEntries::create([
-            'form_id'   => $request->get('form_id'),
-            'value'     => json_encode($fields)
+            'form_id'               => $request->get('form_id'),
+            'user_id'               => Auth::user()->id,
+            'appointed_tutor_id'    => null,
+            'value'                 => json_encode($fields)
        ]);
 
        return redirect()->route('admin.writing.index')->with('message', 'Writing entry has been added successfully!');

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UploadFile;
 use App\Models\WritingFields;
-
+use App\Models\WritingEntries;
 
 class FormMakerController extends Controller
 {
@@ -424,4 +424,27 @@ class FormMakerController extends Controller
 
     }
 
+
+    public function assignTutor(Request $request) {
+        $entryID = $request->get('entryID');
+        $tutorID = $request->get('tutorID');
+
+        $entry = WritingEntries::find($entryID);
+
+        if ($entry) {
+
+            if (!$tutorID) {
+                $tutorID = null;
+            }
+
+            $updatedEntryID = $entry->update([
+                'appointed_tutor_id' => $tutorID
+            ]);   
+            
+            return Response()->json([
+                "success"           => true,   
+                "appointed_tutor_id" => $tutorID,            
+            ]);   
+        }
+    }
 }

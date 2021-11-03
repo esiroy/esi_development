@@ -40,6 +40,7 @@ mix.js(
         [
             "resources/js/croppie/croppie.js",
             "resources/js/datatables/jquery.dataTables.js",
+            "resources/js/select2/select2.full.min.js",
             "resources/js/app.js"
         ],
         "public/js/admin.js"

@@ -15,9 +15,9 @@ class CreateTableWritingEntries extends Migration
     {
         Schema::create('writing_entries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('form_id');
-            $table->unsignedBigInteger('field_id');
-            $table->text('name')->nullable();
+            $table->unsignedBigInteger('form_id');          
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('appointed_tutor_id')->nullable();
             $table->text('value')->nullable();            
             $table->timestamps();
         });

@@ -1,22 +1,21 @@
 <div class="container">        
     @foreach($fieldsArray as $item)
+        
+        <div class='name-wrapper'>
+            <div class="itemName">{{ $item['name'] ?? '' }}</div>        
+        </div>
+
         @if ($item['type'] == 'uploadfield')
-
-
             @if (isset($item['value']))
-
-                <div style="width:350px">
-                @php 
-                    $writingFields = new \App\Models\WritingEntries;
-                    $writingFields->generateFileAnchorLink( $item['value'] );
-                @endphp
+                <div class="value-wrapper">
+                <div class="itemValue"><a href="{{ url(Storage::url($item['value'])) }}">{{ basename($item['value']) }}</a></div>
                 </div>
-
+                @php 
+                    //$writingFields = new \App\Models\WritingEntries;
+                    //$writingFields->generateFileAnchorLink( $item['value'] );
+                @endphp
             @endif
-        @else 
-            <div class='name-wrapper'>
-                <div class="itemName">{{ $item['name'] ?? '' }}</div>        
-            </div>
+        @else
             <div class="value-wrapper">
                 <div class="itemValue">{{ $item['value'] ?? '' }}</div>
             </div>
