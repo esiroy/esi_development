@@ -84,15 +84,19 @@
                                             $writingFields = new \App\Models\WritingEntries;
                                         @endphp      
                                         <div class="col-md-4"> 
-                                            <div class="text-center">
+                                            <div class="text-center pl-2">
                                                 {{$writingFields->generateFileAnchorLink( $fieldValue[$entry->id][$formField->id] )}}
                                             </div>
                                         </div>                                                                
                                     @endif
                                 @else
-                                    @if (isset($fieldValue[$entry->id][$formField->id]))
-                                        {!! $fieldValue[$entry->id][$formField->id]  !!}
-                                    @endif
+                                    <div class="col-md-12"> 
+                                        <div class="text-left pl-2 py-2">
+                                            @if (isset($fieldValue[$entry->id][$formField->id]))
+                                                {!! $fieldValue[$entry->id][$formField->id]  !!}
+                                            @endif
+                                        </div>
+                                    </div>
                                 @endif
                             @endforeach
                         @endforeach
@@ -109,9 +113,6 @@
                     <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
                         Entry Status
                     </div>
-               
-
-
                     <div class="card-body p-0 m-0 b-0">
 
                         <div class="table-responsive mb-0">
@@ -130,8 +131,6 @@
                                         $values = json_decode($entry->value, true);
                                     @endphp                                     
                                     <tr>
-                                       
-
                                         <td>
                                             <div id="{{$formField->id . '_countdown_'. $key }}" style="background-color:">
                                                   <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
