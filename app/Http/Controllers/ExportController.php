@@ -49,18 +49,17 @@ class ExportController extends Controller
         $sheet->setCellValue('B2', "I.D");
         $sheet->setCellValue('C2', "First Name");
         $sheet->setCellValue('D2', "Last Name");
-
         $sheet->setCellValue('E2', "Japanese First Name");
         $sheet->setCellValue('F2', "Japanese Last Name");
-
         $sheet->setCellValue('G2', "E-Mail");
-        $sheet->setCellValue('H2', "Credits");
-        $sheet->setCellValue('I2', "Expiration Date");
+        $sheet->setCellValue('H2', "Attribute");
+        $sheet->setCellValue('I2', "Credits");
+        $sheet->setCellValue('J2', "Expiration Date");
 
         //style for field headers h2
         $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 20);
-        $spreadsheet->getActiveSheet()->getStyle('B2:I2')->applyFromArray($styleArrayH2);
-        $spreadsheet->getActiveSheet()->getStyle('B2:I2')->getAlignment()->setHorizontal('center');
+        $spreadsheet->getActiveSheet()->getStyle('B2:J2')->applyFromArray($styleArrayH2);
+        $spreadsheet->getActiveSheet()->getStyle('B2:J2')->getAlignment()->setHorizontal('center');
       
 
         //get to expired members
@@ -110,20 +109,17 @@ class ExportController extends Controller
                 $spreadsheet->getActiveSheet()->getStyle('B' . $ctr . ':I' . $ctr)->getAlignment()->setHorizontal('center');
                 $sheet->setCellValue('B' . $ctr, $member->user->id); //user id
                 $sheet->setCellValue('C' . $ctr, $member->user->firstname);
-                $sheet->setCellValue('D' . $ctr, $member->user->lastname);
-                
+                $sheet->setCellValue('D' . $ctr, $member->user->lastname);                
                 $sheet->setCellValue('E' . $ctr, $member->user->japanese_firstname);
                 $sheet->setCellValue('F' . $ctr, $member->user->japanese_lastname);
-
                 $sheet->setCellValue('G' . $ctr, $member->user->email);
-                $sheet->setCellValue('H' . $ctr, $credits);
-
+                $sheet->setCellValue('H' . $ctr, $member->attribute);
+                $sheet->setCellValue('I' . $ctr, $credits);
                 if (isset($member->credits_expiration)) {
-                    $sheet->setCellValue('I' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
+                    $sheet->setCellValue('J' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
                 } else {
-                    $sheet->setCellValue('I' . $ctr, date("m-d-Y  h:i:s A", strtotime($memberItem['created_at'])));
-                }
-                
+                    $sheet->setCellValue('J' . $ctr, date("m-d-Y  h:i:s A", strtotime($memberItem['created_at'])));
+                }                
                 $ctr = $ctr + 1;
             }
         }
@@ -187,13 +183,14 @@ class ExportController extends Controller
         $sheet->setCellValue('F2', "Japanese Last Name");
 
         $sheet->setCellValue('G2', "E-Mail");
-        $sheet->setCellValue('H2', "Credits");
-        $sheet->setCellValue('I2', "Expiration Date");
+        $sheet->setCellValue('H2', "Attribute");
+        $sheet->setCellValue('I2', "Credits");
+        $sheet->setCellValue('J2', "Expiration Date");
 
         //style for field headers h2
         $styleArrayH2 = Style::setHeader('FFFFFF', '669999', 20);
-        $spreadsheet->getActiveSheet()->getStyle('B2:I2')->applyFromArray($styleArrayH2);
-        $spreadsheet->getActiveSheet()->getStyle('B2:I2')->getAlignment()->setHorizontal('center');
+        $spreadsheet->getActiveSheet()->getStyle('B2:J2')->applyFromArray($styleArrayH2);
+        $spreadsheet->getActiveSheet()->getStyle('B2:J2')->getAlignment()->setHorizontal('center');
 
         //get to expired members
         $today = Carbon::now();
@@ -223,13 +220,13 @@ class ExportController extends Controller
                 $sheet->setCellValue('B' . $ctr, $member->user_id); //user id
                 $sheet->setCellValue('C' . $ctr, $member->firstname);
                 $sheet->setCellValue('D' . $ctr, $member->lastname);
-
                 $sheet->setCellValue('E' . $ctr, $member->user->japanese_firstname);
                 $sheet->setCellValue('F' . $ctr, $member->user->japanese_lastname);
-
                 $sheet->setCellValue('G' . $ctr, $member->email);
-                $sheet->setCellValue('H' . $ctr, $credits);
-                $sheet->setCellValue('I' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
+                $sheet->setCellValue('H' . $ctr, $member->attribute);                
+                $sheet->setCellValue('I' . $ctr, $credits);
+
+                $sheet->setCellValue('J' . $ctr, date("m-d-Y  h:i:s A", strtotime($member->credits_expiration)));
                 $ctr = $ctr + 1;
             }
         }
