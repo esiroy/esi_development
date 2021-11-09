@@ -11,7 +11,8 @@ var options = {
 var serverPort = 30001;
 
 var server = https.createServer(options, app);
-var io = require('socket.io')(server);
+//var io = require('socket.io')(server);
+var io = require('socket.io')(server, { wsEngine: 'ws' });
 
 app.get('/', function(req, res) {
   //res.sendFile(__dirname + '/public/index.html');
