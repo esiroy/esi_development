@@ -27,7 +27,7 @@ class PhpSpreadsheetFontStyle extends Model
         $spreadsheet->getActiveSheet()->getStyle('B1')->applyFromArray($styleArrayH1);
 
         //Merge Header
-        $spreadsheet->getActiveSheet()->mergeCells('B1:I1');        
+        $spreadsheet->getActiveSheet()->mergeCells('B1:J1');        
         $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
 
         return $spreadsheet;
