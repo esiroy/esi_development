@@ -420,7 +420,7 @@
        skin: 'moono-lisa',
       
 	// allow these tags to accept classes
-        extraPlugins: 'html5audio, imageuploader',
+        extraPlugins: 'html5audio',
        extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src,controls];',
 
        allowedContent: 'html5audio object param embed a p b i; a[!href]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',       
