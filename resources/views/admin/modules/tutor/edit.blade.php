@@ -402,7 +402,7 @@
 
 @section('scripts')
 @parent
-<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
+<script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
 
 <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js' type='text/javascript'></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
@@ -415,22 +415,31 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />
 
 <script>
-    CKEDITOR.replace('introduction', {
-        
-        allowedContent: 'object param embed a p b i; a[!href]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',
-        toolbarGroups: [
-            { name: 'document', groups: ['mode', 'document', 'doctools', 'Html5audio', 'object'] },
-            { name: 'clipboard', groups: ['clipboard', 'undo']},
-            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
+    CKEDITOR.replace('introduction', {        
+        //customConfig: '{{ url("js/ckeditor/plugins/html5audio/plugin.js") }}',
+       skin: 'moono-lisa',
+      
+	// allow these tags to accept classes
+        extraPlugins: 'html5audio, imageuploader',
+       extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src,controls];',
+
+       allowedContent: 'html5audio object param embed a p b i; a[!href]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',       
+       toolbarGroups: [
+            {name: 'insert', groups: [  'html5audio',] },
+            {name: 'document', groups: ['mode', 'document', 'doctools', 'object'] },
+            {name: 'clipboard', groups: ['clipboard', 'undo']},
+            {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing', ]},
             {name: 'forms', groups: ['forms']},
             {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
             {name: 'paragraph', groups: ['list', 'links', 'indent', 'blocks', 'styles', 'align', 'bidi', 'paragraph']},
+            
         ],
-        removePlugins: 'easyimage, exportpdf, cloudservices',
-        removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks',
-
         
-        extraAllowedContent: 'object(*)'
+        removePlugins: 'easyimage, exportpdf, cloudservices',
+        //removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks',        
+
+        removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Font,Smiley,SpecialChar,PageBreak,Iframe',        
+        //extraAllowedContent: 'object(*)'
 
     });
 </script>

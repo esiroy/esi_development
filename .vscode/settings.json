@@ -1,3 +1,5 @@
 {
-    "files.eol": "\r\n"
+    "files.eol": "\r\n",
+    "editor.bracketPairColorization.enabled": true,
+    "window.autoDetectColorScheme": true
 }
