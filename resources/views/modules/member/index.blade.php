@@ -28,6 +28,11 @@
                     <div class="mt-3 mb-4">
                         @include('modules.member.sidebar.reports')
                     </div>
+
+                    <div class="mt-3 mb-4">
+                        @include('modules.member.sidebar.membertestscores')
+                    </div>
+
                 </div>
                 <!--[end sidebar]-->
 
