@@ -118,8 +118,12 @@
 
 @section('scripts')
 @parent
-<script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
+
+<script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
+
+
 <script type="text/javascript">
+
     window.addEventListener('load', function() {
         ///let dtButtons = $.extend(true, [], $.fn.dataTable.defaults.buttons)
 
@@ -142,17 +146,24 @@
             "paging":   false,
         })
 
-        CKEDITOR.replace('introduction', {
+
+        CKEDITOR.replace('introduction', {                
+            skin: 'moono-lisa',      
+            // allow these tags to accept classes
+            extraPlugins: 'html5audio',
+            extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+            allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',       
             toolbarGroups: [
-                { name: 'document', groups: ['mode', 'document', 'doctools'] },
-                { name: 'clipboard', groups: ['clipboard', 'undo']},
-                {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing']},
+                {name: 'insert', groups: [  'html5audio',] },
+                {name: 'document', groups: ['mode', 'document', 'doctools', 'object'] },
+                {name: 'clipboard', groups: ['clipboard', 'undo']},
+                {name: 'editing', groups: ['find', 'selection', 'spellchecker', 'editing', ]},
                 {name: 'forms', groups: ['forms']},
                 {name: 'basicstyles', groups: ['basicstyles', 'cleanup']},
-                {name: 'paragraph', groups: ['list', 'links', 'indent', 'blocks', 'styles', 'align', 'bidi', 'paragraph']},
-            ],
+                {name: 'paragraph', groups: ['list', 'links', 'indent', 'blocks', 'styles', 'align', 'bidi', 'paragraph']},            
+            ],        
             removePlugins: 'easyimage, exportpdf, cloudservices',
-            removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Preview,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Format,Font,Anchor,Table,HorizontalRule,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks'
+            removeButtons: 'Save,Templates,Cut,Undo,SelectAll,Find,Scayt,Form,CopyFormatting,About,TextColor,Image,Outdent,Blockquote,BidiLtr,NewPage,ExportPdf,Print,Flash,CreateDiv,Indent,RemoveFormat,Underline,Copy,Paste,PasteText,PasteFromWord,Redo,Replace,Checkbox,Radio,TextField,Select,Textarea,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,BidiRtl,Language,BGColor,Styles,Font,Smiley,SpecialChar,PageBreak,Iframe'
         });
 
 
