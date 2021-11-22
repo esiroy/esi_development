@@ -304,12 +304,11 @@
                 beforeSend: function() 
                 {
                     //hide tutor memo modal first
-                    $('#tutorMemoModal').modal('hide')      
-
+                    $('#tutorMemoModal').modal('hide');
                     $('#loadingModal').modal('show');
                 },
                 complete: function(){
-                    $('#loadingModal').modal('hide');
+                    $('#loadingModal').modal('hide');                    
                 },
                 success: function() {
                     $('#loadingModal').modal('hide');

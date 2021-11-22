@@ -238,8 +238,11 @@
 </div>
 
  @include('modules.member.popup.content')
-
  @include('modules.member.popup.loading')
  @include('modules.member.popup.memoSent')
+ @include('modules.member.popup.msgboxSuccess')
+ @include('modules.member.popup.addMemberTestScore')
+ @include('modules.member.popup.showAllMemberExamScoreModal')
+
 
 @endsection
