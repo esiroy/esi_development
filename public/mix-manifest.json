@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "/js/admin.js": "/js/admin.js?id=c2cb7227d295a6a64850",
     "/js/admin.js.map": "/js/admin.js.map?id=1edc93964ed7576375b5",
     "/js/app.js": "/js/app.js?id=6e71d4b89bf2fef36ae3",
@@ -7,6 +8,15 @@
     "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
     "/js/app.js.map": "/js/app.js.map?id=a91e58e44bcd4d13af3a",
     "/css/app.css.map": "/css/app.css.map?id=3cc8988703ca99203924",
+=======
+    "/js/admin.js": "/js/admin.js?id=3d1bfcbf1ec3761df566",
+    "/js/admin.js.map": "/js/admin.js.map?id=73c63b6ccf1ba0877a06",
+    "/js/app.js": "/js/app.js?id=0c4ff10e1fc57b0413e3",
+    "/css/app.css": "/css/app.css?id=d0a0dbac97793669d575",
+    "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
+    "/js/app.js.map": "/js/app.js.map?id=3fce8e130619c255854b",
+    "/css/app.css.map": "/css/app.css.map?id=ebc567c6260cfa11300d",
+>>>>>>> memberscores
     "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
     "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",

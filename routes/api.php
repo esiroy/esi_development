@@ -106,24 +106,8 @@ Route::middleware('auth:api')->post('/getAllMemoConversations', 'API\TutorSchedu
 //[start] Lesson Materials
 Route::middleware('auth:api')->post('/sortLessonMaterials', 'API\LessonMaterialsController@sortLessonMaterials')->name('APISortLessonMaterials');
 
+//[start] member exam  score
 
-//Form Maker
-Route::middleware('auth:api')->post('/saveSimpleTextField', 'API\FormMakerController@saveSimpleTextField')->name('APISaveSimpleTextField');
-Route::middleware('auth:api')->post('/saveDropDownSelect', 'API\FormMakerController@saveDropDownSelect')->name('APISaveDropDownSelect');
-Route::middleware('auth:api')->post('/saveHTMLContent', 'API\FormMakerController@saveHTMLContent')->name('APISaveSaveHTMLContent');
-
-//Advance Fields
-Route::middleware('auth:api')->post('/saveFirstNameField', 'API\FormMakerController@saveFirstNameField')->name('APISaveFirstNameField');
-Route::middleware('auth:api')->post('/saveFirstEmailField', 'API\FormMakerController@saveFirstEmailField')->name('APISaveFirstEmailField');
-Route::middleware('auth:api')->post('/saveLastNameField', 'API\FormMakerController@saveLastNameField')->name('APISaveLastNameField');
-Route::middleware('auth:api')->post('/saveEmailField', 'API\FormMakerController@saveEmailField')->name('APISaveEmailField');
-Route::middleware('auth:api')->post('/saveUploadField', 'API\FormMakerController@saveUploadField')->name('APISaveUploadField');
-
-
-Route::middleware('auth:api')->post('/getHTMLFieldContent', 'API\FormMakerController@getHTMLFieldContent')->name('APISGetHTMLFieldContent');
-Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@removeField')->name('APIRemoveField');
-
-//writing api
-Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
-Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');
-Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingEntryUpdate');
+Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamController@getAllMemberExamScore')->name('APIgetMemberGetAllMemberExamScores');
+Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIgetMemberLatestScore');
+Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
