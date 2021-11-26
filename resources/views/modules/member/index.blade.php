@@ -233,7 +233,6 @@
 </div>
 
  @include('modules.member.popup.content')
-
  @include('modules.member.popup.loading')
  @include('modules.member.popup.memoSent')
 

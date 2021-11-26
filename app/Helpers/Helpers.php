@@ -327,5 +327,20 @@ if (! function_exists('linkify'))
     }
 }
 
+if (! function_exists('checkbox_ticker')) {
+    
+    function checkbox_ticker($field_name, $value)
+    {
+        if( is_array( $field_name ) && in_array($value, $field_name )) {
+            return " checked ";
+        } else if (isset($field_name) && isset($value)){
+
+            if ($field_name == $value ) {
+                return " checked ";
+            }
+
+        }
+    } 
+}
 
 ?>
