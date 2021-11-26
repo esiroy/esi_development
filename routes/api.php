@@ -107,7 +107,12 @@ Route::middleware('auth:api')->post('/getAllMemoConversations', 'API\TutorSchedu
 Route::middleware('auth:api')->post('/sortLessonMaterials', 'API\LessonMaterialsController@sortLessonMaterials')->name('APISortLessonMaterials');
 
 //[start] member exam  score
-
-Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamController@getAllMemberExamScore')->name('APIgetMemberGetAllMemberExamScores');
-Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIgetMemberLatestScore');
+Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamController@getAllMemberExamScore')->name('APIGetMemberGetAllMemberExamScores');
+Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIGetMemberLatestScore');
 Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
+
+
+//[start] member purpose
+Route::middleware('auth:api')->post('/getMemberPurposeList', 'API\MemberPurposeController@getMemberPurposeList')->name('APIGetMemberPurposeList');
+Route::middleware('auth:api')->post('/updateMemberPurpose', 'API\MemberPurposeController@updateMemberPurpose')->name('APIUpdateMemberPurpose');
+Route::middleware('auth:api')->post('/getMemberPurpose', 'API\MemberPurposeController@getMemberPurpose')->name('APIGetMemberPurpose');

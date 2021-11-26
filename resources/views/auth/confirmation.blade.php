@@ -132,7 +132,7 @@
                                     <div class="TOEFL">
                                         <div class="main_option">
                                             {{ old('TOEFL') ?? ''  }}
-                                            <input type="hidden" name="IELTS" value="{{ old('TOEFL') }}">
+                                            <input type="hidden" name="TOEFL" value="{{ old('TOEFL') }}">
                                         </div>
                                         @if (is_array(old('TOEFL_option')))
                                             <div class="ml-4">
@@ -160,7 +160,7 @@
                                         @if (is_array(old('TOEIC_option')))
                                             <div class="ml-4">
                                                 @foreach(old('TOEIC_option') as $TOEIC_option_value )
-                                                    <input type="hidden" name="TOEFL_option[]" value="{{ $TOEIC_option_value }}">   
+                                                    <input type="hidden" name="TOEIC_option[]" value="{{ $TOEIC_option_value }}">   
                                                     <div>{{ $TOEIC_option_value }}</div>
                                                 @endforeach
                                             </div>
@@ -175,7 +175,7 @@
                                         @if (is_array(old('EIKEN_option')))
                                             <div class="ml-4">
                                                 @foreach(old('EIKEN_option') as $EIKEN_option_value )
-                                                    <input type="hidden" name="TOEFL_option[]" value="{{ $EIKEN_option_value }}">
+                                                    <input type="hidden" name="EIKEN_option[]" value="{{ $EIKEN_option_value }}">
                                                     <div>{{ $EIKEN_option_value }}</div>
                                                 @endforeach
                                             </div>
@@ -191,7 +191,7 @@
                                         @if (is_array(old('TEAP_option')))
                                             <div class="ml-4">
                                                 @foreach(old('TEAP_option') as $TEAP_option_value )
-                                                    <input type="hidden" name="TOEFL_option[]" value="{{ $TEAP_option_value }}">
+                                                    <input type="hidden" name="TEAP_option[]" value="{{ $TEAP_option_value }}">
                                                     <div>{{ $TEAP_option_value }}</div>
                                                 @endforeach
                                             </div>
@@ -207,6 +207,7 @@
                                         @if (is_array(old('BUSINESS_option')))
                                             <div class="ml-4">
                                                 @foreach(old('BUSINESS_option') as $BUSINESS_option_value )
+                                                    <input type="hidden" name="BUSINESS_option[]" value="{{ $BUSINESS_option_value }}">
                                                     <div>{{ $BUSINESS_option_value }}</div>
                                                 @endforeach
                                             </div>
@@ -222,6 +223,7 @@
                                         @if (is_array(old('BUSINESS_CAREERS_option')))
                                             <div class="ml-4">
                                                 @foreach(old('BUSINESS_CAREERS_option') as $BUSINESS_CAREERS_option_value )
+                                                    <input type="hidden" name="BUSINESS_CAREERS_option[]" value="{{ $BUSINESS_CAREERS_option_value }}">
                                                     <div>{{ $BUSINESS_CAREERS_option_value }}</div>
                                                 @endforeach
                                             </div>
@@ -237,6 +239,7 @@
                                         @if (is_array(old('DAILY_CONVERSATION_option')))
                                             <div class="ml-4">
                                                 @foreach(old('DAILY_CONVERSATION_option') as $DAILY_CONVERSATION_option_value )
+                                                    <input type="hidden" name="DAILY_CONVERSATION_option[]" value="{{ $DAILY_CONVERSATION_option_value }}">
                                                     <div>{{ $DAILY_CONVERSATION_option_value }}</div>
                                                 @endforeach
                                             </div>
@@ -248,9 +251,9 @@
                                             {{ old('OTHERS') ?? '' }}
                                              <input type="hidden" name="OTHERS" value="{{ old('OTHERS') }}">
                                         </div>                                      
-                                        <div class="ml-4">
-                                            {{ old('OTHERS_value') ?? '' }}           
-                                            <input type="hidden" name="OTHERS_value" value="{{ old('OTHERS_value') }}">                                 
+                                        <div class="ml-4">                                            
+                                            <input type="hidden" name="OTHERS_value" value="{{ old('OTHERS_value') }}">
+                                            {{ old('OTHERS_value') ?? '' }}
                                         </div>                                        
                                     </div>
 

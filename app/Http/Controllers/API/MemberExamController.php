@@ -14,13 +14,9 @@ class MemberExamController extends Controller
 
     public function getAllMemberExamScore(Request $request) 
     {
-
-        $limit = $request->get('limit');
-        
+        $limit = $request->get('limit');        
         $scores = MemberExamScore::where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->paginate($limit);
-
         $links = $scores->links();
-
         if ($scores) {
             return Response()->json([
                 "success" => true,
@@ -33,7 +29,6 @@ class MemberExamController extends Controller
                 "message" => "No record found for member",
             ]);
         }
-
     }
 
 
@@ -56,8 +51,8 @@ class MemberExamController extends Controller
         }
     }
 
-    public function addMemberExamScore(Request $request) {
-
+    public function addMemberExamScore(Request $request) 
+    {
         $memberExam = MemberExamScore::create([
             'user_id'   => Auth::user()->id,
             'exam_date' => $request['examDate'],
@@ -77,5 +72,4 @@ class MemberExamController extends Controller
             ]);
         }
     }
-
 }

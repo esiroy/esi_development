@@ -18,6 +18,7 @@ use App\Models\User;
 use App\Models\UserImage;
 use App\Models\MemoReply;
 use App\Models\ChatSupportHistory;
+use App\Models\Purpose;
 
 
 use Auth, Hash;
@@ -637,9 +638,11 @@ class MemberController extends Controller
 
         MemoReply::where('sender_id', $user->id)->delete();
         MemoReply::where('recipient_id', $user->id)->delete();
+        Purpose::where('member_id', $user->id)->delete();
 
         $member->delete();
         $user->forceDelete();
+        
 
         return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
     }

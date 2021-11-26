@@ -250,7 +250,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['IELTS'],
                     'purpose_options' => json_encode($request['IELTS_option']),   
-                    'member_id' => $member->id
+                    'member_id' => $user->id
 
                 ]);
             }
@@ -261,7 +261,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['TOEFL'],
                     'purpose_options' => json_encode($request['TOEFL_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }
 
@@ -271,7 +271,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['TOEFL_Primary'],
                     //'purpose_options' => json_encode($request['TOEFL_Primary_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }
 
@@ -281,7 +281,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['TOEIC'],
                     'purpose_options' => json_encode($request['TOEIC_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }
 
@@ -292,7 +292,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['EIKEN'],
                     'purpose_options' => json_encode($request['EIKEN_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }            
 
@@ -303,7 +303,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['TEAP'],
                     'purpose_options' => json_encode($request['TEAP_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }                 
               
@@ -314,7 +314,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['BUSINESS'],
                     'purpose_options' => json_encode($request['BUSINESS_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }                 
 
@@ -325,7 +325,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['BUSINESS_CAREERS'],
                     'purpose_options' => json_encode($request['BUSINESS_CAREERS_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }         
 
@@ -336,7 +336,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['DAILY_CONVERSATION'],
                     'purpose_options' => json_encode($request['DAILY_CONVERSATION_option']),
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }
 
@@ -346,7 +346,7 @@ class SignUpController extends Controller
                     'valid' => 1,
                     'purpose' => $request['OTHERS'],
                     'purpose_options' => $request['OTHERS_value'],
-                    'member_id' => $member->id
+                    'member_id' => $user->id
                 ]);
             }              
 
