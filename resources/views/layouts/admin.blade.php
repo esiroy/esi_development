@@ -192,9 +192,19 @@
                 </div>
             </div>            
         </footer>        
-    </div>
-                    
-    <script type="text/javascript" src="https://download.skype.com/share/skypebuttons/js/skypeCheck.js"></script>
+    </div>                   
+    
+
+    @if (Auth::user()->user_type == 'ADMINISTRATOR')
+    <script type="text/javascript">
+        window.addEventListener('load', function () {
+            $(function () {
+                $('.select2').select2();
+            });
+        });
+    </script>
+
+    @endif
 
     @if (Auth::user()->user_type == 'TUTOR')
         @include('admin.modules.tutor.includes.memo')

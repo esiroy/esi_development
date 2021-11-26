@@ -50,20 +50,7 @@
           <div class="progress-bar progress-bar-success" style="width:0%;" data-dz-uploadprogress></div>
         </div>
     </div>
-    <div>
-      <button class="btn btn-primary start">
-          <i class="glyphicon glyphicon-upload"></i>
-          <span>Start</span>
-      </button>
-      <button data-dz-remove class="btn btn-warning cancel">
-          <i class="glyphicon glyphicon-ban-circle"></i>
-          <span>Cancel</span>
-      </button>
-      <button data-dz-remove class="btn btn-danger delete">
-        <i class="glyphicon glyphicon-trash"></i>
-        <span>Delete</span>
-      </button>
-    </div>
+
   </div>
 
 </div>
@@ -87,7 +74,7 @@
         var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
             maxFiles: 1,
             maxFilesize: 10,
-            url: "/target-url", // Set the url
+            url: "/uploader/fileUploader", // Set the url
             thumbnailWidth: 80,
             thumbnailHeight: 80,
             parallelUploads: 1,

@@ -71,6 +71,8 @@
  * ©2008-2020 SpryMedia Ltd - datatables.net/license
  */
 
+/*! Select2 4.0.5 | https://github.com/select2/select2/blob/master/LICENSE.md */
+
 /*! https://mths.be/utf8js v2.1.2 by @mathias */
 
 /**

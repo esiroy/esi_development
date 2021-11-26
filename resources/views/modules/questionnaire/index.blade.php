@@ -28,6 +28,12 @@
                     <div class="mt-3 mb-4">
                         @include('modules.member.sidebar.reports')
                     </div>
+
+                    <div class="mt-3 mb-4">
+                        @include('modules.member.sidebar.membertestscores')
+                    </div>
+
+
                 </div>
                 <!--[end sidebar]-->
 
@@ -208,4 +214,10 @@
 
 </div>
 </div>
+
+ @include('modules.member.popup.loading') 
+ @include('modules.member.popup.msgboxSuccess')
+ @include('modules.member.popup.addMemberTestScore')
+ @include('modules.member.popup.showAllMemberExamScoreModal')
+
 @endsection

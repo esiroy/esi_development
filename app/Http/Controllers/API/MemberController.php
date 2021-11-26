@@ -499,7 +499,7 @@ class MemberController extends Controller
          *              IF YOU WILL RESERVE 2 OR MORE IN A DAY 
          ************************/
 
-        $MEMBER_RESERVE_LIMIT_ACTIVE = env('MEMBER_RESERVE_LIMIT_ACTIVE', false);
+        $MEMBER_RESERVE_LIMIT_ACTIVE = env('MEMBER_RESERVE_LIMIT_ACTIVE', true);
 
         if ($MEMBER_RESERVE_LIMIT_ACTIVE == true) 
         {

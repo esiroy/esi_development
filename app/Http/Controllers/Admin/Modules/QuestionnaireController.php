@@ -12,7 +12,9 @@ use App\Models\ScheduleItem;
 use App\Models\UserImage;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
-use Auth;
+
+use Symfony\Component\HttpFoundation\Response;
+use Auth, Gate;
 
 class QuestionnaireController extends Controller
 {
@@ -23,6 +25,8 @@ class QuestionnaireController extends Controller
      */
     public function index(Request $request)
     {
+        abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $items_per_page = Auth::user()->items_per_page;        
 
         if (isset($request->date_from) && isset($request->date_to)) 
@@ -70,6 +74,8 @@ class QuestionnaireController extends Controller
 
     public function questionnaire_test($id) 
     {  
+        abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         echo $id;
 
         $scheduleItem = ScheduleItem::find($id);
@@ -118,6 +124,7 @@ class QuestionnaireController extends Controller
      */
     public function show($id)
     {
+        abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $scheduleItem = ScheduleItem::find($id);
 

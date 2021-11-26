@@ -103,13 +103,11 @@ Route::middleware('auth:api')->post('/getTutorInbox', 'API\TutorController@getTu
 //(all memo)
 Route::middleware('auth:api')->post('/getAllMemoConversations', 'API\TutorScheduleController@getAllMemoConversations')->name('APIGetAllMemoConversations');
 
-
-
 //[start] Lesson Materials
 Route::middleware('auth:api')->post('/sortLessonMaterials', 'API\LessonMaterialsController@sortLessonMaterials')->name('APISortLessonMaterials');
 
+//[start] member exam  score
 
-
-
-
-
+Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamController@getAllMemberExamScore')->name('APIgetMemberGetAllMemberExamScores');
+Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIgetMemberLatestScore');
+Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');

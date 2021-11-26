@@ -39,19 +39,22 @@ mix.js(
     .js(
         [
             "resources/js/croppie/croppie.js",
-            "resources/js/datatables/jquery.dataTables.js",            
+            "resources/js/datatables/jquery.dataTables.js",
+            "resources/js/select2/select2.full.min.js",
             "resources/js/app.js"
         ],
         "public/js/admin.js"
-    )    
+    )
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/mp3/*.*", "public/mp3/")
     .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
     .copy("resources/js/ckeditor/", "public/js/ckeditor/", false)
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
+    .copy("resources/sass/dropzone/dropzone.min.css", "public/css/dropzone/dropzone.min.css")
     .sass("resources/sass/app.scss", "public/css/app.css")
     .sass("resources/sass/admin.scss", "public/css/admin.css")
+    .sass("resources/sass/steps/steps.scss", "public/css/steps/steps.css")
     .version()
     .options({
         processCssUrls: false
