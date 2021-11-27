@@ -33,7 +33,11 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            success: function(data) {
+            success: function(data) 
+            {
+                $('#loadingModal').modal('hide');
+                $('#loadingModal').hide();
+
                 if (data.success == true) 
                 {   
                     $('#submitFormMemberPurpose .container').html(data.purposeForm);
