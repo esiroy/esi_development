@@ -33,6 +33,15 @@
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
+            beforeSend: function() 
+            {
+               $('#showUpdateMemberPurposeModal').css('visibility', 'hidden');
+               $('#loadingModal').modal('show');
+            },            
+            complete: function(){
+                $('#loadingModal').modal('hide');
+                $('#showUpdateMemberPurposeModal').css('visibility', 'visible');                
+            },              
             success: function(data) 
             {
                 $('#loadingModal').modal('hide');
