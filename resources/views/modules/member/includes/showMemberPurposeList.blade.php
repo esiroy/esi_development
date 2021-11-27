@@ -7,17 +7,26 @@
         @endphp
 
         <div class="main_list mb-1">
-            <strong>{{ $list->purpose }}</strong>
 
-            <div class="option_value_wrapper mb-2 ml-2">
-                @foreach ($options as $option_value) 
+            @if (strtolower($list->purpose) == "others")
+                <strong>{{ $list->purpose }}</strong>
+                <div class="option_value_wrapper mb-2 ml-2">
                     <span class="option_value">
-                        {{ $option_value }}@if ($ctr < count($options)){{ "," }} @endif
-                        
-                        @php $ctr++ @endphp
+                        {{ $list->purpose_options }}
                     </span>
-                @endforeach 
-            </div>
+                </div>
+            @else
+                <strong>{{ $list->purpose }}</strong>
+
+                <div class="option_value_wrapper mb-2 ml-2">
+                    @foreach ($options as $option_value) 
+                        <span class="option_value">
+                            {{ $option_value }}@if ($ctr < count($options)){{ "," }} @endif                        
+                            @php $ctr++ @endphp
+                        </span>
+                    @endforeach 
+                </div>
+            @endif
 
         </div>
 
