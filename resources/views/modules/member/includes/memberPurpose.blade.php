@@ -149,6 +149,37 @@
                 $(element).find('input').prop('checked', false);
             }  
         });
+
+
+        $(document).on("click",".main_option",function() {
+            if ($(this).is(':checked')) {
+                $(this).next().show();
+            } else {
+                let element = $(this).next();
+                $(element).hide();
+                $(element).find('input').prop('checked', false);
+            }  
+        });
+
+        $(document).on("click",".sub_options input",function() 
+        {
+            if ($(this).prop('checked') == true)
+            {
+                console.log("test click sub options")
+                let optionsCount = $('.sub_options').find('input').filter(':checked').length
+
+                if (optionsCount > 3) 
+                {                
+                    alert ("You can only select 3 options");
+                    $( this ).prop( "checked", false );
+                    return false;                    
+                }
+            }
+        });
+        
+            
+
+        
     });
 </script>
 @endsection
