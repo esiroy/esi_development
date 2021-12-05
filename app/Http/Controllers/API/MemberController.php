@@ -21,6 +21,7 @@ use App\Models\ReportCardDate;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 use App\Models\LessonMailer;
+use App\Models\Purpose;
 
 use Auth, App;
 use DB;
@@ -1190,6 +1191,7 @@ class MemberController extends Controller
         //abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = json_decode($request['user']);
+        $purposeList = json_decode($request['purposeList']);
 
         //disallow duplicate email and username
         $validator = Validator::make(
@@ -1336,7 +1338,28 @@ class MemberController extends Controller
                 LessonGoals::where('member_id', $user->id)->delete();
                 $purpose = LessonGoals::insert($lessonGoals);
 
-                //Member Attribute
+
+                /********************************************
+                            DELETE: OLD MEMBER PURPOSE
+                **********************************************/
+                Purpose::where('member_id', $user->id)->delete();
+
+                /********************************************
+                            CREATE MEMBER PURPOSE (Dynamic)
+                **********************************************/
+                $purposeObject = new Purpose(); 
+                $ObjectNameArray = array("IELTS", "TOEFL", "TOEFL_Primary", "TOEIC", "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+
+                foreach ($ObjectNameArray as $ObjectName) 
+                {
+                    if (isset($purposeList->{"$ObjectName"})) 
+                    {
+                        $purposeObject->saveMemberPurpose($user->id, $ObjectName, $purposeList);                   
+                    }                
+                }
+
+
+                //Member Attribute (store)
                 $lessonClasses = [];
                 foreach ($data->preference->lessonClasses as $class) {
                     array_push($lessonClasses, [
@@ -1395,6 +1418,9 @@ class MemberController extends Controller
         //abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = json_decode($request['user']);
+        $purposeList = json_decode($request['purposeList']);
+
+
 
         //disallow duplicate email and username
         $validator = Validator::make(
@@ -1553,20 +1579,30 @@ class MemberController extends Controller
                 LessonGoals::where('member_id', $data->user_id)->delete();
                 $purpose = LessonGoals::insert($lessonGoals);
 
-                /*
-                //data sample
-                [id] => 123153
-                [valid] => 1
-                [attribute] => Member
-                [lesson_limit] => 1
-                [month] => JUN
-                [year] => 2021
-                [member_id] => 19208
-                [created_at] =>
-                [updated_at] =>
-                 */
 
-                //Member Attribute
+
+
+                /********************************************
+                            DELETE: OLD MEMBER PURPOSE
+                **********************************************/
+                Purpose::where('member_id', $data->user_id)->delete();
+
+                /********************************************
+                            CREATE MEMBER PURPOSE (Dynamic)
+                **********************************************/
+                $purposeObject = new Purpose(); 
+                $ObjectNameArray = array("IELTS", "TOEFL", "TOEFL_Primary", "TOEIC", "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+
+                foreach ($ObjectNameArray as $ObjectName) 
+                {
+                    if (isset($purposeList->{"$ObjectName"})) 
+                    {
+                        $purposeObject->saveMemberPurpose($data->user_id, $ObjectName, $purposeList);                   
+                    }                
+                }
+
+
+                //Member Attribute (update)
                 $lessonClasses = [];
                 foreach ($data->preference->lessonClasses as $class) {
                     array_push($lessonClasses, [

@@ -215,8 +215,14 @@ table.dataTable thead>tr>th.sorting_desc {
     float: left !important;
     padding-left: 20px;
 }
+
+.sub_options {
+    display: none;
+}
+
 </style>
 @endsection
+
 @section('scripts')
 @parent
 <script type="text/javascript">
@@ -298,6 +304,26 @@ table.dataTable thead>tr>th.sorting_desc {
             "paging":   false,
             fixedColumns: true
         })
+
+
+
+        $('.main_option').each(function(i, obj) {
+            if ($(this).is(':checked')) {
+                $(this).next().show();
+            } else {
+                $(this).next().hide();
+            }  
+        });       
+
+        $(document).on("click",".main_option",function() {
+            if ($(this).is(':checked')) {
+                $(this).next().show();
+            } else {
+                let element = $(this).next();
+                $(element).hide();
+                $(element).find('input').prop('checked', false);
+            }  
+        });        
     });
 
 </script>

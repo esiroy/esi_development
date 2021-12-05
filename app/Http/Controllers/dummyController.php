@@ -36,6 +36,7 @@ class dummyController extends Controller
     {
     }
 
+
     public function index(ScheduleItem $scheduleItemObj) 
     {
         $memberID = 4;
@@ -126,6 +127,36 @@ class dummyController extends Controller
                 echo "<BR>";
             }        
             echo "</pre>";                    
+
+    }
+
+    public function datesort() 
+    {    
+
+        $userid = 148;        
+        $items = DB::table("member_attribute")->where('member_id', $userid)->get();          
+
+       foreach ($items as $item) 
+       {
+         $results[] = array(
+                            'attribute' => $item->attribute,
+                            'month' => $item->month,
+                            'year' => $item->year,
+                            'date' => $item->year ."-". date("m", strtotime($item->month)) ."-01",
+                        );
+       }
+       usort($results, sortByDate('date'));
+       $reversed_results = array_reverse($results);
+
+        foreach ($reversed_results as $item ) {
+            //echo $item['updated_at'] ."<BR>";
+
+
+            echo date('d/M/Y', strtotime($item['date'] ));
+
+            echo "<BR>";
+        }
+    
 
     }
     

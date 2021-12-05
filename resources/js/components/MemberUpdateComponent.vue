@@ -1,5 +1,5 @@
-<template>
-    <div id="updateMemberForm">
+<template>    
+    <div id="updateMemberForm">        
         <form name="updateMemberForm" @submit.prevent="handleSubmit">
             <!-- [start] member information section-->
             <div id="information-section" class="section">
@@ -358,28 +358,32 @@
             <!--[start] Preferences -->
             <div id="preferred-tutor-section" class="section">
                 <div class="card-title bg-gray p-1 mt-4">
-                    <div class="pl-2 font-weight-bold small">Preferred Tutor</div>
+                    <div class="pl-2 font-weight-bold small">
+                        <!--Preferred Tutor-->
+                        Member Monthly Lesson Credits 
+                    </div>
                 </div>
                 <div class="row pt-2">
                     <div class="col-12">
 
                         <!-- Purpose -->
+                        <!--
                         <div class="row">
                             <div class="col-2 small pr-0">
                                 <label for="purpose" class="p-0 col-md-12 col-form-label">
-                                    <!--<span class="text-danger">*</span>-->
+                                    <span class="text-danger">*</span>
                                     Purpose <div class="float-right">:</div>
                                 </label>
                             </div>
                             <div class="col-8">
-
+                               
                                 <ul class="checkbox-options">
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
                                     </li>
                                     
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="CONVERSATION" v-model="user.preference.purpose.CONVERSATION"  value="CONVERSATION">
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="CONVERSATION" v-model="user.preference.purpose.CONVERSATION"  value="CONVERSATION">
                                         <label>Get conversation(communication) skill</label>
 
                                         <ul id="goalList" class="checkbox-options" v-if="user.preference.purpose.CONVERSATION">
@@ -393,14 +397,14 @@
 
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EIKEN" v-model="user.preference.purpose.ANTI_EIKEN"  value="ANTI_EIKEN">
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="ANTI_EIKEN" v-model="user.preference.purpose.ANTI_EIKEN"  value="ANTI_EIKEN">
                                         English certification exam in Japan
 
                                         <input type="text" name="extraDetails" v-if="user.preference.purpose.ANTI_EIKEN" v-model="user.preference.purposeExtraDetails.ANTI_EIKEN" class="col-3 pl-1 form-control form-control-sm d-inline-block">
                                     </li>
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EXAM" v-model="user.preference.purpose.ANTI_EXAM"  value="ANTI_EXAM"> 
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="ANTI_EXAM" v-model="user.preference.purpose.ANTI_EXAM"  value="ANTI_EXAM"> 
                                         Enter school
                                         <ul id="examLevel" v-if="user.preference.purpose.ANTI_EXAM" style="list-style-type: none;">
                                             <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="JUNIOR_HIGH"> Junior High</li>
@@ -410,19 +414,19 @@
                                     </li>
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="TOEFL" v-model="user.preference.purpose.TOEFL" value="TOEFL" > 
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="TOEFL" v-model="user.preference.purpose.TOEFL" value="TOEFL" > 
                                         TOEFL(目標スコアー 点)
                                         <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEFL" v-model="user.preference.purposeExtraDetails.TOEFL" class="col-3 pl-1 form-control form-control-sm d-inline-block">
                                     </li>
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="TOEIC" v-model="user.preference.purpose.TOEIC" value="TOEIC">  
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="TOEIC" v-model="user.preference.purpose.TOEIC" value="TOEIC">  
                                         TOEIC(目標スコアー 点)
                                         <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEIC" v-model="user.preference.purposeExtraDetails.TOEIC" class="col-3 pl-1 form-control form-control-sm d-inline-block">
                                     </li>
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="STUDY_ABROAD" v-model="user.preference.purpose.STUDY_ABROAD" value="STUDY_ABROAD"> Study Abroad
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="STUDY_ABROAD" v-model="user.preference.purpose.STUDY_ABROAD" value="STUDY_ABROAD"> Study Abroad
                                         <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.STUDY_ABROAD" >
                                             <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> Junior High</li>
                                             <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> High school</li>
@@ -432,38 +436,38 @@
 
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="business" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="business" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
                                         <input type="hidden" name="extraDetails" v-if="user.preference.purpose.BUSINESS" v-model="user.preference.purposeExtraDetails.BUSINESS">
                                     </li>
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
+                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
                                         <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
                                             v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
                                     </li>
                                 </ul>
-
-                                <!-- loop all purposes
-                                <div v-if="submitted && !$v.user.purposes.required" class="invalid-feedback" style="display: block">
+                                
+                               
+                                <div v-if="submitted && !$v.user.lessongoals.required" class="invalid-feedback" style="display: block">
                                     Member Purpose is required, Please check at least one of the choices
                                 </div>
-                                -->
-
+                                
                             </div>
 
                         </div>
+                        -->
 
 
                         <!--[start] lesson class row -->
                         <div id="lesson-class-row" class="row pt-2">
                             <div class="col-2">
-                                    <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span>
+                                <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span>
                                 Lesson Class<div class="float-right">:</div></label>                                    
                             </div>
                             
                             <div  class="col-6">
 
-                                <div class="row bg-lightgray border-bottom">
+                                <div class="row bg-lightgray border-bottom border-top">
                                     <div class="col-3 col-md-3 text-center bold">
                                         <label for="year">Year</label>
                                     </div>
@@ -508,7 +512,7 @@
                                 <!--[start] enumaration of all added timeslot -->
                                 <div class="row py-2 bg-lightgray border-bottom" v-for="(lessonClass, index) in user.preference.lessonClasses" :key="lessonClass.id" >
                                     <div class="col-3 col-md-3 text-center">
-                                            {{ lessonClass.attribute }}                                     
+                                            {{ lessonClass.attribute }}                            
                                     </div>
                                     <div year="col-3 col-md-3 text-center">{{ lessonClass.year }} {{ lessonClass.month }}</div>                                        
                                     <div class="col-3 col-md-3 text-center">     
@@ -528,6 +532,259 @@
 
             </div>
             <!--[end] Member Preferences -->
+
+
+            <!--[start] Purpose (New)-->
+            <div id="purpose-section" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Member Purpose</div>                    
+                </div>
+                <div class="row pt-2">
+                    <div class="col-2">
+                        <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span>
+                        Select Member Purpose<div class="float-right">:</div></label>                                    
+                    </div>                
+                    <div class="col-8">
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="IELTS" value="IELTS" class="main_option" v-model="purposeList.IELTS"> IELTS                               
+                            <div class="IELTS ml-4 sub_options">
+                                <input type="checkbox" name="IELTS_option[]" value="Speaking"  v-model="purposeList.IELTS_option.Speaking"> Speaking <br>
+                                <input type="checkbox" name="IELTS_option[]" value="Writing" v-model="purposeList.IELTS_option.Writing"> Writing <br>
+                                <input type="checkbox" name="IELTS_option[]" value="Reading" v-model="purposeList.IELTS_option.Reading"> Reading <br>
+                                <input type="checkbox" name="IELTS_option[]" value="Listening" v-model="purposeList.IELTS_option.Listening"> Listening <br>
+                            </div>
+                        </div>    
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="TOEFL" value="TOEFL" class="main_option" v-model="purposeList.TOEFL"> TOEFL
+                            <div class="TOEFL ml-4 sub_options">
+                                <input type="checkbox" name="TOEFL_option[]" value="Speaking" v-model="purposeList.TOEFL_option.Speaking"> Speaking <br/>
+                                <input type="checkbox" name="TOEFL_option[]" value="Writing" v-model="purposeList.TOEFL_option.Writing"> Writing <br/>
+                                <input type="checkbox" name="TOEFL_option[]" value="Reading" v-model="purposeList.TOEFL_option.Reading"> Reading <br/>
+                                <input type="checkbox" name="TOEFL_option[]" value="Listening" v-model="purposeList.TOEFL_option.Listening"> Listening <br/>                                        
+                            </div>
+                        </div>
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="TOEFL_Primary" value="TOEFL Primary" v-model="purposeList.TOEFL_Primary"> TOEFL Primary
+                        </div>
+
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="TOEIC" value="TOEIC" class="main_option"  v-model="purposeList.TOEIC"> TOEIC
+                            <div class="TOEIC ml-4 sub_options">
+                                <input type="checkbox" name="TOEIC_option[]" value="Speaking" v-model="purposeList.TOEIC_option.Speaking"> Speaking <br/>
+                                <input type="checkbox" name="TOEIC_option[]" value="Writing" v-model="purposeList.TOEIC_option.Writing"> Writing <br/>
+                                <input type="checkbox" name="TOEIC_option[]" value="Reading" v-model="purposeList.TOEIC_option.Reading"> Reading <br/>
+                                <input type="checkbox" name="TOEIC_option[]" value="Listening" v-model="purposeList.TOEIC_option.Listening"> Listening <br/>                                       
+                            </div>
+                        </div>
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="EIKEN" value="EIKEN" class="main_option" v-model="purposeList.EIKEN"> EIKEN(英検）
+                            <div class="EIKEN ml-4 sub_options">
+                                <input type="checkbox" name="EIKEN_option[]" value="Grade 5" v-model="purposeList.EIKEN_option.Grade_5"> Grade 5 <br/>
+                                <input type="checkbox" name="EIKEN_option[]" value="Grade 4" v-model="purposeList.EIKEN_option.Grade_4"> Grade 4 <br/>
+                                <input type="checkbox" name="EIKEN_option[]" value="Grade 3"  v-model="purposeList.EIKEN_option.Grade_3"> Grade 3 <br/>
+                                <input type="checkbox" name="EIKEN_option[]" value="Grade pre 2" v-model="purposeList.EIKEN_option.Grade_pre_2"> Grade pre 2 <br/>   
+                                <input type="checkbox" name="EIKEN_option[]" value="Grade 2" v-model="purposeList.EIKEN_option.Grade_2"> Grade 2 <br/>
+                                <input type="checkbox" name="EIKEN_option[]" value="Grade pre 1" v-model="purposeList.EIKEN_option.Grade_pre_1"> Grade pre 1 <br/>
+                                <input type="checkbox" name="EIKEN_option[]" value="Grade 1" v-model="purposeList.EIKEN_option.Grade_1"> Grade 1 <br/>
+                            </div>
+                        </div>
+
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="TEAP" value="TEAP" class="main_option" v-model="purposeList.TEAP"> TEAP
+                            <div class="TEAP ml-4 sub_options">
+                                <input type="checkbox" name="TEAP_option[]" value="Speaking" v-model="purposeList.TEAP_option.Speaking"> Speaking <br/>
+                                <input type="checkbox" name="TEAP_option[]" value="Writing" v-model="purposeList.TEAP_option.Writing"> Writing <br/>                                     
+                            </div>
+                        </div>      
+
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="BUSINESS" value="BUSINESS" class="main_option" v-model="purposeList.BUSINESS"> Business
+                            <div class="BUSINESS ml-4 sub_options">
+                                <input type="checkbox" name="BUSINESS_option[]" value="Basic" v-model="purposeList.BUSINESS_option.Basic"> Basic <br/>
+                                <input type="checkbox" name="BUSINESS_option[]" value="Intermediate" v-model="purposeList.BUSINESS_option.Intermediate"> Intermediate <br/>
+                                <input type="checkbox" name="BUSINESS_option[]" value="Advance" v-model="purposeList.BUSINESS_option.Advance"> Advance <br/>
+                            </div>
+                        </div>                        
+
+
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="BUSINESS_CAREERS" value="BUSINESS CAREERS" class="main_option"  v-model="purposeList.BUSINESS_CAREERS"> Business Careers(職業別英語）
+                            <div class="BUSINESS_CAREERS ml-4 sub_options">
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Medicine" v-model="purposeList.BUSINESS_CAREERS_option.Medicine"> Medicine <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Nursing" v-model="purposeList.BUSINESS_CAREERS_option.Nursing"> Nursing <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Pharmaceutical" v-model="purposeList.BUSINESS_CAREERS_option.Pharmaceutical"> Pharmaceutical <br/>        
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Accounting" v-model="purposeList.BUSINESS_CAREERS_option.Accounting"> Accounting <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Legal Professionals" v-model="purposeList.BUSINESS_CAREERS_option.Legal_Professionals"> Legal Professionals <br/>        
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Finance" v-model="purposeList.BUSINESS_CAREERS_option.Finance"> Finance <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Technology" v-model="purposeList.BUSINESS_CAREERS_option.Technology"> Technology <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Commerce" v-model="purposeList.BUSINESS_CAREERS_option.Commerce"> Commerce <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Tourism" v-model="purposeList.BUSINESS_CAREERS_option.Tourism"> Tourism <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Cabin Crew" v-model="purposeList.BUSINESS_CAREERS_option.Cabin_Crew"> Cabin Crew <br/>
+                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Marketing and Advertising" v-model="purposeList.BUSINESS_CAREERS_option.Marketing_and_Advertising"> Marketing and Advertising <br/>                                
+                            </div>
+                        </div>                        
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="DAILY_CONVERSATION" value="DAILY CONVERSATION" class="main_option"  v-model="purposeList.DAILY_CONVERSATION"> Daily Conversation
+                            <div class="DAILY_CONVERSATION ml-4 sub_options">
+                                <input type="checkbox" name="DAILY_CONVERSATION_option[]" value="Basic" v-model="purposeList.DAILY_CONVERSATION_option.Basic"> Basic <br/>
+                                <input type="checkbox" name="DAILY_CONVERSATION_option[]" value="Intermediate" v-model="purposeList.DAILY_CONVERSATION_option.Intermediate"> Intermediate <br/>
+                                <input type="checkbox" name="DAILY_CONVERSATION_option[]" value="Advance" v-model="purposeList.DAILY_CONVERSATION_option.Advance"> Advance <br/>
+
+                            </div>
+                        </div>
+
+
+                        <div class="checkbox-options">
+                            <input type="checkbox" name="OTHERS" value="OTHERS" class="main_option"  v-model="purposeList.OTHERS"> Others
+                            <div class="others ml-4 sub_options">
+                                <input type="text" name="OTHERS_value" value="OTHERS" class="col-md-8 form-control form-control-sm " v-model="purposeList.OTHERS_value">  
+                            </div>
+                        </div>                        
+
+                    </div>
+                </div>
+            </div>
+            <!--[end]-->
+
+
+            <!--[start] Exam (New)-->
+            <div id="examination-section" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Examination Scores <small>(all fields required)</small> </div>
+                </div>
+
+                <div class="row pt-2">
+                    <div class="col-2">                       
+                        <div class="pl-2 small"> <span class="text-danger">*</span> Examination Date </div>
+                    </div>
+                    <div class="col-10">
+                        <div class="mb-2 ">
+                            <datepicker                        
+                                id="examDate" 
+                                name="examDate"
+                                v-model="examDate"
+                                :value="examDate"
+                                :format="examDateFormatter"
+                                :input-class="[ 'form-control form-control-sm col-md-3 ']"
+                                :language="ja"
+                            ></datepicker>  
+
+                        </div>
+                    </div>
+                </div>            
+
+                <div class="row pt-2">
+                    <div class="col-2">                       
+                        <div class="pl-2 small"> <span class="text-danger">*</span> Type of Examination </div>
+                    </div>                   
+                    <div class="col-10">
+                        <select id="examType" name="examType" v-model="examType" class="form-control form-control-sm pl-0  col-md-3">
+                            <option value="" class="mx-0 px-0">Select Examination Type</option>
+                            <option value="IELTS" class="mx-0 px-0">IELTS</option>
+                            <option value="TOEFL">TOEFL iBT</option>
+                            <option value="TOEFL_Junior">TOEFL Junior</option>
+                            <option value="TOEFL_Primary_Step_1">TOEFL Primary Step 1</option>
+                            <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>
+                            <option value="TOEIC_Listening_and_Reading">TOEIC Listening and Reading</option>
+                            <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                            <option value="EIKEN">EIKEN(英検）</option>
+                            <option value="TEAP">TEAP</option>
+                            <option value="Other_Test">Other Test</option>
+                        </select>       
+                    </div>                     
+                </div>
+            </div>           
+
+            <div id="examScoreContainer" class="row pt-2">
+                <div class="col-12">  
+                    <!--[start] Dynamic Examination Scores -->
+                    <IELTScoreComponent :examScore="examScore"></IELTScoreComponent>
+                    <ToeflScoreComponent :examScore="examScore"></ToeflScoreComponent>
+                    <ToeflJuniorScoreComponent :examScore="examScore"></ToeflJuniorScoreComponent>
+                    <ToeflPrimaryStep1ScoreComponent :examScore="examScore"></ToeflPrimaryStep1ScoreComponent>
+                    <ToeflPrimaryStep2ScoreComponent :examScore="examScore"></ToeflPrimaryStep2ScoreComponent>
+                    <ToeicListeningAndReadingScoreComponent :examScore="examScore"></ToeicListeningAndReadingScoreComponent>
+                    <ToeicSpeakingScoreComponent :examScore="examScore"></ToeicSpeakingScoreComponent>
+                    <EikenScoreComponent :examScore="examScore"></EikenScoreComponent>
+                    <TeapScoreComponent :examScore="examScore"></TeapScoreComponent>                                    
+                    <!--[end] Dynamic Examination Scores -->
+
+                    <!--[start] Other-->
+                    <div id="ScoresComponent" class="ScoresComponent">
+                        <!--[start] TEAP- -->
+                        <div id="examination-score-Other_Test" class="section examScoreHolder">
+                            <div class="row pt-2">
+                                <div class="col-2">                       
+                                    <div class="pl-2 small  mb-2"> <span class="text-danger">*</span> Score </div>             
+                                </div>
+                                <div class="col-10">            
+                                    <input id="otherScore" name="otherScore" v-model="examScore.Other_Test.otherScore" class="form-control form-control-sm col-md-3">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--[end]-->
+                </div>
+            </div>
+
+
+            <div class="row pt-2">
+                <div class="col-2">
+                    
+                </div>
+                <div class="col-10">
+                    <button id="addExamScore" v-on:click="addExamScore" class="btn btn-primary btn-sm">Add Score</button>
+                    <br> <small class="text-secondary"> <span class="text-danger">*</span> Saves on the fly</small>
+                </div>
+            </div>            
+            
+
+
+
+
+            <div class="row pt-2">
+                <div class="col-12">
+                    <hr>
+                </div>
+            </div>
+
+            <div class="row pt-2">
+                <div class="col-2">                       
+                    <div class="pl-2 font-weight-bold small"> Recent Scores </div>
+                </div>
+
+                <div class="col-10">
+
+                    <div class="latest-score mb-3">
+                        Exam Date: {{ this.latestScore.examDate }} <br/>
+                        Exam Type:  {{ this.latestScore.examType }} <br/>
+
+                        <div v-for="(value, name) in this.latestScore.examScores" :key="name">
+                           {{ capitalizeFirstLetter(name) }}: {{ value }}
+                        </div>
+                        <br/> 
+                    </div>
+
+                    <b-button class="btn btn-secondary btn-sm" @click="showExamHistoryModal">View All Exam History</b-button>
+
+                    <b-modal id="examHistory" ref="examHistoryModal" title="Exam Scores">
+                        <input type="hidden" id="memberExamUserID" v-model="memberinfo.user_id">
+                        <div id="memberExamScores">
+                            <span v-html="this.examScores"></span>
+                        </div>
+                    </b-modal>
+                </div>
+            </div>
+            <!--[end]-->
+
 
 
             <!--[start] Lesson Details -->
@@ -858,6 +1115,18 @@
 </template>
 
 <script>
+
+import IELTScoreComponent from "./scores/IELTScoreComponent.vue";
+import ToeflScoreComponent from "./scores/ToeflScoreComponent.vue";
+import ToeflJuniorScoreComponent from "./scores/ToeflJuniorScoreComponent.vue";
+import ToeflPrimaryStep1ScoreComponent from "./scores/ToeflPrimaryStep1ScoreComponent.vue";
+import ToeflPrimaryStep2ScoreComponent from "./scores/ToeflPrimaryStep2ScoreComponent.vue";
+import ToeicListeningAndReadingScoreComponent from "./scores/ToeicListeningAndReadingScoreComponent.vue";
+import ToeicSpeakingScoreComponent from "./scores/ToeicSpeakingScoreComponent.vue";
+import EikenScoreComponent from "./scores/EikenScoreComponent.vue";
+import TeapScoreComponent from "./scores/TeapScoreComponent.vue";
+
+
 import Vuelidate from "vuelidate";
 import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
 Vue.use(Vuelidate);
@@ -866,11 +1135,16 @@ import * as Moment from 'moment'
 import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale';
 
-
 export default {
     name: "app",
     components: {
-        Datepicker
+        Datepicker,
+        IELTScoreComponent, 
+        ToeflScoreComponent, ToeflJuniorScoreComponent,
+        ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
+        ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, 
+        EikenScoreComponent,
+        TeapScoreComponent,
     },
     props: {
         agentinfo: {
@@ -885,7 +1159,13 @@ export default {
         latestreportcard: {
             type: Object,
         },
-		purposes: {
+		purpose: {
+			type: Array
+		},
+        memberlatestexamscore: {
+            type: Object
+        },
+		lessongoals: {
 			type: Array
 		},
 		lessonclasses: {
@@ -917,8 +1197,173 @@ export default {
             ja: ja, 
 
             //list of main tutors
-            mainTutors: [],
-            
+            mainTutors: [],        
+
+            //Exam Date (Form Entry)
+            examDate: "",
+            uExamDate: "",
+            examType: "",
+            examScore: {
+
+                IELTS: {
+                    overallBandScore : "",
+                    speakingBandScore : "",
+                    writingBandScore : "",
+                    readingBandScore : "",
+                    listeningBandScore : ""                
+                }, 
+                TOEFL: {
+                    total: "",
+                    speakingScore: "",
+                    writingScore: "",
+                    readingScore: "",
+                    listeningScore: "",
+                },
+                TOEFL_Junior: {
+                    total: "",
+                    listening: "",
+                    languageFormAndMeaning: "",
+                    reading: ""
+                },
+                TOEFL_Primary_Step_1: {
+                    total: "",
+                    reading: "",                    
+                    listening: "",                    
+                },
+                TOEFL_Primary_Step_2: {
+                    total: "",
+                    reading: "",                    
+                    listening: "",                    
+                },
+                TOEIC_Listening_and_Reading: {
+                    total: "",
+                    reading: "",                    
+                    listening: "",                 
+                },
+                TOEIC_Speaking: {
+                    speaking: "",
+                },
+                EIKEN: {
+                    grade_5: "",
+                    grade_4: "",
+                    grade_3_1st_stage: "",
+                    grade_pre_2_1st_stage: "",
+                    grade_2_1st_stage: "",
+                    grade_pre_1_1st_stage: "",
+                    grade_1_1st_stage: "",
+
+                    grade_3_2nd_stage: "",
+                    grade_pre_2_2nd_stage: "",
+                    grade_2_2nd_stage: "",
+                    grade_pre_1_2nd_stage: "",
+                    grade_1_2nd_stage: "",                    
+                },
+                TEAP: {
+                    total: "",
+                    speakingScore: "",
+                    writingScore: "",
+                    readingScore: "",
+                    listeningScore: "",                
+                },
+                Other_Test: {
+                    otherScore: "",
+                }
+            }, 
+
+            //Latest Score (show recently added scores)
+            latestScore: {
+                examDate: "",
+                examType: "",
+                examScores: "",                
+            },
+
+            //list exam scores (paginated)
+            examScores: [],
+
+            //purpose List
+            purposeList: {
+                IELTS:  "",
+                IELTS_option:
+                {
+                        Speaking: "",
+                        Writing: "",
+                        Reading: "",
+                        Listening: "",                        
+                },
+                TOEFL: "",
+                TOEFL_option: {
+                        Speaking: "",
+                        Writing: "",
+                        Reading: "",
+                        Listening: "",                
+                },
+
+                TOEFL_Primary: "",
+
+                TOEIC: "",
+                TOEIC_option: {
+                        Speaking: "",
+                        Writing: "",
+                        Reading: "",
+                        Listening: "",                
+                },
+
+                EIKEN: "",
+                EIKEN_option: {
+                        EIKEN_Grade_5: "",
+                        EIKEN_Grade_4: "",
+                        EIKEN_Grade_3: "",
+                        EIKEN_Grade_pre_2: "",
+                        EIKEN_Grade_2: "",
+                        EIKEN_Grade_pre_1: "",
+                        EIKEN_Grade_1: "",
+                },
+                TEAP: "",
+                TEAP_option:
+                {
+                        Speaking: "",
+                        Writing: "",
+                        Reading: "",
+                        Listening: "",                        
+                },     
+
+                BUSINES: "",
+                BUSINESS_option:
+                {
+                        Basic: "",
+                        Intermediate: "",
+                        Advance: "",                               
+                },                  
+
+                BUSINESS_CAREERS: "",
+                BUSINESS_CAREERS_option:
+                {
+                        Medicine: "",
+                        Nursing: "",
+                        Pharmaceutical: "",          
+                        Accounting: "",
+                        Legal_Professionals: "",
+                        Finance: "",       
+                        Technology: "",
+                        Commerce: "",
+                        Tourism: "",       
+                        Cabin_Crew: "",
+                        Marketing_and_Advertising: "",                                                                                                                        
+                },  
+
+                DAILY_CONVERSATION: "",
+                DAILY_CONVERSATION_option:
+                {
+                        Basic: "",
+                        Intermediate: "",
+                        Advance: "",                               
+                },
+
+                OTHERS: "",
+                OTHERS_value: "",
+            },
+
+            //users
             user: {
                 agent_id: "",
 				agent_name_en: "",
@@ -976,7 +1421,7 @@ export default {
                     },
 
                     //array list of purpose
-                    purposes: [],
+                    lessongoals: [],
                     lesson: {
                         class: {
                             month:  "",
@@ -1025,13 +1470,23 @@ export default {
                 },
 
                 desiredScheduleList: [],
-              
             },
             
+
+
         };
     },      
     mounted: function () 
 	{
+
+        //console.log(this.memberlatestexamscore, "latest score");
+
+        if (this.memberlatestexamscore.original.success == true) {
+            this.latestScore.examDate = this.memberlatestexamscore.original.examDate;
+            this.latestScore.examType = this.memberlatestexamscore.original.examType;
+            this.latestScore.examScores = JSON.parse(this.memberlatestexamscore.original.examScores);
+        }        
+
         try {
             this.user.agent_id	= this.agentinfo.agent_id;  
         } catch(err) {
@@ -1045,7 +1500,7 @@ export default {
         }
 
         //console.log(this.userinfo);
-        console.log(this.latestreportcard);
+        //console.log(this.latestreportcard);
 
         //get user
         this.user.user_id                       = this.userinfo.id;
@@ -1116,11 +1571,9 @@ export default {
             this.user.monthlyReport.agent = "No"; 
         }
 
-
-		//Lesson Goals (purpose)
-       
+		//Lesson Goals (purpose) (OLD Scheme)       
 		let item  = [];
-		for (item of this.purposes) {	
+		for (item of this.lessongoals) {	
 
 			if (item.purpose !== '' || item.purpose !== null) this.user.preference.purpose[item.purpose] = true;  
             
@@ -1138,23 +1591,67 @@ export default {
             }
 		}
 
-	
+        let purposeItem  = [];
+        let purposeOptionItem = [];
+        let purposeOptionItems = [];
+
+		for (purposeItem of this.purpose) 
+        {	
+
+
+            let mainItemStr = purposeItem.purpose.replace(/\s+/g, '_');
+
+            this.purposeList.[mainItemStr] = mainItemStr;        
+
+            if (purposeItem.purpose.toLowerCase() == "others" ) 
+            {
+                //purposeItem.purpose_options['others'] = purposeItem.purpose_options;
+
+                this.purposeList.OTHERS_value = purposeItem.purpose_options;
+
+            } else {
+            
+
+                purposeOptionItems = JSON.parse( purposeItem.purpose_options);
+
+                if (purposeOptionItems === null || purposeOptionItems === "null" || purposeOptionItems === "") 
+                {
+                   
+                } else {
+
+                    //(purposeOptionItems);
+
+                   
+                    for (purposeOptionItem of purposeOptionItems) 
+                    {	
+                      
+                        let purposeOptionItemStr = purposeOptionItem.replace(/\s+/g, '_');
+
+                        //console.log(purposeItem.purpose + " " + purposeOptionItemStr)
+
+                        this.purposeList.[mainItemStr +"_option"].[purposeOptionItemStr] = purposeOptionItemStr;
+
+                    }
+               
+
+                }            
+            
+            }
+
+        }
+        //console.log(this.purposeList);
 		//Point Purchase
 		this.user.pointPurchase	= this.memberinfo.point_purchase_type;
-
 		//enumerate lesson classes
 		this.user.preference.lessonClasses = this.lessonclasses;
-
 		//desired schedule
 		this.user.desiredScheduleList = this.desiredschedule;
-
-		this.propagateMainTutorOptions(); //25 minutes is default			
+		this.propagateMainTutorOptions(); //25 minutes is default	
     },
     validations: 
     {
         user: 
-        {           
-            
+        {   
             first_name: { 
                 required                
             },
@@ -1203,7 +1700,7 @@ export default {
                 required
             }
 
-            /*purposes: required */
+            /*lessongoals: required */
         }
     },
     methods: {
@@ -1224,7 +1721,8 @@ export default {
             axios.post("/api/update_member?api_token=" + this.api_token, 
             {
                 method          : "POST",
-                user            : JSON.stringify(this.user)
+                user            : JSON.stringify(this.user),
+                purposeList     : JSON.stringify(this.purposeList)
             })
             .then(response => 
             {
@@ -1245,6 +1743,81 @@ export default {
             });
                         
         },
+        addExamScore(event) 
+        {
+
+            axios.post("/api/addMemberExamScore?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                memberID        : this.memberinfo.user_id,
+                examDate        : this.uExamDate,
+                examType        : this.examType,
+                examScore       : this.examScore,                       
+            })
+            .then(response => 
+            {              
+                if (response.data.success === false) 
+                {
+                    alert (response.data.message);
+                } else {
+                    //successfully added
+                    alert (response.data.message);
+
+                    this.latestScore.examDate = response.data.examDate;
+                    this.latestScore.examType = response.data.examType;                    
+                    this.latestScore.examScores = JSON.parse(response.data.examScores);
+                   
+
+                    //reset
+                    this.examDate = "";
+                    this.examType = "";
+                    const parentElement = document.querySelector('#examScoreContainer');
+                    let allChildren = parentElement.querySelectorAll("select");
+                    allChildren.forEach(item => {            
+                        //alert (item.id)                                
+                        let dropDown = document.getElementById(item.id);
+                        dropDown.selectedIndex = "";
+                    });
+                    
+                    this.$forceUpdate();
+                }
+
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                //console.log(error);
+            }); 
+
+            event.preventDefault()
+        },
+        showExamHistoryModal() 
+        {            
+            this.$refs['examHistoryModal'].show(); 
+
+            axios.post("/api/getAllMemberExamScore?page=1&api_token=" + this.api_token, 
+            {
+                method       : "POST",
+                limit        : 5,
+                memberID     : this.memberinfo.user_id,
+            })
+            .then(response => 
+            {              
+                if (response.data.success === false) {
+                    alert (response.data.message);                    
+                } else {
+
+                    this.examScores = response.data.scores;
+                     
+                }
+			}).catch(function(error) {               
+                alert("Error " + error);                
+            });
+            
+
+           
+            this.$forceUpdate();
+
+        },
         getAgentName() {
             axios.post("/api/get_agent_name?api_token=" + this.api_token, 
             {
@@ -1259,12 +1832,9 @@ export default {
                 } else {
                     this.user.agent_name_en = response.data.firstname + " " + response.data.lastname;
                 }
-
-			}).catch(function(error) {
-                // handle error
-                alert("Error " + error);
-                //console.log(error);
-            });            
+			}).catch(function(error) {               
+                alert("Error " + error);                
+            });
         },
         checkIsValid (val, event) 
         {
@@ -1283,7 +1853,12 @@ export default {
             let fdate = Moment(date).format('YYYY年 MM月 D日');
             return fdate;
         },       
-
+        examDateFormatter(date) 
+        {       
+            let fdate           = this.dateFormatter(date);
+            this.uExamDate      = date;
+            return fdate;
+        },
         memberSinceFomattter(date) {
             let fdate                   = this.dateFormatter(date);
             this.user.umember_since       = date; 
@@ -1326,13 +1901,14 @@ export default {
         {            
             //console.log(this.user.preference.lessonClasses); //check all the classess added
             
-            if (this.user.attribute) {
-                
+            if (this.user.attribute) 
+            {   
                 let year =  this.user.preference.lesson.class.year;
                 let month = this.user.preference.lesson.class.month;
                 let lesson_limit =  this.user.preference.lesson.class.lesson_limit;
 
-                if (year && month && lesson_limit) {
+                if (year && month && lesson_limit) 
+                {
                     const result =  this.user.preference.lessonClasses.find(item => item.year === year && item.month === month);
                     if (result) {
                         alert ("Selected item is already in the list");
@@ -1344,7 +1920,9 @@ export default {
                             month: this.user.preference.lesson.class.month,
                             lesson_limit:  this.user.preference.lesson.class.lesson_limit
                         });
-                    }
+                    }                    
+                  
+  
                 } else {
                     alert ("Incomplete Fields");
                     return false;
@@ -1449,7 +2027,14 @@ export default {
             
             
             this.user.eikenList.push(["40-1"]);
-        }
+        },
+        capitalizeFirstLetter(string) {
+            let newString = string.charAt(0).toUpperCase() + string.slice(1);
+            newString = newString.replace(/_/g, " ")
+
+            //add space before big letters
+            return newString.replace(/([A-Z])/g, ' $1').trim(); 
+        }        
 
     },
 
@@ -1457,7 +2042,8 @@ export default {
         years () {
             const year = new Date().getFullYear()
             return Array.from({length: (year - 2000) + 1}, (value, index) => 2010 + index)
-        }
+        },
+        
     },      
   
 };

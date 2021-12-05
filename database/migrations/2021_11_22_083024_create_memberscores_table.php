@@ -17,8 +17,8 @@ class CreateMemberscoresTable extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->date('exam_date');
-            $table->string('exam_type', 100)->nullable();
-            $table->string('exam_score', 200)->nullable();                        
+            $table->string('exam_type', 100);
+            $table->text('exam_scores');
             $table->timestamps();
         });
     }

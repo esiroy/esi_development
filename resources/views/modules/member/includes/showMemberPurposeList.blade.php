@@ -11,7 +11,7 @@
             @if (strtolower($list->purpose) == "others")
                 <strong>{{ $list->purpose }}</strong>
                 <div class="option_value_wrapper mb-2 ml-2">
-                    <span class="option_value">
+                    <span class="input_value">
                         {{ $list->purpose_options }}
                     </span>
                 </div>

@@ -15,7 +15,9 @@ class MemberExamController extends Controller
     public function getAllMemberExamScore(Request $request) 
     {
         $limit = $request->get('limit');        
-        $scores = MemberExamScore::where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->paginate($limit);
+        $memberID = isset($request['memberID']) ? $request['memberID'] : Auth::user()->id;
+
+        $scores = MemberExamScore::where('user_id', $memberID)->orderBy('id', 'DESC')->paginate($limit);
         $links = $scores->links();
         if ($scores) {
             return Response()->json([
@@ -32,43 +34,59 @@ class MemberExamController extends Controller
     }
 
 
-    public function getMemberLatestScore() 
+    public function getMemberLatestScore(Request $request, MemberExamScore $memberExamScore) 
     {
-        $score = MemberExamScore::where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->first();
-        if ($score) {
-            return Response()->json([
-                "success" => true,
-                'examDate' => $score->exam_date,
-                'examType' => $score->exam_type,
-                'examScore' => $score->exam_score,                
-                "message" => "member score fetched",
-            ]);
-        } else {
-            return Response()->json([
-                "success" => false,
-                "message" => "No record found for member",
-            ]);
-        }
+
+        $memberID = isset($request['memberID']) ? $request['memberID'] : Auth::user()->id;
+        return $memberExamScore->getMemberLatestScore($memberID );    
     }
 
-    public function addMemberExamScore(Request $request) 
+    public function addMemberExamScore(Request $request, MemberExamScore $memberExamScore) 
     {
-        $memberExam = MemberExamScore::create([
-            'user_id'   => Auth::user()->id,
-            'exam_date' => $request['examDate'],
-            'exam_type' => $request['examType'],
-            'exam_score' => $request['examScore']
-        ]);
+        $memberID   = (isset($request['memberID']))? $request['memberID'] : Auth::user()->id;
 
-        if ($memberExam) {
-            return Response()->json([
-                "success" => true,
-                "message" => "member score added",
-            ]);
+        $examDate = $request['examDate'];
+        $examType = $request['examType'];
+        
+        if (!($examDate == "" || $examType == ""))
+        {
+
+            $examTypeIndex = str_replace(" ", "-", $examType);
+
+            $scores = $request['examScore']["$examTypeIndex"];
+            $json_scores = json_encode($request['examScore']["$examTypeIndex"]);
+
+            if ($memberExamScore->isScoresMissing($scores) == true) 
+            {
+
+                return Response()->json([             
+                    "success" => false,
+                    "message" => "All fields are required, please check if the examination date, type and scores are all filled up",
+                ]);
+
+            } else {
+                $data = [
+                    "examDate"      => $examDate,
+                    "examType"      => $examType,
+                    "examScores"    => $json_scores
+                ];
+                $memberExamScore->addScore($memberID, $data);
+
+                return Response()->json([             
+                    "success" => true,
+                    "message" => "Member Score Added",
+                    "examDate"      => ESIDateFormat($examDate),
+                    "examType"      => str_replace("_", " ", $examType),
+                    "examScores"    => $json_scores
+                ]);
+
+
+            }
+
         } else {
             return Response()->json([
                 "success" => false,
-                "message" => "Error white adding score",
+                "message" => "All fields are required, please check if the examination date, type and scores are all filled up",
             ]);
         }
     }

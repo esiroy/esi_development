@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::resource('dump', 'dummyController');
+Route::get('datesort', 'dummyController@datesort');
 Route::get('test', 'dummyController@test');
 Route::get('test/dropzone', 'dummyController@dropzone');
 Route::get('test/testemailWriting', 'dummyController@testemailWriting');

@@ -10,22 +10,56 @@
 
             <div class="modal-body">
                 <form name="submitFormExamScore" id="submitFormExamScore" method="POST" onsubmit="return false">
-                    <div class="mt-2">
-                        Examination Date 
 
-                        <input type="date" id="examDate" name="examDate" value="{{ date('Y-m-d') }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" 
-                                class="inputDate hasDatepicker form-control form-control-sm col-12" data-date="{{ date('Y年 m月 d日') }}">
+                    <div class="examMenu">
+
+                        <div class="row">
+                            <div class="col-md-8">                            
+                                <span class="text-danger">*</span>  Examination Date 
+                                <input type="date" id="examDate" name="examDate" value="{{ date('Y-m-d') }}" min="2000-01-01" data-date-format="YYYY年 M月 DD日" 
+                                    class="inputDate hasDatepicker form-control form-control-sm col-md-12" data-date="{{ date('Y年 m月 d日') }}">
+                                
+                            </div>
+                        </div>
+
+                        <div class="row pt-2">
+                            <div class="col-md-8">
+                                <span class="text-danger">*</span>  Examination Type
+                                <select id="examType" name="examType" class="form-control form-control-sm pl-0 col-md-12" required>
+                                    <option value="" class="mx-0 px-0">Select Examination Type</option>
+                                    <option value="IELTS" class="mx-0 px-0">IELTS</option>
+                                    <option value="TOEFL">TOEFL iBT</option>
+                                    <option value="TOEFL_Junior">TOEFL Junior</option>
+                                    <option value="TOEFL_Primary_Step_1">TOEFL Primary Step 1</option>
+                                    <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>                                    
+                                    <option value="TOEIC_Listening_and_Reading">TOEIC Listening & Reading</option>                            
+                                    <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                                    <option value="EIKEN">EIKEN(英検）</option>
+                                    <option value="TEAP">TEAP</option>
+                                    <option value="Other_Test">Other Test</option>
+                                </select>                          
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="mt-2">
-                        Examination Type
-                        <input type="text" id="examType" name="examType" value="" maxlength="100"required class="form-control form-control-sm">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @include('modules.member.includes.scores.IELTS')
+                            @include('modules.member.includes.scores.TOEFL')
+                            @include('modules.member.includes.scores.TOEFL_Junior')
+                            @include('modules.member.includes.scores.TOEFL_Primary_Step_1')
+                            @include('modules.member.includes.scores.TOEFL_Primary_Step_2')
+                            @include('modules.member.includes.scores.TOEIC_Listening_and_Reading')
+                            @include('modules.member.includes.scores.EIKEN')
+                            @include('modules.member.includes.scores.TOEIC_Speaking')
+                            @include('modules.member.includes.scores.TEAP')
+                            @include('modules.member.includes.scores.OTHERS')
+
+                        </div>
+
                     </div>
 
-                    <div class="mt-2">
-                        Examination Score
-                        <input type="text" id="examScore" name="examScore" value="" maxlength="200" required class="form-control form-control-sm">
-                    </div>
 
                     <div class="mt-2">
                         <div class="float-right">
@@ -33,8 +67,13 @@
                             <input id="submitScore" type="submit" value="Submit Score" class="btn btn-sm  btn-primary">
                         </div>
                     </div>
+
+                    </div>
+
                 </form>
             </div>
+
+           
             
         </div>
     </div>
@@ -75,5 +114,11 @@
         color: black;
         opacity: 1;
     }
+
+    .examScoreHolder {
+        display: none;
+    }
+
+    
 </style>
 @endsection

@@ -187,6 +187,15 @@ if (! function_exists('formatStatus')) {
     }
 }
 
+if (! function_exists('formatWords')) {
+    function formatWords($string) {
+       $fstr = str_replace('_', ' ', $string);
+       $spaced_fstr = preg_replace('/(?<! )(?<!^)(?<![A-Z])[A-Z]/', ' $0', $fstr);
+       return ucwords($spaced_fstr);
+    }
+}
+
+
 
 if (! function_exists('createAttributes')) {
     function createAttributes() {

@@ -19,7 +19,7 @@ use App\Models\UserImage;
 use App\Models\MemoReply;
 use App\Models\ChatSupportHistory;
 use App\Models\Purpose;
-
+use App\Models\MemberExamScore;
 
 use Auth, Hash;
 use Carbon\Carbon;
@@ -445,6 +445,16 @@ class MemberController extends Controller
         $goals = new LessonGoals();
         $lessonGoals = $goals->getLessonGoals($memberID);
 
+
+        //get purose (new)       
+        $purposeModel = new Purpose();
+        $purpose = $purposeModel->getMemberPurpose($memberID);
+        
+
+        $memberExamScoreModel = new MemberExamScore();
+        $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
+
+
         //MemberAttribute - (lessonClasses)
         $memberAttribute = new MemberAttribute();
         
@@ -456,7 +466,7 @@ class MemberController extends Controller
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
-            'lessonGoals', 'lessonClasses', 'desiredSchedule'));
+            'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore'));
 
     }
 
