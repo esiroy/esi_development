@@ -164,13 +164,12 @@
         $(document).on("click",".sub_options input",function() 
         {
             if ($(this).prop('checked') == true)
-            {
-                console.log("test click sub options")
+            {             
                 let optionsCount = $('.sub_options').find('input').filter(':checked').length
 
                 if (optionsCount > 3) 
                 {                
-                    alert ("You can only select 3 options");
+                    alert ("You can only select 3 sub options");
                     $( this ).prop( "checked", false );
                     return false;                    
                 }
