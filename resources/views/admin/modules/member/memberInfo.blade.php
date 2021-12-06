@@ -17,7 +17,7 @@
             <!--Member List -->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
-                   Member Details
+                   Member Details 
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -149,6 +149,95 @@
                                         </td>
                                     </tr>
 
+
+
+
+                                    <tr>
+                                        <th colspan="13"> Recent Exam Score  </th>
+                                    </tr>
+
+
+                                     <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>
+                                            Recent Exam Score 
+                                        </td>
+                                        <td> : </td>
+                                        <td colspan="9">                                        
+                                            <div class="examDate-holder">
+                                                <span class="font-weight-bold">Exam Date : </span>
+                                                {{ $memberLatestExamScore->original['examDate'] }}
+                                            </div>
+                                            <div class="examType-holder">
+                                                <span class="font-weight-bold">Exam Type : </span> 
+                                                {{ $memberLatestExamScore->original['examType'] }}
+                                            </div>
+                                            @foreach (json_decode($memberLatestExamScore->original['examScores']) as $key => $score)
+                                                <div class="mt-1"> 
+                                                    <strong>{{ formatWords($key) . " Score "}}</strong> : {{ $score }}
+                                                </div>
+                                            @endforeach
+                                        </td>                                                                                
+                                    </tr>
+
+                                    <tr valign="top">
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>                                       
+                                        <td> : </td>
+                                         <td colspan="9">
+                                            <div id="viewAllExamScores">                                              
+                                                <button type="button" class="btn btn-secondary">List of Exam Scores</button>                                                
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th colspan="13">Purpose </th>
+                                    </tr>
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>
+                                            List of Purpose 
+                                        </td>
+                                        <td>:</td>
+                                        <td>
+                                            <div>
+                                                @foreach ($purpose as $list)
+                                                    @php 
+                                                        $ctr = 1;
+                                                        $options = (array) json_decode($list->purpose_options, true);
+                                                    @endphp
+
+                                                    <div class="main_list mb-1">
+
+                                                        @if (strtolower($list->purpose) == "others")
+                                                            <strong>{{ $list->purpose }}</strong>
+                                                            <div class="option_value_wrapper mb-2 ml-2">
+                                                                <span class="input_value">
+                                                                    {{ $list->purpose_options }}
+                                                                </span>
+                                                            </div>
+                                                        @else
+                                                            <strong>{{ $list->purpose }}</strong>
+
+                                                            <div class="option_value_wrapper mb-2 ml-2">
+                                                                @foreach ($options as $option_value) 
+                                                                    <span class="option_value">
+                                                                        {{ $option_value }}@if ($ctr < count($options)){{ "," }} @endif                        
+                                                                        @php $ctr++ @endphp
+                                                                    </span>
+                                                                @endforeach 
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                @endforeach
+                                            </div>
+
+                                        </td>
+                                    </tr>
+
+
+                                    @php /* Lesson Goals
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>Purpose</td>
@@ -174,13 +263,12 @@
                                             @endforeach
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <td colspan="13">&nbsp;</td>
-                                    </tr>
+                                    */
+                                    @endphp
 
-                                    <tr>
-                                        <td colspan="13">&nbsp;</td>
-                                    </tr>
+
+
+                                   
 
                                     <tr>
                                         <th colspan="13">Lesson Details</th>
@@ -370,4 +458,69 @@
     </div>
 </div>
 
+<div id="examHistory">
+    @include('modules.member.popup.showAllMemberExamScoreModal')  
+</div>
+
+@endsection
+
+
+@section('scripts')
+    @parent
+
+    <script>
+    window.addEventListener('load', function() 
+    {           
+        $('#viewAllExamScores').on('click', function() 
+        {            
+            getMemberExamScorePage(1);
+        });
+
+        $(document).on('click', '#examHistory .pagination a', function(event) {                    
+            event.preventDefault(); 
+            var page = $(this).attr('href').split('page=')[1];                   
+            let memberID = $('#memberExamUserID').val();
+            getMemberExamScorePage(page, memberID);                    
+            return false;
+        });
+
+    });
+
+    function getMemberExamScorePage(page)
+    {
+        $.ajax({
+            type: 'POST',
+            url: '/api/getAllMemberExamScore?page='+ page +'&api_token=' + api_token,
+            data: {
+                limit: 5,
+                memberID: "{{ Request::segment(3)  }}",
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() 
+            {
+               $('#showAllMemberExamScoreModal').css('visibility', 'hidden');
+               $('#loadingModal').modal('show');
+            },            
+            complete: function(){
+                $('#loadingModal').modal('hide');
+                
+                $('#showAllMemberExamScoreModal').css('visibility', 'visible');                
+            },                                        
+            success:function(data)
+            {
+
+                if (data.success) {
+                    $('#showAllMemberExamScoreModal').modal('show');
+                    $('#memberExamScores').html(data.scores); 
+                }
+                           
+                return false;
+            }
+        });
+    }
+
+
+    </script>
 @endsection

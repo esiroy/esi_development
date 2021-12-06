@@ -65,7 +65,7 @@
     function getMemberLatestExamScore() {
         $.ajax({
             type: 'POST',
-            url: 'api/getMemberLatestScore?api_token=' + api_token,
+            url: '/api/getMemberLatestScore?api_token=' + api_token,
             data: {
                 limit: 1,
             },
@@ -92,7 +92,7 @@
     {
         $.ajax({
             type: 'POST',
-            url: 'api/getAllMemberExamScore?page='+ page +'&api_token=' + api_token,
+            url: '/api/getAllMemberExamScore?page='+ page +'&api_token=' + api_token,
             data: {
                 limit: 5,
             },

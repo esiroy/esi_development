@@ -196,33 +196,22 @@ class MemberController extends Controller
             $reportCardDate = new ReportCardDate();
             $latestWritingReport = $reportCardDate->getLatest($memberID);
 
-            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport'));
+
+            //get purose (new)       
+            $purposeModel = new Purpose();
+            $purpose = $purposeModel->getMemberPurpose($memberID);
+
+            $memberExamScoreModel = new MemberExamScore();
+            $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
+
+
+            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore'));
         } else {
 
             abort(404, "Member Not Found");
         }
 
     }
-
-    /*
-    public function details($memberID)
-    {
-    $member = Member::join('users', 'users.id', '=', 'members.user_id')
-    //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-    attributes.name as attribute,
-    members.id as id,
-    agents.id as agent_id,
-    tutors.name_en as main_tutor_name,
-    members.credits as credits
-    "))->where('members.id', $memberID)->first();
-
-    return view('admin.modules.member.details', compact('member'));
-    }
-     */
-
 
 
     /**
