@@ -161,11 +161,11 @@
             }  
         });
 
-        $(document).on("click",".sub_options input",function() 
+        $(document).on("click",".main_option input",function() 
         {
             if ($(this).prop('checked') == true)
             {             
-                let optionsCount = $('.sub_options').find('input').filter(':checked').length
+                let optionsCount = $('.main_option').find('input').filter(':checked').length
 
                 if (optionsCount > 3) 
                 {                
