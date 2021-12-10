@@ -208,7 +208,10 @@
             $('.ckEditor').each( function () {
                 console.log(this.name);
                 CKEDITOR.replace( this.name , {
-                    removePlugins: 'easyimage, exportpdf, cloudservices'
+                    removePlugins: 'easyimage, exportpdf, cloudservices',
+                    extraPlugins: 'html5audio',
+                    extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                    allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
                 });
             });
 
@@ -721,11 +724,18 @@
 
                 if (extension === 'mp3') {
                     
+                    /*
                      let formattedHTML = '<audio controls>'+                                         
                                          '<source src="'+selectedFilename+'" type="audio/ogg">' +
                                          '<source src="'+selectedFilename+'" type="audio/mpeg">' +
                                          'Your browser does not support the audio element.' +
                                         '</audio>';
+                    */
+
+                    let formattedHTML = '<div class="ckeditor-html5-audio" style="text-align:center">' +
+                                          '<audio controls="controls" controlslist="nodownload" src="'+selectedFilename+'">&nbsp;</audio>'+
+                                        '</div>';
+
 
                     if (newField === true) {
                         let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";
@@ -1132,10 +1142,14 @@
                         $( ".tabs" ).tabs(); 
                         //addCField(data.id, 1);
 
+
                         $('.ckEditor').each( function () {
                             console.log(this.name);
                             CKEDITOR.replace( this.name , {
-                                removePlugins: 'easyimage, exportpdf, cloudservices'
+                                removePlugins: 'easyimage, exportpdf, cloudservices',
+                                extraPlugins: 'html5audio',
+                                extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                                allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
                             });
                         });
 
