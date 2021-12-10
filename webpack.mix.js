@@ -45,10 +45,14 @@ mix.js(
         ],
         "public/js/admin.js"
     )
+    .copy("resources/js/jquery/*.*", "public/js/jquery/")
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/mp3/*.*", "public/mp3/")
     .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
-    .copy("resources/js/ckeditor/", "public/js/ckeditor/", false)
+    .copy("resources/js/steps/*.*", "public/js/steps/")
+    .copy("resources/js/validation/*.*", "public/js/validation/")
+
+    .copy("resources/sass/jquery/*.*", "public/css/jquery/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .copy("resources/sass/dropzone/dropzone.min.css", "public/css/dropzone/dropzone.min.css")
