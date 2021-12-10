@@ -703,6 +703,8 @@
                 let fileURLArray = selectedFilename.split(".");
                 let extension = fileURLArray[1];
 
+                console.log(extension);
+
                 if (extension === 'mp3') {
                     
                      let formattedHTML = '<audio controls>'+                                         
