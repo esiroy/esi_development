@@ -112,13 +112,7 @@ Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamCont
 Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
 
 
-<<<<<<< HEAD
-//[start] member purpose
-Route::middleware('auth:api')->post('/getMemberPurposeList', 'API\MemberPurposeController@getMemberPurposeList')->name('APIGetMemberPurposeList');
-Route::middleware('auth:api')->post('/updateMemberPurpose', 'API\MemberPurposeController@updateMemberPurpose')->name('APIUpdateMemberPurpose');
-Route::middleware('auth:api')->post('/getMemberPurpose', 'API\MemberPurposeController@getMemberPurpose')->name('APIGetMemberPurpose');
-=======
-//Advance Fields
+//Advance Fields 
 Route::middleware('auth:api')->post('/saveFirstNameField', 'API\FormMakerController@saveFirstNameField')->name('APISaveFirstNameField');
 Route::middleware('auth:api')->post('/saveFirstEmailField', 'API\FormMakerController@saveFirstEmailField')->name('APISaveFirstEmailField');
 Route::middleware('auth:api')->post('/saveLastNameField', 'API\FormMakerController@saveLastNameField')->name('APISaveLastNameField');
@@ -131,4 +125,3 @@ Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@rem
 Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
 Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');
 Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingEntryUpdate');
->>>>>>> writing
