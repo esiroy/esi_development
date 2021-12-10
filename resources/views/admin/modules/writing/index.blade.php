@@ -698,7 +698,7 @@
             //INSERT THE IMAGE ON NEW
             $('#btnGalleryInsert').on('click', function()
             {
-                let selectedFilename = $('#selectedFilename').val();
+                let selectedFilename = basename($('#selectedFilename').val());
 
                 let fileURLArray = selectedFilename.split(".");
                 let extension = fileURLArray[1];
@@ -1186,7 +1186,10 @@
 
         });
 
-
+        function basename(str)
+        {
+            return str.split('/').reverse()[0];            
+        }
 
         //GET FIELD ID (eg.  123_fieldname_ctr - returns 123)
         function getFieldID(fid) {
