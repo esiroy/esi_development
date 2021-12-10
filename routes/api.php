@@ -107,7 +107,7 @@ Route::middleware('auth:api')->post('/getAllMemoConversations', 'API\TutorSchedu
 Route::middleware('auth:api')->post('/sortLessonMaterials', 'API\LessonMaterialsController@sortLessonMaterials')->name('APISortLessonMaterials');
 
 
-//Form Maker
+//Form Maker (update)
 Route::middleware('auth:api')->post('/saveSimpleTextField', 'API\FormMakerController@saveSimpleTextField')->name('APISaveSimpleTextField');
 Route::middleware('auth:api')->post('/saveDropDownSelect', 'API\FormMakerController@saveDropDownSelect')->name('APISaveDropDownSelect');
 Route::middleware('auth:api')->post('/saveHTMLContent', 'API\FormMakerController@saveHTMLContent')->name('APISaveSaveHTMLContent');
