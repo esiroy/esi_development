@@ -698,9 +698,11 @@
             //INSERT THE IMAGE ON NEW
             $('#btnGalleryInsert').on('click', function()
             {
-                let selectedFilename = basename($('#selectedFilename').val());
+                let selectedFilename = $('#selectedFilename').val();
 
-                let fileURLArray = selectedFilename.split(".");
+
+                let checkSelectedFilename = basename(selectedFilename);
+                let fileURLArray = checkSelectedFilename.split(".");
                 let extension = fileURLArray[1];
 
                 console.log(extension);
