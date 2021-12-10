@@ -197,13 +197,12 @@ class MemberController extends Controller
             $latestWritingReport = $reportCardDate->getLatest($memberID);
 
 
-            //get purose (new)       
+            //get purpose (new)       
             $purposeModel = new Purpose();
             $purpose = $purposeModel->getMemberPurpose($memberID);
 
             $memberExamScoreModel = new MemberExamScore();
             $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
-
 
             return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore'));
         } else {

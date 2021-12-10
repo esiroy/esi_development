@@ -11,7 +11,7 @@
 
     <div class="col-md-12  pt-2 pb-2 ">
         <div id="memberPurposeList">
-
+            {!! $purposeListView !!}
         </div>
        
     </div>
@@ -50,15 +50,32 @@
                 if (data.success == true) 
                 {   
                     $('#submitFormMemberPurpose .container').html(data.purposeForm);
+
+                    //check member purpose on load
                     $('.main_option').each(function(i, obj) {
                         if ($(this).is(':checked')) {
                             $(this).next().show();
                         } else {
                             $(this).next().hide();
                         }  
-                    });                                        
+                    });                           
+
+                    //check member purpose on load
+                    $('.sub_options input').each(function(i, obj) {
+                        console.log( $(this).val() + " " + $(this)[0].checked);
+
+                        if ($(this).is(':checked'))             
+                        {
+
+                            $(this).next().next().show();
+                        } else {
+                            $(this).next().next().hide();
+                        }
+                    });                  
+
 
                 } else {
+
                     console.log(data.message);
                     return false;
                 }
@@ -79,6 +96,8 @@
                     $('#memberPurposeList').html(data.content);
                 } else {
                     console.log(data.message);
+
+                     $('#memberPurposeList').html(data.message);
                     return false;
                 }
             }
@@ -113,7 +132,7 @@
     window.addEventListener('load', function() 
     {   
         //ON LOAD
-        getMemberPurposeList();
+       // getMemberPurposeList();
 
 
         $('#updatePurpose').on('click', function(){
@@ -127,7 +146,7 @@
 
         //Cancel Purpose Update
         $('#cancelUpdatePurpose').on('click', function() {        
-            $('#submitFormMemberPurpose').trigger('reset');
+            //$('#submitFormMemberPurpose').trigger('reset');
             $('#showUpdateMemberPurposeModal').modal('hide');
         });
 

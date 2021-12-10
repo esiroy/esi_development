@@ -16,18 +16,19 @@ class MemberPurposeController extends Controller
 
     public function getMemberPurposeList(Request $request) 
     {
-
         $purpose = Purpose::where('member_id', Auth::user()->id)->orderBy('id', 'ASC')->get();
 
-        if ($purpose) {
+        if (count($purpose) >= 1) {
             return Response()->json([
-                "success"           => true,
-                'content'       => view('modules.member.includes.showMemberPurposeList', compact('purpose'))->render()                
+                "success"       => true,
+                "message"       => "Purpose found for member",
+                'content'       => view('modules.member.includes.showMemberPurposeList', compact('purpose'))->render()
             ]);
         } else {
             return Response()->json([
-                "success" => false,
-                "message" => "No record found for member",
+                "success"       => false,
+                "message"       => "No record found for member",
+                'content'       => view('modules.member.includes.showMemberPurposeList', compact('purpose'))->render()
             ]);
         }
     }
@@ -68,7 +69,8 @@ class MemberPurposeController extends Controller
                 "success"           => true,
                 'purpose_list'      => $purposelist,
                 "purpose"           => $purpose,
-                "purpose_option"    => $purpose_option,                
+                "purpose_option"    => $purpose_option,   
+                //'purpose_target_score'  => $purpose_target_score,             
                 'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option'))->render()                
             ]);
         } else {

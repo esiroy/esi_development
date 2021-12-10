@@ -342,7 +342,7 @@
                 case 'TOEIC_Speaking':
                         examScores = {                           
                             TOEIC_Speaking: {
-                                speaking: $('#TOEIC_Speaking_listeningScore').val(),
+                                speaking: $('#TOEIC_Speaking_speakingScore').val(),
                             }
                         }
                      break;
