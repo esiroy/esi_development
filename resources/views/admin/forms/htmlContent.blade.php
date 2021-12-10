@@ -69,7 +69,7 @@
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Content</label>
-                                <textarea id="content" name="{{ $id }}_content" class="form-control {{ $id }}_content">{{ $display_meta['content'] ?? '' }}</textarea>
+                                <textarea id="{{ $id }}_content" name="{{ $id }}_content" class="ckEditor form-control {{ $id }}_content">{{ $display_meta['content'] ?? '' }}</textarea>
 
                                 <div id="insertImage" class="mt-2">
                                     <input type="hidden" class="addedContentFieldID" value="{{ $id }}">

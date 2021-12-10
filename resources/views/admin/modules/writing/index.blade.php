@@ -193,13 +193,24 @@
 
 @section('scripts')
 
+
+
     <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}">
+
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
     <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
     <script src="{{ url('js/dropzone/dropzone.min.js') }}" deferd></script>
-    <script type="text/javascript">
+    <script type="text/javascript" defer>
         var api_token = "{{ Auth::user()->api_token }}";
         window.addEventListener('load', function() 
         {
+
+            $('.ckEditor').each( function () {
+                console.log(this.name);
+                CKEDITOR.replace( this.name , {
+                    removePlugins: 'easyimage, exportpdf, cloudservices'
+                });
+            });
 
             $('.fa-caret-up').hide();
 
@@ -670,6 +681,7 @@
 
                 $('#selectedFilename').val("{{ url('storage/uploads/writing_materials') }}" + "/" + fileURL)
                 $('#btnGalleryInsert').prop('disabled', false)
+                
             });
             
             $('.fileinput-button').on('click', function(){
@@ -722,6 +734,9 @@
                     } else {                        
                         let oldContent = $('.'+targetFieldID+"_content").val();
                         $('.'+targetFieldID+"_content").val("" + oldContent +  " " + formattedHTML);
+
+                        CKEDITOR.instances[targetFieldID + '_content'].setData( "" + oldContent +  " " + formattedHTML);
+
                         $("#modal_gallery").modal('toggle');  
                     }
 
@@ -736,6 +751,9 @@
                         let formattedHTML = "<img src='"+selectedFilename+"'>";
                         let oldContent = $('.'+targetFieldID+"_content").val();
                         $('.'+targetFieldID+"_content").val("" + oldContent +  " " + formattedHTML);
+
+                        CKEDITOR.instances[targetFieldID + '_content'].setData("" + oldContent +  " " + formattedHTML);
+
                         $("#modal_gallery").modal('toggle');   
                     }     
                 }
@@ -1113,6 +1131,14 @@
                         });
                         $( ".tabs" ).tabs(); 
                         //addCField(data.id, 1);
+
+                        $('.ckEditor').each( function () {
+                            console.log(this.name);
+                            CKEDITOR.replace( this.name , {
+                                removePlugins: 'easyimage, exportpdf, cloudservices'
+                            });
+                        });
+
                     }
                 });
             });
