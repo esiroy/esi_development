@@ -192,8 +192,9 @@
 @endsection
 
 @section('scripts')
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js" defer></script>
+
+    <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}">
+    <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
     <script src="{{ url('js/dropzone/dropzone.min.js') }}" deferd></script>
     <script type="text/javascript">
         var api_token = "{{ Auth::user()->api_token }}";
