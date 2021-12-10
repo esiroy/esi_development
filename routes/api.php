@@ -118,8 +118,6 @@ Route::middleware('auth:api')->post('/saveFirstEmailField', 'API\FormMakerContro
 Route::middleware('auth:api')->post('/saveLastNameField', 'API\FormMakerController@saveLastNameField')->name('APISaveLastNameField');
 Route::middleware('auth:api')->post('/saveEmailField', 'API\FormMakerController@saveEmailField')->name('APISaveEmailField');
 Route::middleware('auth:api')->post('/saveUploadField', 'API\FormMakerController@saveUploadField')->name('APISaveUploadField');
-
-
 Route::middleware('auth:api')->post('/getHTMLFieldContent', 'API\FormMakerController@getHTMLFieldContent')->name('APISGetHTMLFieldContent');
 Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@removeField')->name('APIRemoveField');
 
