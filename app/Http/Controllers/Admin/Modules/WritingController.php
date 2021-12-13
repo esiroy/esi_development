@@ -65,12 +65,9 @@ class WritingController extends Controller
     {
         //get form fields for name of header
         $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
         //Get Entry of data
         $entries     = WritingEntries::where('form_id', $form_id)->get();
-
-        $tutors      = $tutor->getTutors();
-        
+        $tutors      = $tutor->getTutors();        
         return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
     }
 

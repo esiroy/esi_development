@@ -248,7 +248,7 @@
                         }
                     }
 
-
+                    /*
                     if ($('#'+fieldID).hasClass('paragraphText')) 
                     {
                         var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
@@ -264,7 +264,8 @@
                                 });   
                             }
                         }
-                    }                          
+                    } 
+                    */                         
 
                 });
 
@@ -321,9 +322,9 @@
                     }
 
 
-
-                     if ($('#'+fieldID).hasClass('paragraphText')) 
-                     {
+                    /*
+                    if ($('#'+fieldID).hasClass('paragraphText')) 
+                    {
                         var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
                         var limit = $('#'+fieldID+"_wordLimit").val();
 
@@ -336,9 +337,12 @@
                                 colorHighlight(fieldID)
                                 $('.'+fieldID+"_field_content").find('.error2').remove();
                                 $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
+                            } else {
+                                $('.'+fieldID+"_field_content").find('.error2').remove();
                             }
                         }
-                     }
+                    }
+                    */
 
                 }
             }
@@ -421,12 +425,21 @@
            
             $(document).on("keypress",".paragraphText",function() 
             {
-                var paragraphTextID = $(this).attr('id');                            
-                var isWordLimiterEnabled = $("#"+ paragraphTextID + "_enableWordLimit").val();
+                var fieldID = $(this).attr('id');                            
+                var isWordLimiterEnabled = $("#"+ fieldID + "_enableWordLimit").val();
+                var wordlimit = $('#'+fieldID+"_wordLimit").val();
+                
                 var words = $("#"+ $(this).attr('id')).val()
                 if (isWordLimiterEnabled == true ) {
                     let wordcount = countWords(words);
-                    $("#"+ paragraphTextID +"_total_word_count").text(wordcount);
+                    $("#"+ fieldID +"_total_word_count").text(wordcount);
+                    if (wordcount > wordlimit) 
+                    {                       
+                        $('.'+fieldID+"_field_content").find('.error2').remove();
+                        $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 bg-danger text-white p-1 float-right" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
+                    } else {
+                         $('.'+fieldID+"_field_content").find('.error2').remove();
+                    }                    
                 }                             
             });
               
