@@ -224,6 +224,48 @@
                         }
                     }
 
+
+                    if ($('#'+fieldID).hasClass('uploadfield')) 
+                    {
+                        const oFile = document.getElementById(fieldID).files[0]; // <input type="file" id="fileUpload" accept=".jpg,.png,.gif,.jpeg"/>
+                        if (oFile.size <= 2097152) // 2 MiB for bytes.
+                        {
+                            //less than 2mb (its okay)
+                            
+                            $('.'+fieldID+"_field_content").find('.error2').remove();                                
+                        } else {
+
+                            colorHighlight(fieldID)
+
+                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                            $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
+                            requiredFieldsArr.push({
+                                'id': fieldID,
+                                'isValid': false
+                            });
+                            //alert("File size must under 2MiB!");
+                            //return;
+                        }
+                    }
+
+
+                    if ($('#'+fieldID).hasClass('paragraphText')) 
+                    {
+                        var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
+                        var limit = $('#'+fieldID+"_wordLimit").val();
+
+                        if (isWordLimitEnabled == true) 
+                        {
+                            let wordcounterTest = countWords ($('#'+fieldID).val());
+                            if (wordcounterTest > limit) {                                    
+                                requiredFieldsArr.push({
+                                    'id': fieldID,
+                                    'isValid': false
+                                });   
+                            }
+                        }
+                    }                          
+
                 });
 
                 let goToNextStep = true;
@@ -255,18 +297,7 @@
 
                         if (isValid === false || isValid === null) {
                             console.log(fieldID +"_field_row is invalid")
-                            $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
-                            $('#'+fieldID+"_field_row").css({
-                                'background-color': 'rgba(255,223,224,.25)',
-                                'margin-bottom': '6px!important',
-                                'border-top': '1px solid #C89797',
-                                'border-bottom': '1px solid #C89797',
-                                'padding-bottom': '6px',
-                                'padding-top': '8px',
-                                'margin-top': '16px',
-                                'margin-bottom': '16px',
-                                'box-sizing': 'border-box',
-                            });
+                            colorHighlight(fieldID);
                         } else {
                             $('.'+fieldID+"_field_content").find('label.form-label').removeClass('label-error')
                             $('#'+fieldID+"_field_row").removeAttr("style");
@@ -282,25 +313,50 @@
                         else 
                         {
                             // not valid
-                            $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
-                            $('#'+fieldID+"_field_row").css({
-                                'background-color': 'rgba(255,223,224,.25)',
-                                'margin-bottom': '6px!important',
-                                'border-top': '1px solid #C89797',
-                                'border-bottom': '1px solid #C89797',
-                                'padding-bottom': '6px',
-                                'padding-top': '8px',
-                                'margin-top': '16px',
-                                'margin-bottom': '16px',
-                                'box-sizing': 'border-box',
-                            });
+                            colorHighlight(fieldID)
                             $('.'+fieldID+"_field_content").find('.error2').remove();
                             $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This field only accepts E-Mail Address.</label>');
                             console.log("error in email");                            
                         }
                     }
+
+
+
+                     if ($('#'+fieldID).hasClass('paragraphText')) 
+                     {
+                        var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
+                        var limit = $('#'+fieldID+"_wordLimit").val();
+
+                        if (isWordLimitEnabled == true) 
+                        {
+                            let wordcounter = countWords ($('#'+fieldID).val());
+
+                            if (wordcounter > limit) {
+                                
+                                colorHighlight(fieldID)
+                                $('.'+fieldID+"_field_content").find('.error2').remove();
+                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
+                            }
+                        }
+                     }
+
                 }
             }
+
+            function colorHighlight(fieldID) {
+                $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
+                $('#'+fieldID+"_field_row").css({
+                    'background-color': 'rgba(255,223,224,.25)',
+                    'margin-bottom': '6px!important',
+                    'border-top': '1px solid #C89797',
+                    'border-bottom': '1px solid #C89797',
+                    'padding-bottom': '6px',
+                    'padding-top': '8px',
+                    'margin-top': '16px',
+                    'margin-bottom': '16px',
+                    'box-sizing': 'border-box',
+                });                
+            }            
 
             function getHTMLContent(formID, FieldID) 
             {
@@ -348,6 +404,32 @@
                 }
 
             }
+
+            function countWords(text) 
+            {             
+                var numWords = 0;
+                for (var i = 0; i < text.length; i++) {
+                    var currentCharacter = text[i];
+                    if (currentCharacter == " ") {
+                        numWords += 1;
+                    }
+                }
+                numWords += 1;
+               return  numWords;
+            }            
+           
+           
+            $(document).on("keypress",".paragraphText",function() 
+            {
+                var paragraphTextID = $(this).attr('id');                            
+                var isWordLimiterEnabled = $("#"+ paragraphTextID + "_enableWordLimit").val();
+                var words = $("#"+ $(this).attr('id')).val()
+                if (isWordLimiterEnabled == true ) {
+                    let wordcount = countWords(words);
+                    $("#"+ paragraphTextID +"_total_word_count").text(wordcount);
+                }                             
+            });
+              
 
             // IMPORTANT: You must call .steps() before calling .formValidation()
             $('#writing-form')

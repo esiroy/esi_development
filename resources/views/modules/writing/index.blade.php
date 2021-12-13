@@ -177,6 +177,24 @@
                                 //return;
                             }
                         }
+
+
+                        if ($('#'+fieldID).hasClass('paragraphText')) 
+                        {
+                            var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
+                            var limit = $('#'+fieldID+"_wordLimit").val();
+
+                            if (isWordLimitEnabled == true) 
+                            {
+                                let wordcounterTest = countWords ($('#'+fieldID).val());
+                                if (wordcounterTest > limit) {                                    
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });   
+                                }
+                            }
+                        }                        
                         
                     }
 
@@ -235,6 +253,25 @@
                             console.log("error in email");                            
                         }
                     }
+
+                     if ($('#'+fieldID).hasClass('paragraphText')) 
+                     {
+                        var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
+                        var limit = $('#'+fieldID+"_wordLimit").val();
+
+                        if (isWordLimitEnabled == true) 
+                        {
+                            let wordcounter = countWords ($('#'+fieldID).val());
+
+                            if (wordcounter > limit) {
+                                
+                                 colorHighlight(fieldID)
+                                $('.'+fieldID+"_field_content").find('.error2').remove();
+                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
+                            }
+                        }
+                     }
+
                 }
             }
 
@@ -301,6 +338,35 @@
                 }
 
             }
+
+
+          
+            function countWords(text) 
+            {             
+                var numWords = 0;
+                for (var i = 0; i < text.length; i++) {
+                    var currentCharacter = text[i];
+                    if (currentCharacter == " ") {
+                        numWords += 1;
+                    }
+                }
+                numWords += 1;
+               return  numWords;
+            }            
+           
+           
+            $(document).on("keypress",".paragraphText",function() 
+            {
+                var paragraphTextID = $(this).attr('id');                            
+                var isWordLimiterEnabled = $("#"+ paragraphTextID + "_enableWordLimit").val();
+                var words = $("#"+ $(this).attr('id')).val()
+                if (isWordLimiterEnabled == true ) {
+                    let wordcount = countWords(words);
+                    $("#"+ paragraphTextID +"_total_word_count").text(wordcount);
+                }                             
+            });
+  
+           
 
             // IMPORTANT: You must call .steps() before calling .formValidation()
             $('#writing-form')

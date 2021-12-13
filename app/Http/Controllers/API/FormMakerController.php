@@ -59,6 +59,60 @@ class FormMakerController extends Controller
         ]); 
     }
 
+
+    public function saveParagraphText(Request $request) 
+    {
+        //FORM ID
+        $form_id = 1;
+
+        $label = $request->label;
+        $required = $request->required;
+        $description = $request->description;
+        $enableWordLimit = $request->enableWordLimit;
+        $wordLimit = $request->wordLimit;
+
+        $type = 'paragraphtext';
+
+        $display_meta = [
+            'required'              => $request->required,
+            'label'                 => str_replace(' ', '_', $request->label),
+            'description'           => $request->description,
+            'enableWordLimit'       => $request->enableWordLimit,
+            'wordLimit'             => $request->wordLimit,      
+            'type'                  => $type,
+            'conditional_logic'     => false,
+        ];
+
+        array_walk_recursive($display_meta, function(&$item){
+            if(is_null($item)) $item = '';
+        });
+
+        $max_seq = WritingFields::where('form_id', $form_id)->max('sequence_number');
+
+       
+        $id = WritingFields::Create([
+            'form_id'           => $form_id,
+            'name'              => $request->label,
+            'description'       => $request->description,
+            'type'              => $type,
+            'display_meta'      => json_encode($display_meta),
+            'sequence_number'   => $max_seq + 1
+        ])->id;       
+        
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();            
+
+        $data = view('admin.forms.paragraphtext', compact('id', 'label', 'description', 'required', 'enableWordLimit', 'wordLimit', 'display_meta', 'cfields'))->render();
+
+        return Response()->json([
+            'id'            => $id,
+            "success"       => true,
+            "field"         => $data,
+        ]); 
+    }    
+
+
+
     public function saveDropDownSelect(Request $request) 
     {
         //FORM ID

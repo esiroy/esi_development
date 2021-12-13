@@ -191,7 +191,15 @@ class WritingController extends Controller
                 $type = 'uploadfield';
                 $display_meta['type'] = $type;                
                 $display_meta['content'] = $request[$id.'_content'];
-            }                                   
+
+            } else if (strtolower($request[$id.'_fieldType']) == "paragraphtext") {
+                $type = 'paragraphtext';
+                $display_meta['type'] = $type;
+
+                //word limiter
+                $display_meta['enableWordLimit'] =  ($request[$id.'_enableWordLimit'] == "on") ? true : false; 
+                $display_meta['wordLimit'] = $request[$id.'_wordLimit'];
+            }
             
 
             //Conditonal Field Logic

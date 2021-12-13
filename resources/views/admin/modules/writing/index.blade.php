@@ -115,6 +115,7 @@
     @include('admin.modules.writing.includes.FormFields.simpleTextModal')
     @include('admin.modules.writing.includes.FormFields.dropdownSelectModal')
     @include('admin.modules.writing.includes.FormFields.htmlModal')
+    @include('admin.modules.writing.includes.FormFields.paragraphTextModal')
 
     <!-- ADVANCE FIELDS -->
     @include('admin.modules.writing.includes.FormFields.firstnameModal')
@@ -192,11 +193,7 @@
 @endsection
 
 @section('scripts')
-
-
-
     <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}">
-
     <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
     <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
     <script src="{{ url('js/dropzone/dropzone.min.js') }}" deferd></script>
@@ -797,6 +794,15 @@
 
 
             /***************************************************************
+                            [START] - (BUTTON) [PARAGRAPH TEXT]
+            *****************************************************************/            
+            $("#btn_paragraphText").on("click", function() {
+                $("#modal_paragraphText").modal();
+                $('#form_paragraphText').trigger("reset");
+            });                
+
+
+            /***************************************************************
                             [START] - (BUTTON) [HTML]
             *****************************************************************/
             $("#btn_simpleInputText").on("click", function() {
@@ -1079,6 +1085,42 @@
                 });
 
             });
+
+
+            //[START] - [SIMPLE TEXT]
+            $("#btnParagraphTextSave").on("click", function() 
+            {         
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveParagraphText?api_token=') }}" + api_token,
+                    data: {
+                        formID              : 1,
+                        label               : $('#modal_paragraphText').find('input#label').val(),
+                        description         : $('#modal_paragraphText').find('textarea#description').val(),                       
+                        
+                        enableWordLimit     : $('#modal_paragraphText').find('input#enableWordLimit').prop("checked"),
+                        wordLimit           : $('#modal_paragraphText').find('input#wordLimit').val(),
+                        required            : $('#modal_simpleText').find('input#required').prop("checked"),
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
+                        });
+                        $( ".tabs" ).tabs();
+                        //addCField(data.id, 1);
+                    }
+                });
+
+            });
+                        
             
 
             //[START] - [DROPDOWN]

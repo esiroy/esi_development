@@ -7,10 +7,14 @@
 
         <div class="text-center ">
 
-    
+            <!-- draggable
                 <div id="btn_simpleInputText" type="button" class="draggable btn btn-light border col-md-5 mb-2 ">Simple Input Text</div>
+            -->
             
         
+            <button id="btn_simpleInputText" type="button" class="draggable btn btn-light border col-md-5 mb-2 ">Simple Input Text</button>
+            <button id="btn_paragraphText" type="button" class="draggable btn btn-light border col-md-5 mb-2 ">Paragraph Text</button>
+
 
             <button id="btn_dropdownSelect" type="button" class="draggable btn btn-light border col-md-5 mb-2 ">Dropdown</button>
             <button id="btn_html" type="button" class="btn btn-light border col-md-5 mb-2 ">HTML</button>

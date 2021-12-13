@@ -74,7 +74,12 @@ class FormFields extends Model
             $type   = 'uploadfield';                               
             $formFieldHTML = view('modules.writing.fields.uploadfield', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
         
-        }
+        } else if (strtolower($formField->type) == "paragraphtext" ) {
+
+            $type   = 'paragraphtext';                               
+            $formFieldHTML = view('modules.writing.fields.paragraphtext', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
+
+        }        
 
         return $formFieldHTML;      
     }
@@ -144,7 +149,11 @@ class FormFields extends Model
 
             $type   = 'uploadfield';                               
             $formFieldHTML = view('admin.forms.upload', compact('id', 'page_id', 'label', 'content','display_meta', 'cfields'))->render();
-        }
+        
+        } else if (strtolower($formField->type) == "paragraphtext" ) {
+            $type   = 'paragraphtext';       
+            $formFieldHTML = view('admin.forms.paragraphtext', compact('id', 'page_id', 'label', 'description','display_meta', 'cfields'))->render();
+        }    
 
         return $formFieldHTML;
     }
