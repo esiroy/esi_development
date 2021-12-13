@@ -18,7 +18,7 @@
           <div class="small">{{ $display_meta['description'] ?? "" }}</div>
 
          <div class="{{ $id }}_total_word_count small float-left">
-            Total Word Count : <span id="{{ $id }}_total_word_count">0</span>
+            Total Words : <span id="{{ $id }}_total_word_count">0</span>
          </div>
 
          <div class="small float-right">
