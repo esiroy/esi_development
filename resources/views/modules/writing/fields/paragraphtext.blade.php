@@ -17,15 +17,20 @@
 
           <div class="small">{{ $display_meta['description'] ?? "" }}</div>
 
-          <div class="{{ $id }}_total_word_count small">
-            Total Word Count : <span id="{{ $id }}_total_word_count"></span>
+         <div class="{{ $id }}_total_word_count small float-left">
+            Total Word Count : <span id="{{ $id }}_total_word_count">0</span>
+         </div>
+
+         <div class="small float-right">
+            Max : {{ $display_meta['wordLimit'] ?? "" }}
          </div>
 
         <input type="hidden" id="{{ $id .'_enableWordLimit' }}" name="{{ $id .'_enableWordLimit' }}" value="{{ $display_meta['enableWordLimit'] ?? "" }}">
         <input type="hidden" id="{{ $id .'_wordLimit' }}" name="{{ $id .'_wordLimit' }}" value="{{ $display_meta['wordLimit'] ?? "" }}">
-
-
             
+        <div class="clearfix"></div>
+
     </div>
+
 </div>
 
