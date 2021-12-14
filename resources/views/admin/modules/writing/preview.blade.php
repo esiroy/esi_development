@@ -550,7 +550,6 @@
                                 @else 
                                     //unselect
                                      $('{{ '#' . $field->field_id }}').val('');
-                                     $('{{ '#' . $item->selected_option_id }}').trigger('change');
                                 @endif
                             }
                         @endif
