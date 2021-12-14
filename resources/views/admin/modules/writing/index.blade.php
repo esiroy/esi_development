@@ -1188,18 +1188,44 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(data) {
-                        if (data.success == true) {
-                            $( "#form-content" ).append( data.field ).sortable({ 
-                                connectWith: "div", 
-                                handle: '.handle'
-                            });
+                        if (data.success == true) 
+                        {
+
+                            console.log(data.pageID);
+
+                            if (data.pageID === 0) {
+
+                                console.log("orphaned");
+
+                                $( "#form-content").append( data.field ).sortable({ 
+                                    connectWith: "div", 
+                                    handle: '.handle'
+                                });
+                                                            
+                            } else {
+                            
+                                console.log("paged");
+                                $( "#form-content").find("#page-"+ data.pageID).find('.card-body:first').append( data.field ).sortable({ 
+                                    connectWith: "div", 
+                                    handle: '.handle'
+                                });
+
+                               
+                                CKEDITOR.replace( data.id +"_content", {
+                                    removePlugins: 'easyimage, exportpdf, cloudservices',
+                                    extraPlugins: 'html5audio',                            
+                                });     
+                                
+
+                            }
+
+
+
+
                             $( ".tabs" ).tabs(); 
                             //addCField(data.id, 1);                        
 
-                            CKEDITOR.replace( data.id +"_content", {
-                                removePlugins: 'easyimage, exportpdf, cloudservices',
-                                extraPlugins: 'html5audio',                            
-                            });                           
+                      
                         }
                     }
                 });

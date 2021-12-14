@@ -135,52 +135,15 @@ class FormMakerController extends Controller
 
         $id             = $newField->id;
         $label          = $newField->label;
-        $required       = $display_meta['required'];
-        $description    = $newField->description;
-
-
         $data = $formFields->generateFormFieldHTML($newField, WritingFields::all());
-
-        $enableWordLimit = $newField->enableWordLimit;
-        $wordLimit = $newField->wordLimit;
 
         return Response()->json([
             'id'            => $newField->id,
-            'type'          => $newField->type,
-            'required'      => $required,
-            'display_meta'  => $display_meta,
+            'pageID'        => $newField->page_id,
             "success"       => true,
             "field"         => $data,
         ]);  
         
-                
-       
-
-        /*
-    
-        $id     = $newField->id;
-        $label = $newField->label;
-        $required = $newField->required;
-        $description = $newField->description;
-        $enableWordLimit = $newField->enableWordLimit;
-        $wordLimit = $newField->wordLimit;
-
-        $display_meta = $newField['display_meta'];
-
-        //CONDITIONAL FIELDS
-        $cfields = WritingFields::all();     
-
-        
-        $data = view('admin.forms.paragraphtext', compact('id', 'label', 'description', 'required', 'enableWordLimit', 'wordLimit', 'display_meta', 'cfields'))->render();
-
-        return Response()->json([
-            'id'            => $newField->id,
-            "success"       => true,
-            "field"         => $data,
-        ]);       
-
-        */  
-
     }
 
 
