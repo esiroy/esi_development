@@ -477,14 +477,19 @@
                             {
                                 
                                 $('{{ '#' . $field->field_id }}_field_row').show();
-                                getHTMLContent(1, "{{ $field->field_id }}") 
+
+                                @if( strtolower($writingField->type) == "htmlcontent")
+                                    getHTMLContent(1, "{{ $field->field_id }}") 
+                                @endif
                                  
 
                             } else {
 
                                  $('{{ '#' . $field->field_id }}_field_row').hide();
 
-                                 removeHTMLContent(1, "{{ $field->field_id }}") 
+                                @if( strtolower($writingField->type) == "htmlcontent")
+                                     removeHTMLContent(1, "{{ $field->field_id }}") 
+                                @endif
                             }
 
 

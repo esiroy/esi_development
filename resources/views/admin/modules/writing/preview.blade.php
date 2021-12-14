@@ -366,7 +366,7 @@
                 //Get the html field content
                 $.ajax({
                     type: 'POST',
-                    url: "{{ url('api/getHTMLFieldContent?api_token=') }}" + api_token,
+                    url: "{{ url('api/getHTMLFieldContent?api_token=') }}" + "{{ Auth::user()->api_token }}",
                     data: {
                         formID              :  1,
                         field_id            :  FieldID,                                                           
@@ -385,10 +385,13 @@
 
             function removeHTMLContent(formID, FieldID) 
             {            
-                $('.'+ FieldID +'_field_content').html("");   
-                $('#'+ FieldID +'_field_row').hide();  
-                $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");            
-            }            
+                if ( $('.'+ FieldID +'_field_content').hasClass('htmlContentField') ) {
+                    $('.'+ FieldID +'_field_content').html("");   
+                    $('#'+ FieldID +'_field_row').hide();  
+                    $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");                  
+                }
+          
+            }         
 
             function isLogicTrue(formFieldValue, rule, recordFeldValue) 
             {
@@ -533,11 +536,18 @@
                             {
                                 
                                 $('{{ '#' . $field->field_id }}_field_row').show();
-                                getHTMLContent(1, "{{ $field->field_id }}") 
+
+                                @if( strtolower($writingField->type) == "htmlcontent")
+                                    getHTMLContent(1, "{{ $field->field_id }}") 
+                                @endif
 
                             } else {
                                 $('{{ '#' . $field->field_id }}_field_row').hide();
-                                removeHTMLContent(1, "{{ $field->field_id }}")
+
+
+                                @if( strtolower($writingField->type) == "htmlcontent")
+                                     removeHTMLContent(1, "{{ $field->field_id }}") 
+                                @endif
                             }
                         @endif
                      @endforeach
