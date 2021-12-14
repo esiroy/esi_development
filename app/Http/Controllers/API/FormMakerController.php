@@ -8,6 +8,8 @@ use App\Models\UploadFile;
 use App\Models\WritingFields;
 use App\Models\FormFields;
 use App\Models\WritingEntries;
+use App\Models\ConditionalFieldLogic;
+
 
 
 
@@ -119,6 +121,15 @@ class FormMakerController extends Controller
         $field = WritingFields::find($request->fieldID);
         $newField = $field->replicate();
         $newField->save();
+       
+
+        $conditionalFields = ConditionalFieldLogic::where('field_id', $request->fieldID)->get();
+        foreach($conditionalFields as $condtionalField)
+        {
+            $replicated = $condtionalField->replicate();
+            $replicated->field_id = $newField->id;
+            $replicated->save();
+        }
 
         $display_meta = json_decode($newField->display_meta, true);
 
