@@ -142,7 +142,7 @@ class FormMakerController extends Controller
         $data = $formFields->generateFormFieldHTML($newField, WritingFields::all());
 
         return Response()->json([
-            'id'            => $field->id,
+            'id'            => $id,
             'pageID'        => $request->pageID,
             "success"       => true,
             "field"         => $data,
