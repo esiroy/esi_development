@@ -13,6 +13,8 @@
         <!--RIGHT BUTTON CONTAINER-->
         <div class="float-right">
             <span class="ui-icon ui-icon-arrowthick-2-n-s text-secondary handle"></span>        
+            <a id="{{ $id }}_copyField" href="#" class="text-secondary btnCopyField pr-1"><i class="fa fa-copy fa-sm"></i></a>
+            
             <a id="{{ $id }}_showFieldOptions" href="#" class="text-secondary btnShowFieldOptions"><i class="fa fa-caret-down fa-lg"></i></a>            
             <a id="{{ $id }}_hideFieldOptions" href="#" class="text-secondary btnHideFieldOptions"><i class="fa fa-caret-up fa-lg"></i></a>
             <span id="{{ $id }}_removeField" class="btnRemoveField pl-2">         

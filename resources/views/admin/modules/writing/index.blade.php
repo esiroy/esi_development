@@ -1167,7 +1167,45 @@
                 });
             });
 
+             $(document).on('click', '.btnCopyField', function() { 
 
+                let elementKey = $(this).attr('id');
+                let fieldID = getFieldID(elementKey);
+                let fieldType = $('#'+fieldID+"_fieldType").val();
+                
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/copyField?api_token=') }}" + api_token,
+                    data: {
+                        formID          :  1,
+                        fieldID         : fieldID,
+                        fieldType       : fieldType
+                        //label           :  $('#modal_html').find('input#label').val(),
+                        //description     :  $('#modal_html').find('textarea#description').val(),
+                        //content          :  CKEDITOR.instances['content'].getData()                       
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {
+                        if (data.success == true) {
+                            $( "#form-content" ).append( data.field ).sortable({ 
+                                connectWith: "div", 
+                                handle: '.handle'
+                            });
+                            $( ".tabs" ).tabs(); 
+                            //addCField(data.id, 1);                        
+
+                            CKEDITOR.replace( data.id +"_content", {
+                                removePlugins: 'easyimage, exportpdf, cloudservices',
+                                extraPlugins: 'html5audio',                            
+                            });                           
+                        }
+                    }
+                });
+
+                 return false;
+            });            
 
             $('#btnHTMLSave').on("click", function() 
             {  

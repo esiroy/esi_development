@@ -6,7 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UploadFile;
 use App\Models\WritingFields;
+use App\Models\FormFields;
 use App\Models\WritingEntries;
+
+
 
 class FormMakerController extends Controller
 {
@@ -109,7 +112,65 @@ class FormMakerController extends Controller
             "success"       => true,
             "field"         => $data,
         ]); 
-    }    
+    }
+
+    public function copyField(Request $request, FormFields $formFields )
+    {       
+        $field = WritingFields::find($request->fieldID);
+        $newField = $field->replicate();
+        $newField->save();
+
+        $display_meta = json_decode($newField->display_meta, true);
+
+        $id             = $newField->id;
+        $label          = $newField->label;
+        $required       = $display_meta['required'];
+        $description    = $newField->description;
+
+
+        $data = $formFields->generateFormFieldHTML($newField, WritingFields::all());
+
+        $enableWordLimit = $newField->enableWordLimit;
+        $wordLimit = $newField->wordLimit;
+
+        return Response()->json([
+            'id'            => $newField->id,
+            'type'          => $newField->type,
+            'required'      => $required,
+            'display_meta'  => $display_meta,
+            "success"       => true,
+            "field"         => $data,
+        ]);  
+        
+                
+       
+
+        /*
+    
+        $id     = $newField->id;
+        $label = $newField->label;
+        $required = $newField->required;
+        $description = $newField->description;
+        $enableWordLimit = $newField->enableWordLimit;
+        $wordLimit = $newField->wordLimit;
+
+        $display_meta = $newField['display_meta'];
+
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();     
+
+        
+        $data = view('admin.forms.paragraphtext', compact('id', 'label', 'description', 'required', 'enableWordLimit', 'wordLimit', 'display_meta', 'cfields'))->render();
+
+        return Response()->json([
+            'id'            => $newField->id,
+            "success"       => true,
+            "field"         => $data,
+        ]);       
+
+        */  
+
+    }
 
 
 

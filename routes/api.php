@@ -116,6 +116,8 @@ Route::middleware('auth:api')->post('/saveSimpleTextField', 'API\FormMakerContro
 Route::middleware('auth:api')->post('/saveDropDownSelect', 'API\FormMakerController@saveDropDownSelect')->name('APISaveDropDownSelect');
 Route::middleware('auth:api')->post('/saveHTMLContent', 'API\FormMakerController@saveHTMLContent')->name('APISaveHTMLContent');
 Route::middleware('auth:api')->post('/saveParagraphText', 'API\FormMakerController@saveParagraphText')->name('APISaveParagraphText');
+Route::middleware('auth:api')->post('/copyField', 'API\FormMakerController@copyField')->name('APICopyField');
+
 
 //Advance Fields 
 Route::middleware('auth:api')->post('/saveFirstNameField', 'API\FormMakerController@saveFirstNameField')->name('APISaveFirstNameField');
