@@ -119,7 +119,11 @@ class FormMakerController extends Controller
     public function copyField(Request $request, FormFields $formFields )
     {       
         $field = WritingFields::find($request->fieldID);
+        $pageSlug = explode('-', $request->pageID);
+        $page = $pageSlug[1];
+
         $newField = $field->replicate();
+        $newField->page_id = $page;
         $newField->save();
        
 
@@ -138,8 +142,8 @@ class FormMakerController extends Controller
         $data = $formFields->generateFormFieldHTML($newField, WritingFields::all());
 
         return Response()->json([
-            'id'            => $newField->id,
-            'pageID'        => $newField->page_id,
+            'id'            => $field->id,
+            'pageID'        => $request->pageID,
             "success"       => true,
             "field"         => $data,
         ]);  

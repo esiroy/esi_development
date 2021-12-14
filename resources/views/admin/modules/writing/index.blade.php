@@ -1172,13 +1172,15 @@
                 let elementKey = $(this).attr('id');
                 let fieldID = getFieldID(elementKey);
                 let fieldType = $('#'+fieldID+"_fieldType").val();
-                
+                let pageID = $('#'+fieldID+"_page").val();
+
                 $.ajax({
                     type: 'POST',
                     url: "{{ url('api/copyField?api_token=') }}" + api_token,
                     data: {
                         formID          :  1,
                         fieldID         : fieldID,
+                        pageID          : pageID,
                         fieldType       : fieldType
                         //label           :  $('#modal_html').find('input#label').val(),
                         //description     :  $('#modal_html').find('textarea#description').val(),
@@ -1190,42 +1192,33 @@
                     success: function(data) {
                         if (data.success == true) 
                         {
-
-                            console.log(data.pageID);
-
-                            if (data.pageID === 0) {
-
+                            console.log(pageID);
+                            if (pageID === 0) {
                                 console.log("orphaned");
-
                                 $( "#form-content").append( data.field ).sortable({ 
                                     connectWith: "div", 
                                     handle: '.handle'
-                                });
-                                                            
-                            } else {
-                            
+                                });     
+                            } else {                            
                                 console.log("paged");
-                                $( "#form-content").find("#page-"+ data.pageID).find('.card-body:first').append( data.field ).sortable({ 
-                                    connectWith: "div", 
-                                    handle: '.handle'
-                                });
+                                $(data.field).insertAfter('#'+fieldID+'_field');                              
+                            }
+
+          
 
                                
+                            if ($('#'+fieldID+'_content').hasClass('ckEditor')) {
                                 CKEDITOR.replace( data.id +"_content", {
                                     removePlugins: 'easyimage, exportpdf, cloudservices',
                                     extraPlugins: 'html5audio',                            
-                                });     
-                                
-
+                                });                      
+                                           
                             }
 
-
-
-
-                            $( ".tabs" ).tabs(); 
+                           
                             //addCField(data.id, 1);                        
 
-                      
+                            $( ".tabs" ).tabs();
                         }
                     }
                 });
