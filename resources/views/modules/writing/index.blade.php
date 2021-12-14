@@ -489,7 +489,8 @@
                                      removeHTMLContent(1, "{{ $field->field_id }}") 
                                 @else 
                                     //unselect
-                                    $('{{ '#' . $field->field_id }}').val('');                                                              
+                                    $('{{ '#' . $field->field_id }}').val('');      
+                                    $('{{ '#' . $field->field_id }}').trigger('change');
                                 @endif
                             }
 
