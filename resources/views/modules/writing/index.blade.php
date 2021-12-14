@@ -319,6 +319,15 @@
                 });                
             }
 
+
+            function removeHTMLContent(formID, FieldID) {
+            
+                        $('.'+ FieldID +'_field_content').html("");   
+                        $('#'+ FieldID +'_field_row').hide();  
+                        $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");
+            
+            }
+
             function isLogicTrue(formFieldValue, rule, recordFeldValue) 
             {
                 if (rule == "is") 
@@ -439,7 +448,6 @@
                 $('{{ '#' . $item->selected_option_id }}').on('change keyup blur', function() 
                 {
                     //let cflogic = $(document).find('.cfLogic');
-
                     @php 
                         $showFields = $cfLogic->where('form_id', $form_id)->where('selected_option_id', $item->selected_option_id)->groupby(['field_id'])->get();
                     @endphp
@@ -467,10 +475,19 @@
                             {
                                 
                                 $('{{ '#' . $field->field_id }}_field_row').show();
+                                getHTMLContent(1, "{{ $field->field_id }}") 
+                                 
+
                             } else {
+
                                  $('{{ '#' . $field->field_id }}_field_row').hide();
+
+                                 removeHTMLContent(1, "{{ $field->field_id }}") 
                             }
+
+
                         @endif
+
                      @endforeach
                 });
                 $('{{ '#' . $item->selected_option_id }}').trigger('change', 'keypress');

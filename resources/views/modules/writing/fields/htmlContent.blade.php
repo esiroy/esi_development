@@ -5,7 +5,7 @@
     </div>
 
     <div class="mb-3 text-left col-md-12 {{ $id }}_field_content">
-        @if($display_meta['conditional_logic'] !== 'true')         
+        @if($display_meta['conditional_logic'] == false)
             {!! $display_meta['content'] !!} 
         @endif
     </div>

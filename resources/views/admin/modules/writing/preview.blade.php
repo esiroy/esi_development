@@ -526,6 +526,8 @@
                             {
                                 
                                 $('{{ '#' . $field->field_id }}_field_row').show();
+                                getHTMLContent(1, "{{ $field->field_id }}") 
+                                
                             } else {
                                  $('{{ '#' . $field->field_id }}_field_row').hide();
                             }
