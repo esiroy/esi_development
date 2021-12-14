@@ -484,11 +484,12 @@
                                  
 
                             } else {
-
-                                 $('{{ '#' . $field->field_id }}_field_row').hide();
-
+                                $('{{ '#' . $field->field_id }}_field_row').hide();
                                 @if( strtolower($writingField->type) == "htmlcontent")
                                      removeHTMLContent(1, "{{ $field->field_id }}") 
+                                @else 
+                                    //unselect
+                                    $('{{ '#' . $field->field_id }}').val('')                                                                 
                                 @endif
                             }
 
