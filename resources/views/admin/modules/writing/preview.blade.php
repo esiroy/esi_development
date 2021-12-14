@@ -383,6 +383,13 @@
                 });                
             }
 
+            function removeHTMLContent(formID, FieldID) 
+            {            
+                $('.'+ FieldID +'_field_content').html("");   
+                $('#'+ FieldID +'_field_row').hide();  
+                $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");            
+            }            
+
             function isLogicTrue(formFieldValue, rule, recordFeldValue) 
             {
                 if (rule == "is") 
@@ -527,9 +534,10 @@
                                 
                                 $('{{ '#' . $field->field_id }}_field_row').show();
                                 getHTMLContent(1, "{{ $field->field_id }}") 
-                                
+
                             } else {
                                  $('{{ '#' . $field->field_id }}_field_row').hide();
+                                removeHTMLContent(1, "{{ $field->field_id }}")
                             }
                         @endif
                      @endforeach

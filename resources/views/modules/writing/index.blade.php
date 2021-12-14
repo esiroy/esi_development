@@ -320,12 +320,11 @@
             }
 
 
-            function removeHTMLContent(formID, FieldID) {
-            
-                        $('.'+ FieldID +'_field_content').html("");   
-                        $('#'+ FieldID +'_field_row').hide();  
-                        $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");
-            
+            function removeHTMLContent(formID, FieldID) 
+            {            
+                $('.'+ FieldID +'_field_content').html("");   
+                $('#'+ FieldID +'_field_row').hide();  
+                $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");            
             }
 
             function isLogicTrue(formFieldValue, rule, recordFeldValue) 
