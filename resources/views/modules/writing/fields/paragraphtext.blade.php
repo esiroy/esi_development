@@ -17,6 +17,7 @@
 
           <div class="small">{{ $display_meta['description'] ?? "" }}</div>
 
+        @if ($display_meta['enableWordLimit'] == 'true')
          <div class="{{ $id }}_total_word_count small float-left">
             Total Words : <span id="{{ $id }}_total_word_count">0</span>
          </div>
@@ -24,6 +25,7 @@
          <div class="small float-right">
             Max : {{ $display_meta['wordLimit'] ?? "" }}
          </div>
+         @endif
 
         <input type="hidden" id="{{ $id .'_enableWordLimit' }}" name="{{ $id .'_enableWordLimit' }}" value="{{ $display_meta['enableWordLimit'] ?? "" }}">
         <input type="hidden" id="{{ $id .'_wordLimit' }}" name="{{ $id .'_wordLimit' }}" value="{{ $display_meta['wordLimit'] ?? "" }}">
