@@ -536,7 +536,7 @@
                                 getHTMLContent(1, "{{ $field->field_id }}") 
 
                             } else {
-                                 $('{{ '#' . $field->field_id }}_field_row').hide();
+                                $('{{ '#' . $field->field_id }}_field_row').hide();
                                 removeHTMLContent(1, "{{ $field->field_id }}")
                             }
                         @endif
