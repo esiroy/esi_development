@@ -643,8 +643,8 @@
             //SHOW HTML MODAL
             $('#btn_html').on('click', function(){
                 newField = true;
-
                 $("#modal_html").modal();
+                CKEDITOR.instances['content'].setData("");
                 $('#form_html').trigger("reset");
             });
 
@@ -654,12 +654,22 @@
 
 
             //SHOW IMAGE GALLERY 
+             $(document).on('click', '#btnInsertImage, #btnInsertAudio', (elem, id) => {      
+                $("#modal_gallery").modal();
+                $('#form_gallery').trigger("reset");
+                $( ".tabs" ).tabs();
+                $('#btnMediaLibraryTab').trigger('click');
+             }); 
+
+
+           /*
             $('#btnInsertImage, #btnInsertAudio').on('click', function(){
                 $("#modal_gallery").modal();
                 $('#form_gallery').trigger("reset");
                 $( ".tabs" ).tabs();
                 $('#btnMediaLibraryTab').trigger('click');
             });
+            */
 
             //ADD THE IMAGE INFORMATION FOR GALLERY
             $(document).on('click', '.img-container', (elem, id) => {       
@@ -689,15 +699,9 @@
             })
             
 
-            //INSERT THE IMAGE ON ADDED FIELD
-            $('.insertToMediaAddedField').on('click', function() 
-            {
+            $(document).on('click', '.insertToMediaAddedField', function(elem, id) {
                 newField = false;
-                targetFieldID = $(this).parent().find('.addedContentFieldID').val();
-
-                let test = $('.'+targetFieldID+"_content").val();
-                $('.'+targetFieldID+"_content").text(" ");
-                $('.'+targetFieldID+"_content").text(test);
+                targetFieldID =  $(this).parent().find('.addedContentFieldID').val();
 
                 $("#modal_gallery").modal();
                 $('#form_gallery').trigger("reset");
@@ -719,51 +723,53 @@
 
                 console.log(extension);
 
-                if (extension === 'mp3') {
-                    
-                    /*
-                     let formattedHTML = '<audio controls>'+                                         
-                                         '<source src="'+selectedFilename+'" type="audio/ogg">' +
-                                         '<source src="'+selectedFilename+'" type="audio/mpeg">' +
-                                         'Your browser does not support the audio element.' +
-                                        '</audio>';
-                    */
-
+                if (extension === 'mp3') 
+                {
                     let formattedHTML = '<div class="ckeditor-html5-audio" style="text-align:center">' +
                                           '<audio controls="controls" controlslist="nodownload" src="'+selectedFilename+'">&nbsp;</audio>'+
                                         '</div>';
-
-
                     if (newField === true) {
-                        let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";
-                        $("#modal_html").find('#content').val(updatedContent);                
-                        $("#modal_gallery").modal('toggle');   
-                    } else {                        
-                        let oldContent = $('.'+targetFieldID+"_content").val();
-                        $('.'+targetFieldID+"_content").val("" + oldContent +  " " + formattedHTML);
+                        let oldContent              = CKEDITOR.instances['content'].getData();
+                        let updatedContent          = oldContent + " " + formattedHTML + " <br/>";
 
-                        CKEDITOR.instances[targetFieldID + '_content'].setData( "" + oldContent +  " " + formattedHTML);
+                        //ADD CONTENT OF OLD AND THE NEW FORMATTED HTML CONTENT
+                        CKEDITOR.instances['content'].setData(updatedContent);
+                        $("#modal_html").find('#content').val(updatedContent);
+                        $("#modal_gallery").modal('toggle'); 
+                    } else {
+                        let oldContent          = CKEDITOR.instances[targetFieldID + '_content'].getData();
+                        let updatedContent      = oldContent + " " + formattedHTML + " <br> ";
 
-                        $("#modal_gallery").modal('toggle');  
+                        //ADD CONTENT OF OLD AND THE NEW FORMATTED HTML CONTENT
+                        CKEDITOR.instances[targetFieldID + '_content'].setData(updatedContent);                    
+                        $('.'+targetFieldID+"_content").val(updatedContent);
+                        $("#modal_gallery").modal('toggle');
                     }
-
                 } else {
                     if (newField === true) {
                         // the new field is coming from a modal
-                        let formattedHTML = "<img src='"+selectedFilename+"'>";
-                        let updatedContent = $("#modal_html").find('#content').val() + " " + formattedHTML + " ";
-                        $("#modal_html").find('#content').html(updatedContent);                
-                        $("#modal_gallery").modal('toggle');   
+                        let formattedHTML           = "<p><img src='"+selectedFilename+"' width='100%' height='100%'></p>";
+                        let oldContent              = CKEDITOR.instances['content'].getData();
+                        let updatedContent          = oldContent + " " + formattedHTML + " <br/>";
+
+                        //ADD CONTENT OF OLD AND THE NEW FORMATTED HTML CONTENT
+                        CKEDITOR.instances['content'].setData(updatedContent);
+                        $("#modal_html").find('#content').val(updatedContent);
+                        $("#modal_gallery").modal('toggle'); 
+
                     } else {
-                        let formattedHTML = "<img src='"+selectedFilename+"'>";
-                        let oldContent = $('.'+targetFieldID+"_content").val();
-                        $('.'+targetFieldID+"_content").val("" + oldContent +  " " + formattedHTML);
+                        let formattedHTML       = "<img src='"+selectedFilename+"' width='100%' height='100%'>";
+                        let oldContent          = CKEDITOR.instances[targetFieldID + '_content'].getData();
+                        let updatedContent      = oldContent + " " + formattedHTML + " <br> ";
 
-                        CKEDITOR.instances[targetFieldID + '_content'].setData("" + oldContent +  " " + formattedHTML);
-
+                        //ADD CONTENT OF OLD AND THE NEW FORMATTED HTML CONTENT
+                        CKEDITOR.instances[targetFieldID + '_content'].setData(updatedContent);                    
+                        $('.'+targetFieldID+"_content").val(updatedContent);
                         $("#modal_gallery").modal('toggle');   
                     }     
                 }
+
+
                 return false;
             });
 
@@ -1169,9 +1175,11 @@
                     type: 'POST',
                     url: "{{ url('api/saveHTMLContent?api_token=') }}" + api_token,
                     data: {
-                        formID           :  1,
+                        formID          :  1,
                         label           :  $('#modal_html').find('input#label').val(),
-                        content         :  $('#modal_html').find('textarea#content').val()                                            
+                       //content        :  $('#modal_html').find('textarea#content').val()
+                       content          :  CKEDITOR.instances['content'].getData()
+                       
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1182,18 +1190,14 @@
                             handle: '.handle'
                         });
                         $( ".tabs" ).tabs(); 
-                        //addCField(data.id, 1);
+                        //addCField(data.id, 1);                        
 
-
-                        $('.ckEditor').each( function () {
-                            console.log(this.name);
-                            CKEDITOR.replace( this.name , {
-                                removePlugins: 'easyimage, exportpdf, cloudservices',
-                                extraPlugins: 'html5audio',
-                                //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                                //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                            });
-                        });
+                        CKEDITOR.replace( data.id +"_content", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                       
 
                     }
                 });
