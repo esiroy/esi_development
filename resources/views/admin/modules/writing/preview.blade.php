@@ -521,7 +521,7 @@
                             $writingField = $writingModel->where('form_id', $form_id)->where('id', $field->field_id)->first();
 
                             $displayMeta = json_decode($writingField->display_meta, true);
-                            if (isset($displayMeta['conditional_logic'])) {
+                            if (is_object($displayMeta['conditional_logic'])) {
                                 $conditionalLogic = $displayMeta['conditional_logic'];
                             } else {
                                 $conditionalLogic = false;
