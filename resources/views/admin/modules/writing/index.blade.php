@@ -1300,20 +1300,20 @@
                             } else {                            
                                 console.log("paged");
                                 $(data.field).insertAfter('#'+fieldID+'_field');                              
-                            }
+                            }               
 
-          
-
-                               
                             if ($('#'+fieldID+'_content').hasClass('ckEditor')) {
                                 CKEDITOR.replace( data.id +"_content", {
                                     removePlugins: 'easyimage, exportpdf, cloudservices',
                                     extraPlugins: 'html5audio',                            
-                                });                      
-                                           
+                                });        
+                            } else {
+                            
+                                CKEDITOR.replace( data.id +"_description", {
+                                    removePlugins: 'easyimage, exportpdf, cloudservices',
+                                    extraPlugins: 'html5audio',                            
+                                });                            
                             }
-
-                           
                             //addCField(data.id, 1);                        
 
                             $( ".tabs" ).tabs();
