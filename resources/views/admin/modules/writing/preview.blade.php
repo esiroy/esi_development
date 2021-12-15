@@ -520,10 +520,8 @@
                             $writingModel = new \App\Models\WritingFields;
                             $writingField = $writingModel->where('form_id', $form_id)->where('id', $field->field_id)->first();
 
-                            $displayMeta = json_decode($writingField->display_meta, true);
-                          
-
                             try {
+                                $displayMeta = json_decode($writingField->display_meta, true);
                                 $conditionalLogic = $displayMeta['conditional_logic'];
                             } catch (\Exception $e) {
                                 $conditionalLogic = false;
