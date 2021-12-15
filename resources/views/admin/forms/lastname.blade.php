@@ -58,14 +58,14 @@
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Field Label</label>
-                                <input type="text" id="label" name="{{ $id }}_label" value="{{ $label ?? "" }}" required class="form-control ckEditor pt-0">
+                                <input type="text" id="label" name="{{ $id }}_label" value="{{ $label ?? "" }}" required class="form-control pt-0">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Description</label>
-                                <textarea id="description" name="{{ $id }}_description" class="form-control">{{ $display_meta['description'] ?? '' }}</textarea>
+                                <textarea id="description" name="{{ $id }}_description" class="form-control ckEditor">{{ $display_meta['description'] ?? '' }}</textarea>
                             </div>
                         </div>
 
