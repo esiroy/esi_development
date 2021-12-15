@@ -22,7 +22,7 @@
                             <div class="row">
                                 <div class="col">
                                     <label class="form-label">Description</label>
-                                    <textarea id="description" name="description" class="form-control" style="height:30px"></textarea>
+                                    <textarea id="modal_dropdown_description" name="modal_dropdown_description" class="ckEditor form-control" style="height:30px"></textarea>
                                 </div>
                             </div>
 

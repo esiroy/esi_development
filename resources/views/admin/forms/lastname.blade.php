@@ -43,7 +43,7 @@
         <div class="card-text">
             <input type="text" id="label" class="form-control form-control-sm bg-white" value="last name" disabled="disabled" >
             <div class="small">
-                {{ $display_meta['description'] ?? "" }}
+                {!! $display_meta['description'] ?? "" !!}
             </div>
         </div>
 

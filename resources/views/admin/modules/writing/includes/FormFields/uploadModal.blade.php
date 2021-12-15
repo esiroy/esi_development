@@ -35,7 +35,7 @@
                             <div class="row">
                                 <div class="col">
                                     <label class="form-label">Description</label>
-                                    <textarea id="description" name="description" class="form-control"></textarea>
+                                    <textarea id="modal_upload_description" name="modal_upload_description" class="ckEditor form-control"></textarea>
                                 </div>
                             </div>
 

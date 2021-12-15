@@ -18,7 +18,7 @@
             @endforeach                        
         </select>
 
-        <div class="small">{{ $display_meta['description'] ?? "" }}</div>
+        <div class="small">{!! $display_meta['description'] ?? "" !!}</div>
 
 
     </div>

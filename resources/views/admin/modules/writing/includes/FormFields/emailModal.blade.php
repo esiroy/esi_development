@@ -22,7 +22,7 @@
                             <div class="row">
                                 <div class="col">
                                     <label class="form-label">Description</label>
-                                    <textarea id="description" name="description" class="form-control"></textarea>
+                                    <textarea id="modal_email_description" name="modal_email_description" class="form-control ckEditor"></textarea>
                                 </div>
                             </div>
 

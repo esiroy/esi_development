@@ -16,6 +16,7 @@
                 @if ($display_meta['required']) {{ "required" }} @endif
                 >
                     
-        <div class="small">{{ $display_meta['description'] ?? "" }}</div>
+        <div class="small">{!! $display_meta['description'] ?? "" !!}</div>
+
     </div>
 </div>

@@ -44,7 +44,7 @@
         <div class="card-text">            
             <input type="file" id="file" name="filename" disabled="disabled">
             <div class="small">
-                {{ $display_meta['description'] ?? "" }}
+                {!! $display_meta['description'] ?? "" !!}
             </div>
         </div>
 

@@ -15,7 +15,7 @@
                 @if ($display_meta['required']) {{ "required" }} @endif
             ></textarea>
 
-          <div class="small">{{ $display_meta['description'] ?? "" }}</div>
+          <div class="small">{!! $display_meta['description'] ?? "" !!}</div>
 
         @if ($display_meta['enableWordLimit'] == 'true')
          <div class="{{ $id }}_total_word_count small float-left">

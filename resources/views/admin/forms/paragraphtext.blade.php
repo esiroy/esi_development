@@ -43,7 +43,7 @@
         <div class="card-text">
             <textarea id="label" class="form-control form-control-sm bg-white" disabled="disabled" rows="4" cols="50" ></textarea>
             <div class="small">
-                {{ $display_meta['description'] ?? "" }}
+                {!! $display_meta['description'] ?? "" !!}
             </div>
         </div>
 

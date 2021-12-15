@@ -42,7 +42,7 @@
         <div class="card-text">
             <input type="text" id="label" class="form-control form-control-sm bg-white" disabled="disabled">
             <div class="small">
-                {{ $display_meta['description'] ?? "" }}
+                {!! $display_meta['description'] ?? "" !!}
             </div>
         </div>
 
@@ -64,7 +64,7 @@
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Description</label>
-                                <textarea id="description" name="{{ $id }}_description" class="form-control">{{ $description ?? '' }}</textarea>
+                                <textarea id="description" name="{{ $id }}_description" class="form-control ckEditor">{{ $description ?? '' }}</textarea>
                             </div>
                         </div>
 

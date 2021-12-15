@@ -203,7 +203,7 @@
         {
 
             $('.ckEditor').each( function () {
-                console.log(this.name);
+                console.log(this.name + " add ckeditor");
                 CKEDITOR.replace( this.name , {
                     removePlugins: 'easyimage, exportpdf, cloudservices',
                     extraPlugins: 'html5audio',
@@ -813,6 +813,7 @@
             *****************************************************************/
             $("#btn_simpleInputText").on("click", function() {
                 $("#modal_HTML").modal();
+                CKEDITOR.instances['modal_simpleText_description'].setData("");
                 $('#form_HTML').trigger("reset");
             });
 
@@ -822,6 +823,7 @@
             *****************************************************************/            
             $("#btn_firstname").on("click", function() {
                 $("#modal_firstname").modal();
+                 CKEDITOR.instances['modal_firstname_description'].setData("");
                 $('#form_firstname').trigger("reset");
             });
 
@@ -830,6 +832,7 @@
             *****************************************************************/
             $("#btn_lastname").on("click", function() {
                 $("#modal_lastname").modal();
+                 CKEDITOR.instances['modal_lastname_description'].setData("");
                 $('#form_lastname').trigger("reset");
             });
 
@@ -837,7 +840,8 @@
                             [START] - (BUTTON) [EMAIL]
             *****************************************************************/  
             $("#btn_email").on("click", function() {
-                $("#modal_email").modal();
+                $("#modal_email").modal();                
+                CKEDITOR.instances['modal_email_description'].setData("");
                 $('#form_email').trigger("reset");
             });
 
@@ -845,7 +849,8 @@
                             [START] - (BUTTON) [UPLOAD]
             *****************************************************************/
             $("#btn_upload").on("click", function() {
-                $("#modal_upload").modal();
+                $("#modal_upload").modal();                
+                CKEDITOR.instances['modal_upload_description'].setData("");
                 $('#form_upload').trigger("reset");
             });
 
@@ -858,6 +863,8 @@
                 addNewSelectionChoice('select_choice_start', 1);                
                 $("#modal_dropdownSelect").modal();
                 $('#form_dropdownSelect').trigger("reset");
+                CKEDITOR.instances['modal_dropdown_description'].setData("");
+            
                 updateChoicesButtons();
             });           
 
@@ -913,7 +920,9 @@
                     data: {
                         formID              : 1,
                         label               : $('#modal_firstname').find('input#label').val(),
-                        description         : $('#modal_firstname').find('textarea#description').val(),
+                        //description         : $('#modal_firstname').find('textarea#description').val(),
+                         description         :  CKEDITOR.instances['modal_firstname_description'].getData(), 
+
                        //maximum_characters  : $('#modal_firstname').find('input#maximum_characters').val(),
                         required            : $('#modal_firstname').find('input#required').prop("checked"),
                     },
@@ -931,6 +940,12 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
+                        CKEDITOR.replace( data.id +"_description", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                          
                     }
                 });
             });
@@ -945,7 +960,9 @@
                     data: {
                         formID              : 1,
                         label               : $('#modal_lastname').find('input#label').val(),
-                        description         : $('#modal_lastname').find('textarea#description').val(),
+                        //description         : $('#modal_lastname').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_lastname_description'].getData(), 
+
                        //maximum_characters  : $('#modal_lastname').find('input#maximum_characters').val(),
                         required            : $('#modal_lastname').find('input#required').prop("checked"),
                     },
@@ -963,6 +980,12 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
+                        CKEDITOR.replace( data.id +"_description", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                          
                     }
                 });
             });
@@ -977,7 +1000,8 @@
                     data: {
                         formID              : 1,
                         label               : $('#modal_email').find('input#label').val(),
-                        description         : $('#modal_email').find('textarea#description').val(),
+                        //description         : $('#modal_email').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_email_description'].getData(),      
                        //maximum_characters  : $('#modal_email').find('input#maximum_characters').val(),
                         required            : $('#modal_email').find('input#required').prop("checked"),
                     },
@@ -995,6 +1019,12 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
+                        CKEDITOR.replace( data.id +"_description", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                          
                     }
                 });
             });
@@ -1008,7 +1038,9 @@
                     data: {
                         formID              : 1,
                         label               : $('#modal_upload').find('input#label').val(),
-                        description         : $('#modal_upload').find('textarea#description').val(),
+                        //description         : $('#modal_upload').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_upload_description'].getData(), 
+
                        //maximum_characters  : $('#modal_upload').find('input#maximum_characters').val(),
                         required            : $('#modal_upload').find('input#required').prop("checked"),
                     },
@@ -1026,6 +1058,12 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
+                        CKEDITOR.replace( data.id +"_description", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                           
                     }
                 });
             });
@@ -1069,7 +1107,9 @@
                     data: {
                         formID              : 1,
                         label               : $('#modal_simpleText').find('input#label').val(),
-                        description         : $('#modal_simpleText').find('textarea#description').val(),
+                        //description         : $('#modal_simpleText').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_simpleTextdescription'].getData(), 
+
                         maximum_characters  : $('#modal_simpleText').find('input#maximum_characters').val(),
                         required            : $('#modal_simpleText').find('input#required').prop("checked"),
                     },
@@ -1087,10 +1127,17 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
+                        CKEDITOR.replace( data.id +"_description", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                           
                     }
                 });
 
             });
+
 
 
             //[START] - [SIMPLE TEXT]
@@ -1102,7 +1149,8 @@
                     data: {
                         formID              : 1,
                         label               : $('#modal_paragraphText').find('input#label').val(),
-                        description         : $('#modal_paragraphText').find('textarea#description').val(),                       
+                        //description         : $('#modal_paragraphText').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_paragraphText_description'].getData(),                       
                         
                         enableWordLimit     : $('#modal_paragraphText').find('input#enableWordLimit').prop("checked"),
                         wordLimit           : $('#modal_paragraphText').find('input#wordLimit').val(),
@@ -1122,6 +1170,12 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
+                        CKEDITOR.replace( data.id +"_description", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                           
                     }
                 });
 
@@ -1144,7 +1198,9 @@
                     data: {
                         formID              :  1,
                         label               :  $('#modal_dropdownSelect').find('input#label').val(),
-                        description         :  $('#modal_dropdownSelect').find('textarea#description').val(),
+                        //description         :  $('#modal_dropdownSelect').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_dropdown_description'].getData(),
+
                         maximum_characters  :  $('#modal_dropdownSelect').find('input#maximum_characters').val(),                        
                         required            :  $('#modal_dropdownSelect').find('input#required').prop("checked"),
                         selected_choices    :  choices,                        
@@ -1162,12 +1218,54 @@
                             },                            
                         });
                         $( ".tabs" ).tabs();
-                        //addCField(data.id, 1);
+                        
+                        CKEDITOR.replace( data.id +"_description", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });   
+
                     }
                 });
             });
 
-             $(document).on('click', '.btnCopyField', function() { 
+
+            $('#btnHTMLSave').on("click", function() 
+            {  
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveHTMLContent?api_token=') }}" + api_token,
+                    data: {
+                        formID          :  1,
+                        label           :  $('#modal_html').find('input#label').val(),
+                        //content        :  $('#modal_html').find('textarea#content').val()
+                        content          :  CKEDITOR.instances['content'].getData()
+                       
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle'
+                        });
+                        $( ".tabs" ).tabs(); 
+                        //addCField(data.id, 1);                        
+
+                        CKEDITOR.replace( data.id +"_content", {
+                            removePlugins: 'easyimage, exportpdf, cloudservices',
+                            extraPlugins: 'html5audio',
+                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
+                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
+                        });                       
+
+                    }
+                });
+            });            
+
+            $(document).on('click', '.btnCopyField', function() { 
 
                 let elementKey = $(this).attr('id');
                 let fieldID = getFieldID(elementKey);
@@ -1224,44 +1322,7 @@
                 });
 
                  return false;
-            });            
-
-            $('#btnHTMLSave').on("click", function() 
-            {  
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('api/saveHTMLContent?api_token=') }}" + api_token,
-                    data: {
-                        formID          :  1,
-                        label           :  $('#modal_html').find('input#label').val(),
-                       //content        :  $('#modal_html').find('textarea#content').val()
-                       content          :  CKEDITOR.instances['content'].getData()
-                       
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(data) {                       
-                        $( "#form-content" ).append( data.field ).sortable({ 
-                            connectWith: "div", 
-                            handle: '.handle'
-                        });
-                        $( ".tabs" ).tabs(); 
-                        //addCField(data.id, 1);                        
-
-                        CKEDITOR.replace( data.id +"_content", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                       
-
-                    }
-                });
-            });
-
-
-
+            });    
             
             /***************************************************************
                             [START] - [NEW PAGE]
