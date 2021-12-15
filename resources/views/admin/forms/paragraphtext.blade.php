@@ -67,7 +67,7 @@
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Description</label>
-                                <textarea id="description" name="{{ $id }}_description" class="form-control">{{ $description ?? "" }}</textarea>
+                                <textarea id="description" name="{{ $id }}_description" class="form-control ckEditor">{{ $description ?? "" }}</textarea>
                             </div>
                         </div>
       

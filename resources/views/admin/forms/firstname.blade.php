@@ -69,7 +69,7 @@
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Description</label>
-                                <textarea id="description" name="{{ $id }}_description" class="form-control">{{ $display_meta['description'] ?? '' }}</textarea>
+                                <textarea id="description" name="{{ $id }}_description" class="form-control ckEditor">{{ $display_meta['description'] ?? '' }}</textarea>
                             </div>
                         </div>
 
