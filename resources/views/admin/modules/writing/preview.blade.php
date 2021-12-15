@@ -526,7 +526,7 @@
                             try {
                                 $conditionalLogic = $displayMeta['conditional_logic'];
                             } catch (\Exception $e) {
-                                $conditionalLogic = false
+                                $conditionalLogic = false;
                             }
 
                         @endphp            
