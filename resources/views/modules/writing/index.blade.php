@@ -463,9 +463,10 @@
 
                             $displayMeta = json_decode($writingField->display_meta, true);
 
-                            if (isset($displayMeta['conditional_logic'])) {
+                            try {
+                                $displayMeta = json_decode($writingField->display_meta, true);
                                 $conditionalLogic = $displayMeta['conditional_logic'];
-                            } else {
+                            } catch (\Exception $e) {
                                 $conditionalLogic = false;
                             }
                             
