@@ -7,6 +7,7 @@
     $nickname = "Customer Support";
 @endphp
 
+<!--
 <admin-chat-component 
         userid="{{ Auth::user()->id }}" 
         username="{{ Auth::user()->username }}"
@@ -16,6 +17,7 @@
         csrf_token="{{ csrf_token() }}"
     >
 </admin-chat-component> 
+-->
 @endsection
 
 @section('scripts')

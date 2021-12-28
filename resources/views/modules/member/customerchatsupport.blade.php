@@ -21,7 +21,9 @@
         
     @endphp   
 
-                                                            
+    Sorry, we are offline right now.
+    
+    <!--                                               
     <customer-chat-component 
             userid="{{ Auth::user()->id }}" 
             username="{{ Auth::user()->username }}"
@@ -31,6 +33,8 @@
             csrf_token="{{ csrf_token() }}"            
         >
     </chat-component>     
+    -->
+    
 </div>
 
 
