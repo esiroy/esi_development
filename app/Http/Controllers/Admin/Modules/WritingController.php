@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 use App\Models\FormFields;
 use App\Models\ConditionalFieldLogic;
 use App\Models\WritingEntries;
@@ -27,92 +29,154 @@ class WritingController extends Controller
     }
     
     
-    public function index(FormFields $formFieldModel) 
+    public function index(FormFields $formFieldModel,  Tutor $tutor) 
     {
-        $form_id = 1; //all forms are 1(for now)
-        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-        $formFieldHTML[] = "";
 
-        //CONDITIONAL FIELDS (init)
-        $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
-        foreach ($formFields as $formField) 
+        //abort_if(Gate::denies('writing_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
         {
-            $formFieldHTML[] = $formFieldModel->generateFormFieldHTML($formField, $cfields);
-        }
+        
+            $form_id = 1; //all forms are 1(for now)
+            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+            $formFieldHTML[] = "";
 
-        // GET CHILDREN HTML
-        $formFieldChildrenHTML[] = "";
+            //CONDITIONAL FIELDS (init)
+            $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-        $pageCounter =  $pages->count() + 1;        
-
-        foreach ($pages as $page) 
-        {           
-            $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();           
-            foreach ($formChildFields as $formChildField) 
+            foreach ($formFields as $formField) 
             {
-                $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFormFieldHTML($formChildField, $child_cfields);
+                $formFieldHTML[] = $formFieldModel->generateFormFieldHTML($formField, $cfields);
             }
+
+            // GET CHILDREN HTML
+            $formFieldChildrenHTML[] = "";
+
+            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pageCounter =  $pages->count() + 1;        
+
+            foreach ($pages as $page) 
+            {           
+                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();           
+                foreach ($formChildFields as $formChildField) 
+                {
+                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFormFieldHTML($formChildField, $child_cfields);
+                }
+            }
+
+            return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'formFields', 'formFieldHTML', 'formFieldChildrenHTML'));        
+        
+        } else if (Auth::user()->user_type == 'TUTOR') {
+            
+            $form_id = 1;
+
+            //get form fields for name of header
+            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+
+            //[*Update] Get Entry of data for the current TEacher
+            $entries     = WritingEntries::where('form_id', $form_id)
+                                            ->where('appointed_tutor_id', Auth::user()->id)
+                                            ->orderBy('id', 'DESC')
+                                            ->paginate(Auth::user()->items_per_page ?? 15);
+
+            $tutors      = $tutor->getTutorByID(Auth::user()->id);
+            
+            return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
+        
+        
         }
 
-        return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+
     }
 
 
     public function entries($form_id, Tutor $tutor) 
     {
-        //get form fields for name of header
-        $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-        //Get Entry of data
-        $entries     = WritingEntries::where('form_id', $form_id)->get();
-        $tutors      = $tutor->getTutors();        
-        return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
+
+        //abort_if(Gate::denies('writing_entries'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
+
+            //get form fields for name of header
+            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+
+            //Get Entry of data
+            $entries     = WritingEntries::where('form_id', $form_id)
+                                    ->orderBy('id', 'DESC')
+                                    ->paginate(Auth::user()->items_per_page ?? 15);
+
+
+            $tutors      = $tutor->getTutors();
+            
+            return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
+
+        } else {
+              abort(401, "User is not authorized");
+        }
     }
 
-    public function entry($form_id, $entry_id, Tutor $tutor)  {
 
-        //get form fields for name of header
-        $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-        //Get Entry of data
-        $entries     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->get();
+    /* 
+        Show an entry
+        @var $form_id : form id defaults to 1
+        @entry_id 
+        @tutor model
+    */
+    public function entry($form_id, $entry_id, Tutor $tutor)  
+    {
 
-        $tutors      = $tutor->getTutors();
+        //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
+            //get form fields for name of header
+            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-        return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors'));
+            //Get Entry of data
+            $entries     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->get();
+
+            $tutors      = $tutor->getTutors();
+
+            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors'));
+        //} else {
+           // abort(401, "User is not authorized");
+        //}
     }
 
 
     public function preview($id, FormFields $formFieldModel) 
     {        
-        $form_id = $id; 
-        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-        $formFieldHTML[] = "";
 
-        $cfields = $formFields;        
-        foreach ($formFields as $formField) 
-        {
-            $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
-        }
+        //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
 
-        /************ GET CHILDREN HTML ************/
-        $formFieldChildrenHTML[] = "";
-        //Get Pages
-        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-        $pageCounter =  $pages->count() + 1;
+            $form_id = $id; 
+            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+            $formFieldHTML[] = "";
 
-        foreach ($pages as $page) 
-        {           
-            $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-            foreach ($formChildFields as $formChildField) 
+            $cfields = $formFields;        
+            foreach ($formFields as $formField) 
             {
-                $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
             }
-        }
-        return view('admin.modules.writing.preview', compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+
+            /************ GET CHILDREN HTML ************/
+            $formFieldChildrenHTML[] = "";
+            //Get Pages
+            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pageCounter =  $pages->count() + 1;
+
+            foreach ($pages as $page) 
+            {           
+                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+                foreach ($formChildFields as $formChildField) 
+                {
+                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                }
+            }
+            return view('admin.modules.writing.preview', compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+        } else {
+            abort(401, "User is not authorized");
+        }            
 
     }
 

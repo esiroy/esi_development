@@ -1,47 +1,24 @@
 @extends('layouts.admin')
 
 @section('content')
-
+       
 
     <div class="container bg-light px-0">
         <div class="row">
             <div class="col-md-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb bg-light ">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active"><a href="{{ url('admin/writing') }}">Writing</a></li>
-                        <li class="breadcrumb-item " aria-current="page">Entries</li>
-                    </ol>
-                </nav>
+                @include('admin.modules.writing.includes.menu.top')      
             </div>
         </div>
     </div>
 
-
     <div class="container bg-light">
         <div class="row">
             <div class="col-md-12">
-                
-
-                <div class="card esi-card mb-2">
-                    <div id="form-navigation" class="card-body esi-card-body">              
-                        <div class="form-inline">
-                            <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">
-                                    Edit
-                                </button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-success btn-outline-secondary mr-2" type="button">Entries</button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">                                
-                                    Preview
-                                </button>
-                            </a>                            
-                        </div>                                                
-                    </div>
+                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                <div class="card esi-card mb-2">                                 
+                    @include('admin.modules.writing.includes.menu.navigation')
                 </div>
+                @endif
 
                
                 @foreach ($entries as $entry)
