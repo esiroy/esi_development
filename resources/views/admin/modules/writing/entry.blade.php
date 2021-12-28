@@ -10,7 +10,9 @@
                     <ol class="breadcrumb bg-light ">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active"><a href="{{ url('admin/writing') }}">Writing</a></li>
+                        @if (Auth::user()->user_type == 'ADMINISTRATOR') 
                         <li class="breadcrumb-item "><a href="{{ url('admin/writing/entries/'.$form_id ) }}">Entries</a></li>
+                        @endif
                         <li class="breadcrumb-item " aria-current="page">Entry - {{ $entry_id }}</li>
                     </ol>
                 </nav>
@@ -19,28 +21,17 @@
     </div>
 
 
+
     <div class="container bg-light">
         <div class="row">
             <div class="col-md-12">
-                <div class="card esi-card mb-2">
-                    <div id="form-navigation" class="card-body esi-card-body">              
-                        <div class="form-inline">
-                            <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">
-                                    Edit
-                                </button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-success btn-outline-secondary mr-2" type="button">Entries</button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">                                
-                                    Preview
-                                </button>
-                            </a>                            
-                        </div>                                                
-                    </div>
+
+                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                <div class="card esi-card mb-2">                                 
+                    @include('admin.modules.writing.includes.menu.navigation')
                 </div>
+                @endif
+
             </div>
         </div>
     </div>
@@ -103,8 +94,45 @@
                         </div>
 
                     </div>
-
                 </div>
+
+
+                @if (Auth::user()->user_type == 'TUTOR')
+                <div class="card mt-4">
+                    <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
+                        Content Information
+                    </div>
+
+                    <div class="card-body">
+                    
+                        <!--[start] From Tutor -->                    
+
+                        <div class="container">
+                            <div class="row">
+                                <!--[start] Column 1-->
+                                <div class="col-2">
+                                    Course: 
+                                </div>
+                                <div class="col-4">
+                                    <input type="text" name="course" id="course">
+                                </div>
+
+                                <!--[start] Column 2-->
+                                <div class="col-2">
+                                    Appointed: 
+                                </div>
+                                <div class="col-4">
+                                    <input type="checkbox" name="appointed" id="appointed">
+                                </div>
+                            </div>
+                        </div>
+                        <!--[end] From Tutor -->
+                    </div>
+                </div> 
+                @endif
+
+
+
             </div>
 
             <div class="col-md-4">
@@ -119,9 +147,14 @@
                             <table class="table esi-table table-bordered table-striped  ">
                                 <thead>
                                     <tr>
-
                                         <td>Countdown</td>
-                                        <td>Appoint Teacher</td>
+                                        <td>
+                                            @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                                                Appoint Teacher
+                                            @else 
+                                                Teacher
+                                            @endif                                            
+                                        </td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -143,16 +176,19 @@
                                             </script> 
                                         </td>
                                         <td>
-                                            <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
-                                               
-                                                <option value="" class="{{ $entry->id }}"> Select </option>
-                                                @foreach($tutors as $tutor)
-                                                <option 
-                                                    value="{{ $tutor->user_id }}" class="{{ $entry->id }}" @if ($entry->appointed_tutor_id == $tutor->user_id ) {{ " selected = 'selected"}}  @endif>
+                                           @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                                                <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
+                                                    <option value="" class="{{ $entry->id }}"> Select </option>
+                                                    @foreach($tutors as $tutor)
+                                                    <option value="{{ $tutor->user_id }}" class="{{ $entry->id }}" @if ($entry->appointed_tutor_id == $tutor->user_id ) {{ " selected = 'selected"}}  @endif>
                                                         {{ $tutor->user->firstname }}
                                                     </option>
-                                                @endforeach
-                                            </select>
+                                                    @endforeach
+                                                </select>
+
+                                            @else 
+                                                {{Auth::user()->firstname ?? " "}}
+                                            @endif                                              
                                         </td>                                       
                                     </tr>
                                 @endforeach                                                                       

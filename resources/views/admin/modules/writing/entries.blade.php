@@ -6,13 +6,7 @@
     <div class="container bg-light px-0">
         <div class="row">
             <div class="col-md-12">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb bg-light ">
-                        <li class="breadcrumb-item"><a href="#">Home</a></li>
-                        <li class="breadcrumb-item active"><a href="{{ url('admin/writing') }}">Writing</a></li>
-                        <li class="breadcrumb-item " aria-current="page">Entries</li>
-                    </ol>
-                </nav>
+                @include('admin.modules.writing.includes.menu.top')      
             </div>
         </div>
     </div>
@@ -23,25 +17,11 @@
             <div class="col-md-12">
                 
 
-                <div class="card esi-card mb-2">
-                    <div id="form-navigation" class="card-body esi-card-body">              
-                        <div class="form-inline">
-                            <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">
-                                    Edit
-                                </button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-success btn-outline-secondary mr-2" type="button">Entries</button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">                                
-                                    Preview
-                                </button>
-                            </a>                            
-                        </div>                                                
-                    </div>
+                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                <div class="card esi-card mb-2">                                 
+                    @include('admin.modules.writing.includes.menu.navigation')
                 </div>
+                @endif
 
 
                 <div class="card">
@@ -74,7 +54,6 @@
                                         <td>First Name</td>
                                         <td>Last Name</td>
                                         <td>ご登録メールアドレス</td>
-                                       
 
                                         @foreach ($formFields as $formField)
                                             <td class="{{ strtolower(str_replace(' ', '_', $formField->name)) }}_data" style="display:none">
@@ -83,7 +62,13 @@
                                         @endforeach   
 
                                         <td>Countdown</td>
-                                        <td>Appoint Teacher</td>
+                                        <td>
+                                            @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                                                Appoint Teacher
+                                            @else 
+                                                Teacher
+                                            @endif
+                                        </td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -118,18 +103,33 @@
                                         <td>
                                             <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
                                                
-                                                <option value="" class="{{ $entry->id }}"> Select </option>
-                                                @foreach($tutors as $tutor)
-                                                <option 
-                                                    value="{{ $tutor->user_id }}" class="{{ $entry->id }}" @if ($entry->appointed_tutor_id == $tutor->user_id ) {{ " selected = 'selected"}}  @endif>
-                                                        {{ $tutor->user->firstname }}
-                                                    </option>
-                                                @endforeach
+                                                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                                                    <option value="" class="{{ $entry->id }}"> Select </option>
+                                                    @foreach($tutors as $tutor)
+                                                    <option 
+                                                        value="{{ $tutor->user_id }}" class="{{ $entry->id }}" @if ($entry->appointed_tutor_id == $tutor->user_id ) {{ " selected = 'selected"}}  @endif>
+                                                            {{ $tutor->user->firstname }}
+                                                        </option>
+                                                    @endforeach
+                                                @else 
+                                                    @foreach($tutors as $tutor)
+                                                    <option 
+                                                        value="{{ $tutor->user_id }}" class="{{ $entry->id }}" @if ($entry->appointed_tutor_id == $tutor->user_id ) {{ " selected = 'selected"}}  @endif>
+                                                            {{ $tutor->user->firstname }}
+                                                        </option>
+                                                    @endforeach
+                                                @endif
                                             </select>
                                         </td>                                       
                                     </tr>
                                 @endforeach                                                                       
                             </table>
+
+
+                            <div class="mt-4 mr-4 float-right">
+                                {{ $entries->links() }}
+                            </div>
+
                         </div>
                     </div>
                 </div>
