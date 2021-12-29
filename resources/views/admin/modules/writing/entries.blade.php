@@ -96,7 +96,7 @@
 
                                             <script type="text/javascript">
                                               window.addEventListener('load', function() {
-                                                countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }} ");
+                                                countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
                                               });
                                             </script> 
                                         </td>
