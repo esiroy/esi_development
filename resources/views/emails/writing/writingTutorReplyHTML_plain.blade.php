@@ -11,4 +11,4 @@ Content {{ $writingGrade['content'] }} {{PHP_EOL}}
 grade {{ $writingGrade['grade'] }} {{PHP_EOL}}
 
 
-Attachment {{ url($publicURL . basename($uploadFileName)) }} {{PHP_EOL}}
+Attachment {{ url($writingGrade['attachment']) }} {{PHP_EOL}}
