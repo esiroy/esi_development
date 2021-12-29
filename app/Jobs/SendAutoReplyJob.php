@@ -32,13 +32,14 @@ class SendAutoReplyJob implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate)
+    public function __construct($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment = null)
     {
         $this->emailTo = $emailTo;
         $this->emailFrom = $emailFrom;
         $this->emailSubject = $emailSubject;        
         $this->emailMessage = $emailMessage;
         $this->emailTemplate = $emailTemplate;
+        $this->attachment = $attachment;
     }
 
     /**
@@ -53,11 +54,12 @@ class SendAutoReplyJob implements ShouldQueue
         $emailFrom = $this->emailFrom;
         $message = $this->emailMessage;
         $emailSubject = $this->emailSubject;
-        $emailTemplate = $this->emailTemplate;                
+        $emailTemplate = $this->emailTemplate;   
+        $emailAttachment = $this->attachment;
 
         //$email = new MailAutoReply($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate)
         //Mail::to($emailTo)->send($email);
 
-        Mail::send(new MailAutoReply($emailTo, $emailFrom, $emailSubject, $message, $emailTemplate));
+        Mail::send(new MailAutoReply($emailTo, $emailFrom, $emailSubject, $message, $emailTemplate, $emailAttachment));
     }
 }
