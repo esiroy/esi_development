@@ -14,7 +14,7 @@ use App\Models\Tutor;
 use App\Models\WritingEntryGrade;
 use App\Models\AgentTransaction;
 use App\Models\User;
-use Gate, Auth;
+use Gate, Auth, Config;
 
 class WritingController extends Controller
 {
