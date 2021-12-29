@@ -54,8 +54,14 @@ class SendAutoReplyJob implements ShouldQueue
         $emailFrom = $this->emailFrom;
         $message = $this->emailMessage;
         $emailSubject = $this->emailSubject;
-        $emailTemplate = $this->emailTemplate;   
-        $emailAttachment = $this->attachment;
+        $emailTemplate = $this->emailTemplate;
+
+        if (isset($this->attachement)) {
+            $emailAttachment = $this->attachment;
+        } else {
+            $emailAttachment = null;
+        }
+        
 
         //$email = new MailAutoReply($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate)
         //Mail::to($emailTo)->send($email);
