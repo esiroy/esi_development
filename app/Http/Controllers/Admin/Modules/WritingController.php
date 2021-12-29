@@ -213,7 +213,8 @@ class WritingController extends Controller
 
                 if (isset($user)) {
                     //E-Mail Template
-                    $emailTemplate = 'emails.writing.teacherAutoReply';
+                    $emailTemplate = 'emails.writing.teacherAutoreply';
+                    
                     $formatEntryHTML = view('emails.writing.writingTutorReplyHTML', compact('writingGrade'))->render();
 
                     //E-Mail Recipient
