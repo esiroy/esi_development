@@ -13,7 +13,7 @@ use App\Models\UploadFile;
 use App\Models\Tutor;
 use App\Models\WritingEntryGrade;
 use App\Models\AgentTransaction;
-
+use App\Models\User;
 use Gate, Auth;
 
 class WritingController extends Controller
