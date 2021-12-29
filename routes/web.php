@@ -291,8 +291,14 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         //Admin Writing
         Route::resource('/writing', 'Modules\WritingController');
         Route::get('writing/entries/{form_id}', 'Modules\WritingController@entries')->name('writing.entries');
-        Route::get('writing/entry/{form_id}/{entry_id}', 'Modules\WritingController@entry')->name('writing.entries');
-
+        Route::get('writing/entry/{form_id}/{entry_id}', 'Modules\WritingController@entry')->name('writing.entry');
+           
+        Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');        
+        Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.updateFields');
+        Route::get('/writing/preview/{id}', 'Modules\WritingController@preview')->name('writing.previewFormCreator');        
+        Route::post('/writing', 'Modules\WritingController@store')->name('writing.store');
+        Route::post('/writing/upload', 'Modules\WritingController@upload')->name('writing.upload');
+        Route::post('/writing/postGrade/{id}', 'Modules\WritingController@postGrade')->name('writing.postGrade');
 
         //upload photo
         Route::resource('image-upload', 'imageUploadController');
@@ -383,12 +389,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/lessons', 'Modules\ReportController');
         Route::resource('/salary', 'Modules\SalaryReportController');
 
-        /* Writing (ADMIN BACKEND) */        
-        Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');        
-        Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.updateFields');
-        Route::get('/writing/preview/{id}', 'Modules\WritingController@preview')->name('writing.previewFormCreator');        
-        Route::post('/writing', 'Modules\WritingController@store')->name('writing.store');
-        Route::post('/writing/upload', 'Modules\WritingController@upload')->name('writing.upload');
+
 
 
         /* Administrator Module Lists */

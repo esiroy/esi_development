@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin\Modules;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use App\Models\Member;
 use App\Models\FormFields;
 use App\Models\ConditionalFieldLogic;
 use App\Models\WritingEntries;
 use App\Models\UploadFile;
 use App\Models\Tutor;
+use App\Models\WritingEntryGrade;
+use App\Models\AgentTransaction;
+
 use Gate, Auth;
 
 class WritingController extends Controller
@@ -122,8 +125,11 @@ class WritingController extends Controller
         @entry_id 
         @tutor model
     */
-    public function entry($form_id, $entry_id, Tutor $tutor)  
+    public function entry($form_id, $entry_id, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
     {
+
+        //get the posted grade
+        $postedEntry =  $writingEntryGrade->where('writing_entry_id', $entry_id)->first();        
 
         //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         //if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
@@ -135,10 +141,97 @@ class WritingController extends Controller
 
             $tutors      = $tutor->getTutors();
 
-            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors'));
+            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors', 'postedEntry'));
         //} else {
            // abort(401, "User is not authorized");
         //}
+    }
+
+
+    public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile) 
+    {    
+
+        $storagePath = 'public/uploads/writing_entries/';
+        $publicURL = 'storage/uploads/writing_entries/';
+        $file = $request->file;
+
+        if ($file) {
+            $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+            if ($uploadFileName) {
+                echo "uploaded $uploadFileName : $file <BR>" ;
+            }           
+        } else {
+            $uploadFileName = null;
+        }
+
+        $writingGrade = [
+                'writing_entry_id'  => $id,
+                'course'            => $request->course,
+                'material'          => $request->material,
+                'subject'           => $request->subject,
+                'appointed'         => boolval($request->appointed),
+                'grade'             => $request->grade,
+                'words'             => $request->words,
+                'content'           => $request->content,
+                'attachment'        => $publicURL . basename($uploadFileName)
+            ];
+
+        $writingEntryGrade->create($writingGrade);
+
+        //Get the entry id and know you the member is
+        $writingEntry = $writingEntries->find($id);
+        if (isset($writingEntry)) 
+        {
+            //amount variations (180 = 1 pt), (181 - 2 pts) (501-800 - 3 pts)
+            if ($request->words >= 1 && $request->words <= 180) {
+                $amount = 1;
+            } else if ($request->words >= 181 && $request->words <= 500) {
+                $amount = 2;
+            } else if ($request->words > 501) {
+                $amount = 3;
+            }            
+
+            $member = $member->where('user_id', $writingEntry->user_id)->first();
+            if (isset($member)) {
+                //add member transaction (agent subtract since we are deducting point)
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type' => 'AGENT_SUBTRACT',
+                    'agent_id' => null,
+                    'member_id' => $member->user_id,
+                    'lesson_shift_id' => $member->lesson_shift_id,
+                    'created_by_id' => Auth::user()->id,
+                    'amount' => $amount,
+                    'price' => 1,
+                    'remarks' => "WRITING ENTRY",
+                    //'credits_expiration' => $expiry_date,
+                    //'old_credits_expiration' => $old_credits_expiration,
+                ];
+                AgentTransaction::create($agentCredit);  
+
+
+                //E-Mail Template
+                $emailTemplate = 'emails.writing.autoreply';           
+
+                $user = User::find($member->user_id);
+                //E-Mail Recipient
+                $emailTo['name']    = $user->firstname ." ". $user->lastname;
+                $emailTo['email']   = $user->email; 
+
+                //Email Reply To
+                $emailFrom['name']   = Config::get('mail.from.name');
+                $emailFrom['email']  = Config::get('mail.from.address');
+
+                $emailSubject =  '添削サービス受付のご案内'; //Information on correction service reception
+                $emailMessage =  $formatEntryHTML;
+                $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+                dispatch($job);  
+
+            }                    
+        }
+
+        return redirect()->back()->with(['message' => 'The Grade and content was successfully posted']);        
+    
     }
 
 
