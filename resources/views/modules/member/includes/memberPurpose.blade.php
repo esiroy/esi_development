@@ -679,7 +679,7 @@
 
 
         $('.sub_options input').each(function(i, obj) {
-            console.log( $(this).val() + " " + $(this)[0].checked);
+            //console.log( $(this).val() + " " + $(this)[0].checked);
 
             if ($(this).is(':checked'))             
             {
