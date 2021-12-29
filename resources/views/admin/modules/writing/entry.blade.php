@@ -95,13 +95,13 @@
                                         </div>                                                                
                                     @endif
                                 @else
-                                    <div class="col-md-12"> 
-                                        <div class="text-left pl-2 py-2">
-                                            @if (isset($fieldValue[$entry->id][$formField->id]))
-                                                {!! $fieldValue[$entry->id][$formField->id]  !!}
-                                            @endif
+                                    @if (isset($fieldValue[$entry->id][$formField->id]))
+                                        <div class="col-md-12"> 
+                                            <div class="text-left pl-2 py-2">                                            
+                                                {!! $fieldValue[$entry->id][$formField->id]  !!}                                            
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 @endif
                             @endforeach
                         @endforeach
