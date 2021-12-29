@@ -207,26 +207,28 @@ class WritingController extends Controller
                     //'credits_expiration' => $expiry_date,
                     //'old_credits_expiration' => $old_credits_expiration,
                 ];
-                AgentTransaction::create($agentCredit);  
-
-
-                //E-Mail Template
-                $emailTemplate = 'emails.writing.autoreply';           
+                AgentTransaction::create($agentCredit);
 
                 $user = User::find($member->user_id);
-                //E-Mail Recipient
-                $emailTo['name']    = $user->firstname ." ". $user->lastname;
-                $emailTo['email']   = $user->email; 
 
-                //Email Reply To
-                $emailFrom['name']   = Config::get('mail.from.name');
-                $emailFrom['email']  = Config::get('mail.from.address');
+                if (isset($user)) {
+                    //E-Mail Template
+                    $emailTemplate = 'emails.writing.teacherAutoReply';
+                    $formatEntryHTML = view('emails.writing.writingTutorReplyHTML', compact('writingGrade'))->render();
 
-                $emailSubject =  '添削サービス受付のご案内'; //Information on correction service reception
-                $emailMessage =  $formatEntryHTML;
-                $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
-                dispatch($job);  
+                    //E-Mail Recipient
+                    $emailTo['name']    = $user->firstname ." ". $user->lastname;
+                    $emailTo['email']   = $user->email; 
 
+                    //Email Reply To
+                    $emailFrom['name']   = Config::get('mail.from.name');
+                    $emailFrom['email']  = Config::get('mail.from.address');
+
+                    $emailSubject =  $request->subject; //Information on correction service reception
+                    $emailMessage =  $formatEntryHTML;
+                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+                    dispatch($job);  
+                }
             }                    
         }
 
