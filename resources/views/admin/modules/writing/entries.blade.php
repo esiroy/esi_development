@@ -173,7 +173,7 @@
         */
         function countdown(id, expiration_date) 
         {
-            console.log(expiration_date);
+            //console.log(expiration_date);
             
             // Set the date we're counting down to
             var countDownDate = new Date(expiration_date).getTime();
