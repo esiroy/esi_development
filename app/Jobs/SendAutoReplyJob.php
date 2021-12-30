@@ -19,6 +19,7 @@ class SendAutoReplyJob implements ShouldQueue
     public $emailFrom;
     public $emailMessage; 
     public $emailSubject;
+    public $attachment;
     protected $emailTemplate;
 
     /**

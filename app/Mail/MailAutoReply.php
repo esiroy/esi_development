@@ -15,7 +15,8 @@ class MailAutoReply extends Mailable
     public $emailFrom;
     public $emailMessage; 
     public $emailSubject;
-    protected $emailTemplate;       
+    public $attachment;
+    protected $emailTemplate;    
 
     /**
      * Create a new Auto Reply job instance.
