@@ -11,15 +11,12 @@ use Config;
 class MailAutoReply extends Mailable
 {
     use Queueable, SerializesModels;
-
-
     public $emailTo;
     public $emailFrom;
     public $emailMessage; 
     public $emailSubject;
-    protected $emailTemplate;
-
-        
+    public $attachment;
+    protected $emailTemplate;    
 
     /**
      * Create a new Auto Reply job instance.
@@ -32,13 +29,14 @@ class MailAutoReply extends Mailable
      *
      * @return void
      */
-    public function __construct($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate)
+    public function __construct($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment = null)
     {
         $this->emailTo = $emailTo;
         $this->emailFrom = $emailFrom;
         $this->emailSubject = $emailSubject;        
         $this->emailMessage = $emailMessage;
         $this->emailTemplate = $emailTemplate;
+        $this->attachment = $attachment;
     }
 
     /**
@@ -48,11 +46,24 @@ class MailAutoReply extends Mailable
      */
     public function build()
     {
-        return $this->view($this->emailTemplate)
+
+        if (isset($this->attachment)) 
+        {
+            return $this->view($this->emailTemplate)
                     ->text($this->emailTemplate."_plain")                        
                     ->to($this->emailTo['email'])
                     ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
-                    ->subject($this->emailSubject);        
-    }
-    
+                    ->subject("My Tutor - ". $this->emailSubject)
+                    ->attach($this->attachment['realPath'],[
+                            'as' => $this->attachment['clientOriginalName'],
+                            'mime' => $this->attachment['clientMimeType'] 
+                        ]);
+        } else {
+            return $this->view($this->emailTemplate)
+                    ->text($this->emailTemplate."_plain")                        
+                    ->to($this->emailTo['email'])
+                    ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
+                    ->subject("My Tutor :: " .$this->emailSubject);
+        }
+    }    
 }

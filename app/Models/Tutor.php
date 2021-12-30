@@ -41,4 +41,18 @@ class Tutor extends Model
        ->get();
        return $tutors;
     }
+
+
+    public function getTutorByID($id, $shift = 4) {
+       //Updated: Remove terminated tutor on the list
+       $tutors = Tutor::where('lesson_shift_id', $shift)
+       ->where('is_terminated', 0)
+       ->join('users', 'users.id', '=', 'tutors.user_id')
+       ->orderBy('sort', 'ASC')
+       ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
+       ->where('tutors.user_id', $id)
+       ->where('valid', 1)
+       ->get();
+       return $tutors;
+    }
 }

@@ -4,12 +4,17 @@ namespace App\Http\Controllers\Admin\Modules;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+use App\Models\Member;
 use App\Models\FormFields;
 use App\Models\ConditionalFieldLogic;
 use App\Models\WritingEntries;
 use App\Models\UploadFile;
 use App\Models\Tutor;
-use Gate, Auth;
+use App\Models\WritingEntryGrade;
+use App\Models\AgentTransaction;
+use App\Models\User;
+use Gate, Auth, Config;
 
 class WritingController extends Controller
 {
@@ -27,92 +32,257 @@ class WritingController extends Controller
     }
     
     
-    public function index(FormFields $formFieldModel) 
+    public function index(FormFields $formFieldModel,  Tutor $tutor) 
     {
-        $form_id = 1; //all forms are 1(for now)
-        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-        $formFieldHTML[] = "";
 
-        //CONDITIONAL FIELDS (init)
-        $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
-        foreach ($formFields as $formField) 
+        //abort_if(Gate::denies('writing_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
         {
-            $formFieldHTML[] = $formFieldModel->generateFormFieldHTML($formField, $cfields);
-        }
+        
+            $form_id = 1; //all forms are 1(for now)
+            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+            $formFieldHTML[] = "";
 
-        // GET CHILDREN HTML
-        $formFieldChildrenHTML[] = "";
+            //CONDITIONAL FIELDS (init)
+            $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-        $pageCounter =  $pages->count() + 1;        
-
-        foreach ($pages as $page) 
-        {           
-            $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();           
-            foreach ($formChildFields as $formChildField) 
+            foreach ($formFields as $formField) 
             {
-                $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFormFieldHTML($formChildField, $child_cfields);
+                $formFieldHTML[] = $formFieldModel->generateFormFieldHTML($formField, $cfields);
             }
+
+            // GET CHILDREN HTML
+            $formFieldChildrenHTML[] = "";
+
+            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pageCounter =  $pages->count() + 1;        
+
+            foreach ($pages as $page) 
+            {           
+                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();           
+                foreach ($formChildFields as $formChildField) 
+                {
+                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFormFieldHTML($formChildField, $child_cfields);
+                }
+            }
+
+            return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'formFields', 'formFieldHTML', 'formFieldChildrenHTML'));        
+        
+        } else if (Auth::user()->user_type == 'TUTOR') {
+            
+            $form_id = 1;
+
+            //get form fields for name of header
+            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+
+            //[*Update] Get Entry of data for the current TEacher
+            $entries     = WritingEntries::where('form_id', $form_id)
+                                            ->where('appointed_tutor_id', Auth::user()->id)
+                                            ->orderBy('id', 'DESC')
+                                            ->paginate(Auth::user()->items_per_page ?? 15);
+
+            $tutors      = $tutor->getTutorByID(Auth::user()->id);
+            
+            return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
+        
+        
         }
 
-        return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+
     }
 
 
     public function entries($form_id, Tutor $tutor) 
     {
-        //get form fields for name of header
-        $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-        //Get Entry of data
-        $entries     = WritingEntries::where('form_id', $form_id)->get();
-        $tutors      = $tutor->getTutors();        
-        return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
+
+        //abort_if(Gate::denies('writing_entries'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
+
+            //get form fields for name of header
+            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+
+            //Get Entry of data
+            $entries     = WritingEntries::where('form_id', $form_id)
+                                    ->orderBy('id', 'DESC')
+                                    ->paginate(Auth::user()->items_per_page ?? 15);
+
+
+            $tutors      = $tutor->getTutors();
+            
+            return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
+
+        } else {
+              abort(401, "User is not authorized");
+        }
     }
 
-    public function entry($form_id, $entry_id, Tutor $tutor)  {
 
-        //get form fields for name of header
-        $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-        //Get Entry of data
-        $entries     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->get();
+    /* 
+        Show an entry
+        @var $form_id : form id defaults to 1
+        @entry_id 
+        @tutor model
+    */
+    public function entry($form_id, $entry_id, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
+    {
 
-        $tutors      = $tutor->getTutors();
+        //get the posted grade
+        $postedEntry =  $writingEntryGrade->where('writing_entry_id', $entry_id)->first();        
 
-        return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors'));
+        //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        //if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
+            //get form fields for name of header
+            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+
+            //Get Entry of data
+            $entries     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->get();
+
+            $tutors      = $tutor->getTutors();
+
+            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors', 'postedEntry'));
+        //} else {
+           // abort(401, "User is not authorized");
+        //}
+    }
+
+
+    public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile) 
+    {    
+
+        $storagePath = 'public/uploads/writing_entries/';
+        $publicURL = 'storage/uploads/writing_entries/';
+        //$file = $request->file;
+ 
+        $file = $request->file('file');
+
+        if ($file) {
+            $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+            if ($uploadFileName) {
+                echo "uploaded $uploadFileName : $file <BR>" ;
+            }           
+        } else {
+            $uploadFileName = null;
+        }
+
+        $writingGrade = [
+                'writing_entry_id'  => $id,
+                'course'            => $request->course,
+                'material'          => $request->material,
+                'subject'           => $request->subject,
+                'appointed'         => boolval($request->appointed),
+                'grade'             => $request->grade,
+                'words'             => $request->words,
+                'content'           => $request->content,
+                'attachment'        => $publicURL . basename($uploadFileName)
+            ];
+
+        $writingEntryGrade->create($writingGrade);
+
+        //Get the entry id and know you the member is
+        $writingEntry = $writingEntries->find($id);
+        if (isset($writingEntry)) 
+        {
+            //amount variations (180 = 1 pt), (181 - 2 pts) (501-800 - 3 pts)
+            if ($request->words >= 1 && $request->words <= 180) {
+                $amount = 1;
+            } else if ($request->words >= 181 && $request->words <= 500) {
+                $amount = 2;
+            } else if ($request->words > 501) {
+                $amount = 3;
+            }            
+
+            $member = $member->where('user_id', $writingEntry->user_id)->first();
+            if (isset($member)) {
+                //add member transaction (agent subtract since we are deducting point)
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type' => 'AGENT_SUBTRACT',
+                    'agent_id' => null,
+                    'member_id' => $member->user_id,
+                    'lesson_shift_id' => $member->lesson_shift_id,
+                    'created_by_id' => Auth::user()->id,
+                    'amount' => $amount,
+                    'price' => 1,
+                    'remarks' => "WRITING ENTRY",
+                    //'credits_expiration' => $expiry_date,
+                    //'old_credits_expiration' => $old_credits_expiration,
+                ];
+                AgentTransaction::create($agentCredit);
+
+                $user = User::find($member->user_id);
+
+                if (isset($user)) {
+                    //E-Mail Template
+                    $emailTemplate = 'emails.writing.teacherAutoreply';
+                    
+                    $formatEntryHTML = view('emails.writing.writingTutorReplyHTML', compact('writingGrade'))->render();
+
+                    //E-Mail Recipient
+                    $emailTo['name']    = $user->firstname ." ". $user->lastname;
+                    $emailTo['email']   = $user->email; 
+
+                    //Email Reply To
+                    $emailFrom['name']   = Config::get('mail.from.name');
+                    $emailFrom['email']  = Config::get('mail.from.address');
+
+                    $emailSubject =  $request->subject; //Information on correction service reception
+                    $emailMessage =  $formatEntryHTML;
+
+                    //$fileURL = url($publicURL . basename($uploadFileName));
+                    $attachment = [
+                        'clientOriginalName' => $file->getClientOriginalName(),
+                        'realPath' => $file->getRealPath(),
+                        'clientMimeType'  => $file->getClientMimeType()
+                    ];
+
+                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment);
+                    dispatch($job);  
+                }
+            }                    
+        }
+
+        return redirect()->back()->with(['message' => 'The Grade and content was successfully posted']);        
+    
     }
 
 
     public function preview($id, FormFields $formFieldModel) 
     {        
-        $form_id = $id; 
-        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-        $formFieldHTML[] = "";
 
-        $cfields = $formFields;        
-        foreach ($formFields as $formField) 
-        {
-            $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
-        }
+        //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
 
-        /************ GET CHILDREN HTML ************/
-        $formFieldChildrenHTML[] = "";
-        //Get Pages
-        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-        $pageCounter =  $pages->count() + 1;
+            $form_id = $id; 
+            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+            $formFieldHTML[] = "";
 
-        foreach ($pages as $page) 
-        {           
-            $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-            foreach ($formChildFields as $formChildField) 
+            $cfields = $formFields;        
+            foreach ($formFields as $formField) 
             {
-                $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
             }
-        }
-        return view('admin.modules.writing.preview', compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+
+            /************ GET CHILDREN HTML ************/
+            $formFieldChildrenHTML[] = "";
+            //Get Pages
+            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pageCounter =  $pages->count() + 1;
+
+            foreach ($pages as $page) 
+            {           
+                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+                foreach ($formChildFields as $formChildField) 
+                {
+                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                }
+            }
+            return view('admin.modules.writing.preview', compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+        } else {
+            abort(401, "User is not authorized");
+        }            
 
     }
 

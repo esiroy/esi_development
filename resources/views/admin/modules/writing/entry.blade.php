@@ -10,7 +10,9 @@
                     <ol class="breadcrumb bg-light ">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active"><a href="{{ url('admin/writing') }}">Writing</a></li>
+                        @if (Auth::user()->user_type == 'ADMINISTRATOR') 
                         <li class="breadcrumb-item "><a href="{{ url('admin/writing/entries/'.$form_id ) }}">Entries</a></li>
+                        @endif
                         <li class="breadcrumb-item " aria-current="page">Entry - {{ $entry_id }}</li>
                     </ol>
                 </nav>
@@ -19,30 +21,33 @@
     </div>
 
 
+
     <div class="container bg-light">
         <div class="row">
             <div class="col-md-12">
-                <div class="card esi-card mb-2">
-                    <div id="form-navigation" class="card-body esi-card-body">              
-                        <div class="form-inline">
-                            <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">
-                                    Edit
-                                </button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-success btn-outline-secondary mr-2" type="button">Entries</button>
-                            </a>
-                            <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
-                                <button class="btn btn-sm btn-outline-secondary mr-2" type="button">                                
-                                    Preview
-                                </button>
-                            </a>                            
-                        </div>                                                
-                    </div>
+
+                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                <div class="card esi-card mb-2">                                 
+                    @include('admin.modules.writing.includes.menu.navigation')
                 </div>
+                @endif
+
             </div>
         </div>
+
+            <div class="row">
+                <div class="col-12">
+                    @if (session('message'))
+                    <div class="alert alert-success">
+                        {{ session('message') }}
+                    </div>
+                    @elseif (session('error_message'))
+                    <div class="alert alert-danger">
+                        {{ session('error_message') }}
+                    </div>
+                    @endif
+                </div>
+            </div>        
     </div>
 
 
@@ -90,21 +95,170 @@
                                         </div>                                                                
                                     @endif
                                 @else
-                                    <div class="col-md-12"> 
-                                        <div class="text-left pl-2 py-2">
-                                            @if (isset($fieldValue[$entry->id][$formField->id]))
-                                                {!! $fieldValue[$entry->id][$formField->id]  !!}
-                                            @endif
+                                    @if (isset($fieldValue[$entry->id][$formField->id]))
+                                        <div class="col-md-12"> 
+                                            <div class="text-left pl-2 py-2">                                            
+                                                {!! $fieldValue[$entry->id][$formField->id]  !!}                                            
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endif
                                 @endif
                             @endforeach
                         @endforeach
                         </div>
 
                     </div>
-
                 </div>
+
+
+                @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
+                <div class="card mt-4">
+  
+
+                    @if (isset($postedEntry))
+                        <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
+                            Teacher Submitted Reply
+                        </div>                    
+                        <div class="card-body">
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-2">Course</div>
+                                    <div class="col-md-10">{{ $postedEntry->course }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">Material</div>
+                                    <div class="col-md-10">{{ $postedEntry->material }}</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">Subject</div>
+                                    <div class="col-md-10">{{ $postedEntry->subject }}</div>                                    
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">Grade</div>
+                                    <div class="col-md-10">{{ $postedEntry->grade }}</div>                                                                                                        
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">Appointed</div>
+                                    <div class="col-md-10">{{ (boolval($postedEntry->appointed) ? 'Yes' : 'No')  }}</div>                                                                                                        
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">Words</div>
+                                    <div class="col-md-10">{{ $postedEntry->words }}</div>                                                                                                        
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-2">Content</div>
+                                    <div class="col-md-10">{{ $postedEntry->content }}</div>                                                                                                        
+                                </div> 
+                                <div class="row">
+                                    <div class="col-md-2">Attachment</div>
+                                    <div class="col-md-10">
+                                        
+                                        <a href="{{ url($postedEntry->attachment) }}" download="{{ url($postedEntry->attachment) }}">Download Attachment</a>
+                                    </div>
+                                </div> 
+                                
+                            
+                            </div>
+                        </div>
+                    @else
+                        <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
+                            Teacher Reply
+                        </div>                    
+                        <div class="card-body">
+                            <form action="{{ route("admin.writing.postGrade",$entry->id ) }}"  method="POST" enctype="multipart/form-data" >
+                                @csrf
+                                <!--[start] From Tutor -->
+                                <div class="container">
+                                    <div class="row">
+                                        <!--[start] Column 1-->
+                                        <div class="col-2">
+                                            Course: 
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" name="course" id="course" class="form-control form-control-sm" required>
+                                        </div>
+
+                                        <!--[start] Column 2-->
+                                        <div class="col-2">
+                                            Appointed: 
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="checkbox" name="appointed" id="appointed" >
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <!--[start] Column 1-->
+                                        <div class="col-2">
+                                            Material: 
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" name="material" id="material" class="form-control form-control-sm">
+                                        </div>
+
+                                        <!--[start] Column 2-->
+                                        <div class="col-2">
+                                            Words: 
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="number" name="words" id="words" class="form-control form-control-sm" required>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row  mt-2">
+                                        <!--[start] Column 1-->
+                                        <div class="col-2">
+                                            Subject: 
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="text" name="subject" id="subject" class="form-control form-control-sm">
+                                        </div>
+                                    </div>
+
+                                    <div class="row  mt-2">
+                                        <!--[start] Column 1-->
+                                        <div class="col-2">
+                                            Grade: 
+                                        </div>
+                                        <div class="col-4">
+                                            <input type="number" name="grade" id="grade" class="form-control form-control-sm" required step='any'>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-2">
+                                            Content: 
+                                        </div>                                
+                                        <div class="col-10">                                   
+                                            <textarea name="content" id="content" class="form-control form-control-sm" required></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-2">
+                                        <div class="col-2">
+                                            &nbsp;
+                                        </div>                                
+                                        <div class="col-10">                                   
+                                            <input type="submit" class="btn btn-primary btn-sm" >
+                                            <input type="file" id="file" name="file" class="btn btn-sm float-right"><br><br>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>                            
+                                <!--[end] From Tutor -->
+                            </form>
+
+                        </div>
+                    @endif
+
+                </div> 
+                @endif
+
+
+
             </div>
 
             <div class="col-md-4">
@@ -119,9 +273,14 @@
                             <table class="table esi-table table-bordered table-striped  ">
                                 <thead>
                                     <tr>
-
                                         <td>Countdown</td>
-                                        <td>Appoint Teacher</td>
+                                        <td>
+                                            @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                                                Appoint Teacher
+                                            @else 
+                                                Teacher
+                                            @endif                                            
+                                        </td>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -138,21 +297,24 @@
 
                                             <script type="text/javascript">
                                               window.addEventListener('load', function() {
-                                                countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }} ");
+                                                countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
                                               });
                                             </script> 
                                         </td>
                                         <td>
-                                            <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
-                                               
-                                                <option value="" class="{{ $entry->id }}"> Select </option>
-                                                @foreach($tutors as $tutor)
-                                                <option 
-                                                    value="{{ $tutor->user_id }}" class="{{ $entry->id }}" @if ($entry->appointed_tutor_id == $tutor->user_id ) {{ " selected = 'selected"}}  @endif>
+                                           @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                                                <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
+                                                    <option value="" class="{{ $entry->id }}"> Select </option>
+                                                    @foreach($tutors as $tutor)
+                                                    <option value="{{ $tutor->user_id }}" class="{{ $entry->id }}" @if ($entry->appointed_tutor_id == $tutor->user_id ) {{ " selected = 'selected"}}  @endif>
                                                         {{ $tutor->user->firstname }}
                                                     </option>
-                                                @endforeach
-                                            </select>
+                                                    @endforeach
+                                                </select>
+
+                                            @else 
+                                                {{Auth::user()->firstname ?? " "}}
+                                            @endif                                              
                                         </td>                                       
                                     </tr>
                                 @endforeach                                                                       
@@ -169,7 +331,7 @@
 
 @section('styles')
     @parent
-    <style>
+    <style type="text/css">
         .esi-table img {
             width: 100%;
             padding: 10px;
@@ -178,6 +340,24 @@
             width: 100%;
             padding: 10px;            
         }
+
+
+
+    input:required:invalid, input:focus:invalid,
+    textarea:required:invalid, textarea:focus:invalid  {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAT1JREFUeNpi/P//PwMpgImBRMACY/x7/uDX39sXt/67cMoDyOVgMjBjYFbV/8kkqcCBrIER5KS/967s+rmkXxzI5wJiRSBm/v8P7NTfHHFFl5mVdIzhGv4+u///x+xmuAlcdXPB9KeqeLgYd3bDU2ZpRRmwH4DOeAI07QXIRKipYPD35184/nn17CO4p/+cOfjl76+/X4GYAYThGn7/g+Mfh/ZZwjUA/aABpJVhpv6+dQUjZP78Z0YEK7OezS2gwltg64GmfTu6i+HL+mUMP34wgvGvL78ZOEysf8M1sGgZvQIqfA1SDAL8iUUMPIFRQLf+AmMQ4DQ0vYYSrL9vXDz2sq9LFsiX4dLRA0t8OX0SHKzi5bXf2HUMBVA0gN356N7p7xdOS3w5fAgcfNxWtn+BJi9gVVBOQfYPQIABABvRq3BwGT3OAAAAAElFTkSuQmCC);
+        background-position: right top;
+        background-repeat: no-repeat;
+        -moz-box-shadow: none;
+    }
+    input:required:valid,
+    textarea:required:valid {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAYAAABWdVznAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAZZJREFUeNpi/P//PwMpgImBRMAy58QshrNPTzP8+vOLIUInisFQyYjhz98/DB9/fmT48/+35v7H+8KNhE2+WclZd+G0gZmJmYGThUNz1fUVMZtvbWT59eUXG9wGZIWMUPj993eJ5VeWxuy8veM/CzPL3yfvH/9H0QBSBDYZyOVm4mGYfn6q4cory5lYmFh+MrEwM/76/YsR7mk2ZjbWP///WP37/y8cqIDhx58fjvtu7XV6//ndT34G/v8FasUsDjKO/+A2PP3wpGLd+TVsfOz8XH6KAT+nHpokcu7h6d9q/BoMxToVbBYqlt9///+1GO4/WVdpXqY/zMqXn13/+vTjI9mj94/y//v9/3e9ZRObvYbDT0Y2xnm///x+wsfHB3GSGLf41jb3rv0O8nbcR66d+HPvxf2/+YZFTHaqjl8YWBnm/vv37yly5LL8+vuLgYuVa3uf/4T/Kd8SnSTZpb6FGUXwcvJxbAPKP2VkZESNOBDx8+9PBm4OwR1TwmYwcfzjsBUQFLjOxs52A2YyKysrXANAgAEA7buhysQuIREAAAAASUVORK5CYII=);
+        background-position: right top;
+        background-repeat: no-repeat;
+    }
+
+
     </style>
 @endsection
 
@@ -190,7 +370,7 @@
         */
         function countdown(id, expiration_date) 
         {
-            console.log(expiration_date);
+           // console.log(expiration_date);
             
             // Set the date we're counting down to
             var countDownDate = new Date(expiration_date).getTime();
