@@ -153,7 +153,9 @@ class WritingController extends Controller
 
         $storagePath = 'public/uploads/writing_entries/';
         $publicURL = 'storage/uploads/writing_entries/';
-        $file = $request->file;
+        //$file = $request->file;
+ 
+        $file = $request->file('file_upload');
 
         if ($file) {
             $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
