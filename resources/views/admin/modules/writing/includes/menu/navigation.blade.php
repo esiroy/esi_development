@@ -1,15 +1,16 @@
 <div id="form-navigation" class="card-body esi-card-body">              
     <div class="form-inline">
-        <a class='text-success' href="{{ url('admin/writing/?id='.$form_id) }}">
-            <button class="btn btn-sm btn-outline-success mr-2" type="button">
+       
+        <a class="" href="{{ url('admin/writing/?id='.$form_id) }}">
+            <button class="btn btn-sm @if(Request::segment(3) == '') {{ 'btn-outline-success' }} @else{{ 'btn-outline-secondary' }} @endif mr-2" type="button">
                 Edit
             </button>
         </a>
         <a class='text-secondary' href="{{ url('admin/writing/entries/'.$form_id) }}">
-            <button class="btn btn-sm btn-outline-secondary mr-2" type="button">Entries</button>
+            <button class="btn btn-sm @if(Request::segment(3) == 'entries') {{ 'btn-outline-success' }} @else{{ 'btn-outline-secondary' }} @endif mr-2" type="button">Entries</button>
         </a>
         <a class='text-secondary' href="{{ url('admin/writing/preview/'.$form_id) }}">
-            <button class="btn btn-sm btn-outline-secondary mr-2" type="button">                                
+            <button class="btn btn-sm @if(Request::segment(3) == 'preview') {{ 'btn-outline-success' }} @else{{ 'btn-outline-secondary' }} @endif mr-2" type="button">                                
                 Preview
             </button>
         </a>                            
