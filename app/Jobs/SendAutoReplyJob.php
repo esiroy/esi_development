@@ -57,7 +57,7 @@ class SendAutoReplyJob implements ShouldQueue
         $emailSubject = $this->emailSubject;
         $emailTemplate = $this->emailTemplate;
 
-        if (isset($this->attachement)) {
+        if (isset($this->attachment)) {
             $emailAttachment = $this->attachment;
         } else {
             $emailAttachment = null;
