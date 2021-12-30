@@ -76,9 +76,22 @@
                                     @php 
                                         $user = \App\Models\User::find($entry->user_id); 
                                         $values = json_decode($entry->value, true);
+
+                                        //Check if tutor has submitted Entry grade                                        
+                                        //if (Auth::user()->user_type == 'TUTOR') 
+                                        //{
+                                            $grade = \App\Models\WritingEntryGrade::where('writing_entry_id', $entry->id)->first(); 
+                                        //}
                                     @endphp                                     
                                     <tr>
-                                        <td><a href='{{ url("admin/writing/entry/$form_id/$entry->id") }}'>{{ $user->firstname }}</a></td>
+                                        <td>
+
+                                            @if (isset($grade))
+                                                <span style="color:green"><i class="fas fa-check-circle"></i></div>
+                                            @endif
+
+                                            <a href='{{ url("admin/writing/entry/$form_id/$entry->id") }}'>{{ $user->firstname }}</a>                                            
+                                        </td>
                                         <td>{{ $user->lastname }}</td>
                                         <td>{{ $user->email }}</td>
 
