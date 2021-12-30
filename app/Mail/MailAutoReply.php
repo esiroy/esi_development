@@ -54,7 +54,10 @@ class MailAutoReply extends Mailable
                     ->to($this->emailTo['email'])
                     ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
                     ->subject("My Tutor - ". $this->emailSubject)
-                    ->attach($this->attachment->getRealPath(),['as' => $this->attachment->getClientOriginalName(),'mime' => $this->attachment->getClientMimeType()]); 
+                    ->attach($this->attachment['realPath'],[
+                            'as' => $this->attachment['clientOriginalName'],
+                            'mime' => $this->attachment['clientMimeType'] 
+                        ]);
         } else {
             return $this->view($this->emailTemplate)
                     ->text($this->emailTemplate."_plain")                        

@@ -230,9 +230,14 @@ class WritingController extends Controller
                     $emailSubject =  $request->subject; //Information on correction service reception
                     $emailMessage =  $formatEntryHTML;
 
-                    $fileURL = url($publicURL . basename($uploadFileName));
+                    //$fileURL = url($publicURL . basename($uploadFileName));
+                    $attachment = [
+                        'clientOriginalName' => $file->getClientOriginalName(),
+                        'realPath' => $file->getRealPath(),
+                        'mimeType'  => $file->clientOriginalName()
+                    ];
 
-                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $fileURL);
+                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment);
                     dispatch($job);  
                 }
             }                    
