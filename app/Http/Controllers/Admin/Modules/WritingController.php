@@ -229,7 +229,7 @@ class WritingController extends Controller
 
                     $emailSubject =  $request->subject; //Information on correction service reception
                     $emailMessage =  $formatEntryHTML;
-                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $fuu);
+                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $file);
                     dispatch($job);  
                 }
             }                    
