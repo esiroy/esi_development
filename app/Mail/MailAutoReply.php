@@ -52,14 +52,14 @@ class MailAutoReply extends Mailable
                     ->text($this->emailTemplate."_plain")                        
                     ->to($this->emailTo['email'])
                     ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
-                    ->subject($this->emailSubject)
-                    ->attach($this->attachment->getRealPath(),['as' => $this->data['attachment']->getClientOriginalName(),'mime' => $this->data['attachment']->getClientMimeType()]); 
+                    ->subject("My Tutor - ". $this->emailSubject)
+                    ->attach($this->attachment->getRealPath(),['as' => $this->attachment->getClientOriginalName(),'mime' => $this->attachment->getClientMimeType()]); 
         } else {
             return $this->view($this->emailTemplate)
                     ->text($this->emailTemplate."_plain")                        
                     ->to($this->emailTo['email'])
                     ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
-                    ->subject($this->emailSubject);
+                    ->subject("My Tutor :: " .$this->emailSubject);
         }
     }    
 }
