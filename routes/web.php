@@ -291,7 +291,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         //Admin Writing
         Route::resource('/writing', 'Modules\WritingController');
         Route::get('writing/entries/{form_id}', 'Modules\WritingController@entries')->name('writing.entries');
-        Route::get('writing/entry/{form_id}/{entry_id}', 'Modules\WritingController@entry')->name('writing.entries');
+        Route::get('writing/entry/{form_id}/{entry_id}', 'Modules\WritingController@entry')->name('writing.entry');
 
 
         //upload photo

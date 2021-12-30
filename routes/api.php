@@ -132,3 +132,11 @@ Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@rem
 Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
 Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');
 Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingEntryUpdate');
+
+
+
+
+//[start] member purpose
+Route::middleware('auth:api')->post('/getMemberPurposeList', 'API\MemberPurposeController@getMemberPurposeList')->name('APIGetMemberPurposeList');
+Route::middleware('auth:api')->post('/updateMemberPurpose', 'API\MemberPurposeController@updateMemberPurpose')->name('APIUpdateMemberPurpose');
+Route::middleware('auth:api')->post('/getMemberPurpose', 'API\MemberPurposeController@getMemberPurpose')->name('APIGetMemberPurpose');
