@@ -45,10 +45,14 @@ class MemberDashboard extends Controller
                             ->first();
 
 
-            /*(New) Purpose List */
+            /*(!!! NEW 2022 UPDATE  !!!) Purpose List */
             $purpose = Purpose::where('member_id', Auth::user()->id)->orderBy('id', 'ASC')->get();
-            if (count($purpose) >= 1) {
+
+            if (count($purpose) >= 1) 
+            {
+            
                 $purposeListView = view('modules.member.includes.showMemberPurposeList', compact('purpose'))->render();
+
             } else {
                 $purposeListView = 'No record found for member';
             }

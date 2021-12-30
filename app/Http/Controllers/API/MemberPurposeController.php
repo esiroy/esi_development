@@ -43,13 +43,17 @@ class MemberPurposeController extends Controller
 
         $purpose = array();  
         $purpose_option = array();
+        $target_score = array();
 
         foreach ($purposelist as $key => $list) 
         {
-            $purpose[str_replace(' ', '_', $list->purpose)] = $list->purpose;         
+            $purpose[str_replace(' ', '_', $list->purpose)] = $list->purpose;   
+
             if ($list->purpose == "OTHERS") 
             {
                 $purpose_option["OTHERS"] = $list->purpose_options;
+                $target_score['OTHERS'] = $list->target_scores;
+                
             } else {
                 if (isset($list->purpose_options))
                 {
@@ -59,6 +63,16 @@ class MemberPurposeController extends Controller
                             $purpose_option[str_replace(' ', '_', $list->purpose) ."_". str_replace(' ', '_', $option) ] =  $option;
                         }                
                     }
+
+
+                    //Get the target scores for each purpose
+                    $targetScores = (array)json_decode($list->target_scores);
+                    if (is_array($targetScores)) {
+                        foreach ($targetScores as $targetScoreKey => $score) {
+                            $target_score[str_replace(' ', '_', $list->purpose) ."_". str_replace(' ', '_', ucfirst($targetScoreKey)) ] =  $score;
+                        }
+                    }
+
                 }
             }             
         }
@@ -67,11 +81,12 @@ class MemberPurposeController extends Controller
         if ($purpose) {
             return Response()->json([
                 "success"           => true,
+                'target_score'      => $target_score,      
                 'purpose_list'      => $purposelist,
                 "purpose"           => $purpose,
                 "purpose_option"    => $purpose_option,   
-                //'purpose_target_score'  => $purpose_target_score,             
-                'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option'))->render()                
+                      
+                'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
             ]);
         } else {
             return Response()->json([
@@ -96,12 +111,20 @@ class MemberPurposeController extends Controller
         **********************************************/
         //IELTS
         if (isset($request['IELTS'])) {
+
+            $IELTS_TargetScores = [
+                'speaking' => $request['IELTS_speaking'],
+                'writing' => $request['IELTS_Writing'],
+                'reading' => $request['IELTS_Reading'],
+                'listening' => $request['IELTS_Listening']
+            ];
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['IELTS'],
-                'purpose_options' => json_encode($request['IELTS_option']),   
+                'purpose_options' => json_encode($request['IELTS_option']),
+                'target_scores' => json_encode($IELTS_TargetScores),
                 'member_id' => $user->id
-
             ]);
         }
 

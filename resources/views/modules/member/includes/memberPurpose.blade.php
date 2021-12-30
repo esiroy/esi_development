@@ -6,23 +6,16 @@
 
         <input type="checkbox" name="IELTS_option[]" value="Speaking" {{ checkbox_ticker( $purpose_option['IELTS_Speaking'] ?? old('IELTS_option'), 'Speaking') }}> Speaking <br/>
         <div class="row ml-4 target_score">
-            <div class="col-md-4">Target Score</div>
+            <div class="col-md-4">Target Score
+              
+            </div>
             <div class="col-md-8">
                 <select id="speakingBandScore" name="IELTS_speaking" class="form-control form-control-sm pl-0">
                     <option value="" class="mx-0 px-0">Select Target Speaking Score</option>
-                    <option value="3.0" class="mx-0 px-0">3.0</option>
-                    <option value="3.5" class="mx-0 px-0">3.5</option>
-                    <option value="4.0" class="mx-0 px-0">4.0</option>
-                    <option value="4.5" class="mx-0 px-0">4.5</option>
-                    <option value="5.0" class="mx-0 px-0">5.0</option>
-                    <option value="5.5" class="mx-0 px-0">5.5</option>
-                    <option value="6.0" class="mx-0 px-0">6.0</option>
-                    <option value="6.5" class="mx-0 px-0">6.5</option>
-                    <option value="7.0" class="mx-0 px-0">7.0</option>
-                    <option value="7.5" class="mx-0 px-0">7.5</option>
-                    <option value="8.0" class="mx-0 px-0">8.0</option>
-                    <option value="8.5" class="mx-0 px-0">8.5</option>
-                    <option value="9.0" class="mx-0 px-0">9.0</option>
+                    @for ($score = 3.0; $score <= 9.0; $score = $score+0.5)
+                    <option value="{{ $score }}" class="mx-0 px-0" @if( isset($target_score['IELTS_Speaking']) && $target_score['IELTS_Speaking'] == $score) {{ ' selected ' }} @endif> {{ number_format($score, 1) }}</option>
+                    @endfor
+                    
                 </select>
             </div>
         </div>
@@ -33,19 +26,9 @@
             <div class="col-md-8">
                 <select id="writingBandScore" name="IELTS_Writing" class="form-control form-control-sm pl-0">
                     <option value="" class="mx-0 px-0">Select Target Writing Score</option>
-                    <option value="3.0" class="mx-0 px-0">3.0</option>
-                    <option value="3.5" class="mx-0 px-0">3.5</option>
-                    <option value="4.0" class="mx-0 px-0">4.0</option>
-                    <option value="4.5" class="mx-0 px-0">4.5</option>
-                    <option value="5.0" class="mx-0 px-0">5.0</option>
-                    <option value="5.5" class="mx-0 px-0">5.5</option>
-                    <option value="6.0" class="mx-0 px-0">6.0</option>
-                    <option value="6.5" class="mx-0 px-0">6.5</option>
-                    <option value="7.0" class="mx-0 px-0">7.0</option>
-                    <option value="7.5" class="mx-0 px-0">7.5</option>
-                    <option value="8.0" class="mx-0 px-0">8.0</option>
-                    <option value="8.5" class="mx-0 px-0">8.5</option>
-                    <option value="9.0" class="mx-0 px-0">9.0</option>
+                    @for ($score = 3.0; $score <= 9.0; $score = $score+0.5)
+                    <option value="{{ $score }}" class="mx-0 px-0" @if( isset($target_score['IELTS_Writing']) && $target_score['IELTS_Writing'] == $score) {{ ' selected ' }} @endif> {{ number_format($score, 1) }}</option>
+                    @endfor
                 </select>            
             </div>
         </div>
@@ -57,19 +40,9 @@
             <div class="col-md-8">
                 <select id="readingBandScore" name="IELTS_Reading" class="form-control form-control-sm pl-0">
                     <option value="" class="mx-0 px-0">Select Target Reading Score</option>
-                    <option value="3.0" class="mx-0 px-0">3.0</option>
-                    <option value="3.5" class="mx-0 px-0">3.5</option>
-                    <option value="4.0" class="mx-0 px-0">4.0</option>
-                    <option value="4.5" class="mx-0 px-0">4.5</option>
-                    <option value="5.0" class="mx-0 px-0">5.0</option>
-                    <option value="5.5" class="mx-0 px-0">5.5</option>
-                    <option value="6.0" class="mx-0 px-0">6.0</option>
-                    <option value="6.5" class="mx-0 px-0">6.5</option>
-                    <option value="7.0" class="mx-0 px-0">7.0</option>
-                    <option value="7.5" class="mx-0 px-0">7.5</option>
-                    <option value="8.0" class="mx-0 px-0">8.0</option>
-                    <option value="8.5" class="mx-0 px-0">8.5</option>
-                    <option value="9.0" class="mx-0 px-0">9.0</option>
+                    @for ($score = 3.0; $score <= 9.0; $score = $score+0.5)
+                    <option value="{{ $score }}" class="mx-0 px-0" @if( isset($target_score['IELTS_Reading']) && $target_score['IELTS_Reading'] == $score) {{ ' selected ' }} @endif> {{ number_format($score, 1) }}</option>
+                    @endfor
                 </select>
             </div>
         </div>
@@ -80,19 +53,9 @@
             <div class="col-md-8">
                 <select id="listeningBandScore" name="IELTS_Listening"class="form-control form-control-sm pl-0">
                     <option value="" class="mx-0 px-0">Select Target Listening Score</option>
-                    <option value="3.0" class="mx-0 px-0">3.0</option>
-                    <option value="3.5" class="mx-0 px-0">3.5</option>
-                    <option value="4.0" class="mx-0 px-0">4.0</option>
-                    <option value="4.5" class="mx-0 px-0">4.5</option>
-                    <option value="5.0" class="mx-0 px-0">5.0</option>
-                    <option value="5.5" class="mx-0 px-0">5.5</option>
-                    <option value="6.0" class="mx-0 px-0">6.0</option>
-                    <option value="6.5" class="mx-0 px-0">6.5</option>
-                    <option value="7.0" class="mx-0 px-0">7.0</option>
-                    <option value="7.5" class="mx-0 px-0">7.5</option>
-                    <option value="8.0" class="mx-0 px-0">8.0</option>
-                    <option value="8.5" class="mx-0 px-0">8.5</option>
-                    <option value="9.0" class="mx-0 px-0">9.0</option>
+                    @for ($score = 3.0; $score <= 9.0; $score = $score+0.5)
+                    <option value="{{ $score }}" class="mx-0 px-0" @if( isset($target_score['IELTS_Listening']) && $target_score['IELTS_Listening'] == $score) {{ ' selected ' }} @endif> {{ number_format($score, 1) }}</option>
+                    @endfor
                 </select>    
             </div>    
         </div>

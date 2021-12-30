@@ -9,12 +9,13 @@
             Exam Type : <span id="memberExamType" class="font-weight-normal"> {{ formatWords($score->exam_type) }} </span>
         </div>  
 
-
-        @foreach (json_decode($score->exam_scores) as $key => $score)
-        <div class="small font-weight-bold">
-            {{ formatWords($key) }}: <span id="overallBandScore" class="font-weight-normal"> {{ $score }} </span>
-        </div>
-        @endforeach
+        @if (isset($score->exam_scores))
+            @foreach (json_decode($score->exam_scores) as $key => $score)
+            <div class="small font-weight-bold">
+                {{ formatWords($key) }}: <span id="overallBandScore" class="font-weight-normal"> {{ $score }} </span>
+            </div>
+            @endforeach
+        @endif
 
         
 
@@ -24,4 +25,4 @@
     </div>
 </div>
 @endforeach
-{!! $scores->links() !!}
+{!! $scores->onEachSide(5)->links() !!}

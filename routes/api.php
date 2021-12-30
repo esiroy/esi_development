@@ -134,6 +134,10 @@ Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@
 Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingEntryUpdate');
 
 
+//[start] member exam  score
+Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamController@getAllMemberExamScore')->name('APIGetMemberGetAllMemberExamScores');
+Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIGetMemberLatestScore');
+Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
 
 
 //[start] member purpose

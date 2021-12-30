@@ -18,6 +18,7 @@ class CreatePurposeTable extends Migration
             $table->tinyInteger('valid');   
             $table->string('purpose')->nullable();
             $table->text('purpose_options')->nullable();
+            $table->text('target_scores')->nullable();
             $table->bigInteger('member_id')->nullable();
             $table->timestamps();
         });
