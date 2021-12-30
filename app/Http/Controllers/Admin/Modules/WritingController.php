@@ -155,7 +155,7 @@ class WritingController extends Controller
         $publicURL = 'storage/uploads/writing_entries/';
         //$file = $request->file;
  
-        $file = $request->file('file_upload');
+        $file = $request->file('file');
 
         if ($file) {
             $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
@@ -229,7 +229,7 @@ class WritingController extends Controller
 
                     $emailSubject =  $request->subject; //Information on correction service reception
                     $emailMessage =  $formatEntryHTML;
-                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $file);
+                    $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $fuu);
                     dispatch($job);  
                 }
             }                    
