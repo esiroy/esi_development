@@ -234,7 +234,7 @@ class WritingController extends Controller
                     $attachment = [
                         'clientOriginalName' => $file->getClientOriginalName(),
                         'realPath' => $file->getRealPath(),
-                        'mimeType'  => $file->getClientMimeType()
+                        'clientMimeType'  => $file->getClientMimeType()
                     ];
 
                     $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment);
