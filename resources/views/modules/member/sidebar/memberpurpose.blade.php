@@ -1,5 +1,5 @@
-<div class="profile bg-lightred pt-0 px-0">
-    <div class="col-md-12 bg-red text-white pt-2 pb-2 text-center">
+<div class="profile bg-lightBrown pt-0 px-0">
+    <div class="col-md-12 bg-brown text-white pt-2 pb-2 text-center">
         <strong>受講目的</strong> 
         <strong><!-- Purpose --></strong>
         <span class="btnUpdatePurpose float-right">
@@ -11,7 +11,7 @@
 
     <div class="col-md-12  pt-2 pb-2 ">
         <div id="memberPurposeList">
-            {!! $purposeListView !!}
+            {!! $purposeListView ?? '' !!}
         </div>
        
     </div>
@@ -26,7 +26,8 @@
 @section('scripts')
     @parent    
     <script>    
-    function getMemberPurpose() {
+    function getMemberPurpose() 
+    {       
         $.ajax({
             type: 'POST',
             url: 'api/getMemberPurpose?api_token=' + api_token,            
@@ -36,16 +37,16 @@
             beforeSend: function() 
             {
                $('#showUpdateMemberPurposeModal').css('visibility', 'hidden');
-               $('#loadingModal').modal('show');
+               //$('#loadingModal').modal('show');
             },            
             complete: function(){
-                $('#loadingModal').modal('hide');
+                //$('#loadingModal').modal('hide');
                 $('#showUpdateMemberPurposeModal').css('visibility', 'visible');                
             },              
             success: function(data) 
             {
-                $('#loadingModal').modal('hide');
-                $('#loadingModal').hide();
+                //$('#loadingModal').modal('hide');
+                //$('#loadingModal').hide();
 
                 if (data.success == true) 
                 {   
@@ -95,7 +96,7 @@
                 if (data.success == true) {
                     $('#memberPurposeList').html(data.content);
                 } else {
-                    console.log(data.message);
+                   
 
                      $('#memberPurposeList').html(data.message);
                     return false;
@@ -116,8 +117,7 @@
             },            
             success: function(data) {
                 $('#showUpdateMemberPurposeModal').modal('hide');
-                $('#showUpdateMemberPurposeModal #submitFormMemberPurpose').trigger('reset');
-
+                //$('#showUpdateMemberPurposeModal #submitFormMemberPurpose').trigger('reset');
                 //show message modal
                 $('#msgboxSuccessModal').modal('show');
                 $('#msgboxSuccessModal #msgboxMessage').html("<i class='fas fa-check' style='color:#28a745'></i> " + data.message );
@@ -130,32 +130,25 @@
     }
 
     window.addEventListener('load', function() 
-    {   
-        //ON LOAD
-       // getMemberPurposeList();
-
+    {  
+        getMemberPurposeList();
 
         $('#updatePurpose').on('click', function(){
            updatePurpose();
         });
-
 
         $('.btnUpdatePurpose a').on('click', function(){
            getMemberPurpose();
         });
 
         //Cancel Purpose Update
-        $('#cancelUpdatePurpose').on('click', function() {        
-            //$('#submitFormMemberPurpose').trigger('reset');
+        $('#cancelUpdatePurpose').on('click', function() {    
+            $('#showUpdateMemberPurposeModal #submitFormMemberPurpose').trigger('reset');                
             $('#showUpdateMemberPurposeModal').modal('hide');
         });
 
-
-
         $('#loadingModal').modal('hide');
         $('#loadingModal').hide();
-
-
     });
     </script>
 @endsection
@@ -164,7 +157,10 @@
 
 @section('styles')
     @parent
+
+
     <style>
+    
         #loadingModal  {
             z-index: 99999;
         }

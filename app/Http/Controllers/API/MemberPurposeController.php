@@ -1,19 +1,13 @@
 <?php
 
 namespace App\Http\Controllers\API;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Purpose;
-
-use Auth, App;
+use Auth,App;
 use DB;
-
-
-
 class MemberPurposeController extends Controller
 {
-
     public function getMemberPurposeList(Request $request) 
     {
         $purpose = Purpose::where('member_id', Auth::user()->id)->orderBy('id', 'ASC')->get();
@@ -32,7 +26,6 @@ class MemberPurposeController extends Controller
             ]);
         }
     }
-
 
     /** 
     ** @description: Show the Purpose form 
@@ -111,9 +104,8 @@ class MemberPurposeController extends Controller
         **********************************************/
         //IELTS
         if (isset($request['IELTS'])) {
-
             $IELTS_TargetScores = [
-                'speaking' => $request['IELTS_speaking'],
+                'speaking' => $request['IELTS_Speaking'],
                 'writing' => $request['IELTS_Writing'],
                 'reading' => $request['IELTS_Reading'],
                 'listening' => $request['IELTS_Listening']
@@ -130,10 +122,19 @@ class MemberPurposeController extends Controller
 
         //TOEFL
         if (isset($request['TOEFL'])) {
+
+            $TOEFL_TargetScores = [
+                'speaking' => $request['TOEFL_Speaking'],
+                'writing' => $request['TOEFL_Writing'],
+                'reading' => $request['TOEFL_Reading'],
+                'listening' => $request['TOEFL_Listening']
+            ];
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['TOEFL'],
                 'purpose_options' => json_encode($request['TOEFL_option']),
+                'target_scores' => json_encode($TOEFL_TargetScores),
                 'member_id' => $user->id
             ]);
         }
@@ -150,21 +151,42 @@ class MemberPurposeController extends Controller
 
         //TOEIC
         if (isset($request['TOEIC'])) {
+
+            $TOEIC_TargetScores = [
+                'speaking' => $request['TOEIC_Speaking'],
+                'writing' => $request['TOEIC_Writing'],
+                'reading' => $request['TOEIC_Reading'],
+                'listening' => $request['TOEIC_Listening']
+            ];
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['TOEIC'],
                 'purpose_options' => json_encode($request['TOEIC_option']),
+                'target_scores' => json_encode($TOEIC_TargetScores),
                 'member_id' => $user->id
             ]);
         }
 
-
         //EIKEN
         if (isset($request['EIKEN'])) {
+            $EIKEN_TargetScores = [
+                'grade_5' => $request['EIKEN_Grade_5'],
+                'grade_4' => $request['EIKEN_Grade_4'],
+                'grade_3_1st_Stage' => $request['EIKEN_Grade_3_1st_Stage'],
+                'grade_Pre_2_1st_Stage' => $request['EIKEN_Grade_Pre_2_1st_Stage'],
+                'grade_2_1st_Stage' => $request['EIKEN_Grade_2_1st_Stage'],
+                'grade_Pre_1_1st_Stage' => $request['EIKEN_Grade_Pre_1_1st_Stage'],
+                'grade_1_1st_Stage' => $request['EIKEN_Grade_1_1st_Stage'],
+
+            ];
+
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['EIKEN'],
                 'purpose_options' => json_encode($request['EIKEN_option']),
+                'target_scores' => json_encode($EIKEN_TargetScores),
                 'member_id' => $user->id
             ]);
         }            
@@ -172,10 +194,19 @@ class MemberPurposeController extends Controller
 
         //TEAP
         if (isset($request['TEAP'])) {
+
+           $TEAP_TargetScores = [
+                'speaking' => $request['TEAP_Speaking'],
+                'writing' => $request['TEAP_Writing'],
+                'reading' => $request['TEAP_Reading'],
+                'listening' => $request['TEAP_Listening']
+            ];
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['TEAP'],
                 'purpose_options' => json_encode($request['TEAP_option']),
+                'target_scores' => json_encode($TEAP_TargetScores),                
                 'member_id' => $user->id
             ]);
         }                 
@@ -183,10 +214,18 @@ class MemberPurposeController extends Controller
 
         //BUSINESS
         if (isset($request['BUSINESS'])) {
+
+           $BUSINESS_TargetScores = [
+                'basic' => $request['BUSINESS_Basic'],
+                'intermediate' => $request['BUSINESS_Intermediate'],
+                'advance' => $request['BUSINESS_Advance'],
+            ];
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['BUSINESS'],
                 'purpose_options' => json_encode($request['BUSINESS_option']),
+                'target_scores' => json_encode($BUSINESS_TargetScores),
                 'member_id' => $user->id
             ]);
         }                 
@@ -194,21 +233,44 @@ class MemberPurposeController extends Controller
 
         //BUSINESS_CAREERS
         if (isset($request['BUSINESS_CAREERS'])) {
+
+            $BUSINESS_CAREERS_TargetScores = [
+                'medicine' => $request['BUSINESS_CAREERS_Medicine'],
+                'nursing' => $request['BUSINESS_CAREERS_Nursing'],
+                'pharmaceutical' => $request['BUSINESS_CAREERS_Pharmaceutical'],
+                'accounting' => $request['BUSINESS_CAREERS_Accounting'],
+                'legal_Professionals' => $request['BUSINESS_CAREERS_Legal_Professionals'],
+                'finance' => $request['BUSINESS_CAREERS_Finance'],
+                'technology' => $request['BUSINESS_CAREERS_Technology'],
+                'commerce' => $request['BUSINESS_CAREERS_Commerce'],
+                'tourism' => $request['BUSINESS_CAREERS_Tourism'],
+                'cabin_Crew' => $request['BUSINESS_CAREERS_Cabin_Crew'],
+                'marketing_and_Advertising' => $request['BUSINESS_CAREERS_Marketing_and_Advertising'],
+            ];
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['BUSINESS_CAREERS'],
                 'purpose_options' => json_encode($request['BUSINESS_CAREERS_option']),
+                'target_scores' => json_encode($BUSINESS_CAREERS_TargetScores),
                 'member_id' => $user->id
             ]);
         }         
 
-
         //DAILY_CONVERSATION
         if (isset($request['DAILY_CONVERSATION'])) {
+
+           $DAILY_CONVERSATION_TargetScores = [
+                'basic' => $request['DAILY_CONVERSATION_Basic'],
+                'intermediate' => $request['DAILY_CONVERSATION_Intermediate'],
+                'advance' => $request['DAILY_CONVERSATION_Advance'],
+            ];
+
             Purpose::create([          
                 'valid' => 1,
                 'purpose' => $request['DAILY_CONVERSATION'],
-                'purpose_options' => json_encode($request['DAILY_CONVERSATION_option']),
+                'purpose_options' => json_encode($request['DAILY_CONVERSATION_option']),                
+                'target_scores' => json_encode($DAILY_CONVERSATION_TargetScores),
                 'member_id' => $user->id
             ]);
         }

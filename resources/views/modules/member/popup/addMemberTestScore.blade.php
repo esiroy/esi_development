@@ -83,10 +83,13 @@
 @section('styles')
 @parent
 <style>
+
+   
    #loadingModal {
         display: block;
         background-color: #0009;
     }
+  
 
     .table-schedules tbody th {
         height: 130px !important;

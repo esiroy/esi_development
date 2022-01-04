@@ -794,9 +794,25 @@
     </script>
 
 
+    @include('modules.member.popup.loading') 
+    @include('modules.member.popup.msgboxSuccess')
+
+
+    <!-- Memo -->
     @include('modules.member.popup.memo')
     @include('modules.member.popup.memoReply')
+
+    <!-- Customer Chat -->
     @include('modules.member.popup.customerchat')
+
+    <!-- Purpose-->
+    @include('modules.member.popup.addMemberTestScore')
+    @include('modules.member.popup.showAllMemberExamScoreModal')
+
+    <!-- Member Purpose -->
+    @include('modules.member.popup.updateMemberPurpose')
+
+
     @yield('scripts')
 </body>
 

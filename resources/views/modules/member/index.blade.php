@@ -15,33 +15,9 @@
         <div class="container pb-5">
             <div class="row">
 
-                <!--sidebar-->
-                <div class="col-md-3">
-                    <div>
-                        @include('modules.member.sidebar.profile')
-                    </div>
-
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.customerchatsupport')
-                    </div>
-
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.reports')
-                    </div>
-
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.membertestscores')
-                    </div>
-
-                
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.memberpurpose')
-                    </div>
-
-                </div>
+                <!--[start sidebar]-->
+                @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->
-
-
 
                 <!-- ANNOUNCEMENTS -->
                 <div class="col-md-9">
@@ -241,19 +217,10 @@
         </div><!--[end] container -->
     </div> <!--[end] esi-box -->
 </div>
-   
 
-
-
-    @include('modules.member.popup.content')
-    @include('modules.member.popup.loading')
-    @include('modules.member.popup.memoSent')
-    @include('modules.member.popup.msgboxSuccess')   
-   
-    @include('modules.member.popup.addMemberTestScore')
-    @include('modules.member.popup.showAllMemberExamScoreModal')      
-
-    <!-- Member Purpose -->
-    @include('modules.member.popup.updateMemberPurpose')
+@include('modules.member.popup.content')
+@include('modules.member.popup.loading')
+@include('modules.member.popup.memoSent')
+@include('modules.member.popup.msgboxSuccess')      
 
 @endsection

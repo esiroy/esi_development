@@ -50,11 +50,8 @@
     function formatMemberScores(scores) 
     {
         let obj = JSON.parse(scores);
-
         //clear first
-
         $('#memberExamScoresLabel').text("");
-
         Object.keys(obj).forEach(function(name) 
         {   
             let score = "<div class='mb-2'> <span class='font-weight-bold'>"+ capitalizeFirstLetter(name) +"</span> : "+ obj[name] +"</div>";
@@ -75,10 +72,8 @@
             success: function(data) {
                 if (data.success == true) 
                 {   
-                    $('#memberExamDateLabel').text(data.examDate);
-                    
+                    $('#memberExamDateLabel').text(data.examDate);                    
                     $('#memberExamTypeLabel').text(data.examType.replace(/_/g, ' '));
-
                     formatMemberScores(data.examScores);
                 } else {
                     console.log(data.message);
@@ -102,10 +97,10 @@
             beforeSend: function() 
             {
                $('#showAllMemberExamScoreModal').css('visibility', 'hidden');
-               $('#loadingModal').modal('show');
+               //$('#loadingModal').modal('show');
             },            
             complete: function(){
-                $('#loadingModal').modal('hide');
+               // $('#loadingModal').modal('hide');
                 $('#showAllMemberExamScoreModal').css('visibility', 'visible');                
             },                                        
             success:function(data)
@@ -120,69 +115,19 @@
     /*** COMPUTE TOTALS */
     function getIELTSOverallScore() 
     {
-        if ($('#speakingBandScore').val() !== '' &&  $('#writingBandScore').val() !== '' && 
-            $('#readingBandScore').val() !== '' &&  $('#listeningBandScore').val() !== '') 
+        if ($('#examination-score-IELTS').find('#speakingBandScore').val() !== '' &&  
+            $('#examination-score-IELTS').find('#writingBandScore').val() !== '' && 
+            $('#examination-score-IELTS').find('#readingBandScore').val() !== '' &&  
+            $('#examination-score-IELTS').find('#listeningBandScore').val() !== '') 
             {
-                let sum =  parseFloat($('#speakingBandScore').val()) + parseFloat($('#writingBandScore').val()) + parseFloat($('#readingBandScore').val()) + parseFloat($('#listeningBandScore').val());        
+                let sum =  parseFloat($('#examination-score-IELTS').find('#speakingBandScore').val()) + 
+                           parseFloat($('#examination-score-IELTS').find('#writingBandScore').val()) + 
+                           parseFloat($('#examination-score-IELTS').find('#readingBandScore').val()) + 
+                           parseFloat($('#examination-score-IELTS').find('#listeningBandScore').val());
                 let overall = sum / 4;
                 return overall;
             }
     }
-
-
-    function getTOEFLTotal() 
-    {
-        if ($('#TOEFL_speakingScore').val() !== '' && $('#TOEFL_writingScore').val() !== '' &&
-            $('#TOEFL_readingScore').val() !== '' && $('#TOEFL_listeningScore').val() !== '') 
-            {
-                let total = parseInt($('#TOEFL_speakingScore').val()) 
-                        + parseInt($('#TOEFL_writingScore').val()) 
-                        + parseInt($('#TOEFL_readingScore').val()) 
-                        + parseInt($('#TOEFL_listeningScore').val());
-                return total;           
-            } 
-    }
-
-    function getTOEFLJuniorTotal() 
-    {
-       if ($('#TOEFL_Junior_listeningScore').val() !== '' && $('#TOEFL_Junior_languageFormAndMeaningScore').val() !== '' &&
-            $('#TOEFL_Junior_readingScore').val() !== '' ) 
-            {
-                let total = parseInt($('#TOEFL_Junior_listeningScore').val()) 
-                        + parseInt($('#TOEFL_Junior_languageFormAndMeaningScore').val()) 
-                        + parseInt($('#TOEFL_Junior_readingScore').val());
-                return total;           
-            }
-    }
-
-
-    function getTOEFLTotal() 
-    {
-        if ($('#TOEFL_speakingScore').val() !== '' && $('#TOEFL_writingScore').val() !== '' &&
-            $('#TOEFL_readingScore').val() !== '' && $('#TOEFL_listeningScore').val() !== '') 
-            {
-                let total = parseInt($('#TOEFL_speakingScore').val()) 
-                        + parseInt($('#TOEFL_writingScore').val()) 
-                        + parseInt($('#TOEFL_readingScore').val()) 
-                        + parseInt($('#TOEFL_listeningScore').val());
-                return total;           
-            } 
-    }
-
-
-    function getTOEFLTotal() 
-    {
-        if ($('#TOEFL_speakingScore').val() !== '' && $('#TOEFL_writingScore').val() !== '' &&
-            $('#TOEFL_readingScore').val() !== '' && $('#TOEFL_listeningScore').val() !== '') 
-            {
-                let total = parseInt($('#TOEFL_speakingScore').val()) 
-                        + parseInt($('#TOEFL_writingScore').val()) 
-                        + parseInt($('#TOEFL_readingScore').val()) 
-                        + parseInt($('#TOEFL_listeningScore').val());
-                return total;           
-            } 
-    }        
-
 
 
     function getTotalScore(ExamType) 
@@ -213,9 +158,7 @@
             }
  
         });
-
-
-        console.log (filled_selection_length + " ? length ? " + selection.length);
+        //console.log (filled_selection_length + " ? length ? " + selection.length);
 
         if (filled_selection_length == (selection.length - 1) ||   filled_selection_length == selection.length  ) 
         {
@@ -281,50 +224,50 @@
                 case "IELTS":
                          examScores = {            
                             IELTS : {
-                                overallBandScore: $('#overallBandScore').val(),
-                                speakingBandScore: $('#speakingBandScore').val(),
-                                writingBandScore: $('#writingBandScore').val(),
-                                readingBandScore: $('#readingBandScore').val(),
-                                listeningBandScore: $('#listeningBandScore').val(),
+                                overallBandScore: $('#examination-score-IELTS').find('#overallBandScore').val(),
+                                speakingBandScore: $('#examination-score-IELTS').find('#speakingBandScore').val(),
+                                writingBandScore: $('#examination-score-IELTS').find('#writingBandScore').val(),
+                                readingBandScore: $('#examination-score-IELTS').find('#readingBandScore').val(),
+                                listeningBandScore: $('#examination-score-IELTS').find('#listeningBandScore').val(),
                             }
                         }
                     break;
                 case "TOEFL":
                          examScores = {            
                             TOEFL: {
-                                speakingScore: $('#TOEFL_speakingScore').val(),
-                                writingScore: $('#TOEFL_writingScore').val(),
-                                readingScore: $('#TOEFL_readingScore').val(),
-                                listeningScore: $('#TOEFL_readingScore').val(),
-                                total: $('#TOEFL_total').val(),
+                                speakingScore: $('#examination-score-TOEFL').find('#TOEFL_speakingScore').val(),
+                                writingScore: $('#examination-score-TOEFL').find('#TOEFL_writingScore').val(),
+                                readingScore: $('#examination-score-TOEFL').find('#TOEFL_readingScore').val(),
+                                listeningScore: $('#examination-score-TOEFL').find('#TOEFL_readingScore').val(),
+                                total: $('#examination-score-TOEFL').find('#TOEFL_total').val(),
                             }
                         }
                      break;
                 case "TOEFL_Junior":
                          examScores = {            
                             TOEFL_Junior: {                                
-                                listening: $('#TOEFL_Junior_listeningScore').val(),
-                                languageFormAndMeaning: $('#TOEFL_Junior_languageFormAndMeaningScore').val(),
-                                reading: $('#TOEFL_Junior_readingScore').val(),
-                                total: $('#TOEFL_Junior_totalScore').val(),                                
+                                listening: $('#examination-score-TOEFL_Junior').find('#TOEFL_Junior_listeningScore').val(),
+                                languageFormAndMeaning: $('#examination-score-TOEFL_Junior').find('#TOEFL_Junior_languageFormAndMeaningScore').val(),
+                                reading: $('#examination-score-TOEFL_Junior').find('#TOEFL_Junior_readingScore').val(),
+                                total: $('#examination-score-TOEFL_Junior').find('#TOEFL_Junior_totalScore').val(),                                
                             }
                         }
                     break;
                 case 'TOEFL_Primary_Step_1': 
                          examScores = {            
                             TOEFL_Primary_Step_1: {                                                                
-                                listening: $('#TOEFL_Primary_Step_1_listeningScore').val(),   
-                                reading: $('#TOEFL_Primary_Step_1_readingScore').val(),                    
-                                total: $('#TOEFL_Primary_Step_1_totalScore').val(),                                
+                                listening: $('#examination-score-TOEFL_Primary_Step_1').find('#TOEFL_Primary_Step_1_listeningScore').val(),   
+                                reading: $('#examination-score-TOEFL_Primary_Step_1').find('#TOEFL_Primary_Step_1_readingScore').val(),                    
+                                total: $('#examination-score-TOEFL_Primary_Step_1').find('#TOEFL_Primary_Step_1_totalScore').val(),                                
                             }
                         }
                     break;                    
                 case 'TOEFL_Primary_Step_2': 
                          examScores = {            
                             TOEFL_Primary_Step_2: {                                                        
-                                listening: $('#TOEFL_Primary_Step_2_listeningScore').val(),
-                                reading: $('#TOEFL_Primary_Step_2_readingScore').val(),
-                                total: $('#TOEFL_Primary_Step_2_totalScore').val(),
+                                listening: $('#examination-score-TOEFL_Primary_Step_2').find('#TOEFL_Primary_Step_2_listeningScore').val(),
+                                reading: $('#examination-score-TOEFL_Primary_Step_2').find('#TOEFL_Primary_Step_2_readingScore').val(),
+                                total: $('#examination-score-TOEFL_Primary_Step_2').find('#TOEFL_Primary_Step_2_totalScore').val(),
                             }
                         }
                     break;
@@ -332,9 +275,9 @@
                 case 'TOEIC_Listening_and_Reading':
                         examScores = {   
                             TOEIC_Listening_and_Reading: {                                
-                                listening: $('#TOEIC_Listening_and_Reading_listeningScore').val(),
-                                reading: $('#TOEIC_Listening_and_Reading_readingScore').val(),                                
-                                total: $('#TOEIC_Listening_and_Reading_totalScore').val(),
+                                listening: $('#examination-score-TOEIC_Listening_and_Reading').find('#TOEIC_Listening_and_Reading_listeningScore').val(),
+                                reading: $('#examination-score-TOEIC_Listening_and_Reading').find('#TOEIC_Listening_and_Reading_readingScore').val(),                                
+                                total: $('#examination-score-TOEIC_Listening_and_Reading').find('#TOEIC_Listening_and_Reading_totalScore').val(),
                             }
                         }
                      break;
@@ -342,7 +285,7 @@
                 case 'TOEIC_Speaking':
                         examScores = {                           
                             TOEIC_Speaking: {
-                                speaking: $('#TOEIC_Speaking_speakingScore').val(),
+                                speaking: $('#examination-score-TOEIC_Speaking').find('#TOEIC_Speaking_speakingScore').val(),
                             }
                         }
                      break;
@@ -350,19 +293,19 @@
                 case 'EIKEN':
                         examScores = {           
                             EIKEN: {
-                                grade_5: $('#EIKEN_grade_5').val(),
-                                grade_4: $('#EIKEN_grade_4').val(),
-                                grade_3_1st_stage: $('#EIKEN_grade_3_1st_stage').val(),
-                                grade_pre_2_1st_stage: $('#EIKEN_grade_pre_2_1st_stage').val(),
-                                grade_2_1st_stage: $('#EIKEN_grade_2_1st_stage').val(),
-                                grade_pre_1_1st_stage: $('#EIKEN_grade_pre_1_1st_stage').val(),
-                                grade_1_1st_stage: $('#EIKEN_grade_1_1st_stage').val(),
+                                grade_5: $('#examination-score-EIKEN').find('#EIKEN_grade_5').val(),
+                                grade_4: $('#examination-score-EIKEN').find('#EIKEN_grade_4').val(),
+                                grade_3_1st_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_3_1st_stage').val(),
+                                grade_pre_2_1st_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_pre_2_1st_stage').val(),
+                                grade_2_1st_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_2_1st_stage').val(),
+                                grade_pre_1_1st_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_pre_1_1st_stage').val(),
+                                grade_1_1st_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_1_1st_stage').val(),
 
-                                grade_3_2nd_stage: $('#EIKEN_grade_3_2nd_stage').val(),
-                                grade_pre_2_2nd_stage: $('#EIKEN_grade_pre_2_2nd_stage').val(),
-                                grade_2_2nd_stage: $('#EIKEN_grade_2_2nd_stage').val(),
-                                grade_pre_1_2nd_stage: $('#EIKEN_grade_pre_1_2nd_stage').val(),
-                                grade_1_2nd_stage: $('#EIKEN_grade_1_2nd_stage').val(),                    
+                                grade_3_2nd_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_3_2nd_stage').val(),
+                                grade_pre_2_2nd_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_pre_2_2nd_stage').val(),
+                                grade_2_2nd_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_2_2nd_stage').val(),
+                                grade_pre_1_2nd_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_pre_1_2nd_stage').val(),
+                                grade_1_2nd_stage: $('#examination-score-EIKEN').find('#EIKEN_grade_1_2nd_stage').val(),                    
                             }
                         }
                     break;
@@ -371,11 +314,11 @@
                         examScores = {    
                             TEAP: {
                                 total: "",
-                                speakingScore: $('#TEAP_speakingScore').val(),
-                                writingScore: $('#TEAP_writingScore').val(),
-                                readingScore: $('#TEAP_readingScore').val(),
-                                listeningScore: $('#TEAP_readingScore').val(),
-                                total: $('#TEAP_totalScore').val(),                                           
+                                speakingScore: $('#examination-score-TEAP').find('#TEAP_speakingScore').val(),
+                                writingScore: $('#examination-score-TEAP').find('#TEAP_writingScore').val(),
+                                readingScore: $('#examination-score-TEAP').find('#TEAP_readingScore').val(),
+                                listeningScore: $('#examination-score-TEAP').find('#TEAP_readingScore').val(),
+                                total: $('#examination-score-TEAP').find('#TEAP_totalScore').val(),                                           
                             }
                         }
                     break;
@@ -383,7 +326,7 @@
                 case 'Other_Test':
                     examScores = { 
                         Other_Test: {
-                            otherScore: $('#OTHERS_score').val(),
+                            otherScore: $('#examination-score-Other_Test').find('#OTHERS_score').val(),
                         }
                     }
                     break;
@@ -441,6 +384,10 @@
 
         $(document).ready(function() 
         {
+
+        $('.examScoreHolder').hide();
+
+        
             $(document).on('change', '#examType', function(event) 
             {               
                 let examTypeValue = $(this).val();                    
