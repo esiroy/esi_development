@@ -37,11 +37,11 @@
             beforeSend: function() 
             {
                $('#showUpdateMemberPurposeModal').css('visibility', 'hidden');
-               //$('#loadingModal').modal('show');
+               $('#loadingModal').modal('show');
             },            
-            complete: function(){
-                //$('#loadingModal').modal('hide');
+            complete: function(){               
                 $('#showUpdateMemberPurposeModal').css('visibility', 'visible');                
+                $('#loadingModal').modal('hide');
             },              
             success: function(data) 
             {
