@@ -75,7 +75,7 @@ class MemberPurposeController extends Controller
 
                 "purpose_option"    => $purpose_option,
                 'target_score'      => $target_score,      
-                //'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
+                'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
             ]);
         } else {
             return Response()->json([

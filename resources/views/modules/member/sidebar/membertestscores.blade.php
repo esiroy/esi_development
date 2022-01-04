@@ -385,7 +385,7 @@
         $(document).ready(function() 
         {
 
-        $('.examScoreHolder').hide();
+         $('.examScoreHolder').hide();
 
         
             $(document).on('change', '#examType', function(event) 
