@@ -70,12 +70,11 @@ class MemberPurposeController extends Controller
             return Response()->json([
                 "success"           => true,                
                 //"purpose"           => $purpose,
-                //'purpose_list'      => $purposelist,
-                
+                //'purpose_list'      => $purposelist,               
 
                 "purpose_option"    => $purpose_option,
                 'target_score'      => $target_score,      
-                'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
+                //'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
             ]);
         } else {
             return Response()->json([

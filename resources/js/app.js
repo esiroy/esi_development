@@ -3,31 +3,23 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
 require('./bootstrap');
-
 window.Vue = require('vue');
 
 /* Components Javascript Import*/
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+//import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
 //socket server
 //import io from "socket.io-client";
 //const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
-
-
-
- 
-
-
     
 //css
 //import 'bootstrap/dist/css/bootstrap.css'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 // Optionally install the BootstrapVue icon components plugin
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
+//Vue.use(BootstrapVue);
+//Vue.use(IconsPlugin);
 
 
 /**
@@ -38,8 +30,8 @@ Vue.use(IconsPlugin);
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-const files = require.context('./', true, /\.vue$/i)
-files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+//const files = require.context('./', true, /\.vue$/i)
+//files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 
 //Vue.component('example-component', require('./components/ExampleComponent.vue').default);
@@ -61,7 +53,6 @@ Vue.filter('formatSize', function(size) {
     } else if (size > 1024) {
         return (size / 1024).toFixed(2) + ' KB'
     }
-
     return size + ' B'
 })
 
