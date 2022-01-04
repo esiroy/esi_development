@@ -289,9 +289,9 @@
 
     </div>
 
+  
     @include('modules.member.popup.questionnaire')
     @include('modules.member.popup.questionnaireReadOnly')
-    @include('modules.member.popup.loading')
     @include('modules.member.popup.msgbox')
 
 
