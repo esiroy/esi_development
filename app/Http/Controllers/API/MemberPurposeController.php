@@ -33,7 +33,6 @@ class MemberPurposeController extends Controller
     public function getMemberPurpose(Request $request) 
     {        
         $purposelist = Purpose::where('member_id', Auth::user()->id)->orderBy('id', 'ASC')->get();
-
         $purpose = array();  
         $purpose_option = array();
         $target_score = array();
@@ -56,8 +55,6 @@ class MemberPurposeController extends Controller
                             $purpose_option[str_replace(' ', '_', $list->purpose) ."_". str_replace(' ', '_', $option) ] =  $option;
                         }                
                     }
-
-
                     //Get the target scores for each purpose
                     $targetScores = (array)json_decode($list->target_scores);
                     if (is_array($targetScores)) {
@@ -65,21 +62,20 @@ class MemberPurposeController extends Controller
                             $target_score[str_replace(' ', '_', $list->purpose) ."_". str_replace(' ', '_', ucfirst($targetScoreKey)) ] =  $score;
                         }
                     }
-
                 }
             }             
         }
-
         
         if ($purpose) {
             return Response()->json([
-                "success"           => true,
+                "success"           => true,                
+                //"purpose"           => $purpose,
+                //'purpose_list'      => $purposelist,
+                
+
+                "purpose_option"    => $purpose_option,
                 'target_score'      => $target_score,      
-                'purpose_list'      => $purposelist,
-                "purpose"           => $purpose,
-                "purpose_option"    => $purpose_option,   
-                      
-                'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
+                //'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
             ]);
         } else {
             return Response()->json([
