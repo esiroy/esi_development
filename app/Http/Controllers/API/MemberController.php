@@ -1354,10 +1354,13 @@ class MemberController extends Controller
                 {
                     if (isset($purposeList->{"$ObjectName"})) 
                     {
+                        
                         $purposeObject->saveMemberPurpose($user->id, $ObjectName, $purposeList);                   
                     }                
                 }
 
+
+                
 
                 //Member Attribute (store)
                 $lessonClasses = [];
@@ -1398,6 +1401,7 @@ class MemberController extends Controller
                     "success" => true,
                     "message" => "Member has been added",
                     "userData" => $request['user'],
+                    "test" => $purposeList->{"IELTS". "_targetScore"}
                 ]);
             } catch (\Exception $e) {
                 return Response()->json([
@@ -1597,9 +1601,51 @@ class MemberController extends Controller
                 {
                     if (isset($purposeList->{"$ObjectName"})) 
                     {
-                        $purposeObject->saveMemberPurpose($data->user_id, $ObjectName, $purposeList);                   
+                        $purposeObject->saveMemberPurpose($data->user_id, $ObjectName, $purposeList); 
                     }                
                 }
+
+                
+                
+                foreach ($ObjectNameArray as $ObjectName)  
+                {
+                    $targetScore = null;
+
+                    if (isset($purposeList->{"$ObjectName"})) 
+                    {
+                        //check if the option is checked to be used in_array
+                        if (isset($purposeList->{"$ObjectName". "_option"})) {
+                            $purpose_option_array = (array) $purposeList->{"$ObjectName". "_option"};
+                        }
+                       
+                        if (isset($purposeList->{"$ObjectName". "_targetScore"})) 
+                        {
+                            foreach ($purposeList->{"$ObjectName". "_targetScore"} as $key => $item) {
+                                if (isset($item)) {
+                                    if ($item == true) {
+                                        //check if the $key is on $purpose option
+                                        if (in_array($key, $purpose_option_array)) {
+                                            $targetScore[ strtolower(str_replace(" ", "_", $key))] = "". $item ."";                                        
+                                        }                                        
+                                    }                            
+                                }
+                            }
+
+                            Purpose::where('purpose', str_replace("_", " ", $ObjectName))
+                                    ->where('valid', 1)
+                                    ->where('member_id', $data->user_id)
+                                    ->update([
+                                        'target_scores' => json_encode($targetScore, true)
+                                    ]);
+                    
+                        }
+                       
+                    }
+                }
+
+
+
+
 
 
                 //Member Attribute (update)
@@ -1642,6 +1688,7 @@ class MemberController extends Controller
                     "success" => true,
                     "message" => "Member " . $data->first_name . " " . $data->last_name . " has been updated",
                     "userData" => $request['user'],
+                    "test" => $targetScore
                 ]);
             } catch (\Exception $e) {
                 return Response()->json([

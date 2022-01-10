@@ -19,12 +19,17 @@ class Purpose extends Model
 
 
     //This will save API posted purpose
+    /* 
+        $Object = "Type of all the lesson";
+    */
     public function saveMemberPurpose($memberID, $Object, $purposeList)  
     {         
         $option = [];
+        $targetScore = [];
 
         if (isset($purposeList->{"$Object"})) 
         {
+            //Purpose Options
             if (isset($purposeList->{"$Object". "_option"})) 
             {
                 foreach ($purposeList->{"$Object". "_option"} as $key => $item) {
@@ -36,19 +41,13 @@ class Purpose extends Model
                 }
             }
 
-
-            if ( strtolower($purposeList->{"$Object"}) == "others"   ||   strtolower($Object) == "others" ) {
-
-        
+            if ( strtolower($purposeList->{"$Object"}) == "others"   ||   strtolower($Object) == "others" ) {        
                 $purpose_options = $purposeList->{"OTHERS_value"};
-
             } else {
                 $purpose_options = (is_array($option))? json_encode($option) : [];
             }
-
-
+            
             if ($purposeList->{"$Object"} == true) {
-
                 Purpose::create([          
                     'valid' => 1,
                     'purpose' => str_replace("_", " ", $Object),
@@ -56,8 +55,9 @@ class Purpose extends Model
                     'member_id' => $memberID
                 ]);            
             }
-
-        }        
+        }
     }
+
+
 
 }

@@ -366,98 +366,6 @@
                 <div class="row pt-2">
                     <div class="col-12">
 
-                        <!-- Purpose -->
-                        <!--
-                        <div class="row">
-                            <div class="col-2 small pr-0">
-                                <label for="purpose" class="p-0 col-md-12 col-form-label">
-                                    <span class="text-danger">*</span>
-                                    Purpose <div class="float-right">:</div>
-                                </label>
-                            </div>
-                            <div class="col-8">
-                               
-                                <ul class="checkbox-options">
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
-                                    </li>
-                                    
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="CONVERSATION" v-model="user.preference.purpose.CONVERSATION"  value="CONVERSATION">
-                                        <label>Get conversation(communication) skill</label>
-
-                                        <ul id="goalList" class="checkbox-options" v-if="user.preference.purpose.CONVERSATION">
-                                            <li><input type="radio" name="goal" value="BEGINNER" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Beginner- easy daily conversation level</li>
-                                            <li><input type="radio" name="goal" value="INTERMEDIATE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Intermediate- Daily conversation level</li>
-                                            <li><input type="radio" name="goal" value="ADVANCE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Advance - Social, Environment, Business English</li>
-                                            <li><input type="radio" name="goal" value="NATIVE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Be native level</li>
-                                        </ul>
-                                        <input type="hidden" name="extraDetails" value="BEGINNER">
-                                    </li>
-
-
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="ANTI_EIKEN" v-model="user.preference.purpose.ANTI_EIKEN"  value="ANTI_EIKEN">
-                                        English certification exam in Japan
-
-                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.ANTI_EIKEN" v-model="user.preference.purposeExtraDetails.ANTI_EIKEN" class="col-3 pl-1 form-control form-control-sm d-inline-block">
-                                    </li>
-
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="ANTI_EXAM" v-model="user.preference.purpose.ANTI_EXAM"  value="ANTI_EXAM"> 
-                                        Enter school
-                                        <ul id="examLevel" v-if="user.preference.purpose.ANTI_EXAM" style="list-style-type: none;">
-                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="JUNIOR_HIGH"> Junior High</li>
-                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="HIGHSCHOOL"> High school</li>
-                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="UNIVERSITY"> University</li>
-                                        </ul>                                            
-                                    </li>
-
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="TOEFL" v-model="user.preference.purpose.TOEFL" value="TOEFL" > 
-                                        TOEFL(目標スコアー 点)
-                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEFL" v-model="user.preference.purposeExtraDetails.TOEFL" class="col-3 pl-1 form-control form-control-sm d-inline-block">
-                                    </li>
-
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="TOEIC" v-model="user.preference.purpose.TOEIC" value="TOEIC">  
-                                        TOEIC(目標スコアー 点)
-                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEIC" v-model="user.preference.purposeExtraDetails.TOEIC" class="col-3 pl-1 form-control form-control-sm d-inline-block">
-                                    </li>
-
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="STUDY_ABROAD" v-model="user.preference.purpose.STUDY_ABROAD" value="STUDY_ABROAD"> Study Abroad
-                                        <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.STUDY_ABROAD" >
-                                            <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> Junior High</li>
-                                            <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> High school</li>
-                                            <li><input type="radio" name="studyAbroadLevel" value="UNIVERSITY" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> University</li>
-                                        </ul>
-                                    </li>
-
-
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="business" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
-                                        <input type="hidden" name="extraDetails" v-if="user.preference.purpose.BUSINESS" v-model="user.preference.purposeExtraDetails.BUSINESS">
-                                    </li>
-
-                                    <li>
-                                        <input type="checkbox" ref="lessongoals" name="lessongoals" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
-                                        <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
-                                            v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
-                                    </li>
-                                </ul>
-                                
-                               
-                                <div v-if="submitted && !$v.user.lessongoals.required" class="invalid-feedback" style="display: block">
-                                    Member Purpose is required, Please check at least one of the choices
-                                </div>
-                                
-                            </div>
-
-                        </div>
-                        -->
-
-
                         <!--[start] lesson class row -->
                         <div id="lesson-class-row" class="row pt-2">
                             <div class="col-2">
@@ -533,127 +441,9 @@
             </div>
             <!--[end] Member Preferences -->
 
-
-            <!--[start] Purpose (New)-->
-            <div id="purpose-section" class="section">
-                <div class="card-title bg-gray p-1 mt-4">
-                    <div class="pl-2 font-weight-bold small">Member Purpose</div>                    
-                </div>
-                <div class="row pt-2">
-                    <div class="col-2">
-                        <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span>
-                        Select Member Purpose<div class="float-right">:</div></label>                                    
-                    </div>                
-                    <div class="col-8">
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="IELTS" value="IELTS" class="main_option" v-model="purposeList.IELTS"> IELTS                               
-                            <div class="IELTS ml-4 sub_options">
-                                <input type="checkbox" name="IELTS_option[]" value="Speaking"  v-model="purposeList.IELTS_option.Speaking"> Speaking <br>
-                                <input type="checkbox" name="IELTS_option[]" value="Writing" v-model="purposeList.IELTS_option.Writing"> Writing <br>
-                                <input type="checkbox" name="IELTS_option[]" value="Reading" v-model="purposeList.IELTS_option.Reading"> Reading <br>
-                                <input type="checkbox" name="IELTS_option[]" value="Listening" v-model="purposeList.IELTS_option.Listening"> Listening <br>
-                            </div>
-                        </div>    
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="TOEFL" value="TOEFL" class="main_option" v-model="purposeList.TOEFL"> TOEFL
-                            <div class="TOEFL ml-4 sub_options">
-                                <input type="checkbox" name="TOEFL_option[]" value="Speaking" v-model="purposeList.TOEFL_option.Speaking"> Speaking <br/>
-                                <input type="checkbox" name="TOEFL_option[]" value="Writing" v-model="purposeList.TOEFL_option.Writing"> Writing <br/>
-                                <input type="checkbox" name="TOEFL_option[]" value="Reading" v-model="purposeList.TOEFL_option.Reading"> Reading <br/>
-                                <input type="checkbox" name="TOEFL_option[]" value="Listening" v-model="purposeList.TOEFL_option.Listening"> Listening <br/>                                        
-                            </div>
-                        </div>
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="TOEFL_Primary" value="TOEFL Primary" v-model="purposeList.TOEFL_Primary"> TOEFL Primary
-                        </div>
-
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="TOEIC" value="TOEIC" class="main_option"  v-model="purposeList.TOEIC"> TOEIC
-                            <div class="TOEIC ml-4 sub_options">
-                                <input type="checkbox" name="TOEIC_option[]" value="Speaking" v-model="purposeList.TOEIC_option.Speaking"> Speaking <br/>
-                                <input type="checkbox" name="TOEIC_option[]" value="Writing" v-model="purposeList.TOEIC_option.Writing"> Writing <br/>
-                                <input type="checkbox" name="TOEIC_option[]" value="Reading" v-model="purposeList.TOEIC_option.Reading"> Reading <br/>
-                                <input type="checkbox" name="TOEIC_option[]" value="Listening" v-model="purposeList.TOEIC_option.Listening"> Listening <br/>                                       
-                            </div>
-                        </div>
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="EIKEN" value="EIKEN" class="main_option" v-model="purposeList.EIKEN"> EIKEN(英検）
-                            <div class="EIKEN ml-4 sub_options">
-                                <input type="checkbox" name="EIKEN_option[]" value="Grade 5" v-model="purposeList.EIKEN_option.Grade_5"> Grade 5 <br/>
-                                <input type="checkbox" name="EIKEN_option[]" value="Grade 4" v-model="purposeList.EIKEN_option.Grade_4"> Grade 4 <br/>
-                                <input type="checkbox" name="EIKEN_option[]" value="Grade 3"  v-model="purposeList.EIKEN_option.Grade_3"> Grade 3 <br/>
-                                <input type="checkbox" name="EIKEN_option[]" value="Grade pre 2" v-model="purposeList.EIKEN_option.Grade_pre_2"> Grade pre 2 <br/>   
-                                <input type="checkbox" name="EIKEN_option[]" value="Grade 2" v-model="purposeList.EIKEN_option.Grade_2"> Grade 2 <br/>
-                                <input type="checkbox" name="EIKEN_option[]" value="Grade pre 1" v-model="purposeList.EIKEN_option.Grade_pre_1"> Grade pre 1 <br/>
-                                <input type="checkbox" name="EIKEN_option[]" value="Grade 1" v-model="purposeList.EIKEN_option.Grade_1"> Grade 1 <br/>
-                            </div>
-                        </div>
-
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="TEAP" value="TEAP" class="main_option" v-model="purposeList.TEAP"> TEAP
-                            <div class="TEAP ml-4 sub_options">
-                                <input type="checkbox" name="TEAP_option[]" value="Speaking" v-model="purposeList.TEAP_option.Speaking"> Speaking <br/>
-                                <input type="checkbox" name="TEAP_option[]" value="Writing" v-model="purposeList.TEAP_option.Writing"> Writing <br/>                                     
-                            </div>
-                        </div>      
-
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="BUSINESS" value="BUSINESS" class="main_option" v-model="purposeList.BUSINESS"> Business
-                            <div class="BUSINESS ml-4 sub_options">
-                                <input type="checkbox" name="BUSINESS_option[]" value="Basic" v-model="purposeList.BUSINESS_option.Basic"> Basic <br/>
-                                <input type="checkbox" name="BUSINESS_option[]" value="Intermediate" v-model="purposeList.BUSINESS_option.Intermediate"> Intermediate <br/>
-                                <input type="checkbox" name="BUSINESS_option[]" value="Advance" v-model="purposeList.BUSINESS_option.Advance"> Advance <br/>
-                            </div>
-                        </div>                        
-
-
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="BUSINESS_CAREERS" value="BUSINESS CAREERS" class="main_option"  v-model="purposeList.BUSINESS_CAREERS"> Business Careers(職業別英語）
-                            <div class="BUSINESS_CAREERS ml-4 sub_options">
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Medicine" v-model="purposeList.BUSINESS_CAREERS_option.Medicine"> Medicine <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Nursing" v-model="purposeList.BUSINESS_CAREERS_option.Nursing"> Nursing <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Pharmaceutical" v-model="purposeList.BUSINESS_CAREERS_option.Pharmaceutical"> Pharmaceutical <br/>        
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Accounting" v-model="purposeList.BUSINESS_CAREERS_option.Accounting"> Accounting <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Legal Professionals" v-model="purposeList.BUSINESS_CAREERS_option.Legal_Professionals"> Legal Professionals <br/>        
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Finance" v-model="purposeList.BUSINESS_CAREERS_option.Finance"> Finance <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Technology" v-model="purposeList.BUSINESS_CAREERS_option.Technology"> Technology <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Commerce" v-model="purposeList.BUSINESS_CAREERS_option.Commerce"> Commerce <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Tourism" v-model="purposeList.BUSINESS_CAREERS_option.Tourism"> Tourism <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Cabin Crew" v-model="purposeList.BUSINESS_CAREERS_option.Cabin_Crew"> Cabin Crew <br/>
-                                <input type="checkbox" name="BUSINESS_CAREERS_option[]" value="Marketing and Advertising" v-model="purposeList.BUSINESS_CAREERS_option.Marketing_and_Advertising"> Marketing and Advertising <br/>                                
-                            </div>
-                        </div>                        
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="DAILY_CONVERSATION" value="DAILY CONVERSATION" class="main_option"  v-model="purposeList.DAILY_CONVERSATION"> Daily Conversation
-                            <div class="DAILY_CONVERSATION ml-4 sub_options">
-                                <input type="checkbox" name="DAILY_CONVERSATION_option[]" value="Basic" v-model="purposeList.DAILY_CONVERSATION_option.Basic"> Basic <br/>
-                                <input type="checkbox" name="DAILY_CONVERSATION_option[]" value="Intermediate" v-model="purposeList.DAILY_CONVERSATION_option.Intermediate"> Intermediate <br/>
-                                <input type="checkbox" name="DAILY_CONVERSATION_option[]" value="Advance" v-model="purposeList.DAILY_CONVERSATION_option.Advance"> Advance <br/>
-
-                            </div>
-                        </div>
-
-
-                        <div class="checkbox-options">
-                            <input type="checkbox" name="OTHERS" value="OTHERS" class="main_option"  v-model="purposeList.OTHERS"> Others
-                            <div class="others ml-4 sub_options">
-                                <input type="text" name="OTHERS_value" value="OTHERS" class="col-md-8 form-control form-control-sm " v-model="purposeList.OTHERS_value">  
-                            </div>
-                        </div>                        
-
-                    </div>
-                </div>
-            </div>
-            <!--[end]-->
-
+            <!--[Start] Purpose -->
+            <PurposeComponent :purposeList="this.purposeList"></PurposeComponent>
+            <!--[End] Purpose -->
 
             <!--[start] Exam (New)-->
             <div id="examination-section" class="section">
@@ -1115,6 +905,8 @@
 </template>
 
 <script>
+import PurposeComponent from "./purpose/PurposeComponent.vue";
+
 
 import IELTScoreComponent from "./scores/IELTScoreComponent.vue";
 import ToeflScoreComponent from "./scores/ToeflScoreComponent.vue";
@@ -1135,10 +927,11 @@ import * as Moment from 'moment'
 import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale';
 
+
 export default {
-    name: "app",
+    name: "MemberUpdateComponent",
     components: {
-        Datepicker,
+        Datepicker, PurposeComponent,
         IELTScoreComponent, 
         ToeflScoreComponent, ToeflJuniorScoreComponent,
         ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
@@ -1199,6 +992,10 @@ export default {
             //list of main tutors
             mainTutors: [],        
 
+
+            //number sliders
+            errorMsg: '',
+        
             //Exam Date (Form Entry)
             examDate: "",
             uExamDate: "",
@@ -1290,6 +1087,16 @@ export default {
                         Reading: "",
                         Listening: "",                        
                 },
+                IELTS_targetScore:
+                {
+                        Speaking: 3,
+                        Writing: 3,
+                        Reading: 3,
+                        Listening: 3,                        
+                },
+
+
+
                 TOEFL: "",
                 TOEFL_option: {
                         Speaking: "",
@@ -1297,6 +1104,14 @@ export default {
                         Reading: "",
                         Listening: "",                
                 },
+                TOEFL_targetScore:
+                {
+                        Speaking: 0,
+                        Writing: 0,
+                        Reading: 0,
+                        Listening: 0,                        
+                },
+
 
                 TOEFL_Primary: "",
 
@@ -1307,6 +1122,13 @@ export default {
                         Reading: "",
                         Listening: "",                
                 },
+                TOEIC_targetScore:
+                {
+                        Speaking: 0,
+                        Writing: 0,
+                        Reading: 0,
+                        Listening: 0,                        
+                },                 
 
                 EIKEN: "",
                 EIKEN_option: {
@@ -1318,6 +1140,17 @@ export default {
                         EIKEN_Grade_pre_1: "",
                         EIKEN_Grade_1: "",
                 },
+                EIKEN_targetScore:
+                {
+                        Grade_5: 0,
+                        Grade_4: 0,
+                        Grade_3: 0,
+                        Grade_pre_2: 0,
+                        Grade_2: 0,
+                        Grade_pre_1: 0,
+                        Grade_1: 0,                      
+                }, 
+
                 TEAP: "",
                 TEAP_option:
                 {
@@ -1325,7 +1158,15 @@ export default {
                         Writing: "",
                         Reading: "",
                         Listening: "",                        
+                },
+                TEAP_targetScore:
+                {
+                        Speaking: 0,
+                        Writing: 0,
+                        Reading: 0,
+                        Listening: 0,                        
                 },     
+               
 
                 BUSINES: "",
                 BUSINESS_option:
@@ -1334,6 +1175,14 @@ export default {
                         Intermediate: "",
                         Advance: "",                               
                 },                  
+                BUSINESS_targetScore:
+                {
+                        Basic: "Beginner",
+                        Intermediate: "Beginner",
+                        Advance: "Beginner",                               
+                },  
+                
+
 
                 BUSINESS_CAREERS: "",
                 BUSINESS_CAREERS_option:
@@ -1350,6 +1199,21 @@ export default {
                         Cabin_Crew: "",
                         Marketing_and_Advertising: "",                                                                                                                        
                 },  
+                BUSINESS_CAREERS_targetScore:
+                {
+                        Medicine: "Beginner",
+                        Nursing: "Beginner",
+                        Pharmaceutical: "Beginner",          
+                        Accounting: "Beginner",
+                        Legal_professionals: "Beginner",
+                        Finance: "Beginner",       
+                        Technology: "Beginner",
+                        Commerce: "Beginner",
+                        Tourism: "Beginner",       
+                        Cabin_crew: "Beginner",
+                        Marketing_and_advertising: "Beginner",                                                                                                                        
+                },  
+
 
                 DAILY_CONVERSATION: "",
                 DAILY_CONVERSATION_option:
@@ -1358,6 +1222,12 @@ export default {
                         Intermediate: "",
                         Advance: "",                               
                 },
+                DAILY_CONVERSATION_targetScore:
+                {
+                        Basic: "Beginner",
+                        Intermediate: "Beginner",
+                        Advance: "Beginner",
+                },                
 
                 OTHERS: "",
                 OTHERS_value: "",
@@ -1572,6 +1442,7 @@ export default {
         }
 
 		//Lesson Goals (purpose) (OLD Scheme)       
+        /*
 		let item  = [];
 		for (item of this.lessongoals) {	
 
@@ -1589,57 +1460,85 @@ export default {
             {
                 this.user.preference.purposeExtraDetails.[item.purpose] = item.extra_detail;
             }
-		}
+		}*/
 
         let purposeItem  = [];
         let purposeOptionItem = [];
         let purposeOptionItems = [];
 
+        let purposeTargetScoreItem = [];
+        let purposeTargetScores = [];
+
 		for (purposeItem of this.purpose) 
-        {	
-
-
+        {
             let mainItemStr = purposeItem.purpose.replace(/\s+/g, '_');
-
-            this.purposeList.[mainItemStr] = mainItemStr;        
+            this.purposeList[mainItemStr] = mainItemStr;
 
             if (purposeItem.purpose.toLowerCase() == "others" ) 
             {
-                //purposeItem.purpose_options['others'] = purposeItem.purpose_options;
-
                 this.purposeList.OTHERS_value = purposeItem.purpose_options;
-
             } else {
-            
 
                 purposeOptionItems = JSON.parse( purposeItem.purpose_options);
-
                 if (purposeOptionItems === null || purposeOptionItems === "null" || purposeOptionItems === "") 
                 {
-                   
-                } else {
-
-                    //(purposeOptionItems);
-
-                   
+                   //no option
+                } else {                   
                     for (purposeOptionItem of purposeOptionItems) 
-                    {	
-                      
+                    {	                      
                         let purposeOptionItemStr = purposeOptionItem.replace(/\s+/g, '_');
-
-                        //console.log(purposeItem.purpose + " " + purposeOptionItemStr)
-
-                        this.purposeList.[mainItemStr +"_option"].[purposeOptionItemStr] = purposeOptionItemStr;
-
+                        this.purposeList[mainItemStr +"_option"][purposeOptionItemStr] = purposeOptionItemStr;
                     }
-               
+                }
 
-                }            
-            
+               // console.log( purposeItem.target_scores);
+
+               purposeTargetScores = JSON.parse( purposeItem.target_scores);
+
+                if (purposeTargetScores === null || purposeTargetScores === "null" || purposeTargetScores === "") 
+                {
+                   //no option
+                } else {      
+                    Object.entries(purposeTargetScores).forEach(entry => {
+                        const [key, value] = entry;
+                        const mykeyArray = key.split("_");
+
+                        let keyword = "";
+
+                        mykeyArray.forEach(function(string) 
+                        {
+                            let keyStr = string.charAt(0).toUpperCase() + string.slice(1);
+                            if (string == "and") {
+                                keyStr = "and";
+                            }
+                            //document.getElementById("demo").innerHTML += " "+ keyStr; 
+                            keyword += " "+  keyStr;
+                          
+                        });
+
+                        //console.log("keyword ==> " + keyword.trim());
+                        //let keyStr = key.charAt(0).toUpperCase() + key.slice(1);
+                        //let purposeOptionItemStr = keyStr.replace(/\s+/g, '_') + "";
+                        
+
+                        //console.log(purposeOptionItemStr);
+                        let keyStrCleaned = keyword.trim();
+                        let purposeOptionItemStr = keyStrCleaned.replace(/\s+/g, '_') + "";
+
+                        this.purposeList[mainItemStr +"_targetScore"][purposeOptionItemStr] = value;
+
+                        
+                    });
+
+                    
+
+                    
+                }
+
             }
-
         }
-        //console.log(this.purposeList);
+
+        
 		//Point Purchase
 		this.user.pointPurchase	= this.memberinfo.point_purchase_type;
 		//enumerate lesson classes
@@ -1728,19 +1627,18 @@ export default {
             {
                 if (response.data.success === false) {
                     alert (response.data.message);
-                } else {
-
-                    this.$nextTick(function()
-                    {                    
-                        location.reload(); //success
-                    });
-                }
+                } else if (response.data.success  === true) {
+                    location.reload(); //success
+                } 
 
 			}).catch(function(error) {
                 // handle error
                 alert("Error " + error);
                 //console.log(error);
+            }).finally(() => {
+                
             });
+            
                         
         },
         addExamScore(event) 
@@ -2037,14 +1935,16 @@ export default {
         }        
 
     },
-
     computed : {
         years () {
             const year = new Date().getFullYear()
             return Array.from({length: (year - 2000) + 1}, (value, index) => 2010 + index)
         },
         
-    },      
+    },    
+
+
+
   
 };
 

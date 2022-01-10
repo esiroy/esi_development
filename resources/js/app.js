@@ -7,19 +7,45 @@ require('./bootstrap');
 window.Vue = require('vue');
 
 /* Components Javascript Import*/
-//import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 
-//socket server
-//import io from "socket.io-client";
-//const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
-    
+
 //css
 //import 'bootstrap/dist/css/bootstrap.css'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-// Optionally install the BootstrapVue icon components plugin
-//Vue.use(BootstrapVue);
-//Vue.use(IconsPlugin);
+
+let pathname = window.location.pathname
+let url = pathname.split("/");
+
+
+switch(url[2]) {
+    case '':
+    case 'dashboard':
+    case 'lesson':   
+        console.log("load lesson!")
+        Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+
+    break;
+    case 'member':      
+        console.log(url[4]);
+        if (url[4] === 'edit') {
+            console.log("load edit member!")
+            Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
+        } else {
+            Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
+        }
+    break;
+    case 'customerchatsupport':
+        Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
+    break;
+    default:
+        console.log("default page, no vue!!")
+}
+
 
 
 /**

@@ -35,6 +35,7 @@
         "v-select2-component": "^0.4.3",
         "vue-moment": "^4.1.0",
         "vue-multiselect": "^2.1.6",
+        "vue-slider-component": "^3.2.15",
         "vue-socket.io": "^3.0.10",
         "vue-upload-component": "^2.8.22",
         "vuejs-datepicker": "^1.6.2",

@@ -146,6 +146,7 @@
 
 
                             <member-update-component 
+                                ref="MemberUpdateComponent"
                                 :memberships="{{ json_encode($memberships) }}" 
                                 :attributes="{{ json_encode($attributes) }}" 
                                 :shifts="{{ json_encode($shifts) }}" 
@@ -294,9 +295,61 @@
                         let element = $(this).next();
                         $(element).hide();
                         $(element).find('input').prop('checked', false);
+
+                        $('.sub_options input').each(function(i, obj) {                    
+
+                                if ($(this).is(':checked'))             
+                                {
+                                    $(this).parent().next().show();
+                                    $(this).parent().next().next().show();
+                                } else {
+                                    $(this).parent().next().hide();
+                                    $(this).parent().next().next().hide();
+
+                                }
+                            });
+
                     }  
                 });
 
+
+                $('.sub_options input').each(function(i, obj) {                    
+
+                    if ($(this).is(':checked'))             
+                    {
+                        $(this).parent().next().show();
+                        $(this).parent().next().next().show();
+                    } else {
+                        $(this).parent().next().hide();
+                        $(this).parent().next().next().hide();
+
+                    }
+                });
+
+
+                $(document).on("click",".sub_options input",function() 
+                {
+                    if ($(this).is(':checked')) 
+                    {            
+                        $(this).parent().next().show();
+                        $(this).parent().next().next().show();
+
+                        console.log("checked !!!")
+                    } else {
+                    
+                        $(this).parent().next().hide();
+                        $(this).parent().next().next().hide();
+
+                        console.log("unchecked !!!")
+                    }
+                });
+
+                $(document).on('change', '#examType', function(event) 
+                {   let examTypeValue = $(this).val();                    
+                    let examType = examTypeValue.replace(/\s+/g, '-');
+                    $('.examScoreHolder').hide();
+                    $('#examination-score-'+ examType).show();
+                });
 
 
                 $(document).on('click', '#examHistory .pagination a', function(event) {                    
@@ -307,12 +360,6 @@
                     return false;
                 });
 
-                $(document).on('change', '#examType', function(event) 
-                {   let examTypeValue = $(this).val();                    
-                    let examType = examTypeValue.replace(/\s+/g, '-');
-                    $('.examScoreHolder').hide();
-                    $('#examination-score-'+ examType).show();
-                })
 
 
             

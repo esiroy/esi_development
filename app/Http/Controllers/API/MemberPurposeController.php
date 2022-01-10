@@ -74,7 +74,7 @@ class MemberPurposeController extends Controller
 
                 "purpose_option"    => $purpose_option,
                 'target_score'      => $target_score,      
-                //'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
+                'purposeForm'       => view('modules.member.includes.memberPurpose', compact('purpose', 'purpose_option', 'target_score'))->render()                
             ]);
         } else {
             return Response()->json([
@@ -165,14 +165,15 @@ class MemberPurposeController extends Controller
 
         //EIKEN
         if (isset($request['EIKEN'])) {
+
             $EIKEN_TargetScores = [
                 'grade_5' => $request['EIKEN_Grade_5'],
                 'grade_4' => $request['EIKEN_Grade_4'],
-                'grade_3_1st_Stage' => $request['EIKEN_Grade_3_1st_Stage'],
-                'grade_Pre_2_1st_Stage' => $request['EIKEN_Grade_Pre_2_1st_Stage'],
-                'grade_2_1st_Stage' => $request['EIKEN_Grade_2_1st_Stage'],
-                'grade_Pre_1_1st_Stage' => $request['EIKEN_Grade_Pre_1_1st_Stage'],
-                'grade_1_1st_Stage' => $request['EIKEN_Grade_1_1st_Stage'],
+                'grade_3' => $request['EIKEN_Grade_3_1st_Stage'],
+                'grade_pre_2' => $request['EIKEN_Grade_Pre_2_1st_Stage'],
+                'grade_2' => $request['EIKEN_Grade_2_1st_Stage'],
+                'grade_pre_1' => $request['EIKEN_Grade_Pre_1_1st_Stage'],
+                'grade_1' => $request['EIKEN_Grade_1_1st_Stage'],
 
             ];
 

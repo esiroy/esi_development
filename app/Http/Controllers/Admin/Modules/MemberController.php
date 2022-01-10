@@ -436,7 +436,10 @@ class MemberController extends Controller
 
         //get purose (new)       
         $purposeModel = new Purpose();
+        //$purpose = $purposeModel->getMemberPurpose($memberID);
         $purpose = $purposeModel->getMemberPurpose($memberID);
+
+
         
 
         $memberExamScoreModel = new MemberExamScore();

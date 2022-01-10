@@ -5,6 +5,20 @@
   */
 
 /*!
+ * BootstrapVue Icons, generated from Bootstrap Icons 1.0.0
+ *
+ * @link https://icons.getbootstrap.com/
+ * @license MIT
+ * https://github.com/twbs/icons/blob/master/LICENSE.md
+ */
+
+/*!
+ * Name: vue-upload-component
+ * Version: 2.8.21
+ * Author: Marco Lang
+ */
+
+/*!
  * Sizzle CSS Selector Engine v2.3.5
  * https://sizzlejs.com/
  *
@@ -13,6 +27,13 @@
  * https://js.foundation/
  *
  * Date: 2020-03-14
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
+ * @license  MIT
  */
 
 /*!
@@ -35,11 +56,30 @@
  * Date: 2020-05-04T22:49Z
  */
 
+/*! 
+  * portal-vue © Thorsten Lünborg, 2019 
+  * 
+  * Version: 2.1.7
+  * 
+  * LICENCE: MIT 
+  * 
+  * https://github.com/linusborg/portal-vue
+  * 
+ */
+
 /*! DataTables 1.10.21
  * ©2008-2020 SpryMedia Ltd - datatables.net/license
  */
 
 /*! Select2 4.0.5 | https://github.com/select2/select2/blob/master/LICENSE.md */
+
+/*! https://mths.be/utf8js v2.1.2 by @mathias */
+
+/**
+  * vue-class-component v7.0.1
+  * (c) 2015-present Evan You
+  * @license MIT
+  */
 
 /**
  * @license
@@ -74,3 +114,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+
+//! moment.js
+
+//! moment.js locale configuration
