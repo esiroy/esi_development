@@ -21,30 +21,52 @@ Vue.use(IconsPlugin);
 let pathname = window.location.pathname
 let url = pathname.split("/");
 
+if (url[1] === 'admin') {
 
-switch(url[2]) {
-    case '':
-    case 'dashboard':
-    case 'lesson':   
-        console.log("load lesson!")
-        Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+    //administration
+    switch(url[2]) {
+        case '':
+        case 'dashboard':
+        case 'lesson':   
+            console.log("load lesson!")
+            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
 
-    break;
-    case 'member':      
-        console.log(url[4]);
-        if (url[4] === 'edit') {
-            console.log("load edit member!")
-            Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
-        } else {
-            Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
-        }
-    break;
-    case 'customerchatsupport':
-        Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
-    break;
-    default:
-        console.log("default page, no vue!!")
+        break;
+        case 'member':      
+            console.log(url[4]);
+            if (url[4] === 'edit') {
+                console.log("load edit member!")
+                Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
+            } else {
+                Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
+            }
+        break;
+        case 'customerchatsupport':
+            Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
+        break;
+        default:
+            console.log("default page, no vue!!")
+    }
+
+} else {
+
+
+    //front end 
+    switch(url[1]) {
+        case '':
+        case 'home':        
+            console.log("load member (home)!")
+            Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
+        break;
+        case 'customerchatsupport':
+            console.log("load user chat (home)!")
+            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
+        break;
+        default:
+            console.log("default front end page, no vue!!")
+    }
 }
+
 
 
 

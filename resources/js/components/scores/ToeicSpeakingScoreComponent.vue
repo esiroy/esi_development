@@ -4,18 +4,30 @@
 
     <!--[start] TOEIC-Speaking- -->
     <div id="examination-score-TOEIC_Speaking" class="section examScoreHolder">
-        <div class="row pt-2">
-            <div class="col-2">                       
+
+        <div class="row">
+            <div :class="this.size.leftColumn">                       
                 <div class="pl-2 small "> <span class="text-danger">*</span> Listening Score </div>                
             </div>
-            <div class="col-10">
-                <select id="TOEIC_Speaking-listeningScore" name="listeningScore" v-model="examScore.TOEIC_Speaking.speaking" class="form-control form-control-sm pl-0 col-md-3">
+            <div :class="this.size.rightColumn">
+                <select @change="getTotal" id="TOEIC_Speaking-listeningScore" name="listeningScore" v-model="examScore.TOEIC_Speaking.speaking" :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Listening Score</option>
                     <option :value="item - 1" :key="item - 1" class="mx-0 px-0" v-for="item in 201">{{ item - 1 }}</option>
                 </select>
             </div>
         </div>
 
+
+        <div class="row pt-2">
+            <div :class="this.size.leftColumn">
+                <div class="pl-2 small "> <span class="text-danger">*</span> Total Score </div>
+            </div>
+            <div :class="this.size.rightColumn">
+                <input type="text" id="total" disabled name="TOEIC_totalScore" v-model="examScore.TOEIC_Speaking.total" :class="this.size.select +' form-control form-control-sm '"> 
+            </div>
+        </div>
+
+        
     </div>
     <!--[end]-->
 
@@ -33,11 +45,17 @@ export default {
     };
   },
   props: {
-    examScore: Object
+    examScore: Object,
+    size: Object,    
   },
   methods: {
-    getTotalScore: function(index) {
+    getTotal() {
+        let total =  this.$parent.$parent.$parent.$options.methods.getTotalScore('TOEIC_Speaking');
+        this.examScore.TOEIC_Speaking.total  = total;
 
+        if (this.$parent.$parent.$parent.submitted === true) {
+            this.$parent.$parent.$parent.$options.methods.highlightExamElement();
+        }        
     }
   },
   computed: {},
