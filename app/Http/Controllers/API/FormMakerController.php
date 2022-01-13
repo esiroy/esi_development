@@ -15,10 +15,139 @@ use App\Models\ConditionalFieldLogic;
 
 class FormMakerController extends Controller
 {
-    public function save(Request $request) {
     
-    
-    }
+    public function updateWritingFields(Request $request,  UploadFile $uploadFile) 
+    {
+        $form_id = 1;  
+
+        if (is_array($request->id) == false) {
+            return Response()->json([
+                "success"       => false,
+                "message"       => "Form can't be updated, please add a field from fields menu"
+            ]); 
+        }
+
+
+        $ids = ConditionalFieldLogic::where('form_id', $form_id)->delete();
+
+
+        //initial sq number
+        $sequence_number = 1;
+
+        //go through the field iD
+        foreach($request->id as $id) 
+        {
+
+            //REQUEST FIELDS (STANDARD)
+            $label = $request[$id.'_label'];
+            $description = $request[$id.'_description'];
+            $maximum_characters = $request[$id.'_maximum_characters'];                
+            $default_value = $request[$id.'_default_value'];
+
+            $required = ($request[$id.'_required'] == "on") ? true : false;
+            $conditional_logic = ($request[$id.'_activate_coditional_logic'] == "on") ? true : false;
+            
+            $display_meta = [
+                'required'              => $required,
+                'conditional_logic'     => $conditional_logic,
+                'label'                 => str_replace(' ', '_',  $label),
+                'description'           => $description,
+                'default_value'         => $default_value
+            ];
+
+            /******************** TYPES OF INPUT ***********************/
+            if (strtolower($request[$id.'_fieldType']) == "dropdownselect") {
+                $type = 'dropdownSelect';                
+                $selected_choices = $request[$id.'_selected_choice_text'];                                               
+                $display_meta['type'] = $type;
+                $display_meta['selected_choices'] = $selected_choices;                
+
+            } else if (strtolower($request[$id.'_fieldType']) == "simpletextfield") {
+                $type = 'simpletextfield';
+                $display_meta['type'] = $type;
+                $display_meta['maximum_characters'] = $maximum_characters;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "html" || strtolower($request[$id.'_fieldType']) == "htmlcontent") {
+                $type = 'htmlContent';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "firstname" || strtolower($request[$id.'_fieldType']) == "firstnamefield") {
+                $type = 'firstnamefield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+            } else if (strtolower($request[$id.'_fieldType']) == "lastname" || strtolower($request[$id.'_fieldType']) == "lastnamefield") {
+                $type = 'lastnamefield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+            
+            } else if (strtolower($request[$id.'_fieldType']) == "email" || strtolower($request[$id.'_fieldType']) == "emailfield") {
+                $type = 'emailfield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+
+            } else if (strtolower($request[$id.'_fieldType']) == "upload" || strtolower($request[$id.'_fieldType']) == "uploadfield") {
+                $type = 'uploadfield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+            } else if (strtolower($request[$id.'_fieldType']) == "paragraphtext") {
+                $type = 'paragraphtext';
+                $display_meta['type'] = $type;
+
+                //word limiter
+                $display_meta['enableWordLimit'] =  ($request[$id.'_enableWordLimit'] == "on") ? true : false; 
+                $display_meta['wordLimit'] = $request[$id.'_wordLimit'];
+            }
+            
+
+            //Conditonal Field Logic
+            if (isset( $request[$id.'_cfield_id'] )) {
+                foreach ($request[$id.'_cfield_id'] as $key => $fieldID) {
+                    $cfID               = $request[$id.'_cfield_id'][$key];
+                    $cfRule              = $request[$id.'_cfield_rule'][$key];
+                    $cfValue            = ($request[$id.'_cfield_value'][$key]) ?? "";
+
+                    ConditionalFieldLogic::create([
+                        'form_id'               =>  $form_id,
+                        'field_id'              =>  $id,
+                        'selected_option_id'    =>  $cfID,
+                        'field_rule'            =>  $cfRule,
+                        'field_value'           => $cfValue,
+                    ]);
+                }
+            }
+
+            //GET the page array number for the page
+            if (isset($request[$id.'_page'])) {
+                $formPageArr = explode("-", $request[$id.'_page']);            
+                $page = $formPageArr[1];          
+                                
+            }
+
+            $form = FormFields::find($id);
+            if ($form) {
+                $form->update([
+                    'form_id'           => $form_id,
+                    'page_id'           => $page,
+                    'name'              => $label,
+                    'description'       => $description,
+                    'type'              => $type,
+                    'display_meta'      => json_encode($display_meta),
+                    'sequence_number'     => $sequence_number
+                ]); 
+            }
+
+            $sequence_number = $sequence_number + 1;
+        }            
+
+        return Response()->json([
+            "success"       => true,
+            "message"       => "Updated!"
+        ]); 
+    }    
 
     public function saveSimpleTextField(Request $request) 
     {

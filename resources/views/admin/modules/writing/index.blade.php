@@ -84,9 +84,27 @@
 
             <div class="col-md-4">
                 <div id="righ-sidebar" style="position: -webkit-sticky;position: sticky; top: 20px;">
-                    @include('admin.modules.writing.includes.fieldButtons')                
-                    <input type="button" value="Cancel" class="btn btn-danger mt-4" onclick="window.location.href='{{  url('admin/writing') }}' ">
-                    <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault(); $('#dynamicForms').submit();">               
+                    @include('admin.modules.writing.includes.fieldButtons')         
+
+                   
+                    <div class="mt-2">
+
+                        <div id="form_message"></div>
+
+                        <div class="form-buttons">
+                            <input type="button" value="Cancel" class="btn btn-danger mt-2" onclick="window.location.href='{{  url('admin/writing') }}' ">
+                            <input type="button" value="Update" class="btn btn-primary mt-2" onclick="saveForm()">                  
+                        </div>
+
+                        <div class="form-loader">
+                            <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                            </button>
+                        </div>
+                        
+                    </div>
+
                 </div>
             </div>
 
@@ -116,6 +134,9 @@
     <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}" >
 
     <style>
+        .form-loader {
+            display: none 
+        }
 
         #writing-form img {
             width: 100%
@@ -182,19 +203,71 @@
 
     <script type="text/javascript" defer>
         var api_token = "{{ Auth::user()->api_token }}";
+
+         function saveForm() 
+         {         
+            let data        = $("#dynamicForms").serialize();           
+
+            $('.form-buttons').hide();
+            $('.form-loader').show();
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/updateWritingFields?api_token=') }}" + api_token,
+                dataType: 'json',
+                data :    data + "form_id="+1,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                    $('.form-buttons').show();
+                    $('.form-loader').hide();                    
+
+                    if (data.success === true) 
+                    {
+
+
+                        let message = '<div class="alert alert-success" role="alert">Form Fields have been succussfully saved </div>';
+
+                        $('#form_message').html(message).fadeIn(500).delay(4000).fadeOut('slow');
+                    }
+                }
+            });                   
+         }
+
+         function addTextFormatter(id) {
+               
+
+            CKEDITOR.replace( id , {
+                toolbarGroups: [
+                        { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                        { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                        { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                        { name: 'forms', groups: [ 'forms' ] },
+                        
+                        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                        { name: 'links', groups: [ 'links' ] },
+                        { name: 'insert', groups: [ 'insert' ] },
+                        
+                        { name: 'styles', groups: [ 'styles' ] },
+                        { name: 'colors', groups: [ 'colors' ] },
+                        { name: 'tools', groups: [ 'tools' ] },
+                        { name: 'others', groups: [ 'others' ] },
+                        
+                    ],
+                removePlugins: 'easyimage, exportpdf, cloudservices',
+                extraPlugins: 'html5audio',                        
+                removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
+            });                
+         }
+         
+                 
         window.addEventListener('load', function() 
         {
-            $('#dynamicForms').on('submit', function(e)
-            {
-                let data = $("#dynamicForms").serialize();
-
-                alert (data);
-
-                e.preventDefault();
-            });
-
-
-    /*
+         
+            /*
             $('.ckEditor').each( function () {
                 console.log(this.name + " add ckeditor");
                 CKEDITOR.replace( this.name , {
@@ -214,28 +287,7 @@
             */
             $('.ckEditor').each( function () {
                 console.log(this.name + " add ckeditor");
-                CKEDITOR.replace( this.name , {
-                    toolbarGroups: [
-                            { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-                            { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-                            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-                            { name: 'forms', groups: [ 'forms' ] },
-                            
-                            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-                            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
-                            { name: 'links', groups: [ 'links' ] },
-                            { name: 'insert', groups: [ 'insert' ] },
-                            
-                            { name: 'styles', groups: [ 'styles' ] },
-                            { name: 'colors', groups: [ 'colors' ] },
-                            { name: 'tools', groups: [ 'tools' ] },
-                            { name: 'others', groups: [ 'others' ] },
-                           
-                        ],
-                    removePlugins: 'easyimage, exportpdf, cloudservices',
-                    extraPlugins: 'html5audio',                        
-	                removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
-                });
+                addTextFormatter(this.name )
             });
 
 
@@ -968,12 +1020,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                          
+                        addTextFormatter(data.id);                     
                     }
                 });
             });
@@ -1008,12 +1055,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                          
+                        addTextFormatter(data.id);                     
                     }
                 });
             });
@@ -1047,12 +1089,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                          
+                        addTextFormatter(data.id);                     
                     }
                 });
             });
@@ -1086,12 +1123,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                           
+                        addTextFormatter(data.id);                      
                     }
                 });
             });
@@ -1155,12 +1187,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                           
+                        addTextFormatter(data.id);                      
                     }
                 });
 
@@ -1198,12 +1225,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                           
+                        addTextFormatter(data.id);                      
                     }
                 });
 
@@ -1247,12 +1269,9 @@
                         });
                         $( ".tabs" ).tabs();
                         
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });   
+                    
+
+                        addTextFormatter(data.id +"_description") 
 
                     }
                 });
@@ -1282,12 +1301,10 @@
                         $( ".tabs" ).tabs(); 
                         //addCField(data.id, 1);                        
 
-                        CKEDITOR.replace( data.id +"_content", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                       
+
+                        addTextFormatter(data.id +"_content");
+
+                                        
 
                     }
                 });
@@ -1331,16 +1348,12 @@
                             }               
 
                             if ($('#'+fieldID+'_content').hasClass('ckEditor')) {
-                                CKEDITOR.replace( data.id +"_content", {
-                                    removePlugins: 'easyimage, exportpdf, cloudservices',
-                                    extraPlugins: 'html5audio',                            
-                                });        
+
+                                addTextFormatter(data.id +"_content");
+                                
                             } else {
-                            
-                                CKEDITOR.replace( data.id +"_description", {
-                                    removePlugins: 'easyimage, exportpdf, cloudservices',
-                                    extraPlugins: 'html5audio',                            
-                                });                            
+                                addTextFormatter(data.id +"_description");
+                                                        
                             }
                             //addCField(data.id, 1);                        
 
