@@ -131,6 +131,7 @@
                     if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                        
                         console.log(fieldID + " is hidden, we will not verify");
                     } else {
+
                         if ($('#'+fieldID).attr( "required" )) 
                         {
                             //console.log(fieldID + " is required")
@@ -157,25 +158,30 @@
 
                         if ($('#'+fieldID).hasClass('uploadfield')) 
                         {
-                            const oFile = document.getElementById(fieldID).files[0]; // <input type="file" id="fileUpload" accept=".jpg,.png,.gif,.jpeg"/>
-                            if (oFile.size <= 2097152) // 2 MiB for bytes.
-                            {
-                                //less than 2mb (its okay)
-                                
-                                $('.'+fieldID+"_field_content").find('.error2').remove();                                
-                            } else {
+                            try {
+                                const oFile = document.getElementById(fieldID).files[0]; // <input type="file" id="fileUpload" accept=".jpg,.png,.gif,.jpeg"/>
+                                if (oFile.size <= 2097152) // 2 MiB for bytes.
+                                {
+                                    //less than 2mb (its okay)
+                                    
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();                                
+                                } else {
 
-                                colorHighlight(fieldID)
+                                    colorHighlight(fieldID)
 
-                                $('.'+fieldID+"_field_content").find('.error2').remove();
-                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
-                                requiredFieldsArr.push({
-                                    'id': fieldID,
-                                    'isValid': false
-                                });
-                                //alert("File size must under 2MiB!");
-                                //return;
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });
+                                    //alert("File size must under 2MiB!");
+                                    //return;
+                                }                            
+                           } catch(err) {
+                                //alert( err )
                             }
+
                         }
 
                         /*
@@ -461,7 +467,7 @@
                             $writingModel = new \App\Models\WritingFields;
                             $writingField = $writingModel->where('form_id', $form_id)->where('id', $field->field_id)->first();
 
-                            $displayMeta = json_decode($writingField->display_meta, true);
+                          
 
                             try {
                                 $displayMeta = json_decode($writingField->display_meta, true);
