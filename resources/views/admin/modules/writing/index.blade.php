@@ -206,12 +206,13 @@
          function saveForm() 
          {         
 
-            $('.ckEditor').each( function () {
-                
-
-                        CKEDITOR.instances[this.id].updateElement();
-
+            $('textarea.ckEditor').each( function () {
+                CKEDITOR.instances[this.id].updateElement();
+                let ckData = CKEDITOR.instances[this.id].getData();
+                //alert( $(this).attr('id') + "  " + ckData + " == ? " + $(this).val());
             });
+
+              
 
             let data        = $("#dynamicForms").serialize();           
 
@@ -233,10 +234,7 @@
 
                     if (data.success === true) 
                     {
-
-
                         let message = '<div class="alert alert-success" role="alert">Form Fields have been succussfully saved </div>';
-
                         $('#form_message').html(message).fadeIn(500).delay(4000).fadeOut('slow');
                     }
                 }
