@@ -289,6 +289,9 @@ class WritingController extends Controller
 
     public function update(Request $request,  UploadFile $uploadFile) 
     {
+
+        /* To be replaced by API */
+        
         $form_id = 1;
 
         if (is_array($request->id) == false) {

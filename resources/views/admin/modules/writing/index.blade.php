@@ -86,7 +86,7 @@
                 <div id="righ-sidebar" style="position: -webkit-sticky;position: sticky; top: 20px;">
                     @include('admin.modules.writing.includes.fieldButtons')                
                     <input type="button" value="Cancel" class="btn btn-danger mt-4" onclick="window.location.href='{{  url('admin/writing') }}' ">
-                    <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault();document.getElementById('dynamicForms').submit();">               
+                    <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault(); $('#dynamicForms').submit();">               
                 </div>
             </div>
 
@@ -113,6 +113,7 @@
 @section('styles')
     @parent
     <link rel="stylesheet" href="{{ url('css/dropzone/dropzone.min.css') }}"></link>
+    <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}" >
 
     <style>
 
@@ -175,24 +176,69 @@
 @endsection
 
 @section('scripts')
-    <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}">
-    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
     <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
     <script src="{{ url('js/dropzone/dropzone.min.js') }}" deferd></script>
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
+
     <script type="text/javascript" defer>
         var api_token = "{{ Auth::user()->api_token }}";
         window.addEventListener('load', function() 
         {
+            $('#dynamicForms').on('submit', function(e)
+            {
+                let data = $("#dynamicForms").serialize();
 
+                alert (data);
+
+                e.preventDefault();
+            });
+
+
+    /*
             $('.ckEditor').each( function () {
                 console.log(this.name + " add ckeditor");
                 CKEDITOR.replace( this.name , {
+                    toolbarGroups: [
+                        {"name": "basicstyles"  , "groups": ["basicstyles", "colors"]},
+                        {"name": "links"        , "groups": ["links"]},
+                        {"name": "paragraph"    , "groups": ["list"]},
+                        {"name": "styles"       , "groups": ["insert","styles" ]},                   
+                    ],
                     removePlugins: 'easyimage, exportpdf, cloudservices',
                     extraPlugins: 'html5audio',
+                    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar,PasteFromWord'
                     //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
                     //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
                 });
             });
+            */
+            $('.ckEditor').each( function () {
+                console.log(this.name + " add ckeditor");
+                CKEDITOR.replace( this.name , {
+                    toolbarGroups: [
+                            { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                            { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                            { name: 'forms', groups: [ 'forms' ] },
+                            
+                            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                            { name: 'links', groups: [ 'links' ] },
+                            { name: 'insert', groups: [ 'insert' ] },
+                            
+                            { name: 'styles', groups: [ 'styles' ] },
+                            { name: 'colors', groups: [ 'colors' ] },
+                            { name: 'tools', groups: [ 'tools' ] },
+                            { name: 'others', groups: [ 'others' ] },
+                           
+                        ],
+                    removePlugins: 'easyimage, exportpdf, cloudservices',
+                    extraPlugins: 'html5audio',                        
+	                removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
+                });
+            });
+
+
 
             $('.fa-caret-up').hide();
 

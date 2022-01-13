@@ -15,7 +15,11 @@ use App\Models\ConditionalFieldLogic;
 
 class FormMakerController extends Controller
 {
+    public function save(Request $request) {
     
+    
+    }
+
     public function saveSimpleTextField(Request $request) 
     {
         //FORM ID
