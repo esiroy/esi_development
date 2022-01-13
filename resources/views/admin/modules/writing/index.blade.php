@@ -102,7 +102,6 @@
                             Loading...
                             </button>
                         </div>
-                        
                     </div>
 
                 </div>
@@ -891,11 +890,14 @@
             /***************************************************************
                             [START] - (BUTTON) [HTML]
             *****************************************************************/
+
+            /*
             $("#btn_simpleInputText").on("click", function() {
                 $("#modal_HTML").modal();
                 CKEDITOR.instances['modal_simpleText_description'].setData("");
                 $('#form_HTML').trigger("reset");
             });
+            */
 
 
             /***************************************************************
@@ -1020,7 +1022,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        addTextFormatter(data.id);                     
+                        addTextFormatter(data.id +"_description");                     
                     }
                 });
             });
@@ -1055,7 +1057,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        addTextFormatter(data.id);                     
+                        addTextFormatter(data.id + "_description");                     
                     }
                 });
             });
@@ -1089,7 +1091,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        addTextFormatter(data.id);                     
+                        addTextFormatter(data.id + "_description");                     
                     }
                 });
             });
@@ -1123,7 +1125,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        addTextFormatter(data.id);                      
+                        addTextFormatter(data.id +"_description");                      
                     }
                 });
             });
@@ -1187,7 +1189,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        addTextFormatter(data.id);                      
+                        addTextFormatter(data.id +"_description");                      
                     }
                 });
 
@@ -1225,7 +1227,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        addTextFormatter(data.id);                      
+                        addTextFormatter(data.id +"_description");                      
                     }
                 });
 
@@ -1268,9 +1270,6 @@
                             },                            
                         });
                         $( ".tabs" ).tabs();
-                        
-                    
-
                         addTextFormatter(data.id +"_description") 
 
                     }
@@ -1299,12 +1298,8 @@
                             handle: '.handle'
                         });
                         $( ".tabs" ).tabs(); 
-                        //addCField(data.id, 1);                        
-
-
-                        addTextFormatter(data.id +"_content");
-
-                                        
+                        //addCField(data.id, 1); 
+                        addTextFormatter(data.id  +"_content");                                       
 
                     }
                 });
