@@ -205,6 +205,14 @@
 
          function saveForm() 
          {         
+
+            $('.ckEditor').each( function () {
+                
+
+                        CKEDITOR.instances[this.id].updateElement();
+
+            });
+
             let data        = $("#dynamicForms").serialize();           
 
             $('.form-buttons').hide();
