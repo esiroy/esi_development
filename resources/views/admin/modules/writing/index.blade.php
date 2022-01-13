@@ -222,7 +222,7 @@
                 type: 'POST',
                 url: "{{ url('api/writing/updateWritingFields?api_token=') }}" + api_token,
                 dataType: 'json',
-                data :    data + "form_id="+1,
+                data :    data + "&form_id="+1,
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
