@@ -41,9 +41,19 @@
                                 <img src="{{ url('images/btnBlue.gif') }}" alt="レッスンの予約" title="レッスンの予約">
                             </a>
 
+                            @php 
+                            /*
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
                                 <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
-                            </a>                      
+                            </a> 
+                            */
+                            @endphp                     
+
+
+                            <a href="JavaScript:PopupCenter('{{ url('/writing') }}','講師への連絡　チャット」とは',900,820);">
+                                <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
+                            </a>      
+                            
                         </div>
                     </div>
 
