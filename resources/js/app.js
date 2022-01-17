@@ -64,6 +64,7 @@ if (url[1] === 'admin') {
         break;
         default:
             console.log("default front end page, no vue!!")
+            Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
     }
 }
 

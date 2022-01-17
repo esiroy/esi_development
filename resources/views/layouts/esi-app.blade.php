@@ -807,14 +807,14 @@
 
     @php 
 
-    /*
-    <!-- Exam Score-->
-    @include('modules.member.popup.addMemberTestScore')
-    @include('modules.member.popup.showAllMemberExamScoreModal')
+        /*
+        <!-- Exam Score-->
+        @include('modules.member.popup.addMemberTestScore')
+        @include('modules.member.popup.showAllMemberExamScoreModal')
 
-    <!-- Member Purpose -->
-    @include('modules.member.popup.updateMemberPurpose')
-    */
+        <!-- Member Purpose -->
+        @include('modules.member.popup.updateMemberPurpose')
+        */
 
     @endphp
 

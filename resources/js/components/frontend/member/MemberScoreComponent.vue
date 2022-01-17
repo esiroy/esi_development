@@ -9,15 +9,11 @@
         </div>
 
         <div class="col-md-12  pt-2 pb-2">
-            <div class="mt-3 mb-4">
+            <div class="mt-3">
 
-                <div id="memberAddExamScoreForm">
-
+                <div id="memberAddExamScoreForm" class="modal-container">
                     <b-modal id="modalUpdateMemberForm" title="テストスコア履歴" @show="resetModal">
-
                         <form id="updateMemberForm" name="updateMemberForm" @submit.prevent="handleUpdateMemberSubmit">   
-
-
                             <!--[start] Exam (New)-->
                             <div id="examination-section" class="section">
 
@@ -110,38 +106,117 @@
                                     Loading...
                                 </b-button>
                             </div>
-
-                        </template>
-                                            
+                        </template>                                            
                     </b-modal>
 
 
                     <!-- RECENT SCORES -->
                     <div class="row">                   
                         <div class="col-12">
-                            <div class="latest-score mb-3">
-                                <span class="font-weight-bold small">Exam Date:</span> <span class="small">{{ this.latestScore.examDate }}</span> <br/>
-                                <span class="font-weight-bold small">Exam Type:</span>  <span class="small">{{ this.latestScore.examType }}</span> <br/>
+
+                            <div class="latest-score">
+
+                                <div class="label">
+                                    <span class="font-weight-bold small">Exam Date:</span> 
+                                    <span class="small">{{ this.latestScore.examDate }}</span>
+                                </div>
+
+                                <div class="label">
+                                    <span class="font-weight-bold small">Exam Type:</span>  
+                                    <span class="small">{{ this.latestScore.examType }}</span> 
+                                </div>
+
                                 <div v-for="(value, name) in this.latestScore.examScores" :key="name">
                                     <span class="font-weight-bold small">{{ capitalizeFirstLetter(name) }}</span>: 
                                     <span class="small">{{ value }}</span>
                                 </div>
-                                <br/> 
+                                
                             </div>
 
-                            <a id="viewAllExamScores" href="getAllScores"  data-toggle="modal" data-target="#showAllMemberExamScoreModal">All Scores</a>
+                           <!--
+                           <a id="viewAllExamScores" href="getAllScores"  data-toggle="modal" data-target="#showAllMemberExamScoreModal">All Scores</a>
+                           -->
 
+                           
                             <b-modal id="examHistory" ref="examHistoryModal" title="Exam Scores">
                                 <input type="hidden" id="memberExamUserID" v-model="memberinfo.user_id">
                                 <div id="memberExamScores">
                                     <span v-html="this.examScores"></span>
                                 </div>
                             </b-modal>
+
+
                         </div>
                     </div>
                     <!--[end]-->
 
                 </div>
+
+
+
+                <!-- SCORE MODAL Button-->
+                <div class="row mt-2">
+                    <div class="col-6 float-right px-0 mx-0 d-flex justify-content-end">
+                        <span v-b-modal.modalMemberExamScoreList >
+                            <b-button size="sm" variant="dark"  pill>
+                                <b-icon-calculator></b-icon-calculator> <span class="small"> View Scores </span> 
+                            </b-button>                   
+                        </span>
+                        &nbsp;
+                    </div>
+
+
+
+                <!--Score Graphs Button -->
+                    <div class="col-6  px-0 mx-0">
+                        <span v-b-modal.modalMemberExamScoreList >
+                            <b-button size="sm" variant="primary" pill>
+                                <b-icon-bar-chart-fill></b-icon-bar-chart-fill> <span class="small">Score Graph </span>
+                            </b-button>                   
+                        </span>
+                        &nbsp;
+                    </div>
+                </div>
+
+
+                <!-- SCORE MODAL -->
+                <div id="memberExamScoreList" class="modal-container">
+
+                    <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScorelist">                            
+                        <div style="overflow-x:scroll; ">
+
+
+                            <table>
+                                <tr style="vertical-align:top">
+
+                                    <td v-for="examScoreType in examScoreTypes" :key="examScoreType" style="min-width:320px; border:1px dotted #999">     
+
+                                        <div class="font-weight-bold">{{ capitalizeFirstLetter(examScoreType) }}</div>
+
+                                        <div v-for="values in examScoreList[examScoreType]" :key="values.id">       
+                                            <div v-for="objectName in Object.keys(values)" :key="objectName.id">
+                                                {{ FormatObjectKey(objectName) }} : {{ values[objectName] }}
+                                            </div>         
+                                              <p>-----</p>                              
+                                        </div>
+
+                                        <p>-----</p>
+                                        {{ examScoreType }}
+                                    </td>
+
+
+
+                                    
+                                </tr>                            
+                            </table>
+
+
+                        </div>                        
+                    </b-modal>
+
+                </div>
+
+
             </div>
         </div>
     </div>
@@ -165,13 +240,9 @@ import ToeicListeningAndReadingScoreComponent from "../../scores/ToeicListeningA
 import ToeicSpeakingScoreComponent from "../../scores/ToeicSpeakingScoreComponent.vue";
 import EikenScoreComponent from "../../scores/EikenScoreComponent.vue";
 import TeapScoreComponent from "../../scores/TeapScoreComponent.vue";
-
-
 import * as Moment from 'moment'
 import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale';
-
-
 export default {
     name: "MemberScoreComponent",
     components: {
@@ -193,18 +264,81 @@ export default {
     data() {
         return {
             submitted: false,
-            ja: ja,         
+            ja: ja,
 
+            //this is for examp type column
             size: {
                 leftColumn  : "col-4",
                 rightColumn : "col-8",
                 select      : "col-10",
             },   
 
+            //Exam Score Listings
+            examScoreTypes: ['A', 'B', "Testing Roy C"],
+            examScoreList: [],
+            examScoreLink: [],
+
             //Exam Date (Form Entry)
             examDate: "",
             uExamDate: "",
             examType: "",
+
+            
+
+            examScorePage: {
+                IELTS: {                    
+                    perPage : 2,
+                    currentPage : 1,
+                    items : 1,
+                }, 
+                TOEFL: {                    
+                    perPage : 3,
+                    currentPage : 1,
+                    items : 1,
+                },
+                TOEFL_Junior: {                    
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1,
+                },
+                TOEFL_Primary_Step_1: {                    
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1,          
+                },
+                TOEFL_Primary_Step_2: {                    
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1,             
+                },
+                TOEIC_Listening_and_Reading: {                    
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1, 
+                },
+                TOEIC_Speaking: {
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1,
+                },
+                EIKEN: {
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1,
+                },
+                TEAP: {                    
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1,
+                },
+                Other_Test: {
+                    perPage : 1,
+                    currentPage : 1,
+                    items : 1,
+                }
+            }, 
+
+
             examScore: {
                 IELTS: {                    
                     speakingBandScore : "",
@@ -286,7 +420,73 @@ export default {
 	{
         this.getMemberLatestExamScore();	
     },
-    methods: {       
+    methods: {   
+        getMemberScorelist() 
+        {
+            this.getMemberExamScoreByType();
+        },
+        getMemberExamScoreByType() {
+
+            axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
+            {
+                method      : "POST",
+                memberID    : this.memberinfo.user_id,
+                examType    : this.examType,
+                limit       : 1,
+
+            }).then(response => {               
+                if (response.data.success === true) 
+                {
+                    this.examScoreTypes = response.data.examTypes;
+                    this.examScoreList = response.data.examScoreList;
+                   // this.examScoreLink = response.data.examScoreLink;
+                }
+                else
+                {
+
+                    
+                }
+            }).catch(function(error) {
+
+             
+
+                // handle error
+                alert("Error " + error);
+                //console.log(error);
+            });         
+        
+        },
+        getMemberExamScorePage(page, memberID)
+        {
+
+            axios.post("/api/getAllMemberExamScore?api_token=" + this.api_token, 
+            {
+                method      : "POST",
+                memberID    : this.memberinfo.user_id,
+                examType    : this.examType,
+                limit       : 1,
+
+            }).then(response => {               
+                if (response.data.success === false) 
+                {    
+                    
+                }
+                else
+                {                    
+
+                    
+                }
+            }).catch(function(error) {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+
+                // handle error
+                alert("Error " + error);
+                //console.log(error);
+            });          
+        },
         addExamScore(event) 
         {
             this.submitted = true;
@@ -384,6 +584,13 @@ export default {
             let fdate = Moment(date).format('YYYY年 MM月 D日');                      
             return fdate;            
         },        
+        capitalizeFirstLetter(string) {
+            let newString = string.charAt(0).toUpperCase() + string.slice(1);
+            newString = newString.replace(/_/g, " ")
+
+            //add space before big letters
+            return newString.replace(/([A-Z])/g, ' $1').trim(); 
+        },      
         highlightExamElement()  
         {                       
             let examType = document.getElementById('examType').value;
@@ -543,6 +750,11 @@ export default {
             return fdate;
         },  
         capitalizeFirstLetter(string) {
+            let newString = string.charAt(0).toUpperCase() + string.slice(1);    
+            newString = newString.replace(/_/g, " ")       
+            return newString.trim(); 
+        },        
+        FormatObjectKey(string) {
             let newString = string.charAt(0).toUpperCase() + string.slice(1);
             newString = newString.replace(/_/g, " ")
 
