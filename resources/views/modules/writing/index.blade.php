@@ -1,7 +1,6 @@
 @extends('layouts.writing.template')
 
 @section('content')
-
     <div class="row">
         <div class="col-12">
             @if (session('message'))
@@ -67,6 +66,30 @@
         window.addEventListener('load', function() 
         {
             $('#writing-form').show(300);
+
+            function getSubmittedPoints(fieldID ) 
+            {
+      
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/getSubmittedPoints?api_token=') }}" + api_token,
+                    data: {
+                        formID              :  1,
+                        field_id            :  fieldID,                                                           
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) 
+                    {
+                     
+                    }
+                    
+                });
+            
+            }
+
+
 
             function adjustIframeHeight() {
                 var $body = $('body'), $iframe = $body.data('iframe.fv');
@@ -206,18 +229,56 @@
 
                         if ($('#'+fieldID).hasClass('paragraphText')) 
                         {
-                            var isWordLimitEnabled = $('#'+fieldID+"_memberPointChecker").val();
-                            var limit = $('#'+fieldID+"_wordLimit").val();
+                            var memberPointCheckerEnabled = $('#'+fieldID+"_memberPointChecker").val();
 
-                            if (isWordLimitEnabled == true) 
+                            if (memberPointCheckerEnabled == true) 
                             {
-                                let wordcounterTest = countWords ($('#'+fieldID).val());
-                                if (wordcounterTest > limit) {                                    
-                                    requiredFieldsArr.push({
-                                        'id': fieldID,
-                                        'isValid': false
-                                    });   
+                                @php 
+                                    //check points if point
+                                    $agentTransactions = new \App\Models\AgentTransaction();
+                                    $credits = $agentTransactions->getCredits( Auth::user()->id ); 
+                                  
+                                    //monthly credits left
+                                    $memberObj=  new \App\Models\Member();
+                                    $member = $memberObj->where('user_id', Auth::user()->id )->first();
+                                    $getMonthlyLessonsLeft = $member->getMonthlyLessonsLeft();
+
+                                    //GET PENDING AND DEDCUT TO SCORE OR POINTS
+                                   
+                                @endphp
+
+                                let credits =  "{{ $credits }}";
+                                let membership = "{{ $member->membership }}";
+                                let getMonthlyLessonsLeft = "{{ $getMonthlyLessonsLeft }}";
+
+                                getSubmittedPoints(fieldID)
+
+                               
+                                if (membership == "Monthly") 
+                                {
+
+                                    if (getMonthlyLessonsLeft <= 0) {
+                                        colorHighlight(fieldID)
+                                        $('.'+fieldID+"_field_content").find('.error2').remove();
+                                        $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" > You dont have enough monthly credits left </label>');
+                                        requiredFieldsArr.push({
+                                            'id': fieldID,
+                                            'isValid': false
+                                        });
+                                    }
+
+                                } else if (membership == "Point Balance" ) {
+                                    if (credits <= 0) {
+                                        colorHighlight(fieldID)
+                                        $('.'+fieldID+"_field_content").find('.error2').remove();
+                                        $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" > You dont have enough points</label>');
+                                        requiredFieldsArr.push({
+                                            'id': fieldID,
+                                            'isValid': false
+                                        });
+                                    }                                
                                 }
+                                
                             }
                         }                                    
                         

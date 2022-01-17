@@ -76,7 +76,10 @@
 
                        <div class="row">
                             <div class="col">                                
-                                <input type="checkbox" id="memberPointChecker" name="{{ $id }}_memberPointChecker" @if($display_meta['memberPointChecker'] == "on" || $display_meta['memberPointChecker'] == "true") {{ "checked='checked" }} @endif>
+                                <input type="checkbox" id="memberPointChecker" name="{{ $id }}_memberPointChecker" 
+                                    @if(isset($display_meta['memberPointChecker']))
+                                        @if ($display_meta['memberPointChecker'] == "on" || $display_meta['memberPointChecker'] == "true") {{ "checked='checked" }} @endif 
+                                    @endif>
                                 <label class="form-label">Enable Point Checker</label>
                             </div>
                             <div class="col-8 small">

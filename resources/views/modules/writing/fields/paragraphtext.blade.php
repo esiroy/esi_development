@@ -28,8 +28,8 @@
          @endif
 
 
-        <input type="text" id="{{ $id .'_memberPointChecker' }}" name="{{ $id .'_memberPointChecker' }}" value="{{ $display_meta['memberPointChecker'] ?? "" }}">
-       
+        <input type="hidden" id="{{ $id .'_memberPointChecker' }}" name="{{ $id .'_memberPointChecker' }}" value="{{ $display_meta['memberPointChecker'] ?? "" }}">
+        
 
         <input type="hidden" id="{{ $id .'_enableWordLimit' }}" name="{{ $id .'_enableWordLimit' }}" value="{{ $display_meta['enableWordLimit'] ?? "" }}">
         <input type="hidden" id="{{ $id .'_wordLimit' }}" name="{{ $id .'_wordLimit' }}" value="{{ $display_meta['wordLimit'] ?? "" }}">
