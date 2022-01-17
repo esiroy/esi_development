@@ -613,12 +613,23 @@ class MemberController extends Controller
     }
 
 
+    public function destroy($id)
+    {
+
+        return redirect()->back()->with('error_message', 'Delete feature is not active as of the moment');
+        
+          
+
+    }
+
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    /*
     public function destroy($id)
     {
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -659,5 +670,7 @@ class MemberController extends Controller
         MemoReplies::whereIn('recipient_id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
-    }
+    }*/
+
+
 }
