@@ -201,7 +201,25 @@
                                 }
                             }
                         }    
-                        */                    
+                        */            
+
+
+                        if ($('#'+fieldID).hasClass('paragraphText')) 
+                        {
+                            var isWordLimitEnabled = $('#'+fieldID+"_memberPointChecker").val();
+                            var limit = $('#'+fieldID+"_wordLimit").val();
+
+                            if (isWordLimitEnabled == true) 
+                            {
+                                let wordcounterTest = countWords ($('#'+fieldID).val());
+                                if (wordcounterTest > limit) {                                    
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });   
+                                }
+                            }
+                        }                                    
                         
                     }
 

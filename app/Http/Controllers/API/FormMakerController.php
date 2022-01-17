@@ -100,6 +100,10 @@ class FormMakerController extends Controller
                 //word limiter
                 $display_meta['enableWordLimit'] =  ($request[$id.'_enableWordLimit'] == "on") ? true : false; 
                 $display_meta['wordLimit'] = $request[$id.'_wordLimit'];
+                  
+
+                //enable member credit checker [180 = 1 point ] [180 to 500 words  = 2 points ] [501 to 800 = 3 points]
+                $display_meta['memberPointChecker'] =  ($request[$id.'_memberPointChecker'] == "on") ? true : false;
             }
             
 
@@ -207,6 +211,7 @@ class FormMakerController extends Controller
         $required = $request->required;
         $description = $request->description;
         $enableWordLimit = $request->enableWordLimit;
+        $memberPointChecker = $request->memberPointChecker;
         $wordLimit = $request->wordLimit;
 
         $type = 'paragraphtext';
@@ -215,6 +220,7 @@ class FormMakerController extends Controller
             'required'              => $request->required,
             'label'                 => str_replace(' ', '_', $request->label),
             'description'           => $request->description,
+            'memberPointChecker'    => $request->memberPointChecker,
             'enableWordLimit'       => $request->enableWordLimit,
             'wordLimit'             => $request->wordLimit,      
             'type'                  => $type,

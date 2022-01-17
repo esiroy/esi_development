@@ -1213,8 +1213,9 @@
                         formID              : 1,
                         label               : $('#modal_paragraphText').find('input#label').val(),
                         //description         : $('#modal_paragraphText').find('textarea#description').val(),
-                        description         :  CKEDITOR.instances['modal_paragraphText_description'].getData(),                       
-                        
+                        description         :  CKEDITOR.instances['modal_paragraphText_description'].getData(),        
+                                      
+                        memberPointChecker  : $('#modal_paragraphText').find('input#memberPointChecker').prop("checked"),
                         enableWordLimit     : $('#modal_paragraphText').find('input#enableWordLimit').prop("checked"),
                         wordLimit           : $('#modal_paragraphText').find('input#wordLimit').val(),
                         required            : $('#modal_simpleText').find('input#required').prop("checked"),
