@@ -78,9 +78,12 @@
                         <div class="entry-container border border-light">
                         @foreach($entries as $entry)                    
                             @foreach ($formFields as $formField)
-                                <div class="bg-light">
+
+                                @if (isset($fieldValue[$entry->id][$formField->id]))
+                                <div id="{{$entry->id}}" class="bg-light">
                                      <strong>{{$formField->name}}</strong>
                                 </div>
+                                @endif
                                 
                                 @if ($formField->type == 'uploadfield')
 
@@ -88,7 +91,7 @@
                                         @php 
                                             $writingFields = new \App\Models\WritingEntries;
                                         @endphp      
-                                        <div class="col-md-4"> 
+                                        <div id="{{$entry->id}}" class="col-md-4"> 
                                             <div class="text-center pl-2">
                                                 {{$writingFields->generateFileAnchorLink( $fieldValue[$entry->id][$formField->id] )}}
                                             </div>
@@ -96,7 +99,7 @@
                                     @endif
                                 @else
                                     @if (isset($fieldValue[$entry->id][$formField->id]))
-                                        <div class="col-md-12"> 
+                                        <div id="{{$entry->id}}" class="col-md-12"> 
                                             <div class="text-left pl-2 py-2">                                            
                                                 {!! $fieldValue[$entry->id][$formField->id]  !!}                                            
                                             </div>
