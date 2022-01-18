@@ -14,6 +14,7 @@ use App\Mail\SendEmailDemo;
 use App\Models\MemoReply;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
+use App\Models\WritingEntries;
 use App;
 use Gate;
 use DB;
@@ -37,7 +38,26 @@ class dummyController extends Controller
     }
 
 
-    public function index(ScheduleItem $scheduleItemObj) 
+
+    public function test($user_id  = 3 ) 
+    {
+        $all_entries = WritingEntries::where('user_id', $user_id)->get();
+        foreach ($all_entries as $all) {        
+            $test  = json_decode($all->value, true);
+            echo "<pre>";
+            print_r ($test);
+            echo "</pre>";       
+        }        
+    }
+
+
+    public function  index() {
+    
+    
+    }
+
+
+    public function getTotalreserved (ScheduleItem $scheduleItemObj) 
     {
         $memberID = 4;
 
@@ -537,10 +557,6 @@ class dummyController extends Controller
 
     }
 
-    public function test() {
-        return view('admin.test.index');
-
-    }
 
     public function testUserPoints($memberID) {
         //18153 - Kobayashi, Ryusei  

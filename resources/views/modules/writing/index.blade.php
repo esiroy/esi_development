@@ -1,7 +1,6 @@
 @extends('layouts.writing.template')
 
 @section('content')
-
     <div class="row">
         <div class="col-12">
             @if (session('message'))
@@ -64,9 +63,57 @@
     <script src="{{ url('js/steps/jquery.steps.min.js') }}" defer></script>
     <script src="{{ url('js/validation/jquery.validation.min.js') }}" defer></script>
     <script>
+
+        //enumate fields that needs checking
+        let fieldsArray = new Array();
+
+
         window.addEventListener('load', function() 
         {
             $('#writing-form').show(300);
+
+            //Check if the unapproved writing service and total it
+            async function getSubmittedWritingPoints(fieldID ) 
+            {
+      
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/writing/getSubmittedWritingPoints?api_token=') }}" + api_token,
+                    data: {
+                        formID      :  1,
+                        field_id    :  fieldID, 
+                        userID      : '{{ Auth::user()->id }}'  
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) 
+                    {
+                        return data;
+                    }
+                    
+                });
+            }
+
+
+            /* Count point to deduct
+                180words = 1 point
+                181-500words = 2point
+                501-800words = 3point
+            */
+            function getDeduction(words) 
+            {              
+                if  (parseInt(words) >= 1 && parseInt(words) <= 180)  {
+                    return 1;                        
+                } else if (parseInt(words) >= 181 && parseInt(words) <= 500) {
+                    return 2;
+                } else if (parseInt(words) >= 501 && parseInt(words) <= 800) {
+                    return 3;
+                } else {
+                    return false;
+                } 
+            }
+
 
             function adjustIframeHeight() {
                 var $body = $('body'), $iframe = $body.data('iframe.fv');
@@ -98,7 +145,7 @@
                     }
 
                     if (itemsProcessed == inputs.length) {
-                        console.log(fieldsArr);
+                        //console.log(fieldsArr);
                         convertToJSON(fieldsArr);
                     }
                 });      
@@ -113,6 +160,9 @@
 
             function validateFields(currentIndex) 
             {
+                //clean array
+                fieldsArray = [];
+
                 let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
                 let requiredFieldsArr = [];
 
@@ -201,7 +251,20 @@
                                 }
                             }
                         }    
-                        */                    
+                        */            
+
+
+                        if ($('#'+fieldID).hasClass('paragraphText')) 
+                        {
+                            var memberPointCheckerEnabled = $('#'+fieldID+"_memberPointChecker").val();                          
+                            if (memberPointCheckerEnabled == true) 
+                            {
+                                //add this array so it can be checked for member point or monthly credits
+                                fieldsArray.push(fieldID);
+
+                            }
+
+                        }                                    
                         
                     }
 
@@ -365,15 +428,7 @@
           
             function countWords(text) 
             {             
-                var numWords = 0;
-                for (var i = 0; i < text.length; i++) {
-                    var currentCharacter = text[i];
-                    if (currentCharacter == " ") {
-                        numWords += 1;
-                    }
-                }
-                numWords += 1;
-               return  numWords;
+                return text.trim().split(/\s+/).length;
             }            
            
            
@@ -382,10 +437,10 @@
                 var fieldID = $(this).attr('id');                            
                 var isWordLimiterEnabled = $("#"+ fieldID + "_enableWordLimit").val();
                 var wordlimit = $('#'+fieldID+"_wordLimit").val();
-
-
+                
                 var words = $("#"+ $(this).attr('id')).val()
 
+                
                 if (isWordLimiterEnabled == true ) {
                     let wordcount = countWords(words);
                     $("#"+ fieldID +"_total_word_count").text(wordcount);                   
@@ -431,13 +486,63 @@
                     // Triggered when clicking the Finish button
                     onFinishing: function(e, currentIndex) 
                     {
+
+                        let requiredFieldsArr = new Array();
+
                         let isValid = validateFields(currentIndex);
                         if (isValid === "true" || isValid === false || isValid === null ) 
                         {                          
                             console.log("not valid field detected");
+
                         } else {         
-                            encodeData();
-                            $('#writing-form').find('[type="submit"]').trigger('click');
+
+                            encodeData(); 
+                            let ctr = 1;
+
+                           
+
+                            fieldsArray.forEach(function(fieldID) {
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "{{ url('api/writing/getSubmittedWritingPoints?api_token=') }}" + api_token,
+                                    data: {
+                                        formID      :  1,
+                                        field_id    :  fieldID, 
+                                        userID      : '{{ Auth::user()->id }}',
+                                        words       :  countWords ($('#'+fieldID).val())
+                                    },
+                                    headers: {
+                                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                    },
+                                    success: function(data) 
+                                    {
+                                        if (data.totalPointsLeft < 0) 
+                                        {
+                                            colorHighlight(fieldID);
+                                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                                            $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + data.message + '</label>');
+                                            requiredFieldsArr.push({
+                                                'id': fieldID,
+                                                'isValid': false
+                                            });
+                                        }
+
+                                        if (ctr == fieldsArray.length) 
+                                        {
+                                            if (requiredFieldsArr.length == 0) {
+                                                $('#writing-form').find('[type="submit"]').trigger('click');
+                                            }                                            
+                                        }
+                                    }
+                                    
+                                });
+                            });
+
+
+                           
+
+                            //$('#writing-form').find('[type="submit"]').trigger('click');
                         }                        
                     },
                     onFinished: function(e, currentIndex) {                     

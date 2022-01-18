@@ -648,6 +648,9 @@ class MemberController extends Controller
         return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
     }
 
+    
+
+    /*
     public function massDestroy(Request $request)
     {
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -664,4 +667,7 @@ class MemberController extends Controller
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
+    */
+
+
 }

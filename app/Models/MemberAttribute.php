@@ -16,32 +16,32 @@ class MemberAttribute extends Model
     {
         //return MemberAttribute::where('member_id', $memberID)->where('valid', true)->orderby('created_at', 'DESC')->orderBy('year', 'ASC')->limit(12)->get();
         
-            $items = MemberAttribute::where('member_id', $memberID)->where('valid', true)->orderby('created_at', 'DESC')->orderBy('year', 'ASC')->limit(12)->get();
+        $items = MemberAttribute::where('member_id', $memberID)->where('valid', true)->orderby('created_at', 'DESC')->orderBy('year', 'ASC')->limit(12)->get();
 
 
-            if (count($items) > 1) {
-            
-                foreach ($items as $item) 
-                {
-                    $results[] = array(
-                                    'attribute' => $item->attribute,
-                                    'month' => $item->month,
-                                    'year' => $item->year,
-                                    'lesson_limit' => $item->lesson_limit,
-                                    'date' => $item->year ."-". date("m", strtotime($item->month)) ."-01",
-                                );
-                }
-
-                
-                usort($results, sortByDate('date'));
-                $reversed_results = array_reverse($results);
-                return $reversed_results;            
-                
-                            
-            } else {
-            
-                return array();
+        if (count($items) > 0) {
+        
+            foreach ($items as $item) 
+            {
+                $results[] = array(
+                                'attribute' => $item->attribute,
+                                'month' => $item->month,
+                                'year' => $item->year,
+                                'lesson_limit' => $item->lesson_limit,
+                                'date' => $item->year ."-". date("m", strtotime($item->month)) ."-01",
+                            );
             }
+
+            
+            usort($results, sortByDate('date'));
+            $reversed_results = array_reverse($results);
+            return $reversed_results;            
+            
+                        
+        } else {
+        
+            return array();
+        }
 
         
     }

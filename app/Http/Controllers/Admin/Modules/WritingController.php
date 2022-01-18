@@ -286,9 +286,14 @@ class WritingController extends Controller
 
     }
 
-
+/*
     public function update(Request $request,  UploadFile $uploadFile) 
     {
+
+        //this method is now disregarded       
+
+        exit(); 
+
         $form_id = 1;
 
         if (is_array($request->id) == false) {
@@ -321,7 +326,8 @@ class WritingController extends Controller
                 'default_value'         => $default_value
             ];
 
-            /******************** TYPES OF INPUT ***********************/
+            ///******************** TYPES OF INPUT **********************
+            
             if (strtolower($request[$id.'_fieldType']) == "dropdownselect") {
                 $type = 'dropdownSelect';                
                 $selected_choices = $request[$id.'_selected_choice_text'];                                               
@@ -366,6 +372,9 @@ class WritingController extends Controller
                 //word limiter
                 $display_meta['enableWordLimit'] =  ($request[$id.'_enableWordLimit'] == "on") ? true : false; 
                 $display_meta['wordLimit'] = $request[$id.'_wordLimit'];
+
+                //enable member credit checker [180 = 1 point ] [180 to 500 words  = 2 points ] [501 to 800 = 3 points]
+                $display_meta['memberPointChecker'] =  ($request[$id.'_memberPointChecker'] == "on") ? true : false;
             }
             
 
@@ -411,6 +420,7 @@ class WritingController extends Controller
 
         return redirect()->route('admin.writing.index', $form_id)->with('message', 'Form updated successfully!');
     }
+    */
 
 
     public function store(Request $request, UploadFile $uploadFile) {

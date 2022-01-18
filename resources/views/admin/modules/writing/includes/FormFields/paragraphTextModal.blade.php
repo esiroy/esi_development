@@ -26,10 +26,24 @@
                                 </div>
                             </div>
 
+                             <hr style="border-top:1px dashed #999">
+
+                            <div class="row">
+                                <div class="col-4">
+                                    <input type="checkbox" id="memberPointChecker" name="memberPointChecker" >
+                                    <label class="form-label">Enable Point Checker</label>                                    
+                                </div>
+                                <div class="col-8 small">
+                                    Note: Notify if they need point or monthly credits
+                                </div>
+                            </div>
+
+                            <hr style="border-top:1px dashed #999">
+
                             <div class="row">
                                 <div class="col">
-                                    <label class="form-label">Enable Word Limit</label>
                                     <input type="checkbox" id="enableWordLimit" name="enableWordLimit" >
+                                    <label class="form-label">Enable Word Limit</label>                                    
                                 </div>
                             </div>
 
@@ -39,6 +53,11 @@
                                     <input type="text" id="wordLimit" name="wordLimit" class="form-control pt-0 col-md-3">
                                 </div>
                             </div>
+
+
+                      
+
+                                            
 
                             <div class="row">
                                 <div class="col">

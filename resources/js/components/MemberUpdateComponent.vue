@@ -161,6 +161,8 @@
                                 <div class="form-group">
                                     <input type="text" v-model="user.nickname" id="nickname" name="nickname" 
                                             class="form-control form-control-sm" 
+
+                                            
                                             :class="{ 'is-invalid': submitted && $v.user.nickname.$error }" 
                                             @blur='checkIsValid($v.user.nickname, $event)'
                                     />
@@ -390,7 +392,7 @@
                                 <div class="row py-2 bg-lightgray border-bottom">
                                     <div class="col-3 col-md-3 pr-0">
                                         <select id="lessonClassYear" name="lessonClassYear" v-model="user.preference.lesson.class.year" class="form-control form-control-sm pl-0" >
-                                            <option v-for="year in years" :value="year" :key="year">{{ year }}</option>
+                                            <option v-for="year in years" :value="year" :key="year" >{{ year }}</option>
                                         </select>                                              
                                     </div>
                                     <div class="col-3 col-md-3 pr-0">
@@ -986,6 +988,8 @@ export default {
     data() {
         return {
             submitted: false,
+            currentYear: new Date().getFullYear(),
+            
             //set calendar characters to japanese
             ja: ja, 
 
@@ -1240,6 +1244,8 @@ export default {
                 id: "",
                 first_name: "",
                 last_name: "",
+                nickname: "",
+              
                 
                 japanese_lastname: "",
                 japanese_firstname: "",
@@ -1295,7 +1301,7 @@ export default {
                     lesson: {
                         class: {
                             month:  "",
-                            year:   "",
+                            year:   new Date().getFullYear(),
                             lesson_limit:  ""
                         }
                     },
