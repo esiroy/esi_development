@@ -179,7 +179,8 @@
                     
                     //check all has required in Array
                     if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                        
-                        console.log(fieldID + " is hidden, we will not verify");
+                        //console.log(fieldID + " is hidden, we will not verify");
+
                     } else {
 
                         if ($('#'+fieldID).attr( "required" )) 
@@ -497,11 +498,11 @@
                         } else {         
 
                             encodeData(); 
-                            let ctr = 1;
 
-                           
+                            let ctr = 1;                          
 
-                            fieldsArray.forEach(function(fieldID) {
+                            fieldsArray.forEach(function(fieldID) 
+                            {
 
                                 $.ajax({
                                     type: 'POST',
@@ -517,6 +518,9 @@
                                     },
                                     success: function(data) 
                                     {
+
+                                        console.log (ctr + " .. " + requiredFieldsArr.length);
+
                                         if (data.totalPointsLeft < 0) 
                                         {
                                             colorHighlight(fieldID);
@@ -532,7 +536,14 @@
                                         {
                                             if (requiredFieldsArr.length == 0) {
                                                 $('#writing-form').find('[type="submit"]').trigger('click');
-                                            }                                            
+                                            }  else {
+
+                                                console.log ("1")
+                                            }
+
+                                        } else {
+                                        
+                                            console.log ("2");
                                         }
                                     }
                                     
