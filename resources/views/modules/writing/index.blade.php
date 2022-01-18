@@ -517,18 +517,15 @@
                                     },
                                     success: function(data) 
                                     {
-
                                         if (data.totalPointsLeft < 0) 
                                         {
-                                            
                                             colorHighlight(fieldID);
                                             $('.'+fieldID+"_field_content").find('.error2').remove();
                                             $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + data.message + '</label>');
                                             requiredFieldsArr.push({
                                                 'id': fieldID,
                                                 'isValid': false
-                                            });                                        
-                                        
+                                            });
                                         }
 
                                         if (ctr == fieldsArray.length) 
@@ -537,10 +534,6 @@
                                                 $('#writing-form').find('[type="submit"]').trigger('click');
                                             }                                            
                                         }
-
-                                        //alert (ctr  + "  " + requiredFieldsArr.length)
-                                        //return data;
-
                                     }
                                     
                                 });

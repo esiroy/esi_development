@@ -685,7 +685,7 @@ class FormMakerController extends Controller
     public function getSubmittedWritingPoints(Request $request, Member $member, AgentTransaction $agentTransaction, WritingEntries $writingEntries) 
     {
 
-        $userID = 
+        $userID = $request->userID;
         $targetFieldID = $request->field_id;
         $entries = $writingEntries->where('user_id', $request->userID)->get();
 
@@ -696,7 +696,6 @@ class FormMakerController extends Controller
         {
             //exclude if it is already graded
             $entryGrade = WritingEntryGrade::where('writing_entry_id',  $entry->id)->first();
-
             //check if no grade then get the paragrapthTextfield
             if (!$entryGrade) 
             {
@@ -705,26 +704,16 @@ class FormMakerController extends Controller
                 if (isset($entryValue[$targetFieldID . '_paragraphTextfield'])) {
                     $wordcount = str_word_count($entryValue[$targetFieldID . '_paragraphTextfield']);
                     $pointDeduct = $writingEntries->getWordPointDeduct($wordcount);
-                } else {
-                
+                } else {                
                     $wordcount = 0;
                     $pointDeduct = 0;
-                }
-                
+                }               
 
-                //Add to array
-                /*
-                $wordEntries[] = [
-                                    'id'        => $entry->id,
-                                    'wordcount' => $wordcount,
-                                    'point'     => $pointDeduct
-                                 ];
-                */
-
+                //Add to array                
+                //$wordEntries[] = ['id'        => $entry->id,'wordcount' => $wordcount,'point'     => $pointDeduct];
                 $unapprovedTotalDeduction = $unapprovedTotalDeduction + $pointDeduct;
             }
         }
-       
 
         //Currently Submitted 
         $memberInfo = $member->where('user_id', Auth::user()->id )->first();
@@ -732,8 +721,17 @@ class FormMakerController extends Controller
         //Get the submitted deduction points
         $submittedWritingEntryPoints = $writingEntries->getWordPointDeduct($request->words);
 
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER' || Auth::user()->user_type == "TUTOR") 
+        {
+            return Response()->json([
+                "success"  => true,
+                "totalPointsLeft" => 1
+            ]); 
+
+            exit();
+        } 
+
         if ($memberInfo->membership == "Monthly") {
-        
             $getMonthlyLessonsLeft = $member->getMonthlyLessonsLeft();
             $pointsLeft = $getMonthlyLessonsLeft - $submittedWritingEntryPoints;
 
@@ -750,18 +748,14 @@ class FormMakerController extends Controller
         }
         
         if ($totalPointsLeft < 0) {
-            if ($memberInfo->membership == "Monthly") {
-
+            if ($memberInfo->membership == "Monthly") 
+            {
                 $message = "Sorry, you don't have enough monthly credits </br>";
                 $message .= "You have ". $getMonthlyLessonsLeft;
 
                 if (isset($unapprovedTotalDeduction)) {
                      $message .= " and  ". $unapprovedTotalDeduction . " points of unapproved submitted writing entry";
                 }
-
-                
-              
-
             } else {
                 $message = "Sorry, you don't have enough point credits  </br>";
                 $message .= "You have ". $credits . " points";
@@ -775,8 +769,6 @@ class FormMakerController extends Controller
             $message = "successfully submitted";
         }
 
-
-       
         return Response()->json([
             "success"  => true,   
             "message" =>  $message,
