@@ -140,7 +140,7 @@
                     if ($('#'+id+"_field_row").css( "display" ) == 'none' ) {                        
                        //field is not showed, we will not include it to post
                     } else {                        
-                        console.log( id + " : "  + $(field).attr('name') + " " + $(field).val() );
+                        //console.log( id + " : "  + $(field).attr('name') + " " + $(field).val() );
                         fieldsArr[name] = value;
                     }
 
