@@ -50,4 +50,21 @@ class WritingEntries extends Model
     
     }
 
+    /*
+        @words = determine how much points for deduction, 
+        @return false if not within rangge
+    */
+    function getWordPointDeduct($words) 
+    {          
+        if  ($words >= 1 && $words <= 180)  {
+            return 1;                        
+        } else if ($words >= 181 && $words <= 500) {
+            return 2;
+        } else if ($words >= 501 && $words <= 800) {
+            return 3;
+        } else {
+            return false;
+        }
+    }
+
 }

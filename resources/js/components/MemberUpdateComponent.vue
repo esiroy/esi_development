@@ -161,6 +161,8 @@
                                 <div class="form-group">
                                     <input type="text" v-model="user.nickname" id="nickname" name="nickname" 
                                             class="form-control form-control-sm" 
+
+                                            
                                             :class="{ 'is-invalid': submitted && $v.user.nickname.$error }" 
                                             @blur='checkIsValid($v.user.nickname, $event)'
                                     />
@@ -1242,6 +1244,8 @@ export default {
                 id: "",
                 first_name: "",
                 last_name: "",
+                nickname: "",
+              
                 
                 japanese_lastname: "",
                 japanese_firstname: "",

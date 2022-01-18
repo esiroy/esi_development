@@ -9,9 +9,11 @@ use App\Models\WritingFields;
 use App\Models\FormFields;
 use App\Models\WritingEntries;
 use App\Models\ConditionalFieldLogic;
+use App\Models\WritingEntryGrade;
 
-
-
+use App\Models\AgentTransaction;
+use App\Models\Member;
+use Auth;
 
 class FormMakerController extends Controller
 {
@@ -678,5 +680,113 @@ class FormMakerController extends Controller
                 "appointed_tutor_id" => $tutorID,            
             ]);   
         }
+    }
+
+    public function getSubmittedWritingPoints(Request $request, Member $member, AgentTransaction $agentTransaction, WritingEntries $writingEntries) 
+    {
+
+        $userID = 
+        $targetFieldID = $request->field_id;
+        $entries = $writingEntries->where('user_id', $request->userID)->get();
+
+        $wordEntries = null;
+        $unapprovedTotalDeduction = null;
+
+        foreach ($entries as $entry) 
+        {
+            //exclude if it is already graded
+            $entryGrade = WritingEntryGrade::where('writing_entry_id',  $entry->id)->first();
+
+            //check if no grade then get the paragrapthTextfield
+            if (!$entryGrade) 
+            {
+                $entryValue = (array) json_decode($entry->value, true);
+
+                if (isset($entryValue[$targetFieldID . '_paragraphTextfield'])) {
+                    $wordcount = str_word_count($entryValue[$targetFieldID . '_paragraphTextfield']);
+                    $pointDeduct = $writingEntries->getWordPointDeduct($wordcount);
+                } else {
+                
+                    $wordcount = 0;
+                    $pointDeduct = 0;
+                }
+                
+
+                //Add to array
+                /*
+                $wordEntries[] = [
+                                    'id'        => $entry->id,
+                                    'wordcount' => $wordcount,
+                                    'point'     => $pointDeduct
+                                 ];
+                */
+
+                $unapprovedTotalDeduction = $unapprovedTotalDeduction + $pointDeduct;
+            }
+        }
+       
+
+        //Currently Submitted 
+        $memberInfo = $member->where('user_id', Auth::user()->id )->first();
+
+        //Get the submitted deduction points
+        $submittedWritingEntryPoints = $writingEntries->getWordPointDeduct($request->words);
+
+        if ($memberInfo->membership == "Monthly") {
+        
+            $getMonthlyLessonsLeft = $member->getMonthlyLessonsLeft();
+            $pointsLeft = $getMonthlyLessonsLeft - $submittedWritingEntryPoints;
+
+        } else if ($memberInfo->membership  == "Point Balance" ) {
+
+            $credits = $agentTransaction->getCredits( Auth::user()->id ); 
+            $pointsLeft = $credits - $submittedWritingEntryPoints;
+        }
+
+        if (isset($unapprovedTotalDeduction)) {
+            $totalPointsLeft = $pointsLeft - $unapprovedTotalDeduction;
+        } else {
+            $totalPointsLeft = $pointsLeft;
+        }
+        
+        if ($totalPointsLeft < 0) {
+            if ($memberInfo->membership == "Monthly") {
+
+                $message = "Sorry, you don't have enough monthly credits </br>";
+                $message .= "You have ". $getMonthlyLessonsLeft;
+
+                if (isset($unapprovedTotalDeduction)) {
+                     $message .= " and  ". $unapprovedTotalDeduction . " points of unapproved submitted writing entry";
+                }
+
+                
+              
+
+            } else {
+                $message = "Sorry, you don't have enough point credits  </br>";
+                $message .= "You have ". $credits . " points";
+
+                if (isset($unapprovedTotalDeduction)) {
+                     $message .= " and  ". $unapprovedTotalDeduction . " points of unapproved submitted writing entry";
+                }
+            }
+
+        } else {
+            $message = "successfully submitted";
+        }
+
+
+       
+        return Response()->json([
+            "success"  => true,   
+            "message" =>  $message,
+            //"wordEntries" => $wordEntries,
+            "membership" => $memberInfo->membership,
+            "getMonthlyLessonsLeft" => $getMonthlyLessonsLeft ?? "not applicable",
+            "unapprovedTotalDeduction" => $unapprovedTotalDeduction,
+            "pointsLeft" => $pointsLeft,
+            "totalPointsLeft" => $totalPointsLeft
+        ]);  
+
     }
 }

@@ -133,6 +133,9 @@ Route::middleware('auth:api')->post('/writing/updateWritingFields', 'API\FormMak
 Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
 Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');
 Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingAssignTutor');
+Route::middleware('auth:api')->post('/writing/getSubmittedWritingPoints', 'API\FormMakerController@getSubmittedWritingPoints')->name('APIGetSubmittedWritingPoints');
+
+
 
 
 //[start] member exam  score
