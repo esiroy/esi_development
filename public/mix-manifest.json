@@ -1,21 +1,14 @@
 {
-<<<<<<< HEAD
-    "/js/admin.js": "/js/admin.js",
-    "/js/admin.js.map": "/js/admin.js.map",
-    "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/css/admin.css": "/css/admin.css",
-    "/css/steps/steps.css": "/css/steps/steps.css",
-    "/js/app.js.map": "/js/app.js.map",
-    "/css/app.css.map": "/css/app.css.map",
-    "/css/admin.css.map": "/css/admin.css.map",
-    "/css/steps/steps.css.map": "/css/steps/steps.css.map"
-=======
-    "/js/admin.js": "/js/admin.js?id=5559f4fb73d5dc8b74b1",
-    "/js/app.js": "/js/app.js?id=07e2a666236bb2f48937",
-    "/css/app.css": "/css/app.css?id=534019b8573cb8239fbe",
-    "/css/admin.css": "/css/admin.css?id=f9dd8ae646cb32556d7b",
-    "/css/steps/steps.css": "/css/steps/steps.css?id=ad4cf4455be97223e3f3",
+    "/js/admin.js": "/js/admin.js?id=6cbc3ae2365703bcf2ec",
+    "/js/admin.js.map": "/js/admin.js.map?id=747d9b9d5818ffdd635e",
+    "/js/app.js": "/js/app.js?id=075412a63f8b4bbe8636",
+    "/css/app.css": "/css/app.css?id=5e8ccafb502c63d72542",
+    "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
+    "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
+    "/js/app.js.map": "/js/app.js.map?id=ec2ce2557ba5e21b842d",
+    "/css/app.css.map": "/css/app.css.map?id=3d752936f93676238c06",
+    "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
+    "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
     "/js/jquery/jquery-ui.js": "/js/jquery/jquery-ui.js?id=06c8b12668dc0e45a4c4",
     "/js/jquery/jquery-ui.min.js": "/js/jquery/jquery-ui.min.js?id=777b80b520786cf6f0ce",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",
@@ -85,5 +78,4 @@
     "/css/jquery/images/ui-icons_444444_256x240.png": "/css/jquery/images/ui-icons_444444_256x240.png?id=e2a5dae7004f24d9f4a0",
     "/css/croppie.css": "/css/croppie.css?id=537c93ed28fd3291621c",
     "/css/dropzone/dropzone.min.css": "/css/dropzone/dropzone.min.css?id=a7b0ef1d7c2016826a3e"
->>>>>>> WritingPointChecker
 }
