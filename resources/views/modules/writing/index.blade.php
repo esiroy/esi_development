@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-12">
+        <div class="col-12  message-container">
             @if (session('message'))
             <div class="alert alert-success">
                 {{ session('message') }}
@@ -255,6 +255,7 @@
                         */            
 
 
+                        /*
                         if ($('#'+fieldID).hasClass('paragraphText')) 
                         {
                             var memberPointCheckerEnabled = $('#'+fieldID+"_memberPointChecker").val();                          
@@ -265,7 +266,9 @@
 
                             }
 
-                        }                                    
+                        }         
+                        
+                        */                           
                         
                     }
 
@@ -424,8 +427,6 @@
                 }
 
             }
-
-
           
             function countWords(text) 
             {             
@@ -498,9 +499,64 @@
                         } else {         
 
                             encodeData(); 
+                            let inputs = $("#writing-form").find('.form-control');                          
 
-                            let ctr = 1;                          
+                            Array.from(inputs).forEach(field => 
+                            {
+                                let fieldID =  $(field).attr('id');                                 
+                                highlightFieldRow(fieldID);
 
+                                if ($('#'+fieldID).hasClass('paragraphText')) 
+                                {
+                                    var memberPointCheckerEnabled = $('#'+fieldID+"_memberPointChecker").val();   
+
+                                    if (memberPointCheckerEnabled == true) 
+                                    {
+
+                                        $.ajax({
+                                            type: 'POST',
+                                            url: "{{ url('api/writing/getSubmittedWritingPoints?api_token=') }}" + api_token,
+                                            data: {
+                                                formID      :  1,
+                                                field_id    :  fieldID, 
+                                                userID      : '{{ Auth::user()->id }}',
+                                                words       :  countWords ($('#'+fieldID).val())
+                                            },
+                                            headers: {
+                                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                                            },
+                                            success: function(data) 
+                                            {
+                                                if (data.totalPointsLeft < 0) 
+                                                {
+                                                    /*
+                                                    colorHighlight(fieldID);
+                                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + data.message + '</label>');
+
+                                                    requiredFieldsArr.push({
+                                                        'id': fieldID,
+                                                        'isValid': false
+                                                    });
+                                                    */
+                                                    $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');
+
+                                                   
+                                                } else {
+
+                                                    $('#writing-form').find('[type="submit"]').trigger('click');
+                                                } 
+                                            }
+                                        
+                                        });                                  
+
+                                    }
+
+                                }                              
+                                
+                            });
+
+                            /*
                             fieldsArray.forEach(function(fieldID) 
                             {
 
@@ -548,7 +604,7 @@
                                     }
                                     
                                 });
-                            });
+                            });*/
 
 
                            
