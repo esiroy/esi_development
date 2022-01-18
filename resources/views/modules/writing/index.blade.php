@@ -161,7 +161,7 @@
             function validateFields(currentIndex) 
             {
                 //clean array
-                fieldsArray = [];
+               // fieldsArray = [];
 
                 let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
                 let requiredFieldsArr = [];
