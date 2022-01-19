@@ -39,7 +39,8 @@
         <div class="text-center">
             <button id="btn_firstname" type="button" class="btn btn-light border col-md-5 mb-2">First Name</button>
             <button id="btn_lastname" type="button" class="btn btn-light border col-md-5 mb-2">Last Name</button>
-            <button id="btn_email" type="button" class="btn btn-light border col-md-5 mb-2">E-Mail Address</button>        
+            <button id="btn_email" type="button" class="btn btn-light border col-md-5 mb-2">E-Mail Address</button>    
+             <button id="btn_dropdownSelect_teachers" type="button" class="btn btn-light border col-md-5 mb-2">Teacher List</button>     
         </div>
     </div>
 </div>

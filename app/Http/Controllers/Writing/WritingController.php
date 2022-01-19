@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\FormFields;
 use App\Models\WritingEntries;
 use App\Models\UploadFile;
+use App\Models\Tutor;
+use App\Models\User;
 use Auth, Config;
 
 class WritingController extends Controller
@@ -52,7 +54,7 @@ class WritingController extends Controller
     }
 
 
-    public function store(Request $request, UploadFile $uploadFile) 
+    public function store(Request $request, UploadFile $uploadFile, Tutor $tutor) 
     {
         $fields = array();
 
@@ -60,7 +62,9 @@ class WritingController extends Controller
 
         $dataArray = json_decode($request->get('data'), true);
 
-      
+        $tutor_id = null;
+
+        $fields["appointed"] = false;
 
         foreach ($dataArray as $key => $value)         
         {
@@ -68,6 +72,8 @@ class WritingController extends Controller
             $id = $fkey[0];
 
             $formField = formFields::find($id);
+
+
 
             if ($formField) 
             { 
@@ -87,9 +93,38 @@ class WritingController extends Controller
                         //Add A Key value pair for Email Template
                         $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];                        
                     }
+                } else { 
 
-                } else {                
-                    $fields[$key] = $value;                   
+
+                    //this detects the appoint teacher hidden id and search through they $fkeyid
+                    if (isset($request->appoint_teacher_field_id)) 
+                    {
+                        $fields["appointed"] = true;
+                        $fields["teacher_id"] = $value;
+
+                        if ($id == $request->appoint_teacher_field_id) {
+                            $tutor_id = $value;
+
+                            //value change to name of tutor
+                            $tutorInfo = $tutor->where('user_id', $tutor_id)->first();
+                            $fields[$key] =  $tutorInfo->user->firstname;
+
+                            //replace id to tutor name
+                            $value = $tutorInfo->user->firstname;
+
+                        } else {
+                        
+                            $fields[$key] = $value;
+                        }
+                    } else {
+                        $fields[$key] = $value;
+
+                    }
+
+
+                    $fields[$key] = $value;  
+
+
 
                     //Add A Key value pair for Email Template
                     $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];
@@ -97,14 +132,15 @@ class WritingController extends Controller
 
             } else {
                 
-                echo $key ." not found in form field <BR>";
+                //echo $key ." not found in form field <BR>";
             }
-        }       
+        } 
+    
 
         $entryID = WritingEntries::create([
             'form_id'               => $request->get('form_id'),
             'user_id'               => Auth::user()->id,
-            'appointed_tutor_id'    => null,
+            'appointed_tutor_id'    => $tutor_id ?? null,
             'value'                 => json_encode($fields)
        ]);        
         

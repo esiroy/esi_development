@@ -48,6 +48,7 @@ class WritingController extends Controller
 
             foreach ($formFields as $formField) 
             {
+
                 $formFieldHTML[] = $formFieldModel->generateFormFieldHTML($formField, $cfields);
             }
 
@@ -423,7 +424,7 @@ class WritingController extends Controller
     */
 
 
-    public function store(Request $request, UploadFile $uploadFile) {
+    public function store(Request $request, UploadFile $uploadFile, Tutor $tutor) {
         $fields = array();
 
         $storagePath = 'public/uploads/writing/';
@@ -437,6 +438,10 @@ class WritingController extends Controller
             $id = $fkey[0];
 
             $formField = formFields::find($id);
+
+
+
+            
 
             if ($formField) 
             { 
@@ -455,7 +460,32 @@ class WritingController extends Controller
 
                 } else {
                 
-                    $fields[$key] = $value;
+
+                    //this detects the appoint teacher hidden id and search through they $fkeyid
+                    if (isset($request->appoint_teacher_field_id)) 
+                    {
+                        $fields["appointed"] = true;
+                        $fields["teacher_id"] = $value;
+
+                        if ($id == $request->appoint_teacher_field_id) {
+                            $tutor_id = $value;
+
+                            //value change to name of tutor
+                            $tutorInfo = $tutor->where('user_id', $tutor_id)->first();
+                            $fields[$key] =  $tutorInfo->user->firstname;
+
+                        } else {
+                        
+                            $fields[$key] = $value;
+                        }
+                    } else {
+                        $fields[$key] = $value;
+
+                    }
+
+
+
+                    
                 }
             } else {
                 
@@ -467,7 +497,7 @@ class WritingController extends Controller
        WritingEntries::create([
             'form_id'               => $request->get('form_id'),
             'user_id'               => Auth::user()->id,
-            'appointed_tutor_id'    => null,
+             'appointed_tutor_id'    => $tutor_id ?? null,
             'value'                 => json_encode($fields)
        ]);
 

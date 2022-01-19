@@ -185,7 +185,7 @@
 
                         if ($('#'+fieldID).attr( "required" )) 
                         {
-                            //console.log(fieldID + " is required")
+                            console.log(fieldID + " is required")
                             let isValid = $('#'+fieldID).valid();
                             requiredFieldsArr.push({
                                 'id': fieldID,
@@ -506,12 +506,17 @@
                                 let fieldID =  $(field).attr('id');                                 
                                 highlightFieldRow(fieldID);
 
+                                let isMemberPointEnabled = false;
+
                                 if ($('#'+fieldID).hasClass('paragraphText')) 
                                 {
                                     var memberPointCheckerEnabled = $('#'+fieldID+"_memberPointChecker").val();   
 
                                     if (memberPointCheckerEnabled == true) 
                                     {
+                                        if (isMemberPointEnabled == false) {
+                                            isMemberPointEnabled = true;
+                                        }                                        
 
                                         $.ajax({
                                             type: 'POST',
@@ -554,6 +559,10 @@
 
                                 }                              
                                 
+
+                                if (isMemberPointEnabled == false) {
+                                    $('#writing-form').find('[type="submit"]').trigger('click');
+                                }
                             });
 
                             /*

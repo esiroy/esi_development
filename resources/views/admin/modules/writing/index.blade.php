@@ -122,6 +122,10 @@
     @include('admin.modules.writing.includes.FormFields.emailModal')
     @include('admin.modules.writing.includes.FormFields.uploadModal')
 
+    <!-- Auto Filled Fields -->
+
+    @include('admin.modules.writing.includes.FormFields.dropdownTeacherSelectModal')
+
     <!--image gallery-->
     @include('admin.modules.writing.includes.imageGallery.galleryModal')
 
@@ -956,6 +960,20 @@
                 updateChoicesButtons();
             });           
 
+
+            /***************************************************************
+                        (NEW) [START] - (BUTTON) [DROPDOWN TEACHER SELECT]
+            *****************************************************************/
+            $("#btn_dropdownSelect_teachers").on("click", function() {
+                $("#select_choices").html("");
+                $("#select_choices").append("<div id='select_choice_start'></div>");
+                $("#modal_dropdownTeacherSelect").modal();
+                $('#form_dropdownTeacherSelect').trigger("reset");
+                CKEDITOR.instances['modal_dropdown_teacher_description'].setData("");
+                updateChoicesButtons();
+            });    
+
+
         
             //[DROPDOWN FIELD POPUP] ADD CHOICES FROM
             $(document).on("click", '.field_choice_add', function() {
@@ -1243,9 +1261,8 @@
             
 
             //[START] - [DROPDOWN]
-            $("#btnDropdownSelectSave").on("click", function() 
-            {              
-                let choices = [];
+            $("#btnDropdownTeacherSelectSave").on("click", function() 
+            {  
 
                 $("#select_choices :input").each(function(elem) {
                     choices.push($(this).val());
@@ -1253,16 +1270,15 @@
 
                 $.ajax({
                     type: 'POST',
-                    url: "{{ url('api/saveDropDownSelect?api_token=') }}" + api_token,
+                    url: "{{ url('api/saveDropDownTeacherSelect?api_token=') }}" + api_token,
                     data: {
                         formID              :  1,
-                        label               :  $('#modal_dropdownSelect').find('input#label').val(),
-                        //description         :  $('#modal_dropdownSelect').find('textarea#description').val(),
-                        description         :  CKEDITOR.instances['modal_dropdown_description'].getData(),
-
-                        maximum_characters  :  $('#modal_dropdownSelect').find('input#maximum_characters').val(),                        
-                        required            :  $('#modal_dropdownSelect').find('input#required').prop("checked"),
-                        selected_choices    :  choices,                        
+                        
+                        label               :  $('#modal_dropdownTeacherSelect').find('input#label').val(),
+                        //description       :  $('#modal_dropdown_teacher_description').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_dropdown_teacher_description'].getData(),
+                        maximum_characters  :  $('#modal_dropdownTeacherSelect').find('input#maximum_characters').val(),                        
+                        required            :  $('#modal_dropdownTeacherSelect').find('input#required').prop("checked"),
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -1283,6 +1299,45 @@
                 });
             });
 
+
+            $("#btnDropdownSelectSave").on("click", function() 
+            {              
+                let choices = [];
+
+                $("#select_choices :input").each(function(elem) {
+                    choices.push($(this).val());
+                });           
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveDropDownSelect?api_token=') }}" + api_token,
+                    data: {
+                        formID              :  1,
+                        label               :  $('#modal_dropdownSelect').find('input#label').val(),
+                        //description         :  $('#modal_dropdownSelect').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_dropdown_description'].getData(),
+                        maximum_characters  :  $('#modal_dropdownSelect').find('input#maximum_characters').val(),                        
+                        required            :  $('#modal_dropdownSelect').find('input#required').prop("checked"),                        
+                        selected_choices    :  choices,                        
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
+                        });
+                        $( ".tabs" ).tabs();
+                        addTextFormatter(data.id +"_description") 
+
+                    }
+                });
+            });
 
             $('#btnHTMLSave').on("click", function() 
             {  

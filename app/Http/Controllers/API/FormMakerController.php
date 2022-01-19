@@ -62,7 +62,12 @@ class FormMakerController extends Controller
                 $type = 'dropdownSelect';                
                 $selected_choices = $request[$id.'_selected_choice_text'];                                               
                 $display_meta['type'] = $type;
-                $display_meta['selected_choices'] = $selected_choices;                
+                $display_meta['selected_choices'] = $selected_choices;      
+
+            } else if (strtolower($request[$id.'_fieldType']) == "dropdownteacherselect") {                          
+
+                $type = 'dropdownteacherselect';  
+                $display_meta['type'] = $type;
 
             } else if (strtolower($request[$id.'_fieldType']) == "simpletextfield") {
                 $type = 'simpletextfield';
@@ -346,6 +351,60 @@ class FormMakerController extends Controller
         ]);         
     }
 
+
+
+    public function saveDropDownTeacherSelect(Request $request) 
+    {
+        //FORM ID
+        $form_id = 1;
+
+        $label = $request->label;
+        $description = $request->description;
+        $maximum_characters = $request->maximum_characters;
+        $required = $request->required;
+        //$selected_choices = $request->selected_choices;
+
+        $type = 'dropdownTeacherSelect';
+
+        $display_meta = [
+            'required'              => $request->required,
+            'label'                 => str_replace(' ', '_', $request->label),
+            'description'           => $request->description,
+            'maximum_characters'    => $request->maximum_characters,
+            //'selected_choices'      => $request->selected_choices, 
+            'type'                  => $type,
+            'conditional_logic'     => false,            
+        ];
+
+        array_walk_recursive($display_meta, function(&$item){
+            if(is_null($item)) $item = '';
+        });
+
+        $max_seq = WritingFields::where('form_id', $form_id)->max('sequence_number');
+
+        $id = WritingFields::Create([
+            'form_id'           => $form_id,
+            'name'              => $request->label,
+            'description'       => $request->description,
+            'type'              => $type,
+            'display_meta'      => json_encode($display_meta),
+            'sequence_number'   => $max_seq + 1
+        ])->id;   
+        
+
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();
+        
+        
+        $data = view('admin.forms.dropdownTeacherSelect', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields' ))->render();
+
+        return Response()->json([
+            "success"       => true,
+            'id'            => $id,
+            "field"          => $data,
+            //"selected_choices" => $selected_choices
+        ]);         
+    }
 
     public function saveHTMLContent(Request $request) {
 
