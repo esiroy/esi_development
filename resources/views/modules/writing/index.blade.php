@@ -70,30 +70,9 @@
 
         window.addEventListener('load', function() 
         {
-            $('#writing-form').show(300);
+            $('#writing-form').show();
 
-            //Check if the unapproved writing service and total it
-            async function getSubmittedWritingPoints(fieldID ) 
-            {
-      
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('api/writing/getSubmittedWritingPoints?api_token=') }}" + api_token,
-                    data: {
-                        formID      :  1,
-                        field_id    :  fieldID, 
-                        userID      : '{{ Auth::user()->id }}'  
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(data) 
-                    {
-                        return data;
-                    }
-                    
-                });
-            }
+       
 
 
             /* Count point to deduct
@@ -500,13 +479,21 @@
 
                             encodeData(); 
                             let inputs = $("#writing-form").find('.form-control');                          
+                            let loopcounter = 0;
+
+                            let isMemberPointEnabled = false;
+
+                             let tutorSelectFieldID =  $("[name='appoint_teacher_field_id']").val();
+
 
                             Array.from(inputs).forEach(field => 
                             {
-                                let fieldID =  $(field).attr('id');                                 
-                                highlightFieldRow(fieldID);
+                                loopcounter = loopcounter + 1;
 
-                                let isMemberPointEnabled = false;
+                                let fieldID =  $(field).attr('id');
+
+                                highlightFieldRow(fieldID);
+                              
 
                                 if ($('#'+fieldID).hasClass('paragraphText')) 
                                 {
@@ -514,40 +501,33 @@
 
                                     if (memberPointCheckerEnabled == true) 
                                     {
+                                        //is point checker found
                                         if (isMemberPointEnabled == false) {
                                             isMemberPointEnabled = true;
-                                        }                                        
+                                        }      
 
                                         $.ajax({
                                             type: 'POST',
-                                            url: "{{ url('api/writing/getSubmittedWritingPoints?api_token=') }}" + api_token,
+                                            url: "{{ url('api/writing/checkCredits?api_token=') }}" + api_token,
                                             data: {
                                                 formID      :  1,
-                                                field_id    :  fieldID, 
-                                                userID      : '{{ Auth::user()->id }}',
-                                                words       :  countWords ($('#'+fieldID).val())
+                                                tutorID     :  $('#'+ tutorSelectFieldID).val(),
+                                                words       :  countWords ($('#'+fieldID).val()),                                                
                                             },
                                             headers: {
                                                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                                             },
                                             success: function(data) 
                                             {
+
+                                              
+
                                                 if (data.totalPointsLeft < 0) 
-                                                {
-                                                    /*
-                                                    colorHighlight(fieldID);
-                                                    $('.'+fieldID+"_field_content").find('.error2').remove();
-                                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + data.message + '</label>');
-
-                                                    requiredFieldsArr.push({
-                                                        'id': fieldID,
-                                                        'isValid': false
-                                                    });
-                                                    */
-                                                    $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');
-
-                                                   
+                                                {                                                  
+                                                    $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                                                 } else {
+
+                                                  
 
                                                     $('#writing-form').find('[type="submit"]').trigger('click');
                                                 } 
@@ -559,10 +539,14 @@
 
                                 }                              
                                 
-
-                                if (isMemberPointEnabled == false) {
-                                    $('#writing-form').find('[type="submit"]').trigger('click');
+                                //if there point enabled when loop counter is finished looping through all inputs?
+                                if (inputs.length == loopcounter) {                                
+                                    if (isMemberPointEnabled === false) {
+                                        alert (inputs.length + "  ==  " +loopcounter + " " + isMemberPointEnabled)
+                                        $('#writing-form').find('[type="submit"]').trigger('click');
+                                    }                                
                                 }
+
                             });
 
                             /*

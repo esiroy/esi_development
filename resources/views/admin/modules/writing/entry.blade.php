@@ -60,6 +60,12 @@
             @php
                 $numIndex = explode("_", $index);
                 $fieldValue[$entry->id][$numIndex[0]] = $value;
+
+                //check appointed
+                if ($index == "appointed") {
+                   $is_appointed = $value;
+                }
+                
             @endphp
         @endforeach                  
     @endforeach
@@ -78,7 +84,6 @@
                         <div class="entry-container border border-light">
                         @foreach($entries as $entry)                    
                             @foreach ($formFields as $formField)
-
                                 @if (isset($fieldValue[$entry->id][$formField->id]))
                                 <div id="{{$entry->id}}" class="bg-light">
                                      <strong>{{$formField->name}}</strong>
@@ -114,58 +119,75 @@
                 </div>
 
 
-                @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
-                <div class="card mt-4">
-  
+               @if (count($postedEntries) > 0)
+                <div class="card mt-4">    
+                    <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
+                        Teacher Submitted Reply
+                    </div>                    
+                    <div class="card-body">
+                        <div class="container">
+                            @foreach ($postedEntries as $postedEntry)
 
-                    @if (isset($postedEntry))
-                        <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
-                            Teacher Submitted Reply
-                        </div>                    
-                        <div class="card-body">
-                            <div class="container">
+                            <div id="{{ $postedEntry->id }}" style="border-bottom:1px dotted #999" class="pb-4 pt-4">
+
                                 <div class="row">
-                                    <div class="col-md-2">Course</div>
-                                    <div class="col-md-10">{{ $postedEntry->course }}</div>
+                                    <div class="col-md-3">Date Submitted</div>
+                                    <div class="col-md-9">{{ $postedEntry->created_at }}</div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-3">Course</div>
+                                    <div class="col-md-9">{{ $postedEntry->course }}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2">Material</div>
-                                    <div class="col-md-10">{{ $postedEntry->material }}</div>
+                                    <div class="col-md-3">Material</div>
+                                    <div class="col-md-9">{{ $postedEntry->material }}</div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2">Subject</div>
-                                    <div class="col-md-10">{{ $postedEntry->subject }}</div>                                    
+                                    <div class="col-md-3">Subject</div>
+                                    <div class="col-md-9">{{ $postedEntry->subject }}</div>                                    
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2">Grade</div>
-                                    <div class="col-md-10">{{ $postedEntry->grade }}</div>                                                                                                        
+                                    <div class="col-md-3">Grade</div>
+                                    <div class="col-md-9">{{ $postedEntry->grade }}</div>                                                                                                        
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2">Appointed</div>
-                                    <div class="col-md-10">{{ (boolval($postedEntry->appointed) ? 'Yes' : 'No')  }}</div>                                                                                                        
+                                    <div class="col-md-3">Appointed</div>
+                                    <div class="col-md-9">{{ (boolval($postedEntry->appointed) ? 'Yes' : 'No')  }}</div>                                                                                                        
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2">Words</div>
-                                    <div class="col-md-10">{{ $postedEntry->words }}</div>                                                                                                        
+                                    <div class="col-md-3">Words</div>
+                                    <div class="col-md-9">{{ $postedEntry->words }}</div>                                                                                                        
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-2">Content</div>
-                                    <div class="col-md-10">{{ $postedEntry->content }}</div>                                                                                                        
+                                    <div class="col-md-3">Content</div>
+                                    <div class="col-md-9">{{ $postedEntry->content }}</div>                                                                                                        
                                 </div> 
+
+                                @if ($postedEntry->attachment)
                                 <div class="row">
-                                    <div class="col-md-2">Attachment</div>
-                                    <div class="col-md-10">
-                                        
+                                    <div class="col-md-3">Attachment</div>
+                                    <div class="col-md-9">
                                         <a href="{{ url($postedEntry->attachment) }}" download="{{ url($postedEntry->attachment) }}">Download Attachment</a>
                                     </div>
                                 </div> 
-                                
-                            
+                                @endif
                             </div>
+                            @endforeach
+
                         </div>
-                    @else
+                    </div>
+                </div>
+                @endif
+
+
+
+                @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' )
+                <div class="card mt-4">
+
                         <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
-                            Teacher Reply
+                            Teacher Reply Form
                         </div>                    
                         <div class="card-body">
                             <form action="{{ route("admin.writing.postGrade",$entry->id ) }}"  method="POST" enctype="multipart/form-data" >
@@ -186,7 +208,7 @@
                                             Appointed: 
                                         </div>
                                         <div class="col-4">
-                                            <input type="checkbox" name="appointed" id="appointed" >
+                                            <input type="checkbox" name="appointed" id="appointed" @if (isset($is_appointed) && $is_appointed == 'true') {{ "checked" }} @endif disabled>
                                         </div>
                                     </div>
 
@@ -196,7 +218,7 @@
                                             Material: 
                                         </div>
                                         <div class="col-4">
-                                            <input type="text" name="material" id="material" class="form-control form-control-sm">
+                                            <input type="text" name="material" id="material"  class="form-control form-control-sm" required>
                                         </div>
 
                                         <!--[start] Column 2-->
@@ -215,7 +237,7 @@
                                             Subject: 
                                         </div>
                                         <div class="col-4">
-                                            <input type="text" name="subject" id="subject" class="form-control form-control-sm">
+                                            <input type="text" name="subject" id="subject" class="form-control form-control-sm" required>
                                         </div>
                                     </div>
 
@@ -225,7 +247,7 @@
                                             Grade: 
                                         </div>
                                         <div class="col-4">
-                                            <input type="number" name="grade" id="grade" class="form-control form-control-sm" required step='any'>
+                                            <input type="number" name="grade" id="grade" class="form-control form-control-sm" step='any' required>
                                         </div>
                                     </div>
 
@@ -243,8 +265,8 @@
                                             &nbsp;
                                         </div>                                
                                         <div class="col-10">                                   
-                                            <input type="submit" class="btn btn-primary btn-sm" >
-                                            <input type="file" id="file" name="file" class="btn btn-sm float-right"><br><br>
+                                            <input type="submit" value="Submit Reply" class="btn btn-primary btn-sm" >
+                                            <input type="file" id="file" name="file" class="btn btn-sm float-right" required><br><br>
                                         </div>
 
                                     </div>
@@ -255,18 +277,19 @@
                             </form>
 
                         </div>
-                    @endif
+                  
 
                 </div> 
                 @endif
-
-
+                
+                
+ 
+            
 
             </div>
 
             <div class="col-md-4">
-
-            <div class="card">
+                <div class="card">
                     <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
                         Entry Status
                     </div>
@@ -295,17 +318,17 @@
                                     <tr>
                                         <td>
                                             <div id="{{$formField->id . '_countdown_'. $key }}" style="background-color:">
-                                                  <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
+                                                    <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
                                             </div>
 
                                             <script type="text/javascript">
-                                              window.addEventListener('load', function() {
+                                                window.addEventListener('load', function() {
                                                 countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
-                                              });
+                                                });
                                             </script> 
                                         </td>
                                         <td>
-                                           @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                                            @if (Auth::user()->user_type == 'ADMINISTRATOR') 
                                                 <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
                                                     <option value="" class="{{ $entry->id }}"> Select </option>
                                                     @foreach($tutors as $tutor)
@@ -325,8 +348,8 @@
                         </div>
                     </div>
                 </div>
-
             </div>
+
         </div>
     </div>   
 @endsection

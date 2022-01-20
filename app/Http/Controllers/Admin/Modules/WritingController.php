@@ -130,7 +130,7 @@ class WritingController extends Controller
     {
 
         //get the posted grade
-        $postedEntry =  $writingEntryGrade->where('writing_entry_id', $entry_id)->first();        
+        $postedEntries =  $writingEntryGrade->where('writing_entry_id', $entry_id)->orderby('created_at', 'DESC')->get();        
 
         //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         //if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
@@ -142,7 +142,7 @@ class WritingController extends Controller
 
             $tutors      = $tutor->getTutors();
 
-            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors', 'postedEntry'));
+            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors', 'postedEntries'));
         //} else {
            // abort(401, "User is not authorized");
         //}
@@ -162,10 +162,14 @@ class WritingController extends Controller
             $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
             if ($uploadFileName) {
                 echo "uploaded $uploadFileName : $file <BR>" ;
-            }           
+            }   
+            $attachment_url = $publicURL . basename($uploadFileName);
+
         } else {
             $uploadFileName = null;
+            $attachment_url = null;
         }
+
 
         $writingGrade = [
                 'writing_entry_id'  => $id,
@@ -176,13 +180,14 @@ class WritingController extends Controller
                 'grade'             => $request->grade,
                 'words'             => $request->words,
                 'content'           => $request->content,
-                'attachment'        => $publicURL . basename($uploadFileName)
+                'attachment'        => $attachment_url
             ];
 
         $writingEntryGrade->create($writingGrade);
 
         //Get the entry id and know you the member is
         $writingEntry = $writingEntries->find($id);
+
         if (isset($writingEntry)) 
         {
             //amount variations (180 = 1 pt), (181 - 2 pts) (501-800 - 3 pts)
@@ -195,22 +200,47 @@ class WritingController extends Controller
             }            
 
             $member = $member->where('user_id', $writingEntry->user_id)->first();
+
+            //@todo: the monthly we will add a record
+
             if (isset($member)) {
-                //add member transaction (agent subtract since we are deducting point)
-                $agentCredit = [
-                    'valid' => 1,
-                    'transaction_type' => 'AGENT_SUBTRACT',
-                    'agent_id' => null,
-                    'member_id' => $member->user_id,
-                    'lesson_shift_id' => $member->lesson_shift_id,
-                    'created_by_id' => Auth::user()->id,
-                    'amount' => $amount,
-                    'price' => 1,
-                    'remarks' => "WRITING ENTRY",
-                    //'credits_expiration' => $expiry_date,
-                    //'old_credits_expiration' => $old_credits_expiration,
-                ];
-                AgentTransaction::create($agentCredit);
+
+                if ($member->membership == "Point Balance") 
+                {                
+                    //add member transaction (agent subtract since we are deducting point)
+                    $agentCredit = [
+                        'valid' => 1,
+                        'transaction_type' => 'AGENT_SUBTRACT',
+                        'agent_id' => null,
+                        'member_id' => $member->user_id,
+                        'lesson_shift_id' => $member->lesson_shift_id,
+                        'created_by_id' => Auth::user()->id,
+                        'amount' => $amount,
+                        'price' => 1,
+                        'remarks' => "WRITING ENTRY",
+                        //'credits_expiration' => $expiry_date,
+                        //'old_credits_expiration' => $old_credits_expiration,
+                    ];
+                    AgentTransaction::create($agentCredit);                
+
+                } else if ($member->membership == "Monthly") {
+
+                  
+
+                    $lessonData = [
+                        'member_id' =>  $member->user_id,
+                        'schedule_status' => "CLIENT_RESERVED",
+                        'email_type' => "NOT APPLICABLE",
+                        'valid' => 1,
+                    ];
+
+                    $scheduleItem = ScheduleItem::create($lessonData);
+
+                
+                }
+
+
+
 
                 $user = User::find($member->user_id);
 
@@ -438,10 +468,8 @@ class WritingController extends Controller
             $id = $fkey[0];
 
             $formField = formFields::find($id);
+           
 
-
-
-            
 
             if ($formField) 
             { 
@@ -464,10 +492,11 @@ class WritingController extends Controller
                     //this detects the appoint teacher hidden id and search through they $fkeyid
                     if (isset($request->appoint_teacher_field_id)) 
                     {
-                        $fields["appointed"] = true;
-                        $fields["teacher_id"] = $value;
-
                         if ($id == $request->appoint_teacher_field_id) {
+
+                            $fields["teacher_id"] = $value;
+                            $fields["appointed"] = true;
+
                             $tutor_id = $value;
 
                             //value change to name of tutor
@@ -475,16 +504,13 @@ class WritingController extends Controller
                             $fields[$key] =  $tutorInfo->user->firstname;
 
                         } else {
-                        
+                           
                             $fields[$key] = $value;
                         }
-                    } else {
+                    } else {                       
                         $fields[$key] = $value;
 
                     }
-
-
-
                     
                 }
             } else {

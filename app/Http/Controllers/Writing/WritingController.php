@@ -9,6 +9,10 @@ use App\Models\WritingEntries;
 use App\Models\UploadFile;
 use App\Models\Tutor;
 use App\Models\User;
+use App\Models\Member;
+use App\Models\ScheduleItem;
+use App\Models\AgentTransaction;
+
 use Auth, Config;
 
 class WritingController extends Controller
@@ -54,17 +58,17 @@ class WritingController extends Controller
     }
 
 
-    public function store(Request $request, UploadFile $uploadFile, Tutor $tutor) 
+    public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
         $fields = array();
 
         $storagePath = 'public/uploads/writing/';
-
         $dataArray = json_decode($request->get('data'), true);
 
         $tutor_id = null;
-
-        $fields["appointed"] = false;
+        $userAttachedFile = false;
+        $totalWords = 0;
+        $pointToDeduct = 0;
 
         foreach ($dataArray as $key => $value)         
         {
@@ -72,8 +76,6 @@ class WritingController extends Controller
             $id = $fkey[0];
 
             $formField = formFields::find($id);
-
-
 
             if ($formField) 
             { 
@@ -83,27 +85,42 @@ class WritingController extends Controller
                     $file = $request->file($key);                  
 
                     if ($file) {
+
                         $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
                         if ($uploadFileName) 
                         {
-                            echo "uploaded $uploadFileName : $file <BR>" ;                            
-                        }
-                        $fields[$key] = $uploadFileName;
+                            //echo "uploaded $uploadFileName : $file <BR>" ;   
+                            $fields[$key] = $uploadFileName;
+                            //Add A Key value pair for Email Template
+                            $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];  
 
-                        //Add A Key value pair for Email Template
-                        $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];                        
+                            //user has succesffly attached a file
+                            $userAttachedFile = true;
+                        }
+
+                       
                     }
+
+                } else if (strtolower($formField->type) == 'paragraphtext') {              
+                    $display_meta = json_decode($formField->display_meta, true);
+
+                    if ($display_meta['memberPointChecker'])  
+                    {
+                        $wordCount = countWords($value);
+                        $totalWords = $totalWords +  $wordCount;                        
+                    }
+
+
                 } else { 
 
 
                     //this detects the appoint teacher hidden id and search through they $fkeyid
                     if (isset($request->appoint_teacher_field_id)) 
                     {
-                        $fields["appointed"] = true;
-                        $fields["teacher_id"] = $value;
-
                         if ($id == $request->appoint_teacher_field_id) {
                             $tutor_id = $value;
+                            $fields["appointed"] = true;
+                            $fields["teacher_id"] = $value;
 
                             //value change to name of tutor
                             $tutorInfo = $tutor->where('user_id', $tutor_id)->first();
@@ -118,14 +135,11 @@ class WritingController extends Controller
                         }
                     } else {
                         $fields[$key] = $value;
-
                     }
 
 
                     $fields[$key] = $value;  
-
-
-
+                    
                     //Add A Key value pair for Email Template
                     $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];
                 }               
@@ -136,13 +150,96 @@ class WritingController extends Controller
             }
         } 
     
+       
 
-        $entryID = WritingEntries::create([
-            'form_id'               => $request->get('form_id'),
-            'user_id'               => Auth::user()->id,
-            'appointed_tutor_id'    => $tutor_id ?? null,
-            'value'                 => json_encode($fields)
-       ]);        
+        //detect if theres an attachement
+        if ($pointToDeduct == 0 && $userAttachedFile == true) 
+        {
+            //User has no attachment, then point deduction is automcatically 1
+            $pointToDeduct  = 1;
+
+        } else {
+             $pointToDeduct =  $writingEntries->getWordPointDeduct($totalWords);
+        
+        }
+
+        //make the point double if he assigns a tutor
+        if (isset($tutor_id )) {
+            $pointToDeduct = $pointToDeduct * 2;
+        }
+
+
+       //get the member info and determine what membership type
+       $memberInfo = Member::where('user_id', Auth::user()->id)->first();
+
+       if (isset($memberInfo->membership)) {
+
+            if ($memberInfo->membership == "Monthly") 
+            {   
+                //only (00,30) allowed
+                $minutes = date('i');
+                if ($minutes > 30) {
+                    $min = 30;
+                } else {
+                    $min =  00;
+                }
+
+                $lessonData = [
+                    'lesson_time' => date('Y-m-d H:i:00', strtotime(date('Y-m-d H:'.$min.':00'))),
+                    'member_id' => Auth::user()->id,
+                    'tutor_id'  => $tutor_id ?? null,
+                    'schedule_status' => "WRITING",
+                    'valid' => 0,
+                ];
+                $schedule = ScheduleItem::create($lessonData);
+
+                $entryID = WritingEntries::create([
+                    'form_id'               => $request->get('form_id'),
+                    'type'                  => $memberInfo->membership,
+                    'user_id'               => Auth::user()->id,
+                    'schedule_id'           => $schedule->id,
+                    'appointed_tutor_id'    => $tutor_id ?? null,
+                    'total_points'          => $pointToDeduct,
+                    'value'                 => json_encode($fields)
+                ]);
+
+            } else if ($memberInfo->membership == "Point Balance" || $memberInfo->membership == "Both") {
+
+
+
+                //add member transaction (agent subtract since we are deducting point)
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type' => 'AGENT_SUBTRACT',
+                    'agent_id' => $memberInfo->agent_id,
+                    'member_id' => $memberInfo->user_id,
+                    'lesson_shift_id' => $memberInfo->lesson_shift_id,
+                    'created_by_id' => Auth::user()->id,
+                    'amount' => $pointToDeduct,
+                    'price' => 1,
+                    'remarks' => "WRITING ENTRY",
+                    //'credits_expiration' => $expiry_date,
+                    //'old_credits_expiration' => $old_credits_expiration,
+                ];
+                AgentTransaction::create($agentCredit);     
+
+
+                $entryID = WritingEntries::create([
+                    'form_id'               => $request->get('form_id'),
+                    'type'                  => $memberInfo->membership,
+                    'user_id'               => Auth::user()->id,
+                    'schedule_id'           => null,
+                    'appointed_tutor_id'    => $tutor_id ?? null,
+                    'total_points'          => $pointToDeduct,
+                    'value'                 => json_encode($fields)
+                ]);                
+                
+            }
+       
+       }
+
+     
+
         
         //render the fields
         $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();

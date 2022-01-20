@@ -14,7 +14,6 @@ class WritingEntries extends Model
     public $timestamps = true;
 
 
-
     function generateFileAnchorLink($filename) 
     {
         $basename = basename($filename);      
@@ -37,18 +36,6 @@ class WritingEntries extends Model
     }
 
 
-    function getPointFromWritingEntriesSubmitted($user_id) {
-    
-        $all_entries = WritingEntries::where('user_id', $user_id)->get();
-
-        foreach ($all_entries as $all) {
-        
-        
-        }
-
-
-    
-    }
 
     /*
         @words = determine how much points for deduction, 
