@@ -43,7 +43,7 @@ class dummyController extends Controller
     {
 
         $writingPoints = WritingEntries::where('user_id', $user_id)->where('type', 'Monthly')->sum('total_points');
-        echo $writingPoints;
+        echo "total points : ". $writingPoints ."<BR>";
 
         echo "<BR>----<br>";
 
