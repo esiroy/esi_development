@@ -41,6 +41,10 @@ class dummyController extends Controller
 
     public function test($user_id  = 3 ) 
     {
+
+        $writingPoints = WritingEntries::where('user_id', Auth::user()->id)->where('type', 'Monthly')->sum('total_points');
+        echo $writingPoints;
+
         $all_entries = WritingEntries::where('user_id', $user_id)->get();
         foreach ($all_entries as $all) {        
             $test  = json_decode($all->value, true);
