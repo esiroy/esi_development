@@ -107,7 +107,10 @@ class WritingController extends Controller
                     if ($display_meta['memberPointChecker'])  
                     {
                         $wordCount = countWords($value);
-                        $totalWords = $totalWords +  $wordCount;                        
+                        $totalWords = $totalWords +  $wordCount;   
+
+                        $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];  
+                        $fields[$key] = $value;                     
                     }
 
 
