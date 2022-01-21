@@ -39,15 +39,56 @@ class dummyController extends Controller
 
 
 
-    public function test($user_id  = 21402 ) 
+    public function test($memberID  = 21402 ) 
     {
 
-        $writingPoints = WritingEntries::where('user_id', $user_id)->where('type', 'Monthly')->sum('total_points');
-        echo "total points : ". $writingPoints ."<BR>";
+ //start date
+        $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-1 09:00:00')));
+
+        //temporary end date since we need to get 12:30 which is the next date
+        $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));
+        $endDateNextDay = date("Y-m-d", strtotime($tempEndDate . " + 1 day"));
+
+        //final end date
+        $endDate = $endDateNextDay . " 00:30:00";
+
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")
+                    //->where('valid', 1)
+                    ->count();                    
+
+        
+        $reserved_b = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
+                    //->where('valid', 1)
+                    ->count();                    
+                    
+        $completed = ScheduleItem::where('member_id', $memberID)
+                        ->whereBetween('lesson_time', [$startDate, $endDate])
+                        ->where('schedule_status', '=', "COMPLETED")                       
+                        //->where('valid', 1)
+                        ->count();
+
+        $not_available = ScheduleItem::where('member_id', $memberID)
+                        ->whereBetween('lesson_time', [$startDate, $endDate])
+                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
+                        //->where('valid', 1)
+                        ->count();
+
+      
+        $writingPoints = WritingEntries::where('user_id', $memberID)->where('type', 'Monthly')->sum('total_points');
+
+
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints ;
+
+
+        echo "total points : ". $reserveCount ."<BR>";
 
         echo "<BR>----<br>";
 
-        $all_entries = WritingEntries::where('user_id', $user_id)->get();
+        $all_entries = WritingEntries::where('user_id', $memberID)->get();
         foreach ($all_entries as $all) {        
             $test  = json_decode($all->value, true);
             echo "<pre>";
