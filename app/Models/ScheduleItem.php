@@ -496,7 +496,7 @@ class ScheduleItem extends Model
                         ->count();
 
       
-        $writingPoints = WritingEntries::where('user_id', Auth::user()->id)->where('type', 'Monthly')->sum('total_points');
+        $writingPoints = WritingEntries::where('user_id', $memberID)->where('type', 'Monthly')->sum('total_points');
 
 
         $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints ;
