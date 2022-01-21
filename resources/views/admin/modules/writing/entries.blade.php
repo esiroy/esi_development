@@ -53,7 +53,7 @@
                                     <tr>
                                         <td>First Name</td>
                                         <td>Last Name</td>
-                                        <td>ご登録メールアドレス</td>
+                                        <td>登録メールアドレス</td>
 
                                         @foreach ($formFields as $formField)
                                             <td class="{{ strtolower(str_replace(' ', '_', $formField->name)) }}_data" style="display:none">
