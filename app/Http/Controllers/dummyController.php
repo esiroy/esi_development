@@ -39,11 +39,13 @@ class dummyController extends Controller
 
 
 
-    public function test($user_id  = 3 ) 
+    public function test($user_id  = 21402 ) 
     {
 
-        $writingPoints = WritingEntries::where('user_id', Auth::user()->id)->where('type', 'Monthly')->sum('total_points');
+        $writingPoints = WritingEntries::where('user_id', $user_id)->where('type', 'Monthly')->sum('total_points');
         echo $writingPoints;
+
+        echo "<BR>----<br>";
 
         $all_entries = WritingEntries::where('user_id', $user_id)->get();
         foreach ($all_entries as $all) {        
