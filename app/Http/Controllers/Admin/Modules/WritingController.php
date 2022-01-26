@@ -219,7 +219,7 @@ class WritingController extends Controller
                 'lesson_course'             =>  $request->course,
                 'lesson_date'               =>  $lessonDate,
                 'lesson_material'           =>  $request->material,
-                'lesson_subject'            =>  $request->lessonSubject,
+                'lesson_subject'            =>  $request->subject,
                 'comment'                   =>  $request->content,
                 'created_by_id'             =>  Auth::user()->id, 
                 'member_id'                 =>  $writingEntry->user_id,
