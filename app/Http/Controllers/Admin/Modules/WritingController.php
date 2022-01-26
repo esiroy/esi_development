@@ -144,15 +144,19 @@ class WritingController extends Controller
 
         $writingEntry = WritingEntries::find($id);
 
+        $words =  $writingEntry->total_words;
+
         /*******************************************************************************
         *          CALCULATE ADDITONAL DEDUCTION FOR MONTHLY ONLY AND WITH ATTACMENTS
         *********************************************************************************/
         if (isset($request->hasAttachement)) {
             $hasAttachement = $request->hasAttachement;
             if ($hasAttachement == true) 
-            {                   
-                $writingCredit = $writingEntry->total_points;
+            {   
+                //override counted words on entries                
                 $words = $request->words;        
+
+                $writingCredit = $writingEntry->total_points;                
                 $pointsToDeduct = $writingEntries->getWordPointDeduct($words);
                 $additionalPoints =  $pointsToDeduct - $writingCredit;
                 $data = [
@@ -172,9 +176,7 @@ class WritingController extends Controller
                         $scheduleItem->update($scheduleItemData);                    
                     }
                 }
-            }        
-        } else {
-            $words =  $writingEntry->total_words;
+            } 
         }
 
 
