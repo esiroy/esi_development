@@ -58,7 +58,13 @@
             $numIndex = explode("_", $index);
             $fieldValue[$entry->id][$numIndex[0]] = $value;
         @endphp
-    @endforeach     
+
+        @if ($index == "appointed")
+            @php 
+                $is_appointed = true; 
+            @endphp
+        @endif
+    @endforeach   
 
     <div class="container bg-light">
         <div class="row">

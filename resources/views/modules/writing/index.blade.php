@@ -33,26 +33,31 @@
                         </div>
                                 
                         <div class="col-12">
-                            <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
-                                @csrf
-                                @foreach($pages as $page) 
-                                    <h2>{{ $page->page_id }}</h2>
-                                    <section data-step="{{ $page->page_id }}">
-                                        @if(isset($formFieldChildrenHTML[$page->page_id]))
-                                            @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
-                                                {!! $formFieldChildHTML !!}
-                                            @endforeach
-                                        @endif
-                                        @if( $page->page_id == 1 )
-                                            @foreach($formFieldHTML as $HTML) 
-                                                {!! $HTML !!}
-                                            @endforeach
-                                        @endif
-                                    </section>
-                                @endforeach
-                                <textarea id="data" name="data" style="display:none" ></textarea>
-                                <input type="submit" style="display:none">
-                            </form>
+                            <div class="card mb-3">
+                                <h5 class="card-header py-2">Writing Service</h5>
+                                <div class="card-body">
+                                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                                        @csrf
+                                        @foreach($pages as $page) 
+                                            <h2>{{ $page->page_id }}</h2>
+                                            <section data-step="{{ $page->page_id }}">
+                                                @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                                    @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                                        {!! $formFieldChildHTML !!}
+                                                    @endforeach
+                                                @endif
+                                                @if( $page->page_id == 1 )
+                                                    @foreach($formFieldHTML as $HTML) 
+                                                        {!! $HTML !!}
+                                                    @endforeach
+                                                @endif
+                                            </section>
+                                        @endforeach
+                                        <textarea id="data" name="data" style="display:none" ></textarea>
+                                        <input type="submit" style="display:none">
+                                    </form>                              
+                                </div>
+                            </div>                  
                         </div>
                         
                     </div>
