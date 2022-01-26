@@ -139,38 +139,53 @@ class WritingEntryController extends Controller
                 $totalPointsLeft = ($credits + $deposit) - $wordPointDeduction;
                 
                 $errorMessage = "Sorry, the member don't have enough monthly points for this entry.";
+                if ($totalPointsLeft <= 0) 
+                {
+                    $success =  false;
+                    $message = $errorMessage;
+                    $message .= "<div>This entry requires $wordPointDeduction  addtional point(s), Member only have $credits credit(s) </div>";
+                } else {
+                    $success =  true;
+                    $message = "<div>Congratulations, Member have sufficient credits </div>";
+                }
+
+                return Response()->json([
+                    "success"           => $success,   
+                    "message"           =>  $message,
+                    "membership"        => $memberInfo->membership,
+                    "credits"           => $credits,
+                    "deposit"           => $deposit,
+                    "wordPointDeduction" => $wordPointDeduction,
+                    "totalPointsLeft"   => $totalPointsLeft
+                ]); 
+
 
             } else if ($memberInfo->membership  == "Point Balance" ||  $memberInfo->membership  == "Both") {
 
+                $credits = $agentTransaction->getCredits($memberID); 
+
+                /*
                 $credits = $agentTransaction->getCredits( $memberID ); 
                 $totalPointsLeft = $credits - $wordPointDeduction;
-
                 $errorMessage = "Sorry, the member don't have enough points for this entry.";
+                */
+
+
+                return Response()->json([
+                    "success"           => true,   
+                    "message"           => "Member has " . $memberInfo->membership . " Membership",
+                    "membership"        => $memberInfo->membership,
+                    "credits"           => $credits,
+                    "deposit"           => $deposit,
+                    "wordPointDeduction" => $wordPointDeduction,
+                    "totalPointsLeft" => 1
+                ]);                 
 
             }
         }   
 
         
 
-        if ($totalPointsLeft <= 0) 
-        {
-            $success =  false;
-            $message = $errorMessage;
-            $message .= "<div>This entry requires $wordPointDeduction  addtional point(s), Member only have $credits credit(s) </div>";
-        } else {
-            $success =  true;
-            $message = "<div>Congratulations, Member have sufficient credits </div>";
-        }
-
-        return Response()->json([
-            "success"  => $success,   
-            "message" =>  $message,
-            "membership" => $memberInfo->membership,
-            "credits"   => $credits,
-            "deposit"           => $deposit,
-            "wordPointDeduction" => $wordPointDeduction,
-            "totalPointsLeft" => $totalPointsLeft
-        ]); 
     }
 
 
