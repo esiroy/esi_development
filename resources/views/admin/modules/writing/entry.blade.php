@@ -443,11 +443,9 @@
 
             $(document).on('change keydown keyup', '#words', function() {
                 @if($has_attachement == true) 
-                    @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
-                        autoCheckMemberCredits(false);  
-                    @endif
+                    autoCheckMemberCredits(false);                     
                 @else 
-                        autoCheckMemberCredits(true);   
+                    autoCheckMemberCredits(true);   
                 @endif;
             });
 
