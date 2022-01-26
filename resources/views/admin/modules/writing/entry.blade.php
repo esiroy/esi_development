@@ -215,16 +215,19 @@
                                             <input type="text" name="material" id="material"  class="form-control form-control-sm" required>
                                         </div>
 
-                                        @if (($has_attachement == true))
-                                            <!--[start] Column 2-->
-                                            <div class="col-2">
-                                                Words: 
-                                            </div>
-                                            <div class="col-4">
-                                                <input type="number" name="words" id="words" class="form-control form-control-sm" required>
-                                                <input type="hidden"  name="hasAttachement" value="true">
-                                            </div>     
-                                        
+
+                                        @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
+                                            @if (($has_attachement == true))
+                                                <!--[start] Column 2-->
+                                                <div class="col-2">
+                                                    Words: 
+                                                </div>
+                                                <div class="col-4">
+                                                    <input type="number" name="words" id="words" class="form-control form-control-sm" required>
+                                                    <input type="hidden"  name="hasAttachement" value="true">
+                                                </div>     
+                                            
+                                            @endif
                                         @endif
 
                                     </div>
@@ -432,20 +435,27 @@
                 
                     @if($has_attachement == true) 
                         @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
+                            console.log("with attachment , Monthly member")
                             checkMemberCredits(false);   
                             event.preventDefault();
+                        @else 
+                            console.log("with attachment , point balance member")
+                            checkMemberCredits(true)
                         @endif
-                    @else 
-                         checkMemberCredits(true);   
+                    @else
+                        console.log("no attachment , point balance member")
+                        checkMemberCredits(true);   
                     @endif;
                 }               
             });
 
             $(document).on('change keydown keyup', '#words', function() {
                 @if($has_attachement == true) 
-                    autoCheckMemberCredits(false);                     
+                    @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
+                        autoCheckMemberCredits(false);  
+                    @endif
                 @else 
-                    autoCheckMemberCredits(true);   
+                        autoCheckMemberCredits(true);   
                 @endif;
             });
 
@@ -539,11 +549,6 @@
             // Display the result in the element with id="demo"
             let timer = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
             $('#'+id).html(timer);           
-        }
-
-        function sendMemberReloadMessage($memberID) {
-        
-        
         }
 
 
