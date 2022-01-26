@@ -805,12 +805,16 @@
     <!-- Customer Chat -->
     @include('modules.member.popup.customerchat')
 
+    @php /*
     <!-- Purpose-->
     @include('modules.member.popup.addMemberTestScore')
     @include('modules.member.popup.showAllMemberExamScoreModal')
 
     <!-- Member Purpose -->
     @include('modules.member.popup.updateMemberPurpose')
+    */
+    
+    @endphp
 
 
     @yield('scripts')
