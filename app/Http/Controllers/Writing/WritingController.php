@@ -231,6 +231,7 @@ class WritingController extends Controller
                     'user_id'               => Auth::user()->id,
                     'schedule_id'           => null,
                     'appointed_tutor_id'    => $tutor_id ?? null,
+                    'total_words'           => $totalWords,
                     'total_points'          => $pointToDeduct,
                     'value'                 => json_encode($fields)
                 ]);                
