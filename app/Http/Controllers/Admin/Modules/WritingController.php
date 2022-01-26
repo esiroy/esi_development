@@ -141,10 +141,9 @@ class WritingController extends Controller
 
     public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile, ScheduleItem $scheduleItem) 
     {
-
         $writingEntry = WritingEntries::find($id);
-
         $words =  $writingEntry->total_words;
+        $member = $member->where('user_id', $writingEntry->user_id)->first();
 
         /*******************************************************************************
         *          CALCULATE ADDITONAL DEDUCTION FOR MONTHLY ONLY AND WITH ATTACMENTS
@@ -153,8 +152,12 @@ class WritingController extends Controller
             $hasAttachement = $request->hasAttachement;
             if ($hasAttachement == true) 
             {   
-                //override counted words on entries                
-                $words = $request->words;        
+                //NOTE: OVERRIDE Only Monthly Membership
+                //Teacher overrides the automated counted words on entries, since it is just credit 1 or 2 points for entries with assigned teacher
+                if ($member->membership == "Monthly") {
+                    $words = $request->words;
+                }
+     
 
                 $writingCredit = $writingEntry->total_points;                
                 $pointsToDeduct = $writingEntries->getWordPointDeduct($words);
@@ -170,8 +173,8 @@ class WritingController extends Controller
 
                     if ($scheduleItem) {
                         $scheduleItemData = [
-                        'tutor_id'  => $writingEntry->appointed_tutor_id,
-                        'memo'      => "Point : ". $pointsToDeduct
+                            'tutor_id'  => $writingEntry->appointed_tutor_id,
+                            'memo'      => "Point : ". $pointsToDeduct
                         ];
                         $scheduleItem->update($scheduleItemData);                    
                     }
@@ -274,10 +277,7 @@ class WritingController extends Controller
         //Get the entry id and know you the member is
         if (isset($writingEntry)) 
         {
-
-
-           
-            $member = $member->where('user_id', $writingEntry->user_id)->first();
+          
             if (isset($member)) 
             {
                 $user = User::find($member->user_id);
