@@ -22,14 +22,15 @@
                 <!-- ANNOUNCEMENTS -->
                 <div class="col-md-9">
 
-                        @if (isset($announcement->body))
-                            <h1 class="callout">お知らせ</h1>                        
-                            <div class="blueBrokenLineBox announcements px-4 py-4">                    
-                                {!! html_entity_decode($announcement->body) ?? '' !!}
-                            </div>
-                        @else 
-                          
-                        @endif
+                    @if (isset($announcement->body))
+                        <h1 class="callout">お知らせ</h1>                        
+                        <div class="blueBrokenLineBox announcements px-4 py-4">                    
+                            {!! html_entity_decode($announcement->body) ?? '' !!}
+                        </div>
+                    @else 
+                        
+                    @endif
+
                     <div class="row">
                         <div class="col-md-12 mt-3">
 
@@ -46,13 +47,17 @@
                             <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
                                 <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
                             </a> 
-                            */
-                            @endphp                     
-
+                            
 
                             <a href="JavaScript:PopupCenter('{{ url('/writing') }}','講師への連絡　チャット」とは',900,820);">
                                 <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
                             </a>      
+                            */
+                            @endphp     
+
+                           <a href="{{ url('/writing') }}">
+                                <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
+                            </a>  
                             
                         </div>
                     </div>

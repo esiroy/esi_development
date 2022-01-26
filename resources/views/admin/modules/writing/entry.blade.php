@@ -1,8 +1,5 @@
 @extends('layouts.admin')
-
 @section('content')
-
-
     <div class="container bg-light px-0">
         <div class="row">
             <div class="col-md-12">
@@ -19,8 +16,6 @@
             </div>
         </div>
     </div>
-
-
 
     <div class="container bg-light">
         <div class="row">
@@ -51,25 +46,19 @@
     </div>
 
 
-    @foreach ($entries as $entry)
-        @php 
-            $values = json_decode($entry->value, true);
+
+    @php 
+        $is_appointed = false;
+        $has_attachement = false;
+        $values = json_decode($entry->value, true);
+    @endphp
+
+    @foreach ($values as $index => $value)                                             
+        @php
+            $numIndex = explode("_", $index);
+            $fieldValue[$entry->id][$numIndex[0]] = $value;
         @endphp
-
-        @foreach ($values as $index => $value)                                             
-            @php
-                $numIndex = explode("_", $index);
-                $fieldValue[$entry->id][$numIndex[0]] = $value;
-
-                //check appointed
-                if ($index == "appointed") {
-                   $is_appointed = $value;
-                }
-                
-            @endphp
-        @endforeach                  
-    @endforeach
-
+    @endforeach     
 
     <div class="container bg-light">
         <div class="row">
@@ -80,9 +69,8 @@
                     </div>
 
                     <div class="card-body">
-
                         <div class="entry-container border border-light">
-                        @foreach($entries as $entry)                    
+                                
                             @foreach ($formFields as $formField)
                                 @if (isset($fieldValue[$entry->id][$formField->id]))
                                 <div id="{{$entry->id}}" class="bg-light">
@@ -90,13 +78,14 @@
                                 </div>
                                 @endif
                                 
+                                
                                 @if ($formField->type == 'uploadfield')
-
                                     @if (isset($fieldValue[$entry->id][$formField->id]))
                                         @php 
                                             $writingFields = new \App\Models\WritingEntries;
+                                            $has_attachement = true;
                                         @endphp      
-                                        <div id="{{$entry->id}}" class="col-md-4"> 
+                                        <div id="{{$entry->id}}" class="col-md-12"> 
                                             <div class="text-center pl-2">
                                                 {{$writingFields->generateFileAnchorLink( $fieldValue[$entry->id][$formField->id] )}}
                                             </div>
@@ -112,7 +101,7 @@
                                     @endif
                                 @endif
                             @endforeach
-                        @endforeach
+                      
                         </div>
 
                     </div>
@@ -132,7 +121,7 @@
 
                                 <div class="row">
                                     <div class="col-md-3">Date Submitted</div>
-                                    <div class="col-md-9">{{ $postedEntry->created_at }}</div>
+                                    <div class="col-md-9">{{ ESIDateTimeSecondsFormat($postedEntry->created_at) }}</div>
                                 </div>
 
 
@@ -165,13 +154,13 @@
                                     <div class="col-md-9">{{ $postedEntry->content }}</div>                                                                                                        
                                 </div> 
 
-                                @if ($postedEntry->attachment)
-                                <div class="row">
-                                    <div class="col-md-3">Attachment</div>
-                                    <div class="col-md-9">
-                                        <a href="{{ url($postedEntry->attachment) }}" download="{{ url($postedEntry->attachment) }}">Download Attachment</a>
-                                    </div>
-                                </div> 
+                                @if ($postedEntry->attachment)                                
+                                    <div class="row">
+                                        <div class="col-md-3">Attachment</div>
+                                        <div class="col-md-9">
+                                            <a href="{{ url($postedEntry->attachment) }}" download="{{ url($postedEntry->attachment) }}">Download Attachment</a>
+                                        </div>
+                                    </div>                                    
                                 @endif
                             </div>
                             @endforeach
@@ -184,13 +173,18 @@
 
 
                 @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' )
-                <div class="card mt-4">
 
+                <div class="mt-4">
+                    <div class="col-12 message-container text-center"></div>
+                </div>
+
+                <div class="card mt-4">
                         <div class="card-header card-header esi-card-header-title text-center bg-darkblue text-white h5 font-weight-bold">
                             Teacher Reply Form
-                        </div>                    
+                        </div>          
+
                         <div class="card-body">
-                            <form action="{{ route("admin.writing.postGrade",$entry->id ) }}"  method="POST" enctype="multipart/form-data" >
+                            <form id="TutorReplyForm" name="TutorReplyForm" action="{{ route('admin.writing.postGrade', $entry->id ) }}"  method="POST" enctype="multipart/form-data" >
                                 @csrf
                                 <!--[start] From Tutor -->
                                 <div class="container">
@@ -221,13 +215,18 @@
                                             <input type="text" name="material" id="material"  class="form-control form-control-sm" required>
                                         </div>
 
-                                        <!--[start] Column 2-->
-                                        <div class="col-2">
-                                            Words: 
-                                        </div>
-                                        <div class="col-4">
-                                            <input type="number" name="words" id="words" class="form-control form-control-sm" required>
-                                        </div>
+                                        @if (($has_attachement == true))
+                                            <!--[start] Column 2-->
+                                            <div class="col-2">
+                                                Words: 
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" name="words" id="words" class="form-control form-control-sm" required>
+                                                <input type="hidden"  name="hasAttachement" value="true">
+                                            </div>     
+                                        
+                                        @endif
+
                                     </div>
 
 
@@ -239,6 +238,14 @@
                                         <div class="col-4">
                                             <input type="text" name="subject" id="subject" class="form-control form-control-sm" required>
                                         </div>
+
+                                        @if (($has_attachement == true))
+                                         <div class="col-2"></div>
+                                        <div class="col-4">
+                                            <button id="sendMemberReloadEmail" type="button" class="btn btn-success btn-sm" style="display:none"> Send Member Reload E-Mail</button>
+                                        </div>
+                                        @endif
+
                                     </div>
 
                                     <div class="row  mt-2">
@@ -264,8 +271,11 @@
                                         <div class="col-2">
                                             &nbsp;
                                         </div>                                
-                                        <div class="col-10">                                   
-                                            <input type="submit" value="Submit Reply" class="btn btn-primary btn-sm" >
+                                        <div class="col-10">      
+
+                                            <input type="submit" style="display:none">
+
+                                            <button id="teacherSubmitBtn" type="button" value="Submit Reply" class="btn btn-primary btn-sm" >Submit</button>
                                             <input type="file" id="file" name="file" class="btn btn-sm float-right" required><br><br>
                                         </div>
 
@@ -281,10 +291,6 @@
 
                 </div> 
                 @endif
-                
-                
- 
-            
 
             </div>
 
@@ -299,7 +305,9 @@
                             <table class="table esi-table table-bordered table-striped  ">
                                 <thead>
                                     <tr>
-                                        <td>Countdown</td>
+                                        <td id="countdownLabel">
+                                            Countdown
+                                        </td>
                                         <td>
                                             @if (Auth::user()->user_type == 'ADMINISTRATOR') 
                                                 Appoint Teacher
@@ -310,22 +318,42 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($entries as $key => $entry)
+
+                              
                                     @php 
                                         $user = \App\Models\User::find($entry->user_id); 
                                         $values = json_decode($entry->value, true);
-                                    @endphp                                     
+                                        $grade = \App\Models\WritingEntryGrade::where('writing_entry_id', $entry->id)->first(); 
+                                    @endphp                                 
+                                                                     
                                     <tr>
                                         <td>
-                                            <div id="{{$formField->id . '_countdown_'. $key }}" style="background-color:">
-                                                    <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
-                                            </div>
 
-                                            <script type="text/javascript">
+                                             @if (isset($grade))
+                                                <div id="{{$formField->id . '_countdown' }}" style="background-color:green; padding:0px 15px; width:80%; margin:auto; color:#fff">
+                                                    
+                                                </div>
+                                                <script type="text/javascript">
                                                 window.addEventListener('load', function() {
-                                                countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
+                                                    countdownLeft("{{$formField->id . '_countdown' }}", 
+                                                            "{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 48 hours')) }}", 
+                                                            "{{ date('M d, Y H:i:s', strtotime($grade->created_at)) }}");
+                                                    let elem = document.querySelector('#countdownLabel');
+                                                    elem.innerHTML = "Time Left After Submission";
                                                 });
-                                            </script> 
+                                                </script> 
+                                            @else 
+                                           
+                                                <div id="{{$formField->id . '_countdown' }}" style="background-color:blue; padding:0px 15px; width:80%; margin:auto; color:#fff">
+                                                        <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
+                                                </div>
+
+                                                <script type="text/javascript">
+                                                    window.addEventListener('load', function() {
+                                                        countdown("{{$formField->id . '_countdown' }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
+                                                    });
+                                                </script>
+                                            @endif
                                         </td>
                                         <td>
                                             @if (Auth::user()->user_type == 'ADMINISTRATOR') 
@@ -343,7 +371,7 @@
                                             @endif                                              
                                         </td>                                       
                                     </tr>
-                                @endforeach                                                                       
+                                                                                           
                             </table>
                         </div>
                     </div>
@@ -390,6 +418,69 @@
 @section('scripts')
     @parent
     <script>
+
+        window.addEventListener('load', function() 
+        {
+            $('#teacherSubmitBtn').click(function( event ) 
+            { 
+                var $myForm = $('#TutorReplyForm');
+
+                if (!$myForm[0].checkValidity()) 
+                {
+                     $(document).find('.message-container').html('<div class="alert alert-danger">Please enter all required fields </div>').show()
+                } else {
+                
+                    @if($has_attachement == true) 
+                        @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
+                            checkMemberCredits(false);   
+                            event.preventDefault();
+                        @endif
+                    @else 
+                         checkMemberCredits(true);   
+                    @endif;
+                }               
+            });
+
+            $(document).on('change keydown keyup', '#words', function() {
+                @if($has_attachement == true) 
+                    @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
+                        autoCheckMemberCredits(false);  
+                    @endif
+                @else 
+                        autoCheckMemberCredits(true);   
+                @endif;
+            });
+
+            $('#sendMemberReloadEmail').on('click', function() 
+            {            
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/writing/sendReloadEmail?api_token=') }}" + api_token,
+                    data: {
+                        formID              :  1,
+                        entryID             : "{{ $entry->id }}",
+                        memberID            : "{{ $entry->user_id }}",
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) 
+                    {
+                        if (data.success == true) 
+                        {
+                            alert(data.message);
+                        } else {
+                        
+                        }
+                    }
+                });  
+             });
+        });
+
+
+
+
+
         /*            
             @variable  id              :  Element ID
             @variable  expiration_date :  Target Expiration Date  eg: "Jan 5, 2022 15:37:25"
@@ -429,6 +520,126 @@
             }, 1000);
         }
 
+        function countdownLeft(id, expiration_date, submission_date) 
+        {
+            //console.log(expiration_date);
+            
+            // Set the date we're counting down to
+            var countDownDate = new Date(expiration_date).getTime();
+            // Get today's date and time
+            let now = new Date(submission_date).getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            let timer = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+            $('#'+id).html(timer);           
+        }
+
+        function sendMemberReloadMessage($memberID) {
+        
+        
+        }
+
+
+
+        function countWords(text) 
+        {             
+            return text.trim().split(/\s+/).length;
+        }   
+
+        function submitForm() {
+            $('#TutorReplyForm').find('[type="submit"]').trigger('click');    
+        }
+ 
+        function autoCheckMemberCredits(overrideWordCount) 
+        {            
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/checkMemberCredits?api_token=') }}" + api_token,
+                data: {
+                    formID              :  1,
+                    entryID             : "{{ $entry->id }}",
+                    memberID            : "{{ $entry->user_id }}",
+                    tutorID             : "{{ $entry->appointed_tutor_id }}",
+                    overrideWordCount   : overrideWordCount,
+                    words               : $('#words').val(),                  
+                    appointed           : $('#appointed').attr("checked")
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                    if (data.success == true) {
+                        if (data.totalPointsLeft < 0) 
+                        {   
+                            $('#sendMemberReloadEmail').show();
+                            $('.message-container').show();
+                            $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                  
+                        } else {                        
+                            $('#sendMemberReloadEmail').hide();
+                            $('.message-container').show();
+                            $('.message-container').html('<div class="alert alert-success">' + data.message +'</div>');
+                        }                     
+                    } else {
+
+                        $('#sendMemberReloadEmail').show();
+
+                         $('.message-container').show();
+                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                
+                    }
+                }
+            });     
+        }
+
+        function checkMemberCredits(overrideWordCount) 
+        {            
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/checkMemberCredits?api_token=') }}" + api_token,
+                data: {
+                    formID              :  1,
+                    entryID             : "{{ $entry->id }}",
+                    memberID            : "{{ $entry->user_id }}",
+                    tutorID             : "{{ $entry->appointed_tutor_id }}",
+                    overrideWordCount   : overrideWordCount,
+                    words               : $('#words').val(),                  
+                    appointed           : $('#appointed').attr("checked")
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                    if (data.success == true) {
+                        if (data.totalPointsLeft < 0) 
+                        {            
+                            $('#sendMemberReloadEmail').show();
+                            $('.message-container').show();
+                            $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                 
+                        } else {
+
+                            $('#sendMemberReloadEmail').hide();
+                            $('.message-container').show();
+                            $('.message-container').html('<div class="alert alert-success">' + data.message +'</div>');    
+                            setTimeout(submitForm, 3000);
+                        }                     
+                    } else {
+                        $('#sendMemberReloadEmail').show();
+                        $('.message-container').show();
+                        $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                
+                    }
+                }
+            });     
+        }
 
         function assignTutor(entryID, tutorID) 
         {

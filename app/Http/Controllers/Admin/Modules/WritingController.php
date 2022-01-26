@@ -14,6 +14,9 @@ use App\Models\Tutor;
 use App\Models\WritingEntryGrade;
 use App\Models\AgentTransaction;
 use App\Models\User;
+use App\Models\ReportCardDate;
+use App\Models\ScheduleItem;
+
 use Gate, Auth, Config;
 
 class WritingController extends Controller
@@ -34,7 +37,6 @@ class WritingController extends Controller
     
     public function index(FormFields $formFieldModel,  Tutor $tutor) 
     {
-
         //abort_if(Gate::denies('writing_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
         {
@@ -82,35 +84,22 @@ class WritingController extends Controller
                                             ->where('appointed_tutor_id', Auth::user()->id)
                                             ->orderBy('id', 'DESC')
                                             ->paginate(Auth::user()->items_per_page ?? 15);
-
-            $tutors      = $tutor->getTutorByID(Auth::user()->id);
-            
-            return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
-        
-        
+            $tutors      = $tutor->getTutorByID(Auth::user()->id);            
+            return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));        
         }
-
-
     }
 
 
     public function entries($form_id, Tutor $tutor) 
     {
-
         //abort_if(Gate::denies('writing_entries'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
 
             //get form fields for name of header
             $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
             //Get Entry of data
-            $entries     = WritingEntries::where('form_id', $form_id)
-                                    ->orderBy('id', 'DESC')
-                                    ->paginate(Auth::user()->items_per_page ?? 15);
-
-
-            $tutors      = $tutor->getTutors();
-            
+            $entries     = WritingEntries::where('form_id', $form_id)->orderBy('id', 'DESC')->paginate(Auth::user()->items_per_page ?? 15);
+            $tutors      = $tutor->getTutors();            
             return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
 
         } else {
@@ -126,7 +115,7 @@ class WritingController extends Controller
         @entry_id 
         @tutor model
     */
-    public function entry($form_id, $entry_id, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
+    public function entry($form_id, $entry_id, Member $member, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
     {
 
         //get the posted grade
@@ -138,37 +127,131 @@ class WritingController extends Controller
             $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
             //Get Entry of data
-            $entries     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->get();
-
+            $entry     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->first();
             $tutors      = $tutor->getTutors();
 
-            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entries','formFields', 'tutors', 'postedEntries'));
+            $memberInfo = $member->where('user_id', $entry->user_id)->first();
+           
+            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entry','formFields', 'tutors', 'memberInfo', 'postedEntries'));
         //} else {
            // abort(401, "User is not authorized");
         //}
     }
 
 
-    public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile) 
-    {    
+    public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile, ScheduleItem $scheduleItem) 
+    {
+
+        $writingEntry = WritingEntries::find($id);
+
+        /*******************************************************************************
+        *          CALCULATE ADDITONAL DEDUCTION FOR MONTHLY ONLY AND WITH ATTACMENTS
+        *********************************************************************************/
+        if (isset($request->hasAttachement)) {
+            $hasAttachement = $request->hasAttachement;
+            if ($hasAttachement == true) 
+            {                   
+                $writingCredit = $writingEntry->total_points;
+                $words = $request->words;        
+                $pointsToDeduct = $writingEntries->getWordPointDeduct($words);
+                $additionalPoints =  $pointsToDeduct - $writingCredit;
+                $data = [
+                        'total_points' => $pointsToDeduct
+                ];
+                $writingEntry->update($data);
+
+                //Update Writing Entry
+                if (isset($writingEntry->schedule_id)) {
+                    $scheduleItem = $scheduleItem->find($writingEntry->schedule_id);
+
+                    if ($scheduleItem) {
+                        $scheduleItemData = [
+                        'tutor_id'  => $writingEntry->appointed_tutor_id,
+                        'memo'      => "Point : ". $pointsToDeduct
+                        ];
+                        $scheduleItem->update($scheduleItemData);                    
+                    }
+                }
+            }        
+        } else {
+            $words =  $writingEntry->total_words;
+        }
+
+
+        /********************************************
+        *               log to report card
+        **********************************************/
+        $storagePath = 'public/uploads/report_files/';
+        $publicURL = 'storage/uploads/report_files/';
+       
+        $file = $request->file('file');
+       
+        if ($file) {
+            $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+            if ($uploadFileName) {
+                $attachment_url = $publicURL . basename($uploadFileName);
+            } else {
+                $uploadFileName = null;
+                $attachment_url = null;
+            }
+        } else {
+            $uploadFileName = null;
+            $attachment_url = null;
+        }
+
+        /*******************************************************************************
+        *           Writing Entry Report Card (Both monthly and Credit transaction )
+        *********************************************************************************/       
+        if ($writingEntry) 
+        {
+            //only (00,30) allowed
+            $minutes = date('i');
+            if ($minutes > 30) { $min = 30; } else { $min =  00; }
+            $lessonDate = date('Y-m-d H:'.$min.':00');
+
+            $reportCardData = [
+                'valid'                     => 1,           
+                'file_name'                 =>  $request->file('file')->getClientOriginalName(),
+                'file_path'                 =>  $attachment_url,
+                'grade'                     =>  $request->grade,
+                'lesson_course'             =>  $request->course,
+                'lesson_date'               =>  $lessonDate,
+                'lesson_material'           =>  $request->material,
+                'lesson_subject'            =>  $request->lessonSubject,
+                'comment'                   =>  $request->content,
+                'created_by_id'             =>  Auth::user()->id, 
+                'member_id'                 =>  $writingEntry->user_id,
+                'tutor_id'                  =>  $writingEntry->appointed_tutor_id ?? null,
+                'display_tutor_name'        =>  (boolean) $request->displayTutorName,
+            ];
+                
+            ReportCardDate::create($reportCardData);        
+        }
+
+
+
+        /****************************************
+                writing entries
+        *****************************************/
 
         $storagePath = 'public/uploads/writing_entries/';
         $publicURL = 'storage/uploads/writing_entries/';
-        //$file = $request->file;
  
         $file = $request->file('file');
 
         if ($file) {
             $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
             if ($uploadFileName) {
-                echo "uploaded $uploadFileName : $file <BR>" ;
-            }   
-            $attachment_url = $publicURL . basename($uploadFileName);
-
+                 $attachment_url = $publicURL . basename($uploadFileName);
+            } else {
+                $uploadFileName = null;
+                $attachment_url = null;
+            }
         } else {
             $uploadFileName = null;
             $attachment_url = null;
         }
+
 
 
         $writingGrade = [
@@ -178,70 +261,23 @@ class WritingController extends Controller
                 'subject'           => $request->subject,
                 'appointed'         => boolval($request->appointed),
                 'grade'             => $request->grade,
-                'words'             => $request->words,
+                'words'             => $words,
                 'content'           => $request->content,
                 'attachment'        => $attachment_url
             ];
-
         $writingEntryGrade->create($writingGrade);
+        
+
 
         //Get the entry id and know you the member is
-        $writingEntry = $writingEntries->find($id);
-
         if (isset($writingEntry)) 
         {
-            //amount variations (180 = 1 pt), (181 - 2 pts) (501-800 - 3 pts)
-            if ($request->words >= 1 && $request->words <= 180) {
-                $amount = 1;
-            } else if ($request->words >= 181 && $request->words <= 500) {
-                $amount = 2;
-            } else if ($request->words > 501) {
-                $amount = 3;
-            }            
 
+
+           
             $member = $member->where('user_id', $writingEntry->user_id)->first();
-
-            //@todo: the monthly we will add a record
-
-            if (isset($member)) {
-
-                if ($member->membership == "Point Balance") 
-                {                
-                    //add member transaction (agent subtract since we are deducting point)
-                    $agentCredit = [
-                        'valid' => 1,
-                        'transaction_type' => 'AGENT_SUBTRACT',
-                        'agent_id' => null,
-                        'member_id' => $member->user_id,
-                        'lesson_shift_id' => $member->lesson_shift_id,
-                        'created_by_id' => Auth::user()->id,
-                        'amount' => $amount,
-                        'price' => 1,
-                        'remarks' => "WRITING ENTRY",
-                        //'credits_expiration' => $expiry_date,
-                        //'old_credits_expiration' => $old_credits_expiration,
-                    ];
-                    AgentTransaction::create($agentCredit);                
-
-                } else if ($member->membership == "Monthly") {
-
-                  
-
-                    $lessonData = [
-                        'member_id' =>  $member->user_id,
-                        'schedule_status' => "CLIENT_RESERVED",
-                        'email_type' => "NOT APPLICABLE",
-                        'valid' => 1,
-                    ];
-
-                    $scheduleItem = ScheduleItem::create($lessonData);
-
-                
-                }
-
-
-
-
+            if (isset($member)) 
+            {
                 $user = User::find($member->user_id);
 
                 if (isset($user)) {

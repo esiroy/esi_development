@@ -101,7 +101,8 @@ class WritingController extends Controller
                        
                     }
 
-                } else if (strtolower($formField->type) == 'paragraphtext') {              
+                } else if (strtolower($formField->type) == 'paragraphtext') {       
+
                     $display_meta = json_decode($formField->display_meta, true);
 
                     if ($display_meta['memberPointChecker'])  
@@ -151,31 +152,28 @@ class WritingController extends Controller
                 
                 //echo $key ." not found in form field <BR>";
             }
-        } 
-    
-       
+        }
 
         //detect if theres an attachement
         if ($pointToDeduct == 0 && $userAttachedFile == true) 
         {
             //User has no attachment, then point deduction is automcatically 1
             $pointToDeduct  = 1;
-
         } else {
-             $pointToDeduct =  $writingEntries->getWordPointDeduct($totalWords);
-        
+             $pointToDeduct =  $writingEntries->getWordPointDeduct($totalWords);        
         }
 
         //make the point double if he assigns a tutor
-        if (isset($tutor_id )) {
-            $pointToDeduct = $pointToDeduct * 2;
+        if (isset($tutor_id )) 
+        {
+            $pointToDeduct = $pointToDeduct * 2;       
         }
-
 
        //get the member info and determine what membership type
        $memberInfo = Member::where('user_id', Auth::user()->id)->first();
 
-       if (isset($memberInfo->membership)) {
+       if (isset($memberInfo->membership)) 
+       {
 
             if ($memberInfo->membership == "Monthly") 
             {   
@@ -202,13 +200,13 @@ class WritingController extends Controller
                     'user_id'               => Auth::user()->id,
                     'schedule_id'           => $schedule->id,
                     'appointed_tutor_id'    => $tutor_id ?? null,
+                    'total_words'           => $totalWords,
                     'total_points'          => $pointToDeduct,
                     'value'                 => json_encode($fields)
                 ]);
 
             } else if ($memberInfo->membership == "Point Balance" || $memberInfo->membership == "Both") {
-
-
+                
 
                 //add member transaction (agent subtract since we are deducting point)
                 $agentCredit = [
@@ -274,7 +272,9 @@ class WritingController extends Controller
         }
 
      
-       return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
+        
+
+        return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
     }
     
 

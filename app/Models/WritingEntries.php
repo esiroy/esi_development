@@ -31,7 +31,7 @@ class WritingEntries extends Model
                 echo "<img src='$fileURL' class='img-fluid'/>";
             break;
             default:
-              echo "<a href='$fileURL'>$basename</a>";
+              echo "<a href='$fileURL' download='$fileURL'>$basename</a>";
         }
     }
 

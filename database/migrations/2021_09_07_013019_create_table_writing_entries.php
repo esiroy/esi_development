@@ -19,7 +19,8 @@ class CreateTableWritingEntries extends Migration
             $table->unsignedBigInteger('form_id')->nullable();              
             $table->unsignedBigInteger('user_id')->nullable();
             $table->unsignedBigInteger('schedule_id')->nullable();
-            $table->unsignedBigInteger('appointed_tutor_id')->nullable();            
+            $table->unsignedBigInteger('appointed_tutor_id')->nullable();   
+            $table->integer('total_words')->nullable();         
             $table->integer('total_points')->nullable();
             $table->text('value')->nullable();            
             $table->timestamps();

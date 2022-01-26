@@ -138,6 +138,8 @@ Route::middleware('auth:api')->post('/writing/getSubmittedWritingPoints', 'API\F
 
 //Writing Entry Checker
 Route::middleware('auth:api')->post('/writing/checkCredits', 'API\WritingEntryController@checkCredits')->name('APICheckCredits');
+Route::middleware('auth:api')->post('/writing/checkMemberCredits', 'API\WritingEntryController@checkMemberCredits')->name('APICheckMemberCredits');
+Route::middleware('auth:api')->post('/writing/sendReloadEmail', 'API\WritingEntryController@sendReloadEmail')->name('APISendReloadEmail');
 
 
 
