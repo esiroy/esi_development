@@ -76,17 +76,14 @@
       
     <link rel="stylesheet" href="{{ asset('css/steps/steps.css') }}">
     <style>
-
         .wizard>.content>.body {
             width: 100%
         }
 
-
-         .wrapper {
+        .wrapper {
             margin: 50px auto;
             max-width: 750px;
         }
-
         .writing-header {
             margin-bottom: 30px;
             font-size: 25px;
@@ -618,11 +615,8 @@
                                             checkCredits(checkID)
                                         }
                                     }
-                                }                                  
-                 
-
+                                }
                             });
-
                         }                        
                     },
                     onFinished: function(e, currentIndex) {                     
@@ -636,18 +630,13 @@
                 $items = $cfLogic->where('form_id', $form_id)->groupby(['selected_option_id'])->get();
             @endphp
 
-            @foreach ($items as $item) 
-
-                $('{{ '#' . $item->selected_option_id }}').on('change keyup blur', function() 
-                {
-                    //let cflogic = $(document).find('.cfLogic');
+            @foreach ($items as $item)
+                $('{{ '#' . $item->selected_option_id }}').on('change keyup blur', function() {
                     @php 
                         $showFields = $cfLogic->where('form_id', $form_id)->where('selected_option_id', $item->selected_option_id)->groupby(['field_id'])->get();
                     @endphp
 
                      @foreach ($showFields as $field)
-                        //"{{ $field->field_id }}"
-                        //@todo: search if conditional logic is activated
                         @php 
                             $writingModel = new \App\Models\WritingFields;
                             $writingField = $writingModel->where('form_id', $form_id)->where('id', $field->field_id)->first();
@@ -659,23 +648,15 @@
                             }
                         @endphp            
 
-                        @if ($conditionalLogic == true)
-
-                            //@todo: value condtionals rule logic
+                        @if ($conditionalLogic == true)                           
                             @php 
                                 $conditionals = $cfLogic->where('form_id', $form_id)->where('field_id', $field->field_id)->get();
                                 $fieldCtr = 0;
                             @endphp
-
                             if (@foreach($conditionals as $conditional) @php $fieldCtr++; @endphp isLogicTrue($('#{{$item->selected_option_id}}').val(), "{{ $conditional->field_rule}}", "{{$conditional->field_value}}") @if ( $fieldCtr < count($conditionals)) || @endif @endforeach)
-                            {
-                                
+                            {                                
                                 $('{{ '#' . $field->field_id }}_field_row').show();
-
-                                @if( strtolower($writingField->type) == "htmlcontent")
-                                    getHTMLContent(1, "{{ $field->field_id }}") 
-                                @endif
-                                 
+                                @if( strtolower($writingField->type) == "htmlcontent") getHTMLContent(1, "{{ $field->field_id }}") @endif
 
                             } else {
                                 $('{{ '#' . $field->field_id }}_field_row').hide();
@@ -687,9 +668,7 @@
                                     $('{{ '#' . $field->field_id }}').trigger('change');
                                 @endif
                             }
-
                         @endif
-
                      @endforeach
                 });
                 $('{{ '#' . $item->selected_option_id }}').trigger('change', 'keypress');
