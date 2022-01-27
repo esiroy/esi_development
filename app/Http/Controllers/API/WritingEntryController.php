@@ -137,12 +137,11 @@ class WritingEntryController extends Controller
 
                 //get the deposit based (writing ID) total points when monthy
                 $totalPointsLeft = ($credits + $deposit) - $wordPointDeduction;
-                
-                $errorMessage = "Sorry, the member don't have enough monthly points for this entry.";
+                                
                 if ($totalPointsLeft <= 0) 
                 {
                     $success =  false;
-                    $message = $errorMessage;
+                    $message =  "Sorry, the member don't have enough monthly points for this entry.";
                     $message .= "<div>This entry requires $wordPointDeduction  addtional point(s), Member only have $credits credit(s) </div>";
                 } else {
                     $success =  true;
@@ -176,7 +175,7 @@ class WritingEntryController extends Controller
                     if ($totalPointsLeft <= 0) 
                     {
                         $success =  false;
-                        $message = $errorMessage;
+                        $message =  "Sorry, the member don't have enough monthly points for this entry.";
                         $message .= "<div>This entry requires $wordPointDeduction  addtional point(s), Member only have $credits credit(s) </div>";
                     } else {
                         $success =  true;
