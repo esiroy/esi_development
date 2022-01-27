@@ -21,6 +21,7 @@ class SendAutoReplyJob implements ShouldQueue
     public $emailSubject;
     public $attachment;
     protected $emailTemplate;
+    protected $showlabel;
 
     /**
      * Create a new Auto Reply job instance.
