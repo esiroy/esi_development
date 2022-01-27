@@ -117,6 +117,7 @@ Route::middleware('auth:api')->post('/saveDropDownSelect', 'API\FormMakerControl
 Route::middleware('auth:api')->post('/saveHTMLContent', 'API\FormMakerController@saveHTMLContent')->name('APISaveHTMLContent');
 Route::middleware('auth:api')->post('/saveParagraphText', 'API\FormMakerController@saveParagraphText')->name('APISaveParagraphText');
 Route::middleware('auth:api')->post('/copyField', 'API\FormMakerController@copyField')->name('APICopyField');
+Route::middleware('auth:api')->post('/saveDropDownTeacherSelect', 'API\FormMakerController@saveDropDownTeacherSelect')->name('APISaveDropDownTeacherSelect');
 
 
 //Advance Fields 
@@ -129,9 +130,17 @@ Route::middleware('auth:api')->post('/getHTMLFieldContent', 'API\FormMakerContro
 Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@removeField')->name('APIRemoveField');
 
 //writing api
+Route::middleware('auth:api')->post('/writing/updateWritingFields', 'API\FormMakerController@updateWritingFields')->name('APIWritingFormFieldsUpdate');
 Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
 Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');
-Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingEntryUpdate');
+Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingAssignTutor');
+Route::middleware('auth:api')->post('/writing/getSubmittedWritingPoints', 'API\FormMakerController@getSubmittedWritingPoints')->name('APIGetSubmittedWritingPoints');
+
+//Writing Entry Checker
+Route::middleware('auth:api')->post('/writing/checkCredits', 'API\WritingEntryController@checkCredits')->name('APICheckCredits');
+Route::middleware('auth:api')->post('/writing/checkMemberCredits', 'API\WritingEntryController@checkMemberCredits')->name('APICheckMemberCredits');
+Route::middleware('auth:api')->post('/writing/sendReloadEmail', 'API\WritingEntryController@sendReloadEmail')->name('APISendReloadEmail');
+
 
 
 //[start] member exam  score

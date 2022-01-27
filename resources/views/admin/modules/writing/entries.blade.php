@@ -53,7 +53,7 @@
                                     <tr>
                                         <td>First Name</td>
                                         <td>Last Name</td>
-                                        <td>ご登録メールアドレス</td>
+                                        <td>登録メールアドレス</td>
 
                                         @foreach ($formFields as $formField)
                                             <td class="{{ strtolower(str_replace(' ', '_', $formField->name)) }}_data" style="display:none">
@@ -76,20 +76,13 @@
                                     @php 
                                         $user = \App\Models\User::find($entry->user_id); 
                                         $values = json_decode($entry->value, true);
-
-                                        //Check if tutor has submitted Entry grade                                        
-                                        //if (Auth::user()->user_type == 'TUTOR') 
-                                        //{
-                                            $grade = \App\Models\WritingEntryGrade::where('writing_entry_id', $entry->id)->first(); 
-                                        //}
+                                        $grade = \App\Models\WritingEntryGrade::where('writing_entry_id', $entry->id)->first(); 
                                     @endphp                                     
                                     <tr>
                                         <td>
-
                                             @if (isset($grade))
                                                 <span style="color:green"><i class="fas fa-check-circle"></i></div>
                                             @endif
-
                                             <a href='{{ url("admin/writing/entry/$form_id/$entry->id") }}'>{{ $user->firstname }}</a>                                            
                                         </td>
                                         <td>{{ $user->lastname }}</td>
@@ -103,15 +96,28 @@
                                         @endforeach 
 
                                         <td>
-                                            <div id="{{$formField->id . '_countdown_'. $key }}" style="background-color:">
-                                                  <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
-                                            </div>
+                                            @if (isset($grade))
+                                                <div id="{{$formField->id . '_countdown_'. $key }}" style="background-color:green; padding:0px 15px; width:80%; margin:auto; color:#fff">
+                                                    
+                                                </div>
+                                                <script type="text/javascript">
+                                                window.addEventListener('load', function() {
+                                                    countdownLeft("{{$formField->id . '_countdown_'. $key }}", 
+                                                            "{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 48 hours')) }}", 
+                                                            "{{ date('M d, Y H:i:s', strtotime($grade->created_at)) }}");
+                                                });
+                                                </script> 
+                                            @else 
+                                                <div id="{{$formField->id . '_countdown_'. $key }}" style="background-color:blue; padding:0px 15px; width:80%; margin:auto; color:#fff">
+                                                    <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
+                                                </div>
 
-                                            <script type="text/javascript">
-                                              window.addEventListener('load', function() {
-                                                countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
-                                              });
-                                            </script> 
+                                                <script type="text/javascript">
+                                                window.addEventListener('load', function() {
+                                                    countdown("{{$formField->id . '_countdown_'. $key }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
+                                                });
+                                                </script> 
+                                            @endif
                                         </td>
                                         <td>
                                             <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
@@ -205,6 +211,33 @@
                 }
             }, 1000);
         }
+      
+
+        function countdownLeft(id, expiration_date, submission_date) 
+        {
+            //console.log(expiration_date);
+            
+            // Set the date we're counting down to
+            var countDownDate = new Date(expiration_date).getTime();
+
+            // Get today's date and time
+            let now = new Date(submission_date).getTime();
+
+            // Find the distance between now and the count down date
+            var distance = countDownDate - now;
+
+            // Time calculations for days, hours, minutes and seconds
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            // Display the result in the element with id="demo"
+            let timer = days + "d " + hours + "h " + minutes + "m " + seconds + "s ";
+            $('#'+id).html(timer);
+           
+        }
+
 
 
         function assignTutor(entryID, tutorID) 

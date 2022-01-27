@@ -9,13 +9,157 @@ use App\Models\WritingFields;
 use App\Models\FormFields;
 use App\Models\WritingEntries;
 use App\Models\ConditionalFieldLogic;
+use App\Models\WritingEntryGrade;
 
-
-
+use App\Models\AgentTransaction;
+use App\Models\Member;
+use Auth;
 
 class FormMakerController extends Controller
 {
     
+    public function updateWritingFields(Request $request,  UploadFile $uploadFile) 
+    {
+        $form_id = 1;  
+
+        if (is_array($request->id) == false) {
+            return Response()->json([
+                "success"       => false,
+                "message"       => "Form can't be updated, please add a field from fields menu"
+            ]); 
+        }
+
+
+        $ids = ConditionalFieldLogic::where('form_id', $form_id)->delete();
+
+
+        //initial sq number
+        $sequence_number = 1;
+
+        //go through the field iD
+        foreach($request->id as $id) 
+        {
+
+            //REQUEST FIELDS (STANDARD)
+            $label = $request[$id.'_label'];
+            $description = $request[$id.'_description'];
+            $maximum_characters = $request[$id.'_maximum_characters'];                
+            $default_value = $request[$id.'_default_value'];
+
+            $required = ($request[$id.'_required'] == "on") ? true : false;
+            $conditional_logic = ($request[$id.'_activate_coditional_logic'] == "on") ? true : false;
+            
+            $display_meta = [
+                'required'              => $required,
+                'conditional_logic'     => $conditional_logic,
+                'label'                 => str_replace(' ', '_',  $label),
+                'description'           => $description,
+                'default_value'         => $default_value
+            ];
+
+            /******************** TYPES OF INPUT ***********************/
+            if (strtolower($request[$id.'_fieldType']) == "dropdownselect") {
+                $type = 'dropdownSelect';                
+                $selected_choices = $request[$id.'_selected_choice_text'];                                               
+                $display_meta['type'] = $type;
+                $display_meta['selected_choices'] = $selected_choices;      
+
+            } else if (strtolower($request[$id.'_fieldType']) == "dropdownteacherselect") {                          
+
+                $type = 'dropdownteacherselect';  
+                $display_meta['type'] = $type;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "simpletextfield") {
+                $type = 'simpletextfield';
+                $display_meta['type'] = $type;
+                $display_meta['maximum_characters'] = $maximum_characters;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "html" || strtolower($request[$id.'_fieldType']) == "htmlcontent") {
+                $type = 'htmlContent';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "firstname" || strtolower($request[$id.'_fieldType']) == "firstnamefield") {
+                $type = 'firstnamefield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+            } else if (strtolower($request[$id.'_fieldType']) == "lastname" || strtolower($request[$id.'_fieldType']) == "lastnamefield") {
+                $type = 'lastnamefield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+            
+            } else if (strtolower($request[$id.'_fieldType']) == "email" || strtolower($request[$id.'_fieldType']) == "emailfield") {
+                $type = 'emailfield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+
+            } else if (strtolower($request[$id.'_fieldType']) == "upload" || strtolower($request[$id.'_fieldType']) == "uploadfield") {
+                $type = 'uploadfield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+            } else if (strtolower($request[$id.'_fieldType']) == "paragraphtext") {
+                $type = 'paragraphtext';
+                $display_meta['type'] = $type;
+
+                //word limiter
+                $display_meta['enableWordLimit'] =  ($request[$id.'_enableWordLimit'] == "on") ? true : false; 
+                $display_meta['wordLimit'] = $request[$id.'_wordLimit'];
+                  
+
+                //enable member credit checker [180 = 1 point ] [180 to 500 words  = 2 points ] [501 to 800 = 3 points]
+                $display_meta['memberPointChecker'] =  ($request[$id.'_memberPointChecker'] == "on") ? true : false;
+            }
+            
+
+            //Conditonal Field Logic
+            if (isset( $request[$id.'_cfield_id'] )) {
+                foreach ($request[$id.'_cfield_id'] as $key => $fieldID) {
+                    $cfID               = $request[$id.'_cfield_id'][$key];
+                    $cfRule              = $request[$id.'_cfield_rule'][$key];
+                    $cfValue            = ($request[$id.'_cfield_value'][$key]) ?? "";
+
+                    ConditionalFieldLogic::create([
+                        'form_id'               =>  $form_id,
+                        'field_id'              =>  $id,
+                        'selected_option_id'    =>  $cfID,
+                        'field_rule'            =>  $cfRule,
+                        'field_value'           => $cfValue,
+                    ]);
+                }
+            }
+
+            //GET the page array number for the page
+            if (isset($request[$id.'_page'])) {
+                $formPageArr = explode("-", $request[$id.'_page']);            
+                $page = $formPageArr[1];          
+                                
+            }
+
+            $form = FormFields::find($id);
+            if ($form) {
+                $form->update([
+                    'form_id'           => $form_id,
+                    'page_id'           => $page,
+                    'name'              => $label,
+                    'description'       => $description,
+                    'type'              => $type,
+                    'display_meta'      => json_encode($display_meta),
+                    'sequence_number'     => $sequence_number
+                ]); 
+            }
+
+            $sequence_number = $sequence_number + 1;
+        }            
+
+        return Response()->json([
+            "success"       => true,
+            "message"       => "Updated!"
+        ]); 
+    }    
+
     public function saveSimpleTextField(Request $request) 
     {
         //FORM ID
@@ -74,6 +218,7 @@ class FormMakerController extends Controller
         $required = $request->required;
         $description = $request->description;
         $enableWordLimit = $request->enableWordLimit;
+        $memberPointChecker = $request->memberPointChecker;
         $wordLimit = $request->wordLimit;
 
         $type = 'paragraphtext';
@@ -82,6 +227,7 @@ class FormMakerController extends Controller
             'required'              => $request->required,
             'label'                 => str_replace(' ', '_', $request->label),
             'description'           => $request->description,
+            'memberPointChecker'    => $request->memberPointChecker,
             'enableWordLimit'       => $request->enableWordLimit,
             'wordLimit'             => $request->wordLimit,      
             'type'                  => $type,
@@ -205,6 +351,60 @@ class FormMakerController extends Controller
         ]);         
     }
 
+
+
+    public function saveDropDownTeacherSelect(Request $request) 
+    {
+        //FORM ID
+        $form_id = 1;
+
+        $label = $request->label;
+        $description = $request->description;
+        $maximum_characters = $request->maximum_characters;
+        $required = $request->required;
+        //$selected_choices = $request->selected_choices;
+
+        $type = 'dropdownTeacherSelect';
+
+        $display_meta = [
+            'required'              => $request->required,
+            'label'                 => str_replace(' ', '_', $request->label),
+            'description'           => $request->description,
+            'maximum_characters'    => $request->maximum_characters,
+            //'selected_choices'      => $request->selected_choices, 
+            'type'                  => $type,
+            'conditional_logic'     => false,            
+        ];
+
+        array_walk_recursive($display_meta, function(&$item){
+            if(is_null($item)) $item = '';
+        });
+
+        $max_seq = WritingFields::where('form_id', $form_id)->max('sequence_number');
+
+        $id = WritingFields::Create([
+            'form_id'           => $form_id,
+            'name'              => $request->label,
+            'description'       => $request->description,
+            'type'              => $type,
+            'display_meta'      => json_encode($display_meta),
+            'sequence_number'   => $max_seq + 1
+        ])->id;   
+        
+
+        //CONDITIONAL FIELDS
+        $cfields = WritingFields::all();
+        
+        
+        $data = view('admin.forms.dropdownTeacherSelect', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields' ))->render();
+
+        return Response()->json([
+            "success"       => true,
+            'id'            => $id,
+            "field"          => $data,
+            //"selected_choices" => $selected_choices
+        ]);         
+    }
 
     public function saveHTMLContent(Request $request) {
 
@@ -539,5 +739,105 @@ class FormMakerController extends Controller
                 "appointed_tutor_id" => $tutorID,            
             ]);   
         }
+    }
+
+    public function getSubmittedWritingPoints(Request $request, Member $member, AgentTransaction $agentTransaction, WritingEntries $writingEntries) 
+    {
+
+        $userID = $request->userID;
+        $targetFieldID = $request->field_id;
+        $entries = $writingEntries->where('user_id', $request->userID)->get();
+
+        $wordEntries = null;
+        $unapprovedTotalDeduction = null;
+
+        foreach ($entries as $entry) 
+        {
+            //exclude if it is already graded
+            $entryGrade = WritingEntryGrade::where('writing_entry_id',  $entry->id)->first();
+            //check if no grade then get the paragrapthTextfield
+            if (!$entryGrade) 
+            {
+                $entryValue = (array) json_decode($entry->value, true);
+
+                if (isset($entryValue[$targetFieldID . '_paragraphTextfield'])) {
+                    $wordcount = str_word_count($entryValue[$targetFieldID . '_paragraphTextfield']);
+                    $pointDeduct = $writingEntries->getWordPointDeduct($wordcount);
+                } else {                
+                    $wordcount = 0;
+                    $pointDeduct = 0;
+                }               
+
+                //Add to array                
+                //$wordEntries[] = ['id'        => $entry->id,'wordcount' => $wordcount,'point'     => $pointDeduct];
+                $unapprovedTotalDeduction = $unapprovedTotalDeduction + $pointDeduct;
+            }
+        }
+
+        //Currently Submitted 
+        $memberInfo = $member->where('user_id', Auth::user()->id )->first();
+
+        //Get the submitted deduction points
+        $submittedWritingEntryPoints = $writingEntries->getWordPointDeduct($request->words);
+
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER' || Auth::user()->user_type == "TUTOR") 
+        {
+            return Response()->json([
+                "success"  => true,
+                "totalPointsLeft" => 1
+            ]); 
+
+            exit();
+        } 
+
+        if ($memberInfo->membership == "Monthly") {
+            $getMonthlyLessonsLeft = $member->getMonthlyLessonsLeft();
+            $pointsLeft = $getMonthlyLessonsLeft - $submittedWritingEntryPoints;
+
+        } else if ($memberInfo->membership  == "Point Balance" ) {
+
+            $credits = $agentTransaction->getCredits( Auth::user()->id ); 
+            $pointsLeft = $credits - $submittedWritingEntryPoints;
+        }
+
+        if (isset($unapprovedTotalDeduction)) {
+            $totalPointsLeft = $pointsLeft - $unapprovedTotalDeduction;
+        } else {
+            $totalPointsLeft = $pointsLeft;
+        }
+        
+        if ($totalPointsLeft < 0) {
+            if ($memberInfo->membership == "Monthly") 
+            {
+                $message = "Sorry, you don't have enough monthly credits </br>";
+                $message .= "You have ". $getMonthlyLessonsLeft;
+
+                if (isset($unapprovedTotalDeduction)) {
+                     $message .= " and  ". $unapprovedTotalDeduction . " points of unapproved submitted writing entry";
+                }
+            } else {
+                $message = "Sorry, you don't have enough point credits  </br>";
+                $message .= "You have ". $credits . " points";
+
+                if (isset($unapprovedTotalDeduction)) {
+                     $message .= " and  ". $unapprovedTotalDeduction . " points of unapproved submitted writing entry";
+                }
+            }
+
+        } else {
+            $message = "successfully submitted";
+        }
+
+        return Response()->json([
+            "success"  => true,   
+            "message" =>  $message,
+            //"wordEntries" => $wordEntries,
+            "membership" => $memberInfo->membership,
+            "getMonthlyLessonsLeft" => $getMonthlyLessonsLeft ?? "not applicable",
+            "unapprovedTotalDeduction" => $unapprovedTotalDeduction,
+            "pointsLeft" => $pointsLeft,
+            "totalPointsLeft" => $totalPointsLeft
+        ]);  
+
     }
 }

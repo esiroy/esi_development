@@ -444,7 +444,11 @@ class ScheduleItem extends Model
                         //->where('valid', 1)
                         ->count();
                         
-        $reserveCount = $reserved + $reserved_b + $completed + $not_available;
+
+        $writingPoints = WritingEntries::where('user_id', $memberID)->where('type', 'Monthly')->sum('total_points');
+
+
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints;
 
         return $reserveCount;
     }
@@ -487,7 +491,11 @@ class ScheduleItem extends Model
                         //->where('valid', 1)
                         ->count();
 
-        $reserveCount = $reserved + $reserved_b + $completed + $not_available;   
+      
+        $writingPoints = WritingEntries::where('user_id', $memberID)->where('type', 'Monthly')->sum('total_points');
+
+
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints ;
                     
         return $reserveCount;
     }
@@ -795,13 +803,22 @@ class ScheduleItem extends Model
     //List ALL specific Member schedules
     public function getMemberScheduledLesson($memberID)
     {
+        /*
         $lessons = ScheduleItem::select('schedule_item.*', 'users.firstname', 'users.lastname')
-            ->join('tutors', 'tutors.user_id', '=', 'schedule_item.tutor_id')
+            //->join('tutors', 'tutors.user_id', '=', 'schedule_item.tutor_id')
             ->join('users', 'users.id', '=', 'schedule_item.tutor_id')
             ->where('member_id', $memberID)
             //->where('schedule_item.valid', 1)
             ->orderBy('lesson_time', 'desc')
             ->paginate(Auth::user()->items_per_page);
+        */
+
+             $lessons = ScheduleItem::where('member_id', $memberID)
+            //->where('schedule_item.valid', 1)
+            ->orderBy('lesson_time', 'desc')
+            ->paginate(Auth::user()->items_per_page);
+
+
         return $lessons;
     }
 

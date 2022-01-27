@@ -49,6 +49,12 @@ class FormFields extends Model
             $type   = 'dropdownselect';                               
             $formFieldHTML = view('modules.writing.fields.dropdownSelect', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
 
+        } else if (strtolower($formField->type) == "dropdownteacherselect") {
+
+            $type   = 'dropdownteacherselect';                               
+            $formFieldHTML = view('modules.writing.fields.dropdownTeacherSelect', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+
         } else if (strtolower($formField->type) == "html" || strtolower($formField->type) == "htmlcontent") {
 
             $type   = 'html';                               
@@ -91,6 +97,9 @@ class FormFields extends Model
     /* generate Admin Fields */
     public function generateFormFieldHTML($formField, $cfields) 
     {
+
+      
+
         //covert json objec to array                
         $display_meta = (array) json_decode($formField->display_meta, true);
         $id     = $formField->id;  
@@ -124,6 +133,11 @@ class FormFields extends Model
 
             $type   = 'dropdownselect';                               
             $formFieldHTML = view('admin.forms.dropdownSelect', compact('id', 'page_id','label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "dropdownteacherselect") {
+
+            $type   = 'dropdownteacherselect';                               
+            $formFieldHTML = view('admin.forms.dropdownTeacherSelect', compact('id', 'page_id','label', 'description', 'required', 'display_meta', 'cfields'))->render();            
 
         } else if (strtolower($formField->type) == "html" || strtolower($formField->type) == "htmlcontent") {
 

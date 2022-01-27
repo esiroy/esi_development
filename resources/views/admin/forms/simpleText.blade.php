@@ -42,7 +42,7 @@
         </h5>
 
         <div class="card-text">
-            <input type="text" id="label" class="form-control form-control-sm bg-white" disabled="disabled" >
+            <input type="text" id="{{ $id }}_label" class="form-control form-control-sm bg-white" disabled="disabled" >
             <div class="small">
                 {!! $display_meta['description'] ?? "" !!}
             </div>
@@ -61,14 +61,14 @@
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Field Label</label>
-                                <input type="text" id="label" name="{{ $id }}_label" value="{{ $label ?? "" }}" required class="form-control pt-0">
+                                <input type="text" id="{{ $id }}_label" name="{{ $id }}_label" value="{{ $label ?? "" }}" required class="form-control pt-0">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col">
                                 <label class="form-label">Description</label>
-                                <textarea id="description" name="{{ $id }}_description" class="form-control ckEditor">{{ $description ?? "" }}</textarea>
+                                <textarea id="{{ $id }}_description" name="{{ $id }}_description" class="form-control ckEditor">{{ $description ?? "" }}</textarea>
                             </div>
                         </div>
 
@@ -77,7 +77,7 @@
                         <div class="row">
                             <div class="col">                                                                   
                                 <label class="form-label">Maximum Characters</label>
-                                <input type="text" id="maximum_characters" name="{{ $id }}_maximum_characters" value="{{ $display_meta['maximum_characters'] ?? '' }}" class="form-control col-md-2">
+                                <input type="text" id="{{ $id }}_maximum_characters" name="{{ $id }}_maximum_characters" value="{{ $display_meta['maximum_characters'] ?? '' }}" class="form-control col-md-2">
                             </div>
                         </div>
                        

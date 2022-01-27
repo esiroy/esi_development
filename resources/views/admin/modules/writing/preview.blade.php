@@ -225,25 +225,32 @@
 
                         if ($('#'+fieldID).hasClass('uploadfield')) 
                         {
-                            const oFile = document.getElementById(fieldID).files[0]; // <input type="file" id="fileUpload" accept=".jpg,.png,.gif,.jpeg"/>
-                            if (oFile.size <= 2097152) // 2 MiB for bytes.
-                            {
-                                //less than 2mb (its okay)
-                                
-                                $('.'+fieldID+"_field_content").find('.error2').remove();                                
-                            } else {
 
-                                colorHighlight(fieldID)
+                            try {
 
-                                $('.'+fieldID+"_field_content").find('.error2').remove();
-                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
-                                requiredFieldsArr.push({
-                                    'id': fieldID,
-                                    'isValid': false
-                                });
-                                //alert("File size must under 2MiB!");
-                                //return;
-                            }
+                                const oFile = document.getElementById(fieldID).files[0]; // <input type="file" id="fileUpload" accept=".jpg,.png,.gif,.jpeg"/>
+                                if (oFile.size <= 2097152) // 2 MiB for bytes.
+                                {
+                                    //less than 2mb (its okay)
+                                    
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();                                
+                                } else {
+
+                                    colorHighlight(fieldID)
+
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });
+                                    //alert("File size must under 2MiB!");
+                                    //return;
+                                }
+
+                            } catch(err) {
+                                //alert( err )
+                            }                            
                         }
 
                         /*

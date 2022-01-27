@@ -84,9 +84,26 @@
 
             <div class="col-md-4">
                 <div id="righ-sidebar" style="position: -webkit-sticky;position: sticky; top: 20px;">
-                    @include('admin.modules.writing.includes.fieldButtons')                
-                    <input type="button" value="Cancel" class="btn btn-danger mt-4" onclick="window.location.href='{{  url('admin/writing') }}' ">
-                    <input type="button" value="Update" class="btn btn-primary mt-4" onclick="event.preventDefault();document.getElementById('dynamicForms').submit();">               
+                    @include('admin.modules.writing.includes.fieldButtons')         
+
+                   
+                    <div class="mt-2">
+
+                        <div id="form_message"></div>
+
+                        <div class="form-buttons">
+                            <input type="button" value="Cancel" class="btn btn-danger mt-2" onclick="window.location.href='{{  url('admin/writing') }}' ">
+                            <input type="button" value="Update" class="btn btn-primary mt-2" onclick="saveForm()">                  
+                        </div>
+
+                        <div class="form-loader">
+                            <button class="btn btn-primary" type="button" disabled>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -105,6 +122,10 @@
     @include('admin.modules.writing.includes.FormFields.emailModal')
     @include('admin.modules.writing.includes.FormFields.uploadModal')
 
+    <!-- Auto Filled Fields -->
+
+    @include('admin.modules.writing.includes.FormFields.dropdownTeacherSelectModal')
+
     <!--image gallery-->
     @include('admin.modules.writing.includes.imageGallery.galleryModal')
 
@@ -113,8 +134,12 @@
 @section('styles')
     @parent
     <link rel="stylesheet" href="{{ url('css/dropzone/dropzone.min.css') }}"></link>
+    <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}" >
 
     <style>
+        .form-loader {
+            display: none 
+        }
 
         #writing-form img {
             width: 100%
@@ -175,24 +200,106 @@
 @endsection
 
 @section('scripts')
-    <link rel="stylesheet" href="{{ url('css/jquery/jquery-ui.min.css') }}">
-    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
     <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
     <script src="{{ url('js/dropzone/dropzone.min.js') }}" deferd></script>
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
+
     <script type="text/javascript" defer>
         var api_token = "{{ Auth::user()->api_token }}";
+
+         function saveForm() 
+         {         
+
+            $('textarea.ckEditor').each( function () {
+                CKEDITOR.instances[this.id].updateElement();
+                let ckData = CKEDITOR.instances[this.id].getData();
+                //alert( $(this).attr('id') + "  " + ckData + " == ? " + $(this).val());
+            });
+
+              
+
+            let data        = $("#dynamicForms").serialize();           
+
+            $('.form-buttons').hide();
+            $('.form-loader').show();
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/updateWritingFields?api_token=') }}" + api_token,
+                dataType: 'json',
+                data :    data + "&form_id="+1,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                    $('.form-buttons').show();
+                    $('.form-loader').hide();                    
+
+                    if (data.success === true) 
+                    {
+                        let message = '<div class="alert alert-success" role="alert">Form Fields have been succussfully saved </div>';
+                        $('#form_message').html(message).fadeIn(500).delay(4000).fadeOut('slow');
+                    }
+                }
+            });                   
+         }
+
+         function addTextFormatter(id) {
+               
+
+            CKEDITOR.replace( id , {
+                toolbarGroups: [
+                        { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                        { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                        { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                        { name: 'forms', groups: [ 'forms' ] },
+                        
+                        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                        { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                        { name: 'links', groups: [ 'links' ] },
+                        { name: 'insert', groups: [ 'insert' ] },
+                        
+                        { name: 'styles', groups: [ 'styles' ] },
+                        { name: 'colors', groups: [ 'colors' ] },
+                        { name: 'tools', groups: [ 'tools' ] },
+                        { name: 'others', groups: [ 'others' ] },
+                        
+                    ],
+                removePlugins: 'easyimage, exportpdf, cloudservices',
+                extraPlugins: 'html5audio',                        
+                removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
+            });                
+         }
+         
+                 
         window.addEventListener('load', function() 
         {
-
+         
+            /*
             $('.ckEditor').each( function () {
                 console.log(this.name + " add ckeditor");
                 CKEDITOR.replace( this.name , {
+                    toolbarGroups: [
+                        {"name": "basicstyles"  , "groups": ["basicstyles", "colors"]},
+                        {"name": "links"        , "groups": ["links"]},
+                        {"name": "paragraph"    , "groups": ["list"]},
+                        {"name": "styles"       , "groups": ["insert","styles" ]},                   
+                    ],
                     removePlugins: 'easyimage, exportpdf, cloudservices',
                     extraPlugins: 'html5audio',
+                    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar,PasteFromWord'
                     //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
                     //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
                 });
             });
+            */
+            $('.ckEditor').each( function () {
+                console.log(this.name + " add ckeditor");
+                addTextFormatter(this.name )
+            });
+
+
 
             $('.fa-caret-up').hide();
 
@@ -793,11 +900,14 @@
             /***************************************************************
                             [START] - (BUTTON) [HTML]
             *****************************************************************/
+
+            /*
             $("#btn_simpleInputText").on("click", function() {
                 $("#modal_HTML").modal();
                 CKEDITOR.instances['modal_simpleText_description'].setData("");
                 $('#form_HTML').trigger("reset");
             });
+            */
 
 
             /***************************************************************
@@ -849,6 +959,20 @@
             
                 updateChoicesButtons();
             });           
+
+
+            /***************************************************************
+                        (NEW) [START] - (BUTTON) [DROPDOWN TEACHER SELECT]
+            *****************************************************************/
+            $("#btn_dropdownSelect_teachers").on("click", function() {
+                $("#select_choices").html("");
+                $("#select_choices").append("<div id='select_choice_start'></div>");
+                $("#modal_dropdownTeacherSelect").modal();
+                $('#form_dropdownTeacherSelect').trigger("reset");
+                CKEDITOR.instances['modal_dropdown_teacher_description'].setData("");
+                updateChoicesButtons();
+            });    
+
 
         
             //[DROPDOWN FIELD POPUP] ADD CHOICES FROM
@@ -922,12 +1046,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                          
+                        addTextFormatter(data.id +"_description");                     
                     }
                 });
             });
@@ -962,12 +1081,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                          
+                        addTextFormatter(data.id + "_description");                     
                     }
                 });
             });
@@ -1001,12 +1115,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                          
+                        addTextFormatter(data.id + "_description");                     
                     }
                 });
             });
@@ -1040,12 +1149,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                           
+                        addTextFormatter(data.id +"_description");                      
                     }
                 });
             });
@@ -1109,12 +1213,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                           
+                        addTextFormatter(data.id +"_description");                      
                     }
                 });
 
@@ -1132,8 +1231,9 @@
                         formID              : 1,
                         label               : $('#modal_paragraphText').find('input#label').val(),
                         //description         : $('#modal_paragraphText').find('textarea#description').val(),
-                        description         :  CKEDITOR.instances['modal_paragraphText_description'].getData(),                       
-                        
+                        description         :  CKEDITOR.instances['modal_paragraphText_description'].getData(),        
+                                      
+                        memberPointChecker  : $('#modal_paragraphText').find('input#memberPointChecker').prop("checked"),
                         enableWordLimit     : $('#modal_paragraphText').find('input#enableWordLimit').prop("checked"),
                         wordLimit           : $('#modal_paragraphText').find('input#wordLimit').val(),
                         required            : $('#modal_simpleText').find('input#required').prop("checked"),
@@ -1152,12 +1252,7 @@
                         });
                         $( ".tabs" ).tabs();
                         //addCField(data.id, 1);
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                           
+                        addTextFormatter(data.id +"_description");                      
                     }
                 });
 
@@ -1166,6 +1261,45 @@
             
 
             //[START] - [DROPDOWN]
+            $("#btnDropdownTeacherSelectSave").on("click", function() 
+            {  
+
+                $("#select_choices :input").each(function(elem) {
+                    choices.push($(this).val());
+                });           
+
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveDropDownTeacherSelect?api_token=') }}" + api_token,
+                    data: {
+                        formID              :  1,
+                        
+                        label               :  $('#modal_dropdownTeacherSelect').find('input#label').val(),
+                        //description       :  $('#modal_dropdown_teacher_description').find('textarea#description').val(),
+                        description         :  CKEDITOR.instances['modal_dropdown_teacher_description'].getData(),
+                        maximum_characters  :  $('#modal_dropdownTeacherSelect').find('input#maximum_characters').val(),                        
+                        required            :  $('#modal_dropdownTeacherSelect').find('input#required').prop("checked"),
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        $( "#form-content" ).append( data.field ).sortable({ 
+                            connectWith: "div", 
+                            handle: '.handle',
+                            sort: function(e) {
+                                //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                                $('#dynamicForms').find('.field_container').show();                    
+                            },                            
+                        });
+                        $( ".tabs" ).tabs();
+                        addTextFormatter(data.id +"_description") 
+
+                    }
+                });
+            });
+
+
             $("#btnDropdownSelectSave").on("click", function() 
             {              
                 let choices = [];
@@ -1182,9 +1316,8 @@
                         label               :  $('#modal_dropdownSelect').find('input#label').val(),
                         //description         :  $('#modal_dropdownSelect').find('textarea#description').val(),
                         description         :  CKEDITOR.instances['modal_dropdown_description'].getData(),
-
                         maximum_characters  :  $('#modal_dropdownSelect').find('input#maximum_characters').val(),                        
-                        required            :  $('#modal_dropdownSelect').find('input#required').prop("checked"),
+                        required            :  $('#modal_dropdownSelect').find('input#required').prop("checked"),                        
                         selected_choices    :  choices,                        
                     },
                     headers: {
@@ -1200,18 +1333,11 @@
                             },                            
                         });
                         $( ".tabs" ).tabs();
-                        
-                        CKEDITOR.replace( data.id +"_description", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });   
+                        addTextFormatter(data.id +"_description") 
 
                     }
                 });
             });
-
 
             $('#btnHTMLSave').on("click", function() 
             {  
@@ -1234,14 +1360,8 @@
                             handle: '.handle'
                         });
                         $( ".tabs" ).tabs(); 
-                        //addCField(data.id, 1);                        
-
-                        CKEDITOR.replace( data.id +"_content", {
-                            removePlugins: 'easyimage, exportpdf, cloudservices',
-                            extraPlugins: 'html5audio',
-                            //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                            //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                        });                       
+                        //addCField(data.id, 1); 
+                        addTextFormatter(data.id  +"_content");                                       
 
                     }
                 });
@@ -1285,16 +1405,12 @@
                             }               
 
                             if ($('#'+fieldID+'_content').hasClass('ckEditor')) {
-                                CKEDITOR.replace( data.id +"_content", {
-                                    removePlugins: 'easyimage, exportpdf, cloudservices',
-                                    extraPlugins: 'html5audio',                            
-                                });        
+
+                                addTextFormatter(data.id +"_content");
+                                
                             } else {
-                            
-                                CKEDITOR.replace( data.id +"_description", {
-                                    removePlugins: 'easyimage, exportpdf, cloudservices',
-                                    extraPlugins: 'html5audio',                            
-                                });                            
+                                addTextFormatter(data.id +"_description");
+                                                        
                             }
                             //addCField(data.id, 1);                        
 

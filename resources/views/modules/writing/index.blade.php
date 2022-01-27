@@ -1,46 +1,96 @@
-@extends('layouts.writing.template')
+@extends('layouts.esi-app')
 
 @section('content')
+<div class="container bg-light">
+    <div class="esi-box mb-5">
 
-    <div class="row">
-        <div class="col-12">
-            @if (session('message'))
-            <div class="alert alert-success">
-                {{ session('message') }}
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-light ">
+                <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Writing</li>
+            </ol>
+        </nav>
+
+        <div class="container pb-5">
+            <div class="row">
+                <!--[start sidebar]-->
+                @include('modules.member.sidebar.index')
+                <!--[end sidebar]-->           
+
+                <div class="col-md-9">
+                    <div class="row">
+
+                        <div class="col-12  message-container">
+                            @if (session('message'))
+                            <div class="alert alert-success">
+                                {{ session('message') }}
+                            </div>
+                            @elseif (session('error_message'))
+                            <div class="alert alert-danger">
+                                {{ session('error_message') }}
+                            </div>
+                            @endif
+                        </div>
+                                
+                        <div class="col-12">
+                            <div class="card mb-3">
+                                <h5 class="card-header py-2">Writing Service</h5>
+                                <div class="card-body">
+                                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                                        @csrf
+                                        @foreach($pages as $page) 
+                                            <h2>{{ $page->page_id }}</h2>
+                                            <section data-step="{{ $page->page_id }}">
+                                                @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                                    @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                                        {!! $formFieldChildHTML !!}
+                                                    @endforeach
+                                                @endif
+                                                @if( $page->page_id == 1 )
+                                                    @foreach($formFieldHTML as $HTML) 
+                                                        {!! $HTML !!}
+                                                    @endforeach
+                                                @endif
+                                            </section>
+                                        @endforeach
+                                        <textarea id="data" name="data" style="display:none" ></textarea>
+                                        <input type="submit" style="display:none">
+                                    </form>                              
+                                </div>
+                            </div>                  
+                        </div>
+                        
+                    </div>
+                </div>
+
             </div>
-            @elseif (session('error_message'))
-            <div class="alert alert-danger">
-                {{ session('error_message') }}
-            </div>
-            @endif
-        </div>
+        </div>  
+
+
     </div>
-            
-    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
-        @csrf
-        @foreach($pages as $page) 
-            <h2>{{ $page->page_id }}</h2>
-            <section data-step="{{ $page->page_id }}">
-                @if(isset($formFieldChildrenHTML[$page->page_id]))
-                    @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
-                        {!! $formFieldChildHTML !!}
-                    @endforeach
-                @endif
-                @if( $page->page_id == 1 )
-                    @foreach($formFieldHTML as $HTML) 
-                        {!! $HTML !!}
-                    @endforeach
-                @endif
-            </section>
-        @endforeach
-         <textarea id="data" name="data" style="display:none" ></textarea>
-        <input type="submit" style="display:none">
-    </form>
+</div>
 @endsection
 
 @section('styles')
     @parent
+      
+    <link rel="stylesheet" href="{{ asset('css/steps/steps.css') }}">
     <style>
+
+         .wrapper {
+            margin: 50px auto;
+            max-width: 750px;
+        }
+
+        .writing-header {
+            margin-bottom: 30px;
+            font-size: 25px;
+            border-top: 3px solid #00AFEF;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+
+
         .wizard>.content>.body label.error {
             font-weight: bold;    
             margin-left: 0px !important;    
@@ -64,9 +114,30 @@
     <script src="{{ url('js/steps/jquery.steps.min.js') }}" defer></script>
     <script src="{{ url('js/validation/jquery.validation.min.js') }}" defer></script>
     <script>
+
+        //enumate fields that needs checking
+        let fieldsArray = new Array();
+
         window.addEventListener('load', function() 
         {
-            $('#writing-form').show(300);
+            $('#writing-form').show();
+
+            $('.message-container').find('.alert').delay(5000).fadeOut('slow');
+
+            /* Count point to deduct: 180words = 1 point, 181-500words = 2point, 501-800words = 3point */
+            function getDeduction(words) 
+            {              
+                if  (parseInt(words) >= 1 && parseInt(words) <= 180)  {
+                    return 1;                        
+                } else if (parseInt(words) >= 181 && parseInt(words) <= 500) {
+                    return 2;
+                } else if (parseInt(words) >= 501 && parseInt(words) <= 800) {
+                    return 3;
+                } else {
+                    return false;
+                } 
+            }
+
 
             function adjustIframeHeight() {
                 var $body = $('body'), $iframe = $body.data('iframe.fv');
@@ -93,15 +164,16 @@
                     if ($('#'+id+"_field_row").css( "display" ) == 'none' ) {                        
                        //field is not showed, we will not include it to post
                     } else {                        
-                        console.log( id + " : "  + $(field).attr('name') + " " + $(field).val() );
+                        //console.log( id + " : "  + $(field).attr('name') + " " + $(field).val() );
                         fieldsArr[name] = value;
                     }
 
                     if (itemsProcessed == inputs.length) {
-                        console.log(fieldsArr);
+                        //console.log(fieldsArr);
                         convertToJSON(fieldsArr);
                     }
-                });      
+                });     
+
             };
             
 
@@ -113,6 +185,9 @@
 
             function validateFields(currentIndex) 
             {
+                //clean array
+                // fieldsArray = [];
+
                 let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
                 let requiredFieldsArr = [];
 
@@ -129,11 +204,13 @@
                     
                     //check all has required in Array
                     if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                        
-                        console.log(fieldID + " is hidden, we will not verify");
+                        //console.log(fieldID + " is hidden, we will not verify");
+
                     } else {
+
                         if ($('#'+fieldID).attr( "required" )) 
                         {
-                            //console.log(fieldID + " is required")
+                            console.log(fieldID + " is required")
                             let isValid = $('#'+fieldID).valid();
                             requiredFieldsArr.push({
                                 'id': fieldID,
@@ -157,46 +234,43 @@
 
                         if ($('#'+fieldID).hasClass('uploadfield')) 
                         {
-                            const oFile = document.getElementById(fieldID).files[0]; // <input type="file" id="fileUpload" accept=".jpg,.png,.gif,.jpeg"/>
-                            if (oFile.size <= 2097152) // 2 MiB for bytes.
-                            {
-                                //less than 2mb (its okay)
-                                
-                                $('.'+fieldID+"_field_content").find('.error2').remove();                                
-                            } else {
+                            try {
 
-                                colorHighlight(fieldID)
+                                const oFile = document.getElementById(fieldID).files[0];  
 
-                                $('.'+fieldID+"_field_content").find('.error2').remove();
-                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
-                                requiredFieldsArr.push({
-                                    'id': fieldID,
-                                    'isValid': false
-                                });
-                                //alert("File size must under 2MiB!");
-                                //return;
-                            }
-                        }
-
-                        /*
-                        if ($('#'+fieldID).hasClass('paragraphText')) 
-                        {
-                            var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
-                            var limit = $('#'+fieldID+"_wordLimit").val();
-
-                            if (isWordLimitEnabled == true) 
-                            {
-                                let wordcounterTest = countWords ($('#'+fieldID).val());
-                                if (wordcounterTest > limit) {                                    
+                                 let fileExtension = ['pdf', 'jpeg', 'jpg', 'png'];                                
+                                if ($.inArray($('#'+fieldID).val().split('.').pop().toLowerCase(), fileExtension) == -1) 
+                                {
+                                    let message = "Only formats are allowed : "+fileExtension.join(', ');
+                                    colorHighlight(fieldID)
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + message +'.</label>');
                                     requiredFieldsArr.push({
                                         'id': fieldID,
                                         'isValid': false
-                                    });   
-                                }
+                                    });
+                                } 
+                                else if (oFile.size <= 2097152) // 2 MiB for bytes.
+                                {             
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();    
+
+                                } else {
+                                    colorHighlight(fieldID)
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });
+                                }         
+
+
+                                 
+                            } catch(err) {
+                                //alert( err )
                             }
-                        }    
-                        */                    
-                        
+
+                        }
                     }
 
                 });
@@ -354,32 +428,66 @@
                 }
 
             }
-
-
           
             function countWords(text) 
             {             
-                var numWords = 0;
-                for (var i = 0; i < text.length; i++) {
-                    var currentCharacter = text[i];
-                    if (currentCharacter == " ") {
-                        numWords += 1;
-                    }
+                if (text.length > 0) {
+                    return text.trim().split(/\s+/).length;
+                } else {
+                    return 0;
                 }
-                numWords += 1;
-               return  numWords;
-            }            
-           
-           
-            $(document).on("keypress",".paragraphText",function() 
+                
+            }   
+
+
+            function checkCredits(fieldID) 
+            { 
+                let wordCount = 0;      
+                //attachment (automatically the words is just 1, so it will deduct 1)    
+                if  (fieldID == null) {
+                    wordCount = 1;                    
+                    ajaxGetCredit(wordCount);
+                } else {
+                    wordCount = countWords ($('#'+fieldID).val());
+                    ajaxGetCredit(wordCount);
+                }
+            }
+
+            function ajaxGetCredit(wordCount) 
+            {            
+                let tutorSelectFieldID =  $("[name='appoint_teacher_field_id']").val();    
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/writing/checkCredits?api_token=') }}" + api_token,
+                    data: {
+                        formID      :  1,
+                        tutorID     :  $('#'+ tutorSelectFieldID).val(),
+                        words       :  wordCount,                                                
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) 
+                    {
+                        if (data.totalPointsLeft < 0) 
+                        {                                                  
+                            $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
+                        } else {
+                            $('#writing-form').find('[type="submit"]').trigger('click');                                                     
+                        } 
+                    }
+                }); 
+            } 
+
+            $(document).on("change paste keypress keyup keydown",".paragraphText",function() 
             {
                 var fieldID = $(this).attr('id');                            
                 var isWordLimiterEnabled = $("#"+ fieldID + "_enableWordLimit").val();
                 var wordlimit = $('#'+fieldID+"_wordLimit").val();
-
-
+                
                 var words = $("#"+ $(this).attr('id')).val()
 
+                
                 if (isWordLimiterEnabled == true ) {
                     let wordcount = countWords(words);
                     $("#"+ fieldID +"_total_word_count").text(wordcount);                   
@@ -391,6 +499,28 @@
                          $('.'+fieldID+"_field_content").find('.error2').remove();
                     }
                 }                             
+            }).on("paste", function (element) {
+
+                setTimeout(function () {
+                    let fieldID = element.target.id;
+                    var isWordLimiterEnabled = $("#"+ fieldID + "_enableWordLimit").val();
+                    var wordlimit = $('#'+fieldID+"_wordLimit").val();
+
+                    let words = element.target.value
+
+                    if (isWordLimiterEnabled == true ) {
+                        let wordcount = countWords(words);
+                        $("#"+ fieldID +"_total_word_count").text(wordcount);                   
+                        if (wordcount > wordlimit) 
+                        {                       
+                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                            $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 bg-danger text-white p-1 float-right" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
+                        } else {
+                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                        }
+                    }
+                }, 100);
+              
             });
   
            
@@ -425,13 +555,69 @@
                     // Triggered when clicking the Finish button
                     onFinishing: function(e, currentIndex) 
                     {
+                        let checkID = null;
+
+                        let requiredFieldsArr = new Array();
+
                         let isValid = validateFields(currentIndex);
                         if (isValid === "true" || isValid === false || isValid === null ) 
                         {                          
                             console.log("not valid field detected");
+
                         } else {         
-                            encodeData();
-                            $('#writing-form').find('[type="submit"]').trigger('click');
+
+                            encodeData(); 
+
+                            let inputs = $("#writing-form").find('.form-control');                          
+                            let loopcounter = 0;
+
+                            let isMemberPointEnabled = false;
+                            let tutorSelectFieldID =  $("[name='appoint_teacher_field_id']").val();
+
+
+                            Array.from(inputs).forEach(field => 
+                            {
+                                loopcounter = loopcounter + 1;
+                                let fieldID =  $(field).attr('id');
+                                highlightFieldRow(fieldID);
+                              
+
+                                if ($('#'+fieldID).hasClass('paragraphText')) 
+                                {
+                                    var memberPointCheckerEnabled = $('#'+fieldID+"_memberPointChecker").val();   
+
+                                    if (memberPointCheckerEnabled == true) 
+                                    {
+                                        //is point checker found
+                                        if (isMemberPointEnabled == false) {
+                                            isMemberPointEnabled = true;
+                                        }
+
+                                        if( $("#"+ fieldID +"_field_row").css('display') == 'none') {
+                                            // do not do anything,
+                                        } else {
+                                            checkID = fieldID;
+                                        }
+                                    } 
+                                }                              
+                                
+
+                               //if there point enabled when loop counter is finished looping through all inputs?
+                                if (inputs.length == loopcounter) {                                
+                                    if (isMemberPointEnabled === false) {   
+                                        $('#writing-form').find('[type="submit"]').trigger('click');
+                                    } else {
+                                        if  (checkID === false) {
+                                            $('#writing-form').find('[type="submit"]').trigger('click'); 
+                                        } else {
+                                            checkCredits(checkID)
+                                        }
+                                    }
+                                }                                  
+                 
+
+                            });
+
                         }                        
                     },
                     onFinished: function(e, currentIndex) {                     
@@ -460,17 +646,12 @@
                         @php 
                             $writingModel = new \App\Models\WritingFields;
                             $writingField = $writingModel->where('form_id', $form_id)->where('id', $field->field_id)->first();
-
-                            $displayMeta = json_decode($writingField->display_meta, true);
-
                             try {
                                 $displayMeta = json_decode($writingField->display_meta, true);
                                 $conditionalLogic = $displayMeta['conditional_logic'];
                             } catch (\Exception $e) {
                                 $conditionalLogic = false;
                             }
-                            
-
                         @endphp            
 
                         @if ($conditionalLogic == true)
@@ -501,7 +682,6 @@
                                     $('{{ '#' . $field->field_id }}').trigger('change');
                                 @endif
                             }
-
 
                         @endif
 

@@ -15,9 +15,13 @@ class CreateTableWritingEntries extends Migration
     {
         Schema::create('writing_entries', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('form_id');          
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('appointed_tutor_id')->nullable();
+            $table->string('type', 15)->nullable();
+            $table->unsignedBigInteger('form_id')->nullable();              
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('schedule_id')->nullable();
+            $table->unsignedBigInteger('appointed_tutor_id')->nullable();   
+            $table->integer('total_words')->nullable();         
+            $table->integer('total_points')->nullable();
             $table->text('value')->nullable();            
             $table->timestamps();
         });
@@ -30,6 +34,6 @@ class CreateTableWritingEntries extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('table_writing_entries');
+        Schema::dropIfExists('writing_entries');
     }
 }

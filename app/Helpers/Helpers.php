@@ -352,4 +352,12 @@ if (! function_exists('checkbox_ticker')) {
     } 
 }
 
+
+if (! function_exists('countWords')) 
+{
+    function countWords($text) {
+        return str_word_count($text);
+    }  
+}
+
 ?>

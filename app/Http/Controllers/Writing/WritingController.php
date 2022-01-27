@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\FormFields;
 use App\Models\WritingEntries;
 use App\Models\UploadFile;
+use App\Models\Tutor;
+use App\Models\User;
+use App\Models\Member;
+use App\Models\ScheduleItem;
+use App\Models\AgentTransaction;
+
 use Auth, Config;
 
 class WritingController extends Controller
@@ -20,47 +26,59 @@ class WritingController extends Controller
     
     public function index(FormFields $formFieldModel) 
     {
-        /* FRONT END WRITING FORM */
+        $member = Member::where('user_id', Auth::user()->id)->first();
+        if (isset($member)) {
 
-        $form_id = 1; //all forms are 1(for now)
-        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-        $formFieldHTML[] = "";
+            /* FRONT END WRITING FORM */
 
-        $cfields = $formFields;        
-        foreach ($formFields as $formField) 
-        {
-            $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
-        }
+            $form_id = 1; //all forms are 1(for now)
+            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+            $formFieldHTML[] = "";
 
-        /************ GET CHILDREN HTML ************/
-        $formFieldChildrenHTML[] = "";
-        //Get Pages
-        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-        $pageCounter =  $pages->count() + 1;
-
-        foreach ($pages as $page) 
-        {           
-            $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-            foreach ($formChildFields as $formChildField) 
+            $cfields = $formFields;        
+            foreach ($formFields as $formField) 
             {
-                $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
             }
-        }
 
-        return view("modules.writing.index", compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+            /************ GET CHILDREN HTML ************/
+            $formFieldChildrenHTML[] = "";
+            //Get Pages
+            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pageCounter =  $pages->count() + 1;
+
+            foreach ($pages as $page) 
+            {           
+                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+                foreach ($formChildFields as $formChildField) 
+                {
+                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                }
+            }
+
+            return view("modules.writing.index", compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+
+        } else {
+            sleep(3);
+            return redirect()->away( url('/admin/writing'));        
+        }
     }
 
 
-    public function store(Request $request, UploadFile $uploadFile) 
+    /* Front End
+        @request->data : (json key pair of writing form)
+    */
+    public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
-        $fields = array();
+        $fields = array();        
+        $tutor_id = null;
+        $userAttachedFile = false;
+        $totalWords = 0;
+        $pointToDeduct = 0;
 
         $storagePath = 'public/uploads/writing/';
-
         $dataArray = json_decode($request->get('data'), true);
-
-      
 
         foreach ($dataArray as $key => $value)         
         {
@@ -75,51 +93,173 @@ class WritingController extends Controller
                 if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
                 {                    
                     $file = $request->file($key);                  
-
                     if ($file) {
                         $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
                         if ($uploadFileName) 
                         {
-                            echo "uploaded $uploadFileName : $file <BR>" ;                            
-                        }
-                        $fields[$key] = $uploadFileName;
+                            //echo "uploaded $uploadFileName : $file <BR>" ;   
+                            $fields[$key] = $uploadFileName;
+                            //Add A Key value pair for Email Template
+                            $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];  
 
-                        //Add A Key value pair for Email Template
-                        $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];                        
+                            //user has succesfully attached a file
+                            $userAttachedFile = true;
+                        }                       
                     }
 
-                } else {                
-                    $fields[$key] = $value;                   
+                } else if (strtolower($formField->type) == 'paragraphtext') {       
 
+                    $display_meta = json_decode($formField->display_meta, true);
+
+                    if ($display_meta['memberPointChecker'])  
+                    {
+                        $wordCount = countWords($value);
+                        $totalWords = $totalWords +  $wordCount;   
+
+                        $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];  
+                        $fields[$key] = $value;                     
+                    }
+
+                } else { 
+
+                    //this detects the appoint teacher hidden id and search through they $fkeyid
+                    if (isset($request->appoint_teacher_field_id)) 
+                    {
+                        if ($id == $request->appoint_teacher_field_id) {
+                            $tutor_id = $value;
+                            $fields["appointed"] = true;
+                            $fields["teacher_id"] = $value;
+
+                            //value change to name of tutor
+                            $tutorInfo = $tutor->where('user_id', $tutor_id)->first();
+                            $fields[$key] =  $tutorInfo->user->firstname;
+
+                            //replace id to tutor name
+                            $value = $tutorInfo->user->firstname;
+
+                        } else {
+                        
+                            $fields[$key] = $value;
+                        }
+                    } else {
+                        $fields[$key] = $value;
+                    }
+
+
+                    $fields[$key] = $value;  
+                    
                     //Add A Key value pair for Email Template
                     $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];
                 }               
 
             } else {
                 
-                echo $key ." not found in form field <BR>";
+                //echo $key ." not found in form field <BR>";
             }
-        }       
+        }
 
-        $entryID = WritingEntries::create([
-            'form_id'               => $request->get('form_id'),
-            'user_id'               => Auth::user()->id,
-            'appointed_tutor_id'    => null,
-            'value'                 => json_encode($fields)
-       ]);        
+        //detect if theres an attachement
+        if ($pointToDeduct == 0 && $userAttachedFile == true) 
+        {
+            //User has no attachment, then point deduction is automcatically 1
+            $pointToDeduct  = 1;
+        } else {
+            $pointToDeduct =  $writingEntries->getWordPointDeduct($totalWords);        
+        }
+
+        //make the point double if he assigns a tutor
+        $remarks = "";
+        if (isset($tutor_id )) 
+        {
+            $pointToDeduct = $pointToDeduct * 2;
+
+            if ($tutorInfo) {
+                $remarks = "Appointed Tutor : " . $tutorInfo->user->firstname;
+            }
         
-        //render the fields
-        $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
+        }
 
-       // print_r ($fieldsArray);
-        //echo $formatEntryHTML;
-       // exit();
-       
+       //get the member info and determine what membership type
+       $memberInfo = Member::where('user_id', Auth::user()->id)->first();
+
+       if (isset($memberInfo->membership)) 
+       {
+            if ($memberInfo->membership == "Monthly") 
+            {   
+                //only (00,30) allowed
+                $minutes = date('i');
+                if ($minutes > 30) {
+                    $min = 30;
+                } else {
+                    $min =  00;
+                }
+
+                if ($userAttachedFile == true) {
+                     $remarks .= " with Attached File";
+                }
+
+                $lessonData = [
+                    'lesson_time' => date('Y-m-d H:i:00', strtotime(date('Y-m-d H:'.$min.':00'))),
+                    'member_id' => Auth::user()->id,
+                    'tutor_id'  => $tutor_id ?? null,
+                    'schedule_status' => "WRITING",
+                    "memo"  => "Writing Entry Point : $pointToDeduct " . $remarks,
+                    'valid' => 0,
+                ];
+                $schedule = ScheduleItem::create($lessonData);
+
+                $entryID = WritingEntries::create([
+                    'form_id'               => $request->get('form_id'),
+                    'type'                  => $memberInfo->membership,
+                    'user_id'               => Auth::user()->id,
+                    'schedule_id'           => $schedule->id,
+                    'appointed_tutor_id'    => $tutor_id ?? null,
+                    'total_words'           => $totalWords,
+                    'total_points'          => $pointToDeduct,
+                    'value'                 => json_encode($fields)
+                ]);
+
+            } else if ($memberInfo->membership == "Point Balance" || $memberInfo->membership == "Both") {                
+
+                //add member transaction (agent subtract since we are deducting point)
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type' => 'AGENT_SUBTRACT',
+                    'agent_id' => $memberInfo->agent_id,
+                    'member_id' => $memberInfo->user_id,
+                    'lesson_shift_id' => $memberInfo->lesson_shift_id,
+                    'created_by_id' => Auth::user()->id,
+                    'amount' => $pointToDeduct,
+                    'price' => 1,
+                    'remarks' => "WRITING ENTRY - " . $remarks,
+                    //'credits_expiration' => $expiry_date,
+                    //'old_credits_expiration' => $old_credits_expiration,
+                ];
+                AgentTransaction::create($agentCredit);     
+
+
+                $entryID = WritingEntries::create([
+                    'form_id'               => $request->get('form_id'),
+                    'type'                  => $memberInfo->membership,
+                    'user_id'               => Auth::user()->id,
+                    'schedule_id'           => null,
+                    'appointed_tutor_id'    => $tutor_id ?? null,
+                    'total_words'           => $totalWords,
+                    'total_points'          => $pointToDeduct,
+                    'value'                 => json_encode($fields)
+                ]);                
+                
+            }       
+       }
+        
+     
         if ($entryID) 
         {
+            //render the fields
+            $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
+
             //send the authenticated user the email, since the Authenticated user
             $user = Auth::user();
-
             //E-Mail Template
             $emailTemplate = 'emails.writing.autoreply';           
 
@@ -131,15 +271,11 @@ class WritingController extends Controller
             $emailFrom['name']   = Config::get('mail.from.name');
             $emailFrom['email']  = Config::get('mail.from.address');
 
-            $emailSubject =  '添削サービス受付のご案内'; //Information on correction service reception
+            $emailSubject =  'マイチューター : 添削サービス受付のご案内'; //Information on correction service reception
             $emailMessage =  $formatEntryHTML;
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);                    
         }
-
-     
-       return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
+        return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
     }
-    
-
 }
