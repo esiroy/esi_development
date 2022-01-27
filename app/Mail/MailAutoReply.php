@@ -18,7 +18,7 @@ class MailAutoReply extends Mailable
     public $attachment;
     protected $emailTemplate;    
    protected $showlabel;
-   
+
     /**
      * Create a new Auto Reply job instance.
      * 

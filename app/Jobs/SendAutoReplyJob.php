@@ -42,7 +42,7 @@ class SendAutoReplyJob implements ShouldQueue
         $this->emailMessage = $emailMessage;
         $this->emailTemplate = $emailTemplate;
         $this->attachment = $attachment;
-        $this->showLabel = $showlabel;
+        $this->showlabel = $showlabel;
     }
 
     /**
