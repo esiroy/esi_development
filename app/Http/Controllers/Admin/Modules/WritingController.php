@@ -306,7 +306,7 @@ class WritingController extends Controller
                 'subject'           => $request->subject,
                 'appointed'         => boolval($request->appointed),
                 'grade'             => $request->grade,
-                'words'             => $words,
+                'words'             => $words ?? 0,
                 'content'           => $request->content,
                 'attachment'        => $attachment_url
             ];
