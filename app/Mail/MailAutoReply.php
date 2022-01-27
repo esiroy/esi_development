@@ -49,7 +49,7 @@ class MailAutoReply extends Mailable
     public function build()
     {
 
-        if ($showlabel == false) {        
+        if ($this->showlabel == false) {        
             $label = "";
         } else {
             $label = "My Tutor ::";
