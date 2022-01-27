@@ -77,6 +77,11 @@
     <link rel="stylesheet" href="{{ asset('css/steps/steps.css') }}">
     <style>
 
+        .wizard>.content>.body {
+            width: 100%
+        }
+
+
          .wrapper {
             margin: 50px auto;
             max-width: 750px;
