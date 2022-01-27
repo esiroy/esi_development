@@ -33,8 +33,8 @@
                         </div>
                                 
                         <div class="col-12">
-                            <div class="card mb-3">
-                                <h5 class="card-header py-2">Writing Service</h5>
+                            <div class="card esi-card mb-3">
+                                <h5 class="card-header esi-card-header py-2">Writing Service</h5>
                                 <div class="card-body">
                                     <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                                         @csrf

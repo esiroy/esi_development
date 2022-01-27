@@ -22,9 +22,9 @@
 
                         <div class="col-12  message-container">
 
-                            <div class="card mb-3">
-                                <h5 class="card-header py-2">ありがとうございます。 エントリが正常に送信されました。</h5>
-                                <div class="card-body">
+                            <div class="card esi-card  mb-3">
+                                <h5 class="card-header esi-card-header  py-2">ありがとうございます。 エントリが正常に送信されました。</h5>
+                                <div class="card-body pb-5">
                                     <div class="mt-4">
                                         <p class="text-center">
                                             ライティングサービスをご利用いただきありがとうございます。すぐに講師から返信があります。
