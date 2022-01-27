@@ -29,7 +29,7 @@ class MailAutoReply extends Mailable
      *
      * @return void
      */
-    public function __construct($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment = null)
+    public function __construct($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment = null, $showlabel = false)
     {
         $this->emailTo = $emailTo;
         $this->emailFrom = $emailFrom;
@@ -37,6 +37,7 @@ class MailAutoReply extends Mailable
         $this->emailMessage = $emailMessage;
         $this->emailTemplate = $emailTemplate;
         $this->attachment = $attachment;
+        $this->showlabel = $showlabel;
     }
 
     /**
@@ -47,13 +48,19 @@ class MailAutoReply extends Mailable
     public function build()
     {
 
+        if ($showlabel == false) {        
+            $label = "";
+        } else {
+            $label = "My Tutor ::";
+        }
+
         if (isset($this->attachment)) 
         {
             return $this->view($this->emailTemplate)
                     ->text($this->emailTemplate."_plain")                        
                     ->to($this->emailTo['email'])
                     ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
-                    ->subject("My Tutor - ". $this->emailSubject)
+                    ->subject($label . $this->emailSubject)
                     ->attach($this->attachment['realPath'],[
                             'as' => $this->attachment['clientOriginalName'],
                             'mime' => $this->attachment['clientMimeType'] 
@@ -63,7 +70,7 @@ class MailAutoReply extends Mailable
                     ->text($this->emailTemplate."_plain")                        
                     ->to($this->emailTo['email'])
                     ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
-                    ->subject("My Tutor :: " .$this->emailSubject);
+                    ->subject($label . $this->emailSubject);
         }
     }    
 }
