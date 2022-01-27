@@ -6,7 +6,7 @@
         @if ($item['type'] == 'uploadfield')
             @if (isset($item['value']))
                 <div class="value-wrapper">
-                    <div class="itemValue">
+                    <div class="itemValue" style="margin-left: 25px; min-height:15px; padding-bottom: 3px">
                         <a href="{{ url(Storage::url($item['value'])) }}" download>{{ basename($item['value']) }}</a>
                     </div>
                 </div>

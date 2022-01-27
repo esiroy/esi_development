@@ -172,7 +172,8 @@
                         //console.log(fieldsArr);
                         convertToJSON(fieldsArr);
                     }
-                });      
+                });     
+
             };
             
 
@@ -234,22 +235,37 @@
                         if ($('#'+fieldID).hasClass('uploadfield')) 
                         {
                             try {
-                                const oFile = document.getElementById(fieldID).files[0]; 
-                                if (oFile.size <= 2097152) // 2 MiB for bytes.
+
+                                const oFile = document.getElementById(fieldID).files[0];  
+
+                                 let fileExtension = ['pdf', 'jpeg', 'jpg', 'png'];                                
+                                if ($.inArray($('#'+fieldID).val().split('.').pop().toLowerCase(), fileExtension) == -1) 
+                                {
+                                    let message = "Only formats are allowed : "+fileExtension.join(', ');
+                                    colorHighlight(fieldID)
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + message +'.</label>');
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });
+                                } 
+                                else if (oFile.size <= 2097152) // 2 MiB for bytes.
                                 {             
                                     $('.'+fieldID+"_field_content").find('.error2').remove();    
 
                                 } else {
-
                                     colorHighlight(fieldID)
-
                                     $('.'+fieldID+"_field_content").find('.error2').remove();
                                     $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
                                     requiredFieldsArr.push({
                                         'id': fieldID,
                                         'isValid': false
                                     });
-                                }                            
+                                }         
+
+
+                                 
                             } catch(err) {
                                 //alert( err )
                             }
