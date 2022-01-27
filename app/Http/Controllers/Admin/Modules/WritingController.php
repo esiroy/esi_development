@@ -184,36 +184,38 @@ class WritingController extends Controller
                     if (isset($writingEntry->schedule_id)) {
                         $scheduleItem = $scheduleItem->find($writingEntry->schedule_id);
 
-                        if ($scheduleItem) {
-                            $scheduleItemData = [
-                                'tutor_id'  => $writingEntry->appointed_tutor_id,
-                                'memo'      => "Writing Entry : " . $writingCredit. " - Additional Point : ". $additionalPoints ." ."
-                            ];
-                            $scheduleItem->update($scheduleItemData);                    
+                        if ($additionalPoints > 0) {                        
+                            if ($scheduleItem) {
+                                $scheduleItemData = [
+                                    'tutor_id'  => $writingEntry->appointed_tutor_id,
+                                    'memo'      => "Writing Entry : " . $writingCredit. " - Additional Point : ". $additionalPoints ." ."
+                                ];
+                                $scheduleItem->update($scheduleItemData);                    
+                            }
                         }
                     }
-
-                    exit();
 
                     //Update point balance since deduction of point credit for point balance is reading through agent Credit
                     if (isset($member->membership)) {
                         if ($member->membership == "Point Balance") 
                         {
                             //add member transaction (agent subtract since we are deducting point)
-                            $agentCredit = [
-                                'valid' => 1,
-                                'transaction_type' => 'AGENT_SUBTRACT',
-                                'agent_id' => $member->agent_id,
-                                'member_id' => $member->user_id,
-                                'lesson_shift_id' => $member->lesson_shift_id,
-                                'created_by_id' => Auth::user()->id,
-                                'amount' => $additionalPoints,
-                                'price' => 1,
-                                'remarks' => "WRITING ENTRY - additional point for file attachment",
-                                //'credits_expiration' => $expiry_date,
-                                //'old_credits_expiration' => $old_credits_expiration,
-                            ];
-                            AgentTransaction::create($agentCredit); 
+                            if ($additionalPoints > 0) {    
+                                $agentCredit = [
+                                    'valid' => 1,
+                                    'transaction_type' => 'AGENT_SUBTRACT',
+                                    'agent_id' => $member->agent_id,
+                                    'member_id' => $member->user_id,
+                                    'lesson_shift_id' => $member->lesson_shift_id,
+                                    'created_by_id' => Auth::user()->id,
+                                    'amount' => $additionalPoints,
+                                    'price' => 1,
+                                    'remarks' => "WRITING ENTRY - additional point for file attachment",
+                                    //'credits_expiration' => $expiry_date,
+                                    //'old_credits_expiration' => $old_credits_expiration,
+                                ];
+                                AgentTransaction::create($agentCredit); 
+                            }
                         }                    
                     }
                 } 
