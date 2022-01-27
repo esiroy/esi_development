@@ -208,8 +208,9 @@
                                             Appointed: 
                                         </div>
                                         <div class="col-4">
-                                            <input type="checkbox" name="appointed" id="appointed" @if (isset($is_appointed) && $is_appointed == 'true') {{ "checked" }} @endif disabled>
-                                        </div>
+                                            <input type="hidden" name="appointed_value" value="@if (isset($is_appointed) && $is_appointed == 'true') {{ 'on' }} @else {{ 'off' }} @endif " />
+                                            <input type="checkbox" name="appointed" id="appointed"  @if (isset($is_appointed) && $is_appointed == 'true') {{ "checked" }} @endif disabled >
+                                        </div> 
                                     </div>
 
                                     <div class="row mt-2">
@@ -221,21 +222,18 @@
                                             <input type="text" name="material" id="material"  class="form-control form-control-sm" required>
                                         </div>
 
-
-                                        @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
-                                            @if (($has_attachement == true))
-                                                <!--[start] Column 2-->
-                                                <div class="col-2">
-                                                    Words: 
-                                                </div>
-                                                <div class="col-4">
-                                                    <input type="number" name="words" id="words" class="form-control form-control-sm" required>
-                                                    <input type="hidden"  name="hasAttachement" value="true">
-                                                </div>     
-                                            
-                                            @endif
+                                        @if (($has_attachement == true))
+                                            <!--[start] Column 2-->
+                                            <div class="col-2">
+                                                Words: 
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="number" name="words" id="words" class="form-control form-control-sm" required>
+                                                <input type="hidden"  name="hasAttachement" value="true">
+                                            </div>     
+                                        
                                         @endif
-
+                                      
                                     </div>
 
 
@@ -440,14 +438,8 @@
                 } else {
                 
                     @if($has_attachement == true) 
-                        @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
-                            console.log("with attachment , Monthly member")
-                            checkMemberCredits(false);   
-                            event.preventDefault();
-                        @else 
-                            console.log("with attachment , point balance member")
-                            checkMemberCredits(true)
-                        @endif
+                        //console.log("no attachment , point balance member, false = no override deduction")
+                        checkMemberCredits(false);  
                     @else
                         console.log("no attachment , point balance member")
                         checkMemberCredits(true);   
@@ -457,11 +449,10 @@
 
             $(document).on('change keydown keyup', '#words', function() {
                 @if($has_attachement == true) 
-                    @if ($memberInfo->membership == 'Monthly' || $memberInfo->membership == 'Both')
-                        autoCheckMemberCredits(false);  
-                    @endif
+                    //console.log("no attachment , point balance member, false = no override deduction")
+                    autoCheckMemberCredits(false);                      
                 @else 
-                        autoCheckMemberCredits(true);   
+                    autoCheckMemberCredits(true);   
                 @endif;
             });
 
@@ -580,7 +571,8 @@
                     tutorID             : "{{ $entry->appointed_tutor_id }}",
                     overrideWordCount   : overrideWordCount,
                     words               : $('#words').val(),                  
-                    appointed           : $('#appointed').attr("checked")
+                    appointed           : $('#appointed').attr("checked"),
+                    hasAttachement      : "{{ $has_attachement }}",
                 },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -621,7 +613,8 @@
                     tutorID             : "{{ $entry->appointed_tutor_id }}",
                     overrideWordCount   : overrideWordCount,
                     words               : $('#words').val(),                  
-                    appointed           : $('#appointed').attr("checked")
+                    appointed           : $('#appointed').attr("checked"),
+                    hasAttachement      : "{{ $has_attachement }}",
                 },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

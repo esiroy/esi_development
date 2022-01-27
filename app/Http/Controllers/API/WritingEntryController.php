@@ -162,25 +162,50 @@ class WritingEntryController extends Controller
 
             } else if ($memberInfo->membership  == "Point Balance" ||  $memberInfo->membership  == "Both") {
 
+
                 $credits = $agentTransaction->getCredits($memberID); 
 
-                /*
-                $credits = $agentTransaction->getCredits( $memberID ); 
-                $totalPointsLeft = $credits - $wordPointDeduction;
-                $errorMessage = "Sorry, the member don't have enough points for this entry.";
-                */
+                //get the deposit based (writing ID) total points when monthy
+                $totalPointsLeft = ($credits + $deposit) - $wordPointDeduction;
+
+                if (isset($request->hasAttachement)) {
+
+                    $credits = $agentTransaction->getCredits( $memberID ); 
+                    $totalPointsLeft = $credits - $wordPointDeduction;
+
+                    if ($totalPointsLeft <= 0) 
+                    {
+                        $success =  false;
+                        $message = $errorMessage;
+                        $message .= "<div>This entry requires $wordPointDeduction  addtional point(s), Member only have $credits credit(s) </div>";
+                    } else {
+                        $success =  true;
+                        $message = "<div>Congratulations, Member have sufficient credits </div>";
+                    }
+                    
+                    return Response()->json([
+                        "success"               => $success,   
+                        "message"               => $message,
+                        "membership"            => $memberInfo->membership,
+                        "credits"               => $credits,
+                        "deposit"               => $deposit,
+                        "wordPointDeduction"    => $wordPointDeduction,
+                        "totalPointsLeft"       => $totalPointsLeft
+                    ]); 
 
 
-                return Response()->json([
-                    "success"           => true,   
-                    "message"           => "Member has " . $memberInfo->membership . " Membership",
-                    "membership"        => $memberInfo->membership,
-                    "credits"           => $credits,
-                    "deposit"           => $deposit,
-                    "wordPointDeduction" => $wordPointDeduction,
-                    "totalPointsLeft" => 1
-                ]);                 
-
+                } else {
+                    //no attachment (already deduct, add dummy 1 since it has been credited to user)
+                    return Response()->json([
+                        "success"           => true,   
+                        "message"           => "Member has " . $memberInfo->membership . " Membership",
+                        "membership"        => $memberInfo->membership,
+                        "credits"           => $credits,
+                        "deposit"           => $deposit,
+                        "wordPointDeduction" => $wordPointDeduction,
+                        "totalPointsLeft" => 1
+                    ]);  
+                }
             }
         }   
 

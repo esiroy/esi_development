@@ -145,42 +145,82 @@ class WritingController extends Controller
         $words =  $writingEntry->total_words;
         $member = $member->where('user_id', $writingEntry->user_id)->first();
 
+
         /*******************************************************************************
-        *          CALCULATE ADDITONAL DEDUCTION FOR MONTHLY ONLY AND WITH ATTACMENTS
+        *          UPDATE WRITING ENTRY FOR DEDUCTION ONLY AND WITH ATTACMENTS SINCE NO ATTACHMENT DEDUCTS (1 POINT OR 2)
         *********************************************************************************/
-        if (isset($request->hasAttachement)) {
-            $hasAttachement = $request->hasAttachement;
-            if ($hasAttachement == true) 
-            {   
-                //NOTE: OVERRIDE Only Monthly Membership
-                //Teacher overrides the automated counted words on entries, since it is just credit 1 or 2 points for entries with assigned teacher
-                if ($member->membership == "Monthly") {
+        if ($writingEntry) {
+
+            if (isset($request->hasAttachement)) {
+                $hasAttachement = $request->hasAttachement;
+                if ($hasAttachement == true) 
+                {
                     $words = $request->words;
-                }
-     
+                    $writingCredit = $writingEntry->total_points;                
+                    $pointsToDeduct = $writingEntries->getWordPointDeduct($words);
+                    $additionalPoints =  $pointsToDeduct - $writingCredit;
 
-                $writingCredit = $writingEntry->total_points;                
-                $pointsToDeduct = $writingEntries->getWordPointDeduct($words);
-                $additionalPoints =  $pointsToDeduct - $writingCredit;
-                $data = [
-                        'total_points' => $pointsToDeduct
-                ];
-                $writingEntry->update($data);
+                    //detect if user has assigned a teacher
+                    if (isset($request->appointed_value)) {
+                        if ($request->appointed_value == 'on') {                            
+                            $totalDeductedPoints = $pointsToDeduct * 2;
 
-                //Update Writing Entry
-                if (isset($writingEntry->schedule_id)) {
-                    $scheduleItem = $scheduleItem->find($writingEntry->schedule_id);
+                            //update total addtional points
+                            $additionalPoints =  $totalDeductedPoints - $writingCredit;
 
-                    if ($scheduleItem) {
-                        $scheduleItemData = [
-                            'tutor_id'  => $writingEntry->appointed_tutor_id,
-                            'memo'      => "Point : ". $pointsToDeduct
-                        ];
-                        $scheduleItem->update($scheduleItemData);                    
+                        }
+                    } else {
+                        $totalDeductedPoints = $pointsToDeduct;
+                    }      
+
+                    //echo $member->membership . " " . $totalDeductedPoints;
+                    
+
+                    //Update Deduction for Writing for Monthly 
+                    $data = ['total_points' => $totalDeductedPoints];
+                    $writingEntry->update($data);
+                    
+                    //Update Writing Entry Schedule
+                    if (isset($writingEntry->schedule_id)) {
+                        $scheduleItem = $scheduleItem->find($writingEntry->schedule_id);
+
+                        if ($scheduleItem) {
+                            $scheduleItemData = [
+                                'tutor_id'  => $writingEntry->appointed_tutor_id,
+                                'memo'      => "Writing Entry : " . $writingCredit. " - Additional Point : ". $additionalPoints ." ."
+                            ];
+                            $scheduleItem->update($scheduleItemData);                    
+                        }
                     }
-                }
-            } 
+
+                    exit();
+
+                    //Update point balance since deduction of point credit for point balance is reading through agent Credit
+                    if (isset($member->membership)) {
+                        if ($member->membership == "Point Balance") 
+                        {
+                            //add member transaction (agent subtract since we are deducting point)
+                            $agentCredit = [
+                                'valid' => 1,
+                                'transaction_type' => 'AGENT_SUBTRACT',
+                                'agent_id' => $member->agent_id,
+                                'member_id' => $member->user_id,
+                                'lesson_shift_id' => $member->lesson_shift_id,
+                                'created_by_id' => Auth::user()->id,
+                                'amount' => $additionalPoints,
+                                'price' => 1,
+                                'remarks' => "WRITING ENTRY - additional point for file attachment",
+                                //'credits_expiration' => $expiry_date,
+                                //'old_credits_expiration' => $old_credits_expiration,
+                            ];
+                            AgentTransaction::create($agentCredit); 
+                        }                    
+                    }
+                } 
+            }
+
         }
+
 
 
         /********************************************
@@ -238,10 +278,8 @@ class WritingController extends Controller
         /****************************************
                 writing entries
         *****************************************/
-
         $storagePath = 'public/uploads/writing_entries/';
-        $publicURL = 'storage/uploads/writing_entries/';
- 
+        $publicURL = 'storage/uploads/writing_entries/'; 
         $file = $request->file('file');
 
         if ($file) {
@@ -284,14 +322,11 @@ class WritingController extends Controller
 
                 if (isset($user)) {
                     //E-Mail Template
-                    $emailTemplate = 'emails.writing.teacherAutoreply';
-                    
+                    $emailTemplate = 'emails.writing.teacherAutoreply';                    
                     $formatEntryHTML = view('emails.writing.writingTutorReplyHTML', compact('writingGrade'))->render();
-
                     //E-Mail Recipient
                     $emailTo['name']    = $user->firstname ." ". $user->lastname;
                     $emailTo['email']   = $user->email; 
-
                     //Email Reply To
                     $emailFrom['name']   = Config::get('mail.from.name');
                     $emailFrom['email']  = Config::get('mail.from.address');

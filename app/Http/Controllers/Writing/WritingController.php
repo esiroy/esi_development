@@ -26,49 +26,59 @@ class WritingController extends Controller
     
     public function index(FormFields $formFieldModel) 
     {
-        /* FRONT END WRITING FORM */
+        $member = Member::where('user_id', Auth::user()->id)->first();
+        if (isset($member)) {
 
-        $form_id = 1; //all forms are 1(for now)
-        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-        $formFieldHTML[] = "";
+            /* FRONT END WRITING FORM */
 
-        $cfields = $formFields;        
-        foreach ($formFields as $formField) 
-        {
-            $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
-        }
+            $form_id = 1; //all forms are 1(for now)
+            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+            $formFieldHTML[] = "";
 
-        /************ GET CHILDREN HTML ************/
-        $formFieldChildrenHTML[] = "";
-        //Get Pages
-        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-        $pageCounter =  $pages->count() + 1;
-
-        foreach ($pages as $page) 
-        {           
-            $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-            $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-            foreach ($formChildFields as $formChildField) 
+            $cfields = $formFields;        
+            foreach ($formFields as $formField) 
             {
-                $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
             }
-        }
 
-        return view("modules.writing.index", compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+            /************ GET CHILDREN HTML ************/
+            $formFieldChildrenHTML[] = "";
+            //Get Pages
+            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pageCounter =  $pages->count() + 1;
+
+            foreach ($pages as $page) 
+            {           
+                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+                foreach ($formChildFields as $formChildField) 
+                {
+                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                }
+            }
+
+            return view("modules.writing.index", compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+
+        } else {
+            sleep(3);
+            return redirect()->away( url('/admin/writing'));        
+        }
     }
 
 
+    /* Front End
+        @request->data : (json key pair of writing form)
+    */
     public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
-        $fields = array();
-
-        $storagePath = 'public/uploads/writing/';
-        $dataArray = json_decode($request->get('data'), true);
-
+        $fields = array();        
         $tutor_id = null;
         $userAttachedFile = false;
         $totalWords = 0;
         $pointToDeduct = 0;
+
+        $storagePath = 'public/uploads/writing/';
+        $dataArray = json_decode($request->get('data'), true);
 
         foreach ($dataArray as $key => $value)         
         {
@@ -83,9 +93,7 @@ class WritingController extends Controller
                 if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
                 {                    
                     $file = $request->file($key);                  
-
                     if ($file) {
-
                         $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
                         if ($uploadFileName) 
                         {
@@ -94,11 +102,9 @@ class WritingController extends Controller
                             //Add A Key value pair for Email Template
                             $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];  
 
-                            //user has succesffly attached a file
+                            //user has succesfully attached a file
                             $userAttachedFile = true;
-                        }
-
-                       
+                        }                       
                     }
 
                 } else if (strtolower($formField->type) == 'paragraphtext') {       
@@ -114,9 +120,7 @@ class WritingController extends Controller
                         $fields[$key] = $value;                     
                     }
 
-
                 } else { 
-
 
                     //this detects the appoint teacher hidden id and search through they $fkeyid
                     if (isset($request->appoint_teacher_field_id)) 
@@ -160,13 +164,19 @@ class WritingController extends Controller
             //User has no attachment, then point deduction is automcatically 1
             $pointToDeduct  = 1;
         } else {
-             $pointToDeduct =  $writingEntries->getWordPointDeduct($totalWords);        
+            $pointToDeduct =  $writingEntries->getWordPointDeduct($totalWords);        
         }
 
         //make the point double if he assigns a tutor
+        $remarks = "";
         if (isset($tutor_id )) 
         {
-            $pointToDeduct = $pointToDeduct * 2;       
+            $pointToDeduct = $pointToDeduct * 2;
+
+            if ($tutorInfo) {
+                $remarks = "Appointed Tutor : " . $tutorInfo->user->firstname;
+            }
+        
         }
 
        //get the member info and determine what membership type
@@ -174,7 +184,6 @@ class WritingController extends Controller
 
        if (isset($memberInfo->membership)) 
        {
-
             if ($memberInfo->membership == "Monthly") 
             {   
                 //only (00,30) allowed
@@ -185,11 +194,16 @@ class WritingController extends Controller
                     $min =  00;
                 }
 
+                if ($userAttachedFile == true) {
+                     $remarks .= " with Attached File";
+                }
+
                 $lessonData = [
                     'lesson_time' => date('Y-m-d H:i:00', strtotime(date('Y-m-d H:'.$min.':00'))),
                     'member_id' => Auth::user()->id,
                     'tutor_id'  => $tutor_id ?? null,
                     'schedule_status' => "WRITING",
+                    "memo"  => "Writing Entry Point : $pointToDeduct " . $remarks,
                     'valid' => 0,
                 ];
                 $schedule = ScheduleItem::create($lessonData);
@@ -205,8 +219,7 @@ class WritingController extends Controller
                     'value'                 => json_encode($fields)
                 ]);
 
-            } else if ($memberInfo->membership == "Point Balance" || $memberInfo->membership == "Both") {
-                
+            } else if ($memberInfo->membership == "Point Balance" || $memberInfo->membership == "Both") {                
 
                 //add member transaction (agent subtract since we are deducting point)
                 $agentCredit = [
@@ -218,7 +231,7 @@ class WritingController extends Controller
                     'created_by_id' => Auth::user()->id,
                     'amount' => $pointToDeduct,
                     'price' => 1,
-                    'remarks' => "WRITING ENTRY",
+                    'remarks' => "WRITING ENTRY - " . $remarks,
                     //'credits_expiration' => $expiry_date,
                     //'old_credits_expiration' => $old_credits_expiration,
                 ];
@@ -236,25 +249,17 @@ class WritingController extends Controller
                     'value'                 => json_encode($fields)
                 ]);                
                 
-            }
-       
+            }       
        }
-
-     
-
         
-        //render the fields
-        $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
-
-       // print_r ($fieldsArray);
-        //echo $formatEntryHTML;
-       // exit();
-       
+     
         if ($entryID) 
         {
+            //render the fields
+            $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
+
             //send the authenticated user the email, since the Authenticated user
             $user = Auth::user();
-
             //E-Mail Template
             $emailTemplate = 'emails.writing.autoreply';           
 
@@ -266,17 +271,11 @@ class WritingController extends Controller
             $emailFrom['name']   = Config::get('mail.from.name');
             $emailFrom['email']  = Config::get('mail.from.address');
 
-            $emailSubject =  '添削サービス受付のご案内'; //Information on correction service reception
+            $emailSubject =  'マイチューター : 添削サービス受付のご案内'; //Information on correction service reception
             $emailMessage =  $formatEntryHTML;
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);                    
         }
-
-     
-        
-
         return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
     }
-    
-
 }

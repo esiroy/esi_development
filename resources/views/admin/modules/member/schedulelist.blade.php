@@ -129,7 +129,7 @@
                                                 $writingEntry = new \App\Models\WritingEntries();  
                                                 $entry = $writingEntry->where('schedule_id', $schedule->id)->first();
                                             @endphp
-                                            Point : {{ $entry->total_points ?? "" }}
+                                            @php /*Point : {{ $entry->total_points ?? "" }} */ @endphp
                                         @endif   
 
                                     </td>
