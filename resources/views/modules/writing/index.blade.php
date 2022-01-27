@@ -238,7 +238,7 @@
 
                                 const oFile = document.getElementById(fieldID).files[0];  
 
-                                 let fileExtension = ['pdf', 'jpeg', 'jpg', 'png'];                                
+                                 let fileExtension = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];                                
                                 if ($.inArray($('#'+fieldID).val().split('.').pop().toLowerCase(), fileExtension) == -1) 
                                 {
                                     let message = "Only formats are allowed : "+fileExtension.join(', ');
