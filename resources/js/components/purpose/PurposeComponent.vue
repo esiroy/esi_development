@@ -679,8 +679,7 @@ export default {
                         Writing: 0,
                         Reading: 0,
                         Listening: 0,                        
-                },                
-
+                },
                 EIKEN: "",
                 EIKEN_option: {
                         EIKEN_Grade_5: "",
@@ -700,9 +699,7 @@ export default {
                         Grade_2: 0,
                         Grade_pre_1: 0,
                         Grade_1: 0,                      
-                }, 
-
-
+                },
                 TEAP: "",
                 TEAP_option:
                 {
@@ -717,9 +714,7 @@ export default {
                         Writing: 0,
                         Reading: 0,
                         Listening: 0,                        
-                },   
-
-
+                },
                 BUSINES: "",
                 BUSINESS_option:
                 {
@@ -808,24 +803,14 @@ export default {
     computed: {},
     updated: function () 
     {
-       this.$parent.purposeList = this.childPurposeList;
-            
-        //console.log(this.purposeList.IELTS_targetScore.Speaking);
-
-        
+       this.$parent.purposeList = this.childPurposeList;        
     },
     mounted: function () 
     {
-        //console.log("Purpose mounted");
-        //console.log(this.childPurposeList)
-
         this.childPurposeList = this.purposeList;
-
     },
 };
-
 </script>
-
 <style scoped>
   
 </style>

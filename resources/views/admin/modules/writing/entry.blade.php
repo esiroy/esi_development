@@ -208,7 +208,7 @@
                                             Appointed: 
                                         </div>
                                         <div class="col-4">
-                                            <input type="hidden" name="appointed_value" id="appointed_value" value="@if (isset($is_appointed) && $is_appointed == 'true') {{ 'on' }} @else {{ 'off' }} @endif " />
+                                            <input type="hidden" name="appointed_value" id="appointed_value" value="@if(isset($is_appointed) && $is_appointed == 'true'){{'on'}}@else{{'off'}}@endif"/>
                                             <input type="checkbox" name="appointed" id="appointed"  @if (isset($is_appointed) && $is_appointed == 'true') {{ "checked" }} @endif disabled >
                                         </div> 
                                     </div>
