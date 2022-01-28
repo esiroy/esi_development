@@ -115,7 +115,9 @@ class WritingEntryController extends Controller
             if ($is_appointed == 'on') {
                 $wordPointDeduction = $wordPointDeduction * 2;
             }
-                
+
+            $totalDeduction = $wordPointDeduction;
+
             $wordPointDeduction = $wordPointDeduction - $deposit;
         }
 
@@ -136,7 +138,10 @@ class WritingEntryController extends Controller
                 $credits = $member->getMemberMonthlyLessonsLeft($memberID);
 
                 //get the deposit based (writing ID) total points when monthy
-                $totalPointsLeft = ($credits) - $wordPointDeduction;
+                //$totalPointsLeft = ($credits) - $wordPointDeduction;
+
+                $totalCredits = $credits + $deposit;
+                $totalPointsLeft =  $totalDeduction  - $totalCredits;
                                 
                 if ($totalPointsLeft < 0) 
                 {
@@ -154,6 +159,7 @@ class WritingEntryController extends Controller
                     "membership"        => $memberInfo->membership,
                     "credits"           => $credits,
                     "deposit"           => $deposit,
+                    'totalDeduction'    => $totalDeduction,
                     "wordPointDeduction" => $wordPointDeduction,
                     "totalPointsLeft"   => $totalPointsLeft
                 ]); 
