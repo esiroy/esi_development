@@ -26,8 +26,8 @@
                                 <h5 class="card-header esi-card-header  py-2">ありがとうございます。 エントリが正常に送信されました。</h5>
                                 <div class="card-body pb-5">
                                     <div class="mt-4">
-                                        <p class="text-center">
-                                            必要なポイント残を確認後、48時間以内に添削結果を送信します。
+                                        <p class="text-center">                                           
+                                            48時間以内に添削結果を送信します。
                                         </p>
                                         <div class="text-center">
                                             <a type="submit" href="{{ url('/writing') }}" class="btn-pink col-4 text-white" >ライティングサービスに戻る</a>
