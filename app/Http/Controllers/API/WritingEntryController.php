@@ -141,13 +141,13 @@ class WritingEntryController extends Controller
                 //$totalPointsLeft = ($credits) - $wordPointDeduction;
 
                 $totalCredits = $credits + $deposit;
-                $totalPointsLeft =  $totalCredits - $totalDeduction;
+                $totalPointsLeft =  $totalDeduction - $totalCredits;
                                 
                 if ($totalPointsLeft < 0) 
                 {
                     $success =  false;
                     $message =  "Sorry, the member don't have enough monthly points for this entry.";
-                    $message .= "<div>This entry requires $wordPointDeduction  addtional point(s), Member only have $credits credit(s) </div>";
+                    $message .= "<div>This entry requires $totalPointsLeft  addtional point(s), Member only have $credits credit(s) </div>";
                 } else {
                     $success =  true;
                     $message = "<div>Congratulations, Member have sufficient credits </div>";
