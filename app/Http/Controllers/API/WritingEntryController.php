@@ -136,7 +136,7 @@ class WritingEntryController extends Controller
                 $credits = $member->getMemberMonthlyLessonsLeft($memberID);
 
                 //get the deposit based (writing ID) total points when monthy
-                $totalPointsLeft = ($credits + $deposit) - $wordPointDeduction;
+                $totalPointsLeft = ($credits) - $wordPointDeduction;
                                 
                 if ($totalPointsLeft < 0) 
                 {
