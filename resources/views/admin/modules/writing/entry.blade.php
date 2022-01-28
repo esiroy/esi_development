@@ -461,9 +461,7 @@
             });
 
             $('#sendMemberReloadEmail').on('click', function() 
-            {      
-                alert(reload)
-
+            {
                 $.ajax({
                     type: 'POST',
                     url: "{{ url('api/writing/sendReloadEmail?api_token=') }}" + api_token,
