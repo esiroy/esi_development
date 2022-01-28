@@ -141,8 +141,8 @@ class WritingEntryController extends Controller
                 //$totalPointsLeft = ($credits) - $wordPointDeduction;
 
                 $totalCredits = $credits + $deposit;
-                $totalPointsLeft =  $totalDeduction - $totalCredits;
-                                
+                $totalPointsLeft = $totalCredits - $totalDeduction;
+
                 if ($totalPointsLeft < 0) 
                 {
                     $success =  false;
