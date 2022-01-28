@@ -253,11 +253,11 @@
 
 
                         <div class="form-group row mt-0 mb-0 ">
-                            <label for="communication_app_username" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left">
+                            <label for="communication_app_username" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left border-bottom ">
                                 <span id="commAppText" class="font-weight-bold"></span>
                             </label>
 
-                            <div class="col-md-6  border-left border-top border-right py-4">
+                            <div class="col-md-6  border-left border-top border-right py-4 border-bottom">
                                 <input id="communication_app_username" type="text" name="communication_app_username"
                                     class="col-md-8 form-control form-control-sm @error('communication_app_username') is-invalid @enderror"  
                                     value="{{ old('communication_app_username') }}" required autocomplete="communication_app_username">
@@ -274,19 +274,18 @@
                             </div>
                         </div>
 
-
+                        @php /*
                         <div class="form-group row mt-0 mb-0">
 
                             <label for="last_name" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left border-bottom">
                                 <div class="font-weight-bold">Purpose (Max 3 Purpose)</div>
                                 <div class="font-weight-bold">(受講目的）</div>
                             </label>
-                            
-
                              <div class="col-md-6 border-left border-top border-right border-bottom py-4">
                                 @include('modules/member/includes/memberPurpose') 
-                            </div>
-                        </div>                        
+                            </div>                        
+                        </div>*/
+                        @endphp
 
 
 
