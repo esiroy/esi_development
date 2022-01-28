@@ -101,7 +101,7 @@ class WritingEntryController extends Controller
         $message        = null;
 
         //Get the submitted deduction points
-        if ($request->overrideWordCount == false || $request->overrideWordCount === 'false') 
+        if ($request->overrideWordCount == false || $request->overrideWordCount == 'false') 
         {
             $wordPointDeduction = $writingEntries->getWordPointDeduct($request->words);    
                 
