@@ -147,7 +147,7 @@ class WritingEntryController extends Controller
                 if ($totalPointsLeft < 0) 
                 {
 
-                    $reload = abs(totalPointsLeft);
+                    $reload = abs($totalPointsLeft);
 
                     $success =  false;
                     $message =  "Sorry, the member don't have enough monthly points for this entry.";
