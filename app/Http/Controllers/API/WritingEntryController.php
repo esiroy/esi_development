@@ -138,7 +138,7 @@ class WritingEntryController extends Controller
                 //get the deposit based (writing ID) total points when monthy
                 $totalPointsLeft = ($credits + $deposit) - $wordPointDeduction;
                                 
-                if ($totalPointsLeft <= 0) 
+                if ($totalPointsLeft < 0) 
                 {
                     $success =  false;
                     $message =  "Sorry, the member don't have enough monthly points for this entry.";
@@ -172,7 +172,7 @@ class WritingEntryController extends Controller
                     $credits = $agentTransaction->getCredits( $memberID ); 
                     $totalPointsLeft = $credits - $wordPointDeduction;
 
-                    if ($totalPointsLeft <= 0) 
+                    if ($totalPointsLeft < 0) 
                     {
                         $success =  false;
                         $message =  "Sorry, the member don't have enough monthly points for this entry.";

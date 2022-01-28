@@ -33,9 +33,7 @@
 
             
                 <form method="POST" action="{{ route('createMember') }}">
-                    @csrf
-
-                    
+                    @csrf                    
                     <!-- A8 PARAMETER HERE -->
                     <input type="hidden" name="a8" value="{{ app('request')->input('a8') }}">
 
@@ -107,8 +105,8 @@
                                 </td>
                             </tr>
 
-
-                           <tr valign="top">
+                            @php /*
+                            <tr valign="top">
                                 <td class="red">&nbsp;</td>
                                 <td align="left" style="padding-left: 15px;">Purpose (受講目的）</td>
                                 <td>:</td>
@@ -256,11 +254,9 @@
                                             {{ old('OTHERS_value') ?? '' }}
                                         </div>                                        
                                     </div>
-
-
                                 </td>
                             </tr>                            
-
+                            */@endphp
 
 
 

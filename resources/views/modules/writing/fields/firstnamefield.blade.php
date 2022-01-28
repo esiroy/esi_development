@@ -6,15 +6,7 @@
                 <span class='text-danger'>*</span>                            
             @endif
         </label>
-        <input type="text" 
-                id="{{ $id }}" 
-                name="{{ $id ."_firstname" }}" 
-                placeholder="{{ $label ?? '' }}"                            
-                class="form-control firstnamefield bg-white" 
-                value="{{ Auth::user()->firstname ?? '' }}"
-                readonly="readonly"
-                @if ($display_meta['required']) {{ "required" }} @endif>
+        <input type="text" id="{{ $id }}" name="{{ $id ."_firstname" }}" placeholder="{{ $label ?? '' }}" class="form-control firstnamefield bg-white" value="{{ Auth::user()->firstname ?? '' }}" readonly="readonly" @if ($display_meta['required']) {{ "required" }} @endif>
         <div class="small">{!! $display_meta['description'] ?? "" !!}</div>
-
     </div>
 </div>

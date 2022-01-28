@@ -250,8 +250,7 @@ class WritingController extends Controller
                 ]);                
                 
             }       
-       }
-        
+       }        
      
         if ($entryID) 
         {
@@ -276,6 +275,17 @@ class WritingController extends Controller
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);                    
         }
-        return redirect()->route('writing.index')->with('message', 'Writing entry has been added successfully!');
+
+        return redirect()->route('writing.success')->with('message', 'ライティングエントリが正常に追加されました！');
+    }
+
+    public function success(Request $request) 
+    {      
+        $message = session('message');
+        if (isset($message)) {
+            return view("modules.writing.success", compact('message'));
+        } else {    
+            return redirect( url('/writing') );
+        }
     }
 }

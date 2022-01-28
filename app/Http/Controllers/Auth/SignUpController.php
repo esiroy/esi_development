@@ -243,7 +243,7 @@ class SignUpController extends Controller
             /********************************************
                         CREATE MEMBER PURPOSE
             **********************************************/
-
+            /*
             //IELTS
             if (isset($request['IELTS'])) {
                 Purpose::create([          
@@ -349,7 +349,7 @@ class SignUpController extends Controller
                     'member_id' => $user->id
                 ]);
             }              
-
+            */
 
             DB::commit();
             

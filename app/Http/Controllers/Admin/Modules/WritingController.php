@@ -164,10 +164,11 @@ class WritingController extends Controller
                     if (isset($request->appointed_value)) {
                         if ($request->appointed_value == 'on') {                            
                             $totalDeductedPoints = $pointsToDeduct * 2;
-
+                            
                             //update total addtional points
                             $additionalPoints =  $totalDeductedPoints - $writingCredit;
-
+                        } else {
+                            $totalDeductedPoints = $pointsToDeduct;
                         }
                     } else {
                         $totalDeductedPoints = $pointsToDeduct;

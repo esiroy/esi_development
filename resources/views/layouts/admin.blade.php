@@ -197,6 +197,10 @@
 
     @if (Auth::user()->user_type == 'ADMINISTRATOR')
     <script type="text/javascript">
+
+        var api_token = "{{ Auth::user()->api_token }}";
+
+
         window.addEventListener('load', function () {
             $(function () {
                 $('.select2').select2();

@@ -208,7 +208,7 @@
                                             Appointed: 
                                         </div>
                                         <div class="col-4">
-                                            <input type="hidden" name="appointed_value" value="@if (isset($is_appointed) && $is_appointed == 'true') {{ 'on' }} @else {{ 'off' }} @endif " />
+                                            <input type="hidden" name="appointed_value" id="appointed_value" value="@if (isset($is_appointed) && $is_appointed == 'true') {{ 'on' }} @else {{ 'off' }} @endif " />
                                             <input type="checkbox" name="appointed" id="appointed"  @if (isset($is_appointed) && $is_appointed == 'true') {{ "checked" }} @endif disabled >
                                         </div> 
                                     </div>
@@ -571,7 +571,7 @@
                     tutorID             : "{{ $entry->appointed_tutor_id }}",
                     overrideWordCount   : overrideWordCount,
                     words               : $('#words').val(),                  
-                    appointed           : $('#appointed').attr("checked"),
+                    appointed           : $('#appointed_value').val(),
                     hasAttachement      : "{{ $has_attachement }}",
                 },
                 headers: {
@@ -613,7 +613,7 @@
                     tutorID             : "{{ $entry->appointed_tutor_id }}",
                     overrideWordCount   : overrideWordCount,
                     words               : $('#words').val(),                  
-                    appointed           : $('#appointed').attr("checked"),
+                    appointed           : $('#appointed_value').val(),
                     hasAttachement      : "{{ $has_attachement }}",
                 },
                 headers: {
