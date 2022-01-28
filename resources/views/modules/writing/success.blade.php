@@ -27,7 +27,7 @@
                                 <div class="card-body pb-5">
                                     <div class="mt-4">
                                         <p class="text-center">
-                                            ライティングサービスをご利用いただきありがとうございます。すぐに講師から返信があります。
+                                            必要なポイント残を確認後、48時間以内に添削結果を送信します。
                                         </p>
                                         <div class="text-center">
                                             <a type="submit" href="{{ url('/writing') }}" class="btn-pink col-4 text-white" >ライティングサービスに戻る</a>
