@@ -49,7 +49,7 @@
 
     @php 
         $is_appointed = false;
-        $has_attachement = false;
+        $has_attachment = false;
         $values = json_decode($entry->value, true);
     @endphp
 
@@ -89,7 +89,7 @@
                                     @if (isset($fieldValue[$entry->id][$formField->id]))
                                         @php 
                                             $writingFields = new \App\Models\WritingEntries;
-                                            $has_attachement = true;
+                                            $has_attachment = true;
                                         @endphp      
                                         <div id="{{$entry->id}}" class="col-md-12"> 
                                             <div class="text-center pl-2">
@@ -222,15 +222,18 @@
                                             <input type="text" name="material" id="material"  class="form-control form-control-sm" required>
                                         </div>
 
-                                        @if (($has_attachement == true))
+                                        @if (($has_attachment == true))
                                             <!--[start] Column 2-->
                                             <div class="col-2">
                                                 Words: 
                                             </div>
-                                            <div class="col-4">
+                                            <div class="col-2">
                                                 <input type="number" name="words" id="words" class="form-control form-control-sm" required>
-                                                <input type="hidden"  name="hasAttachement" value="true">
+                                                <input type="hidden"  name="hasAttachment" value="true">
                                             </div>     
+                                             <div class="col-2">
+                                                <span id="total_point_needed" class="small"></span>
+                                             </div>
                                         
                                         @endif
                                       
@@ -246,7 +249,7 @@
                                             <input type="text" name="subject" id="subject" class="form-control form-control-sm" required>
                                         </div>
 
-                                        @if (($has_attachement == true))
+                                        @if (($has_attachment == true))
                                          <div class="col-2"></div>
                                         <div class="col-4">
                                             <button id="sendMemberReloadEmail" type="button" class="btn btn-success btn-sm" style="display:none"> Send Member Reload E-Mail</button>
@@ -426,6 +429,8 @@
     @parent
     <script>
 
+        let reload = 0;
+
         window.addEventListener('load', function() 
         {
             $('#teacherSubmitBtn').click(function( event ) 
@@ -437,7 +442,7 @@
                      $(document).find('.message-container').html('<div class="alert alert-danger">Please enter all required fields </div>').show()
                 } else {
                 
-                    @if($has_attachement == true) 
+                    @if($has_attachment == true) 
                         //console.log("no attachment , point balance member, false = no override deduction")
                         checkMemberCredits(false);  
                     @else
@@ -448,8 +453,7 @@
             });
 
             $(document).on('change keydown keyup', '#words', function() {
-                @if($has_attachement == true) 
-                    //console.log("no attachment , point balance member, false = no override deduction")
+                @if($has_attachment == true) 
                     autoCheckMemberCredits(false);                      
                 @else 
                     autoCheckMemberCredits(true);   
@@ -457,7 +461,9 @@
             });
 
             $('#sendMemberReloadEmail').on('click', function() 
-            {            
+            {      
+                alert(reload)
+
                 $.ajax({
                     type: 'POST',
                     url: "{{ url('api/writing/sendReloadEmail?api_token=') }}" + api_token,
@@ -465,6 +471,7 @@
                         formID              :  1,
                         entryID             : "{{ $entry->id }}",
                         memberID            : "{{ $entry->user_id }}",
+                        reload              : reload
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -572,16 +579,26 @@
                     overrideWordCount   : overrideWordCount,
                     words               : $('#words').val(),                  
                     appointed           : $('#appointed_value').val(),
-                    hasAttachement      : "{{ $has_attachement }}",
+                    hasAttachment      : "{{ $has_attachment }}",
                 },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) 
                 {
+
+                    reload = data.reload;
+
+                    if (data.totalDeduction > 0 ) {
+                        $('#total_point_needed').html(data.totalDeduction + " Points ")
+                    } else {
+                        $('#total_point_needed').html("")
+                    }
+
                     if (data.success == true) {
                         if (data.totalPointsLeft < 0) 
-                        {   
+                        {                 
+
                             $('#sendMemberReloadEmail').show();
                             $('.message-container').show();
                             $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                  
@@ -591,11 +608,9 @@
                             $('.message-container').html('<div class="alert alert-success">' + data.message +'</div>');
                         }                     
                     } else {
-
                         $('#sendMemberReloadEmail').show();
-
-                         $('.message-container').show();
-                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                
+                        $('.message-container').show();
+                        $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');    
                     }
                 }
             });     
@@ -614,16 +629,25 @@
                     overrideWordCount   : overrideWordCount,
                     words               : $('#words').val(),                  
                     appointed           : $('#appointed_value').val(),
-                    hasAttachement      : "{{ $has_attachement }}",
+                    hasAttachment      : "{{ $has_attachment }}",
                 },
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) 
                 {
+
+                    reload = data.reload;
+
+                    if (data.totalDeduction > 0 ) {
+                        $('#total_point_needed').html(data.totalDeduction + " Points ")
+                    } else {
+                        $('#total_point_needed').html("")
+                    }
+
                     if (data.success == true) {
                         if (data.totalPointsLeft < 0) 
-                        {            
+                        {
                             $('#sendMemberReloadEmail').show();
                             $('.message-container').show();
                             $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                 
@@ -635,6 +659,7 @@
                             setTimeout(submitForm, 3000);
                         }                     
                     } else {
+                    
                         $('#sendMemberReloadEmail').show();
                         $('.message-container').show();
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                
