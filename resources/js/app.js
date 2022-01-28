@@ -54,16 +54,13 @@ if (url[1] === 'admin') {
     //front end 
     switch(url[1]) {
         case '':
-        case 'home':        
-            console.log("load member (home)!")
+        case 'home':
             Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
         break;
-        case 'customerchatsupport':
-            console.log("load user chat (home)!")
+        case 'customerchatsupport':           
             Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
         break;
-        default:
-            console.log("default front end page, no vue!!")
+        default:            
             Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
     }
 }
