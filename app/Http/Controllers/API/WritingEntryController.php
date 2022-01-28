@@ -154,7 +154,8 @@ class WritingEntryController extends Controller
                 }
 
                 return Response()->json([
-                    "success"           => $success,   
+                    "success"           => $success,
+                    "is_appointed"      => $is_appointed,
                     "message"           =>  $message,
                     "membership"        => $memberInfo->membership,
                     "credits"           => $credits,
