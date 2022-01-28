@@ -160,6 +160,7 @@ class WritingEntryController extends Controller
                     "membership"        => $memberInfo->membership,
                     "credits"           => $credits,
                     "deposit"           => $deposit,
+                    "totalCredits"      => $totalCredits,
                     'totalDeduction'    => $totalDeduction,
                     "wordPointDeduction" => $wordPointDeduction,
                     "totalPointsLeft"   => $totalPointsLeft
