@@ -147,12 +147,16 @@
                     @endcan
 
                     @can('member_delete')
+
+                        @if (Auth::user()->user_type == "ADMINISTRATOR")
             
                         <form id="delete_member_{{$member->user_id}}" action="member/{{$member->user_id}}" method="POST" onsubmit="return confirm('are you sure you want to delete?');">
                             <input type="hidden" name="_method" value="DELETE">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <input type="submit" style="border:none; color: #c60000; background-color: transparent; font: normal 12px Arial" value="{{ trans('global.delete') }}">
                         </form>
+
+                        @endif
 
                     @endcan
                 </td>
