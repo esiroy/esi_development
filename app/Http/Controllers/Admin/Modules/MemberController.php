@@ -624,28 +624,37 @@ class MemberController extends Controller
     public function destroy($id)
     {
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-
-
-        $member = Member::where('user_id', $id)->first();
-        $user = User::find($member->user_id);
-
-        LessonGoals::where('member_id', $user->id)->delete();
-        MemberAttribute::where('member_id', $user->id)->delete();
-        MemberDesiredSchedule::where('member_id', $user->id)->delete();
-
-        //clear all chat support history
-        ChatSupportHistory::where('sender_id', $user->id)->delete();
-        ChatSupportHistory::where('recipient_id', $user->id)->delete();
-
-        MemoReply::where('sender_id', $user->id)->delete();
-        MemoReply::where('recipient_id', $user->id)->delete();
-        Purpose::where('member_id', $user->id)->delete();
-
-        $member->delete();
-        $user->forceDelete();
         
+        if (Auth::user()->user_type == "ADMINISTRATOR") 
+        {
+        
+            $member = Member::where('user_id', $id)->first();
+            $user = User::find($member->user_id);
 
-        return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
+            LessonGoals::where('member_id', $user->id)->delete();
+            MemberAttribute::where('member_id', $user->id)->delete();
+            MemberDesiredSchedule::where('member_id', $user->id)->delete();
+
+            //clear all chat support history
+            ChatSupportHistory::where('sender_id', $user->id)->delete();
+            ChatSupportHistory::where('recipient_id', $user->id)->delete();
+
+            MemoReply::where('sender_id', $user->id)->delete();
+            MemoReply::where('recipient_id', $user->id)->delete();
+            Purpose::where('member_id', $user->id)->delete();
+            $member->delete();
+            $user->forceDelete();
+
+            return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');        
+
+        } else {        
+
+            return redirect()->route('admin.member.edit', $id)->with('error_message', 'Current user has no administrator privilidge!');
+
+        }
+
+
+
     }
 
     
