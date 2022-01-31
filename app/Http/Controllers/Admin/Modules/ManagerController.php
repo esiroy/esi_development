@@ -236,15 +236,22 @@ class ManagerController extends Controller
     {
         abort_if(Gate::denies('manager_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         
-        $member = Member::where('user_id', $id)->first();
-        if ($member) {
-            $member->forceDelete();
+
+        if (Auth::user()->user_type == "ADMINISTRATOR") 
+        {           
+            $member = Member::where('user_id', $id)->first();
+            if ($member) {
+                $member->forceDelete();
+            }
+            
+
+            $user   = User::find($id);
+            $user->forceDelete();
+
+            return back()->with('message', 'Manager has been deleted successfully!');
+        } else {
+
+            return redirect()->back()->with('error_message', 'Delete is not allowed for your user type, please contact the administrator.');
         }
-        
-
-        $user   = User::find($id);
-        $user->forceDelete();
-
-        return back()->with('message', 'Manager has been deleted successfully!');
     }
 }

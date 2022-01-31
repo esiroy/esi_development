@@ -616,7 +616,7 @@ class MemberController extends Controller
     public function destroy($id)
     {        
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-        
+
         if (Auth::user()->user_type == "ADMINISTRATOR") 
         {        
             $member = Member::where('user_id', $id)->first();
@@ -636,7 +636,7 @@ class MemberController extends Controller
             $member->delete();
             $user->forceDelete();
 
-            return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');    
+            return redirect()->route('admin.member.index')->with('message', 'Member has been deleted!');    
 
         } else {
 

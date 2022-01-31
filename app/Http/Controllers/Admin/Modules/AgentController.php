@@ -360,15 +360,23 @@ class AgentController extends Controller
      */
     public function destroy($id, Request $request)
     {
-        $user   = User::find($id);
-        $agent  = Agent::where('user_id', $id)->first();
-        
-        $agent->delete();
-        $user->forceDelete();
+        if (Auth::user()->user_type == "ADMINISTRATOR") 
+        {       
+            $user   = User::find($id);
+            $agent  = Agent::where('user_id', $id)->first();
+            
+            $agent->delete();
+            $user->forceDelete();
 
-        return back()->with('message', 'Agent has been deleted successfully!');
+            return back()->with('message', 'Agent has been deleted successfully!');
+
+        } else {
+
+            return redirect()->back()->with('error_message', 'Delete is not allowed for your user type, please contact the administrator.');
+        }        
     }
 
+    /*
     public function massDestroy(Request $request)
     {
         //abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -376,7 +384,7 @@ class AgentController extends Controller
         User::whereIn('user_id', request('ids'))->forceDelete();
 
         return response(null, Response::HTTP_NO_CONTENT);
-    }
+    }*/
 
 
 

@@ -388,24 +388,33 @@ class TutorController extends Controller
     {
         abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $user   = User::find($id);
-        $tutor  = Tutor::where('user_id', $id)->first();
+        if (Auth::user()->user_type == "ADMINISTRATOR") 
+        {    
+
+            $user   = User::find($id);
+            $tutor  = Tutor::where('user_id', $id)->first();
 
 
-        //clear all chat support history
-        ChatSupportHistory::where('sender_id', $id)->delete();
-        ChatSupportHistory::where('recipient_id', $id)->delete();
+            //clear all chat support history
+            ChatSupportHistory::where('sender_id', $id)->delete();
+            ChatSupportHistory::where('recipient_id', $id)->delete();
 
-        MemoReply::where('sender_id', $id)->delete();
-        MemoReply::where('recipient_id', $id)->delete();
+            MemoReply::where('sender_id', $id)->delete();
+            MemoReply::where('recipient_id', $id)->delete();
 
-        //delete tutor if there is still added
-        $tutor->delete();
-        $user->forceDelete();
+            //delete tutor if there is still added
+            $tutor->delete();
+            $user->forceDelete();
 
-        return back()->with('message', 'Tutor has been deleted successfully!');
+            return back()->with('message', 'Tutor has been deleted successfully!');
+            
+        } else {
+
+            return redirect()->back()->with('error_message', 'Delete is not allowed for your user type, please contact the administrator.');
+        }
     }
 
+    /*
     public function massDestroy(Request $request)
     {
         abort_if(Gate::denies('tutor_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -416,5 +425,6 @@ class TutorController extends Controller
 
         return response(null, Response::HTTP_NO_CONTENT);
     }
+    */
 
 }
