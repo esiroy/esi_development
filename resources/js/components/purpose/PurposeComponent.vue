@@ -624,11 +624,8 @@ export default {
     VueSlider
     },
     data() {
-        return {               
-
+        return {
             errorMsg: '',
-
-
             //purpose List
             level_difficulty_data_select: ['Beginner', 'Intermediate', 'Advance'],
             childPurposeList: {
@@ -662,10 +659,7 @@ export default {
                         Reading: 0,
                         Listening: 0,                        
                 },
-
-
                 TOEFL_Primary: "",
-
                 TOEIC: "",
                 TOEIC_option: {
                         Speaking: "",
@@ -700,9 +694,7 @@ export default {
                         Grade_2: 0,
                         Grade_pre_1: 0,
                         Grade_1: 0,                      
-                }, 
-
-
+                },
                 TEAP: "",
                 TEAP_option:
                 {
@@ -717,9 +709,7 @@ export default {
                         Writing: 0,
                         Reading: 0,
                         Listening: 0,                        
-                },   
-
-
+                },
                 BUSINES: "",
                 BUSINESS_option:
                 {
@@ -732,9 +722,7 @@ export default {
                         Basic: "",
                         Intermediate: "",
                         Advance: "",                               
-                },  
-
-
+                },
                 BUSINESS_CAREERS: "",
                 BUSINESS_CAREERS_option:
                 {
@@ -763,9 +751,7 @@ export default {
                         Tourism: "",       
                         Cabin_Crew: "",
                         Marketing_and_Advertising: "",                                                                                                                        
-                },  
-
-
+                },
                 DAILY_CONVERSATION: "",
                 DAILY_CONVERSATION_option:
                 {
@@ -779,7 +765,6 @@ export default {
                         Intermediate: "",
                         Advance: "",
                 },
-
                 OTHERS: "",
                 OTHERS_value: "",
             },            
@@ -809,16 +794,10 @@ export default {
     updated: function () 
     {
        this.$parent.purposeList = this.childPurposeList;
-            
-        //console.log(this.purposeList.IELTS_targetScore.Speaking);
-
         
     },
     mounted: function () 
     {
-        //console.log("Purpose mounted");
-        //console.log(this.childPurposeList)
-
         this.childPurposeList = this.purposeList;
 
     },

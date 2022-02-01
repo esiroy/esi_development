@@ -133,9 +133,7 @@
                                 
                             </div>
 
-                           <!--
-                           <a id="viewAllExamScores" href="getAllScores"  data-toggle="modal" data-target="#showAllMemberExamScoreModal">All Scores</a>
-                           -->
+              
 
                            
                             <b-modal id="examHistory" ref="examHistoryModal" title="Exam Scores">
@@ -152,8 +150,6 @@
 
                 </div>
 
-
-
                 <!-- SCORE MODAL Button-->
                 <div class="row mt-2">
                     <div class="col-6 float-right px-0 mx-0 d-flex justify-content-end">
@@ -169,7 +165,7 @@
 
                 <!--Score Graphs Button -->
                     <div class="col-6  px-0 mx-0">
-                        <span v-b-modal.modalMemberExamScoreList >
+                        <span v-b-modal.modalMemberExamScoreGraph>
                             <b-button size="sm" variant="primary" pill>
                                 <b-icon-bar-chart-fill></b-icon-bar-chart-fill> <span class="small">Score Graph </span>
                             </b-button>                   
@@ -178,43 +174,64 @@
                     </div>
                 </div>
 
-
-                <!-- SCORE MODAL -->
+                <!-- [START] SCORE MODAL -->
                 <div id="memberExamScoreList" class="modal-container">
+                    <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScorelist">  
+                        <div class="row">
+                            <div class="col-4" v-for="examScoreType in examScoreTypes" :key="examScoreType">
 
-                    <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScorelist">                            
-                        <div style="overflow-x:scroll; ">
-
-
-                            <table>
-                                <tr style="vertical-align:top">
-
-                                    <td v-for="examScoreType in examScoreTypes" :key="examScoreType" style="min-width:320px; border:1px dotted #999">     
-
-                                        <div class="font-weight-bold">{{ capitalizeFirstLetter(examScoreType) }}</div>
-
-                                        <div v-for="values in examScoreList[examScoreType]" :key="values.id">       
-                                            <div v-for="objectName in Object.keys(values)" :key="objectName.id">
-                                                {{ FormatObjectKey(objectName) }} : {{ values[objectName] }}
-                                            </div>         
-                                              <p>-----</p>                              
+                                <div class="card esi-card mb-3">
+                                    <div class="card-header esi-card-header small">
+                                        {{ capitalizeFirstLetter(examScoreType) }}
+                                    </div>
+                                    <div v-for="(values, index) in examScoreList[examScoreType]" :key="index" >
+                                        <!--
+                                        <div v-for="objectName in Object.keys(values)" :key="objectName.id">
+                                            {{ FormatObjectKey(objectName) }} : {{ values[objectName] }}
+                                        </div> 
+                                        -->
+                                        <div :id="examScoreType" :class="examScoreType" v-if="index == 'rows'">
+                                            <b-table id="my-table" :class="'memberExamTable'" :items="examScoreList[examScoreType].items" 
+                                                :per-page="examScoreList[examScoreType].perPage" 
+                                                :current-page="examScoreList[examScoreType].currentPage" 
+                                                small 
+                                                stacked fixed>
+                                            </b-table>                                        
+                                            <b-pagination
+                                                v-model="examScoreList[examScoreType].currentPage"
+                                                :total-rows="examScoreList[examScoreType].rows"
+                                                :per-page="examScoreList[examScoreType].perPage"
+                                                first-text="<<"
+                                                prev-text="<"
+                                                next-text=">"
+                                                last-text=">>"
+                                                size="sm"
+                                                align="center"
+                                                
+                                            ></b-pagination>
                                         </div>
-
-                                        <p>-----</p>
-                                        {{ examScoreType }}
-                                    </td>
-
-
-
-                                    
-                                </tr>                            
-                            </table>
-
-
+                                    </div>
+                                </div>
+                            </div>                        
                         </div>                        
                     </b-modal>
 
                 </div>
+                <!-- [END] SCORE MODAL -->
+
+                <!-- [START] SCORE MODAL -->
+                <div id="memberExamScoreGraph" class="modal-container">
+                    <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴" size="xl" @show="getMemberScoreTotallist"> 
+
+                        <div class="row">
+                            <div class="col-4" v-for="examScoreType in examScoreTypes" :key="examScoreType">
+                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded" ></line-chart>
+                            </div>
+                        </div>
+                        
+                    </b-modal>
+                </div>
+                <!-- [END] SCORE MODAL -->
 
 
             </div>
@@ -226,6 +243,11 @@
 </template>
 
 <script>
+import LineChart from '../../frontend/chart/lineChartComponent.vue'
+
+
+
+
 import Vuelidate from "vuelidate";
 Vue.use(Vuelidate);
 
@@ -245,7 +267,9 @@ import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale';
 export default {
     name: "MemberScoreComponent",
+  
     components: {
+        LineChart,
         Datepicker, PurposeComponent,
         IELTScoreComponent, 
         ToeflScoreComponent, ToeflJuniorScoreComponent,
@@ -259,12 +283,21 @@ export default {
 		purpose: Array,		
         memberlatestexamscore: Object,
 		csrf_token: String,		
-		api_token: String		
+		api_token: String,
     },
+    
     data() {
         return {
+        
             submitted: false,
             ja: ja,
+
+            slide: 0,
+            sliding: null,
+
+            //charts
+            loaded: false,
+            datacollection: [],
 
             //this is for examp type column
             size: {
@@ -287,52 +320,62 @@ export default {
 
             examScorePage: {
                 IELTS: {                    
-                    perPage : 2,
+                    perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,
                 }, 
                 TOEFL: {                    
-                    perPage : 3,
+                    perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,
                 },
                 TOEFL_Junior: {                    
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,
                 },
                 TOEFL_Primary_Step_1: {                    
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,          
                 },
                 TOEFL_Primary_Step_2: {                    
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,             
                 },
                 TOEIC_Listening_and_Reading: {                    
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1, 
                 },
                 TOEIC_Speaking: {
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,
                 },
                 EIKEN: {
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,
                 },
                 TEAP: {                    
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,
                 },
                 Other_Test: {
                     perPage : 1,
+                    rows: 1,
                     currentPage : 1,
                     items : 1,
                 }
@@ -419,27 +462,80 @@ export default {
     mounted: function () 
 	{
         this.getMemberLatestExamScore();	
+
+    /*
+        this.datacollection['IELTS'] = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [
+                {
+                    label: 'GitHub Commits',
+                    backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), //'#f87979',
+                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
+                }
+            ]
+        }
+*/
+
+
     },
     methods: {   
+        onSlideStart(slide) {
+            this.sliding = true
+        },
+        onSlideEnd(slide) {
+            this.sliding = false
+        },
+        searchkey(nameKey, myArray)
+        {
+            try {              
+                console.log(myArray[nameKey])
+                return myArray[nameKey]
+            } catch (err) {
+                // 👇️ This runs
+                console.log('Error: ', err.message);
+            }            
+        },
         getMemberScorelist() 
         {
             this.getMemberExamScoreByType();
         },
-        getMemberExamScoreByType() {
-
+        getMemberScoreTotallist() {
+            this.getMemberExamTotal();
+        },
+        getMemberExamScoreByType() 
+        {
             axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
             {
                 method      : "POST",
                 memberID    : this.memberinfo.user_id,
                 examType    : this.examType,
                 limit       : 1,
-
             }).then(response => {               
                 if (response.data.success === true) 
                 {
                     this.examScoreTypes = response.data.examTypes;
                     this.examScoreList = response.data.examScoreList;
-                   // this.examScoreLink = response.data.examScoreLink;
+
+                    let types = this.examScoreTypes;
+
+                    types.forEach((type) => {                    
+                        
+                        this.examScorePage[type].rows = this.examScoreList[type].rows;
+
+                        this.datacollection[type] = {
+                            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+                            datasets: [
+                                {
+                                    label: type,
+                                    backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), //'#f87979',
+                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
+                                }
+                            ]
+                        }
+                    });
+
+                    this.loaded = true;
+
                 }
                 else
                 {
@@ -447,14 +543,58 @@ export default {
                     
                 }
             }).catch(function(error) {
-
-             
-
                 // handle error
                 alert("Error " + error);
                 //console.log(error);
-            });         
-        
+            });                 
+        },
+        getMemberExamTotal() 
+        {       
+
+            axios.post("/api/getMemberExamScoreTotalByType?api_token=" + this.api_token, 
+            {
+                method      : "POST",
+                memberID    : this.memberinfo.user_id,
+                examType    : this.examType,
+                limit       : 1,
+            }).then(response => {               
+                if (response.data.success === true) 
+                {
+                    this.examScoreTypes = response.data.examTypes;
+                    this.examScoreList = response.data.examScoreList;
+
+                    let types = this.examScoreTypes;
+
+                    types.forEach((type) => 
+                    {                        
+                        this.examScorePage[type].rows = this.examScoreList[type].rows;
+                        let totals = response.data.examScoreList[type].avg;
+
+                        this.datacollection[type] = {
+                            labels: response.data.examScoreList[type].months,
+                            datasets: [
+                                {
+                                    label: type,
+                                    backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), 
+                                    data: totals
+                                }
+                            ]
+                        }
+                    });
+                    this.loaded = true;
+                }
+                else
+                {
+
+                    
+                }
+            }).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                //console.log(error);
+            });       
+
+
         },
         getMemberExamScorePage(page, memberID)
         {
@@ -850,5 +990,9 @@ export default {
     .sub_options, .examScoreHolder, .loading-container {
         display: none;
     }   
+
+    .memberExamTable td {
+        font-size: 11px;
+    }
 
 </style>

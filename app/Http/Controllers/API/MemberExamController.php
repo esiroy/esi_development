@@ -20,30 +20,30 @@ class MemberExamController extends Controller
         $examTypes = MemberExamScore::where('user_id', $memberID)->select('exam_type')->distinct()->get();
 
         foreach ($examTypes as $value) 
-        {        
-
+        {
             $examType = $value->exam_type;
             $types[] = $examType;
-
             //get list of scores
-            $examScores = MemberExamScore::where('user_id', $memberID)->where('exam_type', $examType)
-                        ->orderBy('id', 'DESC')->paginate(10);
-
-            $links = $examScores->links();
-
+            $examScores = MemberExamScore::where('user_id', $memberID)->where('exam_type', $examType)->orderBy('id', 'DESC')->get();
+          
             $scores = $examScores;
 
-            foreach ($examScores as $examScore) {
-                 $examScoreList[$examType][] = json_decode($examScore->exam_scores, true);
-            }
+            $examScoreList[$examType]['perPage'] = 1;            
+            $examScoreList[$examType]['rows'] =  $examScores->count();
             
+            //$examScoreList[$examType]['pages'] =  $examScores->lastPage();
+            //$examScoreList[$examType]['currentPage'] =  $examScores->currentPage();
+            
+            foreach ($examScores as $examScore) {
+                 $examScoreList[$examType]['items'][] = json_decode($examScore->exam_scores, true);                 
+            }
         }
 
         if ($examTypes) {
         
             return Response()->json([
                 'success' => true,
-                'examTypes' => $types,
+                'examTypes' => $types,               
                 'examScoreList' => $examScoreList,
             ]);
         } else {
@@ -53,6 +53,84 @@ class MemberExamController extends Controller
             ]);
         }
     }
+
+    //Get Just the total for chars 
+    public function getMemberExamScoreTotalByType(Request $request)
+    {
+
+        $yearAndMonths = getMonthAndYear(12);
+
+        $examScoreList = null;
+        $examScoreLink = null;
+
+        $memberID = isset($request['memberID']) ? $request['memberID'] : Auth::user()->id;
+        $examTypes = MemberExamScore::where('user_id', $memberID)->select('exam_type')->distinct()->get();
+        foreach ($examTypes as $value) 
+        {
+            $examType = $value->exam_type;
+            $types[] = $examType;
+
+            $months = getMonths(12);
+
+            //get list of scores
+            
+            foreach ($months as $month) 
+            {                
+                $examScores = MemberExamScore::where('user_id', $memberID)->where('exam_type', $examType)
+                                ->select('exam_scores')
+                                 ->whereYear('exam_date', date('Y', strtotime($month)) )
+                                ->whereMonth('exam_date', date('m', strtotime($month)) )
+                                ->orderBy('id', 'DESC')
+                                ->get();             
+               
+                $total = 0;
+                $count =  0;
+
+                foreach ($examScores as $examScore) 
+                {
+                    $scoreData = json_decode($examScore->exam_scores, true);
+
+                    if (isset($scoreData['total'])) 
+                    {                    
+                        $total = $total + $scoreData['total'];
+
+                    } else if (isset($scoreData['overallBandScore'])) {
+
+                        $total = $total + $scoreData['overallBandScore'];
+                    }
+
+                    $count++;
+                }
+
+                if ($count > 0) {
+                     $avg = $total / $count; 
+                } else {
+                    $avg = 0;
+                }
+               
+
+                $examScoreList[$examType]['totals'][] =  $total;
+                $examScoreList[$examType]['avg'][] =  $avg;
+                $examScoreList[$examType]['months'] = $yearAndMonths;
+            }            
+        }
+
+        if ($examTypes) {
+        
+            return Response()->json([
+                'success' => true,
+                'examTypes' => $types,               
+                'examScoreList' => $examScoreList,
+            ]);
+        } else {
+            return Response()->json([
+                'success' => false,
+                'message' => 'No record found for member exam types',
+            ]);
+        }
+    }
+
+
 
     public function getAllMemberExamScore(Request $request)
     {
