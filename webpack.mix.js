@@ -32,7 +32,8 @@ mix.js('resources/js/app.js', 'public/js')
 
 mix.js(
         [
-            "resources/js/app.js"
+            "resources/js/app.js",
+            "resources/js/custom.js"
         ],
         "public/js/app.js"
     )

@@ -106,6 +106,7 @@
                                     Loading...
                                 </b-button>
                             </div>
+
                         </template>                                            
                     </b-modal>
 
@@ -213,7 +214,16 @@
                                     </div>
                                 </div>
                             </div>                        
-                        </div>                        
+                        </div>   
+
+                        <template #modal-footer>
+                            <div class="buttons-container w-100">
+                                <p class="float-left"></p>
+                                <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalMemberExamScoreList')">Close</b-button>                            
+                            </div>
+                        </template>  
+
+
                     </b-modal>
 
                 </div>
@@ -228,6 +238,13 @@
                                 <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded" ></line-chart>
                             </div>
                         </div>
+
+                        <template #modal-footer>
+                            <div class="buttons-container w-100">
+                                <p class="float-left"></p>
+                                <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalMemberExamScoreGraph')">Close</b-button>                            
+                            </div>
+                        </template>                         
                         
                     </b-modal>
                 </div>
@@ -461,21 +478,7 @@ export default {
     },      
     mounted: function () 
 	{
-        this.getMemberLatestExamScore();	
-
-    /*
-        this.datacollection['IELTS'] = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-            datasets: [
-                {
-                    label: 'GitHub Commits',
-                    backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), //'#f87979',
-                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
-                }
-            ]
-        }
-*/
-
+        this.getMemberLatestExamScore();
 
     },
     methods: {   

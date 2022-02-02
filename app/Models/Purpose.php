@@ -47,17 +47,80 @@ class Purpose extends Model
                 $purpose_options = (is_array($option))? json_encode($option) : [];
             }
             
-            if ($purposeList->{"$Object"} == true) {
-                Purpose::create([          
-                    'valid' => 1,
-                    'purpose' => str_replace("_", " ", $Object),
-                    'purpose_options' => $purpose_options,
-                    'member_id' => $memberID
-                ]);            
+            if ($purposeList->{"$Object"} == true) 
+            {
+                $purposeValue = str_replace("_", " ", $Object);
+                $purposeFound = Purpose::where('purpose', $purposeValue)->first();
+                if ( $purposeFound ) 
+                {                
+                    $purposeFound->update([          
+                        'valid' => 1,
+                        'purpose' => $purposeValue,
+                        'purpose_options' => $purpose_options,
+                        'member_id' => $memberID
+                    ]);                  
+                } else {
+                    Purpose::create([          
+                        'valid' => 1,
+                        'purpose' => $purposeValue,
+                        'purpose_options' => $purpose_options,
+                        'member_id' => $memberID
+                    ]); 
+                }
+          
+            } else {
+            
+                $purposeValue = str_replace("_", " ", $Object);
+                $purposeFound = Purpose::where('purpose', $purposeValue)->first();
+                if ( $purposeFound ) 
+                { 
+                    $purposeFound->update([          
+                        'valid' => 0,
+                    ]);
+                } 
+
             }
         }
     }
 
 
+    public function saveTargetScores($memberID, $Object, $purposeList) 
+    {
+        if (isset($purposeList->{"$Object"}))        
+        {
+            $targetScore = null;
+
+            if (isset($purposeList->{"$Object"})) 
+            {
+                //check if the option is checked to be used in_array
+                if (isset($purposeList->{"$Object". "_option"})) {
+                    $purpose_option_array = (array) $purposeList->{"$Object". "_option"};
+                }
+                
+                if (isset($purposeList->{"$Object". "_targetScore"})) 
+                {
+                    foreach ($purposeList->{"$Object". "_targetScore"} as $key => $item) {
+                        if (isset($item)) {
+                            if ($item == true) {
+                                //check if the $key is on $purpose option
+                                if (in_array($key, $purpose_option_array)) {
+                                    $targetScore[ strtolower(str_replace(" ", "_", $key))] = "". $item ."";                                        
+                                }                                        
+                            }                            
+                        }
+                    }
+
+                    Purpose::where('purpose', str_replace("_", " ", $Object))
+                            ->where('valid', 1)
+                            ->where('member_id', $memberID)
+                            ->update([
+                                'target_scores' => json_encode($targetScore, true)
+                            ]);
+            
+                }
+                
+            }
+        }
+    }
 
 }

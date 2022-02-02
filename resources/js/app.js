@@ -56,11 +56,13 @@ if (url[1] === 'admin') {
         case '':
         case 'home':
             Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
+            Vue.component('member-purpose-commponent', require('./components/frontend/member/MemberPurposeComponent.vue').default)
         break;
         case 'customerchatsupport':           
             Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
         break;
         default:            
+            Vue.component('member-purpose-commponent', require('./components/frontend/member/MemberPurposeComponent.vue').default)
             Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
     }
 }
