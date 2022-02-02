@@ -1,6 +1,23 @@
+
+ @if (isset($examTypes)) 
+    @foreach($examTypes as $examType)
+
+        <span class="border border-primary">
+            {{ $examType->exam_type }} 
+        </span>
+
+        
+    @endforeach
+@endif   
+
+
+
+
 @foreach ($scores as $score)    
 <div class="row my-0">
     <div class="col-md-12 mb-1">
+
+
         <div class="small font-weight-bold">
             Exam Date : <span id="memberExamDate" class="font-weight-normal"> {{ $score->exam_date }} </span>
         </div>
@@ -25,4 +42,6 @@
     </div>
 </div>
 @endforeach
-{!! $scores->onEachSide(5)->links() !!}
+
+
+{!! $scores->links() !!}

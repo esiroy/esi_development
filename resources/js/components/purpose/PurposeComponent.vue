@@ -2,9 +2,11 @@
 
   <div id="PurposeComponent" class="PurposeComponent">
 
+    <div class="message"></div>
+    
     <!--[start] Purpose (New)-->
     <div id="purpose-section" class="section">
-        <div class="card-title bg-gray p-1 mt-4">
+        <div class="card-title bg-gray p-1">
             <div class="pl-2 font-weight-bold small">Member Purpose</div>                    
         </div>
 
@@ -32,8 +34,9 @@
 
         <div class="row pt-2">
             <div class="col-2">
-                <label for="agent" class="px-0 col-md-12 col-form-label"><span class="text-danger">&nbsp;</span>
-                Select Member Purpose<div class="float-right">:</div></label>                                    
+                                      
+                <div class="pl-2 small">Select Purpose</div>
+                   
             </div>                
             <div class="col-10">     
                 <div class="checkbox-options">
@@ -582,9 +585,6 @@
                             </div>
                         </div>  
 
-                        
-                        
-
                     </div>
                 </div>
 
@@ -624,11 +624,8 @@ export default {
     VueSlider
     },
     data() {
-        return {               
-
+        return {
             errorMsg: '',
-
-
             //purpose List
             level_difficulty_data_select: ['Beginner', 'Intermediate', 'Advance'],
             childPurposeList: {
@@ -662,10 +659,7 @@ export default {
                         Reading: 0,
                         Listening: 0,                        
                 },
-
-
                 TOEFL_Primary: "",
-
                 TOEIC: "",
                 TOEIC_option: {
                         Speaking: "",
@@ -727,9 +721,7 @@ export default {
                         Basic: "",
                         Intermediate: "",
                         Advance: "",                               
-                },  
-
-
+                },
                 BUSINESS_CAREERS: "",
                 BUSINESS_CAREERS_option:
                 {
@@ -758,9 +750,7 @@ export default {
                         Tourism: "",       
                         Cabin_Crew: "",
                         Marketing_and_Advertising: "",                                                                                                                        
-                },  
-
-
+                },
                 DAILY_CONVERSATION: "",
                 DAILY_CONVERSATION_option:
                 {
@@ -774,7 +764,6 @@ export default {
                         Intermediate: "",
                         Advance: "",
                 },
-
                 OTHERS: "",
                 OTHERS_value: "",
             },            
@@ -796,6 +785,46 @@ export default {
             }
             this.errorMsg = msg
         },
+        showMainMenuSubOptions() 
+        {        
+            //Main Option click
+            let mainOption = document.getElementsByClassName("main_option");
+            Object.keys(mainOption).forEach(function (key){
+                let element = mainOption[key];
+                if (element.checked) {
+                    element.nextElementSibling.style.display = 'block';            
+                } else {
+                    element.nextElementSibling.style.display = 'none';
+                }
+            });       
+
+            this.showSubMenu();         
+        },
+        showSubMenu() 
+        {
+            let subOption = document.getElementsByClassName("sub_options");
+            Object.keys(subOption).forEach(function (key) 
+            {
+                let element = subOption[key];
+                let inputElements = element.querySelectorAll('input');
+                Object.keys(inputElements).forEach(function (inputElementkey) 
+                {
+                    let subElement = inputElements[inputElementkey];
+                    
+                    if (subElement.checked) {
+                        subElement.parentElement.nextElementSibling.style.display = 'block';   
+                        subElement.parentElement.nextElementSibling.nextElementSibling.style.display = 'block';
+                    } else {
+
+                        if (subElement.parentElement.nextElementSibling) {
+                            subElement.parentElement.nextElementSibling.style.display = 'none';   
+                            subElement.parentElement.nextElementSibling.nextElementSibling.style.display = 'none';                            
+                        }
+                    }
+                });
+
+            });
+        },
         clearErrorMsg() {
             this.errorMsg = ''
         }        
@@ -803,7 +832,8 @@ export default {
     computed: {},
     updated: function () 
     {
-       this.$parent.purposeList = this.childPurposeList;        
+        this.$parent.purposeList = this.childPurposeList;
+        this.showMainMenuSubOptions();
     },
     mounted: function () 
     {
@@ -813,4 +843,8 @@ export default {
 </script>
 <style scoped>
   
+      .sub_options {
+        display: none;
+    }  
+    
 </style>

@@ -9,7 +9,14 @@
             </div>
 
             <div class="modal-body">
-               <div id="memberExamScores"></div>
+            
+               
+
+
+                <div id="memberExamScores"></div>
+
+            
+
             </div>
             
         </div>

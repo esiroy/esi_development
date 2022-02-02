@@ -498,15 +498,15 @@
             <div id="examScoreContainer" class="row pt-2">
                 <div class="col-12">  
                     <!--[start] Dynamic Examination Scores -->
-                    <IELTScoreComponent :examScore="examScore"></IELTScoreComponent>
-                    <ToeflScoreComponent :examScore="examScore"></ToeflScoreComponent>
-                    <ToeflJuniorScoreComponent :examScore="examScore"></ToeflJuniorScoreComponent>
-                    <ToeflPrimaryStep1ScoreComponent :examScore="examScore"></ToeflPrimaryStep1ScoreComponent>
-                    <ToeflPrimaryStep2ScoreComponent :examScore="examScore"></ToeflPrimaryStep2ScoreComponent>
-                    <ToeicListeningAndReadingScoreComponent :examScore="examScore"></ToeicListeningAndReadingScoreComponent>
-                    <ToeicSpeakingScoreComponent :examScore="examScore"></ToeicSpeakingScoreComponent>
-                    <EikenScoreComponent :examScore="examScore"></EikenScoreComponent>
-                    <TeapScoreComponent :examScore="examScore"></TeapScoreComponent>                                    
+                    <IELTScoreComponent :examScore="examScore" :size="this.size"></IELTScoreComponent>
+                    <ToeflScoreComponent :examScore="examScore" :size="this.size"></ToeflScoreComponent>
+                    <ToeflJuniorScoreComponent :examScore="examScore" :size="this.size"></ToeflJuniorScoreComponent>
+                    <ToeflPrimaryStep1ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep1ScoreComponent>
+                    <ToeflPrimaryStep2ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep2ScoreComponent>
+                    <ToeicListeningAndReadingScoreComponent :examScore="examScore" :size="this.size"></ToeicListeningAndReadingScoreComponent>
+                    <ToeicSpeakingScoreComponent :examScore="examScore" :size="this.size"></ToeicSpeakingScoreComponent>
+                    <EikenScoreComponent :examScore="examScore" :size="this.size"></EikenScoreComponent>
+                    <TeapScoreComponent :examScore="examScore" :size="this.size"></TeapScoreComponent>                                    
                     <!--[end] Dynamic Examination Scores -->
 
                     <!--[start] Other-->
@@ -1000,6 +1000,13 @@ export default {
             //number sliders
             errorMsg: '',
         
+            //size of the exam score select dropdown menu
+            size: {
+                leftColumn  : "col-2",
+                rightColumn : "col-10",
+                select      : "col-3",
+            },   
+
             //Exam Date (Form Entry)
             examDate: "",
             uExamDate: "",

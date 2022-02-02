@@ -1342,7 +1342,7 @@ class MemberController extends Controller
                 /********************************************
                             DELETE: OLD MEMBER PURPOSE
                 **********************************************/
-                Purpose::where('member_id', $user->id)->delete();
+                //Purpose::where('member_id', $user->id)->delete();
 
                 /********************************************
                             CREATE MEMBER PURPOSE (Dynamic)
@@ -1404,13 +1404,13 @@ class MemberController extends Controller
                     "test" => $purposeList->{"IELTS". "_targetScore"}
                 ]);
             } catch (\Exception $e) {
+
+                DB::rollback();
+
                 return Response()->json([
                     "success" => false,
                     "message" => "Exception Error Found (Member Store) : " . $e->getMessage() . " on Line : " . $e->getLine(),
                 ]);
-
-                DB::rollback();
-                // something went wrong
             }
         }
 

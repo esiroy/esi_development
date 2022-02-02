@@ -147,6 +147,36 @@ if (! function_exists('ESILessonTimeRange')) {
 }
     
 
+if (! function_exists('getMonths')) {
+    function getMonths($maxCount) 
+    {         
+        for($i=1; $i <= $maxCount; $i++) 
+        {
+            if ($i == 1) {
+                $months[] = date("Y-m");
+            } else {
+                $months[] = date("Y-m", strtotime("-$i month"));
+            }            
+        }
+        return $months;
+    }
+}
+
+if (! function_exists('getMonthAndYear')) {
+    function getMonthAndYear($maxCount) 
+    {         
+        for($i=1; $i <= $maxCount; $i++) 
+        {
+            if ($i == 1) {
+                $monthsYears[] = date("Y-m");
+            } else {
+                $monthsYears[] = date("Y-m", strtotime("-$i month"));
+            }            
+        }
+        return $monthsYears;
+    }
+}
+
 
 
 if (! function_exists('limit')) {
@@ -359,5 +389,7 @@ if (! function_exists('countWords'))
         return str_word_count($text);
     }  
 }
+
+
 
 ?>

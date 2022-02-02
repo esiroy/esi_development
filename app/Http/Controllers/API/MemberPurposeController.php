@@ -10,7 +10,7 @@ class MemberPurposeController extends Controller
 {
     public function getMemberPurposeList(Request $request) 
     {
-        $purpose = Purpose::where('member_id', Auth::user()->id)->orderBy('id', 'ASC')->get();
+        $purpose = Purpose::where('member_id', Auth::user()->id)->where('valid', true)->orderBy('id', 'ASC')->get();
 
         if (count($purpose) >= 1) {
             return Response()->json([
@@ -32,7 +32,7 @@ class MemberPurposeController extends Controller
     */
     public function getMemberPurpose(Request $request) 
     {        
-        $purposelist = Purpose::where('member_id', Auth::user()->id)->orderBy('id', 'ASC')->get();
+        $purposelist = Purpose::where('member_id', Auth::user()->id)->where('valid', true)->orderBy('id', 'ASC')->get();
         $purpose = array();  
         $purpose_option = array();
         $target_score = array();
@@ -85,7 +85,51 @@ class MemberPurposeController extends Controller
     }
 
 
-    public function updateMemberPurpose(Request $request) 
+    public function updateMemberPurpose(Request $request, Purpose $purpose) 
+    {
+        try 
+        {
+
+            DB::beginTransaction();
+
+            $user = Auth::user();
+            $purposeList = json_decode($request['purposeList']);
+
+            $purpose = new Purpose(); 
+            $ObjectNameArray = array("IELTS", "TOEFL", "TOEFL_Primary", "TOEIC", "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+
+            foreach ($ObjectNameArray as $ObjectName) 
+            {
+                if (isset($purposeList->{"$ObjectName"})) 
+                { 
+                    $purpose->saveMemberPurpose($user->id, $ObjectName, $purposeList);
+                    $purpose->saveTargetScores($user->id, $ObjectName, $purposeList);
+                                
+                }                
+            } 
+
+            DB::commit();
+
+            return Response()->json([
+                "success" => true,
+                "message" => "Purpose has been added",
+            ]);  
+
+         } catch (\Exception $e) { 
+
+            DB::rollback();
+
+            return Response()->json([
+                "success" => false,
+                "message" => "Purpose did not succeed " . $e->getMessage() . " on Line : " . $e->getLine(),
+            ]); 
+                           
+         }     
+
+    }
+
+
+    public function updateMemberPurpose_old(Request $request) 
     {
         $user = Auth::user();
 
@@ -97,6 +141,9 @@ class MemberPurposeController extends Controller
         /********************************************
                     CREATE MEMBER PURPOSE
         **********************************************/
+
+        $data = $request['purposeList'];
+
         //IELTS
         if (isset($request['IELTS'])) {
             $IELTS_TargetScores = [

@@ -113,6 +113,7 @@
 @endsection
 
 @section('scripts')
+    @parent
     <script src="{{ url('js/steps/jquery.steps.min.js') }}" defer></script>
     <script src="{{ url('js/validation/jquery.validation.min.js') }}" defer></script>
     <script>
