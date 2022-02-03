@@ -12,6 +12,7 @@
             <div class="mt-3">
 
                 <div id="memberAddExamScoreForm" class="modal-container">
+
                     <b-modal id="modalUpdateMemberForm" title="テストスコア履歴" @show="resetModal">
                         <form id="updateMemberForm" name="updateMemberForm" @submit.prevent="handleUpdateMemberSubmit">   
                             <!--[start] Exam (New)-->
@@ -50,7 +51,7 @@
                                                 :value="examDate"
                                                 :format="examDateFormatter"
                                                 :placeholder="'Select Date'"
-                                                :input-class="[ 'form-control form-control-sm col-md-10 ']"
+                                                :input-class="[ 'form-control form-control-sm col-md-10 bg-white']"
                                                 :language="ja"
                                             ></datepicker>  
 
@@ -153,6 +154,7 @@
 
                 <!-- SCORE MODAL Button-->
                 <div class="row mt-2">
+                    <!-- View Scores -->
                     <div class="col-6 float-right px-0 mx-0 d-flex justify-content-end">
                         <span v-b-modal.modalMemberExamScoreList >
                             <b-button size="sm" variant="dark"  pill>
@@ -162,9 +164,7 @@
                         &nbsp;
                     </div>
 
-
-
-                <!--Score Graphs Button -->
+                    <!--Score Graphs Button -->
                     <div class="col-6  px-0 mx-0">
                         <span v-b-modal.modalMemberExamScoreGraph>
                             <b-button size="sm" variant="primary" pill>
@@ -177,7 +177,7 @@
 
                 <!-- [START] SCORE MODAL -->
                 <div id="memberExamScoreList" class="modal-container">
-                    <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScorelist">  
+                    <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScoreList">  
                         <div class="row">
                             <div class="col-4" v-for="examScoreType in examScoreTypes" :key="examScoreType">
 
@@ -225,13 +225,12 @@
 
 
                     </b-modal>
-
                 </div>
                 <!-- [END] SCORE MODAL -->
 
                 <!-- [START] SCORE MODAL -->
                 <div id="memberExamScoreGraph" class="modal-container">
-                    <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴" size="xl" @show="getMemberScoreTotallist"> 
+                    <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴" size="xl" @show="getMemberScoreTotalList"> 
 
                         <div class="row">
                             <div class="col-4" v-for="examScoreType in examScoreTypes" :key="examScoreType">
@@ -253,6 +252,7 @@
 
             </div>
         </div>
+
     </div>
 
 
@@ -260,220 +260,216 @@
 </template>
 
 <script>
-import LineChart from '../../frontend/chart/lineChartComponent.vue'
-
-
-
-
-import Vuelidate from "vuelidate";
-Vue.use(Vuelidate);
-
-import PurposeComponent from "../../purpose/PurposeComponent.vue";
-//Import Score Types
-import IELTScoreComponent from "../../scores/IELTScoreComponent.vue";
-import ToeflScoreComponent from "../../scores/ToeflScoreComponent.vue";
-import ToeflJuniorScoreComponent from "../../scores/ToeflJuniorScoreComponent.vue";
-import ToeflPrimaryStep1ScoreComponent from "../../scores/ToeflPrimaryStep1ScoreComponent.vue";
-import ToeflPrimaryStep2ScoreComponent from "../../scores/ToeflPrimaryStep2ScoreComponent.vue";
-import ToeicListeningAndReadingScoreComponent from "../../scores/ToeicListeningAndReadingScoreComponent.vue";
-import ToeicSpeakingScoreComponent from "../../scores/ToeicSpeakingScoreComponent.vue";
-import EikenScoreComponent from "../../scores/EikenScoreComponent.vue";
-import TeapScoreComponent from "../../scores/TeapScoreComponent.vue";
-import * as Moment from 'moment'
-import Datepicker from 'vuejs-datepicker';
-import {en, ja} from 'vuejs-datepicker/dist/locale';
-export default {
-    name: "MemberScoreComponent",
-  
-    components: {
-        LineChart,
-        Datepicker, PurposeComponent,
-        IELTScoreComponent, 
-        ToeflScoreComponent, ToeflJuniorScoreComponent,
-        ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
-        ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, 
-        EikenScoreComponent,
-        TeapScoreComponent,
-    },
-    props: {
-        memberinfo: Object,      
-		purpose: Array,		
-        memberlatestexamscore: Object,
-		csrf_token: String,		
-		api_token: String,
-    },
-    
-    data() {
-        return {
+    import LineChart from '../../frontend/chart/lineChartComponent.vue';
+    import Vuelidate from "vuelidate";
+    Vue.use(Vuelidate);import PurposeComponent from "../../purpose/PurposeComponent.vue";
+    //Import Score Types
+    import IELTScoreComponent from "../../scores/IELTScoreComponent.vue";
+    import ToeflScoreComponent from "../../scores/ToeflScoreComponent.vue";
+    import ToeflJuniorScoreComponent from "../../scores/ToeflJuniorScoreComponent.vue";
+    import ToeflPrimaryStep1ScoreComponent from "../../scores/ToeflPrimaryStep1ScoreComponent.vue";
+    import ToeflPrimaryStep2ScoreComponent from "../../scores/ToeflPrimaryStep2ScoreComponent.vue";
+    import ToeicListeningAndReadingScoreComponent from "../../scores/ToeicListeningAndReadingScoreComponent.vue";
+    import ToeicSpeakingScoreComponent from "../../scores/ToeicSpeakingScoreComponent.vue";
+    import EikenScoreComponent from "../../scores/EikenScoreComponent.vue";
+    import TeapScoreComponent from "../../scores/TeapScoreComponent.vue";
+    import * as Moment from 'moment'
+    import Datepicker from 'vuejs-datepicker';
+    import {en, ja} from 'vuejs-datepicker/dist/locale';
+    export default 
+    {
+        name: "MemberScoreComponent",
+        components: {
+            LineChart,
+            Datepicker, PurposeComponent,
+            IELTScoreComponent, 
+            ToeflScoreComponent, ToeflJuniorScoreComponent,
+            ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
+            ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, 
+            EikenScoreComponent,
+            TeapScoreComponent,
+        },
+        props: {
+            memberinfo: Object,      
+            purpose: Array,		
+            memberlatestexamscore: Object,
+            csrf_token: String,		
+            api_token: String,
+            disabledCreate: Boolean,
+        },
         
-            submitted: false,
-            ja: ja,
-
-            slide: 0,
-            sliding: null,
-
-            //charts
-            loaded: false,
-            datacollection: [],
-
-            //this is for examp type column
-            size: {
-                leftColumn  : "col-4",
-                rightColumn : "col-8",
-                select      : "col-10",
-            },   
-
-            //Exam Score Listings
-            examScoreTypes: ['A', 'B', "Testing Roy C"],
-            examScoreList: [],
-            examScoreLink: [],
-
-            //Exam Date (Form Entry)
-            examDate: "",
-            uExamDate: "",
-            examType: "",
-
+        data() 
+        {
+            return {
             
+                submitted: false,
+                ja: ja,
 
-            examScorePage: {
-                IELTS: {                    
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,
-                }, 
-                TOEFL: {                    
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,
-                },
-                TOEFL_Junior: {                    
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,
-                },
-                TOEFL_Primary_Step_1: {                    
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,          
-                },
-                TOEFL_Primary_Step_2: {                    
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,             
-                },
-                TOEIC_Listening_and_Reading: {                    
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1, 
-                },
-                TOEIC_Speaking: {
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,
-                },
-                EIKEN: {
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,
-                },
-                TEAP: {                    
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,
-                },
-                Other_Test: {
-                    perPage : 1,
-                    rows: 1,
-                    currentPage : 1,
-                    items : 1,
-                }
-            }, 
+                slide: 0,
+                sliding: null,
 
+                //charts
+                loaded: false,
+                datacollection: [],
 
-            examScore: {
-                IELTS: {                    
-                    speakingBandScore : "",
-                    writingBandScore : "",
-                    readingBandScore : "",
-                    listeningBandScore : "",
-                    overallBandScore : "",
-                }, 
-                TOEFL: {                    
-                    speakingScore: "",
-                    writingScore: "",
-                    readingScore: "",
-                    listeningScore: "",
-                    total: "",
-                },
-                TOEFL_Junior: {                    
-                    listening: "",
-                    languageFormAndMeaning: "",
-                    reading: "",
-                    total: "",
-                },
-                TOEFL_Primary_Step_1: {                    
-                    reading: "",                    
-                    listening: "",
-                    total: "",               
-                },
-                TOEFL_Primary_Step_2: {                    
-                    reading: "",                    
-                    listening: "",
-                    total: "",               
-                },
-                TOEIC_Listening_and_Reading: {                    
-                    reading: "",                    
-                    listening: "",
-                    total: "",     
-                },
-                TOEIC_Speaking: {
-                    speaking: "",
-                },
-                EIKEN: {
-                    grade_5: "",
-                    grade_4: "",
-                    grade_3_1st_stage: "",
-                    grade_pre_2_1st_stage: "",
-                    grade_2_1st_stage: "",
-                    grade_pre_1_1st_stage: "",
-                    grade_1_1st_stage: "",
+                //this is for examp type column
+                size: {
+                    leftColumn  : "col-4",
+                    rightColumn : "col-8",
+                    select      : "col-10",
+                },   
 
-                    grade_3_2nd_stage: "",
-                    grade_pre_2_2nd_stage: "",
-                    grade_2_2nd_stage: "",
-                    grade_pre_1_2nd_stage: "",
-                    grade_1_2nd_stage: "",                    
-                },
-                TEAP: {                    
-                    speakingScore: "",
-                    writingScore: "",
-                    readingScore: "",
-                    listeningScore: "",
-                    total: "",
-                },
-                Other_Test: {
-                    otherScore: "",
-                }
-            }, 
+                //Exam Score Listings
+                examScoreTypes: ['', '', ''],
+                examScoreList: [],
+                examScoreLink: [],
 
-            //Latest Score (show recently added scores)
-            latestScore: { 
+                //Exam Date (Form Entry)
                 examDate: "",
+                uExamDate: "",
                 examType: "",
-                examScores: "",                
-            },
 
-            //list exam scores (paginated)
-            examScores: []
+                
+
+                examScorePage: {
+                    IELTS: {                    
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    }, 
+                    TOEFL: {                    
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    },
+                    TOEFL_Junior: {                    
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    },
+                    TOEFL_Primary_Step_1: {                    
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,          
+                    },
+                    TOEFL_Primary_Step_2: {                    
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,             
+                    },
+                    TOEIC_Listening_and_Reading: {                    
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1, 
+                    },
+                    TOEIC_Speaking: {
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    },
+                    EIKEN: {
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    },
+                    TEAP: {                    
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    },
+                    Other_Test: {
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    }
+                }, 
+
+
+                examScore: {
+                    IELTS: {                    
+                        speakingBandScore : "",
+                        writingBandScore : "",
+                        readingBandScore : "",
+                        listeningBandScore : "",
+                        overallBandScore : "",
+                    }, 
+                    TOEFL: {                    
+                        speakingScore: "",
+                        writingScore: "",
+                        readingScore: "",
+                        listeningScore: "",
+                        total: "",
+                    },
+                    TOEFL_Junior: {                    
+                        listening: "",
+                        languageFormAndMeaning: "",
+                        reading: "",
+                        total: "",
+                    },
+                    TOEFL_Primary_Step_1: {                    
+                        reading: "",                    
+                        listening: "",
+                        total: "",               
+                    },
+                    TOEFL_Primary_Step_2: {                    
+                        reading: "",                    
+                        listening: "",
+                        total: "",               
+                    },
+                    TOEIC_Listening_and_Reading: {                    
+                        reading: "",                    
+                        listening: "",
+                        total: "",     
+                    },
+                    TOEIC_Speaking: {
+                        speaking: "",
+                    },
+                    EIKEN: {
+                        grade_5: "",
+                        grade_4: "",
+                        grade_3_1st_stage: "",
+                        grade_pre_2_1st_stage: "",
+                        grade_2_1st_stage: "",
+                        grade_pre_1_1st_stage: "",
+                        grade_1_1st_stage: "",
+
+                        grade_3_2nd_stage: "",
+                        grade_pre_2_2nd_stage: "",
+                        grade_2_2nd_stage: "",
+                        grade_pre_1_2nd_stage: "",
+                        grade_1_2nd_stage: "",                    
+                    },
+                    TEAP: {                    
+                        speakingScore: "",
+                        writingScore: "",
+                        readingScore: "",
+                        listeningScore: "",
+                        total: "",
+                    },
+                    Other_Test: {
+                        otherScore: "",
+                    }
+                }, 
+
+                //Latest Score (show recently added scores)
+                latestScore: { 
+                    examDate: "",
+                    examType: "",
+                    examScores: "",                
+                },
+
+                //list exam scores (paginated)
+                examScores: []
         };
     },      
     mounted: function () 
@@ -498,11 +494,11 @@ export default {
                 console.log('Error: ', err.message);
             }            
         },
-        getMemberScorelist() 
+        getMemberScoreList() 
         {
             this.getMemberExamScoreByType();
         },
-        getMemberScoreTotallist() {
+        getMemberScoreTotalList() {
             this.getMemberExamTotal();
         },
         getMemberExamScoreByType() 
@@ -523,7 +519,7 @@ export default {
 
                     types.forEach((type) => {                    
                         
-                        this.examScorePage[type].rows = this.examScoreList[type].rows;
+                        //this.examScorePage[type].rows = this.examScoreList[type].rows;
 
                         this.datacollection[type] = {
                             labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -577,7 +573,7 @@ export default {
                             labels: response.data.examScoreList[type].months,
                             datasets: [
                                 {
-                                    label: type,
+                                    label: this.capitalizeFirstLetter(type),
                                     backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), 
                                     data: totals
                                 }
@@ -873,11 +869,11 @@ export default {
                     this.latestScore.examType = response.data.examType;                    
                     this.latestScore.examScores = JSON.parse(response.data.examScores);
                 } else {
-                    alert (response.data.message);        
+                    $('.latest-score').html("<center>No Latest Score</center>");
+                   // alert (response.data.message);        
                 }
-			}).catch(function(error) {               
-                alert("Error " + error);                
-            });
+			});
+
         },
         examDateFormatter(date) 
         {

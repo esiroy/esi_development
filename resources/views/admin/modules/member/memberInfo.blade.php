@@ -148,10 +148,6 @@
                                             {{ $memberInfo->english_level ?? "-" }}
                                         </td>
                                     </tr>
-
-
-
-
                                     <tr>
                                         <th colspan="13"> Recent Exam Score  </th>
                                     </tr>
@@ -160,36 +156,22 @@
                                      <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>
-                                            Recent Exam Score 
+                                            <div class="row">
+                                                <div class="col-12 pt-2 pb-2">Recent Exam Score </div>
+                                            </div>
+
                                         </td>
                                         <td> : </td>
-                                        <td colspan="9">                                        
-                                            <div class="examDate-holder">
-                                                <span class="font-weight-bold">Exam Date : </span>
-                                                {{ $memberLatestExamScore->original['examDate'] }}
-                                            </div>
-                                            <div class="examType-holder">
-                                                <span class="font-weight-bold">Exam Type : </span> 
-                                                {{ $memberLatestExamScore->original['examType'] }}
-                                            </div>
-                                            @foreach (json_decode($memberLatestExamScore->original['examScores']) as $key => $score)
-                                                <div class="mt-1"> 
-                                                    <strong>{{ formatWords($key) . " Score "}}</strong> : {{ $score }}
-                                                </div>
-                                            @endforeach
+                                        <td colspan="9">   
+                                            <member-score-commponent 
+                                                :memberinfo="{{ json_encode($memberInfo) }}" 
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"
+                                            ></member-score-commponent>
                                         </td>                                                                                
                                     </tr>
 
-                                    <tr valign="top">
-                                        <td>&nbsp;</td>
-                                        <td>&nbsp;</td>                                       
-                                        <td> : </td>
-                                         <td colspan="9">
-                                            <div id="viewAllExamScores">                                              
-                                                <button type="button" class="btn btn-secondary">List of Exam Scores</button>                                                
-                                            </div>
-                                        </td>
-                                    </tr>
+                               
 
                                     <tr>
                                         <th colspan="13">Purpose </th>
@@ -202,35 +184,42 @@
                                         <td>:</td>
                                         <td>
                                             <div>
-                                                @foreach ($purpose as $list)
-                                                    @php 
-                                                        $ctr = 1;
-                                                        $options = (array) json_decode($list->purpose_options, true);
-                                                    @endphp
 
-                                                    <div class="main_list mb-1">
+                                                @if (isset($purpose))                                                 
+                                                    {{ "Member has not yet added a purpose."}}
+                                                @else                                                 
+                                                    @foreach ($purpose as $list)
+                                                        @php 
+                                                            $ctr = 1;
+                                                            $options = (array) json_decode($list->purpose_options, true);
+                                                        @endphp
 
-                                                        @if (strtolower($list->purpose) == "others")
-                                                            <strong>{{ $list->purpose }}</strong>
-                                                            <div class="option_value_wrapper mb-2 ml-2">
-                                                                <span class="input_value">
-                                                                    {{ $list->purpose_options }}
-                                                                </span>
-                                                            </div>
-                                                        @else
-                                                            <strong>{{ $list->purpose }}</strong>
+                                                        <div class="main_list mb-1">
 
-                                                            <div class="option_value_wrapper mb-2 ml-2">
-                                                                @foreach ($options as $option_value) 
-                                                                    <span class="option_value">
-                                                                        {{ $option_value }}@if ($ctr < count($options)){{ "," }} @endif                        
-                                                                        @php $ctr++ @endphp
+                                                            @if (strtolower($list->purpose) == "others")
+                                                                <strong>{{ $list->purpose }}</strong>
+                                                                <div class="option_value_wrapper mb-2 ml-2">
+                                                                    <span class="input_value">
+                                                                        {{ $list->purpose_options }}
                                                                     </span>
-                                                                @endforeach 
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                @endforeach
+                                                                </div>
+                                                            @else
+                                                                <strong>{{ $list->purpose }}</strong>
+
+                                                                <div class="option_value_wrapper mb-2 ml-2">
+                                                                    @foreach ($options as $option_value) 
+                                                                        <span class="option_value">
+                                                                            {{ $option_value }}@if ($ctr < count($options)){{ "," }} @endif                        
+                                                                            @php $ctr++ @endphp
+                                                                        </span>
+                                                                    @endforeach 
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    @endforeach
+                                                                                                    
+                                                @endif
+
                                             </div>
 
                                         </td>

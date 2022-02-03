@@ -18,28 +18,29 @@ class MemberExamController extends Controller
 
         $memberID = isset($request['memberID']) ? $request['memberID'] : Auth::user()->id;
         $examTypes = MemberExamScore::where('user_id', $memberID)->select('exam_type')->distinct()->get();
-
-        foreach ($examTypes as $value) 
-        {
-            $examType = $value->exam_type;
-            $types[] = $examType;
-            //get list of scores
-            $examScores = MemberExamScore::where('user_id', $memberID)->where('exam_type', $examType)->orderBy('id', 'DESC')->get();
-          
-            $scores = $examScores;
-
-            $examScoreList[$examType]['perPage'] = 1;            
-            $examScoreList[$examType]['rows'] =  $examScores->count();
-            
-            //$examScoreList[$examType]['pages'] =  $examScores->lastPage();
-            //$examScoreList[$examType]['currentPage'] =  $examScores->currentPage();
-            
-            foreach ($examScores as $examScore) {
-                 $examScoreList[$examType]['items'][] = json_decode($examScore->exam_scores, true);                 
-            }
-        }
-
         if ($examTypes) {
+
+      
+            foreach ($examTypes as $value) 
+            {
+                $examType = $value->exam_type;
+                $types[] = $examType;
+                //get list of scores
+                $examScores = MemberExamScore::where('user_id', $memberID)->where('exam_type', $examType)->orderBy('id', 'DESC')->get();
+            
+                $scores = $examScores;
+
+                $examScoreList[$examType]['perPage'] = 1;            
+                $examScoreList[$examType]['rows'] =  $examScores->count();
+                
+                //$examScoreList[$examType]['pages'] =  $examScores->lastPage();
+                //$examScoreList[$examType]['currentPage'] =  $examScores->currentPage();
+                
+                foreach ($examScores as $examScore) {
+                    $examScoreList[$examType]['items'][] = json_decode($examScore->exam_scores, true);                 
+                }
+            }
+
         
             return Response()->json([
                 'success' => true,

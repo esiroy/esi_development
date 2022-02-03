@@ -34,12 +34,18 @@ if (url[1] === 'admin') {
         break;
         case 'member':      
             console.log(url[4]);
+
             if (url[4] === 'edit') {
                 console.log("load edit member!")
                 Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
             } else {
+
                 Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
             }
+
+             Vue.component('member-score-commponent', require('./components/backend/member/MemberScoreViewerComponent.vue').default);
+
+
         break;
         case 'customerchatsupport':
             Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
