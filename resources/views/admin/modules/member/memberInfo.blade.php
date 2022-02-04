@@ -184,7 +184,7 @@
                                         <td>
                                             <div>
 
-                                                @if (isset($purpose))                                                 
+                                                @if (count($purpose) == 0)
                                                     {{ "Member has not yet added a purpose."}}
                                                 @else                                                 
                                                     @foreach ($purpose as $list)
@@ -390,7 +390,8 @@
                                         <td> : </td>
                                         <td class="red">
                                              <member-notes-commponent
-                                                :memberinfo="{{ json_encode($memberInfo) }}" 
+                                                :tutorinfo="{{ json_encode(Auth::user()) }}"
+                                                :memberinfo="{{ json_encode($memberInfo) }}"                                                
                                                 api_token="{{ Auth::user()->api_token }}" 
                                                 csrf_token="{{ csrf_token() }}"                                             
                                              ></member-notes-commponent>

@@ -10,7 +10,12 @@ class Notes extends Model
 
     function getMemberNotes($memberID) 
     {        
-        Notes::where('valid', true)->where('member_id', $memberID)->get();    
+        return Notes::select('member_notes.*', 'user_image.original as tutorPhoto')
+                    ->leftJoin('user_image', 'user_image.user_id', '=', 'member_notes.tutor_id')
+                    ->where('member_notes.member_id', $memberID)
+                    ->where('member_notes.valid', true)
+                    ->orderBy('member_notes.created_at', 'DESC')
+                    ->get();
     }
 
 

@@ -150,15 +150,4 @@
 
 </div>
 </div>
-
-@php
-/*
- @include('modules.member.popup.loading') 
- @include('modules.member.popup.msgboxSuccess')
- @include('modules.member.popup.addMemberTestScore')
- @include('modules.member.popup.showAllMemberExamScoreModal')
- */
-@endphp
-
- 
 @endsection

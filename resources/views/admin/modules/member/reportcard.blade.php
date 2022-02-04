@@ -14,6 +14,7 @@
                     <div class="row">
                         <div class="col-md-5">
                             @include('admin.modules.member.includes.profile')
+                            
                         </div>
 
                         <div class="col-md-7">

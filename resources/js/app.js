@@ -32,9 +32,7 @@ if (url[1] === 'admin') {
             Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
 
         break;
-        case 'member':      
-            console.log(url[4]);
-
+        case 'member':  
             if (url[4] === 'edit') {
                 console.log("load edit member!")
                 Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
