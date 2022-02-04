@@ -96,118 +96,128 @@ class WritingEntryController extends Controller
         $writingEntry       = $writingEntries->find($request->entryID);
         $wordPointDeduction = $writingEntries->getWordPointDeduct($request->words);
 
-        if (!isset($request->words) || $request->words == 0) {
-
-            return Response()->json([
-                "success"  => false,   
-                "message" => "Please enter how many words on the file attachment",               
-            ]);              
 
 
-        } else if ($wordPointDeduction == false) {
-            return Response()->json([
-                "success"  => false,   
-                "message" => "800 words limit exceeded",               
-            ]);  
-        } 
-        else 
-        {        
-            if ($user) 
+        if (isset($hasAttachment)) 
+        {
+            if (!isset($request->words) || $request->words == 0) 
             {
-                if ($user->user_type == 'ADMINISTRATOR' || $user->user_type == 'MANAGER' ) 
-                {          
-                    return Response()->json([
-                        "success"           => true,
-                        "message"           => "Account  $user->user_type type of account is not applicable for member credit checker",
-                        "totalPointsLeft"   => 1
-                    ]);
-             
-                } else if ($user->user_type == 'MEMBER' ) {
+                return Response()->json([
+                    "success"  => false,   
+                    "message" => "Please enter how many words on the file attachment",               
+                ]); 
 
-                    if ($memberInfo) 
-                    {                
+                exit();
+                
+            } else if ($wordPointDeduction == false) {
 
-                        //get the credits of user
-                        if ($memberInfo->membership == "Monthly") 
-                        { 
-                            $point_type = "monthly points";
+                return Response()->json([
+                    "success"  => false,   
+                    "message" => "800 words limit exceeded",               
+                ]);  
 
-                            $credits = $member->getMemberMonthlyLessonsLeft($memberID);
-
-                        } else if ($memberInfo->membership  == "Point Balance" ||  $memberInfo->membership  == "Both") {
-
-                            $point_type = "points";
-        
-                            $credits = $agentTransaction->getCredits($memberID);   
-                        } else {                    
-                            $credits = 0;
-                        }
+                exit();
+            }
+        }
 
 
-                        /* CHECK WRITING ENTRY */
-                        if ($writingEntry) 
-                        {
 
-                            if ($hasAttachment == 'on' || $hasAttachment == true) 
-                            {
-                                if ($is_appointed == 'on') {
-                                    $totalDeduction = $wordPointDeduction * 2;
-                                } else {
-                                    $totalDeduction = $wordPointDeduction;
-                                }                               
-                            } else {
-                                $totalDeduction = $wordPointDeduction;
-                            }
+        if ($user) 
+        {
+            if ($user->user_type == 'ADMINISTRATOR' || $user->user_type == 'MANAGER' ) 
+            {          
+                return Response()->json([
+                    "success"           => true,
+                    "message"           => "Account  $user->user_type type of account is not applicable for member credit checker",
+                    "totalPointsLeft"   => 1 //(this will auto submit)
+                ]);
+            
+            } else if ($user->user_type == 'MEMBER' ) {
 
+                if ($memberInfo) 
+                {                
 
-                            $deposit = $writingEntry->total_points;
-                            $totalCredits = $credits + $deposit;
-                            $totalPointsLeft = $totalCredits - $totalDeduction;
+                    //get the credits of user
+                    if ($memberInfo->membership == "Monthly") 
+                    { 
+                        $point_type = "monthly points";
 
-                            if ($totalPointsLeft < 0) 
-                            {
-                                $reload = abs($totalPointsLeft);
-                                $success =  false;
-                                $message =  "Sorry, the member don't have enough $point_type for this entry.";
-                                $message .= "<div>This entry requires $reload  addtional point(s), Member only have $credits credit(s) and $deposit point deposit  </div>";
+                        $credits = $member->getMemberMonthlyLessonsLeft($memberID);
 
-                            } else {
-                                $reload  = 0;
-                                $success =  true;
-                                $message = "<div>Congratulations, Member have sufficient $point_type </div>";
-                            }
+                    } else if ($memberInfo->membership  == "Point Balance" ||  $memberInfo->membership  == "Both") {
 
-                            return Response()->json([
-                                "success"   => $success,                 
-                                "message"   => $message, 
-                                "credit"    => $credits,
-                                "deposit"   => $deposit,
-                                "wordPointDeduction" => $wordPointDeduction,
-                                "totalDeduction" => $totalDeduction,
-                                "reload"    => $reload 
-                            ]);
-
-                        } else {
-                            //The user did not have a valid entry
-                            return Response()->json([
-                                "success"           => false,                 
-                                "message"           => "Member has no valid writing entry",                    
-                            ]);
-                        }
+                        $point_type = "points";
+    
+                        $credits = $agentTransaction->getCredits($memberID);   
+                    } else {                    
+                        $credits = 0;
                     }
 
-                } else {
-                    //The user account is a tutor
-                    return Response()->json([
-                        "success"           => false,                 
-                        "message"           => "User is not a member , you are a tutor please go to tutor page",
-                    ]);
-                }                
-                
-                
-            }        
 
-        }
+                    /* CHECK WRITING ENTRY */
+                    if ($writingEntry) 
+                    {
+
+                        if ($hasAttachment == 'on' || $hasAttachment == true) 
+                        {
+                            if ($is_appointed == 'on') {
+                                $totalDeduction = $wordPointDeduction * 2;
+                            } else {
+                                $totalDeduction = $wordPointDeduction;
+                            }                               
+                        } else {
+                            $totalDeduction = $wordPointDeduction;
+                        }
+
+
+                        $deposit = $writingEntry->total_points;
+                        $totalCredits = $credits + $deposit;
+                        $totalPointsLeft = $totalCredits - $totalDeduction;
+
+                        if ($totalPointsLeft < 0) 
+                        {
+                            $reload = abs($totalPointsLeft);
+                            $success =  false;
+                            $message =  "Sorry, the member don't have enough $point_type for this entry.";
+                            $message .= "<div>This entry requires $reload  addtional point(s), Member only have $credits credit(s) and $deposit point deposit  </div>";
+
+                        } else {
+                            $reload  = 0;
+                            $success =  true;
+                            $message = "<div>Congratulations, Member have sufficient $point_type </div>";
+                        }
+
+                        return Response()->json([
+                            "success"   => $success,                 
+                            "message"   => $message, 
+                            "credit"    => $credits,
+                            "deposit"   => $deposit,
+                            "wordPointDeduction" => $wordPointDeduction,
+                            "totalDeduction" => $totalDeduction,
+                            "reload"    => $reload 
+                        ]);
+
+                    } else {
+                        //The user did not have a valid entry
+                        return Response()->json([
+                            "success"           => false,                 
+                            "message"           => "Member has no valid writing entry",                    
+                        ]);
+                    }
+                }
+
+            } else {
+                //The user account is a tutor
+                return Response()->json([
+                    "success"           => false,                 
+                    "message"           => "User is not a member , you are a tutor please go to tutor page",
+                ]);
+            }                
+            
+            
+        }        
+
+        
     }
 
 

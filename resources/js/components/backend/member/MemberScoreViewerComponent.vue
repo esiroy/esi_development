@@ -286,9 +286,7 @@
             memberlatestexamscore: Object,
             csrf_token: String,		
             api_token: String,
-            disabledCreate: Boolean,
         },
-        
         data() 
         {
             return {

@@ -148,11 +148,12 @@
                                             {{ $memberInfo->english_level ?? "-" }}
                                         </td>
                                     </tr>
+
+
+
                                     <tr>
                                         <th colspan="13"> Recent Exam Score  </th>
                                     </tr>
-
-
                                      <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>
@@ -162,7 +163,7 @@
 
                                         </td>
                                         <td> : </td>
-                                        <td colspan="9">   
+                                        <td >   
                                             <member-score-commponent 
                                                 :memberinfo="{{ json_encode($memberInfo) }}" 
                                                 api_token="{{ Auth::user()->api_token }}" 
@@ -170,8 +171,6 @@
                                             ></member-score-commponent>
                                         </td>                                                                                
                                     </tr>
-
-                               
 
                                     <tr>
                                         <th colspan="13">Purpose </th>
@@ -377,6 +376,28 @@
                                             @endif
                                         </td>
                                     </tr>
+
+                                    <tr>
+                                        <th colspan="13"> Recent Notes  </th>
+                                    </tr>
+                                     <tr valign="top">
+                                         <td class="red">&nbsp;</td>                                        
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-12 pt-2 pb-2">Notes</div>
+                                            </div>
+                                        </td>
+                                        <td> : </td>
+                                        <td class="red">
+                                             <member-notes-commponent
+                                                :memberinfo="{{ json_encode($memberInfo) }}" 
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"                                             
+                                             ></member-notes-commponent>
+                                        </td>
+                                    </tr>
+                                    
+
 
 
                                     <tr>

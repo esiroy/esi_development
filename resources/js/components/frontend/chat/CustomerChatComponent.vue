@@ -98,10 +98,8 @@
             </label>
 
             <div id="send-button" class="input-group-append" style="display:inline-block;">
-                <button type="button" :id="'btn_'+chatbox.userid" 
-                    @click.prevent="$refs.upload.active = false; sendMessage(chatbox, index); "
-                    class="btn btn-lg btn-primary">
-                        <i class="far fa-share-square"></i>
+                <button type="button"  @click.prevent="$refs.upload.active = false; sendMessage(chatbox, index); " class="btn btn-lg btn-primary">
+                      <i class="far fa-share-square"></i>
                 </button>
             </div>            
 
@@ -135,8 +133,7 @@
             v-model="files"
             post-action="/uploader/fileUploader"            
             :data="{ 
-                'message_type': 'MEMBER',
-                'current_chatbox_userid': this.current_chatbox_userid
+                'folder': 'notes',                
             }"
             :headers="{'X-CSRF-TOKEN': this.csrf_token }"
             :multiple="true"

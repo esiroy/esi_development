@@ -156,3 +156,6 @@ Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamContro
 Route::middleware('auth:api')->post('/getMemberPurposeList', 'API\MemberPurposeController@getMemberPurposeList')->name('APIGetMemberPurposeList');
 Route::middleware('auth:api')->post('/updateMemberPurpose', 'API\MemberPurposeController@updateMemberPurpose')->name('APIUpdateMemberPurpose');
 Route::middleware('auth:api')->post('/getMemberPurpose', 'API\MemberPurposeController@getMemberPurpose')->name('APIGetMemberPurpose');
+
+//[start] member notes
+Route::middleware('auth:api')->post('/getMemberNotes', 'API\MemberNotesController@getMemberNotes')->name('APIGetMemberNotes');
