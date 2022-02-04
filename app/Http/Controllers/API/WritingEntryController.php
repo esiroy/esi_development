@@ -96,8 +96,6 @@ class WritingEntryController extends Controller
         $writingEntry       = $writingEntries->find($request->entryID);
         $wordPointDeduction = $writingEntries->getWordPointDeduct($request->words);
 
-
-
         if (isset($hasAttachment)) 
         {
             if (!isset($request->words) || $request->words == 0) 
