@@ -1,22 +1,14 @@
 {
-<<<<<<< HEAD
-    "/js/admin.js": "/js/admin.js?id=4d244fe3c7a36c9d53af",
-    "/js/admin.js.map": "/js/admin.js.map?id=d44937270029ed0d5e5e",
-    "/js/app.js": "/js/app.js?id=5f88e74de5b277d05dda",
-    "/css/app.css": "/css/app.css?id=5e8ccafb502c63d72542",
+    "/js/admin.js": "/js/admin.js?id=15c330af518e229753a3",
+    "/js/admin.js.map": "/js/admin.js.map?id=2afd3ca8b51574a7d355",
+    "/js/app.js": "/js/app.js?id=3434d2836a0f82063096",
+    "/css/app.css": "/css/app.css?id=b188641f5a9a656336cd",
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
     "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
-    "/js/app.js.map": "/js/app.js.map?id=915ee1efc5afcf770a1f",
-    "/css/app.css.map": "/css/app.css.map?id=3d752936f93676238c06",
+    "/js/app.js.map": "/js/app.js.map?id=92faaa2a15b5a3beb011",
+    "/css/app.css.map": "/css/app.css.map?id=90d551b0d7bf1a420491",
     "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
     "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
-=======
-    "/js/admin.js": "/js/admin.js?id=f30d9daf5c789e8008b6",
-    "/js/app.js": "/js/app.js?id=6e96e4ebc891eec38af7",
-    "/css/app.css": "/css/app.css?id=f63ab93c8a991afff257",
-    "/css/admin.css": "/css/admin.css?id=f9dd8ae646cb32556d7b",
-    "/css/steps/steps.css": "/css/steps/steps.css?id=ad4cf4455be97223e3f3",
->>>>>>> optimized
     "/js/jquery/jquery-ui.js": "/js/jquery/jquery-ui.js?id=06c8b12668dc0e45a4c4",
     "/js/jquery/jquery-ui.min.js": "/js/jquery/jquery-ui.min.js?id=777b80b520786cf6f0ce",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",
