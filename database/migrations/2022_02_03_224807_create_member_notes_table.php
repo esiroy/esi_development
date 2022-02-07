@@ -17,7 +17,7 @@ class CreateMemberNotesTable extends Migration
             $table->id();          
             $table->unsignedBigInteger('tutor_id')->nullable();
             $table->unsignedBigInteger('member_id');
-            $table->text('notes')->nullable();
+            $table->text('note')->nullable();
             $table->tinyInteger('valid');
             $table->timestamps();
         });
