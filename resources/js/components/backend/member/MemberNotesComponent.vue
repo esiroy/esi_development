@@ -1,31 +1,100 @@
 <template>
-  <div id="MemberNoteComponent" class="MemberNoteComponent">
-    <div class="NoteHolder">
-      <div id="notes" class="notes">
-        <div class="row" v-for="(note, index) in notes" :key="index">
-          <div class="col-1">
-            <img :src="note.tutor.photo" class="img-fluid" />
-          </div>
-          <div class="col-3">{{ note.tutor.name }}</div>
-          <div class="col-7">{{ note.contents.message }}</div>
-        </div>
-      </div>
+	<div id="MemberNoteComponent" class="MemberNoteComponent">
+		<div class="NoteHolder">
+			<div id="notes" class="notes my-2">	
+				<div class="card">
+					<div class="card-header bg-darkblue text-white font-weight-bold">
+						<div>				
+							Notes				
+							<span class="pl-2 ">
+								<i class="fas fa-plus" v-b-modal.noteEntryModal></i>				
+							</span>				
+						</div>
+					</div>
 
-      <div class="row">
-        <div class="col-9">
-          <textarea id="w3review" name="" rows="2" cols="50"></textarea>
-        </div>
-        <div class="col-3">
-          <b-button size="sm" @click="showEntryForm">Send</b-button>
-        </div>
-      </div>
+					<div class="card-body p-0 m-0 b-0">
+						<table class="table esi-table table-bordered table-striped">
+							<thead>
+								<tr>
+									<!--<td style="width:50px">Note ID</td>-->
+									<td>Tutor Info</td> 
+									<td>Note</td> 
+									<td>Actions </td>
+								</tr>
+							</thead>
+							<tbody>
+								<tr :id="'note_' + note.note_id" v-for="note in notes" :key="note.id">
+									<!--<td> {{ note.note_id }}</td>-->
+									
+									<td class="w-25 p-1" v-html="createImage(note.tutor_photo) + createTutorNameWrapper(note.tutor_name) "> </td>
+									<td class="text-left p-3">{{note.note}}</td>
 
-      <b-button size="sm" variant="dark" pill>
-        <b-icon-chat-square-text></b-icon-chat-square-text>
-        <small>New Note</small>
-      </b-button>
-    </div>
-  </div>
+									<td class="w-25 p-1">
+
+										<div v-if="tutorinfo.id == note.tutor_id || tutorinfo.user_type == 'ADMINISTRATOR' ">
+											<a href="#" @click.prevent="showEditMemberNoteModal(note); "> EDIT </a> | 
+											<a href="#" @click.prevent="showMsgBox(note); "> DELETE </a>
+										</div>
+										<div v-else>
+											<strike>EDIT</strike> | 
+											<strike>DELETE</strike>
+										</div>
+
+									</td>
+								</tr>
+							</tbody>
+
+
+						</table>			
+					</div>
+				</div>
+					
+			</div>
+
+			<b-pagination v-model="currentPage" @input="changePage(currentPage)" :total-rows="rows" :per-page="perPage" aria-controls="tutor-notes"></b-pagination>
+
+
+			<!--Note Modal -->
+			<b-modal id="noteEntryModal" title="Add Member Notes" size="xl" @show="cleanUpEntryForm">
+				<div class="row">
+					<div class="col-12">
+						<textarea id="message" v-model="note" class="form-control form-control-sm" required></textarea>
+					</div>
+				</div>
+
+				<template #modal-footer>
+					<div class="w-100">
+						<b-button variant="primary" size="sm" class="float-right" @click="saveNote">Save Note</b-button>
+					</div>
+				</template>
+			</b-modal>
+			<!--[END NOTE MODAL] -->
+
+			<!--Note Modal -->
+			<b-modal id="noteEditModal" title="Edit Member Notes" size="xl">
+				<div class="row">
+					<div class="col-12 text-center">
+						<textarea id="editNote" v-model="noteEdited" class="form-control form-control-sm edit" required></textarea>						
+					</div>
+				</div>
+
+				<template #modal-footer>
+					<div id="editNoteFooter" class="edit">
+						<b-button variant="primary" size="sm" class="float-right" @click="updateNote">Update Note</b-button>
+					</div>
+
+					<div id="editNoteSpinner" style="display:none">
+						<div class="spinner-border text-success" role="status">
+						<span class="sr-only">Loading...</span>
+						</div>						
+					</div>
+				</template>
+
+			</b-modal>
+			<!--[END NOTE MODAL] -->
+
+		</div>
+	</div>
 </template>
 
 <script>
@@ -33,100 +102,225 @@ export default {
   name: "member-notes-component",
   components: {},
   props: {
-  	tutorinfo: Object,
-    memberinfo: Object,   
+    tutorinfo: Object,
+    memberinfo: Object,
     api_token: String,
     csrf_token: String,
-  },  
+  },
   data() {
     return {
-      notes: [],
-      message: [],
-      users: [],
-      files: [],
-      notes: [
-        {
-          tutor: {
-            id: 1,
-            name: "tutor 1",
-            photo:"http://localhost:8000/storage/user_images/tutors/original/1641392439.png",
-          },
-          member: { id: 1, name: "member 1" },
-          contents: { id: 1, message: "TEST 1", date: "1-1-300" },
-        },
-        {
-          tutor: {
-            id: 2,
-            name: "tutor 1",
-            photo:"http://localhost:8000/storage/user_images/tutors/original/1641392439.png",
-          },
-          member: { id: 2, name: "member 2" },
-          contents: { id: 1, message: "TEST 2", date: "1-2-300" },
-        },
-        {
-          tutor: {
-            id: 3,
-            name: "tutor 1",
-            photo:"http://localhost:8000/storage/user_images/tutors/original/1641392439.png",
-          },
-          member: { id: 3, name: "member 4" },
-          contents: { id: 2, message: "TEST 3", date: "1-3-300" },
-        },
-        {
-          tutor: {
-            id: 4,
-            name: "tutor 1",
-            photo:"http://localhost:8000/storage/user_images/tutors/original/1641392439.png",
-          },
-          member: { id: 4, name: "member 5" },
-          contents: { id: 3, message: "TEST 4", date: "1-4-300" },
-        },
+		note:  "",
+		noteEditedData: "",
+		noteEdited: "",
+
+		highlightID: null,
+
+
+		rows: 1,
+		perPage: 1,
+		currentPage: 1,
+		notes: [],
+		fields: [
+		{
+			key: "tutorPhoto",
+			label: "Tutor",
+			formatter: (value) => {
+			return this.createImage(value);
+			},
+		},
+		{
+			key: "notes",
+			label: "Notes",
+		},
       ],
     };
   },
   mounted: function () 
   {
-	console.log(this.tutorinfo);
-	this.getNotes();
+    this.getNotes(this.currentPage);
 
-  },  
+	
+  },
   methods: {
-    showEntryForm() {
-      this.message = "";
-    },
-	saveNote() {
-	      axios.post("/api/saveNotes?api_token=" + this.api_token, {
-          method: "POST",
-          sender_id: this.memberinfo.userid,
-          message: this.message,
-        })
-        .then((response) => {
-          if (response.data.success === true) {
-          } else {
-            //@todo: HIGHLIGHT error
-          }
-        })
-        .catch(function (error) {
-          console.log("Error " + error);
-        });
+	
+	showMsgBox(note) {
+		this.box = ''
+		this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this note.', {
+			title: 'Please Confirm',
+			size: 'med',
+			buttonSize: 'sm',
+			okVariant: 'danger',
+			okTitle: 'YES',
+			cancelTitle: 'NO',
+			footerClass: 'p-2',
+			hideHeaderClose: false,
+			centered: true
+		})
+		.then(value => {
+			this.box = value
+
+			if (value == true ) {
+				this.deleteNote(note.note_id)
+			}
+		})
+		.catch(err => {
+			// An error occurred
+		})
+	},	
+	addHighlight(id) {
+		$('#note_'+ id).addClass('table-success');
+		this.$forceUpdate();
+		//setTimeout(() => { this.removeHighlight(id)}, 3000);
 	},
-    getNotes() {
-      axios.post("/api/getMemberNotes?api_token=" + this.api_token, {
+	removeHighlight(id) 
+	{
+		$('#note_'+ id).removeClass('table-success');  
+	},
+  	createTutorNameWrapper(name) {
+	  	return "<div class='p3'>"+ name + "</div>";
+	},
+  	changePage(page) 
+	{
+	  	this.getNotes(page);
+		if (this.currentPage > 1) {
+			console.log(" > 1")
+			this.removeHighlight(this.highlightID);
+		}
+	},
+    createImage(value) {
+      let imageURL = this.formatStorageURL(value);
+      return "<img src='" + imageURL + "' fluid alt='' style='width:75px'></img>";
+    },
+    formatStorageURL(fileURL) {
+      return (window.location.protocol + "//" + window.location.host + "/storage/" + fileURL);
+    },
+
+	showEditMemberNoteModal(noteEditedData) 
+	{
+		this.noteEditedData = noteEditedData;
+		this.$bvModal.show('noteEditModal');
+		this.noteEdited = noteEditedData.note;
+	},	
+	updateNote() 
+	{
+
+		$('#editNoteSpinner').show();
+		$('#editNoteFooter').hide();
+
+		console.log(this.noteEditedData);
+
+      	axios.post("/api/updateNote?api_token=" + this.api_token, {
+			method: "POST",
+			noteID: this.noteEditedData.note_id,
+			memberID: this.memberinfo.user_id,
+			tutorID: this.tutorinfo.id,
+			note: this.noteEdited,
+        }).then((response) => {
+
+			if (response.data.success === true) 
+			{
+
+				this.highlightID = this.noteEditedData.note_id;
+
+				$('#editNoteFooter').show();
+				$('#editNoteSpinner').hide();
+
+				this.getNotes(this.currentPage);
+				this.$bvModal.hide('noteEditModal');
+
+			} else {
+				alert ("error")
+			}
+        })
+        .catch(function (error) {
+        	console.log("Error " + error);
+        });
+
+	},
+
+	deleteNote(id) {
+
+      	axios.post("/api/deleteNote?api_token=" + this.api_token, {
+			method: "POST",
+			noteID: id,
+        }).then((response) => {
+			if (response.data.success === true) 
+			{	
+				this.getNotes(this.currentPage);
+
+			} else {
+				alert ("error")
+			}
+        })
+        .catch(function (error) {
+        	console.log("Error " + error);
+        });
+
+
+	},
+    cleanUpEntryForm() {
+      this.note = "";
+    },
+    saveNote() 
+	{
+		$('#editNoteSpinner').show();
+		$('#editNoteFooter').hide();	
+
+      	axios.post("/api/saveNote?api_token=" + this.api_token, {
           method: "POST",
-		  tutorInfo: this.tutorInfo.id,
-          memberID: this.memberinfo.user_id
+          memberID: this.memberinfo.user_id,
+		  tutorID: this.tutorinfo.id,
+          note: this.note,
+        }).then((response) => {
+			if (response.data.success === true) 
+			{
+				$('#editNoteFooter').show();
+				$('#editNoteSpinner').hide();
+				//rewind page to ONE
+				
+				this.currentPage = 1;
+				this.$bvModal.hide('noteEntryModal');
+
+				//add this to highlight when redraw of data table (get notes)
+				this.highlightID = response.data.note.id;
+
+				this.$nextTick(() => {
+					this.getNotes(1);
+				});
+
+			} else {
+				alert ("error")
+			}
+        })
+        .catch(function (error) {
+        	console.log("Error " + error);
+        });
+    },
+    getNotes(page) 
+	{
+      axios.post("/api/getMemberNotes?page="+ page +"&api_token=" + this.api_token, {
+          method: "POST",
+          tutorID: this.tutorinfo.id,
+          memberID: this.memberinfo.user_id,
         })
         .then((response) => {
-          if (response.data.success === true) {
-          } else {
-            //@todo: HIGHLIGHT error
-          }
+        	if (response.data.success === true) 
+			{
+				this.rows = response.data.notes.total;
+				this.perPage = response.data.notes.per_page;
+				this.currentPage = response.data.notes.current_page;
+        		this.notes = response.data.notes.data;
+				this.$nextTick(() => {	
+					this.addHighlight(this.highlightID);					
+				});
+          	} else {
+            	//@todo: HIGHLIGHT error
+          	}
         })
         .catch(function (error) {
           console.log("Error " + error);
         });
     },
-   
   },
   computed: {},
   updated: function () {},

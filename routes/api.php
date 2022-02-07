@@ -160,3 +160,5 @@ Route::middleware('auth:api')->post('/getMemberPurpose', 'API\MemberPurposeContr
 //[start] member notes
 Route::middleware('auth:api')->post('/getMemberNotes', 'API\MemberNotesController@getMemberNotes')->name('APIGetMemberNotes');
 Route::middleware('auth:api')->post('/saveNote', 'API\MemberNotesController@saveNote')->name('APISaveMemberNote');
+Route::middleware('auth:api')->post('/updateNote', 'API\MemberNotesController@updateNote')->name('APIUpdateMemberNote');
+Route::middleware('auth:api')->post('/deleteNote', 'API\MemberNotesController@deleteNote')->name('APIDeleteMemberNote');

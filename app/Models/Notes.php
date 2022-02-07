@@ -7,18 +7,52 @@ use Illuminate\Database\Eloquent\Model;
 class Notes extends Model
 {
     public $table = 'member_notes';
+    
+
+    protected $guarded = array('created_at', 'updated_at');
+
 
     function getMemberNotes($memberID) 
     {        
-        return Notes::select('member_notes.*', 'user_image.original as tutorPhoto')
+        return Notes::select('member_notes.id as note_id', 'member_notes.tutor_id', 'member_notes.member_id', 'member_notes.note as note',
+                        'user_image.original as tutor_photo',  
+                        'users.firstname as tutor_name'
+                    )
                     ->leftJoin('user_image', 'user_image.user_id', '=', 'member_notes.tutor_id')
+                    ->leftJoin('users', 'users.id', '=', 'member_notes.tutor_id')
                     ->where('member_notes.member_id', $memberID)
                     ->where('member_notes.valid', true)
                     ->orderBy('member_notes.created_at', 'DESC')
-                    ->get();
+                    ->paginate(5);
     }
 
+    function saveMemberNote($memberID, $tutorID, $note) {
+    
+        return Notes::create([            
+            'member_id' => $memberID,
+            'tutor_id' => $tutorID,
+            'note' => $note,
+            'valid' => true,
+        ]);
 
+    }
 
+    function updateMemberNote($noteID, $memberID, $tutorID, $note) 
+    {
+
+        $notes = new Notes();
+
+        $noteEditedFound = $notes->find($noteID);
+
+        if ($noteEditedFound) 
+        {
+            return $noteEditedFound->update([            
+                //'member_id' => $memberID,
+                //'tutor_id' => $tutorID,
+                'note' => $note,
+                'valid' => true,
+            ]);        
+        }
+    }
     
 }
