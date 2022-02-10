@@ -182,77 +182,15 @@
                                         </td>
                                         <td>:</td>
                                         <td>
-                                            <div>
-
-                                                @if (count($purpose) == 0)
-                                                    {{ "Member has not yet added a purpose."}}
-                                                @else                                                 
-                                                    @foreach ($purpose as $list)
-                                                        @php 
-                                                            $ctr = 1;
-                                                            $options = (array) json_decode($list->purpose_options, true);
-                                                        @endphp
-
-                                                        <div class="main_list mb-1">
-
-                                                            @if (strtolower($list->purpose) == "others")
-                                                                <strong>{{ $list->purpose }}</strong>
-                                                                <div class="option_value_wrapper mb-2 ml-2">
-                                                                    <span class="input_value">
-                                                                        {{ $list->purpose_options }}
-                                                                    </span>
-                                                                </div>
-                                                            @else
-                                                                <strong>{{ $list->purpose }}</strong>
-
-                                                                <div class="option_value_wrapper mb-2 ml-2">
-                                                                    @foreach ($options as $option_value) 
-                                                                        <span class="option_value">
-                                                                            {{ $option_value }}@if ($ctr < count($options)){{ "," }} @endif                        
-                                                                            @php $ctr++ @endphp
-                                                                        </span>
-                                                                    @endforeach 
-                                                                </div>
-                                                            @endif
-                                                        </div>
-                                                    @endforeach
-                                                                                                    
-                                                @endif
-
-                                            </div>
+                                            <member-purpose-viewer-commponent
+                                                :memberinfo="{{ json_encode($memberInfo) }}"                                                
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"                                             
+                                             ></member-notes-commponent>
 
                                         </td>
                                     </tr>
 
-
-                                    @php /* Lesson Goals
-                                    <tr valign="top">
-                                        <td class="red">&nbsp;</td>
-                                        <td>Purpose</td>
-                                        <td>:</td>
-                                        <td>
-                                            @foreach($lessonGoals as $goals)
-                                            <ul class="mb-0">
-                                                @if(isset($goals->purpose))
-                                                    <li>{{ $goals->purposeDescription ?? '' }}</li>
-                                                    <!--goal description-->
-                                                    @if (isset($goals->goalDescription)) 
-                                                    <ul class="mb-0">
-                                                        <li>{{ $goals->goalDescription ?? '' }}</li>
-                                                    </ul>
-                                                    @endif
-                                                    @if ($goals->extra_detail != "") 
-                                                    <ul class="mb-0">
-                                                        <li>{{ $goals->extra_detail ?? '' }}</li>
-                                                    </ul>
-                                                    @endif
-                                                @endif
-                                            </ul>
-                                            @endforeach
-                                        </td>
-                                    </tr>
-                                    */
-                                    @endphp
 
 
 
@@ -287,42 +225,7 @@
                                     </tr>
 
 
-                                    <!--
-                                    <tr>
-                                        <th colspan="13">Exam Record</th>
-                                    </tr>
-
-                                    <tr valign="top">
-                                        <td class="red">&nbsp;</td>
-                                        <td>TOEIC</td>
-                                        <td>:</td>
-                                        <td colspan="9">
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Year</td>
-                                                        <td>Month</td>
-                                                        <td>Grade</td>
-                                                    </tr>
-
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-
-                                    <tr valign="top">
-                                        <td class="red">&nbsp;</td>
-                                        <td>EIKEN</td>
-                                        <td>:</td>
-                                        <td colspan="9">
-                                            <table>
-                                                <tbody>
-
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    -->
+                                  
 
 
 

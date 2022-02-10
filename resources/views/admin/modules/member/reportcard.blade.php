@@ -7,19 +7,25 @@
         <div class="container mt-5">
             <div class="card esi-card mt-5">
                 <div class="card-header esi-card-header">
-                    Report Card
+                    Lesson Report Card 
                 </div>
                 <div class="card-body">
 
                     <div class="row">
                         <div class="col-md-5">
                             @include('admin.modules.member.includes.profile')
-                            
+                                              
+                          <member-notes-commponent
+                            :tutorinfo="{{ json_encode(Auth::user()) }}"
+                            :memberinfo="{{ json_encode($memberInfo) }}"                                                
+                            api_token="{{ Auth::user()->api_token }}" 
+                            csrf_token="{{ csrf_token() }}"                                             
+                            ></member-notes-commponent>                                              
                         </div>
 
                         <div class="col-md-7">
                         
-                            <form action="{{ route("admin.reportcard.store") }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('admin.reportcard.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="scheduleitemid" value="{{ $scheduleitemid }}">
 
@@ -68,16 +74,16 @@
                                                 @endphp
 
                                                 <select name="lessonLevel" class="form-control form-control-sm col-md-3">
-                                                    <option value="1" @if ($lesson_level == '1')) {{ 'selected' }}  @endif>1</option>
-                                                    <option value="2" @if ($lesson_level == '2')) {{ 'selected' }}  @endif>2</option>
-                                                    <option value="3" @if ($lesson_level == '3')) {{ 'selected' }}  @endif>3</option>
-                                                    <option value="4" @if ($lesson_level == '4')) {{ 'selected' }}  @endif>4</option>
-                                                    <option value="5" @if ($lesson_level == '5')) {{ 'selected' }}  @endif>5</option>
-                                                    <option value="6" @if ($lesson_level == '6')) {{ 'selected' }}  @endif>6</option>
-                                                    <option value="7" @if ($lesson_level == '7')) {{ 'selected' }}  @endif>7</option>
-                                                    <option value="8" @if ($lesson_level == '8')) {{ 'selected' }}  @endif>8</option>
-                                                    <option value="9" @if ($lesson_level == '9')) {{ 'selected' }}  @endif>9</option>
-                                                    <option value="10" @if ($lesson_level == '10')) {{ 'selected' }}  @endif>10</option>
+                                                    <option value="1" @if ($lesson_level == '1') {{ 'selected' }}  @endif>1</option>
+                                                    <option value="2" @if ($lesson_level == '2') {{ 'selected' }}  @endif>2</option>
+                                                    <option value="3" @if ($lesson_level == '3') {{ 'selected' }}  @endif>3</option>
+                                                    <option value="4" @if ($lesson_level == '4') {{ 'selected' }}  @endif>4</option>
+                                                    <option value="5" @if ($lesson_level == '5') {{ 'selected' }}  @endif>5</option>
+                                                    <option value="6" @if ($lesson_level == '6') {{ 'selected' }}  @endif>6</option>
+                                                    <option value="7" @if ($lesson_level == '7') {{ 'selected' }}  @endif>7</option>
+                                                    <option value="8" @if ($lesson_level == '8') {{ 'selected' }}  @endif>8</option>
+                                                    <option value="9" @if ($lesson_level == '9') {{ 'selected' }}  @endif>9</option>
+                                                    <option value="10" @if ($lesson_level == '10') {{ 'selected' }}  @endif>10</option>
                                                 </select>
                                             </td>
                                         </tr>

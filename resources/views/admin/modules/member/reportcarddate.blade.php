@@ -7,21 +7,13 @@
         <div class="container mt-5">
             <div class="card esi-card mt-5">
                 <div class="card-header esi-card-header">
-                    Report Card
+                    Writing Report Card
                 </div>
                 <div class="card-body">
 
                     <div class="row">
                         <div class="col-md-5">
                             @include('admin.modules.member.includes.profile')
-
-                            <member-notes-commponent
-                            :tutorinfo="{{ json_encode(Auth::user()) }}"
-                            :memberinfo="{{ json_encode($memberInfo) }}"                                                
-                            api_token="{{ Auth::user()->api_token }}" 
-                            csrf_token="{{ csrf_token() }}"                                             
-                            ></member-notes-commponent>
-
                         </div>
 
                         <div class="col-md-7">

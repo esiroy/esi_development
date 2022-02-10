@@ -10,9 +10,9 @@
                 <div class="pl-2 small  mb-2"> <span class="text-danger">*</span> Speaking Score </div>             
             </div>
             <div :class="this.size.rightColumn">            
-                <select @change="getTotal" id="TEAP-speakingScore" name="writingBandScore" v-model="examScore.TEAP.speakingScore" :class="this.size.select +' form-control form-control-sm pl-0'">
+                <select @change="getTotal" id="TEAP-speakingScore" name="speakingScore" v-model="examScore.TEAP.speakingScore" :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Speaking Score</option>
-                    <option :value="item" :key="item" class="mx-0 px-0" v-for="item in 31">{{ item -1 }}</option>                     
+                    <option :value="item -1" :key="item -1" class="mx-0 px-0" v-for="item in 31">{{ item -1 }}</option>                     
                 </select>
             </div>
         </div>
