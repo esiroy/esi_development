@@ -17,7 +17,7 @@
             </div>
         </div>
 
-        <b-modal id="modalUpdatePurposeForm" title="テストスコア履歴" size="xl">
+        <b-modal id="modalUpdatePurposeForm" title="受講目的--->最大3目的" size="xl">
             <PurposeComponent :purposeList="this.purposeList"></PurposeComponent>
 
             <template #modal-footer>
@@ -213,6 +213,7 @@ export default {
             axios.post("/api/getMemberPurposeList?api_token=" + this.api_token,
             {
                 method       : "POST",
+                memberID     : this.memberinfo.user_id,
             }).then(response => {
 
                 if (response.data.success) {

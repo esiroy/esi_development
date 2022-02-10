@@ -1,5 +1,4 @@
-<template>    
-
+<template>
     <div class="profile bg-lightred pt-0 px-0">
         <div class="col-md-12 bg-red text-white pt-2 pb-2 text-center">
             <strong>テストスコア履歴</strong>        
@@ -38,7 +37,7 @@
                                         </select>       
                                     </div>                     
                                 </div>
-
+                
                                 <div class="row pt-2">
                                     <div class="col-4">                       
                                         <div class="pl-2 small"> <span class="text-danger">*</span> Examination Date </div>
@@ -116,8 +115,9 @@
                     <div class="row">                   
                         <div class="col-12">
 
-                            <div class="latest-score">
+                            <div class="latest-score-message"></div>
 
+                            <div class="latest-score">
                                 <div class="label">
                                     <span class="font-weight-bold small">Exam Date:</span> 
                                     <span class="small">{{ this.latestScore.examDate }}</span>
@@ -134,13 +134,11 @@
                                 </div>
                                 
                             </div>
-
-              
-
                            
                             <b-modal id="examHistory" ref="examHistoryModal" title="Exam Scores">
                                 <input type="hidden" id="memberExamUserID" v-model="memberinfo.user_id">
                                 <div id="memberExamScores">
+                                    <span id="memberExamScoreMessage"></span>
                                     <span v-html="this.examScores"></span>
                                 </div>
                             </b-modal>
@@ -176,10 +174,15 @@
                 </div>
 
                 <!-- [START] SCORE MODAL -->
-                <div id="memberExamScoreList" class="modal-container">
+                <div id="memberExamScoreList" class="modal-container">                    
                     <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScoreList">  
+
+                        <div id="memberExamModalMessage" class="row">
+                            <div class="text-center col-md-12">No Data found</div>                            
+                        </div>
+
                         <div class="row">
-                            <div class="col-4" v-for="examScoreType in examScoreTypes" :key="examScoreType">
+                            <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
 
                                 <div class="card esi-card mb-3">
                                     <div class="card-header esi-card-header small">
@@ -192,12 +195,17 @@
                                         </div> 
                                         -->
                                         <div :id="examScoreType" :class="examScoreType" v-if="index == 'rows'">
+
+                                          
                                             <b-table id="my-table" :class="'memberExamTable'" :items="examScoreList[examScoreType].items" 
                                                 :per-page="examScoreList[examScoreType].perPage" 
                                                 :current-page="examScoreList[examScoreType].currentPage" 
                                                 small 
                                                 stacked fixed>
-                                            </b-table>                                        
+
+                                            </b-table>
+                                    
+
                                             <b-pagination
                                                 v-model="examScoreList[examScoreType].currentPage"
                                                 :total-rows="examScoreList[examScoreType].rows"
@@ -228,13 +236,17 @@
                 </div>
                 <!-- [END] SCORE MODAL -->
 
-                <!-- [START] SCORE MODAL -->
+                <!-- [START] SCORE MODAL GRAPH -->
                 <div id="memberExamScoreGraph" class="modal-container">
-                    <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴" size="xl" @show="getMemberScoreTotalList"> 
+                    <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴 グラフ" size="xl" @show="getMemberScoreTotalList"> 
+
+                        <div id="memberGraphModalMessage" class="row">
+                            <div class="text-center col-md-12">No Data found</div>                            
+                        </div>
 
                         <div class="row">
-                            <div class="col-4" v-for="examScoreType in examScoreTypes" :key="examScoreType">
-                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded" ></line-chart>
+                            <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
+                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
                             </div>
                         </div>
 
@@ -254,9 +266,6 @@
         </div>
 
     </div>
-
-
-
 </template>
 
 <script>
@@ -307,7 +316,7 @@
 
                 slide: 0,
                 sliding: null,
-
+                extraOptions: [],
                 //charts
                 loaded: false,
                 datacollection: [],
@@ -320,7 +329,7 @@
                 },   
 
                 //Exam Score Listings
-                examScoreTypes: ['', '', ''],
+                examScoreTypes: [],
                 examScoreList: [],
                 examScoreLink: [],
 
@@ -328,7 +337,7 @@
                 examDate: "",
                 uExamDate: "",
                 examType: "",
-
+                examLevel: "",
                 
 
                 examScorePage: {
@@ -512,29 +521,11 @@
             }).then(response => {               
                 if (response.data.success === true) 
                 {
+
+                    $('#memberExamModalMessage').hide();
                     this.examScoreTypes = response.data.examTypes;
                     this.examScoreList = response.data.examScoreList;
-
-                    let types = this.examScoreTypes;
-
-                    types.forEach((type) => {                    
-                        
-                        //this.examScorePage[type].rows = this.examScoreList[type].rows;
-
-                        this.datacollection[type] = {
-                            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                            datasets: [
-                                {
-                                    label: type,
-                                    backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), //'#f87979',
-                                    data: [40, 20, 12, 39, 10, 40, 39, 80, 40, 20, 12, 11]
-                                }
-                            ]
-                        }
-                    });
-
                     this.loaded = true;
-
                 }
                 else
                 {
@@ -548,37 +539,68 @@
             });                 
         },
         getMemberExamTotal() 
-        {       
-
-            axios.post("/api/getMemberExamScoreTotalByType?api_token=" + this.api_token, 
+        { 
+            axios.post("/api/getMemberScoreHistory?api_token=" + this.api_token, 
             {
                 method      : "POST",
                 memberID    : this.memberinfo.user_id,
-                examType    : this.examType,
-                limit       : 1,
-            }).then(response => {               
+            }).then(response => {    
+                       
                 if (response.data.success === true) 
                 {
+                    $('#memberGraphModalMessage').hide();
+
                     this.examScoreTypes = response.data.examTypes;
                     this.examScoreList = response.data.examScoreList;
-
                     let types = this.examScoreTypes;
 
+
+                    let max = {'IELTS': 9, 'TOEFL': 120, 'TOEFL_Junior': 900, 
+                                'TOEFL_Primary_Step_1':  218, 'TOEFL_Primary_Step_2': 230,
+                                'TOEIC_Listening_and_Reading': 990, 
+                                'TOEIC_Speaking': 200, 
+                                'EIKEN_Grade_5': 850,
+                                'EIKEN_Grade_4': 1000,
+                                'EIKEN_Grade_pre_2': 2200,
+                                }
+
                     types.forEach((type) => 
-                    {                        
-                        this.examScorePage[type].rows = this.examScoreList[type].rows;
-                        let totals = response.data.examScoreList[type].avg;
+                    {            
+                        let totals = response.data.examScoreList[type].totals;
 
                         this.datacollection[type] = {
-                            labels: response.data.examScoreList[type].months,
+                            labels: response.data.examScoreList[type].dates,
                             datasets: [
                                 {
                                     label: this.capitalizeFirstLetter(type),
                                     backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), 
-                                    data: totals
-                                }
-                            ]
+                                    data: totals,                   
+                                }                                
+                            ],                           
                         }
+                        
+                        if (type == "Other_Test") 
+                        {                        
+                            this.extraOptions['Other_Test'] = null;
+                        } else {
+                        
+                            this.extraOptions[type] = { 
+                                scales: {
+                                    yAxes: [
+                                    {
+                                        ticks: {
+                                            min: 0,
+                                            max: max[type],
+                                            stepSize: 1,
+                                            reverse: false,
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            };
+
+                        }
+                          
                     });
                     this.loaded = true;
                 }
@@ -640,7 +662,8 @@
                 memberID        : this.memberinfo.user_id,
                 examDate        : this.uExamDate,
                 examType        : this.examType,
-                examScore       : this.examScore,                       
+                examLevel       : this.examLevel,
+                examScore       : this.examScore[this.examType],                       
             }).then(response => {
 
                 //HIDE LOADER HERE
@@ -652,9 +675,7 @@
                     this.highlightExamElement();
                 } else {                    
 
-                    this.latestScore.examDate = response.data.examDate;
-                    this.latestScore.examType = response.data.examType;                    
-                    this.latestScore.examScores = JSON.parse(response.data.examScores);
+                    this.getMemberLatestExamScore();
 
                     $(document).find('.modal-footer').hide();
 
@@ -663,7 +684,7 @@
                         $(document).find('#updateMemberForm').slideDown(500, function() {
                              $(document).find('#updateMemberForm').show();
                         });
-                    });             
+                    }); 
 
                     setTimeout(function(scope) {
                          scope.$bvModal.hide('modalUpdateMemberForm', 500);
@@ -686,7 +707,10 @@
         },        
         handleChangeExamType(event) 
         {
+
+            this.examLevel = "";
             this.submitted = false;
+
             let examTypeValue = event.target.value;                    
             let examType = examTypeValue.replace(/\s+/g, '-');
             this.hideClass('examScoreHolder');
@@ -734,6 +758,80 @@
         {                       
             let examType = document.getElementById('examType').value;
             let examDate = this.examDate;
+
+            let gradeLevel = document.getElementById('gradeLevel').value;
+
+
+            if (examType.length == 0 ) {
+                $('#examType').addClass('border border-danger')
+            } else {               
+                $(document).find('#examType').removeClass('border border-danger')
+            }
+
+            if (examDate == 0) {
+                $('#examDate').addClass('border border-danger')
+            } else {
+                $(document).find('#examDate').removeClass('border border-danger')
+            }
+
+
+            if (examDate == 0) {
+                $('#examDate').addClass('border border-danger')
+            } else {
+                $(document).find('#examDate').removeClass('border border-danger')
+            }
+
+            if (examType == "EIKEN") {
+            
+                if (gradeLevel == 0) {
+                    $(document).find('#gradeLevel').addClass('border border-danger')
+                } else {
+                    $(document).find('#gradeLevel').removeClass('border border-danger')
+                }
+
+                let container = $('div#examination-score-'+examType).find('.grade_level_container');
+
+                container.each(function() {
+                    if ($(this).css('display') == 'flex') 
+                    {
+                        let elementID = $(this).find('select').attr('id');
+
+                        let numeric = parseInt($(this).find('select').val())
+                        
+                        if(!$.isNumeric(numeric)) 
+                        {
+                            console.log(elementID + "  will be highlighted");
+                            $('#'+elementID).addClass('border border-danger')
+                        } else {
+
+                            $('#'+elementID).removeClass('border border-danger')
+                        }
+                    }
+                });
+            } else {
+            
+                let selection = $('div#examination-score-'+examType).find('select');
+
+
+                selection.each(function() {
+                    let elementID = $(this).attr('id');
+                    let numeric = parseInt($(this).val())
+                    if(!$.isNumeric(numeric)) 
+                    {
+                        console.log(elementID + "  will be highlighted");
+                        $('#'+elementID).addClass('border border-danger')
+                    } else {
+                        $('#'+elementID).removeClass('border border-danger')
+                    }
+                });  
+
+            }
+        },
+        highlightEikenExamElement()
+        {
+
+            let examType = document.getElementById('examType').value;
+            let examDate = this.examDate;
             let selection = $('div#examination-score-'+examType).find('select');
 
             if (examType.length == 0 ) {
@@ -758,8 +856,11 @@
                 } else {
                     $('#'+elementID).removeClass('border border-danger')
                 }
-            });        
+            });              
+
+
         },
+
         removeHighlightExamElement() 
         {        
             let examType = document.getElementById('examType').value;
@@ -845,9 +946,7 @@
                 if (response.data.success === false) {
                     alert (response.data.message);                    
                 } else {
-
                     this.examScores = response.data.scores;
-                     
                 }
 			}).catch(function(error) {               
                 alert("Error " + error);                
@@ -864,13 +963,17 @@
                 limit        : 1,
                 memberID     : this.memberinfo.user_id,
             }).then(response => {     
-                if (response.data.success === true) { 
+                if (response.data.success === true) 
+                { 
+                    $('.latest-score-message').html("");
+                    $('.latest-score').show();
+
                     this.latestScore.examDate = response.data.examDate;
                     this.latestScore.examType = response.data.examType;                    
                     this.latestScore.examScores = JSON.parse(response.data.examScores);
                 } else {
-                    $('.latest-score').html("<center>No Latest Score</center>");
-                   // alert (response.data.message);        
+                    $('.latest-score-message').html("<center>No Latest Score</center>");
+                    $('.latest-score').hide();
                 }
 			});
 

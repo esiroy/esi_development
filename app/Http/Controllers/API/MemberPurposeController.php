@@ -10,7 +10,14 @@ class MemberPurposeController extends Controller
 {
     public function getMemberPurposeList(Request $request) 
     {
-        $purpose = Purpose::where('member_id', Auth::user()->id)->where('valid', true)->orderBy('id', 'ASC')->get();
+        $memberID = $request->get('memberID');
+
+        if ($memberID) {
+            $purpose = Purpose::where('member_id', $memberID)->where('valid', true)->orderBy('id', 'ASC')->get();
+        } else {
+            $purpose = Purpose::where('member_id', Auth::user()->id)->where('valid', true)->orderBy('id', 'ASC')->get();
+        }
+        
 
         if (count($purpose) >= 1) {
             return Response()->json([

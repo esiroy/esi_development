@@ -73,7 +73,7 @@ class ReportCardController extends Controller
             //report cards
             $reportcards = ReportCard::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
 
-            return view('admin.modules.member.reportcardlist', compact('reportcards', 'agentInfo' ,'tutorInfo', 'member'));
+            return view('admin.modules.member.reportcardlist', compact('reportcards', 'agentInfo' ,'tutorInfo', 'member', 'memberInfo'));
 
         } else {
 

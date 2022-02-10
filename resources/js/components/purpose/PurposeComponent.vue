@@ -36,7 +36,7 @@
         </div>                
         <div class="col-10">     
             <div class="checkbox-options">
-                <input type="checkbox" name="IELTS" value="IELTS" class="main_option" v-model="childPurposeList.IELTS"> IELTS                               
+                <input type="checkbox" id="IELTS" name="IELTS" value="IELTS" class="main_option" @click="checkMainOption" v-model="childPurposeList.IELTS"> IELTS                               
 
                 <div class="IELTS ml-4 sub_options">
 
@@ -92,7 +92,7 @@
             </div>    
 
             <div class="checkbox-options">
-                <input type="checkbox" name="TOEFL" value="TOEFL" class="main_option" v-model="childPurposeList.TOEFL"> TOEFL
+                <input type="checkbox" id="TOEFL" name="TOEFL" value="TOEFL" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL"> TOEFL
                 <div class="TOEFL ml-4 sub_options">
 
                     <div class="row mt-2">
@@ -148,12 +148,12 @@
             </div>
 
             <div class="checkbox-options">
-                <input type="checkbox" name="TOEFL_Primary" value="TOEFL Primary" v-model="childPurposeList.TOEFL_Primary"> TOEFL Primary
+                <input type="checkbox" id="TOEFL_Primary" name="TOEFL_Primary" value="TOEFL Primary" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Primary"> TOEFL Primary
             </div>
 
 
             <div class="checkbox-options">
-                <input type="checkbox" name="TOEIC" value="TOEIC" class="main_option"  v-model="childPurposeList.TOEIC"> TOEIC
+                <input type="checkbox" id="TOEIC" name="TOEIC" value="TOEIC" class="main_option" @click="checkMainOption"  v-model="childPurposeList.TOEIC"> TOEIC
                 <div class="TOEIC ml-4 sub_options">
 
                     <div class="row mt-2">
@@ -211,7 +211,7 @@
             </div>
 
             <div class="checkbox-options">
-                <input type="checkbox" name="EIKEN" value="EIKEN" class="main_option" v-model="childPurposeList.EIKEN"> EIKEN(英検）
+                <input type="checkbox" id="EIKEN" name="EIKEN" value="EIKEN" class="main_option" @click="checkMainOption" v-model="childPurposeList.EIKEN"> EIKEN(英検）
                 <div class="EIKEN ml-4 sub_options">
 
                     <div class="row mt-2">
@@ -313,7 +313,7 @@
 
 
             <div class="checkbox-options">
-                <input type="checkbox" name="TEAP" value="TEAP" class="main_option" v-model="childPurposeList.TEAP"> TEAP
+                <input type="checkbox" id="TEAP" name="TEAP" value="TEAP" class="main_option" @click="checkMainOption" v-model="childPurposeList.TEAP"> TEAP
                 <div class="TEAP ml-4 sub_options">
                     <div class="row mt-2">
                         <div class="TEAP_option col-md-2">
@@ -344,7 +344,7 @@
 
 
             <div class="checkbox-options">
-                <input type="checkbox" name="BUSINESS" value="BUSINESS" class="main_option" v-model="childPurposeList.BUSINESS"> Business
+                <input type="checkbox" id="BUSINESS" name="BUSINESS" value="BUSINESS" class="main_option" @click="checkMainOption" v-model="childPurposeList.BUSINESS"> Business
                 <div class="BUSINESS ml-4 sub_options">
 
 
@@ -390,7 +390,7 @@
             </div>                        
 
             <div class="checkbox-options">
-                <input type="checkbox" name="BUSINESS_CAREERS" value="BUSINESS CAREERS" class="main_option"  v-model="childPurposeList.BUSINESS_CAREERS"> Business Careers(職業別英語）
+                <input type="checkbox" id="BUSINESS_CAREERS" name="BUSINESS_CAREERS" value="BUSINESS CAREERS" class="main_option" @click="checkMainOption"  v-model="childPurposeList.BUSINESS_CAREERS"> Business Careers(職業別英語）
 
                 <div class="BUSINESS_CAREERS ml-4 sub_options">
 
@@ -540,7 +540,7 @@
             </div>                        
 
             <div class="checkbox-options">
-                <input type="checkbox" name="DAILY_CONVERSATION" value="DAILY CONVERSATION" class="main_option"  v-model="childPurposeList.DAILY_CONVERSATION"> Daily Conversation
+                <input type="checkbox" id="DAILY_CONVERSATION" name="DAILY_CONVERSATION" value="DAILY CONVERSATION" class="main_option" @click="checkMainOption"  v-model="childPurposeList.DAILY_CONVERSATION"> Daily Conversation
                 <div class="DAILY_CONVERSATION ml-4 sub_options">
                     
 
@@ -587,7 +587,7 @@
 
 
             <div class="checkbox-options">
-                <input type="checkbox" name="OTHERS" value="OTHERS" class="main_option"  v-model="childPurposeList.OTHERS"> Others
+                <input type="checkbox" id="OTHERS" name="OTHERS" value="OTHERS" class="main_option" @click="checkMainOption"  v-model="childPurposeList.OTHERS"> Others
                 <div class="others ml-4 sub_options">
                     <input type="text" name="OTHERS_value" value="OTHERS" class="col-md-8 form-control form-control-sm " v-model="childPurposeList.OTHERS_value">  
                 </div>
@@ -780,26 +780,61 @@ export default {
             }
             this.errorMsg = msg
         },
+        showMsgModal(message) {
+            this.boxTwo = '';
+            this.$bvModal.msgBoxOk(message, {
+                title: '告知',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'success',
+                headerClass: 'p-2 border-bottom-0',
+                footerClass: 'p-2 border-top-0',
+                centered: true
+            }).then(value => {
+                this.boxTwo = value
+            })
+            .catch(err => {
+                // An error occurred
+            })            
+        },
+        checkMainOption(event)
+        {
+            let mainOptionLength = $('input.main_option:checked').length;
+            if (mainOptionLength > 3) {
+                this.showMsgModal("受講目的--->最大3目的")
+                event.preventDefault();
+            } else {
+                this.showMainMenuSubOptions() 
+            }
+
+        },
         showMainMenuSubOptions() 
-        {        
-            //Main Option click
+        {
             let mainOption = document.getElementsByClassName("main_option");
-            Object.keys(mainOption).forEach(function (key){
+            let mainOptionKeys = Object.keys(mainOption);
+
+            mainOptionKeys.forEach(function (key) 
+            {
                 let element = mainOption[key];
                 if (element.checked) {
-                    element.nextElementSibling.style.display = 'block';            
-                } else {
-                    element.nextElementSibling.style.display = 'none';
-                }
-            });       
 
+                    if (element.nextElementSibling) {
+                        element.nextElementSibling.style.display = 'block'; 
+                    }
+                  
+                } else {
+                    if (element.nextElementSibling) {
+                        element.nextElementSibling.style.display = 'none';
+                    }
+                }
+            });
             this.showSubMenu();         
         },
         showSubMenu() 
         {
             let subOption = document.getElementsByClassName("sub_options");
             Object.keys(subOption).forEach(function (key) 
-            {
+            {              
                 let element = subOption[key];
                 let inputElements = element.querySelectorAll('input');
                 Object.keys(inputElements).forEach(function (inputElementkey) 
@@ -816,6 +851,7 @@ export default {
                             subElement.parentElement.nextElementSibling.nextElementSibling.style.display = 'none';                            
                         }
                     }
+
                 });
 
             });
@@ -837,9 +873,7 @@ export default {
 };
 </script>
 <style scoped>
-  
-      .sub_options {
+    .sub_options {
         display: none;
-    }  
-    
+    }      
 </style>

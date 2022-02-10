@@ -44,10 +44,11 @@ if (url[1] === 'admin') {
             //url == member/{$id}
             if (url[3]) {
                 Vue.component('member-score-commponent', require('./components/backend/member/MemberScoreViewerComponent.vue').default);
+                Vue.component('member-purpose-viewer-commponent', require('./components/backend/member/MemberPurposeViewerComponent.vue').default);
                 Vue.component('member-notes-commponent', require('./components/backend/member/MemberNotesComponent.vue').default);
             }
         break;
-        case 'reportcarddate':
+        case 'reportcard':
             Vue.component('member-notes-commponent', require('./components/backend/member/MemberNotesComponent.vue').default);
 
         break;
