@@ -558,11 +558,15 @@
                     let max = {'IELTS': 9, 'TOEFL': 120, 'TOEFL_Junior': 900, 
                                 'TOEFL_Primary_Step_1':  218, 'TOEFL_Primary_Step_2': 230,
                                 'TOEIC_Listening_and_Reading': 990, 
-                                'TOEIC_Speaking': 200, 
+                                'TOEIC_Speaking': 200,
                                 'EIKEN_Grade_5': 850,
-                                'EIKEN_Grade_4': 1000,
-                                'EIKEN_Grade_pre_2': 2200,
-                                }
+                                'EIKEN_Grade_4': 1000,     
+                                'EIKEN_Grade_3': 1000,                                
+                                'EIKEN_Grade_2': 2600,
+                                'EIKEN_Grade_1': 3100,                                
+                                'EIKEN_Grade_pre_1': 3000,
+                                'EIKEN_Grade_pre_2': 2400,
+                            }
 
                     types.forEach((type) => 
                     {            
