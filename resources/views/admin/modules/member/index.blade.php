@@ -33,7 +33,7 @@
            <!--Member List -->
 
             <!--[start card] -->
-           <div class="card esi-card mt-5">
+           <div class="card esi-card ">
                 <div class="card-header esi-card-header">
                     Member List
                 </div>

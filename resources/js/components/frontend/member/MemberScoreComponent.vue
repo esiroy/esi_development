@@ -31,7 +31,7 @@
                                             <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>
                                             <option value="TOEIC_Listening_and_Reading">TOEIC Listening and Reading</option>
                                             <option value="TOEIC_Speaking">TOEIC Speaking</option>
-                                             <option value="TOEIC_Writing">TOEIC Writing</option>
+                                            <option value="TOEIC_Writing">TOEIC Writing</option>
                                             <option value="EIKEN">EIKEN(英検）</option>
                                             <option value="TEAP">TEAP</option>
                                             <option value="Other_Test">Other Test</option>

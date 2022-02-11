@@ -32,7 +32,7 @@ export default {
                 if (response.data.success) {
                     $('#memberPurposeList').html(response.data.content);
                 } else {
-                    $('#memberPurposeList').html("<div class='text-center'>" + response.data.message + "</div>");
+                    $('#memberPurposeList').html("<div>" + response.data.message + "</div>");
                 }
 
             }).catch(function(error) { 

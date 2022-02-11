@@ -47,7 +47,7 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <p>Lesson Subject</p>
+                                                Lesson Subject
                                             </td>
                                             <td colspan="6">
                                                 <input required type="text" name="lessonSubject" id="lessonSubject*" class="form-control form-control-sm"
@@ -90,42 +90,124 @@
 
                                         <tr>
                                             <td colspan="7">
-                                                <div class="mt-4">
-                                                    <input required type="radio" name="grade" value="UNDERSTAND_86_100"
-                                                    @if (isset($reportCard->grade) && ($reportCard->grade == 'UNDERSTAND_86_100')) {{ 'checked' }}  @endif> understand 86-100 %
+
+                                                <div class="row mt-4">
+
+
+                                                    <div class="col-4">
+                                                        
+                                                        <table class="table table-sm border">
+                                                            <tr class="bg-darkblue">
+                                                                <th class="small text-white text-center font-weight-bold" colspan="7">
+                                                                    Understanding Percentage
+                                                                </th>
+                                                            </tr>                                                                    
+                                                            <tr>
+                                                                <td class="pl-4">                                                                    
+                                                                    <input required type="radio" name="grade" value="UNDERSTAND_86_100"
+                                                                    @if (isset($reportCard->grade) && ($reportCard->grade == 'UNDERSTAND_86_100')) {{ 'checked' }}  @endif> 
+                                                                    <span class="small">understand 86-100 %</span>                                                                  
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="pl-4">
+                                                                    <input type="radio" name="grade" value="UNDERSTAND_65_85"
+                                                                    @if (isset($reportCard->grade) &&  ($reportCard->grade == 'UNDERSTAND_65_85')) {{ 'checked' }}  @endif> 
+                                                                    <span class="small">understand 65-85 %</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="pl-4">
+                                                                    <input type="radio" name="grade" value="UNDERSTAND_41_64"
+                                                                    @if (isset($reportCard->grade) &&  ($reportCard->grade == 'UNDERSTAND_41_64')) {{ 'checked' }}  @endif> 
+                                                                    <span class="small">understand 41-64 %</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="pl-4">
+                                                                    <input type="radio" name="grade" value="UNDERSTAND_20_40"
+                                                                    @if (isset($reportCard->grade) && ($reportCard->grade == 'UNDERSTAND_20_40')) {{ 'checked' }}  @endif> 
+                                                                    <span class="small">understand 20-40 %</span>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="pl-4">
+                                                                    <input type="radio" name="grade" value="UNDERSTAND_0_19"
+                                                                    @if (isset($reportCard->grade) && ($reportCard->grade == 'UNDERSTAND_0_19')) {{ 'checked' }}  @endif> 
+                                                                    <span class="small">understand 0-19 %</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </div>
+
+                                                    <div class="col-8">
+
+
+                                                        <table class="table table-sm border">
+                                                            <tr class="bg-darkblue">
+                                                                <th class="small text-white text-center font-weight-bold" colspan="7">
+                                                                   Members Home Work 
+                                                                </th>
+                                                            </tr>                                                                    
+                                                            <tr>
+                                                                <td class="px-2">  
+
+                                                                    @if (isset($homework))
+                                                                    <div>
+                                                                        File: <a href="{{ url( Storage::url($homework->original) ) }}" 
+                                                                        download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                                    </div>
+
+                                                                    <div>
+                                                                        Instruction : {{ $homework->instruction ?? '' }}
+                                                                    </div>
+                                                                    @else
+                                                                        <div class="text-center">
+                                                                            <span class="small text-secondary">No homework found, Yeey!</span>
+                                                                        </div>
+                                                                    @endif
+
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+
+                        
+                                                        <table class="table table-sm border">
+                                                            <tr class="bg-darkblue">
+                                                                <th class="small text-white text-center font-weight-bold" colspan="7">
+                                                                   Add Home Work Attachments
+                                                                </th>
+                                                            </tr>                                                                    
+                                                            <tr>
+                                                                <td class="px-2">                                                                    
+                                                                   
+
+                                                                    <div id="file-attachments" class="mb-2 mx-0">
+                                                                        <input id="file" type="file" name="file" class="form-control-file form-control-sm pl-0"  />
+                                                                        <span class="small text-secondary" >* accepts .png, jpg, jpeg, pdf file extension only<span>
+                                                                    </div>
+
+
+                                                                    <textarea id="instruction" name="instruction" 
+                                                                        class="form-control form-control-sm" 
+                                                                        placeholder="Add Homework Instruction"
+                                                                        style="min-height:50px"
+                                                                    >
+                                                                    
+                                                                    </textarea>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+
+
+
+                                                    </div>
                                                 </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="7">
-                                                <input type="radio" name="grade" value="UNDERSTAND_65_85"
-                                                @if (isset($reportCard->grade) &&  ($reportCard->grade == 'UNDERSTAND_65_85')) {{ 'checked' }}  @endif> understand 65-85 %
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="7">
-                                                <input type="radio" name="grade" value="UNDERSTAND_41_64"
-                                                @if (isset($reportCard->grade) &&  ($reportCard->grade == 'UNDERSTAND_41_64')) {{ 'checked' }}  @endif> understand 41-64 %
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="7">
-                                                <input type="radio" name="grade" value="UNDERSTAND_20_40"
-                                                @if (isset($reportCard->grade) && ($reportCard->grade == 'UNDERSTAND_20_40')) {{ 'checked' }}  @endif> understand 20-40 %
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="7">
-                                                <input type="radio" name="grade" value="UNDERSTAND_0_19"
-                                                @if (isset($reportCard->grade) && ($reportCard->grade == 'UNDERSTAND_0_19')) {{ 'checked' }}  @endif> understand 0-19 %
-                                            </td>
-                                        </tr>
+                                        
 
-
-                                        <tr>
-                                            <td colspan="7">
-                                                &nbsp;
                                             </td>
+
                                         </tr>
 
                                         <tr>
@@ -150,4 +232,11 @@
         </div>
     </div>
 </div>
+@endsection
+
+@section('styles')
+@parent
+<style>
+
+</style>
 @endsection

@@ -12,6 +12,8 @@ use App\Models\Member;
 use App\Models\UserImage;
 use App\Models\Agent;
 use App\Models\Tutor;
+use App\Models\UploadFile; 
+use App\Models\Homework; 
 
 class ReportCardController extends Controller
 {   
@@ -20,7 +22,7 @@ class ReportCardController extends Controller
      Description: a link will show the report card in the tutor lesson plan  and will let the tutor report
     */
     public function index(Request $request) 
-    {     
+    {   
 
         $scheduleitemid = $request->scheduleitemid;
 
@@ -52,8 +54,10 @@ class ReportCardController extends Controller
         }
 
 
+        //(get  list of home work )
+        $homework = Homework::where('schedule_item_id', $scheduleitemid)->first();
 
-        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo'));
+        return view('admin.modules.member.reportcard', compact('scheduleitemid', 'userImage', 'scheduleItem', 'reportCard', 'latestReportCard', 'memberInfo', 'tutorInfo' , 'homework'));
     }
 
 
@@ -108,13 +112,16 @@ class ReportCardController extends Controller
     }
 
 
-
-    public function store(Request $request) 
+    /* 
+        @description:  Store Lesson Report Card  
+    */
+    public function store(Request $request, UploadFile $uploadFile) 
     {
-
         $scheduleItem = ScheduleItem::find($request->scheduleitemid);
-
         $reportCard = ReportCard::where('schedule_item_id', $scheduleItem['id'])->first();
+
+        $storagePath    = 'public/uploads/homeworks/';            
+              
         
         if (isset($reportCard->schedule_item_id)) 
         {
@@ -140,7 +147,7 @@ class ReportCardController extends Controller
                 'member_id'             => $scheduleItem['member_id'],
                 'lesson_level'          => $request->lessonLevel,                        
             ];
-            $reportCard->update($reportData);            
+            $reportCard->update($reportData);  
 
         } else {
 
@@ -167,7 +174,65 @@ class ReportCardController extends Controller
             ReportCard::create($reportData);
         }
 
+
+        //@update
+        $homework = Homework::where('schedule_item_id', $scheduleItem->id)->first();
+        if ($homework) 
+        {
+
+            $instruction = $request->get('instruction');
+
+
+            $deleteFile = $uploadFile->deleteUploadedFile($storagePath, $homework->filename);            
+            $file = $request->file('file');
+
+            
+
+            if (isset($file)) 
+            {                
+                $uploadFileName = $uploadFile->uploadFile($storagePath, $file);  
+                $filename =  basename($uploadFileName);
+
+                $updateData = [
+                    'filename'          => $filename,
+                    'original'          => $uploadFileName
+                ];
+
+                $homework->update($updateData);
+            } 
+
+
+            if (isset($instruction)) {
+                $updateData = [
+                    'instruction'   => $instruction,
+                ];
+                $homework->update($updateData);
+            }
+
+         
+                
+        } else {
+
+            $file = $request->file('file');
+
+            if (isset($file)) 
+            {
+                $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
+                $filename =  basename($uploadFileName);
+
+                Homework::create([
+                    'valid'             => true,
+                    'schedule_item_id'  => $scheduleItem->id,
+                    'member_id'         => $scheduleItem['member_id'] ?? '', 
+                    'tutor_id'          => $scheduleItem->tutor_id ?? '',
+                    'filename'          => $filename ?? '',
+                    'original'          => $uploadFileName ?? '',
+                    'instruction'       => $request->get('instruction') ?? ''
+                ]);
+            }
         
+        }
+
         return redirect()->route('admin.lesson.index')->with('message', "Report card saved.");
         
     }

@@ -483,6 +483,7 @@
                                             <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>
                                             <option value="TOEIC_Listening_and_Reading">TOEIC Listening and Reading</option>
                                             <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                                            <option value="TOEIC_Writing">TOEIC Writing</option>
                                             <option value="EIKEN">EIKEN(英検）</option>
                                             <option value="TEAP">TEAP</option>
                                             <option value="Other_Test">Other Test</option>
@@ -521,8 +522,11 @@
                                     <ToeflPrimaryStep2ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep2ScoreComponent>
                                     <ToeicListeningAndReadingScoreComponent :examScore="examScore" :size="this.size"></ToeicListeningAndReadingScoreComponent>
                                     <ToeicSpeakingScoreComponent :examScore="examScore" :size="this.size"></ToeicSpeakingScoreComponent>
+                                    <ToeicWritingScoreComponent :examScore="examScore" :size="this.size"></ToeicWritingScoreComponent>
+
                                     <EikenScoreComponent :examScore="examScore" :size="this.size"></EikenScoreComponent>
-                                    <TeapScoreComponent :examScore="examScore" :size="this.size"></TeapScoreComponent>                                    
+                                    <TeapScoreComponent :examScore="examScore" :size="this.size"></TeapScoreComponent>            
+                                                            
                                     <!--[end] Dynamic Examination Scores -->
 
                                     <!--[start] Other-->
@@ -671,23 +675,32 @@
                     </div>
                     <!-- [END] SCORE MODAL -->
 
-                    <!-- [START] LINE CHART MODAL -->
+
+                    <!-- [START] SCORE MODAL GRAPH -->
                     <div id="memberExamScoreGraph" class="modal-container">
-                        <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴" size="xl" @show="getMemberScoreTotalList"> 
+                        <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴 グラフ" size="xl" @show="getMemberScoreTotalList"> 
+
+                            <div id="memberGraphModalMessage" class="row">
+                                <div class="text-center col-md-12">No Data found</div>                            
+                            </div>
+
                             <div class="row">
                                 <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
-                                    <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded" ></line-chart>
+                                    <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
                                 </div>
                             </div>
+
                             <template #modal-footer>
                                 <div class="buttons-container w-100">
                                     <p class="float-left"></p>
                                     <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalMemberExamScoreGraph')">Close</b-button>                            
                                 </div>
-                            </template>                                                     
+                            </template>                         
+                            
                         </b-modal>
                     </div>
-                    <!-- [END] LINE CHART MODAL -- -->   
+                    <!-- [END] SCORE MODAL -->
+
 
                 </div>
             </div>
@@ -1032,6 +1045,7 @@ import ToeicListeningAndReadingScoreComponent from "./scores/ToeicListeningAndRe
 import ToeicSpeakingScoreComponent from "./scores/ToeicSpeakingScoreComponent.vue";
 import EikenScoreComponent from "./scores/EikenScoreComponent.vue";
 import TeapScoreComponent from "./scores/TeapScoreComponent.vue";
+import ToeicWritingScoreComponent from "./scores/ToeicWritingScoreComponent.vue";
 
 
 import Vuelidate from "vuelidate";
@@ -1051,7 +1065,7 @@ export default {
         IELTScoreComponent, 
         ToeflScoreComponent, ToeflJuniorScoreComponent,
         ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
-        ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, 
+        ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, ToeicWritingScoreComponent, 
         EikenScoreComponent,
         TeapScoreComponent,
     },
@@ -1106,6 +1120,8 @@ export default {
             
             //set calendar characters to japanese
             ja: ja, 
+
+            extraOptions: [],
 
             //list of main tutors
             mainTutors: [],        
@@ -1197,45 +1213,51 @@ export default {
             examDate: "",
             uExamDate: "",
             examType: "",
-            examScore: {
+            examLevel: "",
 
-                IELTS: {
-                    overallBandScore : "",
+            examScore: {
+                IELTS: {                    
                     speakingBandScore : "",
                     writingBandScore : "",
                     readingBandScore : "",
-                    listeningBandScore : ""                
+                    listeningBandScore : "",
+                    overallBandScore : "",
                 }, 
-                TOEFL: {
-                    total: "",
+                TOEFL: {                    
                     speakingScore: "",
                     writingScore: "",
                     readingScore: "",
                     listeningScore: "",
-                },
-                TOEFL_Junior: {
                     total: "",
+                },
+                TOEFL_Junior: {                    
                     listening: "",
                     languageFormAndMeaning: "",
-                    reading: ""
-                },
-                TOEFL_Primary_Step_1: {
+                    reading: "",
                     total: "",
-                    reading: "",                    
-                    listening: "",                    
                 },
-                TOEFL_Primary_Step_2: {
-                    total: "",
+                TOEFL_Primary_Step_1: {                    
                     reading: "",                    
-                    listening: "",                    
+                    listening: "",
+                    total: "",               
                 },
-                TOEIC_Listening_and_Reading: {
-                    total: "",
+                TOEFL_Primary_Step_2: {                    
                     reading: "",                    
-                    listening: "",                 
+                    listening: "",
+                    total: "",               
+                },
+                TOEIC_Listening_and_Reading: {                    
+                    reading: "",                    
+                    listening: "",
+                    total: "",     
                 },
                 TOEIC_Speaking: {
                     speaking: "",
+                    total: ""
+                },
+                TOEIC_Writing: {
+                    writing: "",
+                    total: "",
                 },
                 EIKEN: {
                     grade_5: "",
@@ -1250,19 +1272,21 @@ export default {
                     grade_pre_2_2nd_stage: "",
                     grade_2_2nd_stage: "",
                     grade_pre_1_2nd_stage: "",
-                    grade_1_2nd_stage: "",                    
+                    grade_1_2nd_stage: "",     
+                    total: ""               
                 },
-                TEAP: {
-                    total: "",
+                TEAP: {                    
                     speakingScore: "",
                     writingScore: "",
                     readingScore: "",
-                    listeningScore: "",                
+                    listeningScore: "",
+                    total: "",
                 },
                 Other_Test: {
                     otherScore: "",
                 }
             }, 
+
 
             //Latest Score (show recently added scores)
             latestScore: {
@@ -1842,7 +1866,9 @@ export default {
         },
         handleChangeExamType(event) 
         {
+            this.examLevel = "";
             this.submitted = false;
+
             let examTypeValue = event.target.value;                    
             let examType = examTypeValue.replace(/\s+/g, '-');
             this.hideClass('examScoreHolder');
@@ -1879,38 +1905,73 @@ export default {
                 }
             });
 
-        },        
+        },     
         getMemberExamTotal() 
-        {       
-            axios.post("/api/getMemberExamScoreTotalByType?api_token=" + this.api_token, 
+        { 
+            axios.post("/api/getMemberScoreHistory?api_token=" + this.api_token, 
             {
                 method      : "POST",
                 memberID    : this.memberinfo.user_id,
-                examType    : this.examType,
-                limit       : 1,
-            }).then(response => {               
+            }).then(response => {    
+                       
                 if (response.data.success === true) 
                 {
+                    $('#memberGraphModalMessage').hide();
+
                     this.examScoreTypes = response.data.examTypes;
                     this.examScoreList = response.data.examScoreList;
-
                     let types = this.examScoreTypes;
 
+
+                    let max = {'IELTS': 9, 'TOEFL': 120, 'TOEFL_Junior': 900, 
+                                'TOEFL_Primary_Step_1':  218, 'TOEFL_Primary_Step_2': 230,
+                                'TOEIC_Listening_and_Reading': 990, 'TOEIC_Speaking': 200, 'TOEIC_Writing' : 495,
+                                'EIKEN_Grade_5': 850,
+                                'EIKEN_Grade_4': 1000,     
+                                'EIKEN_Grade_3': 2200,                                
+                                'EIKEN_Grade_2': 2600,
+                                'EIKEN_Grade_1': 3100,                                
+                                'EIKEN_Grade_pre_1': 3000,
+                                'EIKEN_Grade_pre_2': 2400,
+                            }
+
                     types.forEach((type) => 
-                    {                        
-                        this.examScorePage[type].rows = this.examScoreList[type].rows;
-                        let totals = response.data.examScoreList[type].avg;
+                    {            
+                        let totals = response.data.examScoreList[type].totals;
 
                         this.datacollection[type] = {
-                            labels: response.data.examScoreList[type].months,
+                            labels: response.data.examScoreList[type].dates,
                             datasets: [
                                 {
                                     label: this.capitalizeFirstLetter(type),
                                     backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), 
-                                    data: totals
-                                }
-                            ]
+                                    data: totals,                   
+                                }                                
+                            ],                           
                         }
+                        
+                        if (type == "Other_Test") 
+                        {                        
+                            this.extraOptions['Other_Test'] = null;
+                        } else {
+                        
+                            this.extraOptions[type] = { 
+                                scales: {
+                                    yAxes: [
+                                    {
+                                        ticks: {
+                                            min: 0,
+                                            max: max[type],
+                                            stepSize: 1,
+                                            reverse: false,
+                                            beginAtZero: true
+                                        }
+                                    }]
+                                }
+                            };
+
+                        }
+                          
                     });
                     this.loaded = true;
                 }
@@ -1919,8 +1980,13 @@ export default {
 
                     
                 }
-            });
-        },             
+            }).catch(function(error) {
+               
+                console.log(error);
+            });       
+
+
+        },              
         showElementId(id) {
             document.getElementById(id).style.display = "block";
         },                
@@ -2069,10 +2135,13 @@ export default {
             axios.post("/api/addMemberExamScore?api_token=" + this.api_token, 
             {
                 method          : "POST",
+     
                 memberID        : this.memberinfo.user_id,
                 examDate        : this.uExamDate,
                 examType        : this.examType,
-                examScore       : this.examScore,                       
+                examLevel       : this.examLevel,
+                examScore       : this.examScore[this.examType],     
+
             })
             .then(response => 
             {              

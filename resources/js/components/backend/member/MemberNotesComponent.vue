@@ -170,7 +170,7 @@ export default {
 	addHighlight(id) {
 		$('#note_'+ id).addClass('table-success');
 		this.$forceUpdate();
-		//setTimeout(() => { this.removeHighlight(id)}, 3000);
+		setTimeout(() => { this.removeHighlight(id)}, 5000);
 	},
 	removeHighlight(id) 
 	{
@@ -185,6 +185,7 @@ export default {
 		if (this.currentPage > 1) {
 			console.log(" > 1")
 			this.removeHighlight(this.highlightID);
+			this.highlightID = null;
 		}
 	},
     createImage(value) {
