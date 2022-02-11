@@ -31,6 +31,7 @@
                                             <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>
                                             <option value="TOEIC_Listening_and_Reading">TOEIC Listening and Reading</option>
                                             <option value="TOEIC_Speaking">TOEIC Speaking</option>
+                                             <option value="TOEIC_Writing">TOEIC Writing</option>
                                             <option value="EIKEN">EIKEN(英検）</option>
                                             <option value="TEAP">TEAP</option>
                                             <option value="Other_Test">Other Test</option>
@@ -70,6 +71,8 @@
                                     <ToeflPrimaryStep2ScoreComponent :examScore="examScore" :size="this.size"></ToeflPrimaryStep2ScoreComponent>
                                     <ToeicListeningAndReadingScoreComponent :examScore="examScore" :size="this.size"></ToeicListeningAndReadingScoreComponent>
                                     <ToeicSpeakingScoreComponent :examScore="examScore" :size="this.size"></ToeicSpeakingScoreComponent>
+                                    <ToeicWritingScoreComponent :examScore="examScore" :size="this.size"></ToeicWritingScoreComponent>
+
                                     <EikenScoreComponent :examScore="examScore" :size="this.size"></EikenScoreComponent>
                                     <TeapScoreComponent :examScore="examScore" :size="this.size"></TeapScoreComponent>                                    
                                     <!--[end] Dynamic Examination Scores -->
@@ -280,6 +283,8 @@
     import ToeflPrimaryStep2ScoreComponent from "../../scores/ToeflPrimaryStep2ScoreComponent.vue";
     import ToeicListeningAndReadingScoreComponent from "../../scores/ToeicListeningAndReadingScoreComponent.vue";
     import ToeicSpeakingScoreComponent from "../../scores/ToeicSpeakingScoreComponent.vue";
+    import ToeicWritingScoreComponent from "../../scores/ToeicWritingScoreComponent.vue";
+
     import EikenScoreComponent from "../../scores/EikenScoreComponent.vue";
     import TeapScoreComponent from "../../scores/TeapScoreComponent.vue";
     import * as Moment from 'moment'
@@ -294,7 +299,7 @@
             IELTScoreComponent, 
             ToeflScoreComponent, ToeflJuniorScoreComponent,
             ToeflPrimaryStep1ScoreComponent, ToeflPrimaryStep2ScoreComponent, 
-            ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, 
+            ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, ToeicWritingScoreComponent,
             EikenScoreComponent,
             TeapScoreComponent,
         },
@@ -383,6 +388,12 @@
                         currentPage : 1,
                         items : 1,
                     },
+                    TOEIC_Writing: {
+                        perPage : 1,
+                        rows: 1,
+                        currentPage : 1,
+                        items : 1,
+                    },                    
                     EIKEN: {
                         perPage : 1,
                         rows: 1,
@@ -442,6 +453,11 @@
                     },
                     TOEIC_Speaking: {
                         speaking: "",
+                        total: ""
+                    },
+                    TOEIC_Writing: {
+                        writing: "",
+                        total: "",
                     },
                     EIKEN: {
                         grade_5: "",
@@ -456,7 +472,8 @@
                         grade_pre_2_2nd_stage: "",
                         grade_2_2nd_stage: "",
                         grade_pre_1_2nd_stage: "",
-                        grade_1_2nd_stage: "",                    
+                        grade_1_2nd_stage: "",     
+                        total: ""               
                     },
                     TEAP: {                    
                         speakingScore: "",
@@ -557,8 +574,7 @@
 
                     let max = {'IELTS': 9, 'TOEFL': 120, 'TOEFL_Junior': 900, 
                                 'TOEFL_Primary_Step_1':  218, 'TOEFL_Primary_Step_2': 230,
-                                'TOEIC_Listening_and_Reading': 990, 
-                                'TOEIC_Speaking': 200,
+                                'TOEIC_Listening_and_Reading': 990, 'TOEIC_Speaking': 200, 'TOEIC_Writing' : 495,
                                 'EIKEN_Grade_5': 850,
                                 'EIKEN_Grade_4': 1000,     
                                 'EIKEN_Grade_3': 2200,                                
@@ -1055,7 +1071,16 @@
                 },
                 TOEIC_Speaking: {
                     speaking: "",
+                     total: "", 
                 },
+                TOEIC_Speaking: {
+                    writing: "",
+                    total: "", 
+                },
+                TOEIC_Writing: {
+                    writing: "",
+                    total: "",
+                },                
                 EIKEN: {
                     grade_5: "",
                     grade_4: "",
