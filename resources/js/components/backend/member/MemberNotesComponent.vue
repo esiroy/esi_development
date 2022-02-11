@@ -205,6 +205,14 @@ export default {
 	updateNote() 
 	{
 
+		if (this.noteEdited.trim() == "") 
+		{
+			$('#noteEditModal').find('.modal-content').find('.modal-body').find('.alert').remove()
+			$('#noteEditModal').find('.modal-content').find('.modal-body').prepend("<div class='alert alert-danger small'>Don't be shy, Please add a message </div>");		
+			return false;
+		}
+
+		
 		$('#editNoteSpinner').show();
 		$('#editNoteFooter').hide();
 
@@ -264,6 +272,13 @@ export default {
     },
     saveNote() 
 	{
+		if (this.note.trim() == "") 
+		{
+			$('#noteEntryModal').find('.modal-content').find('.modal-body').find('.alert').remove()
+			$('#noteEntryModal').find('.modal-content').find('.modal-body').prepend("<div class='alert alert-danger small'>Don't be shy, Please add a message </div>");		
+			return false;
+		}
+
 		$('#editNoteSpinner').show();
 		$('#editNoteFooter').hide();	
 

@@ -153,12 +153,12 @@
                                                                 <td class="px-2">  
 
                                                                     @if (isset($homework))
-                                                                    <div>
+                                                                    <div class="small">
                                                                         File: <a href="{{ url( Storage::url($homework->original) ) }}" 
                                                                         download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
                                                                     </div>
 
-                                                                    <div>
+                                                                     <div class="small">
                                                                         Instruction : {{ $homework->instruction ?? '' }}
                                                                     </div>
                                                                     @else
@@ -176,7 +176,12 @@
                                                         <table class="table table-sm border">
                                                             <tr class="bg-darkblue">
                                                                 <th class="small text-white text-center font-weight-bold" colspan="7">
-                                                                   Add Home Work Attachments
+
+                                                                    @if (isset($homework))
+                                                                        {{ "Update Home Work Attachments" }}
+                                                                    @else 
+                                                                        {{ "Add Home Work Attachments" }}
+                                                                    @endif
                                                                 </th>
                                                             </tr>                                                                    
                                                             <tr>
@@ -186,16 +191,17 @@
                                                                     <div id="file-attachments" class="mb-2 mx-0">
                                                                         <input id="file" type="file" name="file" class="form-control-file form-control-sm pl-0"  />
                                                                         <span class="small text-secondary" >* accepts .png, jpg, jpeg, pdf file extension only<span>
+                                                                        <span class="error"></div>
                                                                     </div>
 
 
                                                                     <textarea id="instruction" name="instruction" 
                                                                         class="form-control form-control-sm" 
                                                                         placeholder="Add Homework Instruction"
-                                                                        style="min-height:50px"
-                                                                    >
-                                                                    
-                                                                    </textarea>
+                                                                        style="min-height:50px" disabled
+                                                                    ></textarea>
+
+
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -239,4 +245,48 @@
 <style>
 
 </style>
+@endsection
+
+@section('scripts')
+@parent
+<script type="text/javascript">
+    window.addEventListener('load', function() 
+    {
+        $(document).on("change","#file",function() 
+        {
+           
+            const oFile = document.getElementById("file").files[0];  
+
+            let fileExtension = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];                                
+
+            if ($.inArray($('#file').val().split('.').pop().toLowerCase(), fileExtension) == -1) 
+            {
+                let message = "Only formats are allowed : "+fileExtension.join(', ');
+                $('#file-attachments').find('.error').html('<div class="alert alert-danger small">' + message +'.</div>')
+
+
+                $('#file').val("");
+
+                return false;
+
+            } 
+            else if (oFile.size <= 2097152) // 2 MiB for bytes.
+            {             
+            
+                $('#file-attachments').find('.error').html('')
+
+                $('#instruction').prop('disabled', false);
+
+            } else {
+                let message = "This File Size exceeds 2MB";
+                $('#file-attachments').find('.error').html('<div class="alert alert-danger small">' + message +'.</div>')
+                $('#file').val("");
+
+                return false;
+            }   
+            
+        });
+
+    });
+</script>
 @endsection
