@@ -561,7 +561,7 @@
                                 'TOEIC_Speaking': 200,
                                 'EIKEN_Grade_5': 850,
                                 'EIKEN_Grade_4': 1000,     
-                                'EIKEN_Grade_3': 1000,                                
+                                'EIKEN_Grade_3': 2200,                                
                                 'EIKEN_Grade_2': 2600,
                                 'EIKEN_Grade_1': 3100,                                
                                 'EIKEN_Grade_pre_1': 3000,
