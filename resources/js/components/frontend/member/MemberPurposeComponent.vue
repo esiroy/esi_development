@@ -11,8 +11,8 @@
             </div>
 
             <div class="col-md-12  pt-2 pb-2 ">
-                <div id="memberPurposeList" class="text-left small">                  
-                    {{ this.purposeList }}                   
+                <div id="memberPurposeList" class="text-left small" style="display:none">                  
+                                   
                 </div>            
             </div>
         </div>
@@ -218,8 +218,10 @@ export default {
 
                 if (response.data.success) {
                     $('#memberPurposeList').html(response.data.content);
+                    $('#memberPurposeList').show();
                 } else {
                     $('#memberPurposeList').html("<div class='text-center'>" + response.data.message + "</div>");
+                    $('#memberPurposeList').show();
                 }
 
             }).catch(function(error) { 
