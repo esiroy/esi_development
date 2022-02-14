@@ -10,8 +10,8 @@
                 <div class="pl-2 small "> <span class="text-danger">*</span> Listening Score </div>                
             </div>
             <div :class="this.size.rightColumn">
-                <select @change="getTotal" id="TOEIC_Speaking-listeningScore" name="listeningScore" v-model="examScore.TOEIC_Speaking.speaking" :class="this.size.select +' form-control form-control-sm pl-0'">
-                    <option value="" class="mx-0 px-0">Select Listening Score</option>
+                <select @change="getTotal" id="TOEIC_Speaking-speakingScore" name="speakingScore" v-model="examScore.TOEIC_Speaking.speaking" :class="this.size.select +' form-control form-control-sm pl-0'">
+                    <option value="" class="mx-0 px-0">Select Speaking Score</option>
                     <option :value="item - 1" :key="item - 1" class="mx-0 px-0" v-for="item in 201">{{ item - 1 }}</option>
                 </select>
             </div>
