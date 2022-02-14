@@ -883,6 +883,8 @@
                         </div>
                     </div>
 
+
+
                     <div class="col-12">
                         <div class="row">
                             <div class="col-2 small pr-0">
@@ -933,6 +935,50 @@
                             </div>
                         </div>
                     </div>  
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Homework <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-6">
+
+                                <table class="table table-sm border">
+                                    <tr class="bg-darkblue">
+                                        <th class="small text-white text-center font-weight-bold">
+                                            Members Home Work 
+                                        </th>
+                                    </tr>                                                                    
+                                    <tr>
+                                        <td class="px-2">  
+
+                                            <div v-if="this.latestreportcard.homework.url">
+                                                <div class="small">
+                                                    File: <a :href="this.latestreportcard.homework.url" 
+                                                    :download="this.latestreportcard.homework.url" >{{ this.latestreportcard.homework.url }}</a>
+                                                </div>
+
+                                                <div class="small">
+                                                    Instruction : {{ this.latestreportcard.homework.instruction }}
+                                                </div>
+                                            </div>
+                                            <div v-else>                   
+                                                <div class="text-left pt-2">
+                                                    <span class="small text-secondary">No homework found!</span>
+                                                </div>
+                                            </div>
+
+                                        </td>
+                                    </tr>
+                                </table> 
+
+                            </div>
+
+
+                        </div>
+                    </div>
                                         
                 </div>
             </div>

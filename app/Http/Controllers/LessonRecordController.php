@@ -14,6 +14,7 @@ use App\Models\Questionnaire;
 use App\Models\ScheduleItem;
 use App\Models\ReportCard;
 use App\Models\ReportCardDate;
+use App\Models\Homework;
 
 use Gate;
 use Validator;
@@ -127,10 +128,13 @@ class LessonRecordController extends Controller
 
         if ($reportcard) 
         {
-            //$latestReportCard = ReportCard::OrderBy('created_at', 'DESC')->first();
-            $latestReportCard = $reportcards->getLatest($member->user_id);
+           
+            $latestReportCard = $reportcards->getLatest($member->user_id);           
 
-            return view('modules.lessonrecord.reportcard', compact('reportcard', 'member', 'data', 'latestReportCard'));
+            //(get  list of home work )
+            $homework = Homework::where('schedule_item_id', $reportcard->schedule_item_id)->first();
+
+            return view('modules.lessonrecord.reportcard', compact('reportcard', 'member', 'data', 'latestReportCard', 'homework'));
         } else {
             abort(404);
         }

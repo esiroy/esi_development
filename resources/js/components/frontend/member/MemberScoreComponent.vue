@@ -1073,10 +1073,6 @@
                     speaking: "",
                      total: "", 
                 },
-                TOEIC_Speaking: {
-                    writing: "",
-                    total: "", 
-                },
                 TOEIC_Writing: {
                     writing: "",
                     total: "",

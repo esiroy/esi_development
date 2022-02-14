@@ -163,7 +163,7 @@
                                                                     </div>
                                                                     @else
                                                                         <div class="text-center">
-                                                                            <span class="small text-secondary">No homework found, Yeey!</span>
+                                                                            <span class="small text-secondary">No homework found!</span>
                                                                         </div>
                                                                     @endif
 

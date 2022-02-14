@@ -20,8 +20,9 @@ use App\Models\MemoReply;
 use App\Models\ChatSupportHistory;
 use App\Models\Purpose;
 use App\Models\MemberExamScore;
+use App\Models\Homework;
 
-use Auth, Hash;
+use Auth, Hash, Storage;
 use Carbon\Carbon;
 use DB;
 
@@ -408,15 +409,28 @@ class MemberController extends Controller
         $latestReportCardValue = $reportCardObject->getLatest($memberID);
 
         
+        if (isset($latestReportCardValue->schedule_item_id))
+        {
+            $homework = Homework::where('schedule_item_id', $latestReportCardValue->schedule_item_id)->first();
+
+            $homeworkdata = [
+                        'url'           => url( Storage::url($homework->original) ),      
+                        'instruction'   => $homework->instruction             
+                        ];
+        }
+
+     
 
         $latestReportCard = [
             'lesson_level' => isset($latestReportCardValue->lesson_level)? $latestReportCardValue->lesson_level : ' - ',
             'lesson_course' => isset($latestReportCardValue->lesson_course)? $latestReportCardValue->lesson_course : ' - ',
             'lesson_material' => isset($latestReportCardValue->lesson_material)? $latestReportCardValue->lesson_material : ' - ',
-            'lesson_grade' => isset($latestReportCardValue->grade)? formatGrade($latestReportCardValue->grade) : ' - '
+            'lesson_grade' => isset($latestReportCardValue->grade)? formatGrade($latestReportCardValue->grade) : ' - ',
+            'homework' => $homeworkdata ?? '',
         ];
 
 
+        
         if (isset($memberInfo->agent_id))
         {
             $agentInfo = Agent::where("user_id", $memberInfo->agent_id)->first();
