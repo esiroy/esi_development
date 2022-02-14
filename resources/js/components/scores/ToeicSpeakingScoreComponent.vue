@@ -7,7 +7,7 @@
 
         <div class="row">
             <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Listening Score </div>                
+                <div class="pl-2 small "> <span class="text-danger">*</span> Speaking Score </div>                
             </div>
             <div :class="this.size.rightColumn">
                 <select @change="getTotal" id="TOEIC_Speaking-speakingScore" name="speakingScore" v-model="examScore.TOEIC_Speaking.speaking" :class="this.size.select +' form-control form-control-sm pl-0'">
