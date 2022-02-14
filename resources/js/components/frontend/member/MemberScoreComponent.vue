@@ -1071,7 +1071,7 @@
                 },
                 TOEIC_Speaking: {
                     speaking: "",
-                     total: "", 
+                    total: "", 
                 },
                 TOEIC_Writing: {
                     writing: "",
