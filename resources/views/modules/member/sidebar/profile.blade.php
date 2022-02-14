@@ -127,7 +127,13 @@
 
             @if (strtolower($memberInfo->communication_app) == "skype")
                 <div class="col-md-12">
-                    <div class="text-secondary pt-1">Skype ID:</div>
+                    <div class="text-secondary pt-1">
+                        
+                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
+                            Skype ID:
+                        </a>
+                        
+                    </div>
                 </div>
                 <div class="col-md-12">
                     <div class="text-dark">                 
@@ -136,7 +142,11 @@
                 </div>
             @elseif (strtolower($memberInfo->communication_app) == "zoom")
                 <div class="col-md-12">
-                    <div class="text-secondary pt-1">Zoom ID:</div>
+                    <div class="text-secondary pt-1">
+                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
+                            Zoom ID:
+                        </a>
+                    </div>
                 </div>
                 <div class="col-md-12">
                     <div class="text-dark pt-1">                 
