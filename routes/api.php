@@ -164,3 +164,6 @@ Route::middleware('auth:api')->post('/getMemberNotes', 'API\MemberNotesControlle
 Route::middleware('auth:api')->post('/saveNote', 'API\MemberNotesController@saveNote')->name('APISaveMemberNote');
 Route::middleware('auth:api')->post('/updateNote', 'API\MemberNotesController@updateNote')->name('APIUpdateMemberNote');
 Route::middleware('auth:api')->post('/deleteNote', 'API\MemberNotesController@deleteNote')->name('APIDeleteMemberNote');
+
+Route::middleware('auth:api')->post('/getMemberLevel', 'API\MemberLevelController@getMemberLevel')->name('APIGetMemberLevel');
+Route::middleware('auth:api')->post('/saveMemberLevel', 'API\MemberLevelController@saveMemberLevel')->name('APISaveMemberLevel');

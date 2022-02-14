@@ -858,6 +858,33 @@
             </div>
              <!--[end] Report Requirement-->
 
+            <div id="member-latest-reportcard" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Latest Report Card</div>
+                </div>
+                <div class="row pt-2">
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Level<div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+                                    
+                                       <b-form-select id="level" v-model="selectedMemberLevel" :options="memberLevelOptions" ></b-form-select> 
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>                
+
+            </div>
+
 
             <!--[start] Member Latest Report Card -->
             <div id="member-latest-reportcard" class="section">
@@ -1125,6 +1152,9 @@ export default {
         userinfo: {
             type: Object,
         },
+        currentmemberlevel: {
+            type: Object
+        },
         latestreportcard: {
             type: Object,
         },
@@ -1164,6 +1194,19 @@ export default {
             submitted: false,
             currentYear: new Date().getFullYear(),
             
+            selectedMemberLevel: null,
+
+            memberLevelOptions: [
+                { value: null, text: 'Please select CEFR Level' },
+                { value: 'C2', text: 'Mastery' },
+                { value: 'C1', text: 'Expert' },
+                { value: 'B2', text: 'Upper Intermediate' },
+                { value: 'B1', text: 'Intermediate' },
+                { value: 'A2', text: 'Elementary' },
+                { value: 'A1', text: 'Starter' },
+                { value: 'A 0', text: 'Beginner' }
+            ],
+
             //set calendar characters to japanese
             ja: ja, 
 
@@ -1618,6 +1661,17 @@ export default {
     mounted: function () 
 	{
 
+        if (this.currentmemberlevel) {
+            this.selectedMemberLevel = this.currentmemberlevel.level;
+        }  else {
+            this.selectedMemberLevel = null;
+        }
+
+        
+
+    
+
+
         //console.log(this.memberlatestexamscore, "latest score");
 
         if (this.memberlatestexamscore.original.success == true) {
@@ -1882,15 +1936,13 @@ export default {
                 return;
             }
 
-            //console.log (this.submitted, this.$v.$invalid);
-            //alert("SUCCESS!! :-)\n\n" + JSON.stringify(this.user));
-            //console.log(JSON.stringify(this.user));
-
+       
             axios.post("/api/update_member?api_token=" + this.api_token, 
             {
                 method          : "POST",
                 user            : JSON.stringify(this.user),
-                purposeList     : JSON.stringify(this.purposeList)
+                purposeList     : JSON.stringify(this.purposeList),
+                level           : this.selectedMemberLevel
             })
             .then(response => 
             {

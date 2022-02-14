@@ -41,9 +41,11 @@ class MemberNotesController extends Controller
 
             return Response()->json([
                 "success" => true,
-                "message" => "Member Notes has been fetch successfully",
+                "message" => "Member Notes has been added successfully",
                 "note"   =>  $response
             ]);
+
+            
        } catch (\Exception $e) {
             return Response()->json([
                 "success" => false,

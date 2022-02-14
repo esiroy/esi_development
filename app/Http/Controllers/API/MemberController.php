@@ -22,6 +22,7 @@ use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 use App\Models\LessonMailer;
 use App\Models\Purpose;
+use App\Models\MemberLevel;
 
 use Auth, App;
 use DB;
@@ -1583,8 +1584,17 @@ class MemberController extends Controller
                 LessonGoals::where('member_id', $data->user_id)->delete();
                 $purpose = LessonGoals::insert($lessonGoals);
 
+                //member Level
+                $memberlevelData = [
+                                "memberID" => $data->user_id,
+                                "level" => $request->level
+                            ];
+
+                $memberLevel = new MemberLevel();
+                $memberLevel->saveLevel($memberlevelData);
 
 
+                    
 
                 /********************************************
                             DELETE: OLD MEMBER PURPOSE

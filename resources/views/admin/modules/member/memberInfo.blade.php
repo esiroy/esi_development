@@ -224,6 +224,19 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <th colspan="13">Current CEFR Member Level</th>
+                                    </tr>
+
+                                     <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>Level</td>
+                                        <td>:</td>
+                                        <td>
+                                            {{ $currentMemberlevel->level ?? '-' }}
+                                        </td>
+                                    </tr>                                    
+
 
                                     <tr>
                                         <th colspan="13">Latest Report Card</th>

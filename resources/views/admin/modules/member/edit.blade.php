@@ -159,6 +159,7 @@
                                 :lessonclasses="{{ json_encode($lessonClasses) }}" 
                                 :desiredschedule="{{ json_encode($desiredSchedule) }}" 
                                 :latestreportcard="{{ json_encode($latestReportCard) }}" 
+                                :currentmemberlevel="{{ json_encode($currentMemberlevel) }}" 
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />
                         </div>

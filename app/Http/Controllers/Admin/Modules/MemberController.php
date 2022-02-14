@@ -21,6 +21,8 @@ use App\Models\ChatSupportHistory;
 use App\Models\Purpose;
 use App\Models\MemberExamScore;
 use App\Models\Homework;
+use App\Models\MemberLevel;
+
 
 use Auth, Hash, Storage;
 use Carbon\Carbon;
@@ -193,7 +195,11 @@ class MemberController extends Controller
             $reportCard = new ReportCard();
             $latestReportCard = $reportCard->getLatest($memberID);
 
-            
+            //member CEFR Level
+            $memberLevel = new MemberLevel();      
+            $currentMemberlevel = $memberLevel->getLevel($memberID);
+           
+
 
             if (isset($latestReportCard->schedule_item_id))
             {
@@ -214,7 +220,9 @@ class MemberController extends Controller
             $memberExamScoreModel = new MemberExamScore();
             $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
 
-            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 'homework'));
+            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 
+                                                'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 
+                                                'currentMemberlevel', 'homework'));
         } else {
 
             abort(404, "Member Not Found");
@@ -464,7 +472,10 @@ class MemberController extends Controller
 
 
         
-
+        //member CEFR Level
+        $memberLevel = new MemberLevel();      
+        $currentMemberlevel = $memberLevel->getLevel($memberID);
+            
         $memberExamScoreModel = new MemberExamScore();
         $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
 
@@ -480,7 +491,7 @@ class MemberController extends Controller
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
-            'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore'));
+            'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel'));
 
     }
 

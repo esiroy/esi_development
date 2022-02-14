@@ -68,6 +68,7 @@ if (url[1] === 'admin') {
         case 'home':
             Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
             Vue.component('member-purpose-commponent', require('./components/frontend/member/MemberPurposeComponent.vue').default)
+            Vue.component('member-level-commponent', require('./components/frontend/member/MemberLevelComponent.vue').default);
         break;
         case 'customerchatsupport':           
             Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
@@ -75,6 +76,7 @@ if (url[1] === 'admin') {
         default:            
             Vue.component('member-purpose-commponent', require('./components/frontend/member/MemberPurposeComponent.vue').default)
             Vue.component('member-score-commponent', require('./components/frontend/member/MemberScoreComponent.vue').default);
+            Vue.component('member-level-commponent', require('./components/frontend/member/MemberLevelComponent.vue').default);
     }
 }
 
