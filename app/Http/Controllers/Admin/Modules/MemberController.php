@@ -193,6 +193,15 @@ class MemberController extends Controller
             $reportCard = new ReportCard();
             $latestReportCard = $reportCard->getLatest($memberID);
 
+            
+
+            if (isset($latestReportCard->schedule_item_id))
+            {
+                $homework = Homework::where('schedule_item_id', $latestReportCard->schedule_item_id)->first();
+            } else {
+                $homework = null;
+            }
+
             //writing report cards
             $reportCardDate = new ReportCardDate();
             $latestWritingReport = $reportCardDate->getLatest($memberID);
@@ -205,7 +214,7 @@ class MemberController extends Controller
             $memberExamScoreModel = new MemberExamScore();
             $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
 
-            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore'));
+            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 'homework'));
         } else {
 
             abort(404, "Member Not Found");

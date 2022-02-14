@@ -225,10 +225,6 @@
                                     </tr>
 
 
-                                  
-
-
-
                                     <tr>
                                         <th colspan="13">Latest Report Card</th>
                                     </tr>
@@ -279,6 +275,53 @@
                                             @endif
                                         </td>
                                     </tr>
+
+                                  <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>Homework</td>
+                                        <td>:</td>
+                                        <td>
+                                          
+
+                                           <table class="table table-sm border">
+                                                <tr class="">
+                                                    <th class="bg-darkblue small text-white text-center font-weight-bold">
+                                                        Members Home Work 
+                                                    </th>
+                                                </tr>                                                                    
+                                                <tr>
+                                                    <td class="px-2">  
+
+                                                        @if (isset($homework))
+                                                        <div class="small">
+                                                            File: <a href="{{ url( Storage::url($homework->original) ) }}" 
+                                                            download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                        </div>
+
+                                                            <div class="small">
+                                                            Instruction : {{ $homework->instruction ?? '' }}
+                                                        </div>
+                                                        @else
+                                                            <div class="text-center">
+                                                                <span class="small text-secondary">No homework found!</span>
+                                                            </div>
+                                                        @endif
+
+                                                    </td>
+                                                </tr>
+                                            </table>                                        
+
+
+                                        </td>
+                                    </tr>
+
+
+
+                                                         
+
+
+
+
 
                                     <tr>
                                         <th colspan="13"> Recent Notes  </th>
