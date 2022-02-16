@@ -145,7 +145,7 @@ Route::middleware('auth:api')->post('/writing/sendReloadEmail', 'API\WritingEntr
 
 //[start] member exam  score
 Route::middleware('auth:api')->post('/getMemberExamScoreByType', 'API\MemberExamController@getMemberExamScoreByType')->name('APIGetMemberExamScoreByType');
-Route::middleware('auth:api')->post('/getMemberExamScoreByPage', 'API\MemberExamController@getMemberExamScoreByPage')->name('APIGetMemberExamScoreByType');
+Route::middleware('auth:api')->post('/getMemberExamScoreByPage', 'API\MemberExamController@getMemberExamScoreByPage')->name('APIGetMemberExamScoreByPage');
 Route::middleware('auth:api')->post('/getMemberScoreHistory', 'API\MemberExamController@getMemberScoreHistory')->name('APIGetMemberScoreHistory');
 
 Route::middleware('auth:api')->post('/updateMemberExamScore', 'API\MemberExamController@updateMemberExamScore')->name('APIUpdateMemberExamScore');
