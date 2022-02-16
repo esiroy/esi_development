@@ -18,7 +18,7 @@ class MemberExamScore extends Model
         if ($score) {
             return Response()->json([
                 "success"                   => true,
-                'examDate'                  => ESIDateFormat($score->exam_date),
+                'examDate'                  => $score->exam_date,
                 'examType'                  => str_replace("_", " ", $score->exam_type),
                 'examScores'                => $score->exam_scores,
                 "message"                   => "member score fetched",
@@ -50,6 +50,31 @@ class MemberExamScore extends Model
         ]);
 
     }
+
+
+    public function updateScore($id, $memberID, $data)
+    {
+        $memberScore = MemberExamScore::find($id);
+
+        $memberExam = $memberScore->update([
+            'user_id'               => $memberID,
+            'exam_date'             => $data['examDate'],
+            'exam_type'             => $data['examType'],
+            'exam_scores'           => $data['examScores'],
+        ]); 
+
+        return Response()->json([
+            "success"               => true,
+            'exam_date'             => ESIDateFormat($data['examDate']),
+            'exam_type'             => $data['examType'],
+            'exam_scores'           => $data['examScores'],
+            'memberExam'            => $memberExam,
+            "message"               => "member score update"
+        ]);
+
+    }
+
+
 
     public function isScoresMissing($scores) 
     {

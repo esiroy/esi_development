@@ -258,7 +258,7 @@ export default
                 return element.value;
             }
         },
-        handleChangeGradeLevel(event) 
+        handleChangeGradeLevel() 
         {
             //change main exam level
             this.$parent.$parent.$parent.examLevel = this.gradeLevel;
@@ -270,7 +270,7 @@ export default
 
             this.hideFieldsContainer();
 
-            console.log("grade level" + this.gradeLevel);
+           
 
             if (this.gradeLevel === "" || this.gradeLevel === null || this.gradeLevel == null) {
                 //hide separators
@@ -340,7 +340,22 @@ export default
         // console.log("EIKEN mounted")
         //hide separators
         this.hideField('stage_1_separator');
-        this.hideField('stage_2_separator');    
+        this.hideField('stage_2_separator');   
+
+        this.gradeLevel = this.$parent.$parent.$parent.examLevel;
+
+        this.handleChangeGradeLevel();
+
+
+        this.$nextTick(() => 
+        {
+            if (this.$parent.$parent.$parent.examType == "EIKEN") {
+                this.examScore.EIKEN = this.examScore['EIKEN_Grade_'+ this.$parent.$parent.$parent.examLevel]
+            }         
+        });      
+       
+
+       
     }
 };
 

@@ -13,6 +13,14 @@ Autoload this in composer.json file,
 
 use Illuminate\Support\Str;
 
+//normal japanese date only formatter 
+if (! function_exists('JapaneseDateFormat')) {
+    function JapaneseDateFormat($date) 
+    {        
+        return  date('Y年 m月 d日', strtotime($date));
+    }
+}
+
 //japanese date only formatter
 if (! function_exists('ESIDateFormat')) {
     function ESIDateFormat($date) 

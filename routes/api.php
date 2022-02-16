@@ -144,12 +144,15 @@ Route::middleware('auth:api')->post('/writing/sendReloadEmail', 'API\WritingEntr
 
 
 //[start] member exam  score
-Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamController@getAllMemberExamScore')->name('APIGetMemberGetAllMemberExamScores');
 Route::middleware('auth:api')->post('/getMemberExamScoreByType', 'API\MemberExamController@getMemberExamScoreByType')->name('APIGetMemberExamScoreByType');
-Route::middleware('auth:api')->post('/getMemberExamScoreTotalByType', 'API\MemberExamController@getMemberExamScoreTotalByType')->name('APIGetMemberExamScoreTotalByType');
+Route::middleware('auth:api')->post('/getMemberExamScoreByPage', 'API\MemberExamController@getMemberExamScoreByPage')->name('APIGetMemberExamScoreByType');
 Route::middleware('auth:api')->post('/getMemberScoreHistory', 'API\MemberExamController@getMemberScoreHistory')->name('APIGetMemberScoreHistory');
 
+Route::middleware('auth:api')->post('/updateMemberExamScore', 'API\MemberExamController@updateMemberExamScore')->name('APIUpdateMemberExamScore');
+Route::middleware('auth:api')->post('/deleteMemberExamScore', 'API\MemberExamController@deleteMemberExamScore')->name('APIDeleteMemberExamScore');
 
+
+//Lastest Exam scores
 Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIGetMemberLatestScore');
 Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
 

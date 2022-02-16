@@ -13,7 +13,8 @@
 
           <div class="col-md-12  pt-2 pb-2 ">
                 <div id="memberLevel" class="text-left small"> 
-                   Current Level  : {{  this.info[ this.updated ].value }} / {{  this.info[ this.updated ].text }}                       
+                   Current Level  : {{  this.info[ this.updated ].value }} 
+                   <span v-if="this.info[ this.updated ].text"> {{ "(" +  this.info[ this.updated ].text + ")" }} </span>
                 </div>            
             </div>
 
@@ -32,14 +33,16 @@
 
 
                 <div class="row my-3">
-                    <div class="col-4"> Member CEFR Level </div>
-                    <div class="col-8"> 
+                    <div class="col-3 pt-2"> 
+                        <span>CEFR Level </span>
+                    </div>
+                    <div class="col-6"> 
 
                         <div class="control-group">
                         
                             <div id="level-control" class="controls">
                                 <b-form-select id="level" v-model="selected" :options="options" ></b-form-select> 
-                                <span class="invalid-feedback">Please correct the error</span>
+                                <span class="invalid-feedback">Please select a CEFR Level</span>
                             </div>
                             
                         </div>
@@ -82,14 +85,14 @@ export default {
         updated: null,
         selected: null,
         options: [
-          { value: null, text: 'Please select CEFR Level' },
-          { value: 'C2', text: 'Mastery' },
-          { value: 'C1', text: 'Expert' },
-          { value: 'B2', text: 'Upper Intermediate' },
-          { value: 'B1', text: 'Intermediate' },
-          { value: 'A2', text: 'Elementary' },
-          { value: 'A1', text: 'Starter' },
-          { value: 'A 0', text: 'Beginner' }
+          { value: null, text: 'Please select' },
+          { value: 'C2', text: 'C2 (Mastery)' },
+          { value: 'C1', text: 'C1 (Expert)' },
+          { value: 'B2', text: 'B2 (Upper Intermediate)' },
+          { value: 'B1', text: 'B1 (Intermediate)' },
+          { value: 'A2', text: 'A2 (Elementary)' },
+          { value: 'A1', text: 'A1 (Starter)' },
+          { value: 'A 0', text: 'A 0 (Beginner)' }
         ],
         info:
             { 
@@ -183,6 +186,7 @@ mounted: function ()
 
             if (this.selected == null ) {
                 $("#level").addClass('is-invalid');
+                return false;
             } 
 
             //SHOW LOADER HERE
