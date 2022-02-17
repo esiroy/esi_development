@@ -1584,14 +1584,34 @@ class MemberController extends Controller
                 LessonGoals::where('member_id', $data->user_id)->delete();
                 $purpose = LessonGoals::insert($lessonGoals);
 
-                //member Level
-                $memberlevelData = [
-                                "memberID" => $data->user_id,
-                                "level" => $request->level
-                            ];
 
-                $memberLevel = new MemberLevel();
-                $memberLevel->saveLevel($memberlevelData);
+                //Level Description
+                $level_description = [                    
+                    'C2'    => 'Mastery',
+                    'C1'    => 'Expert',
+                    'B2'    => 'Upper Intermediate',
+                    'B1'    => 'Intermediate',
+                    'A2'    => 'Elementary',
+                    'A1'    => 'Starter',
+                    'A 0'  => 'Beginner'
+                ];
+
+                if (isset($request->level)) {
+                    //member Level
+                    $memberlevelData = [
+                                    "memberID"      => $data->user_id,
+                                    "level"         => $request->level,
+                                    "description"   => $level_description[$request->level]
+                                ];
+
+                    $memberLevel = new MemberLevel();
+                    $memberLevel->saveLevel($memberlevelData);                
+                } else {
+                    
+                    MemberLevel::where('member_id', $data->user_id)->delete();
+                 
+                }
+
 
 
                     
