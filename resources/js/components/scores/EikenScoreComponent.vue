@@ -262,22 +262,13 @@ export default
         {
             //change main exam level
             this.$parent.$parent.$parent.examLevel = this.gradeLevel;
-
-
             this.total = "";
             this.examScore.EIKEN.total  = this.total;
-
-
             this.hideFieldsContainer();
-
-           
-
             if (this.gradeLevel === "" || this.gradeLevel === null || this.gradeLevel == null) {
                 //hide separators
                 this.hideField('stage_1_separator');
                 this.hideField('stage_2_separator'); 
-
-                console.log("test 1")
             } else {
             
                 if (this.gradeLevel > 3) 
@@ -320,13 +311,10 @@ export default
                     this.examScore.EIKEN.total  = parseInt(this.total);
                 }
             }
-            
-
             //let total =  this.$parent.$parent.$parent.$options.methods.getEikenTotalScore('EIKEN');
-        
  
             if (this.$parent.$parent.$parent.submitted === true) {
-            // this.$parent.$parent.$parent.$options.methods.highlightExamElement();
+                // this.$parent.$parent.$parent.$options.methods.highlightExamElement();
             }
                     
         }
@@ -343,24 +331,16 @@ export default
         this.hideField('stage_2_separator');   
 
         this.gradeLevel = this.$parent.$parent.$parent.examLevel;
-
         this.handleChangeGradeLevel();
-
-
         this.$nextTick(() => 
         {
             if (this.$parent.$parent.$parent.examType == "EIKEN") {
                 this.examScore.EIKEN = this.examScore['EIKEN_Grade_'+ this.$parent.$parent.$parent.examLevel]
             }         
-        });      
-       
-
-       
+        });       
     }
 };
-
 </script>
-
 <style scoped>
     .scores-container {
         width: 100%

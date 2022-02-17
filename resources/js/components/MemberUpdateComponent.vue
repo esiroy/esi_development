@@ -464,7 +464,7 @@
                 </div>
 
                 <div id="memberAddExamScoreForm" class="modal-container">
-                    <b-modal id="modalUpdateMemberForm" title="Add Member Examination Score" @show="resetModal" @hide="resetButtons">
+                    <b-modal id="modalUpdateMemberForm" :title="getScoreTitle()" @show="resetModal" @hide="resetButtons">
 
                         <form id="updateMemberForm" name="updateMemberForm" @submit.prevent="handleUpdateMemberSubmit">   
                             <!--[start] Exam (New)-->
@@ -641,75 +641,86 @@
                     <div id="memberExamScoreList" class="modal-container">
                         <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScoreList">  
 
-                            <div id="memberExamModalMessage" class="row">
-                                <div class="text-center col-md-12">No Data found</div>                            
+                            <div v-if="loaded == true">
+
+                                <div id="memberExamModalMessage" class="row" v-if="examScoreTypes.length == 0">
+                                    <div class="text-center col-md-12">No Data found</div>                            
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
+
+                                        <div class="card esi-card mb-3">
+                                            <div class="card-header esi-card-header small">
+                                                {{ capitalizeFirstLetter(examScoreType) }}
+                                                <div class="float-right" v-if="examScoreList[examScoreType].rows >= 1">
+                                                    <a href="#" @click.prevent="showUpdateScoreForm(examScoreType)"><b-icon icon="pencil-square" aria-hidden="true"></b-icon></a>
+                                                    <a href="#" @click.prevent="deleteScore(examScoreType, examScoreList[examScoreType].items.details[0].id)"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                                </div>
+                                            </div>
+                                            <div v-for="(values, scoreListIndex) in examScoreList[examScoreType]" :key="scoreListIndex" >
+                                                <div :id="examScoreType" :class="examScoreType" v-if="scoreListIndex == 'rows'">
+                    
+
+                                                <div v-if="examScoreList[examScoreType].rows >= 1">
+
+                                                        <table class="table esi-table table-bordered table-striped" >
+                                                            <tbody :id="item.id" v-for="(item, itemIndexKey) in examScoreList[examScoreType].items.data" :key="itemIndexKey">
+                                                                <tr>
+                                                                    <td> Exam Date </td>
+                                                                    <td>
+                                                                        {{ dateFormatter(examScoreList[examScoreType].items.details[itemIndexKey].exam_date) }}
+                                                                    </td>
+                                                                </tr>
+                                                                <tr v-for="(field, fieldKey) in examScoreList[examScoreType].fields" :key="fieldKey" >
+                                                                    <td class="mb-4" >
+                                                                        {{ ucwords(FormatObjectKey(field)) }}
+                                                                    </td>
+                                                                    <td class="mb-4" >
+                                                                    <!-- {{ item[field] }} (reactive)-->
+                                                                        {{ examScoreDisplay[examScoreType +'_display'].items.data[0][field]  }}
+                                                                    </td>                                                                         
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    
+
+                                                        <div class="mt-4">
+                                                            <b-pagination
+                                                                v-model="examScoreList[examScoreType].currentPage"
+                                                                @input="changePage(examScoreType, examScoreList[examScoreType].currentPage)"
+                                                                :total-rows="examScoreList[examScoreType].rows"
+                                                                :per-page="examScoreList[examScoreType].perPage"
+                                                                first-text="<<"
+                                                                prev-text="<"
+                                                                next-text=">"
+                                                                last-text=">>"
+                                                                size="sm"
+                                                                align="center"                                            
+                                                            ></b-pagination>
+                                                        </div>
+                                                </div>
+                                                    <div v-else class="text-center py-5">
+                                                        <span class="small text-info">
+                                                            No results found
+                                                        </span>
+                                                    </div>                                               
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>                        
+                                </div>
+
                             </div>
+                            <div v-else>  
 
+                                <div class="d-flex justify-content-center my-4">
+                                    <b-spinner label="Loading..." variant="success"></b-spinner>
+                                </div>
 
-                            <div class="row">
-                                <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
-
-                                    <div class="card esi-card mb-3">
-                                        <div class="card-header esi-card-header small">
-                                             {{ capitalizeFirstLetter(examScoreType) }}
-                                            <div class="float-right" v-if="examScoreList[examScoreType].rows >= 1">
-                                                <a href="#" @click.prevent="showUpdateScoreForm(examScoreType)"><b-icon icon="pencil-square" aria-hidden="true"></b-icon></a>
-                                                <a href="#" @click.prevent="deleteScore(examScoreType, examScoreList[examScoreType].items.details[0].id)"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
-                                            </div>
-                                        </div>
-                                        <div v-for="(values, scoreListIndex) in examScoreList[examScoreType]" :key="scoreListIndex" >
-                                            <div :id="examScoreType" :class="examScoreType" v-if="scoreListIndex == 'rows'">
-                 
-
-                                               <div v-if="examScoreList[examScoreType].rows >= 1">
-
-                                                    <table class="table esi-table table-bordered table-striped" >
-                                                        <tbody :id="item.id" v-for="(item, itemIndexKey) in examScoreList[examScoreType].items.data" :key="itemIndexKey">
-                                                            <tr>
-                                                                <td> Exam Date </td>
-                                                                <td>
-                                                                    {{ dateFormatter(examScoreList[examScoreType].items.details[itemIndexKey].exam_date) }}
-                                                                </td>
-                                                            </tr>
-                                                            <tr v-for="(field, fieldKey) in examScoreList[examScoreType].fields" :key="fieldKey" >
-                                                                <td class="mb-4" >
-                                                                    {{ ucwords(FormatObjectKey(field)) }}
-                                                                </td>
-                                                                <td class="mb-4" >
-                                                                <!-- {{ item[field] }} (reactive)-->
-                                                                    {{ examScoreDisplay[examScoreType +'_display'].items.data[0][field]  }}
-                                                                </td>                                                                         
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                
-
-                                                    <div class="mt-4">
-                                                        <b-pagination
-                                                            v-model="examScoreList[examScoreType].currentPage"
-                                                            @input="changePage(examScoreType, examScoreList[examScoreType].currentPage)"
-                                                            :total-rows="examScoreList[examScoreType].rows"
-                                                            :per-page="examScoreList[examScoreType].perPage"
-                                                            first-text="<<"
-                                                            prev-text="<"
-                                                            next-text=">"
-                                                            last-text=">>"
-                                                            size="sm"
-                                                            align="center"                                            
-                                                        ></b-pagination>
-                                                    </div>
-                                               </div>
-                                                <div v-else class="text-center py-5">
-                                                    <span class="small text-info">
-                                                        No results found
-                                                    </span>
-                                                </div>                                               
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>                        
-                            </div>   
+                            </div>                            
 
                             <template #modal-footer>
                                 <div class="buttons-container w-100">
@@ -728,15 +739,23 @@
                     <div id="memberExamScoreGraph" class="modal-container">
                         <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴 グラフ" size="xl" @show="getMemberScoreTotalList"> 
 
-                            <div id="memberGraphModalMessage" class="row">
-                                <div class="text-center col-md-12">No Data found</div>                            
-                            </div>
+                            <div v-if="loaded == true">
 
-                            <div class="row">
-                                <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
-                                    <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
+                                <div id="memberGraphModalMessage" class="row" v-if="examScoreTypes.length == 0">
+                                    <div class="text-center col-md-12">No Data found</div>                            
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
+                                        <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
+                                    </div>
                                 </div>
                             </div>
+                            <div v-else>
+                                <div class="d-flex justify-content-center my-4">
+                                    <b-spinner label="Loading..." variant="success"></b-spinner>
+                                </div>
+                            </div>                               
 
                             <template #modal-footer>
                                 <div class="buttons-container w-100">
@@ -2039,11 +2058,23 @@ export default {
         {
             this.getMemberExamScoreByType();
         },
-        getMemberScoreTotalList() {
+        getMemberScoreTotalList()
+        {
             this.getMemberExamTotal();
         },   
+        getScoreTitle()
+        {
+            
+            if (this.updateType == 'update' || this.updateType == 'edit')  {
+                return  "Edit Member Examination Score";
+            } else {
+                return  "Add Member Examination Score";
+            }
+        },
         getMemberExamScoreByType() 
         {
+
+            this.loaded = false;
 
             axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
             {
@@ -2051,7 +2082,10 @@ export default {
                 memberID    : this.memberinfo.user_id,
                 examType    : this.examType,
                 limit       : 1,
-            }).then(response => {               
+            }).then(response => {  
+
+                this.loaded = true;
+
                 if (response.data.success === true) 
                 {
 
@@ -2062,12 +2096,10 @@ export default {
                 }
                 else
                 {
-
                     this.examScoreTypes = [];
                     this.examScoreList = [];
                     this.examScoreDisplay = [];
-
-                    console.log(response.data.message);
+                    //console.log(response.data.message);
                 }
             }).catch(function(error) {
                 console.log("Error " + error);
@@ -2077,12 +2109,16 @@ export default {
         },     
         getMemberExamTotal() 
         { 
+            this.loaded = false;
+
             axios.post("/api/getMemberScoreHistory?api_token=" + this.api_token, 
             {
                 method      : "POST",
                 memberID    : this.memberinfo.user_id,
-            }).then(response => {    
-                       
+            }).then(response => {
+
+                this.loaded = true;
+
                 if (response.data.success === true) 
                 {
                     $('#memberGraphModalMessage').hide();
@@ -2090,7 +2126,6 @@ export default {
                     this.examScoreTypes = response.data.examTypes;
                     this.examScoreList = response.data.examScoreList;
                     let types = this.examScoreTypes;
-
 
                     let max = {'IELTS': 9, 'TOEFL': 120, 'TOEFL_Junior': 900, 
                                 'TOEFL_Primary_Step_1':  218, 'TOEFL_Primary_Step_2': 230,
@@ -2142,7 +2177,7 @@ export default {
                         }
                           
                     });
-                    this.loaded = true;
+                   
                 }
                 else
                 {
@@ -2151,7 +2186,10 @@ export default {
                 }
             }).catch(function(error) {
                
-                console.log(error);
+                    this.examScoreTypes = [];
+                    this.examScoreList = [];
+                    this.examScoreDisplay = [];
+                    //console.log(response.data.message);
             });       
 
 
@@ -2215,10 +2253,14 @@ export default {
         addExamScore(event) 
         {
 
+            this.submitted = true;
+            //SHOW LOADER HERE
+            $(document).find('#modalUpdateMemberForm').find('div.buttons-container').hide();
+            $(document).find('#modalUpdateMemberForm').find('div.loading-container').show(); 
+
             axios.post("/api/addMemberExamScore?api_token=" + this.api_token, 
             {
                 method          : "POST",
-     
                 memberID        : this.memberinfo.user_id,
                 examDate        : this.uExamDate,
                 examType        : this.examType,
@@ -2228,20 +2270,18 @@ export default {
             })
             .then(response => 
             {              
+                //HIDE LOADER HERE
+                $(document).find('#modalUpdateMemberForm').find('div.buttons-container').show();
+                $(document).find('#modalUpdateMemberForm').find('div.loading-container').hide();  
+
                 if (response.data.success === false) 
                 {                  
                     this.highlightExamElement();
+                    
                 } else {
-                    this.latestScore.examDate = response.data.examDate;
-                    this.latestScore.examType = response.data.examType;                    
-                    this.latestScore.examScores = JSON.parse(response.data.examScores);
 
-                    //new (!!!)
-                    this.latestScore.examDate = response.data.examDate;
-                    this.latestScore.examType = response.data.examType;                    
-                    this.latestScore.examScores = JSON.parse(response.data.examScores);
-
-                    $(document).find('.modal-footer').hide();
+                    this.getMemberLatestExamScore();
+                    $(document).find('#modalUpdateMemberForm').find('.modal-footer').hide();                  
 
                     $(document).find('#updateMemberForm').slideUp(500, function() {
                         $(document).find('#updateMemberForm').html('<div class="alert alert-success text-center" role="alert">Thank you! your score has been submitted</div>');
@@ -2268,8 +2308,8 @@ export default {
         updateExamScore() 
         {
             //SHOW LOADER HERE
-            $(document).find('.modal-footer').find('div.buttons-container').hide();
-            $(document).find('.modal-footer').find('div.loading-container').show();  
+            $(document).find('#modalUpdateMemberForm').find('div.buttons-container').hide();
+            $(document).find('#modalUpdateMemberForm').find('div.loading-container').show();  
 
             let examID = null;
 
@@ -2294,8 +2334,9 @@ export default {
             }).then(response => {
 
                 //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
+         
+                 $(document).find('#modalUpdateMemberForm').find('div.buttons-container').show();
+                $(document).find('#modalUpdateMemberForm').find('div.loading-container').hide();  
                                 
                 if (response.data.success === false) 
                 {    
@@ -2445,7 +2486,7 @@ export default {
             this.examDate = "";
             this.examType = "";
 
-
+            /*
             const parentElement = document.querySelector('#examScoreContainer');
             let allChildren = parentElement.querySelectorAll("select");
 
@@ -2454,7 +2495,7 @@ export default {
                 let dropDown = document.getElementById(item.id);
                 dropDown.selectedIndex = "";
             });
-
+            */
         },
         resetScoreData() {
 

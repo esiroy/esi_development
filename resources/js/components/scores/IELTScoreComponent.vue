@@ -166,7 +166,7 @@ export default {
   mounted: function () 
   {
     //console.log("IELTS scores component mounted");
-    console.log(this.size)
+    //console.log(this.size)
   },
 };
 
