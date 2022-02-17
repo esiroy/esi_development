@@ -205,7 +205,7 @@
 
                                     <div v-for="(values, index) in examScoreList[examScoreType]" :key="index">
                                         <div :id="examScoreType" :class="examScoreType" v-if="index == 'rows'">
-                                        
+
                                             <div v-if="examScoreList[examScoreType].rows >= 1">
 
                                                 <table class="table esi-table table-bordered table-striped" >
@@ -258,9 +258,9 @@
                     </div>   
 
                     <template #modal-footer>
-                        <div class="buttons-container w-100">
+                        <div class="scorelist-buttons-container  w-100">
                             <p class="float-left"></p>
-                            <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalMemberExamScoreList')">Close</b-button>                            
+                            <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalMemberExamScoreList')">Close List</b-button>                            
                         </div>
                     </template>  
 
@@ -520,141 +520,9 @@
             $('#updateButtonContainer').show();
 
         },
-        deleteScore(examType, id) 
-       {
-            axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
-            {
-                method          : "POST",
-                id              : id,
-                examType        : examType,
-                                
-            }).then(response => {
-
-                //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
-                                
-                if (response.data.success === true) 
-                {    
-                    if (examType == "EIKEN") 
-                    {
-                        let currentPage = this.examScoreList[examType + '_Grade_' + this.examLevel].currentPage;
-
-                        if (currentPage > 1) {
-                            let previous_page_eiken = parseInt(currentPage) - 1;
-                            this.getMemberExamScoreByPage(examType + '_Grade_' + this.examLevel, previous_page_eiken);
-                        } else {
-                            this.getMemberExamScoreByPage(examType, 1);    
-                        }
-                        
-
-                        
-                    } else {
-                        
-                        let currentPage = this.examScoreList[examType].currentPage;
-
-                        if (currentPage > 1) {
-                            let previous_page = parseInt(currentPage) - 1;
-                            this.getMemberExamScoreByPage(examType, previous_page);
-                        } else {
-                            this.getMemberExamScoreByPage(examType, 1);
-                        }
-                        
-                        
-                    }
-
-                    this.getMemberLatestExamScore();
-
-                } else {                 
-                
-                    
-                }
-
-			}).catch(function(error) {
-
-                //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
-                console.log(error);
-            }); 
-        },
-        updateExamScore() 
-        {
-            //SHOW LOADER HERE
-            $(document).find('.modal-footer').find('div.buttons-container').hide();
-            $(document).find('.modal-footer').find('div.loading-container').show();  
-
-            let examID = null;
-
-            if (this.examType == "EIKEN") 
-            {
-                examID =  this.examScoreList[this.examType + '_Grade_' + this.examLevel].items.details[0].id;
-
-            } else {
-
-                examID = this.examScoreList[this.examType].items.details[0].id;
-            }
-
-
-            axios.post("/api/updateMemberExamScore?api_token=" + this.api_token, 
-            {
-                method          : "POST",
-                id              : examID,
-                memberID        : this.memberinfo.user_id,
-                examDate        : this.uExamDate,
-                examType        : this.examType,
-                examLevel       : this.examLevel,
-                examScore       : this.examScore[this.examType],                       
-            }).then(response => {
-
-                //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
-                                
-                if (response.data.success === false) 
-                {    
-                    this.highlightExamElement();
-                } else {                 
-                
-                    if (this.examType == "EIKEN") 
-                    {
-
-                        this.getMemberExamScoreByPage(this.examType + '_Grade_' + this.examLevel, this.examScoreList[this.examType + '_Grade_' + this.examLevel].currentPage);
-
-                    } else {
-                        this.getMemberExamScoreByPage(this.examType, this.examScoreList[this.examType].currentPage);
-                    }
-
-                    this.getMemberLatestExamScore();
-                    
-                    $(document).find('.modal-footer').hide();
-
-                    $(document).find('#updateMemberForm').slideUp(500, function() {
-                        $(document).find('#updateMemberForm').html('<div class="alert alert-success text-center" role="alert">Thank you! your score has been submitted</div>');
-                        $(document).find('#updateMemberForm').slideDown(500, function() {
-                             $(document).find('#updateMemberForm').show();
-                        });
-                    });
-
-                    this.messageTimer = setTimeout(function(scope) {
-                         scope.$bvModal.hide('modalUpdateMemberForm');
-                    }, 3500, this);
-
-                    this.$forceUpdate();
-                }
-			}).catch(function(error) {
-
-                //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
-                console.log(error);
-            }); 
-        },
-
         hideFormModal(name) {
             this.$bvModal.hide(name);
-        },        
-
+        },
         getMemberExamScoreByPage(examType, page)  {
 
             axios.post("/api/getMemberExamScoreByPage?page="+ page +"&api_token=" + this.api_token,            
@@ -845,6 +713,133 @@
             }); 
 
             event.preventDefault()
+        }, 
+        updateExamScore() 
+        {
+            //SHOW LOADER HERE
+            $(document).find('.modal-footer').find('div.buttons-container').hide();
+            $(document).find('.modal-footer').find('div.loading-container').show();  
+
+            let examID = null;
+
+            if (this.examType == "EIKEN") 
+            {
+                examID =  this.examScoreList[this.examType + '_Grade_' + this.examLevel].items.details[0].id;
+            } else {
+                examID = this.examScoreList[this.examType].items.details[0].id;
+            }
+
+            axios.post("/api/updateMemberExamScore?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                id              : examID,
+                memberID        : this.memberinfo.user_id,
+                examDate        : this.uExamDate,
+                examType        : this.examType,
+                examLevel       : this.examLevel,
+                examScore       : this.examScore[this.examType],                       
+            }).then(response => {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                                
+                if (response.data.success === false) 
+                {    
+                    this.highlightExamElement();
+                } else {                 
+                
+                    if (this.examType == "EIKEN") 
+                    {
+
+                        this.getMemberExamScoreByPage(this.examType + '_Grade_' + this.examLevel, this.examScoreList[this.examType + '_Grade_' + this.examLevel].currentPage);
+
+                    } else {
+                        this.getMemberExamScoreByPage(this.examType, this.examScoreList[this.examType].currentPage);
+                    }
+
+                    this.getMemberLatestExamScore();
+                    
+                    $(document).find('#modalUpdateMemberForm').find('.modal-footer').hide();
+
+                    $(document).find('#updateMemberForm').slideUp(500, function() {
+                        $(document).find('#updateMemberForm').html('<div class="alert alert-success text-center" role="alert">Thank you! your score has been submitted</div>');
+                        $(document).find('#updateMemberForm').slideDown(500, function() {
+                             $(document).find('#updateMemberForm').show();
+                        });
+                    });
+
+                    this.messageTimer = setTimeout(function(scope) {
+                         scope.$bvModal.hide('modalUpdateMemberForm');
+                    }, 3500, this);
+
+                    this.$forceUpdate();
+                }
+			}).catch(function(error) {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                console.log(error);
+            }); 
+        },
+        deleteScore(examType, id) 
+       {
+            axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                id              : id,
+                examType        : examType,
+                                
+            }).then(response => {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                                
+                if (response.data.success === true) 
+                {    
+                    if (examType == "EIKEN") 
+                    {
+                        let currentPage = this.examScoreList[examType + '_Grade_' + this.examLevel].currentPage;
+
+                        if (currentPage > 1) {
+                            let previous_page_eiken = parseInt(currentPage) - 1;
+                            this.getMemberExamScoreByPage(examType + '_Grade_' + this.examLevel, previous_page_eiken);
+                        } else {
+                            this.getMemberExamScoreByPage(examType, 1);    
+                        }
+                        
+
+                        
+                    } else {
+                        
+                        let currentPage = this.examScoreList[examType].currentPage;
+
+                        if (currentPage > 1) {
+                            let previous_page = parseInt(currentPage) - 1;
+                            this.getMemberExamScoreByPage(examType, previous_page);
+                        } else {
+                            this.getMemberExamScoreByPage(examType, 1);
+                        }
+                        
+                        
+                    }
+
+                    this.getMemberLatestExamScore();
+
+                } else {                 
+                
+                    
+                }
+
+			}).catch(function(error) {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                console.log(error);
+            }); 
         },        
         handleChangeExamType(event) 
         {

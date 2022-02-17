@@ -130,7 +130,7 @@
                     </div>   
 
                     <template #modal-footer>
-                        <div class="buttons-container w-100">
+                        <div class="scorelist-buttons-container w-100">
                             <p class="float-left"></p>
                             <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalMemberExamScoreList')">Close</b-button>                            
                         </div>
