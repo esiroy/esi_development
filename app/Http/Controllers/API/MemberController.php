@@ -1401,9 +1401,9 @@ class MemberController extends Controller
                 return Response()->json([
                     "success" => true,
                     "message" => "Member has been added",
-                    "userData" => $request['user'],
-                    "test" => $purposeList->{"IELTS". "_targetScore"}
+                    "userData" => $request['user']                
                 ]);
+                
             } catch (\Exception $e) {
 
                 DB::rollback();

@@ -193,7 +193,6 @@
                     <div class="row">
 
                         <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
-
                                 <div class="card esi-card mb-3">
                                     <div class="card-header esi-card-header small">
                                         {{ capitalizeFirstLetter(examScoreType) }}
@@ -206,35 +205,30 @@
 
                                     <div v-for="(values, index) in examScoreList[examScoreType]" :key="index">
                                         <div :id="examScoreType" :class="examScoreType" v-if="index == 'rows'">
-
-                                            <div  v-if="examScoreList[examScoreType].rows >= 1">
+                                        
+                                            <div v-if="examScoreList[examScoreType].rows >= 1">
 
                                                 <table class="table esi-table table-bordered table-striped" >
-
                                                     <tbody :id="item.id" v-for="(item, itemIndexKey) in examScoreList[examScoreType].items.data" :key="itemIndexKey">
-
                                                         <tr>
                                                             <td> Exam Date </td>
                                                             <td>
                                                                 {{ dateFormatter(examScoreList[examScoreType].items.details[itemIndexKey].exam_date) }}
                                                             </td>
                                                         </tr>
-
                                                         <tr v-for="(field, fieldKey) in examScoreList[examScoreType].fields" :key="fieldKey" >
                                                             <td class="mb-4" >
-                                                                {{ FormatObjectKey(field) }}
+                                                                {{ ucwords(FormatObjectKey(field)) }}
                                                             </td>
                                                             <td class="mb-4" >
                                                             <!-- {{ item[field] }} (reactive)-->
                                                                 {{ examScoreDisplay[examScoreType +'_display'].items.data[0][field]  }}
                                                             </td>                                                                         
                                                         </tr>
-
                                                     </tbody>
                                                 </table>
                                             
                                                 <div class="mt-4">
-
                                                     <b-pagination
                                                         v-model="examScoreList[examScoreType].currentPage"
                                                         @input="changePage(examScoreType, examScoreList[examScoreType].currentPage)"
@@ -247,7 +241,6 @@
                                                         size="sm"
                                                         align="center"                                            
                                                     ></b-pagination>
-
                                                 </div>
 
                                             </div>
@@ -259,15 +252,9 @@
 
                                         </div>
                                     </div>
-
-                                   
-
                                 </div>
+                        </div>    
 
-                          
-                           
-
-                        </div>                        
                     </div>   
 
                     <template #modal-footer>
@@ -479,17 +466,12 @@
     methods: {   
 
         changePage (examType, page) {
-           
             this.getMemberExamScoreByPage(examType, page);
         },
-
         showUpdateScoreForm(examType)
         {  
-
             clearTimeout(this.messageTimer);
-
             this.$bvModal.show('modalUpdateMemberForm'); 
-            
 
             //SET AFTER SHOWING MODAL
 
@@ -538,7 +520,6 @@
             $('#updateButtonContainer').show();
 
         },
-
         deleteScore(examType, id) 
        {
             axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
@@ -597,8 +578,6 @@
                 console.log(error);
             }); 
         },
-
-
         updateExamScore() 
         {
             //SHOW LOADER HERE
@@ -670,8 +649,7 @@
                 $(document).find('.modal-footer').find('div.loading-container').hide();
                 console.log(error);
             }); 
-        },        
-
+        },
 
         hideFormModal(name) {
             this.$bvModal.hide(name);
@@ -907,7 +885,10 @@
         {
             let fdate = Moment(date).format('YYYY年 MM月 D日');                      
             return fdate;            
-        },        
+        },    
+        ucwords(string) {
+            return string.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())  
+        },             
         capitalizeFirstLetter(string) {
             let newString = string.charAt(0).toUpperCase() + string.slice(1);
             newString = newString.replace(/_/g, " ")
@@ -1114,40 +1095,33 @@
         },
         examDateFormatter(date) 
         {
-
             let fdate           = this.dateFormatter(date);
             this.uExamDate      = date;
             this.$forceUpdate();       
-
             if (this.submitted === true) {
                 this.highlightExamElement();
-            }          
-
+            }
             return fdate;
         },  
-        capitalizeFirstLetter(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);    
-            newString = newString.replace(/_/g, " ")       
-            return newString.trim(); 
-        },        
         FormatObjectKey(string) {
             let newString = string.charAt(0).toUpperCase() + string.slice(1);
             newString = newString.replace(/_/g, " ")
 
             //add space before big letters
             return newString.replace(/([A-Z])/g, ' $1').trim(); 
+        },        
+        capitalizeFirstLetter(string) {
+            let newString = string.charAt(0).toUpperCase() + string.slice(1);    
+            newString = newString.replace(/_/g, " ")       
+            return newString.trim(); 
         },
-
         resetButtons() 
         {
-             this.updateType = null;    
-             
+            this.updateType = null;                 
         },
         resetModal() {
             this.submitted = false;
-
-            clearTimeout(this.messageTimer);
-            
+            clearTimeout(this.messageTimer);            
             this.resetScoreData();
         },
         resetScoreData() {

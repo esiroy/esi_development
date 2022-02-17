@@ -120,17 +120,17 @@
 
                 <td class="small text-center">
 
-                    @if (Auth::user()->user_type !== "ADMINISTRATOR")
-                        @can('member_view')                        
-                            <div class="action">
-                                <a href="{{ route('admin.member.show', $member->user_id) }}" class="red">View</a>
-                                @can('member_edit')
-                                    <span class="separator">|</span>
-                                @endcan
-                            </div>
-                        
-                        @endcan
-                    @endif
+                 
+                    @can('member_view')                        
+                        <div class="action">
+                            <a href="{{ route('admin.member.show', $member->user_id) }}" class="red">View</a>
+                            @can('member_edit')
+                                <span class="separator">|</span>
+                            @endcan
+                        </div>
+                    
+                    @endcan
+                   
 
                     @can('member_edit')
                     <div class="action">

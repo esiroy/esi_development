@@ -464,7 +464,8 @@
                 </div>
 
                 <div id="memberAddExamScoreForm" class="modal-container">
-                    <b-modal id="modalUpdateMemberForm" title="Add Member Examination Score" @show="resetModal">
+                    <b-modal id="modalUpdateMemberForm" title="Add Member Examination Score" @show="resetModal" @hide="resetButtons">
+
                         <form id="updateMemberForm" name="updateMemberForm" @submit.prevent="handleUpdateMemberSubmit">   
                             <!--[start] Exam (New)-->
                             <div id="examination-section" class="section">
@@ -547,11 +548,20 @@
                                 </div>
                             </div>
                         </form>
+
                         <template #modal-footer>
                             <div class="buttons-container w-100">
                                 <p class="float-left"></p>
-                                <b-button variant="primary" size="sm" class="float-right mr" id="addExamScore" v-on:click="addExamScore" @click="show=false">Save Exam Score</b-button>
-                                <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalUpdateMemberForm')">Cancel</b-button>                            
+                                <div v-if="updateType == 'update' || updateType == 'edit'">
+                                    <b-button variant="primary" size="sm" class="float-right mr" id="updateExamScore" v-on:click="updateExamScore">Update Exam Score</b-button>
+                                </div>
+
+                                <div v-else>
+                                    <b-button variant="primary" size="sm" class="float-right mr" id="addExamScore" v-on:click="addExamScore">Save Exam Score</b-button>
+                                </div>
+                                <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalUpdateMemberForm')">Cancel</b-button> 
+
+                                
                             </div>
 
                             <div class="loading-container">
@@ -560,8 +570,8 @@
                                     Loading...
                                 </b-button>
                             </div>
+                        </template> 
 
-                        </template>                                            
                     </b-modal>
                 </div> 
 
@@ -630,33 +640,71 @@
                     <!-- [START] SCORE MODAL -->
                     <div id="memberExamScoreList" class="modal-container">
                         <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberScoreList">  
+
+                            <div id="memberExamModalMessage" class="row">
+                                <div class="text-center col-md-12">No Data found</div>                            
+                            </div>
+
+
                             <div class="row">
                                 <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
 
                                     <div class="card esi-card mb-3">
                                         <div class="card-header esi-card-header small">
-                                            {{ capitalizeFirstLetter(examScoreType) }}
+                                             {{ capitalizeFirstLetter(examScoreType) }}
+                                            <div class="float-right" v-if="examScoreList[examScoreType].rows >= 1">
+                                                <a href="#" @click.prevent="showUpdateScoreForm(examScoreType)"><b-icon icon="pencil-square" aria-hidden="true"></b-icon></a>
+                                                <a href="#" @click.prevent="deleteScore(examScoreType, examScoreList[examScoreType].items.details[0].id)"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                            </div>
                                         </div>
                                         <div v-for="(values, scoreListIndex) in examScoreList[examScoreType]" :key="scoreListIndex" >
                                             <div :id="examScoreType" :class="examScoreType" v-if="scoreListIndex == 'rows'">
-                                                <b-table id="my-table" :class="'memberExamTable'" :items="examScoreList[examScoreType].items" 
-                                                    :per-page="examScoreList[examScoreType].perPage" 
-                                                    :current-page="examScoreList[examScoreType].currentPage" 
-                                                    small 
-                                                    stacked fixed>
-                                                </b-table>                                        
-                                                <b-pagination
-                                                    v-model="examScoreList[examScoreType].currentPage"
-                                                    :total-rows="examScoreList[examScoreType].rows"
-                                                    :per-page="examScoreList[examScoreType].perPage"
-                                                    first-text="<<"
-                                                    prev-text="<"
-                                                    next-text=">"
-                                                    last-text=">>"
-                                                    size="sm"
-                                                    align="center"
-                                                    
-                                                ></b-pagination>
+                 
+
+                                               <div v-if="examScoreList[examScoreType].rows >= 1">
+
+                                                    <table class="table esi-table table-bordered table-striped" >
+                                                        <tbody :id="item.id" v-for="(item, itemIndexKey) in examScoreList[examScoreType].items.data" :key="itemIndexKey">
+                                                            <tr>
+                                                                <td> Exam Date </td>
+                                                                <td>
+                                                                    {{ dateFormatter(examScoreList[examScoreType].items.details[itemIndexKey].exam_date) }}
+                                                                </td>
+                                                            </tr>
+                                                            <tr v-for="(field, fieldKey) in examScoreList[examScoreType].fields" :key="fieldKey" >
+                                                                <td class="mb-4" >
+                                                                    {{ ucwords(FormatObjectKey(field)) }}
+                                                                </td>
+                                                                <td class="mb-4" >
+                                                                <!-- {{ item[field] }} (reactive)-->
+                                                                    {{ examScoreDisplay[examScoreType +'_display'].items.data[0][field]  }}
+                                                                </td>                                                                         
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                
+
+                                                    <div class="mt-4">
+                                                        <b-pagination
+                                                            v-model="examScoreList[examScoreType].currentPage"
+                                                            @input="changePage(examScoreType, examScoreList[examScoreType].currentPage)"
+                                                            :total-rows="examScoreList[examScoreType].rows"
+                                                            :per-page="examScoreList[examScoreType].perPage"
+                                                            first-text="<<"
+                                                            prev-text="<"
+                                                            next-text=">"
+                                                            last-text=">>"
+                                                            size="sm"
+                                                            align="center"                                            
+                                                        ></b-pagination>
+                                                    </div>
+                                               </div>
+                                                <div v-else class="text-center py-5">
+                                                    <span class="small text-info">
+                                                        No results found
+                                                    </span>
+                                                </div>                                               
+
                                             </div>
                                         </div>
                                     </div>
@@ -860,7 +908,7 @@
 
             <div id="member-latest-reportcard" class="section">
                 <div class="card-title bg-gray p-1 mt-4">
-                    <div class="pl-2 font-weight-bold small">Latest Report Card</div>
+                    <div class="pl-2 font-weight-bold small">Member CEFR Level</div>
                 </div>
                 <div class="row pt-2">
 
@@ -1191,6 +1239,8 @@ export default {
     },
     data() {
         return {
+            updateType: "",
+
             submitted: false,
             currentYear: new Date().getFullYear(),
             
@@ -1198,13 +1248,13 @@ export default {
 
             memberLevelOptions: [
                 { value: null, text: 'Please select CEFR Level' },
-                { value: 'C2', text: 'Mastery' },
-                { value: 'C1', text: 'Expert' },
-                { value: 'B2', text: 'Upper Intermediate' },
-                { value: 'B1', text: 'Intermediate' },
-                { value: 'A2', text: 'Elementary' },
-                { value: 'A1', text: 'Starter' },
-                { value: 'A 0', text: 'Beginner' }
+                { value: 'C2', text: 'C2 (Mastery)' },
+                { value: 'C1', text: 'C1 (Expert)' },
+                { value: 'B2', text: 'B2 (Upper Intermediate)' },
+                { value: 'B1', text: 'B1 (Intermediate)' },
+                { value: 'A2', text: 'A2 (Elementary)' },
+                { value: 'A1', text: 'A1 (Starter)' },
+                { value: 'A 0', text: 'A 0 (Beginner)' }
             ],
 
             //set calendar characters to japanese
@@ -1231,9 +1281,12 @@ export default {
 
 
             //Exam Score Listings
-            examScoreTypes: ['', '', ''],
+            examScoreTypes: [],
             examScoreList: [],
+            examScoreDisplay: [],
             examScoreLink: [],
+
+
             examScorePage: {
                 IELTS: {                    
                     perPage : 1,
@@ -1926,6 +1979,7 @@ export default {
         }
     },
     methods: {
+
         handleSubmit(e) 
         {
             this.submitted = true;
@@ -1990,6 +2044,8 @@ export default {
         },   
         getMemberExamScoreByType() 
         {
+
+            /*
             axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
             {
                 method      : "POST",
@@ -2001,7 +2057,36 @@ export default {
                     this.examScoreTypes = response.data.examTypes;
                     this.examScoreList = response.data.examScoreList;
                 }
-            });
+            });*/
+
+            axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
+            {
+                method      : "POST",
+                memberID    : this.memberinfo.user_id,
+                examType    : this.examType,
+                limit       : 1,
+            }).then(response => {               
+                if (response.data.success === true) 
+                {
+
+                    $('#memberExamModalMessage').hide();
+                    this.examScoreTypes = response.data.examTypes;
+                    this.examScoreList = response.data.examScoreList;
+                    this.examScoreDisplay = response.data.examScoreDisplay;
+                }
+                else
+                {
+
+                    this.examScoreTypes = [];
+                    this.examScoreList = [];
+                    this.examScoreDisplay = [];
+
+                    console.log(response.data.message);
+                }
+            }).catch(function(error) {
+                console.log("Error " + error);
+            });  
+
 
         },     
         getMemberExamTotal() 
@@ -2084,14 +2169,306 @@ export default {
             });       
 
 
-        },              
+        },    
+
+        changePage (examType, page) {
+            this.getMemberExamScoreByPage(examType, page);
+        },
+        showUpdateScoreForm(examType)
+        {  
+            clearTimeout(this.messageTimer);
+            this.$bvModal.show('modalUpdateMemberForm'); 
+
+            //SET AFTER SHOWING MODAL
+
+            this.updateType = 'update';
+            this.examType = examType;           
+
+            //test if EIKEN
+            let examtypeCheck = examType.split("_");           
+
+            if (examtypeCheck[0] == "EIKEN") 
+            {
+                this.examType = examtypeCheck[0];
+                let levelExamType = examType.split("Grade_"); 
+                
+                this.examLevel = levelExamType[1];         
+                this.examDate = this.examScoreList[examType].items.details[0].exam_date;
+
+                this.$nextTick(() => 
+                {
+                    document.getElementById("gradeLevel").setAttribute("disabled", "disabled");
+                });
+
+
+            } else {
+                this.examType = examType;
+                this.examDate = this.examScoreList[examType].items.details[0].exam_date; 
+            }
+
+
+            this.$nextTick(() => 
+            {
+                document.getElementById("examType").setAttribute("disabled", "disabled");
+
+                this.hideClass('examScoreHolder');              
+                let examTypeSelect = this.examType.replace(/\s+/g, '-');
+                if (examTypeSelect.length  > 0 ) 
+                {               
+                    this.showElementId('examination-score-'+ examTypeSelect); 
+                    this.examScore[examType] = this.examScoreList[examType].items.data[0] 
+                }
+
+                this.removeHighlightExamElement();    
+                this.$forceUpdate();                  
+            });
+
+            $('#updateButtonContainer').show();
+
+        },
+        addExamScore(event) 
+        {
+
+            axios.post("/api/addMemberExamScore?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+     
+                memberID        : this.memberinfo.user_id,
+                examDate        : this.uExamDate,
+                examType        : this.examType,
+                examLevel       : this.examLevel,
+                examScore       : this.examScore[this.examType],     
+
+            })
+            .then(response => 
+            {              
+                if (response.data.success === false) 
+                {                  
+                    this.highlightExamElement();
+                } else {
+                    this.latestScore.examDate = response.data.examDate;
+                    this.latestScore.examType = response.data.examType;                    
+                    this.latestScore.examScores = JSON.parse(response.data.examScores);
+
+                    //new (!!!)
+                    this.latestScore.examDate = response.data.examDate;
+                    this.latestScore.examType = response.data.examType;                    
+                    this.latestScore.examScores = JSON.parse(response.data.examScores);
+
+                    $(document).find('.modal-footer').hide();
+
+                    $(document).find('#updateMemberForm').slideUp(500, function() {
+                        $(document).find('#updateMemberForm').html('<div class="alert alert-success text-center" role="alert">Thank you! your score has been submitted</div>');
+                        $(document).find('#updateMemberForm').slideDown(500, function() {
+                             $(document).find('#updateMemberForm').show();
+                        });
+                    });             
+
+                    this.messageTimer = setTimeout(function(scope) {
+                         scope.$bvModal.hide('modalUpdateMemberForm');
+                    }, 3500, this);
+
+                    this.$forceUpdate();
+                }
+
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                //console.log(error);
+            }); 
+
+            event.preventDefault()
+        },
+        updateExamScore() 
+        {
+            //SHOW LOADER HERE
+            $(document).find('.modal-footer').find('div.buttons-container').hide();
+            $(document).find('.modal-footer').find('div.loading-container').show();  
+
+            let examID = null;
+
+            if (this.examType == "EIKEN") 
+            {
+                examID =  this.examScoreList[this.examType + '_Grade_' + this.examLevel].items.details[0].id;
+
+            } else {
+
+                examID = this.examScoreList[this.examType].items.details[0].id;
+            }
+
+            axios.post("/api/updateMemberExamScore?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                id              : examID,
+                memberID        : this.memberinfo.user_id,
+                examDate        : this.uExamDate,
+                examType        : this.examType,
+                examLevel       : this.examLevel,
+                examScore       : this.examScore[this.examType],                       
+            }).then(response => {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                                
+                if (response.data.success === false) 
+                {    
+                    this.highlightExamElement();
+                } else {                 
+                
+                    if (this.examType == "EIKEN") 
+                    {
+
+                        this.getMemberExamScoreByPage(this.examType + '_Grade_' + this.examLevel, this.examScoreList[this.examType + '_Grade_' + this.examLevel].currentPage);
+
+                    } else {
+                        this.getMemberExamScoreByPage(this.examType, this.examScoreList[this.examType].currentPage);
+                    }
+
+                    this.getMemberLatestExamScore();
+                    
+                    $(document).find('.modal-footer').hide();
+
+                    $(document).find('#updateMemberForm').slideUp(500, function() {
+                        $(document).find('#updateMemberForm').html('<div class="alert alert-success text-center" role="alert">Thank you! your score has been submitted</div>');
+                        $(document).find('#updateMemberForm').slideDown(500, function() {
+                             $(document).find('#updateMemberForm').show();
+                        });
+                    });
+
+                    this.messageTimer = setTimeout(function(scope) {
+                         scope.$bvModal.hide('modalUpdateMemberForm');
+                    }, 3500, this);
+
+                    this.$forceUpdate();
+                }
+			}).catch(function(error) {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                console.log(error);
+            }); 
+        },
+        deleteScore(examType, id) 
+        {
+            axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                id              : id,
+                examType        : examType,
+                                
+            }).then(response => {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                                
+                if (response.data.success === true) 
+                {    
+                    if (examType == "EIKEN") 
+                    {
+                        let currentPage = this.examScoreList[examType + '_Grade_' + this.examLevel].currentPage;
+
+                        if (currentPage > 1) {
+                            let previous_page_eiken = parseInt(currentPage) - 1;
+                            this.getMemberExamScoreByPage(examType + '_Grade_' + this.examLevel, previous_page_eiken);
+                        } else {
+                            this.getMemberExamScoreByPage(examType, 1);    
+                        }
+                        
+
+                        
+                    } else {
+                        
+                        let currentPage = this.examScoreList[examType].currentPage;
+
+                        if (currentPage > 1) {
+                            let previous_page = parseInt(currentPage) - 1;
+                            this.getMemberExamScoreByPage(examType, previous_page);
+                        } else {
+                            this.getMemberExamScoreByPage(examType, 1);
+                        }
+                        
+                        
+                    }
+
+                    this.getMemberLatestExamScore();
+
+                } else {                 
+                
+                    
+                }
+
+			}).catch(function(error) {
+
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+                console.log(error);
+            }); 
+        },
+
+        getMemberExamScoreByPage(examType, page)  {
+
+            axios.post("/api/getMemberExamScoreByPage?page="+ page +"&api_token=" + this.api_token,            
+            {
+                method      : "POST",
+                memberID    : this.memberinfo.user_id,
+                examType    : examType
+            }).then(response => {        
+
+
+                if (response.data.success === true) 
+                {
+
+                    this.examScoreList[examType] = response.data.examScoreList[examType];
+                    this.examScoreDisplay[examType + '_display'] = response.data.examScoreDisplay[examType + '_display'];
+                    this.$forceUpdate();
+                }
+                else
+                {
+                    this.examScoreList[examType] = response.data.examScoreList[examType];
+                    this.examScoreDisplay[examType + '_display'] = response.data.examScoreDisplay[examType + '_display'];
+                 
+                }
+
+            }).catch(function(error) {
+                console.log("Error " + error);
+            });  
+        
+        },
+        hideFormModal(name) {
+            this.$bvModal.hide(name);
+        },
         showElementId(id) {
             document.getElementById(id).style.display = "block";
         },                
+        resetButtons() 
+        {
+            this.updateType = null;                 
+        },
         resetModal() {
             this.submitted = false;
-            this.resetScoreData();            
-        }, 
+            clearTimeout(this.messageTimer);            
+            this.resetScoreData();
+
+
+            //reset
+            this.examDate = "";
+            this.examType = "";
+
+
+            const parentElement = document.querySelector('#examScoreContainer');
+            let allChildren = parentElement.querySelectorAll("select");
+
+            allChildren.forEach(item => {            
+                //alert (item.id)                                
+                let dropDown = document.getElementById(item.id);
+                dropDown.selectedIndex = "";
+            });
+
+        },
         resetScoreData() {
 
             this.examDate = "";
@@ -2136,7 +2513,12 @@ export default {
                 },
                 TOEIC_Speaking: {
                     speaking: "",
+                    total: "", 
                 },
+                TOEIC_Writing: {
+                    writing: "",
+                    total: "",
+                },                
                 EIKEN: {
                     grade_5: "",
                     grade_4: "",
@@ -2165,7 +2547,7 @@ export default {
                     otherScore: "",
                 }
             }         
-        },
+        }, 
         highlightExamElement()  
         {                       
             let examType = document.getElementById('examType').value;
@@ -2227,75 +2609,31 @@ export default {
             });
         }, 
 
-        addExamScore(event) 
-        {
 
-            axios.post("/api/addMemberExamScore?api_token=" + this.api_token, 
+        getMemberLatestExamScore() 
+        {        
+            axios.post("/api/getMemberLatestScore?api_token=" + this.api_token,
             {
-                method          : "POST",
-     
-                memberID        : this.memberinfo.user_id,
-                examDate        : this.uExamDate,
-                examType        : this.examType,
-                examLevel       : this.examLevel,
-                examScore       : this.examScore[this.examType],     
+                method       : "POST",
+                limit        : 1,
+                memberID     : this.memberinfo.user_id,
+            }).then(response => {     
+                if (response.data.success === true) 
+                { 
+                    $('.latest-score-message').html("");
+                    $('.latest-score').show();
 
-            })
-            .then(response => 
-            {              
-                if (response.data.success === false) 
-                {
-                  
-                    this.highlightExamElement();
-
+                    this.latestScore.examDate = response.data.examDate;
+                    this.latestScore.examType = response.data.examType;                    
+                    this.latestScore.examScores = JSON.parse(response.data.examScores);
                 } else {
-                    this.latestScore.examDate = response.data.examDate;
-                    this.latestScore.examType = response.data.examType;                    
-                    this.latestScore.examScores = JSON.parse(response.data.examScores);
-
-                    //reset
-                    this.examDate = "";
-                    this.examType = "";
-                    const parentElement = document.querySelector('#examScoreContainer');
-                    let allChildren = parentElement.querySelectorAll("select");
-                    allChildren.forEach(item => {            
-                        //alert (item.id)                                
-                        let dropDown = document.getElementById(item.id);
-                        dropDown.selectedIndex = "";
-                    });
-                    
-                    this.$forceUpdate();
-
-                    //new (!!!)
-                    this.latestScore.examDate = response.data.examDate;
-                    this.latestScore.examType = response.data.examType;                    
-                    this.latestScore.examScores = JSON.parse(response.data.examScores);
-
-                    $(document).find('.modal-footer').hide();
-
-                    $(document).find('#updateMemberForm').slideUp(500, function() {
-                        $(document).find('#updateMemberForm').html('<div class="alert alert-success text-center" role="alert">Thank you! your score has been submitted</div>');
-                        $(document).find('#updateMemberForm').slideDown(500, function() {
-                             $(document).find('#updateMemberForm').show();
-                        });
-                    });             
-
-                    setTimeout(function(scope) {
-                         scope.$bvModal.hide('modalUpdateMemberForm', 500);
-                    }, 3500, this);
-
-                    this.$forceUpdate();
-
+                    $('.latest-score-message').html("<center>No Latest Score</center>");
+                    $('.latest-score').hide();
                 }
+			});
 
-			}).catch(function(error) {
-                // handle error
-                alert("Error " + error);
-                //console.log(error);
-            }); 
-
-            event.preventDefault()
         },
+
         showExamHistoryModal() 
         {            
             this.$refs['examHistoryModal'].show(); 
@@ -2532,13 +2870,22 @@ export default {
             
             this.user.eikenList.push(["40-1"]);
         },
-        capitalizeFirstLetter(string) {
+
+        FormatObjectKey(string) {
             let newString = string.charAt(0).toUpperCase() + string.slice(1);
             newString = newString.replace(/_/g, " ")
 
             //add space before big letters
             return newString.replace(/([A-Z])/g, ' $1').trim(); 
         },
+        capitalizeFirstLetter(string) {
+            let newString = string.charAt(0).toUpperCase() + string.slice(1);    
+            newString = newString.replace(/_/g, " ")       
+            return newString.trim(); 
+        }, 
+        ucwords(string) {
+            return string.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())  
+        },        
         getTotalScore(ExamType) 
         {
             let selection = $('div#examination-score-'+ExamType).find('select');
