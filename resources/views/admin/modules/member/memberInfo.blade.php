@@ -234,6 +234,8 @@
                                         <td>:</td>
                                         <td>
                                             {{ $currentMemberlevel->level ?? '-' }}
+
+                                            {{ (isset($currentMemberlevel->description)) ? "(" . $currentMemberlevel->description .")" : ""  }}
                                         </td>
                                     </tr>                                    
 

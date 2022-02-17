@@ -4,8 +4,8 @@
 			<div id="notes" class="notes my-2">	
 				<div class="card">
 					<div class="card-header bg-darkblue text-white font-weight-bold">
-						<div>				
-							Notes				
+						<div class="small">				
+							<strong>Notes</strong>
 							<span class="pl-2 ">
 								<i class="fas fa-plus" v-b-modal.noteEntryModal></i>				
 							</span>				
@@ -13,7 +13,14 @@
 					</div>
 
 					<div class="card-body p-0 m-0 b-0">
-						<table class="table esi-table table-bordered table-striped">
+
+						<div class="py-3 text-center small" v-if="notes.length == 0">
+							Hey Teachers!!! You can drop a note by clicking  
+							<span class="px-1"><i class="fas fa-plus" v-b-modal.noteEntryModal></i></span>							
+							button 
+						</div>
+
+						<table v-else class="table esi-table table-bordered table-striped">
 							<thead>
 								<tr>
 									<!--<td style="width:50px">Note ID</td>-->
@@ -62,9 +69,17 @@
 				</div>
 
 				<template #modal-footer>
-					<div class="w-100">
+					<div id="addNoteFooter" class="w-100">
 						<b-button variant="primary" size="sm" class="float-right" @click="saveNote">Save Note</b-button>
 					</div>
+
+					<div id="addNoteSpinner" style="display:none">
+						<b-button variant="primary" size="sm" class="float-right mr">
+							<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+							Loading...
+						</b-button>					
+					</div>
+
 				</template>
 			</b-modal>
 			<!--[END NOTE MODAL] -->
@@ -83,9 +98,10 @@
 					</div>
 
 					<div id="editNoteSpinner" style="display:none">
-						<div class="spinner-border text-success" role="status">
-						<span class="sr-only">Loading...</span>
-						</div>						
+						<b-button variant="primary" size="sm" class="float-right mr">
+							<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+							Loading...
+						</b-button>					
 					</div>
 				</template>
 
@@ -201,6 +217,49 @@ export default {
 		this.$bvModal.show('noteEditModal');
 		this.noteEdited = noteEditedData.note;
 	},	
+
+    saveNote() 
+	{
+		if (this.note.trim() == "") 
+		{
+			$('#noteEntryModal').find('.modal-content').find('.modal-body').find('.alert').remove()
+			$('#noteEntryModal').find('.modal-content').find('.modal-body').prepend("<div class='alert alert-danger small'>Don't be shy, Please add a message </div>");		
+			return false;
+		}
+
+		$('#addNoteSpinner').show();
+		$('#addNoteFooter').hide();	
+
+      	axios.post("/api/saveNote?api_token=" + this.api_token, {
+          method: "POST",
+          memberID: this.memberinfo.user_id,
+		  tutorID: this.tutorinfo.id,
+          note: this.note,
+        }).then((response) => {
+			if (response.data.success === true) 
+			{
+				$('#addNoteFooter').show();
+				$('#addNoteSpinner').hide();
+				//rewind page to ONE
+				
+				this.currentPage = 1;
+				this.$bvModal.hide('noteEntryModal');
+
+				//add this to highlight when redraw of data table (get notes)
+				this.highlightID = response.data.note.id;
+
+				this.$nextTick(() => {
+					this.getNotes(1);
+				});
+
+			} else {
+				alert ("error")
+			}
+        })
+        .catch(function (error) {
+        	console.log("Error " + error);
+        });
+    },	
 	updateNote() 
 	{
 
@@ -210,7 +269,6 @@ export default {
 			$('#noteEditModal').find('.modal-content').find('.modal-body').prepend("<div class='alert alert-danger small'>Don't be shy, Please add a message </div>");		
 			return false;
 		}
-
 		
 		$('#editNoteSpinner').show();
 		$('#editNoteFooter').hide();
@@ -269,48 +327,7 @@ export default {
     cleanUpEntryForm() {
       this.note = "";
     },
-    saveNote() 
-	{
-		if (this.note.trim() == "") 
-		{
-			$('#noteEntryModal').find('.modal-content').find('.modal-body').find('.alert').remove()
-			$('#noteEntryModal').find('.modal-content').find('.modal-body').prepend("<div class='alert alert-danger small'>Don't be shy, Please add a message </div>");		
-			return false;
-		}
 
-		$('#editNoteSpinner').show();
-		$('#editNoteFooter').hide();	
-
-      	axios.post("/api/saveNote?api_token=" + this.api_token, {
-          method: "POST",
-          memberID: this.memberinfo.user_id,
-		  tutorID: this.tutorinfo.id,
-          note: this.note,
-        }).then((response) => {
-			if (response.data.success === true) 
-			{
-				$('#editNoteFooter').show();
-				$('#editNoteSpinner').hide();
-				//rewind page to ONE
-				
-				this.currentPage = 1;
-				this.$bvModal.hide('noteEntryModal');
-
-				//add this to highlight when redraw of data table (get notes)
-				this.highlightID = response.data.note.id;
-
-				this.$nextTick(() => {
-					this.getNotes(1);
-				});
-
-			} else {
-				alert ("error")
-			}
-        })
-        .catch(function (error) {
-        	console.log("Error " + error);
-        });
-    },
     getNotes(page) 
 	{
       axios.post("/api/getMemberNotes?page="+ page +"&api_token=" + this.api_token, {

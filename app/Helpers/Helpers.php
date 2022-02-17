@@ -398,6 +398,11 @@ if (! function_exists('countWords'))
     }  
 }
 
-
+if (! function_exists('memberCEFRLevel')) 
+{
+    function memberCEFRLevel($text) {
+       
+    }  
+}
 
 ?>

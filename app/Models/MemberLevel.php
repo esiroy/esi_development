@@ -25,16 +25,18 @@ class MemberLevel extends Model
 
             if ($memberLevel) 
             {
-                $data = [
+                $data = [                        
                         'level' => $data['level'],
+                        'description'    => $data['description'],
                     ];
                 return $memberLevel->update($data);
             } else {
             
                 $data = [
-                        'member_id'  =>  $data['memberID'],
-                        'level'      => $data['level'],
-                        'valid'      => true,
+                        'member_id'     =>  $data['memberID'],
+                        'level'         => $data['level'],
+                        'description'    => $data['description'],
+                        'valid'         => true,
                 ];
 
                 return MemberLevel::create($data);

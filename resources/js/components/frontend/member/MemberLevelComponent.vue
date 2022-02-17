@@ -107,12 +107,12 @@ export default {
                     }, 
                 'C1': { 
                         value: 'C1',
-                        text: "Upper Intermediate",
+                        text: "Expert",
                         content: "IELTS 7.0～8.0 / TOEFL iBT 95～120 / 英検 G-1(2600～3299) / TEAP 375～400 / Cambridge English 200 ～ 230"
                     },
                 'B2': {
-                        value: 'B2',
-                        text: "Expert",
+                        value:  'B2',
+                        text:   "Upper Intermediate",
                         content: 'IELTS 5.5～6.5 / TOEFL iBT 72～94 / 英検 G-Pre1(2300～2599) / TEAP 309～374 /TOEFL Junior Standard 851 ～ 900 / Cambridge English 160 ～ 179' 
                     },  
                 'B1': 
@@ -172,8 +172,6 @@ mounted: function ()
                     this.updated = response.data.level.level; 
                     this.selected = response.data.level.level; 
 
-                    console.log(this.updated )  
-
                 } else {
                     //set null since it has not submitted
                     this.updated = null;
@@ -198,7 +196,8 @@ mounted: function ()
             {
                 method       : "POST",
                 memberID     : this.memberinfo.user_id,
-                level        : this.selected
+                level        : this.selected,
+                description  : this.info[ this.selected ].text,
 
             }).then(response => {     
                 if (response.data.success === true) 

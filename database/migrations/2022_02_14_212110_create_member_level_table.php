@@ -18,7 +18,7 @@ class CreateMemberLevelTable extends Migration
             $table->tinyInteger('valid');
             $table->unsignedBigInteger('member_id');
             $table->string("level", 8);
-            $table->string("comments");
+            $table->string("description", 16);
             $table->timestamps();
         });
     }

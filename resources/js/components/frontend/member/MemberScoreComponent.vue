@@ -260,12 +260,10 @@
                         </div>
 
                     </div>
-                    <div v-else>  
-
+                    <div v-else>
                         <div class="d-flex justify-content-center my-4">
                             <b-spinner label="Loading..." variant="success"></b-spinner>
                         </div>
-
                     </div>
 
 

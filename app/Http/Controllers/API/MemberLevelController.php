@@ -36,7 +36,6 @@ class MemberLevelController extends Controller
 
     function saveMemberLevel(Request $request, MemberLevel $memberLevel) 
     {
-
       
         try {
 
@@ -44,7 +43,8 @@ class MemberLevelController extends Controller
 
                 $data = [
                             'memberID'  => $request['memberID'],
-                            'level'     => $request['level']
+                            'level'     => $request['level'],
+                            'description' => $request['description']
                         ];
 
                 $response = $memberLevel->saveLevel($data);
