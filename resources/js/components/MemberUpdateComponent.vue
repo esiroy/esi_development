@@ -2045,20 +2045,6 @@ export default {
         getMemberExamScoreByType() 
         {
 
-            /*
-            axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
-            {
-                method      : "POST",
-                memberID    : this.memberinfo.user_id,
-                limit       : 1,
-            }).then(response => {               
-                if (response.data.success === true) 
-                {
-                    this.examScoreTypes = response.data.examTypes;
-                    this.examScoreList = response.data.examScoreList;
-                }
-            });*/
-
             axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
             {
                 method      : "POST",
@@ -2327,7 +2313,8 @@ export default {
 
                     this.getMemberLatestExamScore();
                     
-                    $(document).find('.modal-footer').hide();
+                   
+                    $(document).find('#modalUpdateMemberForm').find('.modal-footer').hide();
 
                     $(document).find('#updateMemberForm').slideUp(500, function() {
                         $(document).find('#updateMemberForm').html('<div class="alert alert-success text-center" role="alert">Thank you! your score has been submitted</div>');
