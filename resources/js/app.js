@@ -27,10 +27,8 @@ if (url[1] === 'admin') {
     switch(url[2]) {
         case '':
         case 'dashboard':
-        case 'lesson':   
-            console.log("load lesson!")
+        case 'lesson':
             Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
-
         break;
         case 'member':  
             if (url[4] === 'edit') {
@@ -56,7 +54,9 @@ if (url[1] === 'admin') {
             Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
         break;
         default:
-            console.log("default page, no vue!!")
+            console.log("admin default page loaded")
+            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+            
     }
 
 } else {
