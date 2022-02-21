@@ -2,6 +2,10 @@
 
 namespace App\Models;
 
+
+
+use App\Models\ConditionalFieldLogic;
+
 use Illuminate\Database\Eloquent\Model;
 
 class FormFields extends Model
@@ -173,5 +177,200 @@ class FormFields extends Model
     }
 
 
+    public function includeFormFieldHTML($formField, $cfields) 
+    {
+
+        //covert json objec to array                
+        $display_meta = (array) json_decode($formField->display_meta, true);
+        $id     = $formField->id;  
+        $page_id = $formField->page_id;              
+        $label  = $formField->name;
+        
+        $required = $formField->required;
+        $maximum_characters = $formField->maximum_characters;
+        $description = $formField->description;
+
+
+
+
+        if (isset($display_meta['description'])) {
+            $description = $display_meta['description'];
+        }
+        
+
+        if (isset($display_meta['content'])) {
+            $content = $display_meta['content'];
+        } else {
+            $content = "";
+        }
+
+
+
+       $cf_items = "";
+
+        if ( strtolower($formField->type) == "simpletext" || strtolower($formField->type) == "simpletextfield") 
+        {
+            $type   = 'simpletextfield';       
+            return [
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                    'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+            ];
+
+        } else if (strtolower($formField->type) == "dropdown" || strtolower($formField->type) == "dropdownselect") {
+
+            $type   = 'dropdownselect';
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                     'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];
+
+
+        } else if (strtolower($formField->type) == "dropdownteacherselect") {
+
+            $type   = 'dropdownteacherselect';                               
+           
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                     'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];
+
+        } else if (strtolower($formField->type) == "html" || strtolower($formField->type) == "htmlcontent") {
+
+            $type   = 'html';                               
+            
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                     'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];            
+
+        } else if (strtolower($formField->type) == "firstname" || strtolower($formField->type) == "firstnamefield") {
+
+            $type   = 'firstnamefield';                               
+           
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                     'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];
+        
+        } else if (strtolower($formField->type) == "lastname" || strtolower($formField->type) == "lastnamefield") {
+
+            $type   = 'lastnamefield';                               
+         
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                     'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];         
+
+        } else if (strtolower($formField->type) == "email" || strtolower($formField->type) == "emailfield") {
+
+            $type   = 'emailfield';                               
+            
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                     'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];            
+        
+        } else if (strtolower($formField->type) == "upload" || strtolower($formField->type) == "uploadfield") {
+
+            $type   = 'uploadfield';                               
+            
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                     'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];            
+        
+        } else if (strtolower($formField->type) == "paragraphtext" ) {
+            $type   = 'paragraphtext';       
+            
+            return [                  
+                    'type' => $type,
+                    'id'    => $id, 
+                    'page_id' => $page_id,
+                    'label' => $label,
+                    'description' => $label,
+                    'maximum_characters' => $maximum_characters,
+                    'required' => $required,
+                    'display_meta' => $display_meta,
+                    'cfields'   => $cfields,
+                    'cf_items'       => $cf_items ?? '',
+                    'template'=> 'admin.forms.simpleText', 
+                ];
+
+        }    
+
+      
+    }
 
 }

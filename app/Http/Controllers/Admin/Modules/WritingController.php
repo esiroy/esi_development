@@ -35,7 +35,7 @@ class WritingController extends Controller
     }
     
     
-    public function index(FormFields $formFieldModel,  Tutor $tutor) 
+    public function index(FormFields $formFieldModel,   Tutor $tutor) 
     {
         //abort_if(Gate::denies('writing_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
@@ -43,34 +43,15 @@ class WritingController extends Controller
         
             $form_id = 1; //all forms are 1(for now)
             $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-            $formFieldHTML[] = "";
+            $cfields = FormFields::select('id','sequence_number')->where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-            //CONDITIONAL FIELDS (init)
-            $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
-            foreach ($formFields as $formField) 
-            {
-
-                $formFieldHTML[] = $formFieldModel->generateFormFieldHTML($formField, $cfields);
-            }
-
-            // GET CHILDREN HTML
-            $formFieldChildrenHTML[] = "";
-
+           
             $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-            $pageCounter =  $pages->count() + 1;        
+            $pageCounter =  $pages->count() + 1;
 
-            foreach ($pages as $page) 
-            {           
-                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();           
-                foreach ($formChildFields as $formChildField) 
-                {
-                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFormFieldHTML($formChildField, $child_cfields);
-                }
-            }
+          
 
-            return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'formFields', 'formFieldHTML', 'formFieldChildrenHTML'));        
+            return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'cfields' ));        
         
         } else if (Auth::user()->user_type == 'TUTOR') {
             

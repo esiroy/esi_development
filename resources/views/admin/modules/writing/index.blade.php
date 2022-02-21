@@ -51,29 +51,40 @@
                         @csrf
                         <div id="form-content" class="card-body esi-card-body">
                             
+                            @php 
+                                $formFields = new App\Models\FormFields();
+                            @endphp
+
                             @foreach ($pages as $page)
                             <div id="page-{{ $page->page_id }}" class="card esi-card-header-page mb-4">
                                 <div class='card-header'>
                                     {{ "Page : ".  $page->page_id }}
                                 </div>
                                 <div class='card-body droptrue'>
-                                    @if(isset($formFieldChildrenHTML[$page->page_id]))
-                                        @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
-                                            {!! $formFieldChildHTML !!}
-                                        @endforeach
-                                    @endif
+                                   
+
+                                    @php
+                                        $formChildFields = $formFields->where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                                    @endphp
+                                        
+
+
+                                    @foreach ($formChildFields as $formChildField) 
+
+                                        @php                                        
+                                            $field = $formFields->includeFormFieldHTML($formChildField, $cfields);
+                                        @endphp
+
+                                        @include ('admin.forms.test', $field)
+                                        
+                                    @endforeach
 
                                 </div>
                             </div>
                             @endforeach
                            
 
-                            <div class="sortable">
-                                @foreach($formFieldHTML as $HTML) 
-                                    {!! $HTML !!}
-                                @endforeach
-                            </div>
-
+                           
                         </div>
                     </form>
                     <!--[START DYNAMIC FORMS]-->
@@ -201,23 +212,14 @@
 
 @section('scripts')
     <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
-    <script src="{{ url('js/dropzone/dropzone.min.js') }}" deferd></script>
-    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
+    <script src="{{ url('js/dropzone/dropzone.min.js') }}" defer></script>
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" deferd></script>
 
     <script type="text/javascript" defer>
         var api_token = "{{ Auth::user()->api_token }}";
 
          function saveForm() 
-         {         
-
-            $('textarea.ckEditor').each( function () {
-                CKEDITOR.instances[this.id].updateElement();
-                let ckData = CKEDITOR.instances[this.id].getData();
-                //alert( $(this).attr('id') + "  " + ckData + " == ? " + $(this).val());
-            });
-
-              
-
+         {  
             let data        = $("#dynamicForms").serialize();           
 
             $('.form-buttons').hide();
@@ -247,7 +249,7 @@
 
          function addTextFormatter(id) {
                
-
+        
             CKEDITOR.replace( id , {
                 toolbarGroups: [
                         { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
@@ -270,36 +272,13 @@
                 extraPlugins: 'html5audio',                        
                 removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
             });                
+
+            
          }
          
                  
         window.addEventListener('load', function() 
         {
-         
-            /*
-            $('.ckEditor').each( function () {
-                console.log(this.name + " add ckeditor");
-                CKEDITOR.replace( this.name , {
-                    toolbarGroups: [
-                        {"name": "basicstyles"  , "groups": ["basicstyles", "colors"]},
-                        {"name": "links"        , "groups": ["links"]},
-                        {"name": "paragraph"    , "groups": ["list"]},
-                        {"name": "styles"       , "groups": ["insert","styles" ]},                   
-                    ],
-                    removePlugins: 'easyimage, exportpdf, cloudservices',
-                    extraPlugins: 'html5audio',
-                    removeButtons: 'Underline,Strike,Subscript,Superscript,Anchor,Styles,Specialchar,PasteFromWord'
-                    //extraAllowedContent: 'html5audio; div(!ckeditor-html5-audio){text-align,float,margin-left,margin-right}; audio[src, autoplay, controls, controlslist];',
-                    //allowedContent: 'html5audio; object(*); object param embed a p b i; audio[src, autoplay, controls, controlslist]; a[!href, target, onclick]; object[data]; object[width]; object[height]; param[name]; param[value]; iframe[*]; iframe[width]; iframe[height], audio',                           
-                });
-            });
-            */
-            $('.ckEditor').each( function () {
-                console.log(this.name + " add ckeditor");
-                addTextFormatter(this.name )
-            });
-
-
 
             $('.fa-caret-up').hide();
 
