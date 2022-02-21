@@ -505,10 +505,12 @@
 
             if (examtypeCheck[0] == "EIKEN") 
             {
+                //auto select the grade level (Format: Grade_[$levelExamType]))
                 this.examType = examtypeCheck[0];
-                let levelExamType = examType.split("Grade_"); 
-                
-                this.examLevel = levelExamType[1];         
+                let levelExamType = examType.split("Grade_");                 
+                this.examLevel = levelExamType[1];      
+
+
                 this.examDate = this.examScoreList[examType].items.details[0].exam_date;
 
                 this.$nextTick(() => 
@@ -1162,6 +1164,7 @@
             this.examDate = "";
             this.uExamDate = "";
             this.examType = "";
+            this.examLevel = "";
 
             this.examScore = {
                 IELTS: {                 

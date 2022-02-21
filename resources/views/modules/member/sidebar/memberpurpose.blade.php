@@ -4,8 +4,8 @@
     $purpose = $purposeModel->getMemberPurpose(Auth::user()->id);
 @endphp
 
-<member-purpose-commponent 
+<member-purpose-component 
         :memberinfo="{{ json_encode($memberInfo) }}" 
         :purpose="{{ json_encode($purpose) }}" 
         api_token="{{ Auth::user()->api_token }}" 
-        csrf_token="{{ csrf_token() }}"></member-purpose-commponent>
+        csrf_token="{{ csrf_token() }}"></member-purpose-component>

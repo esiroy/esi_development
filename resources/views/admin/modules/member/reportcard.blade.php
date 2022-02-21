@@ -15,12 +15,12 @@
                         <div class="col-md-5">
                             @include('admin.modules.member.includes.profile')
                                               
-                          <member-notes-commponent
+                          <member-notes-component
                             :tutorinfo="{{ json_encode(Auth::user()) }}"
                             :memberinfo="{{ json_encode($memberInfo) }}"                                                
                             api_token="{{ Auth::user()->api_token }}" 
                             csrf_token="{{ csrf_token() }}"                                             
-                            ></member-notes-commponent>                                              
+                            ></member-notes-component>                                              
                         </div>
 
                         <div class="col-md-7">

@@ -164,11 +164,11 @@
                                         </td>
                                         <td> : </td>
                                         <td >   
-                                            <member-score-commponent 
+                                            <member-score-component 
                                                 :memberinfo="{{ json_encode($memberInfo) }}" 
                                                 api_token="{{ Auth::user()->api_token }}" 
                                                 csrf_token="{{ csrf_token() }}"
-                                            ></member-score-commponent>
+                                            ></member-score-component>
                                         </td>                                                                                
                                     </tr>
 
@@ -182,11 +182,11 @@
                                         </td>
                                         <td>:</td>
                                         <td>
-                                            <member-purpose-viewer-commponent
+                                            <member-purpose-viewer-component
                                                 :memberinfo="{{ json_encode($memberInfo) }}"                                                
                                                 api_token="{{ Auth::user()->api_token }}" 
                                                 csrf_token="{{ csrf_token() }}"                                             
-                                             ></member-notes-commponent>
+                                             ></member-notes-component>
 
                                         </td>
                                     </tr>
@@ -350,12 +350,12 @@
                                         </td>
                                         <td> : </td>
                                         <td class="red">
-                                             <member-notes-commponent
+                                             <member-notes-component
                                                 :tutorinfo="{{ json_encode(Auth::user()) }}"
                                                 :memberinfo="{{ json_encode($memberInfo) }}"                                                
                                                 api_token="{{ Auth::user()->api_token }}" 
                                                 csrf_token="{{ csrf_token() }}"                                             
-                                             ></member-notes-commponent>
+                                             ></member-notes-component>
                                         </td>
                                     </tr>
                                     

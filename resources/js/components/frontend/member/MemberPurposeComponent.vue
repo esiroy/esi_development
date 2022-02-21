@@ -47,7 +47,7 @@
 import PurposeComponent from "../../purpose/PurposeComponent.vue";
 
 export default {
-    name: "MemberUpdateComponent",
+    name: "MemberPurposeComponent",
     components: { PurposeComponent },
     props: { memberinfo: Object, userinfo: Object, purpose: Array, csrf_token: String, api_token: String },
     data() {

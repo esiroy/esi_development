@@ -80,6 +80,7 @@
 
 <script>
 export default {   
+ name: "memberLevelComponent",
  data() {
       return {
         updated: null,

@@ -186,6 +186,9 @@ Route::resource('updateMemberExpirty', 'TableUserExpiryUpdaterController');
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
+//Time Manager
+Route::resource('time-manager', 'MemberTimeManagerController');
+
 
 /*STATIC PAGES */
 Route::get('/stagelevel', 'PageController@stageLevel')->name('stagelevel');
@@ -444,3 +447,10 @@ Route::post('login', 'Auth\LoginController@login')->name('login_member');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout_member');
 
 Route::get('login.do', 'Auth\LoginController@showLoginForm')->name('login_member_do');
+
+
+
+// any other url, subfolders also
+Route::get('/{any}', function ($any) {  
+  echo "ANY : " . $any;
+})->where('any', 'time-manager/.*');
