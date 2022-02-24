@@ -111,6 +111,9 @@ Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamCon
 Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIGetMemberLatestScore');
 Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
 
+
+
+
 //Form Maker (update)
 Route::middleware('auth:api')->post('/saveSimpleTextField', 'API\FormMakerController@saveSimpleTextField')->name('APISaveSimpleTextField');
 Route::middleware('auth:api')->post('/saveDropDownSelect', 'API\FormMakerController@saveDropDownSelect')->name('APISaveDropDownSelect');
@@ -129,12 +132,20 @@ Route::middleware('auth:api')->post('/saveUploadField', 'API\FormMakerController
 Route::middleware('auth:api')->post('/getHTMLFieldContent', 'API\FormMakerController@getHTMLFieldContent')->name('APISGetHTMLFieldContent');
 Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@removeField')->name('APIRemoveField');
 
+//Form Field HTML 
+Route::middleware('auth:api')->post('/writing/editFormField', 'API\FormMakerController@editFormField')->name('APIEditFormField');
+Route::middleware('auth:api')->post('/writing/updateFormField', 'API\FormMakerController@updateFormField')->name('APIupdateFormField');
+
+
 //writing api
 Route::middleware('auth:api')->post('/writing/updateWritingFields', 'API\FormMakerController@updateWritingFields')->name('APIWritingFormFieldsUpdate');
 Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
 Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');
 Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingAssignTutor');
 Route::middleware('auth:api')->post('/writing/getSubmittedWritingPoints', 'API\FormMakerController@getSubmittedWritingPoints')->name('APIGetSubmittedWritingPoints');
+
+
+
 
 //Writing Entry Checker
 Route::middleware('auth:api')->post('/writing/checkCredits', 'API\WritingEntryController@checkCredits')->name('APICheckCredits');

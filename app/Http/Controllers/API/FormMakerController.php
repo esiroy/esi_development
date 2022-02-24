@@ -18,6 +18,27 @@ use Auth;
 class FormMakerController extends Controller
 {
     
+
+     public function editFormField(Request $request, FormFields $formFields) 
+    {    
+        $form_id = 1;
+        $id = $request->get('id');
+
+        $field = $formFields->find($id);
+        $cfields = FormFields::select('id','sequence_number')->where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+
+
+        $data = $formFields->generateFormEditFieldHTML($field, $cfields);
+
+        return Response()->json([
+            "success"       => true,
+            'id'            => $id,
+            "field"          => $data,
+        ]); 
+    }
+
+
+
     public function updateWritingFields(Request $request,  UploadFile $uploadFile) 
     {
         $form_id = 1;  

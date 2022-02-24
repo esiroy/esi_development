@@ -66,8 +66,6 @@
                                     @php
                                         $formChildFields = $formFields->where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
                                     @endphp
-                                        
-
 
                                     @foreach ($formChildFields as $formChildField) 
 
@@ -75,7 +73,7 @@
                                             $field = $formFields->includeFormFieldHTML($formChildField, $cfields);
                                         @endphp
 
-                                        @include ('admin.forms.test', $field)
+                                        @include ($field['template'], $field)
                                         
                                     @endforeach
 
@@ -122,23 +120,27 @@
     </div>
 
     <!-- STANDARD FIELDS -->
-    @include('admin.modules.writing.includes.FormFields.simpleTextModal')
-    @include('admin.modules.writing.includes.FormFields.dropdownSelectModal')
-    @include('admin.modules.writing.includes.FormFields.htmlModal')
-    @include('admin.modules.writing.includes.FormFields.paragraphTextModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.simpleTextModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.dropdownSelectModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.htmlModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.paragraphTextModal')
 
     <!-- ADVANCE FIELDS -->
-    @include('admin.modules.writing.includes.FormFields.firstnameModal')
-    @include('admin.modules.writing.includes.FormFields.lastnameModal')
-    @include('admin.modules.writing.includes.FormFields.emailModal')
-    @include('admin.modules.writing.includes.FormFields.uploadModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.firstnameModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.lastnameModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.emailModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.uploadModal')
 
     <!-- Auto Filled Fields -->
-
-    @include('admin.modules.writing.includes.FormFields.dropdownTeacherSelectModal')
+    @include('admin.modules.writing.includes.FormFieldsModals.dropdownTeacherSelectModal')
 
     <!--image gallery-->
     @include('admin.modules.writing.includes.imageGallery.galleryModal')
+
+
+    <!--edit gallery-->
+    @include('admin.modules.writing.includes.FormFieldsModals.editFieldModal')
+
 
 @endsection
 
@@ -218,6 +220,42 @@
     <script type="text/javascript" defer>
         var api_token = "{{ Auth::user()->api_token }}";
 
+        function editFormField(id) 
+        {       
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/editFormField?api_token=') }}" + api_token,
+                dataType: 'json',
+                data: {
+                    formID      : 1,
+                    id          : id
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                  
+                    if (data.success === true) 
+                    {
+                        $('#modal_edit').find('.modal-body').html(data.field);
+                        $( ".tabs" ).tabs();
+
+                        if ($('#'+ data.id +"_description").length >= 1) {
+                            addTextFormatter(data.id +"_description");
+                        } else {
+                            addTextFormatter(data.id +"_content");
+                        }
+                        
+
+                    }
+                }
+            });  
+
+            $("#modal_edit").modal('show');
+            return false;
+        }
+
          function saveForm() 
          {  
             let data        = $("#dynamicForms").serialize();           
@@ -280,16 +318,15 @@
         window.addEventListener('load', function() 
         {
 
-
             $('.ckEditor').each( function () {
                 console.log(this.name + " add ckeditor");
                 addTextFormatter(this.name )
             });
 
-            
+
             $('.fa-caret-up').hide();
 
-            let currentMousePos = { x: -1, y: -1 };
+            
             let pageCtr = '{{ $pageCounter ?? 1 }}';            
 
             $( ".tabs" ).tabs();
@@ -299,7 +336,6 @@
                 connectWith: "div", 
                 handle: '.handle',
                 sort: function(e) {
-                    //console.log('X:' + e.screenX, 'Y:' + e.screenY);
                     $('#dynamicForms').find('.field_container').show();                    
                 },
             });
@@ -385,7 +421,8 @@
                 }               
             });
 
-            $(document).on('click', '.btnShowFieldOptions', function() {
+            $(document).on('click', '.btnShowFieldOptions', function() 
+            {
                 let element = $(this).parent().parent().parent().find('.tab-container');
                 
                 if (!element.hasClass('open')) {                   
@@ -619,7 +656,9 @@
                    let fieldID = getFieldID(cfield.id);
                    let coptvalue = $('#'+cfield.id).find('#id').val();
                    let coptlabel = $('#'+fieldID+'_label').val();
-                   $('#'+ targetFieldID +'_cfield_id_'+ insCtr).append('<option value="'+coptvalue+'">'+coptlabel+'</option>');
+
+                   //Lets test this
+                   $('#'+ targetFieldID +'_cfield_id_'+ insCtr).append('<option value="'+coptvalue+'">'+fieldID + " ," +coptlabel+'</option>');
                 });
             }
 
@@ -631,7 +670,8 @@
                 $('#'+ targetFieldID +'_cfield_rule_'+ insCtr).append('<option value="contains">contains</option>');
             }
 
-            function populateValuesDropdownOptions(selectedOptionID, targetFieldID, index) {
+            function populateValuesDropdownOptions(selectedOptionID, targetFieldID, index) 
+            {
                 let selectValueOption = "<select id='"+ targetFieldID +"_cfield_value_"+ index +"' name='"+ targetFieldID +"_cfield_value[]' class='"+ targetFieldID +"_cfield_value form-control form-control-sm'></select>"
                 $('#'+ targetFieldID + '_cfield_value_container_'+index).html('');  
                 $('#'+ targetFieldID + '_cfield_value_container_'+index).append(selectValueOption);
@@ -1323,6 +1363,29 @@
                     }
                 });
             });
+
+
+            $('#btnUpdate').on("click", function() 
+            {  
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/saveHTMLContent?api_token=') }}" + api_token,
+                    data: {
+                        formID          :  1,
+                        label           :  $('#modal_html').find('input#label').val(),
+                        //content        :  $('#modal_html').find('textarea#content').val()
+                        content          :  CKEDITOR.instances['content'].getData()
+                       
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) {                       
+                        alert(data.id)
+                    }
+                });
+            });            
+
 
             $('#btnHTMLSave').on("click", function() 
             {  

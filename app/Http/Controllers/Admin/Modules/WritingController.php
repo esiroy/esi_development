@@ -46,12 +46,12 @@ class WritingController extends Controller
             $cfields = FormFields::select('id','sequence_number')->where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
            
-            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pages =  FormFields::distinct()->where('page_id', '>=', 0)->orderBy('page_id', 'ASC')->get(['page_id']);
             $pageCounter =  $pages->count() + 1;
 
           
 
-            return view('admin.modules.writing.index', compact('pages', 'pageCounter',  'form_id', 'cfields' ));        
+            return view('admin.modules.writing.writing-edit', compact('pages', 'pageCounter',  'form_id', 'cfields' ));        
         
         } else if (Auth::user()->user_type == 'TUTOR') {
             
