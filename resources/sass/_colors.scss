@@ -39,8 +39,34 @@
 }
 
 /* button gradients */
-
 .btn-yellow {
     border: 1px solid #fcbf1b;
     background-image: linear-gradient(#fbdd64, #fcbf1b);
 }
+
+
+.btn-blue-gradient {
+    border: 1px solid #339dc5 !important;
+    background-image: linear-gradient(#03b1f2, #0293c9);
+    border-radius: 22px !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;    
+}
+
+
+.btn-orange-gradient {
+    border: 1px solid #fcbf1a !important;
+    background-image: linear-gradient(#fbdd64, #fcbf1a);
+    border-radius: 22px !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;   
+}
+
+.btn-green-gradient {
+    border: 1px solid #399957 !important;
+    background-image: linear-gradient(#27c85c, #2e934d);
+    border-radius: 22px !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;   
+}
+

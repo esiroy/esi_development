@@ -1120,21 +1120,29 @@ export default {
 		//Lesson Goals (purpose)
        
 		let item  = [];
-		for (item of this.purposes) {	
+		for (item of this.purposes) {
 
-			if (item.purpose !== '' || item.purpose !== null) this.user.preference.purpose[item.purpose] = true;  
+            console.log(item.purpose);
+
+			if (item.purpose !== '' || item.purpose !== null) 
+            {
+                this.user.preference.purpose[item.purpose] = true;  
+            } else {
+                this.user.preference.purpose[item.purpose] = false;  
+            }
+
             
             if (item.purpose === "CONVERSATION") 
             {
-                this.user.preference.purposeExtraDetails.[item.purpose] = item.goal;
+                this.user.preference.purposeExtraDetails[item.purpose] = item.goal;
             } 
             else if (item.purpose === "ANTI_EXAM" || item.purpose === "STUDY_ABROAD") 
             {
-                this.user.preference.purposeExtraDetails.[item.purpose] = item.year_level;
+                this.user.preference.purposeExtraDetails[item.purpose] = item.year_level;
             }
             else 
             {
-                this.user.preference.purposeExtraDetails.[item.purpose] = item.extra_detail;
+                this.user.preference.purposeExtraDetails[item.purpose] = item.extra_detail;
             }
 		}
 
