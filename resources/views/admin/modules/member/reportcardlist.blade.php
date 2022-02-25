@@ -67,7 +67,7 @@
                                     @foreach($reportcards as $item)
                                     <tr>
                                         <td>                                            
-                                            {{ date('F d, Y H:i', strtotime($item->lesson_time)) ?? '' }}
+                                            {{ ESIDateTimeFormat($item->lesson_time) ?? '' }}
                                         </td>
                                         <td>
                                             {!! wordwrap($item->lesson_subject, 20, "<br />\n") !!}
