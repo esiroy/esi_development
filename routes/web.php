@@ -450,7 +450,9 @@ Route::get('login.do', 'Auth\LoginController@showLoginForm')->name('login_member
 
 
 
-// any other url, subfolders also
+/*
 Route::get('/{any}', function ($any) {  
   echo "ANY : " . $any;
 })->where('any', 'time-manager/.*');
+
+*/
