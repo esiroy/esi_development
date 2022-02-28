@@ -1,5 +1,4 @@
-<!-- Simple Text [Backend] -->
-<div id="{{ $id }}_field" class="card esi-card-writing mb-2">
+<div id="{{ $id }}_field" class="card esi-card-writing mb-2 field_container">
     <div class="card-header esi-card-header-writing">
         <span class="ui-icon ui-icon-arrowthick-2-n-s text-secondary handle"></span>                 
         <span>First Name : Field ID ({{ $id }})</span>

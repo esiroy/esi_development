@@ -1,34 +1,13 @@
-<!-- Simple Text [Backend] -->
-
 <div id="{{ $id }}_field" class="card esi-card-writing mb-2">
-
     <div class="card-header esi-card-header-writing ">
-
-        <input type="hidden" id="id" name="id[]" value="{{ $id }}">
-        
-        <span class="handle">
-            Paragraph Text : Field ID ({{ $id }})
-        </span>
-        
-        <!--RIGHT BUTTON CONTAINER-->
-        <div class="float-right">
-            <span class="ui-icon ui-icon-arrowthick-2-n-s text-secondary handle"></span>        
-            <a id="{{ $id }}_copyField" href="#" class="text-secondary btnCopyField pr-1"><i class="fa fa-copy fa-sm"></i></a>
-            <a id="{{ $id }}_showFieldOptions" href="#" class="text-secondary btnShowFieldOptions"><i class="fa fa-caret-down fa-lg"></i></a>            
-            <a id="{{ $id }}_hideFieldOptions" href="#" class="text-secondary btnHideFieldOptions"><i class="fa fa-caret-up fa-lg"></i></a>
-            <span id="{{ $id }}_removeField" class="btnRemoveField pl-2">         
-                <a href="#" class="text-secondary"><small><i class="fas fa-times"></i></small></a>
-            </span>
-        </div>
-
+        <span>Paragraph Text : Field ID ({{ $id }})</span>
     </div>
 
     <div class="card-body">    
-
+        <input type="hidden" id="id" name="id[]" value="{{ $id }}">
         <input type="hidden" id="{{ $id }}_fieldType" name="{{ $id }}_fieldType" value="paragraphText">           
         <input type="hidden" id="{{ $id }}_label" name="{{ $id }}_label" value="{{ $label ?? '' }}">
         <input type="hidden" id="{{ $id }}_page" name="{{ $id }}_page"  class="page" value="page-{{ $page_id ?? '0' }}">
-
 
         <!--LABEL-->
         <h5 class="card-title font-weight-bold">            
@@ -49,7 +28,7 @@
 
         
 
-        <div id="{{ $id }}_tab_container" class="tab-container esi-tab-container" style='display:none'>
+        <div id="{{ $id }}_tab_container" class="tab-container esi-tab-container">
             <div id="tabs" class="tabs esi-tabs mt-2">
                 <ul>
                     <li><a href="#tabs-general">General</a></li>                

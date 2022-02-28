@@ -56,31 +56,37 @@
                             @endphp
 
                             @foreach ($pages as $page)
-                            <div id="page-{{ $page->page_id }}" class="card esi-card-header-page mb-4">
-                                <div class='card-header'>
-                                    {{ "Page : ".  $page->page_id }}
-                                </div>
-                                <div class='card-body droptrue'>
-                                   
-
-                                    @php
-                                        $formChildFields = $formFields->where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-                                    @endphp
-
-                                    @foreach ($formChildFields as $formChildField) 
-
-                                        @php                                        
-                                            $field = $formFields->includeFormFieldHTML($formChildField, $cfields);
-                                        @endphp
-
-                                        @include ($field['template'], $field)
-                                        
-                                    @endforeach
-
-                                </div>
-                            </div>
+                                @if ($page->page_id >= 1)
+                                    <div id="page-{{ $page->page_id }}" class="card esi-card-header-page mb-4">
+                                        <div class='card-header'>
+                                            {{ "Page : ".  $page->page_id }}
+                                        </div>
+                                        <div class='card-body droptrue'>
+                                            @php
+                                                $formChildFields = $formFields->where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                                            @endphp
+                                            @foreach ($formChildFields as $formChildField) 
+                                                @php                                        
+                                                    $field = $formFields->includeFormFieldHTML($formChildField, $cfields);
+                                                @endphp
+                                                @include ($field['template'], $field)                                            
+                                            @endforeach
+                                        </div>
+                                    </div>  
+                                @endif                              
                             @endforeach
                            
+                            <div class='card-body droptrue'>
+                                @php
+                                    $formChildFields = $formFields->where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+                                @endphp
+                                @foreach ($formChildFields as $formChildField) 
+                                    @php                                        
+                                        $field = $formFields->includeFormFieldHTML($formChildField, $cfields);
+                                    @endphp
+                                    @include ($field['template'], $field)                                            
+                                @endforeach
+                            </div>                           
 
                            
                         </div>
@@ -93,17 +99,9 @@
 
             <div class="col-md-4">
                 <div id="righ-sidebar" style="position: -webkit-sticky;position: sticky; top: 20px;">
-                    @include('admin.modules.writing.includes.fieldButtons')         
-
-                   
+                    @include('admin.modules.writing.includes.fieldButtons')      
                     <div class="mt-2">
-
                         <div id="form_message"></div>
-
-                        <div class="form-buttons">
-                            <input type="button" value="Cancel" class="btn btn-danger mt-2" onclick="window.location.href='{{  url('admin/writing') }}' ">
-                            <input type="button" value="Update" class="btn btn-primary mt-2" onclick="saveForm()">                  
-                        </div>
 
                         <div class="form-loader">
                             <button class="btn btn-primary" type="button" disabled>
@@ -112,7 +110,6 @@
                             </button>
                         </div>
                     </div>
-
                 </div>
             </div>
 
@@ -141,6 +138,8 @@
     <!--edit gallery-->
     @include('admin.modules.writing.includes.FormFieldsModals.editFieldModal')
 
+
+    @include('admin.modules.writing.includes.FormFieldsModals.message')
 
 @endsection
 
@@ -215,13 +214,19 @@
 @section('scripts')
     <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
     <script src="{{ url('js/dropzone/dropzone.min.js') }}" defer></script>
-    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" deferd></script>
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
 
-    <script type="text/javascript" defer>
+    <script type="text/javascript" >
         var api_token = "{{ Auth::user()->api_token }}";
+        var editFieldID;
 
         function editFormField(id) 
-        {       
+        {
+
+            editFieldID = id
+
+            $('#modal_edit').find('.modal-body').html("loading...");
+
             $.ajax({
                 type: 'POST',
                 url: "{{ url('api/writing/editFormField?api_token=') }}" + api_token,
@@ -234,20 +239,16 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function(data) 
-                {
-                  
+                {                  
                     if (data.success === true) 
                     {
                         $('#modal_edit').find('.modal-body').html(data.field);
                         $( ".tabs" ).tabs();
-
                         if ($('#'+ data.id +"_description").length >= 1) {
                             addTextFormatter(data.id +"_description");
                         } else {
                             addTextFormatter(data.id +"_content");
                         }
-                        
-
                     }
                 }
             });  
@@ -256,8 +257,93 @@
             return false;
         }
 
-         function saveForm() 
-         {  
+        function updateField()
+        {   
+            let data        = $("#editField").serialize();
+
+            let label = $("#editField").find('#'+editFieldID+'_tab_container').find("#"+editFieldID+'_label');  
+            let description = $("#editField").find('#'+editFieldID+'_tab_container').find("#"+editFieldID+'_description');          
+
+            if (description.length >= 1) {
+                let updatedContent = CKEDITOR.instances[editFieldID+'_description'].getData();
+                description.val(updatedContent);
+            }  
+
+            let content = $("#editField").find("#"+ editFieldID+'_content');
+            if (content.val()>= 1) {
+                let updatedContent = CKEDITOR.instances[editFieldID+'_content'].getData();
+                description.val(updatedContent);
+            }          
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/updateWritingFields?api_token=') }}" + api_token,
+                data :    data + "&form_id="+1,
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) {  
+
+                    if (data.success === true) 
+                    {
+                        $('#form-content').find('#'+editFieldID+'_field').find('#'+editFieldID+'_label').val(label.val());
+                        $('#form-content').find('#'+editFieldID+'_field').find('.card-title').html(label.val());
+                        $('#form-content').find('#'+editFieldID+'_field').find('.card-text').find('.small').html(description.val());
+                        let message = '<div class="alert alert-success" role="alert">Form Fields have been succussfully saved </div>';
+                        $('#editField').find('.modal-body').find('.alert').remove();
+                        $('#editField').find('.modal-body').prepend(message).find('.alert');
+                    }
+
+                }
+            });
+
+        } 
+
+
+        function sortFields(page) 
+        {   
+
+            $("#modal_message").modal('show');
+            $('#'+page).find('.page').val(page);
+
+            let  sorting = [];         
+            $(".field_container").each(function() 
+            {
+                let id = $(this).find('#id').val();
+                let page = $(this).find('.page').val();
+                sorting.push({'id':id , "page": page});   
+            });
+
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/sortWritingFields?api_token=') }}" + api_token,
+                dataType: 'json',
+                data :   {
+                    formID:    1,
+                    sorting: JSON.stringify(sorting)
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                    if (data.success === 'true' || data.success === true || data.success ==  true) 
+                    {
+
+                        setTimeout(function() { 
+                            $("#modal_message").modal('hide');   
+                           
+                        }, 500);
+                    }
+                    
+                }
+            }); 
+            
+            
+        }
+
+        function saveForm() 
+        {  
             let data        = $("#dynamicForms").serialize();           
 
             $('.form-buttons').hide();
@@ -283,7 +369,7 @@
                     }
                 }
             });                   
-         }
+        }
 
          function addTextFormatter(id) {
                
@@ -344,14 +430,13 @@
             $( ".droptrue" ).sortable({        
                 connectWith: "div", 
                 handle: '.handle',              
-                sort: function(e) {
-                    //console.log('X:' + e.screenX, 'Y:' + e.screenY);
+                sort: function(e) {                   
                     $('#dynamicForms').find('.field_container').show();                   
                 },               
-                update: function( event, ui) {
-                    console.log($(this).parent().attr('id'));
+                update: function( event, ui) 
+                {
                     let page = $(this).parent().attr('id');
-                    $('#'+page).find('.page').val(page)
+                    sortFields(page);                  
                 }                
             });
 
@@ -492,7 +577,9 @@
             //ADD Custom Field
             function addCField(fieldID, btnIndex) 
             {                
-                let fieldsCtr = $("#"+ fieldID +"_field").find('.conditional_fields').find('.row').length;
+
+
+                let fieldsCtr =  $('#'+fieldID+'_tab_container').find('.conditional_fields').find('.row').length;
                 let insCtr = fieldsCtr + 1;                
 
                 //check duplicate
@@ -530,35 +617,34 @@
 
                 populateFieldIDOptions(fieldID, insCtr);
                 populateRulesOptions(fieldID, insCtr)
-
-                 //[TARGET]clean and populate
+                 
 
                 let selectedOptionID = $('#'+fieldID +"_cfield_id_"+ insCtr).find(":selected").val();
                 let targetFieldType = $('#'+selectedOptionID+"_fieldType").val();
-                if (targetFieldType == "dropdownSelect") {
-                   
-                    populateValuesDropdownOptions(selectedOptionID, fieldID, insCtr);
 
-                    console.log("hi created here!")
+                if (targetFieldType == "dropdownSelect") {                   
+                    populateValuesDropdownOptions(selectedOptionID, fieldID, insCtr);                    
                 } else {                    
                     createNewTextField(fieldID, fieldID, insCtr)
                 }
             }          
 
-            $(document).on('click', '.activate_coditional_logic', (elem) => {
+            $(document).on('click', '.activate_coditional_logic', (elem) => 
+            {
+
                 let elementID = elem.currentTarget.id;
+
                 let cfieldID = getFieldID(elementID);                               
                 let btnIndex = getFieldCtr(elem.currentTarget.id);
 
                 if ($('#'+elementID).is(':checked')) {
-                    console.log("checked")
 
-               
                     $('#'+cfieldID+'_tab_container').find('.conditional_fields').show();
+                    let fieldsCtr = $('#'+cfieldID+'_tab_container').find('.conditional_fields').find('.row').length;    
 
-                    let fieldsCtr = $("#"+ cfieldID +"_field").find('.conditional_fields').find('.row').length;                
+                    if (fieldsCtr == 0) 
+                    {
 
-                    if (fieldsCtr == 0) {
                         addCField(cfieldID, 1); 
 
                         $('#'+cfieldID +'_cfield_id_1').css('border', '1px solid blue');
@@ -574,8 +660,9 @@
                             createNewTextField(selectedOptionID, cfieldID, 1)
                         }   
                     }
+
                 } else {
-                    //console.log("not checked")
+                   
                     $('#'+cfieldID+'_tab_container').find('.conditional_fields').hide();
                 }                 
             });
@@ -587,10 +674,6 @@
                 let targetFieldID = getFieldID(targetID);
                 let index = getFieldCtr(targetID)              
 
-                //[@note] target id is the full id of an element
-                $('#'+targetID).css('border', '1px solid red');
-                $('#'+targetID).find(":selected").val();
-
                 let selectedOptionID = $('#'+targetID).find(":selected").val();
                 let targetFieldType = $('#'+selectedOptionID+"_fieldType").val();
 
@@ -600,13 +683,9 @@
 
                     let selectedRuleValue = $('#'+targetFieldID+"_cfield_rule_"+index).find(":selected").val();
 
-                    console.log(selectedRuleValue)
-
                     if (selectedRuleValue === 'contains') 
-                    {    
-
+                    {
                         createNewTextField(selectedOptionID, targetFieldID, index)
-
                     } else {
                         populateValuesDropdownOptions(selectedOptionID, targetFieldID, index)
                     }
@@ -624,8 +703,8 @@
                 let index = getFieldCtr(targetID)              
 
                 //[@note] target id is the full id of an element
-                $('#'+targetID).css('border', '1px solid red');
-                $('#'+targetID).find(":selected").val();
+                //$('#'+targetID).css('border', '1px solid red');
+                //$('#'+targetID).find(":selected").val();
 
                 let selectedRuleValue= $('#'+targetID).find(":selected").val();
 
@@ -645,8 +724,6 @@
                     }
                 }
             }); 
-
-            
      
 
             function populateFieldIDOptions(targetFieldID, insCtr) {
@@ -657,8 +734,12 @@
                    let coptvalue = $('#'+cfield.id).find('#id').val();
                    let coptlabel = $('#'+fieldID+'_label').val();
 
-                   //Lets test this
-                   $('#'+ targetFieldID +'_cfield_id_'+ insCtr).append('<option value="'+coptvalue+'">'+fieldID + " ," +coptlabel+'</option>');
+                    if (coptlabel == "") {
+                        $('#'+ targetFieldID +'_cfield_id_'+ insCtr).append('<option value="'+coptvalue+'"> Field ID :'+ fieldID+'</option>');
+                    } else {
+                        $('#'+ targetFieldID +'_cfield_id_'+ insCtr).append('<option value="'+coptvalue+'">'+coptlabel+'</option>');
+                    }
+                   
                 });
             }
 
@@ -672,16 +753,47 @@
 
             function populateValuesDropdownOptions(selectedOptionID, targetFieldID, index) 
             {
-                let selectValueOption = "<select id='"+ targetFieldID +"_cfield_value_"+ index +"' name='"+ targetFieldID +"_cfield_value[]' class='"+ targetFieldID +"_cfield_value form-control form-control-sm'></select>"
-                $('#'+ targetFieldID + '_cfield_value_container_'+index).html('');  
-                $('#'+ targetFieldID + '_cfield_value_container_'+index).append(selectValueOption);
+               
+               $('#'+ targetFieldID + '_cfield_value_container_' + index).html("loading, please wait...")
+               $('#' + targetFieldID + '_cfield_btn_container_' + index).hide();
 
-                let activeChoices = $('#'+selectedOptionID+'_tab_container').find('#'+selectedOptionID+'_selected_choices').find("input");                                                  
-                Array.from(activeChoices, (choice) => { 
-                    let coptvalue = $(choice).val();
-                    let targetValueInputID = '#'+ targetFieldID + '_cfield_value_' + index               
-                    $(targetValueInputID).append('<option value="'+coptvalue+'">'+coptvalue+'</option>');
-                });   
+               
+                $.ajax({
+                    type: 'POST',
+                    url: "{{ url('api/writing/getDropDownOptions?api_token=') }}" + api_token,
+                    dataType: 'json',
+                    data : {
+                        fieldID:            targetFieldID,
+                        selectedOptionID:   selectedOptionID
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(data) 
+                    {                    
+                        if (data.success == true) 
+                        {
+                            let selectValueOption = "<select id='"+ targetFieldID +"_cfield_value_"+ index +"' name='"+ targetFieldID +"_cfield_value[]' class='"+ targetFieldID +"_cfield_value form-control form-control-sm'></select>"
+                            $('#'+ targetFieldID + '_cfield_value_container_'+index).html('');  
+                            $('#'+ targetFieldID + '_cfield_value_container_'+index).append(selectValueOption);
+
+
+                            let targetValueInputID = '#'+ targetFieldID + '_cfield_value_' + index                                
+                            Array.from(data.options, (choice) => { 
+                                if (data.selected_value == choice) {
+                                    $(targetValueInputID).append('<option value="'+choice+'" selected>'+choice+'</option>');
+                                } else {
+                                    $(targetValueInputID).append('<option value="'+choice+'" >'+choice+'</option>');
+                                }                                
+                            }); 
+
+                            $('#' + targetFieldID + '_cfield_btn_container_' + index).show();
+                        }
+                    }
+                }); 
+
+
+               
             }
 
 
@@ -1365,27 +1477,6 @@
             });
 
 
-            $('#btnUpdate').on("click", function() 
-            {  
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('api/saveHTMLContent?api_token=') }}" + api_token,
-                    data: {
-                        formID          :  1,
-                        label           :  $('#modal_html').find('input#label').val(),
-                        //content        :  $('#modal_html').find('textarea#content').val()
-                        content          :  CKEDITOR.instances['content'].getData()
-                       
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(data) {                       
-                        alert(data.id)
-                    }
-                });
-            });            
-
 
             $('#btnHTMLSave').on("click", function() 
             {  
@@ -1477,6 +1568,11 @@
             //[start] - ADD Button AUTO SAVE
             $("#btn_page").click(function () {
 
+                if ( $('#page-'+pageCtr).length >= 1) {
+                    pageCtr = parseInt(pageCtr) + 1;
+                }
+                
+
                 var $div = $("<div>", { 
                         "id": "page-"+ pageCtr +"",
                         "class": "card esi-card-header-page mb-4 handle", 
@@ -1490,12 +1586,12 @@
                 $( ".droptrue" ).sortable({ 
                     connectWith: "div", 
                     handle: '.handle',
-                    update: function( event, ui) {
-                        console.log($(this).parent().attr('id'));
-                        let page = $(this).parent().attr('id');
-                        $('#'+page).find('.page').val(page)
+                    update: function( event, ui) {                     
+                        let page = $(this).parent().attr('id');                        
+                        sortFields(page);   
                     }                
                 });
+
 
 
                 pageCtr = parseInt(pageCtr) + 1;
@@ -1508,30 +1604,38 @@
             *****************************************************************/
             $(document).on("click", '.btnRemoveField', function() 
             {
-                let elementID = $(this).attr('id');                
-                let id = getFieldID(elementID);
 
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('api/removeField?api_token=') }}" + api_token,
-                    data: {
-                        formID              :  1,
-                        id                  : id,
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(data) 
-                    {                  
-                   
-                        if (data.success == true) {
-                            $('#'+id+"_field").remove();                      
-                        } else {
-                            alert ("Sorry, Can't delete this field right now, it may not exists any longer. please try again in a later time.")
+                let isExecuted = confirm("Are you sure to delete field?");
+
+                if (isExecuted == true) 
+                {
+                    let elementID = $(this).attr('id');                
+                    let id = getFieldID(elementID);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{{ url('api/removeField?api_token=') }}" + api_token,
+                        data: {
+                            formID              :  1,
+                            id                  : id,
+                        },
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function(data) 
+                        {                  
+                    
+                            if (data.success == true) {
+                                $('#'+id+"_field").remove();                      
+                            } else {
+                                alert ("Sorry, Can't delete this field right now, it may not exists any longer. please try again in a later time.")
+                            }
+                            
                         }
-                        
-                    }
-                });
+                    });
+
+                }
+
 
                 return false;
             });

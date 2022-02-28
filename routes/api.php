@@ -144,7 +144,8 @@ Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@
 Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingAssignTutor');
 Route::middleware('auth:api')->post('/writing/getSubmittedWritingPoints', 'API\FormMakerController@getSubmittedWritingPoints')->name('APIGetSubmittedWritingPoints');
 
-
+Route::middleware('auth:api')->post('/writing/getDropDownOptions', 'API\FormMakerController@getDropDownOptions')->name('APIWritingGetDropDownOptions');
+Route::middleware('auth:api')->post('/writing/sortWritingFields', 'API\FormMakerController@sortWritingFields')->name('APIWritingSortWritingFields');
 
 
 //Writing Entry Checker

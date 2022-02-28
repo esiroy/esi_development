@@ -1,13 +1,12 @@
 <div id="{{ $id }}_field" class="card esi-card-writing mb-2">
 
-    <input type="hidden" id="id" name="id[]" value="{{ $id }}">            
-
     <div class="card-header esi-card-header-writing ">        
         <span>HTML Block : Field ID ({{ $id }})</span>
     </div>
 
     <div class="card-body">
-    
+
+        <input type="hidden" id="id" name="id[]" value="{{ $id }}">
         <input type="hidden" id="{{ $id }}_fieldType" name="{{ $id }}_fieldType" value="html">           
         <input type="hidden" id="{{ $id }}_label" name="{{ $id }}_label" value="{{ $label ?? '' }}">
         <input type="hidden" id="{{ $id }}_page" name="{{ $id }}_page"  class="page" value="page-{{ $page_id ?? '0' }}">

@@ -177,13 +177,89 @@ class FormFields extends Model
     }
 
 
-    public function generateFormEditFieldHTML($formField, $cfields) 
+    public function generateFormViewFieldHTML($formField, $cfields) 
     {
         //covert json objec to array                
         $display_meta = (array) json_decode($formField->display_meta, true);
         $id     = $formField->id;  
         $page_id = $formField->page_id;              
         $label  = $formField->name;
+        
+        $required = $formField->required;
+        $maximum_characters = $formField->maximum_characters;
+        $description = $formField->description;
+
+
+        if (isset($display_meta['description'])) {
+            $description = $display_meta['description'];
+        }
+        
+
+        if (isset($display_meta['content'])) {
+            $content = $display_meta['content'];
+        } else {
+            $content = "";
+        }
+
+        $formFieldHTML = "";
+
+        if ( strtolower($formField->type) == "simpletext" || strtolower($formField->type) == "simpletextfield") 
+        {
+            $type   = 'simpletextfield';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.simpleText', compact('id', 'page_id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "dropdown" || strtolower($formField->type) == "dropdownselect") {
+
+            $type   = 'dropdownselect';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.dropdownSelect', compact('id', 'page_id','label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "dropdownteacherselect") {
+
+            $type   = 'dropdownteacherselect';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.dropdownTeacherSelect', compact('id', 'page_id','label', 'description', 'required', 'display_meta', 'cfields'))->render();            
+
+        } else if (strtolower($formField->type) == "html" || strtolower($formField->type) == "htmlcontent") {
+
+            $type   = 'html';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.htmlContent', compact('id', 'page_id', 'label', 'content','display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "firstname" || strtolower($formField->type) == "firstnamefield") {
+
+            $type   = 'firstnamefield';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.firstname', compact('id', 'page_id', 'label', 'content','display_meta', 'cfields'))->render();
+        
+        } else if (strtolower($formField->type) == "lastname" || strtolower($formField->type) == "lastnamefield") {
+
+            $type   = 'lastnamefield';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.lastname', compact('id', 'page_id', 'label', 'content','display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "email" || strtolower($formField->type) == "emailfield") {
+
+            $type   = 'emailfield';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.email', compact('id', 'page_id', 'label', 'content','display_meta', 'cfields'))->render();
+        
+        } else if (strtolower($formField->type) == "upload" || strtolower($formField->type) == "uploadfield") {
+
+            $type   = 'uploadfield';                               
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.upload', compact('id', 'page_id', 'label', 'content','display_meta', 'cfields'))->render();
+        
+        } else if (strtolower($formField->type) == "paragraphtext" ) {
+            $type   = 'paragraphtext';       
+            $formFieldHTML = view('admin.modules.writing.includes.fields.view.paragraphtext', compact('id', 'page_id', 'label', 'description','display_meta', 'cfields'))->render();
+        }    
+
+        return $formFieldHTML;
+    }
+
+    public function generateFormEditFieldHTML($formField, $cfields) 
+    {
+        //covert json objec to array                
+        $display_meta = (array) json_decode($formField->display_meta, true);
+
+       
+        $id         = $formField->id;  
+        $page_id    = $formField->page_id;              
+        $label      = $formField->name;
         
         $required = $formField->required;
         $maximum_characters = $formField->maximum_characters;

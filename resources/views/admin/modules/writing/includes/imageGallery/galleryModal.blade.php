@@ -1,5 +1,5 @@
     <!-- Modal -->
-    <div id="modal_gallery" class="modal fade" role="dialog" >
+    <div id="modal_gallery" class="modal fade" role="dialog" style="z-index:9999;">
         <div class="modal-dialog  modal-lg" style="max-width:90%; height:80%">
             <!-- Modal content-->
             <div class="modal-content" style="height:100%">

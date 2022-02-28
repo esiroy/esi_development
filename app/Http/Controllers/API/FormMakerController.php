@@ -17,29 +17,64 @@ use Auth;
 
 class FormMakerController extends Controller
 {
-    
 
-     public function editFormField(Request $request, FormFields $formFields) 
+
+    /* 
+        get options and get writing_conditional_logic  selected option
+        @var fieldID            : current option id
+        @var selectedOptionID   : the selected option
+    */
+    public function getDropDownOptions (Request $request) 
+    {    
+        $fieldID           = $request->get('fieldID');
+        $selectedOptionID  = $request->get('selectedOptionID');
+
+        $formField = FormFields::find($selectedOptionID);
+
+
+        if ($formField) 
+        {
+            $display_meta = json_decode($formField->display_meta, true);
+            $options =  $display_meta['selected_choices'];
+
+            $selected_value = ConditionalFieldLogic::where('field_id', $fieldID)->where('selected_option_id', $selectedOptionID)->first();
+
+            return Response()->json([
+                "success"       => true,
+                "message"       => "Field Options successfully fetched",            
+                "options"       => $options,  
+                "selected_value" => $selected_value
+            ]); 
+
+        } else {
+            return Response()->json([
+                "success"       => false,
+                "message"          => "No options found",            
+            ]);
+        }
+    
+    }
+
+
+    public function editFormField(Request $request, FormFields $formFields) 
     {    
         $form_id = 1;
         $id = $request->get('id');
-
         $field = $formFields->find($id);
-        $cfields = FormFields::select('id','sequence_number')->where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
-
-        $data = $formFields->generateFormEditFieldHTML($field, $cfields);
-
+        $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();        
+        $data = $formFields->generateFormEditFieldHTML($field, $cfields);        
         return Response()->json([
             "success"       => true,
             'id'            => $id,
             "field"          => $data,
+           
         ]); 
     }
 
 
 
-    public function updateWritingFields(Request $request,  UploadFile $uploadFile) 
+
+    public function saveWritingFields(Request $request,  UploadFile $uploadFile) 
     {
         $form_id = 1;  
 
@@ -179,7 +214,195 @@ class FormMakerController extends Controller
             "success"       => true,
             "message"       => "Updated!"
         ]); 
+    }  
+
+
+    public function sortWritingFields(Request $request) 
+    {    
+        $form_id = $request->get('formID');
+        $sorting = json_decode($request->get('sorting'), true);
+        $sequence_number = 1;        
+        foreach($sorting as $sort) 
+        {
+
+            $field = FormFields::find($sort['id']);
+
+            if ($field) {
+
+                if (isset($sort['page'])) {
+                    $formPageArr = explode("-", $sort['page']);            
+                    $page = $formPageArr[1];
+                }
+                
+
+                $field->update([
+                    'form_id'           => $form_id,
+                    'page_id'           => $page,
+                    'sequence_number'   => $sequence_number
+                ]); 
+
+            }
+             $sequence_number = $sequence_number + 1;
+
+
+        }
+
+        return Response()->json([
+            "success"       => true,
+            "message"       =>  $sorting 
+        ]); 
+    }
+
+
+    public function updateWritingFields(Request $request,  UploadFile $uploadFile) 
+    {
+        $form_id = 1;  
+
+        if (is_array($request->id) == false) 
+        {
+            return Response()->json([
+                "success"       => false,
+                "message"       => "Form can't be updated, please add a field from fields menu"
+            ]); 
+        }  
+
+        //initial sq number
+        $sequence_number = 1;
+
+        ConditionalFieldLogic::where('form_id', $form_id)->where('field_id', $request->id)->delete();
+
+
+        //go through the field iD
+        foreach($request->id as $id) 
+        {
+
+            //REQUEST FIELDS (STANDARD)
+            $label = $request[$id.'_label'];
+            $description = $request[$id.'_description'];
+            $maximum_characters = $request[$id.'_maximum_characters'];                
+            $default_value = $request[$id.'_default_value'];
+
+            $required = ($request[$id.'_required'] == "on") ? true : false;
+            $conditional_logic = ($request[$id.'_activate_coditional_logic'] == "on") ? true : false;
+            
+            $display_meta = [
+                'required'              => $required,
+                'conditional_logic'     => $conditional_logic,
+                'label'                 => str_replace(' ', '_',  $label),
+                'description'           => $description,
+                'default_value'         => $default_value
+            ];
+
+            /******************** TYPES OF INPUT ***********************/
+            if (strtolower($request[$id.'_fieldType']) == "dropdownselect") {
+                $type = 'dropdownSelect';                
+                $selected_choices = $request[$id.'_selected_choice_text'];                                               
+                $display_meta['type'] = $type;
+                $display_meta['selected_choices'] = $selected_choices;      
+
+            } else if (strtolower($request[$id.'_fieldType']) == "dropdownteacherselect") {                          
+
+                $type = 'dropdownteacherselect';  
+                $display_meta['type'] = $type;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "simpletextfield") {
+                $type = 'simpletextfield';
+                $display_meta['type'] = $type;
+                $display_meta['maximum_characters'] = $maximum_characters;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "html" || strtolower($request[$id.'_fieldType']) == "htmlcontent") {
+                $type = 'htmlContent';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];;
+
+            } else if (strtolower($request[$id.'_fieldType']) == "firstname" || strtolower($request[$id.'_fieldType']) == "firstnamefield") {
+                $type = 'firstnamefield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+            } else if (strtolower($request[$id.'_fieldType']) == "lastname" || strtolower($request[$id.'_fieldType']) == "lastnamefield") {
+                $type = 'lastnamefield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+            
+            } else if (strtolower($request[$id.'_fieldType']) == "email" || strtolower($request[$id.'_fieldType']) == "emailfield") {
+                $type = 'emailfield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+
+            } else if (strtolower($request[$id.'_fieldType']) == "upload" || strtolower($request[$id.'_fieldType']) == "uploadfield") {
+                $type = 'uploadfield';
+                $display_meta['type'] = $type;                
+                $display_meta['content'] = $request[$id.'_content'];
+
+            } else if (strtolower($request[$id.'_fieldType']) == "paragraphtext") {
+                $type = 'paragraphtext';
+                $display_meta['type'] = $type;
+
+                //word limiter
+                $display_meta['enableWordLimit'] =  ($request[$id.'_enableWordLimit'] == "on") ? true : false; 
+                $display_meta['wordLimit'] = $request[$id.'_wordLimit'];
+                  
+
+                //enable member credit checker [180 = 1 point ] [180 to 500 words  = 2 points ] [501 to 800 = 3 points]
+                $display_meta['memberPointChecker'] =  ($request[$id.'_memberPointChecker'] == "on") ? true : false;
+            }
+            
+
+            //Conditonal Field Logic
+            if (isset( $request[$id.'_cfield_id'] )) 
+            {
+                foreach ($request[$id.'_cfield_id'] as $key => $fieldID) 
+                {
+                    $cfID               = $request[$id.'_cfield_id'][$key];
+                    $cfRule              = $request[$id.'_cfield_rule'][$key];
+                    $cfValue            = ($request[$id.'_cfield_value'][$key]) ?? "";
+
+
+                    if ($conditional_logic == true) {
+                        ConditionalFieldLogic::create([
+                            'form_id'               =>  $form_id,
+                            'field_id'              =>  $id,
+                            'selected_option_id'    =>  $cfID,
+                            'field_rule'            =>  $cfRule,
+                            'field_value'           =>  $cfValue,
+                        ]);
+                    }
+
+
+                }
+            }
+
+            //GET the page array number for the page
+            if (isset($request[$id.'_page'])) {
+                $formPageArr = explode("-", $request[$id.'_page']);            
+                $page = $formPageArr[1];
+            }
+
+            $form = FormFields::find($id);
+            if ($form) {
+                $form->update([
+                    'form_id'           => $form_id,
+                    'page_id'           => $page,
+                    'name'              => $label,
+                    'description'       => $description,
+                    'type'              => $type,
+                    'display_meta'      => json_encode($display_meta),
+                    //'sequence_number'     => $sequence_number
+                ]); 
+            }
+
+            $sequence_number = $sequence_number + 1;
+        }            
+
+        return Response()->json([
+            "success"       => true,
+            "message"       => "Updated!"
+        ]); 
     }    
+
+
 
     public function saveSimpleTextField(Request $request) 
     {
@@ -220,7 +443,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();            
 
-        $data = view('admin.forms.simpleText', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
+        $data = view('admin.modules.writing.includes.fields.view.simpleText', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             'id'            => $id,
@@ -274,7 +497,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();            
 
-        $data = view('admin.forms.paragraphtext', compact('id', 'label', 'description', 'required', 'enableWordLimit', 'wordLimit', 'display_meta', 'cfields'))->render();
+        $data = view('admin.modules.writing.includes.fields.view.paragraphtext', compact('id', 'label', 'description', 'required', 'enableWordLimit', 'wordLimit', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             'id'            => $id,
@@ -306,7 +529,9 @@ class FormMakerController extends Controller
 
         $id             = $newField->id;
         $label          = $newField->label;
-        $data = $formFields->generateFormFieldHTML($newField, WritingFields::all());
+
+
+        $data = $formFields->generateFormViewFieldHTML($newField, WritingFields::all());
 
         return Response()->json([
             'id'            => $id,
@@ -362,7 +587,7 @@ class FormMakerController extends Controller
         $cfields = WritingFields::all();
         
         
-        $data = view('admin.forms.dropdownSelect', compact('id', 'label', 'description', 'maximum_characters', 'selected_choices', 'required', 'display_meta', 'cfields' ))->render();
+        $data = view('admin.modules.writing.includes.fields.view.dropdownSelect', compact('id', 'label', 'description', 'maximum_characters', 'selected_choices', 'required', 'display_meta', 'cfields' ))->render();
 
         return Response()->json([
             "success"       => true,
@@ -417,7 +642,7 @@ class FormMakerController extends Controller
         $cfields = WritingFields::all();
         
         
-        $data = view('admin.forms.dropdownTeacherSelect', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields' ))->render();
+        $data = view('admin.modules.writing.includes.fields.view.dropdownTeacherSelect', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields' ))->render();
 
         return Response()->json([
             "success"       => true,
@@ -464,7 +689,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();        
         
-        $data = view('admin.forms.htmlContent', compact('id', 'label', 'display_meta', 'cfields'))->render();
+        $data = view('admin.modules.writing.includes.fields.view.htmlContent', compact('id', 'label', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             "success"       => true,
@@ -516,7 +741,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();            
 
-        $data = view('admin.forms.firstname', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+        $data = view('admin.modules.writing.includes.fields.view.firstname', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             'id'            => $id,
@@ -565,7 +790,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();            
 
-        $data = view('admin.forms.lastname', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+        $data = view('admin.modules.writing.includes.fields.view.lastname', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             'id'            => $id,
@@ -613,7 +838,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();            
 
-        $data = view('admin.forms.email', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+        $data = view('admin.modules.writing.includes.fields.view.email', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             'id'            => $id,
@@ -661,7 +886,7 @@ class FormMakerController extends Controller
         //CONDITIONAL FIELDS
         $cfields = WritingFields::all();            
 
-        $data = view('admin.forms.upload', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+        $data = view('admin.modules.writing.includes.fields.view.upload', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
 
         return Response()->json([
             'id'            => $id,
