@@ -66,14 +66,12 @@ if (url[1] === 'admin') {
     Vue.component('member-purpose-component', require('./components/frontend/member/MemberPurposeComponent.vue').default)
     Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
     Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
+    Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);   
 
     //front end 
     switch(url[1]) {
-        case 'time-manager':
-            Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);        
-            break;        
         case 'customerchatsupport':           
-            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
+            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue'));
             break;
         default:  
             console.log("default front end")

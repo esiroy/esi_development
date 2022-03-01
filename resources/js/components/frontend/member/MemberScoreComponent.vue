@@ -1,5 +1,6 @@
 <template>
-    <div class="profile bg-lightred pt-0 px-0">
+    <div class="bg-lightred pt-0 px-0">
+
         <div class="col-md-12 bg-red text-white pt-2 pb-2 text-center">
             <strong>テストスコア履歴</strong>        
             <span class="btnAddScoreHolder float-right">
@@ -137,7 +138,7 @@
                             </div>
 
                             <div v-for="(value, name) in this.latestScore.examScores" :key="name">
-                                <span class="font-weight-bold small">{{ capitalizeFirstLetter(name) }}</span>: 
+                                <span class="font-weight-bold small">{{ ucwords(FormatObjectKey(name)) }}</span>: 
                                 <span class="small">{{ value }}</span>
                             </div>
                             

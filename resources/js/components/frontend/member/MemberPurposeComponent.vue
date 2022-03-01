@@ -1,6 +1,7 @@
 <template>    
     <div id="purposeList">  
-        <div class="profile bg-lightBrown pt-0 px-0">
+    
+        <div class="bg-lightBrown pt-0 px-0">
             <div class="col-md-12 bg-brown text-white pt-2 pb-2 text-center">
                 <strong>受講目的</strong> 
                 <span class="btnUpdatePurpose float-right">
