@@ -7,7 +7,7 @@
             <form id="editField" name="editField">
             
                 <div class="modal-header">
-                    <h4 class="modal-title">First Name : Field</h4>
+                    <h4 class="modal-title">Edit Field</h4>
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                 </div>
 
