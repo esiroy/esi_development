@@ -259,7 +259,7 @@
 
         function updateField()
         {   
-            let data        = $("#editField").serialize();
+            
 
             let label = $("#editField").find('#'+editFieldID+'_tab_container').find("#"+editFieldID+'_label');  
             let description = $("#editField").find('#'+editFieldID+'_tab_container').find("#"+editFieldID+'_description');          
@@ -269,11 +269,13 @@
                 description.val(updatedContent);
             }  
 
-            let content = $("#editField").find("#"+ editFieldID+'_content');
-            if (content.val()>= 1) {
+            let content =  $("#editField").find('#'+editFieldID+'_tab_container').find("#"+editFieldID+'_content');
+            if (content.length >= 1) {
                 let updatedContent = CKEDITOR.instances[editFieldID+'_content'].getData();
-                description.val(updatedContent);
+                content.val(updatedContent);
             }          
+
+            let data        = $("#editField").serialize();
 
             $.ajax({
                 type: 'POST',
