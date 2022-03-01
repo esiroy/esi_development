@@ -54,7 +54,7 @@
                     :value="examEndDate"
                     :format="dateFormatter"
                     :placeholder="'Select Exam Last Date'"
-                    :input-class="[ 'form-control form-control-sm bg-white']"
+                    :input-class="'form-control form-control-sm bg-white'"
                     :language="ja"></datepicker>                
             </div>
 
