@@ -63,19 +63,22 @@ if (url[1] === 'admin') {
 
 } else {
 
-    Vue.component('member-purpose-component', require('./components/frontend/member/MemberPurposeComponent.vue').default)
-    Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
-    Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
-    Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);   
 
     //front end 
     switch(url[1]) {
         case 'customerchatsupport':           
-            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue'));
+            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
             break;
         default:  
-            console.log("default front end")
+            console.log("member interface loaded")
     }
+
+
+    Vue.component('member-purpose-component', require('./components/frontend/member/MemberPurposeComponent.vue').default)
+    Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
+    Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
+    Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);   
+        
 }
 
 
