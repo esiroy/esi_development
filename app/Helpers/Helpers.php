@@ -14,6 +14,15 @@ Autoload this in composer.json file,
 use Illuminate\Support\Str;
 
 //normal japanese date only formatter 
+if (! function_exists('ESIDate')) {
+    function ESIDate($date) 
+    {        
+        return  date('Y-m-d', strtotime($date));
+    }
+}
+
+
+//normal japanese date only formatter 
 if (! function_exists('JapaneseDateFormat')) {
     function JapaneseDateFormat($date) 
     {        
@@ -404,5 +413,28 @@ if (! function_exists('memberCEFRLevel'))
        
     }  
 }
+
+if (! function_exists('calculateHoursToDays')) 
+{
+    function calculateHoursToDays($minutes) {
+        $days = $minutes / 24;
+        return $days;
+    }  
+}
+
+
+
+if (! function_exists('getRemainingDays')) 
+{
+    function getRemainingDays($start, $end) 
+    {
+
+        $timeleft = strtotime(ESIDate($end)) - strtotime(ESIDate($start));
+        $daysleft = round((($timeleft/24)/60)/60); 
+        return $daysleft;
+    }  
+}
+
+
 
 ?>

@@ -13,8 +13,8 @@
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select Course</div>
 
-                            <select id="timeManagerCourse" name="timeManagerCourse" v-model="data.timeManagerCourse" @change="handleCourseChange($event)" 
-                                class="form-control form-control-sm"  :class="{ 'is-invalid' : submitted && $v.data.timeManagerCourse.$error }">
+                            <select id="course" name="course" v-model="data.course" @change="handleCourseChange($event)" 
+                                class="form-control form-control-sm"  :class="{ 'is-invalid' : submitted && $v.data.course.$error }">
 
                                 <option value="" class="mx-0 px-0">Select Course</option>
                                 <option value="IELTS" class="mx-0 px-0">IELTS</option>
@@ -30,7 +30,7 @@
                                 <option value="Other_Test">Other Test</option>
                             </select>
 
-                            <div v-if="submitted && !$v.data.timeManagerCourse.required" class="invalid-feedback">
+                            <div v-if="submitted && !$v.data.course.required" class="invalid-feedback">
                                 course required
                             </div>
                         </div>
@@ -38,17 +38,17 @@
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select Start Date</div>
                              
-                            <datepicker id="examStartDate" 
-                                name="examStartDate"                                          
-                                v-model="data.examStartDate"
-                                :value="data.examStartDate"
+                            <datepicker id="startDate" 
+                                name="startDate"                                          
+                                v-model="data.startDate"
+                                :value="data.startDate"
                                 :format="dateFormatter"
                                 :placeholder="'Select Start Date'"
-                                :input-class="['form-control form-control-sm bg-white',  { 'is-invalid' : submitted && $v.data.examStartDate.$error }] "
+                                :input-class="['form-control form-control-sm bg-white',  { 'is-invalid' : submitted && $v.data.startDate.$error }] "
                                 :language="ja"
                             ></datepicker> 
 
-                            <div v-if="submitted && !$v.data.examStartDate.required" class="text-danger small pt-1">
+                            <div v-if="submitted && !$v.data.startDate.required" class="text-danger small pt-1">
                                 start date required
                             </div>
 
@@ -57,17 +57,17 @@
                             <div class="small"><span class="text-danger">*</span> Select End Date</div>
 
                             <datepicker id="examDate" 
-                                name="examEndDate"                                          
-                                v-model="data.examEndDate"
-                                :value="data.examEndDate"
+                                name="endDate"                                          
+                                v-model="data.endDate"
+                                :value="data.endDate"
                                 :format="dateFormatter"
                                 :placeholder="'Select Date'"                                
-                                :input-class="['form-control form-control-sm bg-white',  { 'is-invalid' : submitted && $v.data.examEndDate.$error }] "
+                                :input-class="['form-control form-control-sm bg-white',  { 'is-invalid' : submitted && $v.data.endDate.$error }] "
                                 :language="ja"
                             ></datepicker>
 
 
-                            <div v-if="submitted && !$v.data.examEndDate.required" class="text-danger small pt-1">
+                            <div v-if="submitted && !$v.data.endDate.required" class="text-danger small pt-1">
                                 end date required
                             </div>
 
@@ -170,11 +170,11 @@ export default {
             submitted: "",
 
             data: {
-                material_checkbox: "",
-                
-                timeManagerCourse: "",
-                examStartDate: "",
-                examEndDate: "",
+                material_checkbox: "",                
+                course: "",
+
+                startDate: "",
+                endDate: "",
                 
                 currentScore: "",
                 targetScore: "",
@@ -191,9 +191,9 @@ export default {
     validations: 
     {
         data: {
-            timeManagerCourse: { required },
-            examStartDate: { required },
-            examEndDate: { required },   
+            course: { required },
+            startDate: { required },
+            endDate: { required },   
             currentScore:     { required, numeric },  
             targetScore:  { required, numeric },
             requiredHours:  { required, numeric },         
@@ -209,9 +209,6 @@ export default {
             this.submitted = true;
             this.$v.data.$touch();
 
-
-            console.log(this.data);
-
             if (!this.$v.data.$invalid) {
 
                 axios.post("/api/createTimeManager?api_token=" + this.api_token, 
@@ -222,8 +219,25 @@ export default {
                 }).then(response => {
 
 
-                    this.$parent.$bvModal.hide('modalTimeManager');
-                
+                    alert(response.data.success)              
+
+                    if (response.data.success == true) 
+                    {                    
+                     
+                        //this.$parent.$parent.$parent.content = response.data.content;
+                        this.$parent.$parent.$parent.$options.methods.assign(response.data.content)
+                    }
+
+                  
+                         
+
+                        // this.$parent.$bvModal.hide('modalTimeManager');         
+
+                  
+
+
+                   
+
                 }).catch(function(error) {
 
                 });
@@ -238,9 +252,6 @@ export default {
             console.log(index + ": " + course)
 		},
         showMaterials() {
-
-            console.log(this.material_checkbox);
-
             if (this.data.materials.length == 0) {
                 this.data.materials.push({'id': 1, 'value': "" })
                 this.data.materials.push({'id': 2, 'value': "" })

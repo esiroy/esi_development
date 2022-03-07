@@ -125,8 +125,17 @@ export default {
 		},
 
         showElementId(id) {
-            //document.getElementById(id).style.display = "block";
-            document.getElementById(id).className = "d-block";
+            
+            if (document.getElementById(id)) {
+            
+                document.getElementById(id).style.display = "block";
+                document.getElementById(id).className = "d-block";            
+            
+            } else {
+                console.log(id + " element does not exists");
+            }
+
+
            
         },        
         showMaterials() {

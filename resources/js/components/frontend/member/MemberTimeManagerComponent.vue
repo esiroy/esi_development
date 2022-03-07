@@ -15,7 +15,7 @@
                 <div class="row">
                     <div class="small col-12">
                         <strong>Course</strong>: 
-                        <span id="course">{{ content.timeManagerCourse }}</span>
+                        <span id="course">{{ content.course }}</span>
                     </div>
                 </div>
 
@@ -34,7 +34,7 @@
 
                 <div class="row  pt-2 ">
                     <div class="col-12 small">
-                        {{ dateFormatter(content.examStartDate) }} - {{ dateFormatter(content.examEndDate) }}
+                        {{ dateFormatter(content.startDate) }} - {{ dateFormatter(content.endDate) }}
                     </div>
                 </div>
                 <div class="row">
@@ -154,17 +154,21 @@ export default {
             //time manager content 
             content: {
                 material_checkbox: "",
-                timeManagerCourse: "IELTS",                
-                examStartDate: "",
-                examEndDate: "",
+                course: "IELTS",   
+
+                startDate: "",
+                endDate: "",
+
                 currentScore: "",
                 targetScore: "",
                 requiredHours: "",
+
                 materials: [],
+
                 //auto calculated
-                requiredDays: "666",
-                remainingDays: "666",
-                requiredHours: "666",
+                requiredDays: "",
+                remainingDays: "",
+                requiredHours: "",
 
                 percentTimeAchievement: 10,
             }
@@ -200,10 +204,14 @@ export default {
         },
         create() 
         {
-            this.$refs.timeManager.create()
+            this.$refs.timeManager.create();
+        },
+        assign(data) {
 
-            this.content = this.$refs.timeManager.data ;
+            alert ("assigning!!")
+            console.log(data)
 
+        
 
         },
 		handleCourseChange() {
