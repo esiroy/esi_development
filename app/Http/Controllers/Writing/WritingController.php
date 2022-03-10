@@ -272,8 +272,26 @@ class WritingController extends Controller
 
             $emailSubject =  'マイチューター : 添削サービス受付のご案内'; //Information on correction service reception
             $emailMessage =  $formatEntryHTML;
+
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
-            dispatch($job);                    
+            dispatch($job);       
+
+
+            //send to admins
+            $job = new \App\Jobs\SendAutoReplyJob('takemura0717@yahoo.co.jp', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job); 
+
+            $job = new \App\Jobs\SendAutoReplyJob('james.4communication@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job); 
+
+            $job = new \App\Jobs\SendAutoReplyJob('criz.4communication@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job);
+
+            $job = new \App\Jobs\SendAutoReplyJob('bhadz.trex@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job);  
+
+            $job = new \App\Jobs\SendAutoReplyJob('abellana@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job);          
         }
 
         return redirect()->route('writing.success')->with('message', 'ライティングエントリが正常に追加されました！');
