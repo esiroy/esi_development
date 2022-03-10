@@ -1,6 +1,6 @@
 <template>
 
-    <form id="formTimeManager" name="formTimeManager" @submit.prevent="create">   
+    <form id="formTimeManager" name="formTimeManager" @submit.prevent="saveTimeManager">   
         
         <div id="examination-section" class="section">
 
@@ -18,7 +18,7 @@
 
                                 <option value="" class="mx-0 px-0">Select Course</option>
                                 <option value="IELTS" class="mx-0 px-0">IELTS</option>
-                                <option value="TOEFL">TOEFL iBT</option>
+                                <option value="TOEFL">TOEFL</option>
                                 <option value="TOEFL_Junior">TOEFL Junior</option>
                                 <option value="TOEFL_Primary_Step_1">TOEFL Primary Step 1</option>
                                 <option value="TOEFL_Primary_Step_2">TOEFL Primary Step 2</option>
@@ -39,6 +39,7 @@
                             <div class="small"><span class="text-danger">*</span> Select Start Date</div>
                              
                             <datepicker id="startDate" 
+                              
                                 name="startDate"                                          
                                 v-model="data.startDate"
                                 :value="data.startDate"
@@ -56,7 +57,7 @@
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select End Date</div>
 
-                            <datepicker id="examDate" 
+                            <datepicker id="endDate" 
                                 name="endDate"                                          
                                 v-model="data.endDate"
                                 :value="data.endDate"
@@ -92,7 +93,10 @@
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Target Score</div>
 
-                            <input type="text" name="targetScore" v-model="data.targetScore" :class="['form-control form-control-sm bg-white', { 'is-invalid' : submitted && $v.data.targetScore.$error }]" placeholder="Enter Target Score">
+                            <input type="text" name="targetScore" v-model="data.targetScore" 
+                                :class="['form-control form-control-sm bg-white', { 'is-invalid' : submitted && $v.data.targetScore.$error }]" 
+                                placeholder="Enter Target Score">
+
                             <div v-if="submitted && !$v.data.targetScore.required" class="invalid-feedback">
                                 target score required
                             </div>
@@ -105,15 +109,19 @@
 
                     <div class="row mt-2">
                         <div class="col-4">
-                            <div class="small"><span class="text-danger">*</span> Required Hours</div>
-                            <input type="text" name="requiredHours" v-model="data.requiredHours" :class="['form-control form-control-sm bg-white', { 'is-invalid' : submitted && $v.data.requiredHours.$error }]" placeholder="Enter Required Hours">
-                            <div v-if="submitted && !$v.data.requiredHours.required" class="invalid-feedback">
-                                required hours required
-                            </div>
+                            <div class="small"><span class="text-danger">*</span> Required Hours</div>                           
 
-                            <div v-if="submitted && !$v.data.requiredHours.numeric" class="invalid-feedback">
-                                required hours must be numeric
+                            <input type="text" name="requiredHours" v-model="data.requiredHours"
+                                :class="['form-control form-control-sm bg-white', { 'is-invalid' : submitted && $v.data.requiredHours.$error }]" 
+                                :placeholder="'Enter Required Hours'" 
+                                
+                            >
+                            <div v-if="submitted && !$v.data.requiredHours.required" class="invalid-feedback">
+                                target score required
                             </div>
+                            <div v-if="submitted && !$v.data.requiredHours.numeric" class="invalid-feedback">
+                                target score must be numeric
+                            </div>   
 
                         </div>   
                     </div>
@@ -162,6 +170,7 @@ export default {
         memberinfo: Object,
         csrf_token: String,		
         api_token: String,
+        content: Object,
     },
     data() {
         return {
@@ -170,8 +179,10 @@ export default {
             submitted: "",
 
             data: {
-                material_checkbox: "",                
+                material_checkbox: "",
+
                 course: "",
+                courseTextValue : "",
 
                 startDate: "",
                 endDate: "",
@@ -182,9 +193,8 @@ export default {
                 materials: [],
 
                 //auto calculated
-                requiredDays: "666",
-                remainingDays: "666",
-                requiredHours: "666",                
+                requiredDays: "",
+                remainingDays: ""
             },
         }
     },
@@ -199,18 +209,23 @@ export default {
             requiredHours:  { required, numeric },         
         }
        
-    },                 
+    },
+    mounted: function () 
+	{
+        this.data = this.content;           
+          
+    },    
     methods: {     
         resetModal() {
         
         },
-        create() {
-
+      
+        saveTimeManager() {
             this.submitted = true;
             this.$v.data.$touch();
 
-            if (!this.$v.data.$invalid) {
-
+            if (!this.$v.data.$invalid) 
+            {                
                 axios.post("/api/createTimeManager?api_token=" + this.api_token, 
                 {
                     method          : "POST",
@@ -218,32 +233,42 @@ export default {
                     data            : this.data
                 }).then(response => {
 
-
-                    alert(response.data.success)              
-
                     if (response.data.success == true) 
                     {                    
                      
-                        //this.$parent.$parent.$parent.content = response.data.content;
-                        this.$parent.$parent.$parent.$options.methods.assign(response.data.content)
-                    }
+                        let content= response.data.content;
 
-                  
-                         
+                        this.$nextTick(() => {
 
-                        // this.$parent.$bvModal.hide('modalTimeManager');         
+                            //this.data.requiredHours = content.required_hours;
 
-                  
+                            this.$parent.$parent.$parent.updateType = "update";
+                            
 
+                            this.$parent.$parent.$parent.content = {
+                                course: content.course,   
+                                startDate: content.start_date,
+                                endDate: content.end_date,
+                                currentScore: content.current_score,
+                                targetScore: content.target_score,
+                                requiredHours: content.required_hours,
+                                material_checkbox: content.has_materials,
+                                materials: content.materials,                
+                                requiredDays: content.required_days,
+                                remainingDays: content.remaining_days,
+                                requiredHours: content.required_hours,
+                                percentTimeAchievement: 0
+                            } 
 
                    
-
+                        });
+                    }
                 }).catch(function(error) {
-
+                    console.log(error);
                 });
-
             }
         },        
+
 		handleCourseChange(event) {
 
             let index = event.target.value;
@@ -257,18 +282,39 @@ export default {
                 this.data.materials.push({'id': 2, 'value': "" })
                 this.data.materials.push({'id': 3, 'value': "" })
             }
-            
         },
         addMaterial() {
-        
             this.data.materials.push({'id': this.data.materials.length + 1, 'value': "" })
         },
         dateFormatter(date) 
         {
-            let fdate = Moment(date).format('YYYY年 MM月 D日');                      
-            return fdate;            
+            let fdate = Moment(date).format('YYYY年 MM月 D日');  
+            return fdate;
         },
-    },
+        calculateHours() {
+
+            const ONE_DAY = 1000 * 60 * 60;
+            // Calculate the difference in milliseconds
+            const differenceMs = Math.abs( this.data.startDate - this.data.endDate);
+            // Convert back to days and return
+            let requiredHours =  differenceMs / ONE_DAY;
+
+            if (this.data.startDate && this.data.endDate)
+            {
+
+                if (Number.isNaN(requiredHours)) {
+                    alert ("null")
+                } else {
+                    this.data.requiredHours = requiredHours;
+                
+                }            
+            
+            }
+
+
+            
+        }
+    }
       
 }
 

@@ -11,43 +11,65 @@ class TimeManagerAPIController extends Controller
 {
    
 
+    public function get(request $request) 
+    {
+        $memberID = $request->get('memberID');
+        
+        $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+        if ($timeManager) 
+        {
+
+            $timeManager->makeHidden(['created_at', 'updated_at']);
+
+            return Response()->json([
+                "success"           => true,
+                "message"           => "entry has been successfully found",
+                "content"           => $timeManager,                
+            ]); 
+
+
+        }      
+    
+    
+    }
+
     public function create(Request $request)
     {
         
-        $data = $request->get('data');
+        $inputData = $request->get('data');
 
-        $startDate = ESIDate($data['startDate']);
-        $endDate   = ESIDate($data['endDate']);
+        $startDate = ESIDate($inputData['startDate']);
+        $endDate   = ESIDate($inputData['endDate']);
 
-        $remainingDays = getRemainingDays($startDate, $endDate);       
+        $requiredDays = getRemainingDays($startDate, $endDate);       
 
         //calculated hours to days
-        $requiredDays = calculateHoursToDays($data["requiredHours"]);
+        $requiredHours = calculateDaysToHours($requiredDays);
         
-        $content = [
+        $data = [
             'valid'             => true, 
             'member_id'         => $request->get('memberID'),
-            'course'            => $data['course'],
-            'start_date'        => ESIDate($data['startDate']),
-            'end_date'          => ESIDate($data['endDate']),
-            'current_score'     => $data['currentScore'],
-            'target_score'      => $data['targetScore'],            
-            'required_hours'    => $data['requiredHours'],
-            'required_days'     => number_format($requiredDays, 4, '.', ''),
-            'has_materials'     => isset($data['material_checkbox']) ? true : false,
-            'materials'         => json_encode($data['materials']),
+            'course'            => $inputData['course'],
+            'start_date'        => ESIDate($inputData['startDate']),
+            'end_date'          => ESIDate($inputData['endDate']),
+            'current_score'     => $inputData['currentScore'],
+            'target_score'      => $inputData['targetScore'],            
+            'required_hours'    => $requiredHours,
+            'required_days'     => $requiredDays,
+            'has_materials'     => isset($inputData['material_checkbox']) ? true : false,
+            'materials'         => json_encode($inputData['materials']),
             'time_achievement'  => 0, //set to zero
-            'remaining_days'    => $remainingDays,
+            'remaining_days'    => $requiredDays,
         ];
 
-        $result = TimeManager::create($content);
+        $result = TimeManager::create($data);
 
         if ($result) {
         
             return Response()->json([
                 "success"           => true,
                 "message"           => "entry has been successfully saved",
-                "content"              => $content,                
+                "content"              => $data,                
             ]); 
 
         } else {
@@ -86,9 +108,34 @@ class TimeManagerAPIController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+
+        $timeManager = TimeManager::where('member_id', $request->get('memberID'))->where('valid', true)->first();
+
+        if ($timeManager) {
+            $timeManager->update([
+                'valid'=> false
+            ]);        
+
+            return Response()->json([
+                "success"           => true,
+                "message"           => "entry has been successfully removed",
+            ]);
+
+        } else {
+        
+            return Response()->json([
+                "success"           => false,
+                "message"           => "Error can't remove entry",
+            ]);
+        
+        }
+
+
+
+
+              
     }
 
 

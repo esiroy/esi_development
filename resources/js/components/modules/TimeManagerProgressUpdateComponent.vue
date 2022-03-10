@@ -11,7 +11,7 @@
                     <div id="content" class="d-none">
                         <div class="row">
                             <div class="col-4">
-                                <div class="small">Course: {{ content.timeManagerCourse }} </div>                           
+                                <div class="small">Course: {{ content.course }} </div>                           
                             </div>
 
                             <div class="col-4">
@@ -39,15 +39,31 @@
                             </div>
                         </div>
                     </div>
-
           
                     <div id="minutes-entry" class="card-body">
                         <IELTSTimeManagerComponent :content="content" :size="this.size"></IELTSTimeManagerComponent>
+                        <ToeflTimeManagerComponent :content="content" :size="this.size"></ToeflTimeManagerComponent>
+
+                      
+                        <ToeflJuniorTimeManagerComponent :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>
+
+                          <!--
+                        <ToeflPrimaryStep1TimeManagerComponent :content="content" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
+                        -->
+
+
+                        <ToeflPrimaryStep2TimeManagerComponent :content="content" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
+
+                        <!--
+                        <ToeicListeningAndReadingTimeManagerComponent :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
+                        <ToeicListeningAndReadingTimeManagerComponent :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
+                        <ToeicSpeakingTimeManagerComponent :content="content" :size="this.size"></ToeicSpeakingTimeManagerComponent>
+                        <ToeicWritingTimeManagerComponent :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>-->
+
                     </div>
+                    
+                </div>
 
-                </div>    
-
-         
             </div>
         </div>
 
@@ -85,26 +101,26 @@ export default {
         return {
             submitted: "",
             size: {
-                leftColumn  : "col-4",
-                rightColumn : "col-8",
-                select      : "col-10",
+                leftColumn  : "col-5",
+                rightColumn : "col-7",
+                select      : "col-8",
             },
         }
     },
     mounted: function () 
     {
-        this.showElementId('timeManager-'+  this.content.timeManagerCourse)
+        this.showElementId('timeManager-'+  this.content.course)
     },             
     methods: {     
         resetModal() {
         
         },
-        create() {
+        addProgress() {
             this.submitted = true;
             this.$v.content.$touch();
             console.log(this.data);
             if (!this.$v.content.$invalid) {
-                axios.post("/api/createTimeManager?api_token=" + this.api_token, 
+                axios.post("/api/addTimeManagerProgress?api_token=" + this.api_token, 
                 {
                     method          : "POST",
                     memberID        : this.memberinfo.user_id,

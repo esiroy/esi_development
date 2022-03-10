@@ -422,6 +422,14 @@ if (! function_exists('calculateHoursToDays'))
     }  
 }
 
+if (! function_exists('calculateDaysToHours')) 
+{
+    function calculateDaysToHours($days) {
+        $hours = $days * 24;
+        return $hours;
+    }  
+}
+
 
 
 if (! function_exists('getRemainingDays')) 
