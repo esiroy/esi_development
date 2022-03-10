@@ -278,6 +278,14 @@ class WritingController extends Controller
 
 
             //send to admins
+
+            //Admin E-Mail Recipient
+            $emailTo['name'] =  "takemura0717@yahoo.co.jp";
+            $emailTo['email'] = "takemura0717@yahoo.co.jp"; 
+            $job = new \App\Jobs\SendAutoReplyJob( $emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job);
+
+
             //Admin E-Mail Recipient
             $emailTo['name']    = "james.4communication@gmail.com";
             $emailTo['email']   = "james.4communication@gmail.com";             
@@ -290,11 +298,7 @@ class WritingController extends Controller
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job); 
 
-            //Admin E-Mail Recipient
-            $emailTo['name'] =  "abellana@gmail.com";
-            $emailTo['email'] = "abellana@gmail.com"; 
-            $job = new \App\Jobs\SendAutoReplyJob( $emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
-            dispatch($job);
+      
 
             //E-Mail Recipient
             $emailTo['name'] =  "bhadz.trex@gmail.com";
