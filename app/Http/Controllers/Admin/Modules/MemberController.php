@@ -430,10 +430,19 @@ class MemberController extends Controller
         {
             $homework = Homework::where('schedule_item_id', $latestReportCardValue->schedule_item_id)->first();
 
-            $homeworkdata = [
-                        'url'           => url( Storage::url($homework->original) ),      
-                        'instruction'   => $homework->instruction             
-                        ];
+            if ($homework) {
+            
+                $homeworkdata = [
+                            'url'           => url( Storage::url($homework->original) ),      
+                            'instruction'   => $homework->instruction             
+                            ];
+                
+            } else {
+            
+                 $homeworkdata = null;
+            
+            }
+
         }
 
      
