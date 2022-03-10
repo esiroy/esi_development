@@ -278,19 +278,34 @@ class WritingController extends Controller
 
 
             //send to admins
-            $job = new \App\Jobs\SendAutoReplyJob('takemura0717@yahoo.co.jp', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            //Admin E-Mail Recipient
+            $emailTo['name']    = "james.4communication@gmail.com";
+            $emailTo['email']   = "james.4communication@gmail.com";             
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job); 
 
-            $job = new \App\Jobs\SendAutoReplyJob('james.4communication@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            //Admin E-Mail Recipient
+            $emailTo['name'] = "criz.4communication@gmail.com";
+            $emailTo['email'] = "criz.4communication@gmail.com";
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job); 
 
-            $job = new \App\Jobs\SendAutoReplyJob('criz.4communication@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            //Admin E-Mail Recipient
+            $emailTo['name'] =  "abellana@gmail.com";
+            $emailTo['email'] = "abellana@gmail.com"; 
+            $job = new \App\Jobs\SendAutoReplyJob( $emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);
 
-            $job = new \App\Jobs\SendAutoReplyJob('bhadz.trex@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            //E-Mail Recipient
+            $emailTo['name'] =  "bhadz.trex@gmail.com";
+            $emailTo['email'] = "bhadz.trex@gmail.com"; 
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);  
 
-            $job = new \App\Jobs\SendAutoReplyJob('abellana@gmail.com', $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            //E-Mail Recipient
+            $emailTo['name'] =  "abellana@gmail.com";
+            $emailTo['email'] = "abellana@gmail.com"; 
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);          
         }
 
