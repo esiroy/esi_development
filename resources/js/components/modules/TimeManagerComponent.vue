@@ -156,7 +156,7 @@ import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale'; 
 
 import Vuelidate from "vuelidate";
-import { required, numeric } from "vuelidate/lib/validators";
+import { required, numeric, decimal } from "vuelidate/lib/validators";
 Vue.use(Vuelidate);
 
 
@@ -204,9 +204,9 @@ export default {
             course: { required },
             startDate: { required },
             endDate: { required },   
-            currentScore:     { required, numeric },  
-            targetScore:  { required, numeric },
-            requiredHours:  { required, numeric },         
+            currentScore:     { required, decimal },  
+            targetScore:  { required, decimal },
+            requiredHours:  { required, decimal },         
         }
        
     },
