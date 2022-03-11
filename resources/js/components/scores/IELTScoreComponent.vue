@@ -138,9 +138,7 @@ export default {
   },
   methods: {
     getTotal: function(total) 
-    {
-
-        
+    {  
 
         let speakingBandScore = document.getElementById("speakingBandScore").value ;
         let writingBandScore = document.getElementById("writingBandScore").value ;
@@ -149,9 +147,33 @@ export default {
         if (speakingBandScore !== '' &&  writingBandScore !== '' && readingBandScore !== '' && listeningBandScore !== '') 
         {
             let sum =  parseFloat(speakingBandScore) + parseFloat(writingBandScore) +  parseFloat(readingBandScore) + parseFloat(listeningBandScore);
+
+
             let overall = sum / 4;
-            this.examScore.IELTS.overallBandScore = parseFloat(overall);
+            
+            let fixedOverall = parseFloat(overall).toFixed(3);
+
+            let splitOverall = (fixedOverall + "").split(".");
+
+
+            let number = splitOverall[0];
+            let decimal = splitOverall[1];
+
+            console.log( decimal );
+
+            if (decimal < 250) {
+                decimal = 0;
+            } else if (decimal >= 250 && decimal < 750) {
+                decimal = 5;
+            } else if (decimal >= 750) {
+                 number = parseInt(number) + 1;
+                 decimal = 0;                 
+            }
+            let roundOff = number + "." + decimal;
+            this.examScore.IELTS.overallBandScore = parseFloat(roundOff);
         }
+
+
 
         if (this.$parent.$parent.$parent.submitted === true) {
             this.$parent.$parent.$parent.$options.methods.highlightExamElement();

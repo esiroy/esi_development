@@ -51,6 +51,7 @@
                                             :format="examDateFormatter"
                                             :placeholder="'Select Date'"
                                             :input-class="[ 'form-control form-control-sm col-md-10 bg-white']"
+                                            :disabledDates="disabledDates"
                                             :language="ja"
                                         ></datepicker>  
 
@@ -364,7 +365,12 @@
         data() 
         {
             return {
-            
+                
+
+                 disabledDates: {
+                    from: new Date(Date.now() + 8640000)
+                },
+
                 updateType: "",
 
                 submitted: false,
