@@ -246,7 +246,32 @@ export default {
         updateTimeManager() 
         {
 
+            axios.post("/api/updateTimeManager?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                memberID        : this.memberinfo.user_id
+            }).then(response => {
 
+                if (response.data.success == true) 
+                {                    
+                    //when user opens to create it will show update info and update button
+                    this.updateType = "update";
+
+                    let content= response.data.content;
+
+                    this.$nextTick(() => {
+                        this.content = this.assignData(content);
+                        this.contentData = this.assignData(content);
+                    });
+
+                } else {
+
+                     this.contentData = this.resetData();
+                     this.updateType = "new";
+                }
+            }).catch(function(error) {
+                console.log(error);
+            });  
 
         },
         getTimeManager() 

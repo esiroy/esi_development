@@ -1,9 +1,9 @@
 <template>
 
-  <div id="ScoresComponent" class="ScoresComponent">
+  
 
     <!--[start] EikenScoreComponent- -->
-    <div id="examination-score-EIKEN" class="section examScoreHolder">
+    <div id="timeManager-IELTS" class="section examScoreHolder">
 
         <div class="row pt-2">
             <div class="col-4">                       
@@ -209,7 +209,7 @@
     <!--[end]-->
 
     
-  </div>
+
 </template>
 
 <script>

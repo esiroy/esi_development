@@ -18,19 +18,19 @@ class TimeManagerAPIController extends Controller
         $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
         if ($timeManager) 
         {
-
             $timeManager->makeHidden(['created_at', 'updated_at']);
 
             return Response()->json([
                 "success"           => true,
                 "message"           => "entry has been successfully found",
                 "content"           => $timeManager,                
-            ]); 
-
-
-        }      
-    
-    
+            ]);
+        } else {        
+            return Response()->json([
+                "success"           => false,
+                "message"           => "entry was not found",     
+            ]);
+        }    
     }
 
     public function create(Request $request)
@@ -44,7 +44,9 @@ class TimeManagerAPIController extends Controller
         $requiredDays = getRemainingDays($startDate, $endDate);       
 
         //calculated hours to days
-        $requiredHours = calculateDaysToHours($requiredDays);
+        //$requiredHours = calculateDaysToHours($requiredDays);
+
+        $requiredHours = $inputData['requiredHours'];
         
         $data = [
             'valid'             => true, 
@@ -92,7 +94,57 @@ class TimeManagerAPIController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $memberID = $request->get('memberID');
+        $requiredHours = $inputData['requiredHours'];
+
+        $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+
+        if ($timeManager) 
+        {
+
+            $data = [
+                'valid'             => true, 
+                'member_id'         => $request->get('memberID'),
+                'course'            => $inputData['course'],
+                'start_date'        => ESIDate($inputData['startDate']),
+                'end_date'          => ESIDate($inputData['endDate']),
+                'current_score'     => $inputData['currentScore'],
+                'target_score'      => $inputData['targetScore'],            
+                'required_hours'    => $requiredHours,
+                'required_days'     => $requiredDays,
+                'has_materials'     => isset($inputData['material_checkbox']) ? true : false,
+                'materials'         => json_encode($inputData['materials']),
+                'time_achievement'  => 0, //set to zero
+                //'remaining_days'    => $requiredDays,
+            ];
+
+
+            $result = TimeManager::updae($data);
+
+            if ($result) {
+                
+                return Response()->json([
+                    "success"           => true,
+                    "message"           => "entry has been successfully found",
+                    "content"           => $timeManager,                
+                ]);
+            } else {
+            
+                return Response()->json([
+                    "success"           => false,
+                    "message"           => "update error for time manager",     
+                ]);
+                
+
+            }
+
+
+        } else {        
+            return Response()->json([
+                "success"           => false,
+                "message"           => "entry was not found",     
+            ]);
+        }           
     }
 
 
