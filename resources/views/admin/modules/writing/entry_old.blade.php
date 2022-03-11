@@ -76,69 +76,40 @@
 
                     <div class="card-body">
                         <div class="entry-container border border-light">
-                        @foreach ($values as $key => $value)         
-
-                              @php
-                                $key = explode("_", $key);
-                                $fieldID = $key[0];
-                                $field = App\Models\WritingFields::find($fieldID);                                         
-                            @endphp
-
-                            @if ($fieldID == "appointed") 
-                                <!-- <div> is teacher appointed? {!! $value !!} </div> -->
-
-                                @php $is_appointed = true;  @endphp
                                 
-                            @elseif ($fieldID == "teacher")
-
-
-                                <!-- <div> Teacher ID : {!! $value !!} </div> -->
-
-                            @elseif ($field->type == "uploadfield")
-
-                                 @php 
-                                    $writingFields = new \App\Models\WritingEntries;
-                                    $has_attachment = true; 
-                                @endphp
-
-
-
-                                <div id="{{$entry->id}}" class="bg-light ">                             
-                                    <span class="{{ $fieldID }} field-name font-weight-bold">
-                                        {{ $field->name ?? " - " }} 
-                                        </span>
-                                    <span class="field-type float-right">{{ $field->type ?? " - " }}</span>
+                            @foreach ($formFields as $formField)
+                                @if (isset($fieldValue[$entry->id][$formField->id]))
+                                <div id="{{$entry->id}}" class="bg-light">
+                                     <strong>{{$formField->name}}</strong>
                                 </div>
-
-                                <div id="{{$entry->id}}" class="col-md-12"> 
-                                    <div class="text-center pl-2">
-                                        {{$writingFields->generateFileAnchorLink( $value  )}}
-                                    </div>
-                                </div>                                    
-
-                            @else
-
-
-                                <div id="{{$entry->id}}" class="bg-light ">                             
-                                    <span class="{{ $fieldID }} field-name font-weight-bold">
-                                        {{ $field->name ?? " - " }} 
-                                        </span>
-                                    <span class="field-type float-right">{{ $field->type ?? " - " }}</span>
-                                </div>
-
-                                <div id="{{$entry->id}}" class="col-md-12"> 
-                                    <div class="text-left pl-2 py-2"> 
-                                    {!! $value !!}
-                                    </div>
-                                </div>   
-
-                            @endif
-
-                             
-
-                          
-                           
-                        @endforeach                               
+                                @else 
+                                    {{$formField->name}}
+                                @endif
+                                
+                                
+                                @if ($formField->type == 'uploadfield')
+                                    @if (isset($fieldValue[$entry->id][$formField->id]))
+                                        @php 
+                                            $writingFields = new \App\Models\WritingEntries;
+                                            $has_attachment = true;
+                                        @endphp      
+                                        <div id="{{$entry->id}}" class="col-md-12"> 
+                                            <div class="text-center pl-2">
+                                                {{$writingFields->generateFileAnchorLink( $fieldValue[$entry->id][$formField->id] )}}
+                                            </div>
+                                        </div>                                                                
+                                    @endif
+                                @else
+                                    @if (isset($fieldValue[$entry->id][$formField->id]))
+                                        <div id="{{$entry->id}}" class="col-md-12"> 
+                                            <div class="text-left pl-2 py-2">                                            
+                                                {!! $fieldValue[$entry->id][$formField->id]  !!}                                            
+                                            </div>
+                                        </div>
+                                    @endif
+                                @endif
+                                
+                            @endforeach
                       
                         </div>
 
@@ -372,12 +343,12 @@
                                         <td>
 
                                              @if (isset($grade))
-                                                <div id="{{$entry->id . '_countdown' }}" style="background-color:green; padding:0px 15px; width:80%; margin:auto; color:#fff">
+                                                <div id="{{$formField->id . '_countdown' }}" style="background-color:green; padding:0px 15px; width:80%; margin:auto; color:#fff">
                                                     
                                                 </div>
                                                 <script type="text/javascript">
                                                 window.addEventListener('load', function() {
-                                                    countdownLeft("{{$entry->id . '_countdown' }}", 
+                                                    countdownLeft("{{$formField->id . '_countdown' }}", 
                                                             "{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 48 hours')) }}", 
                                                             "{{ date('M d, Y H:i:s', strtotime($grade->created_at)) }}");
                                                     let elem = document.querySelector('#countdownLabel');
@@ -386,13 +357,13 @@
                                                 </script> 
                                             @else 
                                            
-                                                <div id="{{$entry->id . '_countdown' }}" style="background-color:blue; padding:0px 15px; width:80%; margin:auto; color:#fff">
+                                                <div id="{{$formField->id . '_countdown' }}" style="background-color:blue; padding:0px 15px; width:80%; margin:auto; color:#fff">
                                                         <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
                                                 </div>
 
                                                 <script type="text/javascript">
                                                     window.addEventListener('load', function() {
-                                                        countdown("{{$entry->id . '_countdown' }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
+                                                        countdown("{{$formField->id . '_countdown' }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
                                                     });
                                                 </script>
                                             @endif
