@@ -26,22 +26,18 @@ function prepareFrame() {
     ifrm.style.width = "100%";
     ifrm.style.height = "420px";
     ifrm.style.border = "none";
-    ifrm.style.scrolling = "no";
-    //appendChild(ifrm);
+    ifrm.style.scrolling = "no";    
     $( "#chat" ).html(ifrm);
 }
 
     
-window.addEventListener('load', function() 
-{       
-   $('#customerChatSupportModal').on('show.bs.modal', function (e) {
+window.addEventListener('load', function() {       
+   $('#customerChatSupportModal').on('show.bs.modal', function (e) {        
         prepareFrame(); 
     });
-
     $('#customerChatSupportModal').on('hide.bs.modal', function (e) {
         $( "#chat" ).html(""); 
-    })
-
+    });
 });
 </script>
 @endsection

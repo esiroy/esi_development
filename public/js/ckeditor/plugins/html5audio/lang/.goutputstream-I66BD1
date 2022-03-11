@@ -1,4 +1,0 @@
-CKEDITOR.plugins.setLang( 'html5audio', 'en', {
-
-	"tesT": "test"
-});

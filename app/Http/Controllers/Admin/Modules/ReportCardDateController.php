@@ -160,9 +160,10 @@ class ReportCardDateController extends Controller
                 'file_name'                 => $request->file('file')->getClientOriginalName(),
                 'file_path'                 => $public_file_path,
                 'grade'                     => $request->grade,
-                'lesson_course'             => $request->lessonCourse,
                 'lesson_date'               =>  $request->inputDate,
-                'lesson_material'           =>  $request->lessonCourse,
+
+                'lesson_course'             => $request->lessonCourse,               
+                'lesson_material'           =>  $request->lessonMaterial,
                 'lesson_subject'            =>  $request->lessonSubject,
                 'created_by_id'             =>  Auth::user()->id, //@note: (Create by tutor iD)
                 'member_id'                 =>  $request->memberid,
@@ -186,9 +187,9 @@ class ReportCardDateController extends Controller
                     'valid'                     => 1,
                     'comment'                   => $request->comment,
                     'grade'                     => $request->grade,
-                    'lesson_course'             => $request->lessonCourse,
                     'lesson_date'               =>  $request->inputDate,
-                    'lesson_material'           =>  $request->lessonCourse,
+                    'lesson_course'             => $request->lessonCourse,                   
+                    'lesson_material'           =>  $request->lessonMaterial,
                     'lesson_subject'            =>  $request->lessonSubject,
                     'created_by_id'             =>  Auth::user()->id, //@note: (Create by tutor iD)
                     'member_id'                 =>  $request->memberid,

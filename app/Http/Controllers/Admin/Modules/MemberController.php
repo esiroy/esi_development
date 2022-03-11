@@ -18,9 +18,13 @@ use App\Models\User;
 use App\Models\UserImage;
 use App\Models\MemoReply;
 use App\Models\ChatSupportHistory;
+use App\Models\Purpose;
+use App\Models\MemberExamScore;
+use App\Models\Homework;
+use App\Models\MemberLevel;
 
 
-use Auth, Hash;
+use Auth, Hash, Storage;
 use Carbon\Carbon;
 use DB;
 
@@ -191,37 +195,40 @@ class MemberController extends Controller
             $reportCard = new ReportCard();
             $latestReportCard = $reportCard->getLatest($memberID);
 
+            //member CEFR Level
+            $memberLevel = new MemberLevel();      
+            $currentMemberlevel = $memberLevel->getLevel($memberID);
+           
+
+
+            if (isset($latestReportCard->schedule_item_id))
+            {
+                $homework = Homework::where('schedule_item_id', $latestReportCard->schedule_item_id)->first();
+            } else {
+                $homework = null;
+            }
+
             //writing report cards
             $reportCardDate = new ReportCardDate();
             $latestWritingReport = $reportCardDate->getLatest($memberID);
 
-            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 'latestReportCard', 'latestWritingReport'));
+
+            //get purpose (new)       
+            $purposeModel = new Purpose();
+            $purpose = $purposeModel->getMemberPurpose($memberID);
+
+            $memberExamScoreModel = new MemberExamScore();
+            $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
+
+            return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 
+                                                'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 
+                                                'currentMemberlevel', 'homework'));
         } else {
 
             abort(404, "Member Not Found");
         }
 
     }
-
-    /*
-    public function details($memberID)
-    {
-    $member = Member::join('users', 'users.id', '=', 'members.user_id')
-    //->leftJoin('attributes', 'attributes.id', '=', 'members.member_attribute_id')
-    ->leftJoin('agents', 'agents.id', '=', 'members.agent_id')
-    ->leftJoin('tutors', 'tutors.id', '=', 'members.main_tutor_id')
-    ->select("*", DB::raw("CONCAT(users.first_name,' ',users.last_name) as full_name,
-    attributes.name as attribute,
-    members.id as id,
-    agents.id as agent_id,
-    tutors.name_en as main_tutor_name,
-    members.credits as credits
-    "))->where('members.id', $memberID)->first();
-
-    return view('admin.modules.member.details', compact('member'));
-    }
-     */
-
 
 
     /**
@@ -419,15 +426,37 @@ class MemberController extends Controller
         $latestReportCardValue = $reportCardObject->getLatest($memberID);
 
         
+        if (isset($latestReportCardValue->schedule_item_id))
+        {
+            $homework = Homework::where('schedule_item_id', $latestReportCardValue->schedule_item_id)->first();
+
+            if ($homework) {
+            
+                $homeworkdata = [
+                            'url'           => url( Storage::url($homework->original) ),      
+                            'instruction'   => $homework->instruction             
+                            ];
+                
+            } else {
+            
+                 $homeworkdata = null;
+            
+            }
+
+        }
+
+     
 
         $latestReportCard = [
             'lesson_level' => isset($latestReportCardValue->lesson_level)? $latestReportCardValue->lesson_level : ' - ',
             'lesson_course' => isset($latestReportCardValue->lesson_course)? $latestReportCardValue->lesson_course : ' - ',
             'lesson_material' => isset($latestReportCardValue->lesson_material)? $latestReportCardValue->lesson_material : ' - ',
-            'lesson_grade' => isset($latestReportCardValue->grade)? formatGrade($latestReportCardValue->grade) : ' - '
+            'lesson_grade' => isset($latestReportCardValue->grade)? formatGrade($latestReportCardValue->grade) : ' - ',
+            'homework' => $homeworkdata ?? '',
         ];
 
 
+        
         if (isset($memberInfo->agent_id))
         {
             $agentInfo = Agent::where("user_id", $memberInfo->agent_id)->first();
@@ -444,6 +473,22 @@ class MemberController extends Controller
         $goals = new LessonGoals();
         $lessonGoals = $goals->getLessonGoals($memberID);
 
+
+        //get purose (new)       
+        $purposeModel = new Purpose();
+        //$purpose = $purposeModel->getMemberPurpose($memberID);
+        $purpose = $purposeModel->getMemberPurpose($memberID);
+
+
+        
+        //member CEFR Level
+        $memberLevel = new MemberLevel();      
+        $currentMemberlevel = $memberLevel->getLevel($memberID);
+            
+        $memberExamScoreModel = new MemberExamScore();
+        $memberLatestExamScore = $memberExamScoreModel->getMemberLatestScore($memberID);
+
+
         //MemberAttribute - (lessonClasses)
         $memberAttribute = new MemberAttribute();
         
@@ -455,7 +500,7 @@ class MemberController extends Controller
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
-            'lessonGoals', 'lessonClasses', 'desiredSchedule'));
+            'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel'));
 
     }
 
@@ -655,28 +700,42 @@ class MemberController extends Controller
     public function destroy($id)
     {
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        
+        if (Auth::user()->user_type == "ADMINISTRATOR") 
+        {
+        
+            $member = Member::where('user_id', $id)->first();
+            $user = User::find($member->user_id);
+
+            LessonGoals::where('member_id', $user->id)->delete();
+            MemberAttribute::where('member_id', $user->id)->delete();
+            MemberDesiredSchedule::where('member_id', $user->id)->delete();
+
+            //clear all chat support history
+            ChatSupportHistory::where('sender_id', $user->id)->delete();
+            ChatSupportHistory::where('recipient_id', $user->id)->delete();
+
+            MemoReply::where('sender_id', $user->id)->delete();
+            MemoReply::where('recipient_id', $user->id)->delete();
+            Purpose::where('member_id', $user->id)->delete();
+            $member->delete();
+            $user->forceDelete();
+
+            return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');        
+
+        } else {        
+
+            return redirect()->route('admin.member.edit', $id)->with('error_message', 'Current user has no administrator privilidge!');
+
+        }
 
 
-        $member = Member::where('user_id', $id)->first();
-        $user = User::find($member->user_id);
 
-        LessonGoals::where('member_id', $user->id)->delete();
-        MemberAttribute::where('member_id', $user->id)->delete();
-        MemberDesiredSchedule::where('member_id', $user->id)->delete();
-
-        //clear all chat support history
-        ChatSupportHistory::where('sender_id', $user->id)->delete();
-        ChatSupportHistory::where('recipient_id', $user->id)->delete();
-
-        MemoReply::where('sender_id', $user->id)->delete();
-        MemoReply::where('recipient_id', $user->id)->delete();
-
-        $member->delete();
-        $user->forceDelete();
-
-        return redirect()->route('admin.member.index')->with('message', 'Member has been added deleted!');
     }
 
+    
+
+    /*
     public function massDestroy(Request $request)
     {
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
@@ -692,7 +751,8 @@ class MemberController extends Controller
         MemoReplies::whereIn('recipient_id', request('ids'))->delete();
 
         return response(null, Response::HTTP_NO_CONTENT);
-    }*/
+    }
+    */
 
 
 }

@@ -107,9 +107,32 @@
                                         @endif                                        
                                     </td>
 
-                                    <td>{{ $schedule->firstname }}</td>
+                                    <td>
+                                        @php
+                                            $tutor= new \App\Models\Tutor();
+                                            $tutorInfo = $tutor->where('user_id', $schedule->tutor_id )->first();
+                                        @endphp
 
-                                    <td style="width:320px">{{ $schedule->memo }}</td>
+                                        @if ($schedule->schedule_status == "WRITING") 
+                                             {{ $tutorInfo->user->firstname ?? ' ~ not selected ~ ' }}
+                                        @else 
+                                            {{ $tutorInfo->user->firstname ?? '' }}
+                                        @endif   
+
+                                    </td>
+
+                                    <td style="width:320px">
+                                        {{ $schedule->memo }}
+
+                                        @if ($schedule->schedule_status == "WRITING") 
+                                            @php
+                                                $writingEntry = new \App\Models\WritingEntries();  
+                                                $entry = $writingEntry->where('schedule_id', $schedule->id)->first();
+                                            @endphp
+                                            @php /*Point : {{ $entry->total_points ?? "" }} */ @endphp
+                                        @endif   
+
+                                    </td>
                                 </tr>
                                 @endforeach
                             </tbody>

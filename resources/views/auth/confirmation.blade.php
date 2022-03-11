@@ -33,9 +33,7 @@
 
             
                 <form method="POST" action="{{ route('createMember') }}">
-                    @csrf
-
-                    
+                    @csrf                    
                     <!-- A8 PARAMETER HERE -->
                     <input type="hidden" name="a8" value="{{ app('request')->input('a8') }}">
 
@@ -50,7 +48,7 @@
                                 <td class="red">&nbsp;</td>                                
                                 <td align="left" style="padding-left: 15px;">氏名　(漢字)<em>(Japanese)</em></td>
                                 <td>:</td>
-                                <td colspan="5" style="width: 20%;">
+                                <td colspan="5" style="width: 70%;">
                                     姓  {{ old('last_name_jp') }}                                   
                                     <input type="hidden" name="last_name_jp" value="{{ old('last_name_jp') }}">
                                     &nbsp;&nbsp;
@@ -94,9 +92,8 @@
                                     <input type="hidden" name="commApp" value="{{ old('commApp') }}">
                                 </td>
                             </tr>
-                            
-                        
-                        
+
+
                             <tr valign="top">
                                 <td class="red">&nbsp;</td>
                                 <td align="left" style="padding-left: 15px;">メールアドレス <em>(Email)</em></td>
@@ -107,9 +104,162 @@
                                      <input type="hidden" name="password" value="{{ old('password') }}">
                                 </td>
                             </tr>
-                            
-                            <tr></tr>
-                            
+
+                            @php /*
+                            <tr valign="top">
+                                <td class="red">&nbsp;</td>
+                                <td align="left" style="padding-left: 15px;">Purpose (受講目的）</td>
+                                <td>:</td>
+                                <td colspan="3">
+
+                                    <div class="IELTS">
+                                        <div class="main_option">
+                                            {{ old('IELTS') ?? ''  }}
+                                            <input type="hidden" name="IELTS" value="{{ old('IELTS') }}">
+                                        </div>
+                                        @if (is_array(old('IELTS_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('IELTS_option') as $IELTS_option_value )
+                                                    <input type="hidden" name="IELTS_option[]" value="{{ $IELTS_option_value }}">
+                                                    <div>{{ $IELTS_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="TOEFL">
+                                        <div class="main_option">
+                                            {{ old('TOEFL') ?? ''  }}
+                                            <input type="hidden" name="TOEFL" value="{{ old('TOEFL') }}">
+                                        </div>
+                                        @if (is_array(old('TOEFL_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('TOEFL_option') as $TOEFL_option_value )
+                                                    <input type="hidden" name="TOEFL_option[]" value="{{ $TOEFL_option_value }}">
+                                                    <div>{{ $TOEFL_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+
+                                    <div class="TOEFL_Primary">
+                                        <div class="main_option">
+                                            {{ old('TOEFL_Primary') ?? ''  }}
+                                             <input type="hidden" name="TOEFL_Primary" value="{{ old('TOEFL_Primary') }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="TOEIC">
+                                        <div class="main_option">
+                                            {{ old('TOEIC') ?? ''  }}
+                                            <input type="hidden" name="TOEIC" value="{{ old('TOEIC') }}">
+                                        </div>
+                                        @if (is_array(old('TOEIC_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('TOEIC_option') as $TOEIC_option_value )
+                                                    <input type="hidden" name="TOEIC_option[]" value="{{ $TOEIC_option_value }}">   
+                                                    <div>{{ $TOEIC_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="EIKEN">
+                                        <div class="main_option">
+                                            {{ old('EIKEN') ?? '' }}
+                                            <input type="hidden" name="EIKEN" value="{{ old('EIKEN') }}">
+                                        </div>
+                                        @if (is_array(old('EIKEN_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('EIKEN_option') as $EIKEN_option_value )
+                                                    <input type="hidden" name="EIKEN_option[]" value="{{ $EIKEN_option_value }}">
+                                                    <div>{{ $EIKEN_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+
+                                    <div class="TEAP">
+                                        <div class="main_option">
+                                            {{ old('TEAP') ?? '' }}
+                                            <input type="hidden" name="TEAP" value="{{ old('TEAP') }}">
+                                        </div>
+                                        @if (is_array(old('TEAP_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('TEAP_option') as $TEAP_option_value )
+                                                    <input type="hidden" name="TEAP_option[]" value="{{ $TEAP_option_value }}">
+                                                    <div>{{ $TEAP_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+
+                                    <div class="BUSINESS">
+                                        <div class="main_option">
+                                            {{ old('BUSINESS') ?? '' }}
+                                             <input type="hidden" name="BUSINESS" value="{{ old('BUSINESS') }}">
+                                        </div>
+                                        @if (is_array(old('BUSINESS_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('BUSINESS_option') as $BUSINESS_option_value )
+                                                    <input type="hidden" name="BUSINESS_option[]" value="{{ $BUSINESS_option_value }}">
+                                                    <div>{{ $BUSINESS_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="BUSINESS_CAREERS">
+                                        <div class="main_option">
+                                            {{ old('BUSINESS_CAREERS') ?? '' }}
+                                            <input type="hidden" name="BUSINESS_CAREERS" value="{{ old('BUSINESS_CAREERS') }}">
+                                        </div>
+                                        </div>
+                                        @if (is_array(old('BUSINESS_CAREERS_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('BUSINESS_CAREERS_option') as $BUSINESS_CAREERS_option_value )
+                                                    <input type="hidden" name="BUSINESS_CAREERS_option[]" value="{{ $BUSINESS_CAREERS_option_value }}">
+                                                    <div>{{ $BUSINESS_CAREERS_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+
+                                    <div class="DAILY_CONVERSATION">
+                                        <div class="main_option">
+                                            {{ old('DAILY_CONVERSATION') ?? '' }}
+                                            <input type="hidden" name="DAILY_CONVERSATION" value="{{ old('DAILY_CONVERSATION') }}">
+                                        </div>
+                                        @if (is_array(old('DAILY_CONVERSATION_option')))
+                                            <div class="ml-4">
+                                                @foreach(old('DAILY_CONVERSATION_option') as $DAILY_CONVERSATION_option_value )
+                                                    <input type="hidden" name="DAILY_CONVERSATION_option[]" value="{{ $DAILY_CONVERSATION_option_value }}">
+                                                    <div>{{ $DAILY_CONVERSATION_option_value }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                    </div>
+
+                                    <div class="OTHERS">
+                                        <div class="main_option">
+                                            {{ old('OTHERS') ?? '' }}
+                                             <input type="hidden" name="OTHERS" value="{{ old('OTHERS') }}">
+                                        </div>                                      
+                                        <div class="ml-4">                                            
+                                            <input type="hidden" name="OTHERS_value" value="{{ old('OTHERS_value') }}">
+                                            {{ old('OTHERS_value') ?? '' }}
+                                        </div>                                        
+                                    </div>
+                                </td>
+                            </tr>                            
+                            */@endphp
+
+
+
                             <tr>
                                 <td colspan="10" align="right">
                                     <div class="pr-5 pt-3">
@@ -117,6 +267,9 @@
                                     </div>
                                 </td>
                             </tr>
+
+
+
                                 
                         </tbody>
                         </table>

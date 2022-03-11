@@ -111,10 +111,44 @@ class Member extends Model
         return $scheduleItemObj->getTotalReservedForCurrentMonth($user->id);
     }
 
+
     public function getMonthlyLessonsLeft() {
         $credits = $this->getLessonLimit();
         $consumed = $this->getLessonConsumed();
         return $credits - $consumed;
+    }
+
+
+
+    public function getMemberLessonLimit($memberID) 
+    {
+        
+        $memberAttributeObj = new MemberAttribute();
+        $memberAttribute = $memberAttributeObj->getCurrentMonthLessonLimit($memberID);
+
+        if ($memberAttribute) {
+            return $memberAttribute->lesson_limit;
+        } else {
+            return null;
+        }
+        
+    }
+
+    public function getLessonMemberConsumed($memberID) {
+             
+        $scheduleItemObj = new ScheduleItem();        
+        return $scheduleItemObj->getTotalReservedForCurrentMonth($memberID);
+    }
+
+
+
+
+    public function getMemberMonthlyLessonsLeft($memberID) 
+    {
+        $credits = $this->getMemberLessonLimit($memberID);
+        $consumed = $this->getLessonMemberConsumed($memberID);
+        return $credits - $consumed;
+    
     }
 
 

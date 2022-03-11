@@ -146,16 +146,20 @@
 
 
                             <member-update-component 
+                                ref="MemberUpdateComponent"
                                 :memberships="{{ json_encode($memberships) }}" 
                                 :attributes="{{ json_encode($attributes) }}" 
                                 :shifts="{{ json_encode($shifts) }}" 
                                 :agentinfo="{{ json_encode($agentInfo) }}" 
                                 :userinfo="{{ json_encode($userInfo)  }}" 
                                 :memberinfo="{{ json_encode($memberInfo) }}" 
-                                :purposes="{{ json_encode($lessonGoals) }}" 
+                                :lessongoals="{{ json_encode($lessonGoals) }}" 
+                                :purpose="{{ json_encode($purpose) }}" 
+                                :memberlatestexamscore ="{{ json_encode($memberLatestExamScore) }}" 
                                 :lessonclasses="{{ json_encode($lessonClasses) }}" 
                                 :desiredschedule="{{ json_encode($desiredSchedule) }}" 
                                 :latestreportcard="{{ json_encode($latestReportCard) }}" 
+                                :currentmemberlevel="{{ json_encode($currentMemberlevel) }}" 
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />
                         </div>
@@ -185,6 +189,37 @@
 
 
 <script>
+
+    function getMemberExamScorePage(page, memberID)
+    {
+        $.ajax({
+            type: 'POST',
+            url: '/api/getAllMemberExamScore?page='+ page +'&api_token={{ Auth::user()->api_token }}',
+            data: {
+                limit: 5,
+                memberID: memberID
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() 
+            {             
+               $('#loadingModal').modal('show');
+            },            
+            complete: function()
+            {
+                $('#loadingModal').modal('hide');                             
+            },                                        
+            success:function(data)
+            {
+                $('#memberExamScores').html(data.scores);               
+                return false;
+            }
+        });
+    }
+
+
+
     (function($) 
     {
             "use strict";
@@ -244,10 +279,103 @@
                     })
                 });
                                 
+
+
+                $('.main_option').each(function(i, obj) {
+                    if ($(this).is(':checked')) {
+                        $(this).next().show();
+                    } else {
+                        $(this).next().hide();
+                    }  
+                });       
+
+                $(document).on("click",".main_option",function() {
+                    if ($(this).is(':checked')) {
+                        $(this).next().show();
+                    } else {
+                        let element = $(this).next();
+                        $(element).hide();
+                        $(element).find('input').prop('checked', false);
+
+                        $('.sub_options input').each(function(i, obj) {                    
+
+                                if ($(this).is(':checked'))             
+                                {
+                                    $(this).parent().next().show();
+                                    $(this).parent().next().next().show();
+                                } else {
+                                    $(this).parent().next().hide();
+                                    $(this).parent().next().next().hide();
+
+                                }
+                            });
+
+                    }  
+                });
+
+
+                $('.sub_options input').each(function(i, obj) {                    
+
+                    if ($(this).is(':checked'))             
+                    {
+                        $(this).parent().next().show();
+                        $(this).parent().next().next().show();
+                    } else {
+                        $(this).parent().next().hide();
+                        $(this).parent().next().next().hide();
+
+                    }
+                });
+
+
+                $(document).on("click",".sub_options input",function() 
+                {
+                    if ($(this).is(':checked')) 
+                    {            
+                        $(this).parent().next().show();
+                        $(this).parent().next().next().show();
+
+                        console.log("checked !!!")
+                    } else {
+                    
+                        $(this).parent().next().hide();
+                        $(this).parent().next().next().hide();
+
+                        console.log("unchecked !!!")
+                    }
+                });
+
+                $(document).on('change', '#examType', function(event) 
+                {   let examTypeValue = $(this).val();                    
+                    let examType = examTypeValue.replace(/\s+/g, '-');
+                    $('.examScoreHolder').hide();
+                    $('#examination-score-'+ examType).show();
+                });
+
+
+                $(document).on('click', '#examHistory .pagination a', function(event) {                    
+                    event.preventDefault(); 
+                    var page = $(this).attr('href').split('page=')[1];                   
+                    let memberID = $('#memberExamUserID').val();
+                    getMemberExamScorePage(page, memberID);                    
+                    return false;
+                });
+
+
+
             
             }); //[end] $(document)
 
     })(jQuery);
     
 </script>
+@endsection
+
+@section('styles')
+@parent
+<style type="text/css">    
+    .sub_options, .examScoreHolder {
+        display: none;
+    }   
+</style>
 @endsection

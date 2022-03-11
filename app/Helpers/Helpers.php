@@ -13,6 +13,14 @@ Autoload this in composer.json file,
 
 use Illuminate\Support\Str;
 
+//normal japanese date only formatter 
+if (! function_exists('JapaneseDateFormat')) {
+    function JapaneseDateFormat($date) 
+    {        
+        return  date('Y年 m月 d日', strtotime($date));
+    }
+}
+
 //japanese date only formatter
 if (! function_exists('ESIDateFormat')) {
     function ESIDateFormat($date) 
@@ -147,6 +155,36 @@ if (! function_exists('ESILessonTimeRange')) {
 }
     
 
+if (! function_exists('getMonths')) {
+    function getMonths($maxCount) 
+    {         
+        for($i=1; $i <= $maxCount; $i++) 
+        {
+            if ($i == 1) {
+                $months[] = date("Y-m");
+            } else {
+                $months[] = date("Y-m", strtotime("-$i month"));
+            }            
+        }
+        return $months;
+    }
+}
+
+if (! function_exists('getMonthAndYear')) {
+    function getMonthAndYear($maxCount) 
+    {         
+        for($i=1; $i <= $maxCount; $i++) 
+        {
+            if ($i == 1) {
+                $monthsYears[] = date("Y-m");
+            } else {
+                $monthsYears[] = date("Y-m", strtotime("-$i month"));
+            }            
+        }
+        return $monthsYears;
+    }
+}
+
 
 
 if (! function_exists('limit')) {
@@ -186,6 +224,15 @@ if (! function_exists('formatStatus')) {
        return ucwords($str);
     }
 }
+
+if (! function_exists('formatWords')) {
+    function formatWords($string) {
+       $fstr = str_replace('_', ' ', $string);
+       $spaced_fstr = preg_replace('/(?<! )(?<!^)(?<![A-Z])[A-Z]/', ' $0', $fstr);
+       return ucwords($spaced_fstr);
+    }
+}
+
 
 
 if (! function_exists('createAttributes')) {
@@ -327,5 +374,35 @@ if (! function_exists('linkify'))
     }
 }
 
+if (! function_exists('checkbox_ticker')) {
+    
+    function checkbox_ticker($field_name, $value)
+    {
+        if( is_array( $field_name ) && in_array($value, $field_name )) {
+            return " checked ";
+        } else if (isset($field_name) && isset($value)){
+
+            if ($field_name == $value ) {
+                return " checked ";
+            }
+
+        }
+    } 
+}
+
+
+if (! function_exists('countWords')) 
+{
+    function countWords($text) {
+        return str_word_count($text);
+    }  
+}
+
+if (! function_exists('memberCEFRLevel')) 
+{
+    function memberCEFRLevel($text) {
+       
+    }  
+}
 
 ?>

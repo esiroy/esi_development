@@ -304,12 +304,11 @@
                 beforeSend: function() 
                 {
                     //hide tutor memo modal first
-                    $('#tutorMemoModal').modal('hide')      
-
+                    $('#tutorMemoModal').modal('hide');
                     $('#loadingModal').modal('show');
                 },
                 complete: function(){
-                    $('#loadingModal').modal('hide');
+                    $('#loadingModal').modal('hide');                    
                 },
                 success: function() {
                     $('#loadingModal').modal('hide');
@@ -795,9 +794,34 @@
     </script>
 
 
+    @include('modules.member.popup.loading') 
+    @include('modules.member.popup.msgboxSuccess')
+
+
+    <!-- Memo -->
     @include('modules.member.popup.memo')
     @include('modules.member.popup.memoReply')
+
+    <!-- Customer Chat -->
     @include('modules.member.popup.customerchat')
+
+    @php 
+
+        /*
+        <!-- Exam Score-->
+        @include('modules.member.popup.addMemberTestScore')
+        @include('modules.member.popup.showAllMemberExamScoreModal')
+
+        <!-- Member Purpose -->
+        @include('modules.member.popup.updateMemberPurpose')
+        */
+
+    @endphp
+
+
+
+
+
     @yield('scripts')
 </body>
 

@@ -17,7 +17,7 @@
             <!--Member List -->
             <div class="card esi-card">
                 <div class="card-header esi-card-header">
-                   Member Details
+                   Member Details 
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -149,38 +149,52 @@
                                         </td>
                                     </tr>
 
-                                    <tr valign="top">
-                                        <td class="red">&nbsp;</td>
-                                        <td>Purpose</td>
-                                        <td>:</td>
-                                        <td>
-                                            @foreach($lessonGoals as $goals)
-                                            <ul class="mb-0">
-                                                @if(isset($goals->purpose))
-                                                    <li>{{ $goals->purposeDescription ?? '' }}</li>
-                                                    <!--goal description-->
-                                                    @if (isset($goals->goalDescription)) 
-                                                    <ul class="mb-0">
-                                                        <li>{{ $goals->goalDescription ?? '' }}</li>
-                                                    </ul>
-                                                    @endif
-                                                    @if ($goals->extra_detail != "") 
-                                                    <ul class="mb-0">
-                                                        <li>{{ $goals->extra_detail ?? '' }}</li>
-                                                    </ul>
-                                                    @endif
-                                                @endif
-                                            </ul>
-                                            @endforeach
-                                        </td>
-                                    </tr>
+
+
                                     <tr>
-                                        <td colspan="13">&nbsp;</td>
+                                        <th colspan="13"> Recent Exam Score  </th>
+                                    </tr>
+                                     <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-12 pt-2 pb-2">Recent Exam Score </div>
+                                            </div>
+
+                                        </td>
+                                        <td> : </td>
+                                        <td >   
+                                            <member-score-component 
+                                                :memberinfo="{{ json_encode($memberInfo) }}" 
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"
+                                            ></member-score-component>
+                                        </td>                                                                                
                                     </tr>
 
                                     <tr>
-                                        <td colspan="13">&nbsp;</td>
+                                        <th colspan="13">Purpose </th>
                                     </tr>
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>
+                                            List of Purpose 
+                                        </td>
+                                        <td>:</td>
+                                        <td>
+                                            <member-purpose-viewer-component
+                                                :memberinfo="{{ json_encode($memberInfo) }}"                                                
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"                                             
+                                             ></member-notes-component>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+                                   
 
                                     <tr>
                                         <th colspan="13">Lesson Details</th>
@@ -210,44 +224,20 @@
                                         </td>
                                     </tr>
 
-
-                                    <!--
                                     <tr>
-                                        <th colspan="13">Exam Record</th>
+                                        <th colspan="13">Current CEFR Member Level</th>
                                     </tr>
 
-                                    <tr valign="top">
+                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
-                                        <td>TOEIC</td>
+                                        <td>Level</td>
                                         <td>:</td>
-                                        <td colspan="9">
-                                            <table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td>Year</td>
-                                                        <td>Month</td>
-                                                        <td>Grade</td>
-                                                    </tr>
+                                        <td>
+                                            {{ $currentMemberlevel->level ?? '-' }}
 
-                                                </tbody>
-                                            </table>
+                                            {{ (isset($currentMemberlevel->description)) ? "(" . $currentMemberlevel->description .")" : ""  }}
                                         </td>
-                                    </tr>
-
-                                    <tr valign="top">
-                                        <td class="red">&nbsp;</td>
-                                        <td>EIKEN</td>
-                                        <td>:</td>
-                                        <td colspan="9">
-                                            <table>
-                                                <tbody>
-
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                    -->
-
+                                    </tr>                                    
 
 
                                     <tr>
@@ -300,6 +290,76 @@
                                             @endif
                                         </td>
                                     </tr>
+
+                                  <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td>Homework</td>
+                                        <td>:</td>
+                                        <td>
+                                          
+
+                                           <table class="table table-sm border">
+                                                <tr class="">
+                                                    <th class="bg-darkblue small text-white text-center font-weight-bold">
+                                                        Members Home Work 
+                                                    </th>
+                                                </tr>                                                                    
+                                                <tr>
+                                                    <td class="px-2">  
+
+                                                        @if (isset($homework))
+                                                        <div class="small">
+                                                            File: <a href="{{ url( Storage::url($homework->original) ) }}" 
+                                                            download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                        </div>
+
+                                                            <div class="small">
+                                                            Instruction : {{ $homework->instruction ?? '' }}
+                                                        </div>
+                                                        @else
+                                                            <div class="text-center">
+                                                                <span class="small text-secondary">No homework found!</span>
+                                                            </div>
+                                                        @endif
+
+                                                    </td>
+                                                </tr>
+                                            </table>                                        
+
+
+                                        </td>
+                                    </tr>
+
+
+
+                                                         
+
+
+
+
+
+                                    <tr>
+                                        <th colspan="13"> Recent Notes  </th>
+                                    </tr>
+                                     <tr valign="top">
+                                         <td class="red">&nbsp;</td>                                        
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-12 pt-2 pb-2">Notes</div>
+                                            </div>
+                                        </td>
+                                        <td> : </td>
+                                        <td class="red">
+                                             <member-notes-component
+                                                :tutorinfo="{{ json_encode(Auth::user()) }}"
+                                                :memberinfo="{{ json_encode($memberInfo) }}"                                                
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"                                             
+                                             ></member-notes-component>
+                                        </td>
+                                    </tr>
+                                    
+
 
 
                                     <tr>
@@ -370,4 +430,69 @@
     </div>
 </div>
 
+<div id="examHistory">
+    @include('modules.member.popup.showAllMemberExamScoreModal')  
+</div>
+
+@endsection
+
+
+@section('scripts')
+    @parent
+
+    <script>
+    window.addEventListener('load', function() 
+    {           
+        $('#viewAllExamScores').on('click', function() 
+        {            
+            getMemberExamScorePage(1);
+        });
+
+        $(document).on('click', '#examHistory .pagination a', function(event) {                    
+            event.preventDefault(); 
+            var page = $(this).attr('href').split('page=')[1];                   
+            let memberID = $('#memberExamUserID').val();
+            getMemberExamScorePage(page, memberID);                    
+            return false;
+        });
+
+    });
+
+    function getMemberExamScorePage(page)
+    {
+        $.ajax({
+            type: 'POST',
+            url: '/api/getAllMemberExamScore?page='+ page +'&api_token=' + api_token,
+            data: {
+                limit: 5,
+                memberID: "{{ Request::segment(3)  }}",
+            },
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            beforeSend: function() 
+            {
+               $('#showAllMemberExamScoreModal').css('visibility', 'hidden');
+               $('#loadingModal').modal('show');
+            },            
+            complete: function(){
+                $('#loadingModal').modal('hide');
+                
+                $('#showAllMemberExamScoreModal').css('visibility', 'visible');                
+            },                                        
+            success:function(data)
+            {
+
+                if (data.success) {
+                    $('#showAllMemberExamScoreModal').modal('show');
+                    $('#memberExamScores').html(data.scores); 
+                }
+                           
+                return false;
+            }
+        });
+    }
+
+
+    </script>
 @endsection

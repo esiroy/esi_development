@@ -7,7 +7,7 @@
         <div class="container mt-5">
             <div class="card esi-card mt-5">
                 <div class="card-header esi-card-header">
-                    Report Card
+                    Writing Report Card
                 </div>
                 <div class="card-body">
 

@@ -21,6 +21,8 @@ use App\Models\ReportCardDate;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 use App\Models\LessonMailer;
+use App\Models\Purpose;
+use App\Models\MemberLevel;
 
 use Auth, App;
 use DB;
@@ -499,7 +501,7 @@ class MemberController extends Controller
          *              IF YOU WILL RESERVE 2 OR MORE IN A DAY 
          ************************/
 
-        $MEMBER_RESERVE_LIMIT_ACTIVE = env('MEMBER_RESERVE_LIMIT_ACTIVE', false);
+        $MEMBER_RESERVE_LIMIT_ACTIVE = env('MEMBER_RESERVE_LIMIT_ACTIVE', true);
 
         if ($MEMBER_RESERVE_LIMIT_ACTIVE == true) 
         {
@@ -1190,6 +1192,7 @@ class MemberController extends Controller
         //abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = json_decode($request['user']);
+        $purposeList = json_decode($request['purposeList']);
 
         //disallow duplicate email and username
         $validator = Validator::make(
@@ -1336,7 +1339,31 @@ class MemberController extends Controller
                 LessonGoals::where('member_id', $user->id)->delete();
                 $purpose = LessonGoals::insert($lessonGoals);
 
-                //Member Attribute
+
+                /********************************************
+                            DELETE: OLD MEMBER PURPOSE
+                **********************************************/
+                //Purpose::where('member_id', $user->id)->delete();
+
+                /********************************************
+                            CREATE MEMBER PURPOSE (Dynamic)
+                **********************************************/
+                $purposeObject = new Purpose(); 
+                $ObjectNameArray = array("IELTS", "TOEFL", "TOEFL_Primary", "TOEIC", "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+
+                foreach ($ObjectNameArray as $ObjectName) 
+                {
+                    if (isset($purposeList->{"$ObjectName"})) 
+                    {
+                        
+                        $purposeObject->saveMemberPurpose($user->id, $ObjectName, $purposeList);                   
+                    }                
+                }
+
+
+                
+
+                //Member Attribute (store)
                 $lessonClasses = [];
                 foreach ($data->preference->lessonClasses as $class) {
                     array_push($lessonClasses, [
@@ -1374,16 +1401,17 @@ class MemberController extends Controller
                 return Response()->json([
                     "success" => true,
                     "message" => "Member has been added",
-                    "userData" => $request['user'],
+                    "userData" => $request['user']                
                 ]);
+                
             } catch (\Exception $e) {
+
+                DB::rollback();
+
                 return Response()->json([
                     "success" => false,
                     "message" => "Exception Error Found (Member Store) : " . $e->getMessage() . " on Line : " . $e->getLine(),
                 ]);
-
-                DB::rollback();
-                // something went wrong
             }
         }
 
@@ -1395,6 +1423,9 @@ class MemberController extends Controller
         //abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = json_decode($request['user']);
+        $purposeList = json_decode($request['purposeList']);
+
+
 
         //disallow duplicate email and username
         $validator = Validator::make(
@@ -1559,20 +1590,101 @@ class MemberController extends Controller
                 LessonGoals::where('member_id', $data->user_id)->delete();
                 $purpose = LessonGoals::insert($lessonGoals);
 
-                /*
-                //data sample
-                [id] => 123153
-                [valid] => 1
-                [attribute] => Member
-                [lesson_limit] => 1
-                [month] => JUN
-                [year] => 2021
-                [member_id] => 19208
-                [created_at] =>
-                [updated_at] =>
-                 */
 
-                //Member Attribute
+                //Level Description
+                $level_description = [                    
+                    'C2'    => 'Mastery',
+                    'C1'    => 'Expert',
+                    'B2'    => 'Upper Intermediate',
+                    'B1'    => 'Intermediate',
+                    'A2'    => 'Elementary',
+                    'A1'    => 'Starter',
+                    'A 0'  => 'Beginner'
+                ];
+
+                if (isset($request->level)) {
+                    //member Level
+                    $memberlevelData = [
+                                    "memberID"      => $data->user_id,
+                                    "level"         => $request->level,
+                                    "description"   => $level_description[$request->level]
+                                ];
+
+                    $memberLevel = new MemberLevel();
+                    $memberLevel->saveLevel($memberlevelData);                
+                } else {
+                    
+                    MemberLevel::where('member_id', $data->user_id)->delete();
+                 
+                }
+
+
+
+                    
+
+                /********************************************
+                            DELETE: OLD MEMBER PURPOSE
+                **********************************************/
+                Purpose::where('member_id', $data->user_id)->delete();
+
+                /********************************************
+                            CREATE MEMBER PURPOSE (Dynamic)
+                **********************************************/
+                $purposeObject = new Purpose(); 
+                $ObjectNameArray = array("IELTS", "TOEFL", "TOEFL_Primary", "TOEIC", "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+
+                foreach ($ObjectNameArray as $ObjectName) 
+                {
+                    if (isset($purposeList->{"$ObjectName"})) 
+                    {
+                        $purposeObject->saveMemberPurpose($data->user_id, $ObjectName, $purposeList); 
+                    }                
+                }
+
+                
+                
+                foreach ($ObjectNameArray as $ObjectName)  
+                {
+                    $targetScore = null;
+
+                    if (isset($purposeList->{"$ObjectName"})) 
+                    {
+                        //check if the option is checked to be used in_array
+                        if (isset($purposeList->{"$ObjectName". "_option"})) {
+                            $purpose_option_array = (array) $purposeList->{"$ObjectName". "_option"};
+                        }
+                       
+                        if (isset($purposeList->{"$ObjectName". "_targetScore"})) 
+                        {
+                            foreach ($purposeList->{"$ObjectName". "_targetScore"} as $key => $item) {
+                                if (isset($item)) {
+                                    if ($item == true) {
+                                        //check if the $key is on $purpose option
+                                        if (in_array($key, $purpose_option_array)) {
+                                            $targetScore[ strtolower(str_replace(" ", "_", $key))] = "". $item ."";                                        
+                                        }                                        
+                                    }                            
+                                }
+                            }
+
+                            Purpose::where('purpose', str_replace("_", " ", $ObjectName))
+                                    ->where('valid', 1)
+                                    ->where('member_id', $data->user_id)
+                                    ->update([
+                                        'target_scores' => json_encode($targetScore, true)
+                                    ]);
+                    
+                        }
+                       
+                    }
+                }
+
+
+
+
+
+
+                //Member Attribute (update)
                 $lessonClasses = [];
                 foreach ($data->preference->lessonClasses as $class) {
                     array_push($lessonClasses, [
@@ -1612,6 +1724,7 @@ class MemberController extends Controller
                     "success" => true,
                     "message" => "Member " . $data->first_name . " " . $data->last_name . " has been updated",
                     "userData" => $request['user'],
+                    "test" => $targetScore
                 ]);
             } catch (\Exception $e) {
                 return Response()->json([

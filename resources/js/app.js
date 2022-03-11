@@ -3,31 +3,84 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
 require('./bootstrap');
-
 window.Vue = require('vue');
 
 /* Components Javascript Import*/
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-
-//socket server
-//import io from "socket.io-client";
-//const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
-
+// Optionally install the BootstrapVue icon components plugin
+Vue.use(BootstrapVue);
+Vue.use(IconsPlugin);
 
 
- 
-
-
-    
 //css
 //import 'bootstrap/dist/css/bootstrap.css'
 //import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(BootstrapVue);
-Vue.use(IconsPlugin);
+
+let pathname = window.location.pathname
+let url = pathname.split("/");
+
+if (url[1] === 'admin') {
+
+    //administration
+    switch(url[2]) {
+        case '':
+        case 'dashboard':
+        case 'lesson':
+            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+        break;
+        case 'member':  
+            if (url[4] === 'edit') {
+                console.log("load edit member!")
+                Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
+            } else {
+
+                Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
+            }
+
+            //url == member/{$id}
+            if (url[3]) {
+                Vue.component('member-score-component', require('./components/backend/member/MemberScoreViewerComponent.vue').default);
+                Vue.component('member-purpose-viewer-component', require('./components/backend/member/MemberPurposeViewerComponent.vue').default);
+                Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
+            }
+        break;
+        case 'reportcard':
+            Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
+
+        break;
+        case 'customerchatsupport':
+            Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
+        break;
+
+        
+        default:
+            console.log("admin default page loaded")
+            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+            
+    }
+
+} else {
+
+    Vue.component('member-purpose-component', require('./components/frontend/member/MemberPurposeComponent.vue').default)
+    Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
+    Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
+
+    //front end 
+    switch(url[1]) {
+        case 'time-manager':
+            Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);        
+            break;        
+        case 'customerchatsupport':           
+            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
+            break;
+        default:  
+            console.log("default front end")
+    }
+}
+
+
 
 
 /**
@@ -38,8 +91,8 @@ Vue.use(IconsPlugin);
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
  */
 
-const files = require.context('./', true, /\.vue$/i)
-files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+//const files = require.context('./', true, /\.vue$/i)
+//files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 
 //Vue.component('example-component', require('./components/ExampleComponent.vue').default);
@@ -61,7 +114,6 @@ Vue.filter('formatSize', function(size) {
     } else if (size > 1024) {
         return (size / 1024).toFixed(2) + ' KB'
     }
-
     return size + ' B'
 })
 

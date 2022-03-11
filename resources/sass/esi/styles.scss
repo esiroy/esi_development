@@ -1,6 +1,35 @@
 /****************** ADMIN PANEL ***************/
+
 .esi-card {
     border: 2px solid #cbe5ee;
+    .esi-html-container {
+        border: 1px solid #E4E4E4;
+        padding: 20px;
+        background-color: #F6F6F6;
+    }
+    .esi_blockheader {
+        font-weight: 700;
+        display: block;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        font-size: 16px;
+        line-height: 16px;
+    }
+}
+
+.esi-card-grey {
+    max-width: 750px;
+    margin: 50px auto;
+    padding: 15px;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: lightgray;
+    -moz-box-shadow: 0px 0px 0px 3px #ccc;
+    -webkit-box-shadow: 0px 0px 0px 3px #ccc;
+    box-shadow: 0px 0px 0px 3px #ccc;
+    text-align: center;
+    background-color: white;
 }
 
 .esi-card-header {
@@ -10,13 +39,33 @@
     color: #0eadd9;
 }
 
+
+/* ESI CARD WRITING*/
+
+.esi-card-writing {
+    border: 2px solid #D2E0EB;
+    .card-title {
+        font-size: 14px;
+    }
+    .card-body {
+        background-color: #F6FBFD;
+    }
+}
+
+.esi-card-header-writing {
+    background-color: #D2E0EB;
+    border-color: #D2E0EB;
+    color: #47749A;
+    font-weight: 700;
+    font-size: 11px;
+}
+
 .esi-box {
     .esi-table {
         tr {
             th {
-                background-color: #e6e6e6;
+                background-color: #ffffff;
             }
-
             th,
             td {
                 font-size: 11px;
@@ -26,7 +75,65 @@
     }
 }
 
+.esi-tab-container {
+    .ui-widget.ui-widget-content {
+        border: 0px !important;
+        background-color: transparent !important;
+        .ui-tabs-nav {
+            a {
+                font-size: 12px;
+            }
+        }
+        .ui-tabs-panel {
+            a {
+                color: #c60000;
+            }
+            a:hover {
+                color: #6e0000
+            }
+        }
+    }
+}
+
+.esi-tabs {
+    .ui-tabs-nav {
+        margin: 0px !important;
+        padding: 0px !important;
+    }
+    .ui-widget-header {
+        background-color: transparent !important;
+        border: none;
+        border-bottom: 0px;
+    }
+    .ui-tabs-panel {
+        border-width: 1px !important;
+        border: 1px solid #D2E0EB;
+        background-color: #fff !important;
+        padding: 18px;
+        margin: 0px;
+    }
+    .ui-tabs-tab {
+        border-top: 1px solid #d2e0eb !important;
+        border-left: 1px solid #d2e0eb !important;
+        border-right: 1px solid #d2e0eb !important;
+        background-color: #D2E0EB !important;
+    }
+    .ui-tabs-active {
+        border-top: 1px solid #d2e0eb !important;
+        border-left: 1px solid #d2e0eb !important;
+        border-right: 1px solid #d2e0eb !important;
+        border-bottom: 0px;
+        background-color: #fff !important;
+        a {
+            color: #000 !important;
+            font-weight: bold
+        }
+    }
+}
+
+
 /*background*/
+
 .bg-gray {
     background-color: #e2e2e2;
 }
@@ -60,19 +167,27 @@
     }
 }
 
+
 /*scrollable table */
+
 .scrollable-x {
     overflow-x: auto;
 }
 
+
 /* LESSSON MODULE */
+
+
 /*class*/
+
 .class-schedule {
     font-size: 12px;
     vertical-align: top;
 }
 
+
 /*checkbox*/
+
 .checkbox-options {
     font-size: 12px;
     list-style-type: none;
@@ -87,7 +202,9 @@
     }
 }
 
+
 /*flags*/
+
 .flag-ph {
     background-image: url("/images/flag-ph.jpg");
     background-repeat: no-repeat;
@@ -104,12 +221,16 @@
     display: inline-block;
 }
 
+
 /*custom card */
+
 .card label {
     font-size: 12px;
 }
 
+
 /*custom table */
+
 .esi-table {
     border-collapse: separate;
     border-spacing: 2px;
@@ -122,12 +243,10 @@
                 min-width: 45px;
                 min-height: 29px;
             }
-
             th::before,
             th::after {
                 top: 1px;
             }
-
             td {
                 background-color: #d0e8f7;
                 border-bottom: 3px solid #7dbae0;
@@ -183,7 +302,9 @@
     text-align: center;
 }
 
+
 /* user */
+
 .blueBox {
     background: #d7f3fa;
     padding: 10px;
@@ -262,6 +383,7 @@ a.red:hover {
     padding: 3px;
 }
 */
+
 .toggleHide .hide {
     display: none;
     border: 1px solid #d0cbcb;
@@ -295,7 +417,9 @@ a.red:hover {
     cursor: pointer;
 }
 
+
 /*tooltip*/
+
 .comment_tooltip {
     position: relative;
     display: inline-block;
@@ -310,16 +434,14 @@ a.red:hover {
     border-radius: 6px;
     padding: 6px 0;
     font-size: 12px;
-
     /* Position the comment_tooltip */
     position: absolute;
     z-index: 1;
     bottom: 100%;
     left: 50%;
     margin-left: -60px;
-
-    overflow: hidden;    
-    border: 1px solid rgb(211, 211, 211);    
+    overflow: hidden;
+    border: 1px solid rgb(211, 211, 211);
     z-index: 9999;
 }
 
@@ -332,7 +454,6 @@ a.red:hover {
     visibility: visible;
 }
 
-
 .blink {
     animation: blink 1s;
     -webkit-animation: blink 1s;
@@ -344,7 +465,17 @@ a.red:hover {
     -o-animation-iteration-count: infinite;
 }
 
-
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
 @keyframes blink {
     0% {
@@ -357,17 +488,7 @@ a.red:hover {
         opacity: 1;
     }
 }
-@keyframes blink {
-    0% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
-}
+
 @keyframes blink {
     0% {
         opacity: 1;

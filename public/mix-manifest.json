@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "/js/admin.js": "/js/admin.js?id=7bf5256ed2a6ace16bbb",
     "/js/admin.js.map": "/js/admin.js.map?id=98e008619681abecb337",
     "/js/app.js": "/js/app.js?id=e55cbf41bac9048501be",
@@ -6,9 +7,23 @@
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
     "/js/app.js.map": "/js/app.js.map?id=1bf28b2b7beddd226b36",
     "/css/app.css.map": "/css/app.css.map?id=df9e6be66e5721c31c64",
+=======
+    "/js/admin.js": "/js/admin.js?id=0dba625f5799fe70943c",
+    "/js/admin.js.map": "/js/admin.js.map?id=68473733565dafa26545",
+    "/js/app.js": "/js/app.js?id=d96fec995612f67f1e87",
+    "/css/app.css": "/css/app.css?id=d9e03ee7eab830ac9a8b",
+    "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
+    "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
+    "/js/app.js.map": "/js/app.js.map?id=7028a64b77bc5d03e1ec",
+    "/css/app.css.map": "/css/app.css.map?id=bed59f42de2c6872d10b",
+>>>>>>> staging_v2
     "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
+    "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
+    "/js/jquery/jquery-ui.js": "/js/jquery/jquery-ui.js?id=06c8b12668dc0e45a4c4",
+    "/js/jquery/jquery-ui.min.js": "/js/jquery/jquery-ui.min.js?id=777b80b520786cf6f0ce",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",
     "/images/arrowActive.png": "/images/arrowActive.png?id=7c5d0d33bdc56abf8e4b",
+    "/images/audio.png": "/images/audio.png?id=53c9d5a92c61e5e2e771",
     "/images/bg_login.png": "/images/bg_login.png?id=946e552b752ceeea4910",
     "/images/bg_user_login.png": "/images/bg_user_login.png?id=30985b8d1b23112d4998",
     "/images/bgCallout.gif": "/images/bgCallout.gif?id=2ff11fb730baa14188eb",
@@ -65,5 +80,12 @@
     "/mp3/message-sent.mp3": "/mp3/message-sent.mp3?id=407da4104fe0976d2960",
     "/js/dropzone/dropzone-amd-module.min.js": "/js/dropzone/dropzone-amd-module.min.js?id=0b12a2ad957be1ad9c77",
     "/js/dropzone/dropzone.min.js": "/js/dropzone/dropzone.min.js?id=c56e787e0f4f6d6e9ca8",
-    "/css/croppie.css": "/css/croppie.css?id=537c93ed28fd3291621c"
+    "/js/steps/jquery.steps.js": "/js/steps/jquery.steps.js?id=f42e2573c9d5aa23443a",
+    "/js/steps/jquery.steps.min.js": "/js/steps/jquery.steps.min.js?id=4c5e9f4e84d32b7df69a",
+    "/js/validation/jquery.validation.min.js": "/js/validation/jquery.validation.min.js?id=014e81dd1a31bde533eb",
+    "/css/jquery/jquery-ui.css": "/css/jquery/jquery-ui.css?id=a132ede819bad05cca41",
+    "/css/jquery/jquery-ui.min.css": "/css/jquery/jquery-ui.min.css?id=8dcebf12fbabea677390",
+    "/css/jquery/images/ui-icons_444444_256x240.png": "/css/jquery/images/ui-icons_444444_256x240.png?id=e2a5dae7004f24d9f4a0",
+    "/css/croppie.css": "/css/croppie.css?id=537c93ed28fd3291621c",
+    "/css/dropzone/dropzone.min.css": "/css/dropzone/dropzone.min.css?id=a7b0ef1d7c2016826a3e"
 }

@@ -15,35 +15,22 @@
         <div class="container pb-5">
             <div class="row">
 
-                <!--sidebar-->
-                <div class="col-md-3">
-                    <div>
-                        @include('modules.member.sidebar.profile')
-                    </div>
-
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.customerchatsupport')
-                    </div>
-
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.reports')
-                    </div>
-                </div>
+                <!--[start sidebar]-->
+                @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->
-
-
 
                 <!-- ANNOUNCEMENTS -->
                 <div class="col-md-9">
 
-                        @if (isset($announcement->body))
-                            <h1 class="callout">お知らせ</h1>                        
-                            <div class="blueBrokenLineBox announcements px-4 mb-4 py-4">                    
-                                {!! html_entity_decode($announcement->body) ?? '' !!}
-                            </div>
-                        @else 
-                          
-                        @endif
+                    @if (isset($announcement->body))
+                        <h1 class="callout">お知らせ</h1>                        
+                        <div class="blueBrokenLineBox announcements px-4 py-4">                    
+                            {!! html_entity_decode($announcement->body) ?? '' !!}
+                        </div>
+                    @else 
+                        
+                    @endif
+
                     <div class="row">
                         <div class="col-md-12">
 
@@ -59,7 +46,8 @@
                                 </button>
                             </a>
 
-                            <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
+                          
+                            <a href="{{ url('writing') }}">
                                 <button type="button" class="btn btn-sm btn-green-gradient" alt="添削くん" title="添削くん">
                                     添削くん
                                 </button>
@@ -238,9 +226,10 @@
     </div> <!--[end] esi-box -->
 </div>
 
- @include('modules.member.popup.content')
-
- @include('modules.member.popup.loading')
- @include('modules.member.popup.memoSent')
+@include('modules.member.popup.content')
+@include('modules.member.popup.loading')
+@include('modules.member.popup.memoSent')
+@include('modules.member.popup.msgboxSuccess')   
+   
 
 @endsection

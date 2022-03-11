@@ -91,7 +91,7 @@
                             <div class="col-md-6  border-left border-top border-right py-4">
                                 <input id="password" type="password" class="form-control form-control-sm @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
 
-                                ※半角英数字のみ有効 ※4文字以上32文字以内
+                                半角英数字のみ有効 4文字以上32文字以内
 
                                 @error('password')
                                     <span class="invalid-feedback" role="alert">
@@ -216,8 +216,7 @@
 
            
 
-                        <div class="form-group row mt-0 mb-0">
-                        
+                        <div class="form-group row mt-0 mb-0">                        
                             <label for="communication_app" class="col-md-4 col-form-label text-md-right mt-0 pt-5 py-4 offset-md-1 border-top border-left">
                                 <span class="font-weight-bold">
                                     Skype または　ZOOM どちらか一つを選び、登録してください<br>
@@ -225,9 +224,7 @@
                                 </span>
                             </label>
 
-                            <div class="col-md-6 border-left border-top border-right py-4">                              
-                               
-
+                            <div class="col-md-6 border-left border-top border-right py-4">
                                 <table width="100%">
                                     <tbody>
                                     <tr>
@@ -256,11 +253,11 @@
 
 
                         <div class="form-group row mt-0 mb-0 ">
-                            <label for="communication_app_username" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left border-bottom">
+                            <label for="communication_app_username" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left border-bottom ">
                                 <span id="commAppText" class="font-weight-bold"></span>
                             </label>
 
-                            <div class="col-md-6 border-left border-top border-right border-bottom py-4">
+                            <div class="col-md-6  border-left border-top border-right py-4 border-bottom">
                                 <input id="communication_app_username" type="text" name="communication_app_username"
                                     class="col-md-8 form-control form-control-sm @error('communication_app_username') is-invalid @enderror"  
                                     value="{{ old('communication_app_username') }}" required autocomplete="communication_app_username">
@@ -277,12 +274,24 @@
                             </div>
                         </div>
 
+                        @php /*
+                        <div class="form-group row mt-0 mb-0">
+
+                            <label for="last_name" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left border-bottom">
+                                <div class="font-weight-bold">Purpose (Max 3 Purpose)</div>
+                                <div class="font-weight-bold">(受講目的）</div>
+                            </label>
+                             <div class="col-md-6 border-left border-top border-right border-bottom py-4">
+                                @include('modules/member/includes/memberPurpose') 
+                            </div>                        
+                        </div>*/
+                        @endphp
+
 
 
                         <div class="form-group row mb-2 mt-2">
-
                             <div class="col-md-12 text-center small py-3">
-                                <input type="checkbox" id="agree" name="agree" must_be_checked="true" not_checked_message="利用規約とプライバシーポリシーに同意されていません" class="mr-3">
+                                <input type="checkbox" id="agree" name="agree" required must_be_checked="true" not_checked_message="利用規約とプライバシーポリシーに同意されていません" class="mr-3">
                                 私は<span style="color: rgb(0,176,240);"></span>
                                 <a href='https://www.mytutor-jpn.com/policy.html' target="_blank">mytutor 利用規約 と プラ イバシ ー ポリ シ ー</a> を読み同意しました。
                             </div>
@@ -293,8 +302,6 @@
                                 </button>
                             </div>
                         </div>
-
-
 
 
                     </form>
@@ -327,7 +334,7 @@
             $('#commAppDescription').html('ZOOM登録時に使用したメールアドレスを入力してください。<br>ZOOMにサインインする時に入力するメールアドレスです。<br><a style="color:#0000EE;text-decoration: underline;" target="_blank" href="https://www.mytutor-jpn.com/info/2019/0218124810.html"><b>*</b>ZOOM無料アカウントを取得する</a><br><br>');		 	
             appImage.style.visibility = 'hidden';
         }else{
-            $('#commAppDescription').html('※半角英数字有効 <br><br>下記画像を参考にSkype名を入力してください。 <br>Skype表示名を入力した場合トレーナーからのコールが届きません。<br>');
+            $('#commAppDescription').html('半角英数字有効 <br><br>下記画像を参考にSkype名を入力してください。 <br>Skype表示名を入力した場合トレーナーからのコールが届きません。<br>');
             appImage.style.visibility = 'visible';	 	
         } 
     }        

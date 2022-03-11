@@ -14,6 +14,7 @@ use App\Mail\SendEmailDemo;
 use App\Models\MemoReply;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
+use App\Models\WritingEntries;
 use App;
 use Gate;
 use DB;
@@ -27,6 +28,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 
+use App\Jobs\SendAutoReplyJob;
+
 class dummyController extends Controller
 {
 
@@ -34,7 +37,74 @@ class dummyController extends Controller
     {
     }
 
-    public function index(ScheduleItem $scheduleItemObj) 
+
+
+    public function test($memberID  = 21402 ) 
+    {
+
+ //start date
+        $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-1 09:00:00')));
+
+        //temporary end date since we need to get 12:30 which is the next date
+        $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));
+        $endDateNextDay = date("Y-m-d", strtotime($tempEndDate . " + 1 day"));
+
+        //final end date
+        $endDate = $endDateNextDay . " 00:30:00";
+
+        $reserved = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED")
+                    //->where('valid', 1)
+                    ->count();                    
+
+        
+        $reserved_b = ScheduleItem::where('member_id', $memberID)
+                    ->whereBetween('lesson_time', [$startDate, $endDate])
+                    ->where('schedule_status', '=', "CLIENT_RESERVED_B")                       
+                    //->where('valid', 1)
+                    ->count();                    
+                    
+        $completed = ScheduleItem::where('member_id', $memberID)
+                        ->whereBetween('lesson_time', [$startDate, $endDate])
+                        ->where('schedule_status', '=', "COMPLETED")                       
+                        //->where('valid', 1)
+                        ->count();
+
+        $not_available = ScheduleItem::where('member_id', $memberID)
+                        ->whereBetween('lesson_time', [$startDate, $endDate])
+                        ->where('schedule_status', '=', "CLIENT_NOT_AVAILABLE")                       
+                        //->where('valid', 1)
+                        ->count();
+
+      
+        $writingPoints = WritingEntries::where('user_id', $memberID)->where('type', 'Monthly')->sum('total_points');
+
+
+        $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints ;
+
+
+        echo "total points : ". $reserveCount ."<BR>";
+
+        echo "<BR>----<br>";
+
+        $all_entries = WritingEntries::where('user_id', $memberID)->get();
+        foreach ($all_entries as $all) {        
+            $test  = json_decode($all->value, true);
+            echo "<pre>";
+            print_r ($test);
+            echo "</pre>";       
+        }        
+    }
+
+
+    public function  index() {
+    
+    
+    }
+
+
+    public function getTotalreserved (ScheduleItem $scheduleItemObj) 
     {
         $memberID = 4;
 
@@ -126,6 +196,36 @@ class dummyController extends Controller
             echo "</pre>";                    
 
     }
+
+    public function datesort() 
+    {    
+
+        $userid = 148;        
+        $items = DB::table("member_attribute")->where('member_id', $userid)->get();          
+
+       foreach ($items as $item) 
+       {
+         $results[] = array(
+                            'attribute' => $item->attribute,
+                            'month' => $item->month,
+                            'year' => $item->year,
+                            'date' => $item->year ."-". date("m", strtotime($item->month)) ."-01",
+                        );
+       }
+       usort($results, sortByDate('date'));
+       $reversed_results = array_reverse($results);
+
+        foreach ($reversed_results as $item ) {
+            //echo $item['updated_at'] ."<BR>";
+
+
+            echo date('d/M/Y', strtotime($item['date'] ));
+
+            echo "<BR>";
+        }
+    
+
+    }
     
     public function mailDateFormat(ScheduleItem $scheduleItem) {
 
@@ -137,9 +237,11 @@ class dummyController extends Controller
 
     }
 
-
-
     public function dropzone() {
+        return view("dummy/dropzoneSimple", ['title'=> "TEST"]);
+    }
+
+    public function simpleuploader() {
         return view("dummy/index", ['title'=> "TEST"]);
     }
 
@@ -313,6 +415,40 @@ class dummyController extends Controller
 
     }
 
+    public function testemailWriting() 
+    {
+        
+        $user = Auth::user();
+
+        //E-Mail Recipient
+        $emailTo['name'] = $user->firstname ." ". $user->lastname;
+        $emailTo['email'] = $user->email; 
+
+        //Email Reply To
+        $emailFrom['name']   = Config::get('mail.from.name');
+        $emailFrom['email']  = Config::get('mail.from.address');
+
+        
+        $subject = "test is a localhost test";
+        $message = "this is a test message";
+
+        //set template
+        $template = 'emails.writing.autoreply';
+
+        try {
+
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $subject, $message, $template);
+            dispatch($job);
+
+        } catch (Throwable $e) {
+            report($e);
+    
+            return false;
+        }        
+
+
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -468,10 +604,6 @@ class dummyController extends Controller
 
     }
 
-    public function test() {
-        return view('admin.test.index');
-
-    }
 
     public function testUserPoints($memberID) {
         //18153 - Kobayashi, Ryusei  

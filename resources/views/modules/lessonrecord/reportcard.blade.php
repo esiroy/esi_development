@@ -15,20 +15,9 @@
         <div class="container">
 
             <div class="row">
-                <!--sidebar-->
-                <div class="col-md-3">
-                    <div>
-                        @include('modules.member.sidebar.profile')
-                    </div>
 
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.customersupport')
-                    </div>
-
-                    <div class="mt-3 mb-4">
-                        @include('modules.member.sidebar.reports')
-                    </div>
-                </div>
+                <!--[start sidebar]-->
+                @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->
 
                 <div class="col-md-9">
@@ -39,7 +28,7 @@
 
                         <div class="card-body">
 
-                            <table  cellspacing="5" cellpadding="3">
+                            <table  cellspacing="5" cellpadding="3" width="100%">
 
                                 <tbody>
                                     <tr>
@@ -121,15 +110,46 @@
                                         <td>Understand</td>
                                         <td>:</td>
                                         <td>
-
                                             <input type="radio" name="grade" value="UNDERSTAND_86_100" @if (($reportcard->grade == 'UNDERSTAND_86_100')) {{ 'checked' }} @endif> understand 86-100 %<br>
                                             <input type="radio" name="grade" value="UNDERSTAND_65_85"  @if (($reportcard->grade == 'UNDERSTAND_65_85')) {{ 'checked' }} @endif> understand 65-85 %<br>
                                             <input type="radio" name="grade" value="UNDERSTAND_41_64" @if (($reportcard->grade == 'UNDERSTAND_41_64')) {{ 'checked' }} @endif> understand 41-64 %<br>
                                             <input type="radio" name="grade" value="UNDERSTAND_20_40" @if (($reportcard->grade == 'UNDERSTAND_20_40')) {{ 'checked' }} @endif> understand 20-40 %<br>
                                             <input type="radio" name="grade" value="UNDERSTAND_0_19" @if (($reportcard->grade == 'UNDERSTAND_0_19')) {{ 'checked' }} @endif> understand 0-19 %<br>
-
                                         </td>
                                     </tr>
+
+                                    <tr>
+                                        <td colspan="3">
+                                        
+                                            <table class="table table-sm border">
+                                                <tr class="bg-darkblue">
+                                                    <th class="small text-white text-center font-weight-bold">
+                                                        Members Home Work 
+                                                    </th>
+                                                </tr>                                                                    
+                                                <tr>
+                                                    <td class="px-2">  
+
+                                                        @if (isset($homework))
+                                                        <div class="small">
+                                                            File: <a href="{{ url( Storage::url($homework->original) ) }}" 
+                                                            download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                        </div>
+
+                                                            <div class="small">
+                                                            Instruction : {{ $homework->instruction ?? '' }}
+                                                        </div>
+                                                        @else
+                                                            <div class="text-center">
+                                                                <span class="small text-secondary">No homework found!</span>
+                                                            </div>
+                                                        @endif
+
+                                                    </td>
+                                                </tr>
+                                            </table>                                        
+                                        </td>
+                                    </tr>                                    
 
                                     <tr>
                                         <td colspan="3">&nbsp;</td>
@@ -160,4 +180,5 @@
 
 </div>
 </div>
+
 @endsection

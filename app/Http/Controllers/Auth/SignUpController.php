@@ -12,6 +12,7 @@ use App\Models\MemberAttribute;
 use App\Models\Role;
 use App\Models\Shift;
 use App\Models\User;
+use App\Models\Purpose;
 use Auth;
 use DB;
 use Hash;
@@ -239,10 +240,120 @@ class SignUpController extends Controller
             $member = Member::create($memberInformation);
             $user->members()->sync([$member->id], false);
 
+            /********************************************
+                        CREATE MEMBER PURPOSE
+            **********************************************/
+            /*
+            //IELTS
+            if (isset($request['IELTS'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['IELTS'],
+                    'purpose_options' => json_encode($request['IELTS_option']),   
+                    'member_id' => $user->id
+
+                ]);
+            }
+ 
+            //TOEFL
+            if (isset($request['TOEFL'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['TOEFL'],
+                    'purpose_options' => json_encode($request['TOEFL_option']),
+                    'member_id' => $user->id
+                ]);
+            }
+
+            //TOEFL_Primary
+            if (isset($request['TOEFL_Primary'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['TOEFL_Primary'],
+                    //'purpose_options' => json_encode($request['TOEFL_Primary_option']),
+                    'member_id' => $user->id
+                ]);
+            }
+
+            //TOEIC
+            if (isset($request['TOEIC'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['TOEIC'],
+                    'purpose_options' => json_encode($request['TOEIC_option']),
+                    'member_id' => $user->id
+                ]);
+            }
+
+
+            //EIKEN
+            if (isset($request['EIKEN'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['EIKEN'],
+                    'purpose_options' => json_encode($request['EIKEN_option']),
+                    'member_id' => $user->id
+                ]);
+            }            
+
+
+            //TEAP
+            if (isset($request['TEAP'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['TEAP'],
+                    'purpose_options' => json_encode($request['TEAP_option']),
+                    'member_id' => $user->id
+                ]);
+            }                 
+              
+
+            //BUSINESS
+            if (isset($request['BUSINESS'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['BUSINESS'],
+                    'purpose_options' => json_encode($request['BUSINESS_option']),
+                    'member_id' => $user->id
+                ]);
+            }                 
+
+
+            //BUSINESS_CAREERS
+            if (isset($request['BUSINESS_CAREERS'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['BUSINESS_CAREERS'],
+                    'purpose_options' => json_encode($request['BUSINESS_CAREERS_option']),
+                    'member_id' => $user->id
+                ]);
+            }         
+
+
+            //DAILY_CONVERSATION
+            if (isset($request['DAILY_CONVERSATION'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['DAILY_CONVERSATION'],
+                    'purpose_options' => json_encode($request['DAILY_CONVERSATION_option']),
+                    'member_id' => $user->id
+                ]);
+            }
+
+            //DAILY_CONVERSATION
+            if (isset($request['OTHERS'])) {
+                Purpose::create([          
+                    'valid' => 1,
+                    'purpose' => $request['OTHERS'],
+                    'purpose_options' => $request['OTHERS_value'],
+                    'member_id' => $user->id
+                ]);
+            }              
+            */
+
             DB::commit();
-
+            
             //@todo: send verification mail.
-
             $mailData = [
                 'firstname' => $request['first_name'],
                 'lastname' => $request['last_name'],
@@ -252,7 +363,6 @@ class SignUpController extends Controller
                 'a8' => $request['a8'],
                 'activation_code' => $activation_code,
             ];
-
             Mail::send(new SendUserSignUpConfirmationMail($mailData));
 
             //redirect to step 3
@@ -266,7 +376,7 @@ class SignUpController extends Controller
 
             DB::rollback();
             
-            return redirect()->route('signup')->with('message', $e->getMessage());
+            return redirect()->route('signup')->with('message', $e->getMessage() . " on Line Number: " . $e->getLine());
         }
 
     }

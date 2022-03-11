@@ -13,6 +13,13 @@
  */
 
 /*!
+ * Chart.js v2.9.4
+ * https://www.chartjs.org
+ * (c) 2020 Chart.js Contributors
+ * Released under the MIT License
+ */
+
+/*!
  * Name: vue-upload-component
  * Version: 2.8.21
  * Author: Marco Lang
@@ -71,7 +78,15 @@
  * ©2008-2020 SpryMedia Ltd - datatables.net/license
  */
 
+/*! Select2 4.0.5 | https://github.com/select2/select2/blob/master/LICENSE.md */
+
 /*! https://mths.be/utf8js v2.1.2 by @mathias */
+
+/**
+  * vue-class-component v7.0.1
+  * (c) 2015-present Evan You
+  * @license MIT
+  */
 
 /**
  * @license

@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::resource('dump', 'dummyController');
+Route::get('datesort', 'dummyController@datesort');
 Route::get('test', 'dummyController@test');
+Route::get('test/dropzone', 'dummyController@dropzone');
+Route::get('test/testemailWriting', 'dummyController@testemailWriting');
+Route::get('test/dropzoneComponent', 'dummyController@dropzone');
 Route::get('testGetMembers', 'dummyController@testGetMembers');
 Route::get('sendTestMail', 'dummyController@sendTestMail');
 Route::get('testDispatch', 'dummyController@testDispatch');
@@ -182,6 +186,9 @@ Route::resource('updateMemberExpirty', 'TableUserExpiryUpdaterController');
 /*** MEMBERS */
 Route::get('/home', 'MemberDashboard@index')->name('home');
 
+//Time Manager
+Route::resource('time-manager', 'MemberTimeManagerController');
+
 
 /*STATIC PAGES */
 Route::get('/stagelevel', 'PageController@stageLevel')->name('stagelevel');
@@ -260,6 +267,13 @@ Route::get('downloadlessonReport', 'ExportController@downloadlessonReport')->nam
 Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->name('downloadSalaryReport');
 
 
+Route::get('writing', 'Writing\WritingController@index')->name('writing.index');
+Route::post('writing', 'Writing\WritingController@store')->name('writingSaveEntry.store');
+Route::get('writing/success', 'Writing\WritingController@success')->name('writing.success');
+
+
+
+
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 
@@ -277,6 +291,18 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
+
+        //Admin Writing
+        Route::resource('/writing', 'Modules\WritingController');
+        Route::get('writing/entries/{form_id}', 'Modules\WritingController@entries')->name('writing.entries');
+        Route::get('writing/entry/{form_id}/{entry_id}', 'Modules\WritingController@entry')->name('writing.entry');
+           
+        Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');        
+        Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.updateFields');
+        Route::get('/writing/preview/{id}', 'Modules\WritingController@preview')->name('writing.previewFormCreator');        
+        Route::post('/writing', 'Modules\WritingController@store')->name('writing.store');
+        Route::post('/writing/upload', 'Modules\WritingController@upload')->name('writing.upload');
+        Route::post('/writing/postGrade/{id}', 'Modules\WritingController@postGrade')->name('writing.postGrade');
 
         //upload photo
         Route::resource('image-upload', 'imageUploadController');
@@ -367,6 +393,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/lessons', 'Modules\ReportController');
         Route::resource('/salary', 'Modules\SalaryReportController');
 
+
+
+
         /* Administrator Module Lists */
         Route::group(['prefix' => 'module', 'namespace' => 'Modules', 'as' => 'module.'], function() 
         {
@@ -380,6 +409,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
             **
             */
         });
+
+ 
+        
+        
            
         //User Management - Admin Area
         Route::group(['prefix' => 'user-management'], function() {
@@ -414,3 +447,12 @@ Route::post('login', 'Auth\LoginController@login')->name('login_member');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout_member');
 
 Route::get('login.do', 'Auth\LoginController@showLoginForm')->name('login_member_do');
+
+
+
+/*
+Route::get('/{any}', function ($any) {  
+  echo "ANY : " . $any;
+})->where('any', 'time-manager/.*');
+
+*/

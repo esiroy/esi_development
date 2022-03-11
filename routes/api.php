@@ -103,13 +103,82 @@ Route::middleware('auth:api')->post('/getTutorInbox', 'API\TutorController@getTu
 //(all memo)
 Route::middleware('auth:api')->post('/getAllMemoConversations', 'API\TutorScheduleController@getAllMemoConversations')->name('APIGetAllMemoConversations');
 
-
-
 //[start] Lesson Materials
 Route::middleware('auth:api')->post('/sortLessonMaterials', 'API\LessonMaterialsController@sortLessonMaterials')->name('APISortLessonMaterials');
 
+//[start] member exam  score
+Route::middleware('auth:api')->post('/getAllMemberExamScore', 'API\MemberExamController@getAllMemberExamScore')->name('APIGetMemberGetAllMemberExamScores');
+Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIGetMemberLatestScore');
+Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
 
 
 
 
+//Form Maker (update)
+Route::middleware('auth:api')->post('/saveSimpleTextField', 'API\FormMakerController@saveSimpleTextField')->name('APISaveSimpleTextField');
+Route::middleware('auth:api')->post('/saveDropDownSelect', 'API\FormMakerController@saveDropDownSelect')->name('APISaveDropDownSelect');
+Route::middleware('auth:api')->post('/saveHTMLContent', 'API\FormMakerController@saveHTMLContent')->name('APISaveHTMLContent');
+Route::middleware('auth:api')->post('/saveParagraphText', 'API\FormMakerController@saveParagraphText')->name('APISaveParagraphText');
+Route::middleware('auth:api')->post('/copyField', 'API\FormMakerController@copyField')->name('APICopyField');
+Route::middleware('auth:api')->post('/saveDropDownTeacherSelect', 'API\FormMakerController@saveDropDownTeacherSelect')->name('APISaveDropDownTeacherSelect');
 
+
+//Advance Fields 
+Route::middleware('auth:api')->post('/saveFirstNameField', 'API\FormMakerController@saveFirstNameField')->name('APISaveFirstNameField');
+Route::middleware('auth:api')->post('/saveFirstEmailField', 'API\FormMakerController@saveFirstEmailField')->name('APISaveFirstEmailField');
+Route::middleware('auth:api')->post('/saveLastNameField', 'API\FormMakerController@saveLastNameField')->name('APISaveLastNameField');
+Route::middleware('auth:api')->post('/saveEmailField', 'API\FormMakerController@saveEmailField')->name('APISaveEmailField');
+Route::middleware('auth:api')->post('/saveUploadField', 'API\FormMakerController@saveUploadField')->name('APISaveUploadField');
+Route::middleware('auth:api')->post('/getHTMLFieldContent', 'API\FormMakerController@getHTMLFieldContent')->name('APISGetHTMLFieldContent');
+Route::middleware('auth:api')->post('/removeField', 'API\FormMakerController@removeField')->name('APIRemoveField');
+
+//Form Field HTML 
+Route::middleware('auth:api')->post('/writing/editFormField', 'API\FormMakerController@editFormField')->name('APIEditFormField');
+Route::middleware('auth:api')->post('/writing/updateFormField', 'API\FormMakerController@updateFormField')->name('APIupdateFormField');
+
+
+//writing api
+Route::middleware('auth:api')->post('/writing/updateWritingFields', 'API\FormMakerController@updateWritingFields')->name('APIWritingFormFieldsUpdate');
+Route::middleware('auth:api')->post('/writing/getWritingImages', 'API\FormMakerController@getWritingImages')->name('APIGetWritingImages');
+Route::middleware('auth:api')->post('/writing/upload', 'API\FormMakerController@upload')->name('APIWritingUpload');
+Route::middleware('auth:api')->post('/writing/assignTutor', 'API\FormMakerController@assignTutor')->name('APIWritingAssignTutor');
+Route::middleware('auth:api')->post('/writing/getSubmittedWritingPoints', 'API\FormMakerController@getSubmittedWritingPoints')->name('APIGetSubmittedWritingPoints');
+
+Route::middleware('auth:api')->post('/writing/getDropDownOptions', 'API\FormMakerController@getDropDownOptions')->name('APIWritingGetDropDownOptions');
+Route::middleware('auth:api')->post('/writing/sortWritingFields', 'API\FormMakerController@sortWritingFields')->name('APIWritingSortWritingFields');
+
+
+//Writing Entry Checker
+Route::middleware('auth:api')->post('/writing/checkCredits', 'API\WritingEntryController@checkCredits')->name('APICheckCredits');
+Route::middleware('auth:api')->post('/writing/checkMemberCredits', 'API\WritingEntryController@checkMemberCredits')->name('APICheckMemberCredits');
+Route::middleware('auth:api')->post('/writing/sendReloadEmail', 'API\WritingEntryController@sendReloadEmail')->name('APISendReloadEmail');
+
+
+
+//[start] member exam  score
+Route::middleware('auth:api')->post('/getMemberExamScoreByType', 'API\MemberExamController@getMemberExamScoreByType')->name('APIGetMemberExamScoreByType');
+Route::middleware('auth:api')->post('/getMemberExamScoreByPage', 'API\MemberExamController@getMemberExamScoreByPage')->name('APIGetMemberExamScoreByPage');
+Route::middleware('auth:api')->post('/getMemberScoreHistory', 'API\MemberExamController@getMemberScoreHistory')->name('APIGetMemberScoreHistory');
+
+Route::middleware('auth:api')->post('/updateMemberExamScore', 'API\MemberExamController@updateMemberExamScore')->name('APIUpdateMemberExamScore');
+Route::middleware('auth:api')->post('/deleteMemberExamScore', 'API\MemberExamController@deleteMemberExamScore')->name('APIDeleteMemberExamScore');
+
+
+//Lastest Exam scores
+Route::middleware('auth:api')->post('/getMemberLatestScore', 'API\MemberExamController@getMemberLatestScore')->name('APIGetMemberLatestScore');
+Route::middleware('auth:api')->post('/addMemberExamScore', 'API\MemberExamController@addMemberExamScore')->name('APIAddMemberScore');
+
+
+//[start] member purpose
+Route::middleware('auth:api')->post('/getMemberPurposeList', 'API\MemberPurposeController@getMemberPurposeList')->name('APIGetMemberPurposeList');
+Route::middleware('auth:api')->post('/updateMemberPurpose', 'API\MemberPurposeController@updateMemberPurpose')->name('APIUpdateMemberPurpose');
+Route::middleware('auth:api')->post('/getMemberPurpose', 'API\MemberPurposeController@getMemberPurpose')->name('APIGetMemberPurpose');
+
+//[start] member notes
+Route::middleware('auth:api')->post('/getMemberNotes', 'API\MemberNotesController@getMemberNotes')->name('APIGetMemberNotes');
+Route::middleware('auth:api')->post('/saveNote', 'API\MemberNotesController@saveNote')->name('APISaveMemberNote');
+Route::middleware('auth:api')->post('/updateNote', 'API\MemberNotesController@updateNote')->name('APIUpdateMemberNote');
+Route::middleware('auth:api')->post('/deleteNote', 'API\MemberNotesController@deleteNote')->name('APIDeleteMemberNote');
+
+Route::middleware('auth:api')->post('/getMemberLevel', 'API\MemberLevelController@getMemberLevel')->name('APIGetMemberLevel');
+Route::middleware('auth:api')->post('/saveMemberLevel', 'API\MemberLevelController@saveMemberLevel')->name('APISaveMemberLevel');
