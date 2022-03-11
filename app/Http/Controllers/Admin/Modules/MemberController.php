@@ -658,12 +658,45 @@ class MemberController extends Controller
     }
 
 
+    public function destroy($id)
+    {        
+        abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        if (Auth::user()->user_type == "ADMINISTRATOR") 
+        {        
+            $member = Member::where('user_id', $id)->first();
+            $user = User::find($member->user_id);
+
+            LessonGoals::where('member_id', $user->id)->delete();
+            MemberAttribute::where('member_id', $user->id)->delete();
+            MemberDesiredSchedule::where('member_id', $user->id)->delete();
+
+            //clear all chat support history
+            ChatSupportHistory::where('sender_id', $user->id)->delete();
+            ChatSupportHistory::where('recipient_id', $user->id)->delete();
+
+            MemoReply::where('sender_id', $user->id)->delete();
+            MemoReply::where('recipient_id', $user->id)->delete();
+
+            $member->delete();
+            $user->forceDelete();
+
+            return redirect()->route('admin.member.index')->with('message', 'Member has been deleted!');    
+
+        } else {
+
+            return redirect()->back()->with('error_message', 'Delete is not allowed for your user type, please contact the administrator.');
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+    /*
     public function destroy($id)
     {
         abort_if(Gate::denies('member_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');

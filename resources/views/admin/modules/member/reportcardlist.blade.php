@@ -67,15 +67,7 @@
                                     @foreach($reportcards as $item)
                                     <tr>
                                         <td>                                            
-                                            @php 
-                                                if (isset(\App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'])) {
-                                                    $time = \App\Models\ScheduleItem::find($item->schedule_item_id)['lesson_time'];
-                                                    echo date('F d, Y H:i', strtotime($time));
-                                                } else {
-                                                    echo "-";
-                                                }                                                
-                                            @endphp                                            
-
+                                            {{ ESIDateTimeFormat($item->lesson_time) ?? '' }}
                                         </td>
                                         <td>
                                             {!! wordwrap($item->lesson_subject, 20, "<br />\n") !!}
@@ -86,7 +78,8 @@
                                         <td>
                                             {!! wordwrap($item->lesson_material, 20, "<br />\n") !!}
                                         </td>
-                                        <td>{{ $item->grade }}</td>
+                                        <td>
+                                            {{ formatGrade ( $item->grade) }}</td>
                                         <td>
 
 

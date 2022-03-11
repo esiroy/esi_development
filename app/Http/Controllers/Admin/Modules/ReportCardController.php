@@ -75,7 +75,11 @@ class ReportCardController extends Controller
             $tutorInfo       = Tutor::where('user_id', $memberInfo->tutor_id)->first(); 
 
             //report cards
-            $reportcards = ReportCard::where('member_id', $member->id)->orderBy('created_at', 'DESC')->paginate(30);
+            $reportcards = ReportCard::select('report_card.*', 'schedule_item.lesson_time')
+                                        ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
+                                        ->where('report_card.member_id', $member->id)
+                                        ->orderBy('schedule_item.lesson_time', 'DESC')
+                                        ->paginate(30);
 
             return view('admin.modules.member.reportcardlist', compact('reportcards', 'agentInfo' ,'tutorInfo', 'member', 'memberInfo'));
 

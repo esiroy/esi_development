@@ -32,33 +32,26 @@
                     @endif
 
                     <div class="row">
-                        <div class="col-md-12 mt-3">
+                        <div class="col-md-12">
 
                             <a href="{{ url('lessonrecord') }}">
-                                <img src="{{ url('images/btnYellow3.png') }}" alt="受講履歴/添削履歴" title="受講履歴/添削履歴">
+                                <button type="button" class="btn btn-sm btn-orange-gradient" alt="受講履歴/添削履歴" title="受講履歴/添削履歴">
+                                    受講履歴/添削履歴
+                                </button>
                             </a>
 
-                            <a href="{{ url('memberschedule') }}">                                
-                                <img src="{{ url('images/btnBlue.gif') }}" alt="レッスンの予約" title="レッスンの予約">
+                            <a href="{{ url('memberschedule') }}">
+                                <button type="button" class="btn btn-sm btn-blue-gradient" alt="レッスンの予約" title="レッスンの予約">
+                                    レッスンの予約
+                                </button>
                             </a>
 
-                            @php 
-                            /*
-                            <a href="JavaScript:newPopup('http://writing.mytutor-jpn.info/');" data-toggle="modal" data-target="#writingServiceModal" >
-                                <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
-                            </a> 
-                            
-
-                            <a href="JavaScript:PopupCenter('{{ url('/writing') }}','講師への連絡　チャット」とは',900,820);">
-                                <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
-                            </a>      
-                            */
-                            @endphp     
-
-                           <a href="{{ url('/writing') }}">
-                                <img src="{{ url('images/newBtn3.png') }}" alt="添削くん" title="添削くん">
-                            </a>  
-                            
+                          
+                            <a href="{{ url('writing') }}">
+                                <button type="button" class="btn btn-sm btn-green-gradient" alt="添削くん" title="添削くん">
+                                    添削くん
+                                </button>
+                            </a>                      
                         </div>
                     </div>
 

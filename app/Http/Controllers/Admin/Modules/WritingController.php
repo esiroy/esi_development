@@ -106,15 +106,16 @@ class WritingController extends Controller
         //abort_if(Gate::denies('writing_entry'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         //if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') {
             //get form fields for name of header
-            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+            //$formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
             //Get Entry of data
             $entry     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->first();
+
             $tutors      = $tutor->getTutors();
 
             $memberInfo = $member->where('user_id', $entry->user_id)->first();
            
-            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entry','formFields', 'tutors', 'memberInfo', 'postedEntries'));
+            return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entry', 'tutors', 'memberInfo', 'postedEntries'));
         //} else {
            // abort(401, "User is not authorized");
         //}

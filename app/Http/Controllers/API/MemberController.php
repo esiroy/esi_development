@@ -1552,33 +1552,39 @@ class MemberController extends Controller
                 //LessonGoals
                 $lessonGoals = [];
                 foreach ($data->preference->purpose as $key => $purpose) {
-                    $goal = null;
-                    $year_level = null;
-                    $purposeExtraDetails = null;
 
-                    if (isset($data->preference->purposeExtraDetails->$key)) {
+                    if ($purpose == true) {
+                        
+                        $goal = null;
+                        $year_level = null;
+                        $purposeExtraDetails = null;
 
-                        if ($key === "CONVERSATION") {
-                            $goal = $data->preference->purposeExtraDetails->$key;
+                        if (isset($data->preference->purposeExtraDetails->$key)) {
 
-                        } else if ($key === "ANTI_EXAM" || $key === "STUDY_ABROAD") {
-                            $year_level = $data->preference->purposeExtraDetails->$key;
+                            if ($key === "CONVERSATION") {
+                                $goal = $data->preference->purposeExtraDetails->$key;
+
+                            } else if ($key === "ANTI_EXAM" || $key === "STUDY_ABROAD") {
+                                $year_level = $data->preference->purposeExtraDetails->$key;
+                            } else {
+                                $purposeExtraDetails = $data->preference->purposeExtraDetails->$key;
+                            }
+
                         } else {
-                            $purposeExtraDetails = $data->preference->purposeExtraDetails->$key;
+                            $purposeExtraDetails = null;
                         }
 
-                    } else {
-                        $purposeExtraDetails = null;
+                        array_push($lessonGoals, [
+                            "member_id" => $data->user_id,
+                            "purpose" => $key,
+                            "goal" => $goal,
+                            "year_level" => $year_level,
+                            "extra_detail" => $purposeExtraDetails,
+                            "valid" => true,
+                        ]);
+                                            
                     }
 
-                    array_push($lessonGoals, [
-                        "member_id" => $data->user_id,
-                        "purpose" => $key,
-                        "goal" => $goal,
-                        "year_level" => $year_level,
-                        "extra_detail" => $purposeExtraDetails,
-                        "valid" => true,
-                    ]);
                 }
                 //delete old Lesson Goals and insert updated ones
                 LessonGoals::where('member_id', $data->user_id)->delete();

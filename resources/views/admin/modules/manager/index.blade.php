@@ -98,12 +98,17 @@
                                         <td class="small text-center">{{$manager->email}}</td>            
                                         <td class="small text-center">                                                 
                                             <a href="{{ route('admin.manager.edit', $manager->id) }}" class="btn btn-sm btn-info">Edit</a>  
+
+                                            @if (Auth::user()->user_type == "ADMINISTRATOR")
                                             <form action="{{ route('admin.manager.destroy', $manager->id) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
                                                 style="display: inline-block;">
                                                 <input type="hidden" name="_method" value="DELETE">
                                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                                 <input type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}">
                                             </form>
+                                            @endif
+
+
                                         </td>
                                     </tr>
                                     @endforeach

@@ -81,7 +81,8 @@
                                             <th class="small text-center">{{ $announcement->is_hidden ? 'true' : 'false' }}</th>
                                             <th class="small text-center">
                                                 <a href="{{ route('admin.announcement.edit', $announcement->id)}}">Edit</a> |
-                                                <a href="{{ route('admin.announcement.destroy', ['announcement' => $announcement]) }}" onclick="event.preventDefault();document.getElementById('delete-form-{{ $announcement->id }}').submit();">Delete
+                                               
+                                                <a href="{{ route('admin.announcement.destroy', ['announcement' => $announcement]) }}" onclick="confirmSubmitAction('delete-form-{{ $announcement->id }}'); return false; ">Delete
                                                 </a>
                                                 <form id="delete-form-{{ $announcement->id }}" action="{{ route('admin.announcement.destroy', ['announcement' => $announcement]) }}" method="POST" style="display: none;">
                                                     @method("DELETE")
@@ -223,6 +224,15 @@
 <script src="https://cdn.ckeditor.com/4.15.1/full/ckeditor.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
 <script type="text/javascript">
+    function confirmSubmitAction(formID) {
+        let confirmAction = confirm("Are you sure to execute this action?");
+        if (confirmAction) {            
+            document.getElementById(formID).submit();            
+        } else {             
+            return false;
+        }
+    }
+
     window.addEventListener('load', function() 
     {        
         $(".inputDate").on("change", function() {
@@ -231,7 +241,8 @@
 
         //editor
         CKEDITOR.replace('body');
-
     });
+
+
 </script>
 @endsection

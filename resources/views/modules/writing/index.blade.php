@@ -666,7 +666,7 @@
                                 @else 
                                     //unselect
                                     $('{{ '#' . $field->field_id }}').val('');      
-                                    $('{{ '#' . $field->field_id }}').trigger('change');
+                                    //$('{{ '#' . $field->field_id }}').trigger('change');
                                 @endif
                             }
                         @endif
