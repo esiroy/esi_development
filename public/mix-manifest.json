@@ -1,22 +1,12 @@
 {
-<<<<<<< HEAD
-    "/js/admin.js": "/js/admin.js?id=7bf5256ed2a6ace16bbb",
-    "/js/admin.js.map": "/js/admin.js.map?id=98e008619681abecb337",
-    "/js/app.js": "/js/app.js?id=e55cbf41bac9048501be",
-    "/css/app.css": "/css/app.css?id=b1c68408e79d77c93bea",
-    "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
-    "/js/app.js.map": "/js/app.js.map?id=1bf28b2b7beddd226b36",
-    "/css/app.css.map": "/css/app.css.map?id=df9e6be66e5721c31c64",
-=======
-    "/js/admin.js": "/js/admin.js?id=0dba625f5799fe70943c",
-    "/js/admin.js.map": "/js/admin.js.map?id=68473733565dafa26545",
-    "/js/app.js": "/js/app.js?id=d96fec995612f67f1e87",
-    "/css/app.css": "/css/app.css?id=d9e03ee7eab830ac9a8b",
+    "/js/admin.js": "/js/admin.js?id=32e768225cb537df0fd8",
+    "/js/admin.js.map": "/js/admin.js.map?id=ea65f0faecf46ed774e4",
+    "/js/app.js": "/js/app.js?id=b82105c23366c2cb72a1",
+    "/css/app.css": "/css/app.css?id=717cddf8b1f246b8d803",
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
     "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
-    "/js/app.js.map": "/js/app.js.map?id=7028a64b77bc5d03e1ec",
-    "/css/app.css.map": "/css/app.css.map?id=bed59f42de2c6872d10b",
->>>>>>> staging_v2
+    "/js/app.js.map": "/js/app.js.map?id=eff364bf80be69283937",
+    "/css/app.css.map": "/css/app.css.map?id=60076f9217d3eaa11387",
     "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
     "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
     "/js/jquery/jquery-ui.js": "/js/jquery/jquery-ui.js?id=06c8b12668dc0e45a4c4",
