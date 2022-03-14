@@ -14,7 +14,7 @@
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') .'?version='.date('ymdhis')  }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -22,7 +22,7 @@
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     
     <!-- Styles -->
-    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+    <link rel="preload" href="{{ asset('css/app.css') .'?version='.date('ymdhis') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @yield('styles')
     <noscript>
