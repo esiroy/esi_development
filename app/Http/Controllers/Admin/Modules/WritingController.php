@@ -24,7 +24,8 @@ class WritingController extends Controller
 
     public function __construct()
     {
-        
+
+        /*   
         $this->middleware(function ($request, $next) {
             //authenticated by has no "admin_access" in his role attached
             //@do: redirect to home (authenticated member will be his view)
@@ -33,6 +34,7 @@ class WritingController extends Controller
             }
             return $next($request);           
         });    
+        */
     }
     
     
