@@ -138,7 +138,7 @@
                             </div>
 
                             <div v-for="(value, name) in this.latestScore.examScores" :key="name">
-                                <span class="font-weight-bold small">{{ capitalizeFirstLetter(name) }}</span>: 
+                                <span class="font-weight-bold small">{{ FormatObjectKey( name) }}</span>: 
                                 <span class="small">{{ value }}</span>
                             </div>
                             
