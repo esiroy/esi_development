@@ -213,7 +213,7 @@
 
                         if ($('#'+fieldID).attr( "required" )) 
                         {
-                            console.log(fieldID + " is required")
+                            //console.log(fieldID + " is required")
                             let isValid = $('#'+fieldID).valid();
                             requiredFieldsArr.push({
                                 'id': fieldID,
@@ -287,10 +287,10 @@
                 });                        
 
                 if (goToNextStep == true) {
-                    console.log("Go to step next page")
+                    //console.log("Go to step next page")
                     return true;
                 } else{
-                    console.log("stay on current page")
+                    //console.log("stay on current page")
                     return false;
                 }                
             }
@@ -298,7 +298,7 @@
             function highlightFieldRow(fieldID) 
             {
                 if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                    
-                    console.log(fieldID + " is hidden, we will not highlight");
+                    //console.log(fieldID + " is hidden, we will not highlight");
                 } else {
 
                     if ($('#'+fieldID).attr( "required" )) 
@@ -328,7 +328,7 @@
 
                             $('.'+fieldID+"_field_content").find('.error2').remove();
                             $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This field only accepts E-Mail Address.</label>');
-                            console.log("error in email");                            
+                            //console.log("error in email");                            
                         }
                     }
 
@@ -565,7 +565,7 @@
                         let isValid = validateFields(currentIndex);
                         if (isValid === "true" || isValid === false || isValid === null ) 
                         {                          
-                            console.log("not valid field detected");
+                            //console.log("not valid field detected");
 
                         } else {         
 
