@@ -56,7 +56,11 @@ export default {
             //size select dropdown menu
             size: { leftColumn  : "col-2", rightColumn : "col-10", select      : "col-3" },  
 
+            purposeList: { },
+
+
             //purpose List
+            
             purposeList: 
             {
                 IELTS:  "",
@@ -67,11 +71,31 @@ export default {
                 TOEFL_option: { Speaking: "", Writing: "", Reading: "", Listening: ""},
                 TOEFL_targetScore: { Speaking: 0, Writing: 0, Reading: 0, Listening: 0 },
 
-                TOEFL_Primary: "",
+                /* NEW TEOFL ADDITION */
+                TOEFL_Junior: "",
+                TOEFL_Junior_option: {   listening: "", languageFormAndMeaning: "", reading: "", total: "", },
+                TOEFL_Junior_targetScore: {                    
+                    listening: 200,
+                    languageFormAndMeaning: 200,
+                    reading: 200
+                },                
+                                
+                TOEFL_Primary_Step_1: "",
+                TOEFL_Primary_Step_1_option: {  Listening: "",  Reading: "",},
+                TOEFL_Primary_Step_1_targetScore: { Listening: 0, Reading: 0 },
+
+                TOEFL_Primary_Step_2: "",
+                TOEFL_Primary_Step_2_option: {  Listening: "",  Reading: "",},
+                TOEFL_Primary_Step_2_targetScore: { Listening: 0, Reading: 0 },  
+                /* NEW TEOFL ADDITION */
+
+                    
+
 
                 TOEIC: "",
                 TOEIC_option: { Speaking: "", Writing: "", Reading: "", Listening: ""},
                 TOEIC_targetScore: { Speaking: 0, Writing: 0, Reading: 0, Listening: 0 },                 
+
 
                 EIKEN: "",
                 EIKEN_option: {
@@ -96,7 +120,12 @@ export default {
 
                 TEAP: "",
                 TEAP_option: { Speaking: "", Writing: "", Reading: "", Listening: "" },
-                TEAP_targetScore: { Speaking: 0, Writing: 0, Reading: 0, Listening: 0 },                    
+                TEAP_targetScore: { 
+                    Speaking: 20,
+                    Writing: 20,
+                    Reading: 20,
+                    Listening: 20
+                },
 
                 BUSINES: "",
                 BUSINESS_option: { Basic: "", Intermediate: "", Advance: "" },                  
@@ -139,6 +168,7 @@ export default {
                 OTHERS: "",
                 OTHERS_value: "",
             }
+
         };
     },      
     mounted: function () 

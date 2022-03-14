@@ -27,7 +27,11 @@
                                 $targetScoreText = "";
                             }
                         @endphp
-                        <span class="option_value small">{{$option_value}}{{$targetScoreText}}@if($ctr < count($options)){{","}}@endif</span>
+                        <span class="option_value small">
+                        
+                        <strong>{{ addSpaceBeforeCapitalizedLetters($option_value) }}</strong>
+                        
+                        {{$targetScoreText}}@if($ctr < count($options)){{","}}@endif</span>
                         @php $ctr++ @endphp
                     @endforeach 
                 </div>

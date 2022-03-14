@@ -119,7 +119,7 @@
             <div :class="this.size.rightColumn">
                 <select @change="getTotal" id="EIKEN-grade_1_1st_stage" name="EIKEN-grade_1_1st_stage" v-model="examScore.EIKEN.grade_1_1st_stage" :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Grade 1 1st Stage Score</option>
-                    <option :value="item - 1" :key="item - 1" class="mx-0 px-0" v-for="item in 2251">{{ item - 1 }}</option>
+                    <option :value="item - 1" :key="item - 1" class="mx-0 px-0" v-for="item in 2551">{{ item - 1 }}</option>
                 </select>
             </div>
         </div>     

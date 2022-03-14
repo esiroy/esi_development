@@ -1,6 +1,6 @@
 {
-    "name": "esi-reservation-system-with-chat",
-    "version": "0.3.0",
+    "name": "esi-reservation-system-with-chat-scores",
+    "version": "1.0.0",
     "private": true,
     "scripts": {
         "dev": "npm run development",

@@ -12,7 +12,7 @@
             <div :class="this.size.rightColumn">            
                 <select @change="getTotal" id="TEAP-speakingScore" name="speakingScore" v-model="examScore.TEAP.speakingScore" :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Speaking Score</option>
-                    <option :value="item -1" :key="item -1" class="mx-0 px-0" v-for="item in 31">{{ item -1 }}</option>                     
+                    <option :value="item + 19" :key="item + 19" class="mx-0 px-0" v-for="item in 101">{{ item + 19 }}</option>                     
                 </select>
             </div>
         </div>
@@ -24,7 +24,7 @@
             <div :class="this.size.rightColumn">            
                 <select @change="getTotal" id="TEAP-writingScore" name="writingScore" v-model="examScore.TEAP.writingScore" :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Writing Score</option>
-                    <option :value="item -1" :key="item -1" class="mx-0 px-0" v-for="item in 31">{{ item -1 }}</option>                     
+                    <option :value="item + 19" :key="item + 19" class="mx-0 px-0" v-for="item in 101">{{ item + 19 }}</option>                     
                 </select>
             </div>
         </div>
@@ -36,7 +36,7 @@
             <div :class="this.size.rightColumn">
                 <select @change="getTotal" id="TEAP-readingScore" name="readingScore" v-model="examScore.TEAP.readingScore" :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Reading Score</option>
-                    <option :value="item -1" :key="item -1" class="mx-0 px-0" v-for="item in 31">{{ item -1 }}</option>                     
+                    <option :value="item + 19" :key="item + 19" class="mx-0 px-0" v-for="item in 101">{{ item + 19 }}</option>                     
                 </select>
             </div>
         </div>
@@ -48,7 +48,7 @@
             <div :class="this.size.rightColumn">
                 <select @change="getTotal" id="TEAP-listeningScore" name="listeningScore" v-model="examScore.TEAP.listeningScore" :class="this.size.select +' form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Listening Score</option>
-                    <option :value="item -1" :key="item -1" class="mx-0 px-0" v-for="item in 31">{{ item -1 }}</option>                     
+                    <option :value="item + 19" :key="item + 19" class="mx-0 px-0" v-for="item in 101">{{ item + 19 }}</option>                     
                 </select>
             </div>
         </div>
