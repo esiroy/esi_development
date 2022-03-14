@@ -405,4 +405,18 @@ if (! function_exists('memberCEFRLevel'))
     }  
 }
 
+
+
+if (! function_exists('addSpaceBeforeCapitalizedLetters')) 
+{
+    function addSpaceBeforeCapitalizedLetters($String) {
+      $string =  preg_replace('/(?<!\ )[A-Z]/', ' $0', $String);
+
+      return ucfirst($string);
+    }  
+}
+
+
+
+
 ?>

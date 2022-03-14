@@ -147,8 +147,122 @@
                 </div>
             </div>
 
+            <!--- [START] TOEFL IUNIOR-->
             <div class="checkbox-options">
-                <input type="checkbox" id="TOEFL_Primary" name="TOEFL_Primary" value="TOEFL Primary" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Primary"> TOEFL Primary
+                <input type="checkbox" id="TOEFL_Junior" name="TOEFL_Junior" value="TOEFL_Junior" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Junior"> TOEFL Junior
+                <div class="TOEFL_Junior ml-4 sub_options">
+                
+                    <div class="row mt-4">
+                        <div class="TOEFL_Junior_option col-md-2">
+                            <input type="checkbox" name="TOEFL_Junior_option[]" value="Reading" v-model="childPurposeList.TOEFL_Junior_option.reading"> Reading <br/>
+                        </div>               
+                        <div class="TOEFL_Junior_option col-md-2">
+                            {{ childPurposeList.TOEFL_Junior_targetScore.reading }}
+                        </div>
+                        <div class="TOEFL_Junior_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_Junior_targetScore.reading" :min="200" :max="300"  :interval="1" :marks="[200, 300]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_Junior_option col-md-2">
+                            <input type="checkbox" name="TOEFL_Junior_option[]" value="Writing" v-model="childPurposeList.TOEFL_Junior_option.languageFormAndMeaning"> Language Form & Meaning <br/>
+                        </div>               
+                        <div class="TOEFL_Junior_option col-md-2">
+                            {{ childPurposeList.TOEFL_Junior_targetScore.languageFormAndMeaning }}
+                        </div>
+                        <div class="TOEFL_Junior_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_Junior_targetScore.languageFormAndMeaning" :min="200" :max="300"  :interval="1" :marks="[200, 300]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+
+
+
+                    <div class="row mt-4 mb-2">
+                        <div class="IELTS_option col-md-2">
+                            <input type="checkbox" name="TOEFL_Junior_option[]" value="Listening" v-model="childPurposeList.TOEFL_Junior_option.listening"> Listening <br/>
+                        </div>               
+                        <div class="IELTS_option col-md-2">
+                            {{ childPurposeList.TOEFL_Junior_targetScore.listening }}
+                        </div>
+                        <div class="IELTS_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_Junior_targetScore.listening" :min="200" :max="300"  :interval="1" :marks="[200, 300]"></vue-slider>                                     
+                        </div>
+                    </div>      
+
+                </div>
+            </div>            
+
+            <!--- [START] TOEFL PRIMARY STEP 1-->
+            <div class="checkbox-options">
+                <input type="checkbox" id="TOEFL_Primary" name="TOEFL_Primary_Step_1" value="TOEFL Primary Step 1" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Primary_Step_1"> TOEFL Primary Step 1
+
+                <div class="TOEFL ml-4 sub_options">
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_option col-md-2">
+                            <input type="checkbox" name="TOEFL_option[]" value="Reading" v-model="childPurposeList.TOEFL_Primary_Step_1_option.Reading"> Reading <br/>
+                        </div>               
+                        <div class="TOEFL_option col-md-2">
+                            {{ childPurposeList.TOEFL_Primary_Step_1_targetScore.Reading }}
+                        </div>
+                        <div class="TOEFL_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_Primary_Step_1_targetScore.Reading" :min="0" :max="109"  :interval="1" :marks="[0, 109]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-4 mb-2">
+                        <div class="IELTS_option col-md-2">
+                            <input type="checkbox" name="TOEFL_option[]" value="Listening" v-model="childPurposeList.TOEFL_Primary_Step_1_option.Listening"> Listening <br/>
+                        </div>               
+                        <div class="IELTS_option col-md-2">
+                            {{ childPurposeList.TOEFL_Primary_Step_1_targetScore.Listening }}
+                        </div>
+                        <div class="IELTS_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_Primary_Step_1_targetScore.Listening" :min="0" :max="109"  :interval="1" :marks="[0, 109]"></vue-slider>                                     
+                        </div>
+                    </div>      
+
+                </div>
+
+            </div>
+
+            <!--- [START] TOEFL PRIMARY STEP 2-->
+            <div class="checkbox-options">
+                <input type="checkbox" id="TOEFL_Primary" name="TOEFL_Primary_Step_2" value="TOEFL Primary Step 2" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Primary_Step_2"> TOEFL Primary Step 2
+
+                <div class="TOEFL ml-4 sub_options">
+
+                    <div class="row mt-4">
+                        <div class="TOEFL_option col-md-2">
+                            <input type="checkbox" name="TOEFL_option[]" value="Reading" v-model="childPurposeList.TOEFL_Primary_Step_2_option.Reading"> Reading <br/>
+                        </div>               
+                        <div class="TOEFL_option col-md-2">
+                            {{ childPurposeList.TOEFL_Primary_Step_2_targetScore.Reading }}
+                        </div>
+                        <div class="TOEFL_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_Primary_Step_2_targetScore.Reading" :min="0" :max="115"  :interval="1" :marks="[0, 115]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-4 mb-2">
+                        <div class="IELTS_option col-md-2">
+                            <input type="checkbox" name="TOEFL_option[]" value="Listening" v-model="childPurposeList.TOEFL_Primary_Step_2_option.Listening"> Listening <br/>
+                        </div>               
+                        <div class="IELTS_option col-md-2">
+                            {{ childPurposeList.TOEFL_Primary_Step_2_targetScore.Listening }}
+                        </div>
+                        <div class="IELTS_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TOEFL_Primary_Step_2_targetScore.Listening" :min="0" :max="115"  :interval="1" :marks="[0, 115]"></vue-slider>                                     
+                        </div>
+                    </div>      
+
+                </div>
+
             </div>
 
 
@@ -248,7 +362,7 @@
                             {{ childPurposeList.EIKEN_targetScore.Grade_3 }}
                         </div>
                         <div class="EIKEN_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_3" :min="0" :max="1650"  :interval="1" :marks="[0, 1650]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_3" :min="0" :max="2200"  :interval="1" :marks="[0, 2200]"></vue-slider>                                     
                         </div>
                     </div>
 
@@ -262,7 +376,7 @@
                             {{ childPurposeList.EIKEN_targetScore.Grade_pre_2 }}
                         </div>
                         <div class="EIKEN_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_pre_2" :min="0" :max="1800"  :interval="1" :marks="[0, 1800]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_pre_2" :min="0" :max="2400"  :interval="1" :marks="[0, 2400]"></vue-slider>                                     
                         </div>
                     </div>
 
@@ -275,7 +389,7 @@
                             {{ childPurposeList.EIKEN_targetScore.Grade_2 }}
                         </div>
                         <div class="EIKEN_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_2" :min="0" :max="1950"  :interval="1" :marks="[0, 1950]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_2" :min="0" :max="2600"  :interval="1" :marks="[0, 2600]"></vue-slider>                                     
                         </div>
                     </div>
                     
@@ -290,7 +404,7 @@
                             {{ childPurposeList.EIKEN_targetScore.Grade_pre_1 }}
                         </div>
                         <div class="EIKEN_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_pre_1" :min="0" :max="2250"  :interval="1" :marks="[0, 2250]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_pre_1" :min="0" :max="3000"  :interval="1" :marks="[0, 3000]"></vue-slider>                                     
                         </div>
                     </div>
 
@@ -303,7 +417,7 @@
                             {{ childPurposeList.EIKEN_targetScore.Grade_1 }}
                         </div>
                         <div class="EIKEN_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_1" :min="0" :max="2250"  :interval="1" :marks="[0, 2250]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.EIKEN_targetScore.Grade_1" :min="0" :max="3400"  :interval="1" :marks="[0, 3400]"></vue-slider>                                     
                         </div>
                     </div>
                     
@@ -311,11 +425,13 @@
                 </div>
             </div>
 
+            
 
             <div class="checkbox-options">
                 <input type="checkbox" id="TEAP" name="TEAP" value="TEAP" class="main_option" @click="checkMainOption" v-model="childPurposeList.TEAP"> TEAP
                 <div class="TEAP ml-4 sub_options">
                     <div class="row mt-2">
+
                         <div class="TEAP_option col-md-2">
                             <input type="checkbox" name="TEAP_option[]" value="Speaking" v-model="childPurposeList.TEAP_option.Speaking"> Speaking <br/>
                         </div>               
@@ -323,9 +439,10 @@
                             {{ childPurposeList.TEAP_targetScore.Speaking }}
                         </div>
                         <div class="TEAP_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TEAP_targetScore.Speaking" :min="0" :max="2250"  :interval="1" :marks="[0, 2250]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TEAP_targetScore.Speaking" :min="20" :max="100"  :interval="1" :marks="[20, 100]"></vue-slider>                                     
                         </div>
                     </div>
+
 
                     <div class="row mt-4 mb-2">
                         <div class="TEAP_option col-md-2">
@@ -335,9 +452,34 @@
                             {{ childPurposeList.TEAP_targetScore.Writing }}
                         </div>
                         <div class="TEAP_targetScore col-md-6">                                    
-                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TEAP_targetScore.Writing" :min="0" :max="2250"  :interval="1" :marks="[0, 2250]"></vue-slider>                                     
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TEAP_targetScore.Writing" :min="20" :max="100"  :interval="1" :marks="[20, 100]"></vue-slider>                                     
                         </div>
                     </div>
+
+                    <div class="row mt-4 mb-2">
+                        <div class="TEAP_option col-md-2">
+                            <input type="checkbox" name="TEAP_option[]" value="Writing" v-model="childPurposeList.TEAP_option.Reading"> Reading <br/>                                     
+                        </div>               
+                        <div class="col-md-2">
+                            {{ childPurposeList.TEAP_targetScore.Reading }}
+                        </div>
+                        <div class="TEAP_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TEAP_targetScore.Reading" :min="20" :max="100"  :interval="1" :marks="[20, 100]"></vue-slider>                                     
+                        </div>
+                    </div>
+
+                    <div class="row mt-4 mb-2">
+                        <div class="TEAP_option col-md-2">
+                            <input type="checkbox" name="TEAP_option[]" value="Writing" v-model="childPurposeList.TEAP_option.Listening"> Listening <br/>                                     
+                        </div>               
+                        <div class="col-md-2">
+                            {{ childPurposeList.TEAP_targetScore.Listening }}
+                        </div>
+                        <div class="TEAP_targetScore col-md-6">                                    
+                            <vue-slider  @change="clearErrorMsg" v-model="childPurposeList.TEAP_targetScore.Listening" :min="20" :max="100"  :interval="1" :marks="[20, 100]"></vue-slider>                                     
+                        </div>
+                    </div>
+
                     
                 </div>
             </div>      
@@ -654,7 +796,31 @@ export default {
                         Reading: 0,
                         Listening: 0,                        
                 },
-                TOEFL_Primary: "",
+
+                /* NEW TEOFL ADDITION */
+                TOEFL_Junior: "",
+                TOEFL_Junior_option: {                    
+                    listening: "",
+                    languageFormAndMeaning: "",
+                    reading: "",
+                    total: "",
+                },
+                TOEFL_Junior_targetScore: {                    
+                    listening: 200,
+                    languageFormAndMeaning: 200,
+                    reading: 200
+                },                
+                                
+                TOEFL_Primary_Step_1: "",
+                TOEFL_Primary_Step_1_option: {  Listening: "",  Reading: "",},
+                TOEFL_Primary_Step_1_targetScore: { Listening: 0, Reading: 0 },
+
+                TOEFL_Primary_Step_2: "",
+                TOEFL_Primary_Step_2_option: {  Listening: "",  Reading: "",},
+                TOEFL_Primary_Step_2_targetScore: { Listening: 0, Reading: 0 },  
+                /* NEW TEOFL ADDITION */
+
+
                 TOEIC: "",
                 TOEIC_option: {
                         Speaking: "",
@@ -662,6 +828,12 @@ export default {
                         Reading: "",
                         Listening: "",                
                 },
+
+
+
+
+
+
                 TOEIC_targetScore:
                 {
                         Speaking: 0,
@@ -699,10 +871,10 @@ export default {
                 },     
                 TEAP_targetScore:
                 {
-                        Speaking: 0,
-                        Writing: 0,
-                        Reading: 0,
-                        Listening: 0,                        
+                        Speaking: 20,
+                        Writing: 20,
+                        Reading: 20,
+                        Listening: 20,                        
                 },
                 BUSINES: "",
                 BUSINESS_option:

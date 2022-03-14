@@ -27,6 +27,9 @@ class Purpose extends Model
         $option = [];
         $targetScore = [];
 
+        //add this to delete non usable targets (no more use sitewide delete)
+        Purpose::where('purpose', "TOEFL Primary")->delete();
+
         if (isset($purposeList->{"$Object"})) 
         {
             //Purpose Options
@@ -43,6 +46,7 @@ class Purpose extends Model
 
             if ( strtolower($purposeList->{"$Object"}) == "others"   ||   strtolower($Object) == "others" ) {        
                 $purpose_options = $purposeList->{"OTHERS_value"};
+
             } else {
                 $purpose_options = (is_array($option))? json_encode($option) : [];
             }
@@ -51,6 +55,8 @@ class Purpose extends Model
             {
                 $purposeValue = str_replace("_", " ", $Object);
                 $purposeFound = Purpose::where('purpose', $purposeValue)->first();
+
+                
                 if ( $purposeFound ) 
                 {                
                     $purposeFound->update([          
