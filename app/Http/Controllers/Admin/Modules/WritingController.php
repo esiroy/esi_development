@@ -24,8 +24,7 @@ class WritingController extends Controller
 
     public function __construct()
     {
-
-        /*   
+        
         $this->middleware(function ($request, $next) {
             //authenticated by has no "admin_access" in his role attached
             //@do: redirect to home (authenticated member will be his view)
@@ -34,77 +33,43 @@ class WritingController extends Controller
             }
             return $next($request);           
         });    
-        */
-    }
-
-    public function index(FormFields $formFieldModel,   Tutor $tutor) {
-
-
-            
-        $form_id = 1; //all forms are 1(for now)
-        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-
-        $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
-    
-        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-        $pageCounter =  $pages->count() + 1;
-
-
-
-        return view('admin.modules.writing.writing-edit', compact('pages', 'pageCounter',  'form_id', 'cfields' ));      
-
-
-        echo "Test";
     }
     
     
-    public function index_test(FormFields $formFieldModel,   Tutor $tutor) 
+    public function index(FormFields $formFieldModel,   Tutor $tutor) 
     {
+        //abort_if(Gate::denies('writing_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+        if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
+        {
+        
+            $form_id = 1; //all forms are 1(for now)
+            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
 
-        try {
+            $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
+           
+            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+            $pageCounter =  $pages->count() + 1;
 
-            //abort_if(Gate::denies('writing_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
-            if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
-            {
+          
+
+            return view('admin.modules.writing.writing-edit', compact('pages', 'pageCounter',  'form_id', 'cfields' ));        
+        
+        } else if (Auth::user()->user_type == 'TUTOR') {
             
-                $form_id = 1; //all forms are 1(for now)
-                $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+            $form_id = 1;
 
-                $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+            //get form fields for name of header
+            $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-            
-                $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-                $pageCounter =  $pages->count() + 1;
-
-            
-
-                return view('admin.modules.writing.writing-edit', compact('pages', 'pageCounter',  'form_id', 'cfields' ));        
-            
-            } else if (Auth::user()->user_type == 'TUTOR') {
-                
-                $form_id = 1;
-
-                //get form fields for name of header
-                $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-
-                //[*Update] Get Entry of data for the current TEacher
-                $entries     = WritingEntries::where('form_id', $form_id)
-                                                ->where('appointed_tutor_id', Auth::user()->id)
-                                                ->orderBy('id', 'DESC')
-                                                ->paginate(Auth::user()->items_per_page ?? 15);
-                $tutors      = $tutor->getTutorByID(Auth::user()->id);            
-                return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));        
-            }
-
-
-
-        } catch (\Exception $e) {
-
-            echo  $e->getMessage();
+            //[*Update] Get Entry of data for the current TEacher
+            $entries     = WritingEntries::where('form_id', $form_id)
+                                            ->where('appointed_tutor_id', Auth::user()->id)
+                                            ->orderBy('id', 'DESC')
+                                            ->paginate(Auth::user()->items_per_page ?? 15);
+            $tutors      = $tutor->getTutorByID(Auth::user()->id);            
+            return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));        
         }
-      
     }
 
 
