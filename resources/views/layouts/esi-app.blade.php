@@ -23,7 +23,7 @@
     
     <!-- Styles -->
     <link rel="preload" href="{{ asset('css/app.css') .'?version='.date('ymd') }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') .'?version='.date('ymd') }}">
     @yield('styles')
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
