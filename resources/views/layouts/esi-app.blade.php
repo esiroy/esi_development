@@ -11,8 +11,11 @@
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
-    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+   <!-- Styles -->
+    <link rel="preload" href="{{ asset('css/app.css') .'?version='.date('ymd') }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') .'?version='.date('ymd') }}">
+    
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') .'?version='.date('ymd')  }}" defer></script>
 
@@ -21,9 +24,7 @@
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com"  crossorigin />
     
-    <!-- Styles -->
-    <link rel="preload" href="{{ asset('css/app.css') .'?version='.date('ymd') }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') .'?version='.date('ymd') }}">
+ 
     @yield('styles')
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
