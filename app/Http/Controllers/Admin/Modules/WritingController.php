@@ -36,9 +36,15 @@ class WritingController extends Controller
         });    
         */
     }
+
+    public function index(FormFields $formFieldModel,   Tutor $tutor) {
+
+
+        echo "Test";
+    }
     
     
-    public function index(FormFields $formFieldModel,   Tutor $tutor) 
+    public function index_test(FormFields $formFieldModel,   Tutor $tutor) 
     {
 
         try {
