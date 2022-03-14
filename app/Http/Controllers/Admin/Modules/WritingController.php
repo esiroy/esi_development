@@ -41,15 +41,19 @@ class WritingController extends Controller
 
 
             
-                $form_id = 1; //all forms are 1(for now)
-                $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+        $form_id = 1; //all forms are 1(for now)
+        $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
 
-                $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+        $cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
 
-            
-                $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-                $pageCounter =  $pages->count() + 1;
-                
+    
+        $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+        $pageCounter =  $pages->count() + 1;
+
+
+
+        return view('admin.modules.writing.writing-edit', compact('pages', 'pageCounter',  'form_id', 'cfields' ));      
+
 
         echo "Test";
     }
