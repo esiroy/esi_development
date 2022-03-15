@@ -2920,8 +2920,12 @@ export default {
             return newString.trim(); 
         }, 
         ucwords(string) {
-            return string.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())  
-        },        
+            let words = string.split(" "); 
+            for (let i = 0; i < words.length; i++) {
+                words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+            }
+            return words.join(" ");
+        },          
         getTotalScore(ExamType) 
         {
             let selection = $('div#examination-score-'+ExamType).find('select');

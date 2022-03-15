@@ -928,8 +928,12 @@
             return fdate;            
         },    
         ucwords(string) {
-            return string.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())  
-        },             
+            let words = string.split(" "); 
+            for (let i = 0; i < words.length; i++) {
+                words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+            }
+            return words.join(" ");
+        },              
         capitalizeFirstLetter(string) {
             let newString = string.charAt(0).toUpperCase() + string.slice(1);
             newString = newString.replace(/_/g, " ")
