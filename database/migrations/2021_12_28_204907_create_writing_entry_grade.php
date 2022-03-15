@@ -21,6 +21,8 @@ class CreateWritingEntryGrade extends Migration
             $table->text('subject')->nullable();
             $table->boolean('appointed');
             $table->double('grade', 8, 2);
+            
+            $table->integer('total_points');
             $table->integer('words');
             $table->text('content');
             $table->text('attachment')->nullable();
