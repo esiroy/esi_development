@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') .'?version='.date('ymd') }}">
     
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js')  }}" ></script>
+    <script src="{{ asset('js/app.js') .'?version='.date('ymd')  }}" defer ></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
