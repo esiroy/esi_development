@@ -24,13 +24,13 @@ let url = pathname.split("/");
 if (url[1] === 'admin') {
 
     //administration
-    switch(url[2]) {
+    switch (url[2]) {
         case '':
         case 'dashboard':
         case 'lesson':
             Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
-        break;
-        case 'member':  
+            break;
+        case 'member':
             if (url[4] === 'edit') {
                 console.log("load edit member!")
                 Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
@@ -45,20 +45,20 @@ if (url[1] === 'admin') {
                 Vue.component('member-purpose-viewer-component', require('./components/backend/member/MemberPurposeViewerComponent.vue').default);
                 Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
             }
-        break;
+            break;
         case 'reportcard':
             Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
 
-        break;
+            break;
         case 'customerchatsupport':
             Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
-        break;
+            break;
 
-        
+
         default:
             console.log("admin default page loaded")
             Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
-            
+
     }
 
 } else {
@@ -68,14 +68,14 @@ if (url[1] === 'admin') {
     Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
 
     //front end 
-    switch(url[1]) {
+    switch (url[1]) {
         case 'time-manager':
-            Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);        
-            break;        
-        case 'customerchatsupport':           
+            //Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);        
+            break;
+        case 'customerchatsupport':
             Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
             break;
-        default:  
+        default:
             console.log("default front end")
     }
 }
