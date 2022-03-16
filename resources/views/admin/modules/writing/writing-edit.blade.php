@@ -35,7 +35,7 @@
                 @endif
 
 
-                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                 @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')  
                 <div class="card esi-card mb-2">                                 
                     @include('admin.modules.writing.includes.menu.navigation')
                 </div>
