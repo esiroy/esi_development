@@ -54,7 +54,7 @@ class Purpose extends Model
             if ($purposeList->{"$Object"} == true) 
             {
                 $purposeValue = str_replace("_", " ", $Object);
-                $purposeFound = Purpose::where('purpose', $purposeValue)->first();
+                $purposeFound = Purpose::where('member_id', $memberID)->where('purpose', $purposeValue)->first();
 
                 
                 if ( $purposeFound ) 
@@ -77,7 +77,8 @@ class Purpose extends Model
             } else {
             
                 $purposeValue = str_replace("_", " ", $Object);
-                $purposeFound = Purpose::where('purpose', $purposeValue)->first();
+                $purposeFound = Purpose::where('member_id', $memberID)->where('purpose', $purposeValue)->first();
+
                 if ( $purposeFound ) 
                 { 
                     $purposeFound->update([          
