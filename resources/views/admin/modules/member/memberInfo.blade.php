@@ -152,6 +152,29 @@
 
 
                                     <tr>
+                                        <th colspan="13"> Attention Required For Teacher </th>
+                                    </tr>
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>
+                                        <td><strong>Attention</strong></td>
+                                        <td>:</td>
+                                        <td>
+                                            @foreach($lessonGoals as $key => $goals)
+                                                @if(isset($goals->purpose))
+
+                                                    @if (isset($goals->purposeDescription))
+                                                        @if (strtolower($goals->purposeDescription) == "others")
+                                                            {{ $goals->extra_detail ?? '' }}
+                                                        @endif
+                                                    @endif
+
+                                                @endif
+                                            @endforeach
+                                        </td>
+                                    </tr>
+
+
+                                    <tr>
                                         <th colspan="13"> Recent Exam Score  </th>
                                     </tr>
                                      <tr valign="top">
