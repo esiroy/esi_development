@@ -1494,10 +1494,6 @@ export default {
                         Listening: 0,                        
                 },
 
-
-
-
-
                 /* NEW TEOFL ADDITION */
                 TOEFL_Junior: "",
                 TOEFL_Junior_option: {   listening: "", languageFormAndMeaning: "", reading: "", total: "", },

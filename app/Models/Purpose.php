@@ -26,10 +26,7 @@ class Purpose extends Model
     {         
         $option = [];
         $targetScore = [];
-
-        //add this to delete non usable targets (no more use sitewide delete)
-        //Purpose::where('purpose', "TOEFL Primary")->delete();
-
+        
         if (isset($purposeList->{"$Object"})) 
         {
             //Purpose Options

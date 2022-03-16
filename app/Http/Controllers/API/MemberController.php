@@ -1339,14 +1339,8 @@ class MemberController extends Controller
                 LessonGoals::where('member_id', $user->id)->delete();
                 $purpose = LessonGoals::insert($lessonGoals);
 
-
                 /********************************************
-                            DELETE: OLD MEMBER PURPOSE
-                **********************************************/
-                //Purpose::where('member_id', $user->id)->delete();
-
-                /********************************************
-                            CREATE MEMBER PURPOSE (Dynamic)
+                            CREATE MEMBER PURPOSE (ADD)
                 **********************************************/
                 $purposeObject = new Purpose(); 
                 $ObjectNameArray = array("IELTS", 
@@ -1354,13 +1348,12 @@ class MemberController extends Controller
                             "TOEIC", 
                             "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
 
-
                 foreach ($ObjectNameArray as $ObjectName) 
                 {
                     if (isset($purposeList->{"$ObjectName"})) 
                     {
-                        
-                        $purposeObject->saveMemberPurpose($user->id, $ObjectName, $purposeList);                   
+                        $purposeObject->saveMemberPurpose($user->id, $ObjectName, $purposeList); 
+                        $purposeObject->saveTargetScores($user->id, $ObjectName, $purposeList);
                     }                
                 }
 
@@ -1626,7 +1619,7 @@ class MemberController extends Controller
               
 
                 /********************************************
-                            CREATE MEMBER PURPOSE [update]
+                            UPDATE MEMBER PURPOSE [update]
                 **********************************************/
                 $purposeObject = new Purpose(); 
                 $ObjectNameArray = array("IELTS", 
