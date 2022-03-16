@@ -197,7 +197,7 @@
 
             <!--- [START] TOEFL PRIMARY STEP 1-->
             <div class="checkbox-options">
-                <input type="checkbox" id="TOEFL_Primary" name="TOEFL_Primary_Step_1" value="TOEFL Primary Step 1" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Primary_Step_1"> TOEFL Primary Step 1
+                <input type="checkbox" id="TOEFL_Primary_Step_1" name="TOEFL_Primary_Step_1" value="TOEFL Primary Step 1" class="main_option" @click="checkMainOption" v-model="childPurposeList.TOEFL_Primary_Step_1"> TOEFL Primary Step 1
 
                 <div class="TOEFL ml-4 sub_options">
 

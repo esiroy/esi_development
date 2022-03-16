@@ -4,7 +4,7 @@
         <div class="row">
             <div class="col-4">  
 				<label for="examType">Exam Type</label>          
-                <select id="examType" name="examType" v-model="examType" @change="handleChangeExamType($event)" class="form-control form-control-sm">
+                <select>
                     <option value="" class="mx-0 px-0">Select Examination Type</option>
                     <option value="IELTS" class="mx-0 px-0">IELTS</option>
                     <option value="TOEFL">TOEFL iBT</option>
@@ -21,7 +21,7 @@
             </div>
             <div class="col-4">                 
 				<label for="currentScore">Current Score</label>
-				<input id="currentScore" name="currentScore" class="form-control form-control-sm" type="text"></input>
+				<input id="currentScore" name="currentScore" class="form-control form-control-sm" type="text">
             </div>
             <div class="col-4">
                 Target 

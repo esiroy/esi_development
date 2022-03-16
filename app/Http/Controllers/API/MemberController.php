@@ -1349,7 +1349,11 @@ class MemberController extends Controller
                             CREATE MEMBER PURPOSE (Dynamic)
                 **********************************************/
                 $purposeObject = new Purpose(); 
-                $ObjectNameArray = array("IELTS", "TOEFL", "TOEFL_Primary", "TOEIC", "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+                $ObjectNameArray = array("IELTS", 
+                            "TOEFL", "TOEFL_Junior", "TOEFL_Primary_Step_1", "TOEFL_Primary_Step_2", 
+                            "TOEIC", 
+                            "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+
 
                 foreach ($ObjectNameArray as $ObjectName) 
                 {
@@ -1617,21 +1621,18 @@ class MemberController extends Controller
                     MemberLevel::where('member_id', $data->user_id)->delete();
                  
                 }
-
-
-
                     
 
-                /********************************************
-                            DELETE: OLD MEMBER PURPOSE
-                **********************************************/
-                Purpose::where('member_id', $data->user_id)->delete();
+              
 
                 /********************************************
-                            CREATE MEMBER PURPOSE (Dynamic)
+                            CREATE MEMBER PURPOSE [update]
                 **********************************************/
                 $purposeObject = new Purpose(); 
-                $ObjectNameArray = array("IELTS", "TOEFL", "TOEFL_Primary", "TOEIC", "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
+                $ObjectNameArray = array("IELTS", 
+                            "TOEFL", "TOEFL_Junior", "TOEFL_Primary_Step_1", "TOEFL_Primary_Step_2", 
+                            "TOEIC", 
+                            "EIKEN", "TEAP", "BUSINESS", "BUSINESS_CAREERS", "DAILY_CONVERSATION", "OTHERS");
 
                 foreach ($ObjectNameArray as $ObjectName) 
                 {
