@@ -356,7 +356,6 @@
 
             </div>
             <!--[end] member information section-->
-
             <!--[start] Preferences -->
             <div id="preferred-tutor-section" class="section">
                 <div class="card-title bg-gray p-1">
@@ -367,6 +366,98 @@
                 </div>
                 <div class="row pt-2 mb-4">
                     <div class="col-12">
+
+
+           <!-- Purpose -->
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="purpose" class="p-0 col-md-12 col-form-label">
+                                    <!--<span class="text-danger">*</span>-->
+                                    Purpose <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-8">
+
+                                <ul class="checkbox-options">
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
+                                    </li>
+                                    
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="CONVERSATION" v-model="user.preference.purpose.CONVERSATION"  value="CONVERSATION">
+                                        <label>Get conversation(communication) skill</label>
+
+                                        <ul id="goalList" class="checkbox-options" v-if="user.preference.purpose.CONVERSATION">
+                                            <li><input type="radio" name="goal" value="BEGINNER" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Beginner- easy daily conversation level</li>
+                                            <li><input type="radio" name="goal" value="INTERMEDIATE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Intermediate- Daily conversation level</li>
+                                            <li><input type="radio" name="goal" value="ADVANCE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Advance - Social, Environment, Business English</li>
+                                            <li><input type="radio" name="goal" value="NATIVE" v-model="user.preference.purposeExtraDetails.CONVERSATION"> Be native level</li>
+                                        </ul>
+                                        <input type="hidden" name="extraDetails" value="BEGINNER">
+                                    </li>
+
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EIKEN" v-model="user.preference.purpose.ANTI_EIKEN"  value="ANTI_EIKEN">
+                                        English certification exam in Japan
+
+                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.ANTI_EIKEN" v-model="user.preference.purposeExtraDetails.ANTI_EIKEN" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="ANTI_EXAM" v-model="user.preference.purpose.ANTI_EXAM"  value="ANTI_EXAM"> 
+                                        Enter school
+                                        <ul id="examLevel" v-if="user.preference.purpose.ANTI_EXAM" style="list-style-type: none;">
+                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="JUNIOR_HIGH"> Junior High</li>
+                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="HIGHSCHOOL"> High school</li>
+                                            <li><input type="radio" name="antiExamLevel" v-model="user.preference.purposeExtraDetails.ANTI_EXAM" value="UNIVERSITY"> University</li>
+                                        </ul>                                            
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="TOEFL" v-model="user.preference.purpose.TOEFL" value="TOEFL" > 
+                                        TOEFL(目標スコアー 点)
+                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEFL" v-model="user.preference.purposeExtraDetails.TOEFL" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="TOEIC" v-model="user.preference.purpose.TOEIC" value="TOEIC">  
+                                        TOEIC(目標スコアー 点)
+                                        <input type="text" name="extraDetails" v-if="user.preference.purpose.TOEIC" v-model="user.preference.purposeExtraDetails.TOEIC" class="col-3 pl-1 form-control form-control-sm d-inline-block">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="STUDY_ABROAD" v-model="user.preference.purpose.STUDY_ABROAD" value="STUDY_ABROAD"> Study Abroad
+                                        <ul id="abroadLevel" style="list-style-type: none;"  v-if="user.preference.purpose.STUDY_ABROAD" >
+                                            <li><input type="radio" name="studyAbroadLevel" value="JUNIOR_HIGH" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> Junior High</li>
+                                            <li><input type="radio" name="studyAbroadLevel" value="HIGHSCHOOL" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> High school</li>
+                                            <li><input type="radio" name="studyAbroadLevel" value="UNIVERSITY" v-model="user.preference.purposeExtraDetails.STUDY_ABROAD"> University</li>
+                                        </ul>
+                                    </li>
+
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="business" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
+                                        <input type="hidden" name="extraDetails" v-if="user.preference.purpose.BUSINESS" v-model="user.preference.purposeExtraDetails.BUSINESS">
+                                    </li>
+
+                                    <li>
+                                        <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
+                                        <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
+                                            v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
+                                    </li>
+                                </ul>
+
+                                <!-- loop all purposes
+                                <div v-if="submitted && !$v.user.purposes.required" class="invalid-feedback" style="display: block">
+                                    Member Purpose is required, Please check at least one of the choices
+                                </div>
+                                -->
+
+                            </div>
+
+                        </div>
+                                            
                         <!--[start] lesson class row -->
                         <div id="lesson-class-row" class="row pt-2">
                             <div class="col-2">
@@ -1225,6 +1316,10 @@ export default {
         latestreportcard: {
             type: Object,
         },
+		purposes: {
+			type: Array
+		},
+
 		purpose: {
 			type: Array
 		},
@@ -1850,7 +1945,7 @@ export default {
         }
 
 		//Lesson Goals (purpose) (OLD Scheme)       
-        /*
+     
 		let item  = [];
 		for (item of this.purposes) {
 
@@ -1876,7 +1971,7 @@ export default {
             {
                 this.user.preference.purposeExtraDetails[item.purpose] = item.extra_detail;
             }
-		}*/
+		}
 
         let purposeItem  = [];
         let purposeOptionItem = [];

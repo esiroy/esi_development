@@ -154,6 +154,7 @@
                                 :userinfo="{{ json_encode($userInfo)  }}" 
                                 :memberinfo="{{ json_encode($memberInfo) }}" 
                                 :lessongoals="{{ json_encode($lessonGoals) }}" 
+                                :purposes="{{ json_encode($lessonGoals) }}"
                                 :purpose="{{ json_encode($purpose) }}" 
                                 :memberlatestexamscore ="{{ json_encode($memberLatestExamScore) }}" 
                                 :lessonclasses="{{ json_encode($lessonClasses) }}" 
