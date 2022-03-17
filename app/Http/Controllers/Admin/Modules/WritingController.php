@@ -308,9 +308,10 @@ class WritingController extends Controller
           
             if (isset($member)) 
             {
-                $user = User::find($member->user_id);
+                $user = User::where('id', $member->user_id)->first();
 
                 if (isset($user)) {
+                   
                     //E-Mail Template
                     $emailTemplate = 'emails.writing.teacherAutoreply';                    
                     $formatEntryHTML = view('emails.writing.writingTutorReplyHTML', compact('writingGrade'))->render();
