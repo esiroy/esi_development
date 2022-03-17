@@ -124,7 +124,7 @@ class WritingController extends Controller
 
 
     public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile, ScheduleItem $scheduleItem) 
-    {
+    {      
         $writingEntry = WritingEntries::find($id);
         $words =  $writingEntry->total_words;
         $member = $member->where('user_id', $writingEntry->user_id)->first();
@@ -294,7 +294,7 @@ class WritingController extends Controller
                 'subject'           => $request->subject,
                 'appointed'         => boolval($request->appointed),
                 'grade'             => $request->grade,
-                'words'             => $words ?? 0,
+                'words'             => $request->words ?? $writingEntry->total_words,
                 'content'           => $request->content,
                 'attachment'        => $attachment_url
             ];
