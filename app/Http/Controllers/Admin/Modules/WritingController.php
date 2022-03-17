@@ -162,7 +162,10 @@ class WritingController extends Controller
                     
 
                     //Update Deduction for Writing for Monthly 
-                    $data = ['total_points' => $totalDeductedPoints];
+                    $data = [
+                                'total_points' => $totalDeductedPoints,
+                                'total_words' =>  $words
+                            ];
                     $writingEntry->update($data);
                     
                     //Update Writing Entry Schedule
