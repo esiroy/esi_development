@@ -72,9 +72,10 @@ class SendAutoReplyJob implements ShouldQueue
         //$email = new MailAutoReply($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate)
         //Mail::to($emailTo)->send($email);
 
+        //Mail::send(new MailAutoReply($emailTo, $emailFrom, $emailSubject, $message, $emailTemplate, $emailAttachment, $showlabel));
+
         $email =  new MailAutoReply($emailTo, $emailFrom, $emailSubject, $message, $emailTemplate, $emailAttachment, $showlabel);
         Mail::to($emailTo)->send($email);
 
-       
     }
 }
