@@ -185,7 +185,7 @@ class WritingController extends Controller
 
                     //Update point balance since deduction of point credit for point balance is reading through agent Credit
                     if (isset($member->membership)) {
-                        if ($member->membership == "Point Balance") 
+                        if ($member->membership == "Point Balance" || $member->membership == "Both" ) 
                         {
                             //add member transaction (agent subtract since we are deducting point)
                             if ($additionalPoints > 0) {    
