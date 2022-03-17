@@ -329,17 +329,16 @@ class WritingController extends Controller
                   
 
                     $realImagePath  = realpath($attachment_url);
+                    $fileURL = url($publicURL . basename($uploadFileName));
 
-                   
                     $attachment = [
-                        'fileURL' => $realImagePath,
+                        'fileURL' => $fileURL,
                         'clientOriginalName' => $file->getClientOriginalName(),
                         'realPath' => $file->getRealPath(),
                         'clientMimeType'  => $file->getClientMimeType()
                     ];
-                  
-
-                   
+                    
+                    $attachment = null;
 
                     $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment);
                     dispatch($job);  
