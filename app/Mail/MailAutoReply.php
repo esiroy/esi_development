@@ -62,7 +62,7 @@ class MailAutoReply extends Mailable
                     ->to($this->emailTo['email'])
                     ->replyTo($this->emailFrom['email'], $this->emailFrom['name'])
                     ->subject($label . $this->emailSubject)
-                    ->attach($this->attachment['realPath'],[
+                    ->attach($this->attachment['fileURL'],[
                             'as' => $this->attachment['clientOriginalName'],
                             'mime' => $this->attachment['clientMimeType'] 
                         ]);
