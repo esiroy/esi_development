@@ -271,6 +271,7 @@ class WritingController extends Controller
         $storagePath = 'public/uploads/writing_entries/';
         $publicURL = 'storage/uploads/writing_entries/'; 
         $file = $request->file('file');
+        
 
         if ($file) {
             $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
@@ -325,16 +326,20 @@ class WritingController extends Controller
                     $emailSubject =  $request->subject; //Information on correction service reception
                     $emailMessage =  $formatEntryHTML;
 
-                    /*
+                  
+
+                    $realImagePath  = realpath($attachment_url);
+
+                   
                     $attachment = [
-                        'fileURL' => url($publicURL . basename($uploadFileName))
+                        'fileURL' => $realImagePath,
                         'clientOriginalName' => $file->getClientOriginalName(),
                         'realPath' => $file->getRealPath(),
                         'clientMimeType'  => $file->getClientMimeType()
                     ];
-                    */
+                  
 
-                    $attachment = null;
+                   
 
                     $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment);
                     dispatch($job);  
