@@ -122,7 +122,7 @@
                                         <td>
                                             <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
                                                
-                                                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                                                @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER') 
                                                     <option value="" class="{{ $entry->id }}"> Select </option>
                                                     @foreach($tutors as $tutor)
                                                     <option 
