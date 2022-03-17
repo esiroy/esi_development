@@ -375,31 +375,19 @@
                                                 <div id="{{$entry->id . '_countdown' }}" style="background-color:green; padding:0px 15px; width:80%; margin:auto; color:#fff">
                                                     
                                                 </div>
-                                                <script type="text/javascript">
-                                                window.addEventListener('load', function() {
-                                                    countdownLeft("{{$entry->id . '_countdown' }}", 
-                                                            "{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 48 hours')) }}", 
-                                                            "{{ date('M d, Y H:i:s', strtotime($grade->created_at)) }}");
-                                                    let elem = document.querySelector('#countdownLabel');
-                                                    elem.innerHTML = "Time Left After Submission";
-                                                });
-                                                </script> 
+                                              
                                             @else 
                                            
                                                 <div id="{{$entry->id . '_countdown' }}" style="background-color:blue; padding:0px 15px; width:80%; margin:auto; color:#fff">
                                                         <!--{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 2 days')) }}-->
                                                 </div>
 
-                                                <script type="text/javascript">
-                                                    window.addEventListener('load', function() {
-                                                        countdown("{{$entry->id . '_countdown' }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
-                                                    });
-                                                </script>
+                                              
                                             @endif
                                         </td>
                                         <td>
-
-                                             @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
+                                        
+                                            @if (Auth::user()->user_type == 'ADMINISTRATOR') 
                                                 <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
                                                     <option value="" class="{{ $entry->id }}"> Select </option>
                                                     @foreach($tutors as $tutor)
@@ -649,6 +637,10 @@
 
         function checkMemberCredits(overrideWordCount) 
         {            
+
+           let api_token = "{{ Auth::user()->api_token }}";
+
+
             $.ajax({
                 type: 'POST',
                 url: "{{ url('api/writing/checkMemberCredits?api_token=') }}" + api_token,
@@ -747,4 +739,23 @@
         });
 
     </script>
+
+    @if (isset($grade))
+        <script type="text/javascript">
+        window.addEventListener('load', function() {
+            countdownLeft("{{$entry->id . '_countdown' }}", 
+                    "{{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 48 hours')) }}", 
+                    "{{ date('M d, Y H:i:s', strtotime($grade->created_at)) }}");
+            let elem = document.querySelector('#countdownLabel');
+            elem.innerHTML = "Time Left After Submission";
+        });
+        </script> 
+    @else 
+        <script type="text/javascript">
+            window.addEventListener('load', function() {
+                countdown("{{$entry->id . '_countdown' }}", " {{ date('M d, Y H:i:s', strtotime($entry->created_at. ' + 47 hours')) }} ");
+            });
+        </script>
+    @endif
+
 @endsection
