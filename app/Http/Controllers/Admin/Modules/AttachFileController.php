@@ -53,6 +53,8 @@ class AttachFileController extends Controller
 
         print_r ($file);
 
+        
+
        
         if ($file) {
 
@@ -91,8 +93,11 @@ class AttachFileController extends Controller
                 $emailMessage =  $formatEntryHTML;
 
                 $attachment_url = $publicURL . basename($uploadFileName);
+
                 $realImagePath  = realpath($attachment_url);
                 $fileURL = url($publicURL . basename($uploadFileName));
+
+                
 
                 $attachment = [
                     'fileURL' => $fileURL,
