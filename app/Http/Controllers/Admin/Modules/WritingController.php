@@ -326,7 +326,7 @@ class WritingController extends Controller
                     $emailSubject =  $request->subject; //Information on correction service reception
                     $emailMessage =  $formatEntryHTML;
 
-                  
+                    /*
 
                     $realImagePath  = realpath($attachment_url);
                     $fileURL = url($publicURL . basename($uploadFileName));
@@ -337,8 +337,9 @@ class WritingController extends Controller
                         'realPath' => $file->getRealPath(),
                         'clientMimeType'  => $file->getClientMimeType()
                     ];
+                    */
                     
-                    //$attachment = null;
+                    $attachment = null;
 
                     $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate, $attachment);
                     dispatch($job);  
