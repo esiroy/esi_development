@@ -95,7 +95,7 @@ class AttachFileController extends Controller
                 $fileURL = url($publicURL . basename($uploadFileName));
 
                 $attachment = [
-                    'fileURL' => $realImagePath,
+                    'fileURL' => $fileURL,
                     'clientOriginalName' => $file->getClientOriginalName(),
                     'realPath' => $file->getRealPath(),
                     'clientMimeType'  => $file->getClientMimeType()
