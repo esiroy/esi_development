@@ -12,3 +12,6 @@ grade {{ $writingGrade['grade'] }} {{PHP_EOL}}
 
 
 Attachment {{ url($writingGrade['attachment']) }} {{PHP_EOL}}
+
+
+Link : <a href="{{ url($writingGrade['attachment']) }}">{{ basename($writingGrade['attachment']) }}</a> {{PHP_EOL}}

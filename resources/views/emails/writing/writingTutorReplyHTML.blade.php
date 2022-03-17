@@ -12,5 +12,5 @@
 
 
 <p>
-    Attachment : {{ url($writingGrade['attachment']) }} 
+    Attachment : <a href="{{ url($writingGrade['attachment']) }}">{{ basename($writingGrade['attachment']) }}</a>
 </p>

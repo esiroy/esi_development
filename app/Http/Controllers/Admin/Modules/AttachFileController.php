@@ -61,7 +61,7 @@ class AttachFileController extends Controller
             if ($uploadFileName) 
             {
 
-                print_r ($uploadFileName);
+         
 
 
                 $writingGrade = [
