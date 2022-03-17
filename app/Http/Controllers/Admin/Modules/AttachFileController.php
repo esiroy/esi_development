@@ -73,7 +73,7 @@ class AttachFileController extends Controller
                     'grade'             => "test",
                     'words'             => "test",
                     'content'           => "test",
-                    'attachment'        =>  url($publicURL . basename($uploadFileName));,
+                    'attachment'        =>  url($publicURL . basename($uploadFileName)),
                 ];
 
 
