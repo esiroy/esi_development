@@ -291,6 +291,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
+       
+        Route::resource('/attachfile', 'Modules\AttachFileController');
 
         //Admin Writing
         Route::resource('/writing', 'Modules\WritingController');
