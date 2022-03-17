@@ -181,7 +181,7 @@
 
 
 
-                @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' )
+                @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
 
                 <div class="mt-4">
                     <div class="col-12 message-container text-center"></div>

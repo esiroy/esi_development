@@ -7,7 +7,7 @@
                     <ol class="breadcrumb bg-light ">
                         <li class="breadcrumb-item"><a href="#">Home</a></li>
                         <li class="breadcrumb-item active"><a href="{{ url('admin/writing') }}">Writing</a></li>
-                        @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                         @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')  
                         <li class="breadcrumb-item "><a href="{{ url('admin/writing/entries/'.$form_id ) }}">Entries</a></li>
                         @endif
                         <li class="breadcrumb-item " aria-current="page">Entry - {{ $entry_id }}</li>
@@ -21,7 +21,7 @@
         <div class="row">
             <div class="col-md-12">
 
-                @if (Auth::user()->user_type == 'ADMINISTRATOR')  
+                 @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')   
                 <div class="card esi-card mb-2">                                 
                     @include('admin.modules.writing.includes.menu.navigation')
                 </div>
@@ -210,7 +210,7 @@
 
 
 
-                @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' )
+                @if (Auth::user()->user_type == 'TUTOR' || Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
 
                 <div class="mt-4">
                     <div class="col-12 message-container text-center"></div>
@@ -351,7 +351,7 @@
                                             Countdown
                                         </td>
                                         <td>
-                                            @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+                                            @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')  
                                                 Appoint Teacher
                                             @else 
                                                 Teacher
@@ -398,7 +398,8 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if (Auth::user()->user_type == 'ADMINISTRATOR') 
+
+                                             @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
                                                 <select id="assignTutor_{{ $entry->id }}" class="assignTutor">
                                                     <option value="" class="{{ $entry->id }}"> Select </option>
                                                     @foreach($tutors as $tutor)
