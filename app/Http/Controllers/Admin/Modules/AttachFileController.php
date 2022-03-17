@@ -82,7 +82,7 @@ class AttachFileController extends Controller
                 $formatEntryHTML = view('emails.writing.writingTutorReplyHTML', compact('writingGrade'))->render();
                 //E-Mail Recipient
                 $emailTo['name']    = "roy robert abellana";
-                $emailTo['email']   = "emailroy2002@yahoo.com"; 
+                $emailTo['email']   = "abellana@gmail.com"; 
                 //Email Reply To
                 $emailFrom['name']   = Config::get('mail.from.name');
                 $emailFrom['email']  = Config::get('mail.from.address');
