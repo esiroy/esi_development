@@ -483,6 +483,8 @@
 
             $('#sendMemberReloadEmail').on('click', function() 
             {
+                let api_token = "{{ Auth::user()->api_token }}";
+
                 $.ajax({
                     type: 'POST',
                     url: "{{ url('api/writing/sendReloadEmail?api_token=') }}" + api_token,
@@ -587,6 +589,9 @@
  
         function autoCheckMemberCredits(overrideWordCount) 
         {            
+
+            let api_token = "{{ Auth::user()->api_token }}";
+
             $.ajax({
                 type: 'POST',
                 url: "{{ url('api/writing/checkMemberCredits?api_token=') }}" + api_token,
