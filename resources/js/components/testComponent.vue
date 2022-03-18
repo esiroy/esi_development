@@ -22,7 +22,7 @@ export default {
     */
     capitalizeFirstLetter(string) {
         let newString = string.charAt(0).toUpperCase() + string.slice(1);    
-        newString = newString.replace(/_/g, " ")       
+        newString = newString.replace(/_/, " ")       
         return newString.trim(); 
     },    
   }
