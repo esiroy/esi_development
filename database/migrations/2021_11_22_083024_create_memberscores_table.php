@@ -31,6 +31,6 @@ class CreateMemberscoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('memberscores');
+        Schema::dropIfExists('member_scores');
     }
 }
