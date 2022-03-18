@@ -28,36 +28,36 @@ if (url[1] === 'admin') {
         case '':
         case 'dashboard':
         case 'lesson':
-            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+           // Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
             break;
         case 'member':
             if (url[4] === 'edit') {
                 console.log("load edit member!")
-                Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
+                //Vue.component('member-update-component', require('./components/MemberUpdateComponent.vue').default);
             } else {
 
-                Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
+                //Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
             }
 
             //url == member/{$id}
             if (url[3]) {
-                Vue.component('member-score-component', require('./components/backend/member/MemberScoreViewerComponent.vue').default);
-                Vue.component('member-purpose-viewer-component', require('./components/backend/member/MemberPurposeViewerComponent.vue').default);
-                Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
+                //Vue.component('member-score-component', require('./components/backend/member/MemberScoreViewerComponent.vue').default);
+               // Vue.component('member-purpose-viewer-component', require('./components/backend/member/MemberPurposeViewerComponent.vue').default);
+                //Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
             }
             break;
         case 'reportcard':
-            Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
+            //Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
 
             break;
         case 'customerchatsupport':
-            Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
+            //Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
             break;
 
 
         default:
-            console.log("admin default page loaded")
-            Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
+            //console.log("admin default page loaded")
+            //Vue.component('schedule-item-component', require('./components/ScheduleItemComponent.vue').default);
 
     }
 
@@ -67,17 +67,17 @@ if (url[1] === 'admin') {
     //front end 
     switch (url[1]) {
         case 'customerchatsupport':
-            Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
+            //Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
             break;
         default:
             console.log("member interface loaded")
     }
 
 
-    Vue.component('member-purpose-component', require('./components/frontend/member/MemberPurposeComponent.vue').default)
-    Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
-    Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
-    Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);
+    // Vue.component('member-purpose-component', require('./components/frontend/member/MemberPurposeComponent.vue').default)
+    // Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
+    //Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
+    //Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);
 
     Vue.component('test-component', require('./components/testComponent.vue').default)
 

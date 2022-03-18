@@ -9,16 +9,13 @@ export default {
   methods: {
     ucwords(string) {
       let wordArray = string.split(" ");
-
       for (var i = 0; i < wordArray.length; i++) {
         wordArray[i] = wordArray[i].charAt(0).toUpperCase() + wordArray[i].slice(1);
       }
-
       let words = wordArray.join(" ");
-
       return words;
-
     }
+    
   }
 }
 </script>
