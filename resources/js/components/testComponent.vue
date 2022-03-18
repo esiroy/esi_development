@@ -9,7 +9,6 @@ export default {
   methods: {
  
     ucwords(string) {
-<<<<<<< HEAD
         return string.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())  
     },
     FormatObjectKey(string) {
@@ -24,14 +23,6 @@ export default {
         newString = newString.replace(/_/g, " ")       
         return newString.trim(); 
     },    
-=======
-        let words = string.split(" "); 
-        for (let i = 0; i < words.length; i++) {
-            words[i] = words[i][0].toUpperCase() + words[i].substr(1);
-        }
-        return words.join(" ");
-    } 
->>>>>>> 09042ab482730a12e15bb80626a93efd34ac259a
   }
 }
 </script>
