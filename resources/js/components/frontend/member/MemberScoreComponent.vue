@@ -896,9 +896,6 @@
             let examTypeValue = event.target.value;                    
             let examType = this.replaceSpaceToDash(examTypeValue);
 
-            alert (examType);
-
-
             this.hideClass('examScoreHolder');
             if (examType.length  > 0 ) {
                 this.showElementId('examination-score-'+ examType);
@@ -942,9 +939,7 @@
         },
         replaceSpaceToDash(string) {
             let wordArray = string.split(" ");
-            let words = wordArray.join("-[roy]");
-
-            alert (words)
+            let words = wordArray.join("-");
             return words;        
         },
         removeUnderscore(string) {
