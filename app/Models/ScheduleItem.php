@@ -815,7 +815,7 @@ class ScheduleItem extends Model
 
              $lessons = ScheduleItem::where('member_id', $memberID)
             //->where('schedule_item.valid', 1)
-            ->orderBy('created_at', 'desc')
+            //->orderBy('created_at', 'desc')
             ->orderBy('lesson_time', 'desc')
             ->paginate(Auth::user()->items_per_page);
 
