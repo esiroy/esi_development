@@ -3014,26 +3014,29 @@ export default {
             
             this.user.eikenList.push(["40-1"]);
         },
-
-        FormatObjectKey(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = newString.replace(/_/g, " ")
-
-            //add space before big letters
-            return newString.replace(/([A-Z])/g, ' $1').trim(); 
-        },
-        capitalizeFirstLetter(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);    
-            newString = newString.replace(/_/g, " ")       
-            return newString.trim(); 
-        }, 
         ucwords(string) {
-            let words = string.split(" "); 
-            for (let i = 0; i < words.length; i++) {
-                words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+            let wordArray = string.split(" ");
+            for (var i = 0; i < wordArray.length; i++) {
+                wordArray[i] = wordArray[i].charAt(0).toUpperCase() + wordArray[i].slice(1);
             }
-            return words.join(" ");
-        },          
+            let words = wordArray.join(" ");
+            return words;
+        },
+        removeUnderscore(string) {
+            let wordArray = string.split("_");
+            let words = wordArray.join(" ");
+            return words;
+        },    
+        capitalizeFirstLetter(string) {
+            let words = this.removeUnderscore(string);
+            let newString = words.charAt(0).toUpperCase() + words.slice(1); 
+            return newString.trim(); 
+        },   
+        FormatObjectKey(string) {
+            let wordArray = string.split(/(?=[A-Z])/);
+            let words = wordArray.join(" ");
+            return words;
+        },        
         getTotalScore(ExamType) 
         {
             let selection = $('div#examination-score-'+ExamType).find('select');

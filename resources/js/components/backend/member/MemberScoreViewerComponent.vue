@@ -612,14 +612,7 @@
         {
             let fdate = Moment(date).format('YYYY年 MM月 D日');                      
             return fdate;            
-        },        
-        capitalizeFirstLetter(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = newString.replace(/_/g, " ")
-
-            //add space before big letters
-            return newString.replace(/([A-Z])/g, ' $1').trim(); 
-        },      
+        },
         highlightExamElement()  
         {                       
             let examType = document.getElementById('examType').value;
@@ -863,22 +856,28 @@
             return fdate;            
         },    
         ucwords(string) {
-            return string.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())  
-        },             
-        capitalizeFirstLetter(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = newString.replace(/_/g, " ")
-
-            //add space before big letters
-            return newString.replace(/([A-Z])/g, ' $1').trim(); 
-        },         
-        FormatObjectKey(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = newString.replace(/_/g, " ")
-
-            //add space before big letters
-            return newString.replace(/([A-Z])/g, ' $1').trim(); 
+            let wordArray = string.split(" ");
+            for (var i = 0; i < wordArray.length; i++) {
+                wordArray[i] = wordArray[i].charAt(0).toUpperCase() + wordArray[i].slice(1);
+            }
+            let words = wordArray.join(" ");
+            return words;
         },
+        removeUnderscore(string) {
+            let wordArray = string.split("_");
+            let words = wordArray.join(" ");
+            return words;
+        },    
+        capitalizeFirstLetter(string) {
+            let words = this.removeUnderscore(string);
+            let newString = words.charAt(0).toUpperCase() + words.slice(1); 
+            return newString.trim(); 
+        },   
+        FormatObjectKey(string) {
+            let wordArray = string.split(/(?=[A-Z])/);
+            let words = wordArray.join(" ");
+            return words;
+        }, 
         resetModal() {
             this.submitted = false;
             this.resetScoreData();            

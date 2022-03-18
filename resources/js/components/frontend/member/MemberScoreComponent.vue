@@ -536,7 +536,8 @@
                 document.getElementById("examType").setAttribute("disabled", "disabled");
 
                 this.hideClass('examScoreHolder');              
-                let examTypeSelect = this.examType.replace(/\s+/g, '-');
+                let examTypeSelect = this.replaceSpaceToDash(this.examType);
+
                 if (examTypeSelect.length  > 0 ) 
                 {               
                     this.showElementId('examination-score-'+ examTypeSelect); 
@@ -893,7 +894,11 @@
             this.submitted = false;
 
             let examTypeValue = event.target.value;                    
-            let examType = examTypeValue.replace(/\s+/g, '-');
+            let examType = this.replaceSpaceToDash(examTypeValue);
+
+            alert (examType);
+
+
             this.hideClass('examScoreHolder');
             if (examType.length  > 0 ) {
                 this.showElementId('examination-score-'+ examType);
@@ -928,18 +933,34 @@
             return fdate;            
         },    
         ucwords(string) {
-            let words = string.split(" "); 
-            for (let i = 0; i < words.length; i++) {
-                words[i] = words[i][0].toUpperCase() + words[i].substr(1);
+            let wordArray = string.split(" ");
+            for (var i = 0; i < wordArray.length; i++) {
+                wordArray[i] = wordArray[i].charAt(0).toUpperCase() + wordArray[i].slice(1);
             }
-            return words.join(" ");
-        },              
-        capitalizeFirstLetter(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = newString.replace(/_/g, " ")
+            let words = wordArray.join(" ");
+            return words;
+        },
+        replaceSpaceToDash(string) {
+            let wordArray = string.split(" ");
+            let words = wordArray.join("-[roy]");
 
-            //add space before big letters
-            return newString.replace(/([A-Z])/g, ' $1').trim(); 
+            alert (words)
+            return words;        
+        },
+        removeUnderscore(string) {
+            let wordArray = string.split("_");
+            let words = wordArray.join(" ");
+            return words;
+        },    
+        capitalizeFirstLetter(string) {
+            let words = this.removeUnderscore(string);
+            let newString = words.charAt(0).toUpperCase() + words.slice(1); 
+            return newString.trim(); 
+        },   
+        FormatObjectKey(string) {
+            let wordArray = string.split(/(?=[A-Z])/);
+            let words = wordArray.join(" ");
+            return words;
         },      
         highlightExamElement()  
         {                       
@@ -1148,18 +1169,7 @@
             }
             return fdate;
         },  
-        FormatObjectKey(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = newString.replace(/_/g, " ")
 
-            //add space before big letters
-            return newString.replace(/([A-Z])/g, ' $1').trim(); 
-        },        
-        capitalizeFirstLetter(string) {
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);    
-            newString = newString.replace(/_/g, " ")       
-            return newString.trim(); 
-        },
         resetButtons() 
         {
             this.updateType = null;                 
