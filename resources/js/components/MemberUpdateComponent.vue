@@ -355,30 +355,33 @@
                 </div>
 
             </div>
+            
             <!--[end] member information section-->
+
             <!--[start] Preferences -->
             <div id="preferred-tutor-section" class="section">
                 <div class="card-title bg-gray p-1">
                     <div class="pl-2 font-weight-bold small">
-                        <!--Preferred Tutor-->
-                        Member Monthly Lesson Credits 
+                       
+                        Attention <!--this is purpose old-->
                     </div>
                 </div>
+             
                 <div class="row pt-2 mb-4">
                     <div class="col-12">
-
-
-           <!-- Purpose -->
+                       <!-- Purpose -->
                         <div class="row">
                             <div class="col-2 small pr-0">
                                 <label for="purpose" class="p-0 col-md-12 col-form-label">
-                                    <!--<span class="text-danger">*</span>-->
-                                    Purpose <div class="float-right">:</div>
+                                    <span class="text-danger">&nbsp;</span>
+                                    Teacher Attention <div class="float-right">:</div>
                                 </label>
                             </div>
                             <div class="col-8">
 
                                 <ul class="checkbox-options">
+
+                                    <!--
                                     <li>
                                         <input type="checkbox" ref="purposes" name="purposes" id="BILINGUAL"  v-model="user.preference.purpose.BILINGUAL"  value="BILINGUAL"> Take part in Bilingual training course                                            
                                     </li>
@@ -440,9 +443,10 @@
                                         <input type="checkbox" ref="purposes" name="purposes" id="business" v-model="user.preference.purpose.BUSINESS" value="BUSINESS"> Business English
                                         <input type="hidden" name="extraDetails" v-if="user.preference.purpose.BUSINESS" v-model="user.preference.purposeExtraDetails.BUSINESS">
                                     </li>
+                                      -->
 
                                     <li>
-                                        <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Others 
+                                        <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Note 
                                         <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
                                             v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
                                     </li>
@@ -457,6 +461,21 @@
                             </div>
 
                         </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!--[start] Preferences -->
+            <div id="preferred-tutor-section" class="section">
+                <div class="card-title bg-gray p-1">
+                    <div class="pl-2 font-weight-bold small">
+                        Member Monthly Lesson Credits 
+                    </div>
+                </div>
+                <div class="row pt-2 mb-4">
+                    <div class="col-12">
+ 
                                             
                         <!--[start] lesson class row -->
                         <div id="lesson-class-row" class="row pt-2">
