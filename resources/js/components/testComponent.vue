@@ -9,15 +9,7 @@ export default {
   methods: {
     ucwords(string) {
         return string.toLowerCase().replace(/(?<= )[^\s]|^./g, a=>a.toUpperCase())  
-    },
-   
-    convertUnderscoreToSpaces() {
-
-    },
-    capitalizeFirstLetter(string) {
-        let newString = string.charAt(0).toUpperCase() + string.slice(1); 
-        return newString.trim(); 
-    },
+    }
   }
 }
 </script>
