@@ -20,11 +20,14 @@ export default {
         return newString.replace(/([A-Z])/g, ' $1').trim(); 
     },
     */
+    convertUnderscoreToSpaces() {
+
+    },
     capitalizeFirstLetter(string) {
-        let newString = string.charAt(0).toUpperCase() + string.slice(1);    
-        newString = newString.replace(/_/, " ")       
+        let newString = string.charAt(0).toUpperCase() + string.slice(1);  
+        //newString = newString.replace(/_/g, " ")               
         return newString.trim(); 
-    },    
+    },
   }
 }
 </script>
