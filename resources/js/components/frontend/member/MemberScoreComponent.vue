@@ -194,7 +194,7 @@
                             </div>
                         </div>
 
-                        <div class="row">
+                        <div class="row" v-if="isMobile(1) == false">
                             <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                     <div class="card esi-card mb-3">
                                         <div class="card-header esi-card-header small">
@@ -207,6 +207,7 @@
                                         </div>
 
                                         <div v-for="(values, index) in examScoreList[examScoreType]" :key="index">
+                                        
                                             <div :id="examScoreType" :class="examScoreType" v-if="index == 'rows'">
 
                                                 <div v-if="examScoreList[examScoreType].rows >= 1">
@@ -256,9 +257,86 @@
                                             </div>
                                         </div>
                                     </div>
-                            </div>    
+                            </div> 
+                        </div>
+
+
+                        <div class="row" v-if="isMobile(2) == true">
+
+                             <div class="col-12 mb-2" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
+                                <b-card no-body>
+                                    <b-card-header header-tag="header" class="p-1" role="tab">
+                                        <b-button block v-b-toggle="'accordion-'+examScoreType" variant="info">{{ capitalizeFirstLetter(examScoreType) }}</b-button>
+                                    </b-card-header>
+                                    <b-collapse :id="'accordion-'+examScoreType" :visible=isAccordionExpanded(examScoreTypeIndex) accordion="my-accordion" role="tabpanel">
+                                        <b-card-body>
+                                            <b-card-text>
+
+
+                                                <div class="float-right" v-if="examScoreList[examScoreType].rows >= 1">
+                                                    <a href="#" @click.prevent="showUpdateScoreForm(examScoreType)" class="mr-1"><b-icon icon="pencil-square" aria-hidden="true"></b-icon></a>
+                                                    <a href="#" @click.prevent="deleteScore(examScoreType, examScoreList[examScoreType].items.details[0].id)"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                                </div>
+                                                
+                                                <div v-for="(values, index) in examScoreList[examScoreType]" :key="index">
+                                                
+                                                    <div :id="examScoreType" :class="examScoreType" v-if="index == 'rows'">
+
+                                                        <div v-if="examScoreList[examScoreType].rows >= 1">
+
+                                                            <table class="table esi-table table-bordered table-striped" >
+                                                                <tbody :id="item.id" v-for="(item, itemIndexKey) in examScoreList[examScoreType].items.data" :key="itemIndexKey">
+                                                                    <tr>
+                                                                        <td> Exam Date </td>
+                                                                        <td>
+                                                                            {{ dateFormatter(examScoreList[examScoreType].items.details[itemIndexKey].exam_date) }}
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr v-for="(field, fieldKey) in examScoreList[examScoreType].fields" :key="fieldKey" >
+                                                                        <td class="mb-4" >
+                                                                            {{ ucwords(FormatObjectKey(field)) }}
+                                                                        </td>
+                                                                        <td class="mb-4" >
+                                                                        <!-- {{ item[field] }} (reactive)-->
+                                                                            {{ examScoreDisplay[examScoreType +'_display'].items.data[0][field]  }}
+                                                                        </td>                                                                         
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        
+                                                            <div class="mt-4">
+                                                                <b-pagination
+                                                                    v-model="examScoreList[examScoreType].currentPage"
+                                                                    @input="changePage(examScoreType, examScoreList[examScoreType].currentPage)"
+                                                                    :total-rows="examScoreList[examScoreType].rows"
+                                                                    :per-page="examScoreList[examScoreType].perPage"
+                                                                    first-text="<<"
+                                                                    prev-text="<"
+                                                                    next-text=">"
+                                                                    last-text=">>"
+                                                                    size="sm"
+                                                                    align="center"                                            
+                                                                ></b-pagination>
+                                                            </div>
+
+                                                        </div>
+                                                        <div v-else class="text-center py-5">
+                                                            <span class="small text-info">
+                                                                No results found
+                                                            </span>
+                                                        </div>
+
+                                                    </div>
+                                                </div>                                                
+                                            </b-card-text>                                        
+                                        </b-card-body>
+                                    </b-collapse>
+                                </b-card>
+
+                             </div>
 
                         </div>
+
 
                     </div>
                     <div v-else>
@@ -293,17 +371,15 @@
                         </div>
 
 
-                        <div class="row graph-list" v-if="isMobile() == false">
+                        <div class="row graph-list" v-if="isMobile(3) == false">
                             <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                 <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
                             </div>
                         </div>
 
-                        <div class="accordion" role="tablist" v-if="isMobile() == true">
-
+                        <div class="accordion" role="tablist" v-if="isMobile(4) == true">
                             <div class="col-md-12">
-
-                                <b-card no-body class="mb-1" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
+                                <b-card no-body class="mb-2" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                     <b-card-header header-tag="header" class="p-1" role="tab">
                                         <b-button block v-b-toggle="'accordion-'+examScoreType" variant="info">{{ capitalizeFirstLetter(examScoreType) }}</b-button>
                                     </b-card-header>
@@ -315,12 +391,8 @@
                                         </b-card-body>
                                     </b-collapse>
                                 </b-card>
-
-                            </div>
-                            
+                            </div>                            
                         </div>
-
-
                     </div>
 
 
@@ -515,15 +587,10 @@
     mounted: function () 
 	{
         this.getMemberLatestExamScore();
-
-      
-        
-     
-
     },
     methods: {   
-        isMobile() {
-            console.log(screen.width  +  " " +  window.innerWidth);
+        isMobile(index) {
+            console.log(index + " : " + screen.width  +  " " +  window.innerWidth);
 
             if (window.innerWidth <= 1024 || screen.width  <= 1024 ) {
                 return true
@@ -615,6 +682,13 @@
                     this.examScoreList[examType] = response.data.examScoreList[examType];
                     this.examScoreDisplay[examType + '_display'] = response.data.examScoreDisplay[examType + '_display'];
                     this.$forceUpdate();
+
+                    if (this.isMobile() == true) {
+                        $(".modal-dialog").css({
+                            'max-width': '90%'
+                        });                  
+                    }
+
                 }
                 else
                 {
@@ -631,6 +705,8 @@
         getMemberExamScoreByType() 
         {
             this.loaded = false;
+
+            
 
             axios.post("/api/getMemberExamScoreByType?api_token=" + this.api_token, 
             {
@@ -649,6 +725,13 @@
                     this.examScoreTypes = response.data.examTypes;
                     this.examScoreList = response.data.examScoreList;
                     this.examScoreDisplay = response.data.examScoreDisplay;
+
+                    if (this.isMobile() == true) {
+                        $(".modal-dialog").css({
+                            'max-width': '90%'
+                        });                  
+                    } 
+
                 }
                 else
                 {
@@ -666,8 +749,7 @@
         getMemberScoreGraph() 
         { 
             this.loaded = false;
-
-   
+          
 
             axios.post("/api/getMemberScoreHistory?api_token=" + this.api_token, 
             {
@@ -676,6 +758,8 @@
             }).then(response => {    
                        
                 this.loaded = true;
+
+     
 
                 if (response.data.success === true) 
                 {
@@ -737,15 +821,13 @@
                         }
                           
                     });
-
+                    
                     if (this.isMobile() == true) {
                         $(".modal-dialog").css({
                             'max-width': '90%'
                         });                  
-                    }
+                    } 
 
-                
-                    
                 } else {
 
                     this.examScoreTypes = [];
@@ -888,62 +970,83 @@
         },
         deleteScore(examType, id) 
        {
-            axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
-            {
-                method          : "POST",
-                id              : id,
-                examType        : examType,
-                                
-            }).then(response => {
 
-                //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
-                                
-                if (response.data.success === true) 
-                {    
-                    if (examType == "EIKEN") 
-                    {
-                        let currentPage = this.examScoreList[examType + '_Grade_' + this.examLevel].currentPage;
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this score.', {
+                title: 'Please Confirm',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                if (value == true) {
+                    this.deleteScoreRecord(examType, id);
+                }
+              
+            }).catch(err => {
+                // An error occurred
+            });
 
-                        if (currentPage > 1) {
-                            let previous_page_eiken = parseInt(currentPage) - 1;
-                            this.getMemberExamScoreByPage(examType + '_Grade_' + this.examLevel, previous_page_eiken);
+        },
+        deleteScoreRecord(examType, id) {
+        
+                axios.post("/api/deleteMemberExamScore?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    id              : id,
+                    examType        : examType,
+                                    
+                }).then(response => {
+
+                    //HIDE LOADER HERE
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();
+                                    
+                    if (response.data.success === true) 
+                    {    
+                        if (examType == "EIKEN") 
+                        {
+                            let currentPage = this.examScoreList[examType + '_Grade_' + this.examLevel].currentPage;
+
+                            if (currentPage > 1) {
+                                let previous_page_eiken = parseInt(currentPage) - 1;
+                                this.getMemberExamScoreByPage(examType + '_Grade_' + this.examLevel, previous_page_eiken);
+                            } else {
+                                this.getMemberExamScoreByPage(examType, 1);    
+                            }
                         } else {
-                            this.getMemberExamScoreByPage(examType, 1);    
-                        }
-                        
+                            let currentPage = this.examScoreList[examType].currentPage;
 
-                        
-                    } else {
-                        
-                        let currentPage = this.examScoreList[examType].currentPage;
-
-                        if (currentPage > 1) {
-                            let previous_page = parseInt(currentPage) - 1;
-                            this.getMemberExamScoreByPage(examType, previous_page);
-                        } else {
-                            this.getMemberExamScoreByPage(examType, 1);
+                            if (currentPage > 1) {
+                                let previous_page = parseInt(currentPage) - 1;
+                                this.getMemberExamScoreByPage(examType, previous_page);
+                            } else {
+                                this.getMemberExamScoreByPage(examType, 1);
+                            }
                         }
-                        
+
+                        this.getMemberLatestExamScore();
+
+                    } else {                 
+                    
                         
                     }
 
-                    this.getMemberLatestExamScore();
+                }).catch(function(error) {
 
-                } else {                 
-                
-                    
-                }
+                    //HIDE LOADER HERE
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();
+                    console.log(error);
+                }); 
+                            
+           
 
-			}).catch(function(error) {
-
-                //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
-                console.log(error);
-            }); 
-        },        
+        },                    
         handleChangeExamType(event) 
         {
             this.examLevel = "";
@@ -1011,6 +1114,7 @@
         FormatObjectKey(string) {
             let wordArray = string.split(/(?=[A-Z])/);
             let words = wordArray.join(" ");
+            words = this.removeUnderscore(words);
             return words;
         },      
         highlightExamElement()  
