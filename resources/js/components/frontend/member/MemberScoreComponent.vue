@@ -194,7 +194,7 @@
                             </div>
                         </div>
 
-                        <div class="row" v-if="isMobile(1) == false">
+                        <div class="row" v-if="isMobile() == false">
                             <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                     <div class="card esi-card mb-3">
                                         <div class="card-header esi-card-header small">
@@ -261,7 +261,7 @@
                         </div>
 
 
-                        <div class="row" v-if="isMobile(2) == true">
+                        <div class="row" v-if="isMobile() == true">
 
                              <div class="col-12 mb-2" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                 <b-card no-body>
@@ -371,13 +371,13 @@
                         </div>
 
 
-                        <div class="row graph-list" v-if="isMobile(3) == false">
+                        <div class="row graph-list" v-if="isMobile() == false">
                             <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                 <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
                             </div>
                         </div>
 
-                        <div class="accordion" role="tablist" v-if="isMobile(4) == true">
+                        <div class="accordion" role="tablist" v-if="isMobile() == true">
                             <div class="col-md-12">
                                 <b-card no-body class="mb-2" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                     <b-card-header header-tag="header" class="p-1" role="tab">
@@ -589,8 +589,8 @@
         this.getMemberLatestExamScore();
     },
     methods: {   
-        isMobile(index) {
-            console.log(index + " : " + screen.width  +  " " +  window.innerWidth);
+        isMobile() {
+           
 
             if (window.innerWidth <= 1024 || screen.width  <= 1024 ) {
                 return true
@@ -739,8 +739,7 @@
                     this.examScoreTypes = [];
                     this.examScoreList = [];
                     this.examScoreDisplay = [];
-
-                    console.log(response.data.message);
+                    //console.log(response.data.message);
                 }
             }).catch(function(error) {
                 console.log("Error " + error);
@@ -834,7 +833,7 @@
                     this.examScoreList = [];
                     this.examScoreDisplay = [];
 
-                    console.log(response.data.message);
+                    //console.log(response.data.message);
                 }
 
             }).catch(function(error) {
@@ -1160,7 +1159,7 @@
                         
                         if(!$.isNumeric(numeric)) 
                         {
-                            console.log(elementID + "  will be highlighted");
+                            //console.log(elementID + "  will be highlighted");
                             $('#'+elementID).addClass('border border-danger')
                         } else {
 
@@ -1178,7 +1177,7 @@
                     let numeric = parseInt($(this).val())
                     if(!$.isNumeric(numeric)) 
                     {
-                        console.log(elementID + "  will be highlighted");
+                        //console.log(elementID + "  will be highlighted");
                         $('#'+elementID).addClass('border border-danger')
                     } else {
                         $('#'+elementID).removeClass('border border-danger')
@@ -1211,7 +1210,7 @@
                 let numeric = parseInt($(this).val())
                 if(!$.isNumeric(numeric)) 
                 {
-                    console.log(elementID + "  will be highlighted");
+                    //console.log(elementID + "  will be highlighted");
                     $('#'+elementID).addClass('border border-danger')
                 } else {
                     $('#'+elementID).removeClass('border border-danger')
@@ -1254,7 +1253,7 @@
         getTotalScore(ExamType) 
         {
             let selection = $('div#examination-score-'+ExamType).find('select');
-            console.log(selection.length);
+            //console.log(selection.length);
 
             let total = 0;
             let filled_selection_length = 0;
@@ -1271,7 +1270,7 @@
                         //this will not be added to total score, since this is a total score element
                     } else {
                         total = parseInt(total) + parseInt($(this).val());                    
-                        console.log($(this).attr('id') + " " + parseInt($(this).val() ));
+                        //console.log($(this).attr('id') + " " + parseInt($(this).val() ));
                     }
                 } else {
                     console.log("empty");
