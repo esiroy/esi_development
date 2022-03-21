@@ -184,7 +184,7 @@
 
             <!-- [START] SCORE MODAL -->
             <div id="memberExamScoreList" class="modal-container">                    
-                <b-modal id="modalMemberExamScoreList" title="テストスコア履歴" size="xl" @show="getMemberExamScoreByType">  
+                <b-modal id="modalMemberExamScoreList" scrollable title="テストスコア履歴" size="xl" @show="getMemberExamScoreByType">  
 
                     <div v-if="loaded == true">
 
@@ -281,7 +281,8 @@
 
             <!-- [START] SCORE MODAL GRAPH -->
             <div id="memberExamScoreGraph" class="modal-container">
-                <b-modal id="modalMemberExamScoreGraph" title="テストスコア履歴 グラフ" size="xl" @show="getMemberScoreGraph"> 
+            
+                <b-modal id="modalMemberExamScoreGraph" scrollable title="テストスコア履歴 グラフ" size="xl" @show="getMemberScoreGraph"> 
 
                     <div v-if="loaded == true">
 
@@ -292,13 +293,38 @@
                         </div>
 
 
-                        <div class="row">
+                        <div class="row graph-list" v-if="isMobile() == false">
                             <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
                                 <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
                             </div>
                         </div>
 
+                        <div class="accordion" role="tablist" v-if="isMobile() == true">
+
+                            <div class="col-md-12">
+
+                                <b-card no-body class="mb-1" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
+                                    <b-card-header header-tag="header" class="p-1" role="tab">
+                                        <b-button block v-b-toggle="'accordion-'+examScoreType" variant="info">{{ capitalizeFirstLetter(examScoreType) }}</b-button>
+                                    </b-card-header>
+                                    <b-collapse :id="'accordion-'+examScoreType" :visible=isAccordionExpanded(examScoreTypeIndex) accordion="my-accordion" role="tabpanel">
+                                        <b-card-body>
+                                            <b-card-text>
+                                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
+                                            </b-card-text>                                        
+                                        </b-card-body>
+                                    </b-collapse>
+                                </b-card>
+
+                            </div>
+                            
+                        </div>
+
+
                     </div>
+
+
+
                     <div v-else>
                         <div class="d-flex justify-content-center my-4">
                             <b-spinner label="Loading..." variant="success"></b-spinner>
@@ -490,9 +516,28 @@
 	{
         this.getMemberLatestExamScore();
 
+      
+        
+     
+
     },
     methods: {   
+        isMobile() {
+            console.log(screen.width  +  " " +  window.innerWidth);
 
+            if (window.innerWidth <= 1024 || screen.width  <= 1024 ) {
+                return true
+            } else {
+                return false
+            }
+        },
+        isAccordionExpanded(index) {
+            if (index == 0) {
+                return true
+            } else {
+                return false;
+            }
+        },
         changePage (examType, page) {
             this.getMemberExamScoreByPage(examType, page);
         },
@@ -622,6 +667,8 @@
         { 
             this.loaded = false;
 
+   
+
             axios.post("/api/getMemberScoreHistory?api_token=" + this.api_token, 
             {
                 method      : "POST",
@@ -690,6 +737,14 @@
                         }
                           
                     });
+
+                    if (this.isMobile() == true) {
+                        $(".modal-dialog").css({
+                            'max-width': '90%'
+                        });                  
+                    }
+
+                
                     
                 } else {
 
@@ -703,6 +758,7 @@
             }).catch(function(error) {
                 console.log("Error " + error);
             });
+
         }, 
         addExamScore(event) 
         {
@@ -1260,7 +1316,7 @@
 </script>
 
 
-<style type="text/css" >
+<style type="text/css">
 
     .sub_options, .examScoreHolder, .loading-container {
         display: none;
@@ -1269,6 +1325,5 @@
     .memberExamTable td {
         font-size: 11px;
     }
-
 
 </style>
