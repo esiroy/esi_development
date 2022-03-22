@@ -360,7 +360,7 @@
             <!-- [START] SCORE MODAL GRAPH -->
             <div id="memberExamScoreGraph" class="modal-container">
             
-                <b-modal id="modalMemberExamScoreGraph" scrollable title="テストスコア履歴 グラフ" size="xl" @show="getMemberScoreGraph"> 
+                <b-modal id="modalMemberExamScoreGraph"  title="テストスコア履歴 グラフ" size="xl" @show="getMemberScoreGraph"> 
 
                     <div v-if="loaded == true">
 
@@ -422,7 +422,8 @@
 <script>
     import LineChart from '../../frontend/chart/lineChartComponent.vue';
     import Vuelidate from "vuelidate";
-    Vue.use(Vuelidate);import PurposeComponent from "../../purpose/PurposeComponent.vue";
+    Vue.use(Vuelidate);
+    import PurposeComponent from "../../purpose/PurposeComponent.vue";
     //Import Score Types
     import IELTScoreComponent from "../../scores/IELTScoreComponent.vue";
     import ToeflScoreComponent from "../../scores/ToeflScoreComponent.vue";
@@ -758,8 +759,6 @@
                        
                 this.loaded = true;
 
-     
-
                 if (response.data.success === true) 
                 {
 
@@ -796,26 +795,89 @@
                                 }                                
                             ],                           
                         }
-                        
+
+
+                        let TypeTest = this.removeUnderscore(type);
+
+
                         if (type == "Other_Test") 
                         {                        
                             this.extraOptions['Other_Test'] = null;
                         } else {
-                        
+
+
                             this.extraOptions[type] = { 
-                                scales: {
-                                    yAxes: [
-                                    {
-                                        ticks: {
-                                            min: 0,
-                                            max: max[type],
-                                            stepSize: 1,
-                                            reverse: false,
-                                            beginAtZero: true
-                                        }
-                                    }]
-                                }
-                            };
+                                    scales: {
+                                        yAxes: [
+                                        {
+                                            ticks: {
+                                                min: 0,
+                                                max: max[type],
+                                                stepSize: 1,
+                                                reverse: false,
+                                                beginAtZero: true
+                                            }
+                                        }]
+                                    }
+                                };
+                         
+                            /*
+                            if (TypeTest.includes("EIKEN") === true) {
+
+                                console.log(TypeTest +"  " + TypeTest.includes("EIKEN"))
+                                this.extraOptions[type] = { 
+                                    scales: {
+                                        type: 'linear',
+                                        yAxes: [
+                                        {
+                                            ticks: {
+                                                min: 0,
+                                                max: max[type],
+                                                reverse: false,
+                                                beginAtZero: true,
+                                                stepSize: 350,
+                                            
+                                                // Include a dollar sign in the ticks
+                                                callback: function(value, index, ticks) {
+
+                                                    let level = "";
+
+                                                    if (value === 0) {                                                    
+                                                        level = "A1" + " (" + value + ")";
+
+                                                    } else if (value === 1700) {
+                                                        level = "A2" + " (" + value + ")";
+
+                                                    } else if (value === 1950) {
+                                                        level = "B1" + " (" + value + ")";
+
+                                                    } else if (value === 2300) {
+                                                        level = "B2" + " (" + value + ")";
+
+                                                    } else if (value === 2600) {
+                                                        level = "C1" + " (" + value + ")";
+
+                                                    } else if (value === 3300) {
+                                                        level = "C2" + " (" + value + ")";
+
+                                                    } else if (value === 4000) {
+                                                        level = "C2" + " (" + value + ")";
+                                                    }
+                                                    
+
+
+                                                     return  level + " ("+ value +")";
+
+                                                }
+                                            },
+                                                                        
+                                        }]
+                                    }
+                                };
+                            }         
+                            */
+                        
+      
 
                         }
                           
