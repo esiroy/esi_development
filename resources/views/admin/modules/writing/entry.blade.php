@@ -360,8 +360,6 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-
-                              
                                     @php 
                                         $user = \App\Models\User::find($entry->user_id); 
                                         $values = json_decode($entry->value, true);
@@ -402,9 +400,15 @@
                                             @endif                                              
                                         </td>                                       
                                     </tr>
-                                                                                           
+                                   
+                                    
+                                    <tr>
+                                        <td> Date Submitted </td>
+                                        <td>{{ ESIDateTimeSecondsFormat($entry->created_at) }}</td>
+                                    </tr>
                             </table>
                         </div>
+
                     </div>
                 </div>
             </div>
