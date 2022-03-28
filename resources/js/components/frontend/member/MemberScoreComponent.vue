@@ -1,7 +1,7 @@
 <template>
     <div class="profile bg-lightred pt-0 px-0">
-        <div class="col-md-12 bg-red text-white pt-2 pb-2 text-center">
-            <strong>テストスコア履歴</strong>        
+        <div class="col-md-12 bg-red text-white pt-2 pb-2 text-center">            
+            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0326183251.html','テストスコア履歴',900,820);" class="text-white"><strong>テストスコア履歴 </strong></a>           
             <span class="btnAddScoreHolder float-right">
                 <span v-b-modal.modalUpdateMemberForm><i class="fas fa-plus"></i></span>
             </span>

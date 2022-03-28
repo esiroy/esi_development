@@ -2,7 +2,7 @@
     <div id="purposeList">  
         <div class="profile bg-lightBrown pt-0 px-0">
             <div class="col-md-12 bg-brown text-white pt-2 pb-2 text-center">
-                <strong>受講目的</strong> 
+                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0326164819.html','受講目的',900,820);" class="text-white"><strong>受講目的</strong></a>
                 <span class="btnUpdatePurpose float-right">
                     <span v-b-modal.modalUpdatePurposeForm>
                         <i class="fas fa-plus"></i>
