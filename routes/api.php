@@ -182,3 +182,10 @@ Route::middleware('auth:api')->post('/deleteNote', 'API\MemberNotesController@de
 
 Route::middleware('auth:api')->post('/getMemberLevel', 'API\MemberLevelController@getMemberLevel')->name('APIGetMemberLevel');
 Route::middleware('auth:api')->post('/saveMemberLevel', 'API\MemberLevelController@saveMemberLevel')->name('APISaveMemberLevel');
+
+
+
+Route::middleware('auth:api')->post('/getTimeManager', 'API\TimeManagerAPIController@get')->name('APIGetTimeManager');
+Route::middleware('auth:api')->post('/createTimeManager', 'API\TimeManagerAPIController@create')->name('APICreateTimeManager');
+Route::middleware('auth:api')->post('/updateTimeManager', 'API\TimeManagerAPIController@update')->name('APIUpdateTimeManager');
+Route::middleware('auth:api')->post('/deleteTimeManager', 'API\TimeManagerAPIController@destroy')->name('APIDeleteTimeManager');

@@ -417,6 +417,16 @@ if (! function_exists('addSpaceBeforeCapitalizedLetters'))
 }
 
 
+if (! function_exists('getRemainingDays')) 
+{
+    function getRemainingDays($start, $end) 
+    {
+
+        $timeleft = strtotime(ESIDate($end)) - strtotime(ESIDate($start));
+        $daysleft = round((($timeleft/24)/60)/60); 
+        return $daysleft;
+    }  
+}
 
 
 ?>
