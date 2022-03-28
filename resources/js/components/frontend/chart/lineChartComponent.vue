@@ -1,7 +1,7 @@
 
 
 <script>
-import { Bar, mixins } from 'vue-chartjs'
+import { Bar, Line, mixins } from 'vue-chartjs'
 const { reactiveProp } = mixins
 
 export default {
@@ -9,6 +9,7 @@ export default {
   mixins: [reactiveProp],
   props: ['options'],
   axisMax: 1250,
+  
   mounted () {
     // this.chartData is created in the mixin.
     // If you want to pass options please create a local options object

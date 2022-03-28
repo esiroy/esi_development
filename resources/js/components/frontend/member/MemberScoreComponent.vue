@@ -386,7 +386,7 @@
                                     <b-collapse :id="'accordion-'+examScoreType" :visible=isAccordionExpanded(examScoreTypeIndex) accordion="my-accordion" role="tabpanel">
                                         <b-card-body>
                                             <b-card-text>
-                                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
+                                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded" :options="extraOptions[examScoreType]"></line-chart>
                                             </b-card-text>                                        
                                         </b-card-body>
                                     </b-collapse>
@@ -746,6 +746,14 @@
                 console.log("Error " + error);
             });              
         },
+        addAlpha(color, opacity) {
+            // coerce values so ti is between 0 and 1.
+            var _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+            return color + _opacity.toString(16).toUpperCase();
+        },
+        onlyUnique(value, index, self) {
+            return self.indexOf(value) === index;
+        },
         getMemberScoreGraph() 
         { 
             this.loaded = false;
@@ -771,33 +779,93 @@
 
                     let max = {'IELTS': 9, 'TOEFL': 120, 'TOEFL_Junior': 900, 
                                 'TOEFL_Primary_Step_1':  218, 'TOEFL_Primary_Step_2': 230,
-                                'TOEIC_Listening_and_Reading': 990, 'TOEIC_Speaking': 200, 'TOEIC_Writing' : 495,
+                                'TOEIC_Listening_and_Reading': 990, 
+                                'TOEIC_Speaking': 200, 
+                                'TOEIC_Writing' : 495,
                                 'EIKEN_Grade_5': 850,
                                 'EIKEN_Grade_4': 1000,     
                                 'EIKEN_Grade_3': 2200,                                
                                 'EIKEN_Grade_2': 2600,
-                                'EIKEN_Grade_1': 3100,                                
+                                'EIKEN_Grade_1': 3400,                                
                                 'EIKEN_Grade_pre_1': 3000,
                                 'EIKEN_Grade_pre_2': 2400,
                             }
 
                     types.forEach((type) => 
-                    {            
-                        let totals = response.data.examScoreList[type].totals;
-
-                        this.datacollection[type] = {
-                            labels: response.data.examScoreList[type].dates,
-                            datasets: [
-                                {
-                                    label: this.capitalizeFirstLetter(type),
-                                    backgroundColor: '#'+ Math.floor(Math.random()*16777215).toString(16), 
-                                    data: totals,                   
-                                }                                
-                            ],                           
-                        }
-
+                    {  
+                       
 
                         let TypeTest = this.removeUnderscore(type);
+                        let totals = response.data.examScoreList[type].totals;
+
+                        if (TypeTest.includes("EIKEN") === true) 
+                        {    
+
+                            let colors = [];
+                            let EikenLabels = [];
+                        
+
+                            //determin if it has passed (green bar) 
+                            totals.forEach(function (total, index) {
+
+                                if (TypeTest.includes("Grade 5") == true) {
+                                    if (total >= 419) {
+                                        EikenLabels.push("passed");
+                                        colors.push('rgba(75, 192, 192, 0.2)')
+                                    } else {
+                                        EikenLabels.push("failed");
+                                        colors.push("rgba(255, 99, 132, 0.4)");
+                                    }
+
+                                } else if (TypeTest.includes("Grade 4") == true) {
+                                    if (total >= 622) {
+                                        
+
+                                        passTotals.push(total)
+                                   } else {
+                                      
+
+                                        failTotals.push(total)                                  
+                                   }                                
+                                
+                                } else {
+                                    colors.push("rgba(255, 99, 132, 0.4)");
+                                }
+
+                                
+                            });
+
+
+                            this.datacollection[type] = {
+                                labels: response.data.examScoreList[type].dates,                                                        
+                                datasets: [
+                                    {
+                                        label: this.capitalizeFirstLetter(type),
+                                        backgroundColor: colors,                     
+                                        data: totals,                   
+                                    }                                                                                                                                      
+                                ],                           
+                            } 
+       
+
+
+                        } else {
+
+                            //random for non-EIKEN
+
+                            let randColor =  '#'+ Math.floor(Math.random()*16777215).toString(16); 
+                            let color = this.addAlpha(randColor, 0.4)
+                            this.datacollection[type] = {
+                                labels: response.data.examScoreList[type].dates,                                                        
+                                datasets: [
+                                    {
+                                        label: this.capitalizeFirstLetter(type),                                   
+                                        backgroundColor: color,                     
+                                        data: totals,                   
+                                    },
+                                ],                           
+                            } 
+                        }
 
 
                         if (type == "Other_Test") 
