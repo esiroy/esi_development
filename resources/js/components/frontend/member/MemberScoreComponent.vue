@@ -795,9 +795,23 @@
                     {  
                        
 
-                        let TypeTest = this.removeUnderscore(type);
+                        //let TypeTest = this.removeUnderscore(type);
                         let totals = response.data.examScoreList[type].totals;
 
+                        let randColor =  '#'+ Math.floor(Math.random()*16777215).toString(16); 
+                        let color = this.addAlpha(randColor, 0.4)
+                        this.datacollection[type] = {
+                            labels: response.data.examScoreList[type].dates,                                                        
+                            datasets: [
+                                {
+                                    label: this.capitalizeFirstLetter(type),                                   
+                                    backgroundColor: color,                     
+                                    data: totals,                   
+                                },
+                            ],                           
+                        } 
+
+                        /*
                         if (TypeTest.includes("EIKEN") === true) 
                         {    
 
@@ -866,6 +880,7 @@
                                 ],                           
                             } 
                         }
+                        */
 
 
                         if (type == "Other_Test") 
