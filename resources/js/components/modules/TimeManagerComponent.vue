@@ -35,6 +35,7 @@
                             </div>
                         </div>
 
+
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select Start Date</div>
                              
@@ -45,7 +46,7 @@
                                 :value="data.startDate"
                                 :format="dateFormatter"
                                 :placeholder="'Select Start Date'"
-                                :input-class="['form-control form-control-sm bg-white',  { 'is-invalid' : submitted && $v.data.startDate.$error }] "
+                                :input-class="['form-control form-control-sm bg-white',  { 'is-invalid' : submitted  && $v.data.startDate.$error }] "
                                 :language="ja"
                             ></datepicker> 
 
@@ -54,6 +55,7 @@
                             </div>
 
                         </div>
+
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select End Date</div>
 
@@ -74,6 +76,32 @@
 
                         </div>
                     </div>
+
+                    <!-- [START] Grade Level (Optional) -->
+                    <div class="row mt-2" v-show="data.course == 'EIKEN'">
+                        <div class="col-4">
+
+                            <div class="small"><span class="text-danger">*</span> Grade Level </div>
+                            
+                            <select id="gradeLevel" name="gradeLevel" v-model="data.gradeLevel" class="form-control form-control-sm"  
+                                :class="{ 'is-invalid' : submitted && $v.data.gradeLevel.$error }">
+
+                                <option value="" class="mx-0 px-0">Select Grade Level</option>
+                                <option value="5" class="mx-0 px-0">Grade 5</option>
+                                <option value="4" class="mx-0 px-0">Grade 4</option>
+                                <option value="3" class="mx-0 px-0">Grade 3</option>
+                                <option value="pre_2" class="mx-0 px-0">Grade Pre 2</option>
+                                <option value="2" class="mx-0 px-0">Grade 2</option>
+                                <option value="pre_1" class="mx-0 px-0">Grade Pre 1</option> 
+                                <option value="1" class="mx-0 px-0">Grade 1</option> 
+                            </select> 
+                            <div v-if="submitted && $v.data.gradeLevel.$error " class="invalid-feedback">
+                                Grade level required
+                            </div>
+                        </div>
+                    
+                    </div>
+                    <!--[END] Grade Level -->
 
                     <div class="row mt-2">
                         <div class="col-4">
@@ -130,18 +158,27 @@
                 </div>
                 <div class="col-5">
                     <div id="timemanager-materials-container">
-                        <input type="checkbox" name="material_checkbox" @change="showMaterials" v-model="data.material_checkbox"> <span class="pl-2 small"> Non Mytutor Materials</span>
+                        <input type="checkbox" name="material_checkbox" @change="showMaterials" v-model="data.material_checkbox"> 
+
+                        <span class="pl-2 small"> Non Mytutor Materials (5 materials max)</span>
+
                         <div id="timemanager-materials" v-show="data.material_checkbox">
 
                             <input v-for="(material, materialKey) in data.materials" :key="materialKey" :id="material.id" name="material[]" type="text" 
                                 placeholder="Enter Material Description" class="form-control form-control-sm mb-2" v-model="data.materials[materialKey].value">
                         </div>
+
+                        
+
                         <div id="timemanager-materials-buttons" v-show="data.material_checkbox">
-                            <a href="#" @click.prevent="addMaterial" class="text-primary small">
+
+                            <a href="#" @click.prevent="addMaterial" class="text-primary small" v-show="this.data.materials.length < 5">
                                 <i class="fa fa-plus-circle text-primary" aria-hidden="true"></i> Add New Material
                             </a>
-                        </div>                        
+                        </div>       
+
                     </div>
+
                 </div>
             </div>
         </div>
@@ -156,7 +193,7 @@ import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale'; 
 
 import Vuelidate from "vuelidate";
-import { required, numeric, decimal } from "vuelidate/lib/validators";
+import { required, numeric, decimal, requiredIf } from "vuelidate/lib/validators";
 Vue.use(Vuelidate);
 
 
@@ -180,46 +217,111 @@ export default {
 
             data: {
                 material_checkbox: "",
-
                 course: "",
                 courseTextValue : "",
-
+                gradeLevel: "",
+                gradeLevelTextValue: "",
                 startDate: "",
-                endDate: "",
                 
                 currentScore: "",
                 targetScore: "",
                 requiredHours: "",
                 materials: [],
-
                 //auto calculated
                 requiredDays: "",
                 remainingDays: ""
+                
             },
         }
     },
     validations: 
-    {
+    {        
         data: {
             course: { required },
             startDate: { required },
             endDate: { required },   
             currentScore:     { required, decimal },  
             targetScore:  { required, decimal },
-            requiredHours:  { required, decimal },         
+            requiredHours:  { required, decimal },       
+            gradeLevel: { required: requiredIf(data => data.course === 'EIKEN'), }
+    
         }
-       
     },
     mounted: function () 
 	{
-        this.data = this.content;           
+        this.data = this.content;        
           
     },    
     methods: {     
-        resetModal() {
-        
+        resetTimeMangerEntryModal() {
+
+            this.submitted = "";
+
+            this.data = {             
+                material_checkbox: "",
+                course: "",
+                courseTextValue : "",
+                
+                gradeLevel: "",
+                gradeLevelTextValue: "",
+                startDate: "",
+                
+                currentScore: "",
+                targetScore: "",
+                requiredHours: "",
+                materials: [],
+                //auto calculated
+                requiredDays: "",
+                remainingDays: ""                
+            }
         },
-      
+        updateTimeManager() {
+            this.submitted = true;
+            this.$v.data.$touch();
+
+            if (!this.$v.data.$invalid) 
+            {                
+                axios.post("/api/updateTimeManager?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    memberID        : this.memberinfo.user_id,
+                    data            : this.data
+                }).then(response => {
+
+                    if (response.data.success == true) 
+                    {                    
+                     
+                        let content = response.data.content;
+
+                        this.$nextTick(() => {
+
+                            this.$parent.$parent.$parent.updateType = "update";
+
+                            this.$parent.$parent.$parent.content = {
+                                course: content.course,   
+                                gradeLevel: content.gradeLevel,
+                                startDate: content.start_date,
+                                endDate: content.end_date,
+                                currentScore: content.current_score,
+                                targetScore: content.target_score,
+                                requiredHours: content.required_hours,
+                                material_checkbox: content.has_materials,
+                                materials: content.materials,                
+                                requiredDays: content.required_days,
+                                remainingDays: content.remaining_days,
+                                requiredHours: content.required_hours,
+                                percentTimeAchievement: 0
+                            } 
+
+                   
+                        });
+                    }
+                }).catch(function(error) {
+                    console.log(error);
+                });
+            }
+        },        
+
         saveTimeManager() {
             this.submitted = true;
             this.$v.data.$touch();
@@ -246,7 +348,8 @@ export default {
                             
 
                             this.$parent.$parent.$parent.content = {
-                                course: content.course,   
+                                course: content.course,
+                                gradeLevel: content.gradeLevel,
                                 startDate: content.start_date,
                                 endDate: content.end_date,
                                 currentScore: content.current_score,
@@ -269,11 +372,10 @@ export default {
             }
         },        
 
-		handleCourseChange(event) {
-
+		handleCourseChange(event) 
+        {
             let index = event.target.value;
             let course = event.target.selectedOptions[0].text;
-
             console.log(index + ": " + course)
 		},
         showMaterials() {
@@ -307,11 +409,8 @@ export default {
                 } else {
                     this.data.requiredHours = requiredHours;
                 
-                }            
-            
+                }   
             }
-
-
             
         }
     }

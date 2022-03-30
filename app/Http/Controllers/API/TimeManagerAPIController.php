@@ -52,8 +52,9 @@ class TimeManagerAPIController extends Controller
             'valid'             => true, 
             'member_id'         => $request->get('memberID'),
             'course'            => $inputData['course'],
-            'start_date'        => ESIDate($inputData['startDate']),
-            'end_date'          => ESIDate($inputData['endDate']),
+            'grade_level'        => $inputData['gradeLevel'] ?? "", //OPTIONAL GRADE LEVE
+            'start_date'        => $inputData['startDate'],
+            'end_date'          => $inputData['endDate'],
             'current_score'     => $inputData['currentScore'],
             'target_score'      => $inputData['targetScore'],            
             'required_hours'    => $requiredHours,
@@ -63,6 +64,8 @@ class TimeManagerAPIController extends Controller
             'time_achievement'  => 0, //set to zero
             'remaining_days'    => $requiredDays,
         ];
+
+    
 
         $result = TimeManager::create($data);
 
@@ -92,10 +95,18 @@ class TimeManagerAPIController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         $memberID = $request->get('memberID');
+        $inputData = $request->get('data');
+        $startDate = ESIDate($inputData['startDate']);
+        $endDate   = ESIDate($inputData['endDate']);
+        $requiredDays = getRemainingDays($startDate, $endDate);  
+
+        //calculated hours to days
+        //$requiredHours = calculateDaysToHours($requiredDays);
         $requiredHours = $inputData['requiredHours'];
+
 
         $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
 
@@ -106,8 +117,9 @@ class TimeManagerAPIController extends Controller
                 'valid'             => true, 
                 'member_id'         => $request->get('memberID'),
                 'course'            => $inputData['course'],
-                'start_date'        => ESIDate($inputData['startDate']),
-                'end_date'          => ESIDate($inputData['endDate']),
+                'grade_level'        => $inputData['gradeLevel'] ?? "", //OPTIONAL GRADE LEVE
+                'start_date'        => $inputData['startDate'],
+                'end_date'          => $inputData['endDate'],
                 'current_score'     => $inputData['currentScore'],
                 'target_score'      => $inputData['targetScore'],            
                 'required_hours'    => $requiredHours,
@@ -119,14 +131,14 @@ class TimeManagerAPIController extends Controller
             ];
 
 
-            $result = TimeManager::updae($data);
+            $result =  $timeManager->update($data);
 
             if ($result) {
                 
                 return Response()->json([
                     "success"           => true,
                     "message"           => "entry has been successfully found",
-                    "content"           => $timeManager,                
+                    "content"           => $data,                
                 ]);
             } else {
             
@@ -183,10 +195,6 @@ class TimeManagerAPIController extends Controller
             ]);
         
         }
-
-
-
-
               
     }
 

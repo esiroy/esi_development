@@ -9,7 +9,7 @@
                 <div class="pl-2 small"> <span class="text-danger">&nbsp;</span> Course </div>
             </div>
             <div :class="this.size.rightColumn">
-                <input type="text" id="course" :value="this.content.course "
+                <input type="text" id="course" :value="this.content.courseTextValue "
                     disabled name="course"  :class="this.size.select +' form-control form-control-sm '">  
             </div>
         </div>

@@ -189,3 +189,10 @@ Route::middleware('auth:api')->post('/getTimeManager', 'API\TimeManagerAPIContro
 Route::middleware('auth:api')->post('/createTimeManager', 'API\TimeManagerAPIController@create')->name('APICreateTimeManager');
 Route::middleware('auth:api')->post('/updateTimeManager', 'API\TimeManagerAPIController@update')->name('APIUpdateTimeManager');
 Route::middleware('auth:api')->post('/deleteTimeManager', 'API\TimeManagerAPIController@destroy')->name('APIDeleteTimeManager');
+
+
+
+Route::middleware('auth:api')->post('/getTimeManagerProgress', 'API\TimeManagerProgressAPIController@get')->name('APIgetTimeManagerProgress');
+Route::middleware('auth:api')->post('/createTimeManagerProgress', 'API\TimeManagerProgressAPIController@store')->name('APICreateTimeManagerProgress');
+Route::middleware('auth:api')->post('/updateTimeManagerProgress', 'API\TimeManagerProgressAPIController@update')->name('APIUpdateTimeManagerProgress');
+Route::middleware('auth:api')->post('/deleteTimeManagerProgress', 'API\TimeManagerProgressAPIController@destroy')->name('APIDeleteTimeManagerProgress');

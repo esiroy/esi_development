@@ -429,4 +429,30 @@ if (! function_exists('getRemainingDays'))
 }
 
 
+/*********************************
+    Database Time formatting
+/********************************* */
+
+//2022-03-22
+
+if (! function_exists('mysql_format_date')) 
+{
+    function mysql_format_date($date) 
+    {        
+        return  date('Y-m-d', strtotime($date));
+    }
+}
+
+
+
+if (! function_exists('mysql_format_datetime')) 
+{
+    function mysql_format_datetime($date) 
+    {        
+        return  date('Y-m-d H:m:s', strtotime($date));
+    }
+}
+
+
+
 ?>

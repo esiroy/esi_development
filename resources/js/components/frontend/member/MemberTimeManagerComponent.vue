@@ -76,7 +76,7 @@
             </div>
 
 
-            <div id="buttonContainer" class="row mt-2">
+            <div id="buttonContainer" class="row mt-2" v-show="this.updateType == 'update'">
                 <!-- View Scores -->
                 <div class="col-6 d-flex justify-content-end mx-0 px-0">
                     <span v-b-modal.modalTimeManagerProgressUpdate >
@@ -103,6 +103,8 @@
         <b-modal id="modalTimeManager" title="Time Manager" size="xl" @hide="resetTimeManagerModal">
 
             <time-manager-component ref="timeManager" :memberinfo="memberinfo"  :content="contentData" :csrf_token="csrf_token" :api_token="api_token"/>
+
+
             <template #modal-footer>
                 <div class="buttons-container w-100">                    
                     <div v-if="updateType == 'update' || updateType == 'edit'">
@@ -138,17 +140,20 @@
 
             <template #modal-footer>
                 <div class="buttons-container w-100">                                        
-                    <b-button variant="primary" size="sm" class="float-right mr" id="create" v-on:click="create">Progress Update</b-button>
+                    <b-button variant="primary" size="sm" class="float-right mr" id="create" v-on:click="addProgress">Progress Update</b-button>
                     <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressUpdate')">Cancel</b-button>                         
                 </div>
 
                 <div class="loading-container">
-                <b-button variant="primary" size="sm" class="float-right mr">
-                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                    Loading...
-                </b-button>
-            </div>
-            </template>                  
+                    <b-button variant="primary" size="sm" class="float-right mr">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </b-button>
+                </div>
+
+
+
+            </template>             
         </b-modal>        
 
        
@@ -170,12 +175,19 @@ export default {
     data() {
         return {
 
+
             updateType: "",
+
+            timer: null,
 
             //time manager content 
             content: {
                 material_checkbox: "",
                 course: "",   
+
+                gradeLevel: "",
+                gradeLevelTextValue: "",
+
 
                 startDate: "",
                 endDate: "",
@@ -216,10 +228,95 @@ export default {
     },
 
     methods: {     
+
         resetTimeManagerModal() {
             this.getTimeManager();
         },
-        resetTimeManagerUpdateModal() {
+        resetTimeManagerUpdateModal() 
+        {
+            clearTimeout(this.timer);
+        },
+        getFormArray() {          
+            var form = document.querySelector('#form-timemanager-'+this.content.course);
+            var data = new FormData(form);
+            for (let entry of data) {
+                console.log(entry);
+            }
+        },
+        addProgress() {     
+
+            //Determine Component Opened
+            let progressUpdate = this.$refs['timeManagerProgressUpdate'];
+            let updaterModal = progressUpdate.$refs[this.content.course + 'TimeManagerComponent'];
+
+            let date       = updaterModal.getDate();
+            let minutes    = updaterModal.getMinutesData();
+
+            //Get the total from minutes object
+            let totalMinutes = minutes.total;
+
+            if (date && totalMinutes > 0) {
+
+                //format data
+                let data = {
+                    'memberID'      : this.memberinfo.user_id,
+                    'date'          : date,
+                    'id'            : this.content.id,
+                    'course'        : this.content.course,
+                    'gradelLevel'   : this.content.gradelLevel,
+                    'minutes'       : minutes 
+                }
+
+                this.saveProgress(data);
+
+            } else {
+            
+                alert ("you have to enter date and minutes")
+            }
+        },
+        saveProgress(data)  {
+            
+            //SHOW LOADER HERE
+            $(document).find('.modal-footer').find('div.buttons-container').hide();
+            $(document).find('.modal-footer').find('div.loading-container').show();
+
+            axios.post("/api/createTimeManagerProgress?api_token=" + this.api_token, 
+            {
+                'method'      : "POST",
+                'data'        : data
+
+            }).then(response => {
+
+
+                if (response.data.success == true) 
+                {  
+                    this.$nextTick(() => {
+                 
+                        $(document).find('.modal-footer').hide();
+                        
+                        $(document).find('#timeManager-'+this.content.course).find('.message').html('<div class="alert alert-success text-center" role="alert">Thank you! Progress has been submitted</div>'); 
+
+                        $(document).find('#form-timemanager-'+this.content.course).slideUp(500);             
+
+                        this.timer = setTimeout(function(scope) {
+                            scope.$bvModal.hide('modalTimeManagerProgressUpdate');
+                        }, 2500, this);
+
+                        this.$forceUpdate();
+                    });            
+
+                } else {
+                    //show error message 
+
+                    //HIDE LOADER HERE
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();
+
+                }
+
+            }).catch(function(error) {
+                console.log(error);
+            });   
 
         },
         deleteTimeManager() {
@@ -234,9 +331,13 @@ export default {
                 {  
                     this.updateType = "new";
 
-                    this.content = this.resetData;
-                    this.contentData = this.resetData();
-                }
+                    this.$nextTick(() => {
+                        this.content = this.resetData;
+                        this.contentData = this.resetData();
+                        this.$refs.timeManager.resettimemanagerEntryModal();                        
+                    });                    
+                } 
+
             }).catch(function(error) {
                 console.log(error);
             });   
@@ -245,34 +346,7 @@ export default {
         },
         updateTimeManager() 
         {
-
-            axios.post("/api/updateTimeManager?api_token=" + this.api_token, 
-            {
-                method          : "POST",
-                memberID        : this.memberinfo.user_id
-            }).then(response => {
-
-                if (response.data.success == true) 
-                {                    
-                    //when user opens to create it will show update info and update button
-                    this.updateType = "update";
-
-                    let content= response.data.content;
-
-                    this.$nextTick(() => {
-                        this.content = this.assignData(content);
-                        this.contentData = this.assignData(content);
-                    });
-
-                } else {
-
-                     this.contentData = this.resetData();
-                     this.updateType = "new";
-                }
-            }).catch(function(error) {
-                console.log(error);
-            });  
-
+            this.$refs.timeManager.updateTimeManager();
         },
         getTimeManager() 
         {
@@ -297,6 +371,8 @@ export default {
                 } else {
 
                      this.contentData = this.resetData();
+                     this.content = this.resetData();
+                     
                      this.updateType = "new";
                 }
             }).catch(function(error) {
@@ -305,14 +381,21 @@ export default {
         },  
         create() 
         {
+            //this.$refs.timeManager.saveTimeManager();
+
             this.$refs.timeManager.saveTimeManager();
+            
             //this.$parent.$bvModal.hide('modalTimeManager');  
         },
         
         resetData() {
+
             return  {
+                    id: null,
                     course: "",
                     courseTextValue: "",
+                    gradeLevel: "",
+                    gradeLevelTextValue:  "",
                     startDate: "",
                     endDate: "",
                     currentScore: "",
@@ -330,8 +413,12 @@ export default {
         assignData(content) 
         {        
             return  {
+                    id: content.id,
                     course: content.course,   
                     courseTextValue: this.formatCourse(content.course),
+                    gradeLevel: content.gradeLevel,
+                    gradeLevelTextValue:  this.formatCourse(content.gradeLevel),
+
                     startDate: content.start_date,
                     endDate: content.end_date,
                     currentScore: content.current_score,
@@ -350,11 +437,22 @@ export default {
             let fdate = Moment(date).format('YYYY年 MM月 D日');                      
             return fdate;            
         },
-
+        removeUnderscore(string) {
+            let wordArray = string.split("_");
+            let words = wordArray.join(" ");
+            return words;
+        }, 
         formatCourse(string) {
+
+            if (string) {
+                       
             let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = newString.replace(/_/g, " ")            
+            newString = this.removeUnderscore(newString);
             return newString;
+            }
+
+            
+
         },
     },     
 

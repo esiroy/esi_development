@@ -10,6 +10,7 @@
                     <!--[start] Course Select-->
                     <div id="content" class="d-none">
                         <div class="row">
+                        
                             <div class="col-4">
                                 <div class="small">Course: {{ content.course }} </div>                           
                             </div>
@@ -41,25 +42,16 @@
                     </div>
           
                     <div id="minutes-entry" class="card-body">
-                        <IELTSTimeManagerComponent :content="content" :size="this.size"></IELTSTimeManagerComponent>
-                        <ToeflTimeManagerComponent :content="content" :size="this.size"></ToeflTimeManagerComponent>
-
-                      
-                        <ToeflJuniorTimeManagerComponent :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>
-
-                          <!--
+                        <IELTSTimeManagerComponent ref="IELTSTimeManagerComponent" :content="content" :size="this.size"></IELTSTimeManagerComponent>
+                        <ToeflTimeManagerComponent ref="TOEFLTimeManagerComponent" :content="content" :size="this.size"></ToeflTimeManagerComponent>                      
+                        <ToeflJuniorTimeManagerComponent :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>                         
                         <ToeflPrimaryStep1TimeManagerComponent :content="content" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
-                        -->
-
-
                         <ToeflPrimaryStep2TimeManagerComponent :content="content" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
-
-                        <!--
-                        <ToeicListeningAndReadingTimeManagerComponent :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
                         <ToeicListeningAndReadingTimeManagerComponent :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
                         <ToeicSpeakingTimeManagerComponent :content="content" :size="this.size"></ToeicSpeakingTimeManagerComponent>
-                        <ToeicWritingTimeManagerComponent :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>-->
-
+                        <ToeicWritingTimeManagerComponent :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>
+                        <EikenTimeManagerComponent :content="content" :size="this.size"></EikenTimeManagerComponent>
+                        <TeapTimeManagerComponent :content="content" :size="this.size"></TeapTimeManagerComponent>
                     </div>
                     
                 </div>
@@ -83,13 +75,15 @@ import ToeflPrimaryStep2TimeManagerComponent from "../timemanagerprogress/ToeflP
 import ToeicListeningAndReadingTimeManagerComponent from "../timemanagerprogress/ToeicListeningAndReadingTimeManagerComponent.vue";
 import ToeicSpeakingTimeManagerComponent from "../timemanagerprogress/ToeicSpeakingTimeManagerComponent.vue";
 import ToeicWritingTimeManagerComponent from "../timemanagerprogress/ToeicWritingTimeManagerComponent.vue";
+import EikenTimeManagerComponent from "../timemanagerprogress/EikenTimeManagerComponent.vue";
+import TeapTimeManagerComponent from "../timemanagerprogress/TeapTimeManagerComponent.vue";
 
 export default {   
     name: "time-manager-progress-update-component",
     components: {    
         IELTSTimeManagerComponent, ToeflTimeManagerComponent, ToeflJuniorTimeManagerComponent,
         ToeflPrimaryStep1TimeManagerComponent, ToeflPrimaryStep2TimeManagerComponent, ToeicListeningAndReadingTimeManagerComponent,
-        ToeicSpeakingTimeManagerComponent, ToeicWritingTimeManagerComponent
+        ToeicSpeakingTimeManagerComponent, ToeicWritingTimeManagerComponent, EikenTimeManagerComponent, TeapTimeManagerComponent
     },      
     props: {
         memberinfo: Object,
@@ -112,13 +106,27 @@ export default {
         this.showElementId('timeManager-'+  this.content.course)
     },             
     methods: {     
+        getTotalMinutes(course) {          
+
+            console.log(course) ;
+
+            let values = Array.from(document.querySelectorAll('#timeManager-'+ course +' .minutes-entry input')).map(input => input.value );
+            //get total
+            let total = 0;
+            for (var i = 0, n = values.length; i < n; ++i) {
+                if (values[i]) { total = parseFloat(total) + parseFloat(values[i]); }            
+            }
+            return total;
+        },
         resetModal() {
         
         },
+        
         addProgress() {
             this.submitted = true;
             this.$v.content.$touch();
             console.log(this.data);
+
             if (!this.$v.content.$invalid) {
                 axios.post("/api/addTimeManagerProgress?api_token=" + this.api_token, 
                 {
