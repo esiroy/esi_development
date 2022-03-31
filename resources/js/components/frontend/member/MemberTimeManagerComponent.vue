@@ -324,8 +324,10 @@ export default {
                     
                     console.log( dates, minutes)
 
-                    let randColor =  '#'+ Math.floor(Math.random()*16777215).toString(16); 
-                    let color = this.addAlpha(randColor, 0.4)
+                    //let randColor =  '#'+ Math.floor(Math.random()*16777215).toString(16); 
+                    //let color = this.addAlpha(randColor, 0.4)
+                      
+                    let color = this.addAlpha('#2F5233', 0.4)
 
                     this.datacollection = {
                         labels: dates,  
@@ -337,6 +339,21 @@ export default {
                             },
                         ],                           
                     } 
+
+                    this.extraOptions = { 
+                        scales: {
+                            yAxes: [
+                            {
+                                ticks: {
+                                    min: 0,
+                                    max: this.content.requiredHours,
+                                    stepSize: 1,
+                                    reverse: false,
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    };                    
                     
                     if (this.isMobile() == true) {
                         $(".modal-dialog").css({
