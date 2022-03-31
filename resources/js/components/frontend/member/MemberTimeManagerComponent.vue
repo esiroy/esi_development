@@ -448,10 +448,18 @@ export default {
 
             }).catch(function(error) {
                 console.log(error);
+                
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
             });   
 
         },
         deleteTimeManager() {
+
+            //SHOW LOADER HERE
+            $(document).find('.modal-footer').find('div.buttons-container').hide();
+            $(document).find('.modal-footer').find('div.loading-container').show();
 
             axios.post("/api/deleteTimeManager?api_token=" + this.api_token, 
             {
@@ -466,12 +474,24 @@ export default {
                     this.$nextTick(() => {
                         this.content = this.resetData;
                         this.contentData = this.resetData();
-                        this.$refs.timeManager.resettimemanagerEntryModal();                        
-                    });                    
-                } 
+                        this.$bvModal.hide('modalTimeManager')                 
+                    });        
+
+                } else {
+
+                    //error
+                    
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();
+
+                }
+
 
             }).catch(function(error) {
                 console.log(error);
+                
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();                
             });   
 
 
