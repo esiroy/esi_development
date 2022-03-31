@@ -398,10 +398,41 @@ if (! function_exists('countWords'))
     }  
 }
 
-if (! function_exists('memberCEFRLevel')) 
+
+if (! function_exists('minutesFormatter')) 
 {
-    function memberCEFRLevel($text) {
-       
+
+    function minutesFormatter($minutes) {
+        $d = floor ($minutes / 1440);
+        $h = floor (($minutes - $d * 1440) / 60);
+        $m = $minutes - ($d * 1440) - ($h * 60);
+        return "{$d}d {$h}h {$m}m";
+    }
+}
+
+
+if (! function_exists('calculateHoursToDays')) 
+{
+    function calculateHoursToDays($minutes) {
+        $days = $minutes / 24;
+        return $days;
+    }  
+}
+
+
+if (! function_exists('calculateDaysToHours')) 
+{
+    function calculateDaysToHours($days) {
+        $hours = $days * 24;
+        return $hours;
+    }  
+}
+
+if (! function_exists('calculateHoursToMinutes')) 
+{
+    function calculateHoursToMinutes($hours) {
+        $minutes = $hours * 60;
+        return $minutes;
     }  
 }
 

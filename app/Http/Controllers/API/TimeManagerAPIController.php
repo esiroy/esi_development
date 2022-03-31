@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\TimeManager;
+use App\Models\TimeManagerProgress;
 
 class TimeManagerAPIController extends Controller
 {
@@ -16,13 +17,24 @@ class TimeManagerAPIController extends Controller
         $memberID = $request->get('memberID');
         
         $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+        
         if ($timeManager) 
         {
             $timeManager->makeHidden(['created_at', 'updated_at']);
 
+            $minutes = TimeManagerProgress::where('member_id', $memberID)->sum('total_minutes');
+            $requiredMinutes = calculateHoursToMinutes($timeManager->required_hours);
+            $minutesLeft = $requiredMinutes - $minutes;
+
+            $totalTimeLeft = minutesFormatter($minutesLeft);  
+            $percentageLeft = ($minutes / $requiredMinutes) * 100;
+            $formatted_percentage= number_format($percentageLeft, 2, '.', '');
+
             return Response()->json([
                 "success"           => true,
                 "message"           => "entry has been successfully found",
+                "totalTimeLeft"     => $totalTimeLeft,
+                "percentageLeft"    => $formatted_percentage,
                 "content"           => $timeManager,                
             ]);
         } else {        
@@ -127,7 +139,7 @@ class TimeManagerAPIController extends Controller
                 'has_materials'     => isset($inputData['material_checkbox']) ? true : false,
                 'materials'         => json_encode($inputData['materials']),
                 'time_achievement'  => 0, //set to zero
-                //'remaining_days'    => $requiredDays,
+                'remaining_days'    => $requiredDays,
             ];
 
 
@@ -160,10 +172,6 @@ class TimeManagerAPIController extends Controller
     }
 
 
-    public function view()
-    {
-        //
-    }
 
 
     /**

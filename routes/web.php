@@ -12,26 +12,9 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::resource('dump', 'dummyController');
-Route::get('datesort', 'dummyController@datesort');
-Route::get('test', 'dummyController@test');
-Route::get('test/dropzone', 'dummyController@dropzone');
-Route::get('test/testemailWriting', 'dummyController@testemailWriting');
-Route::get('test/dropzoneComponent', 'dummyController@dropzone');
-Route::get('testGetMembers', 'dummyController@testGetMembers');
-Route::get('sendTestMail', 'dummyController@sendTestMail');
-Route::get('testDispatch', 'dummyController@testDispatch');
-Route::get('testMailReserved', 'dummyController@testMailReserved');
-Route::get('testMailCancelled', 'dummyController@testMailCancelled');
-Route::get('testExpiry', 'dummyController@testExpiry');
 
-Route::get('testMailReservedB', 'dummyController@testMailReservedB');
+Route::get('test', 'dummyController@index');
 
-
-//Route::get('test/{id}', 'TableImporterController@test')->name('test');
-//Route::get('testSchedule/{id}', 'TableImporterController@test')->name('test');
-
-/* REVERSE TRANSACTION B*/
 
 
 /*************** 
