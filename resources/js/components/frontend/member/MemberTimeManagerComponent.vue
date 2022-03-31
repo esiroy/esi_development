@@ -89,7 +89,7 @@
 
                 <!--Score Graphs Button -->
                 <div class="col-6 justify-content-end mx-0 pl-0 pr-2">
-                    <span v-b-modal.modalMemberExamScoreGraph>
+                    <span v-b-modal.modalTimeManagerProgressGraph>
                         <b-button size="sm" block variant="primary" pill>
                             <b-icon-bar-chart-fill></b-icon-bar-chart-fill> <span class="small">View Graph </span>
                         </b-button>                   
@@ -157,12 +157,52 @@
         </b-modal>        
 
        
+        <!-- [START] SCORE TIME PROGRESS GRAPH -->
+        <div id="timeManagerProgressGraph" class="modal-container">
+        
+            <b-modal id="modalTimeManagerProgressGraph"  title="Time Manager Graph" size="md" @show="getTimeManagerProgressGraph"> 
+
+                <div v-if="loaded == true">
+
+                    <div id="memberGraphModalMessage" class="row" v-if="entries.length == 0">
+                        <div class="text-center col-md-12 my-4">                               
+                            <span class="text-success"> No data found </span>
+                        </div>
+                    </div>
+
+                    <div class="row graph-list" v-else>
+                        <div class="col-12">
+                            <line-chart :chart-data="datacollection"  v-if="loaded"  :options="extraOptions"></line-chart>
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div v-else>
+                    <div class="d-flex justify-content-center my-4">
+                        <b-spinner label="Loading..." variant="success"></b-spinner>
+                    </div>
+                </div>    
+                <template #modal-footer>
+                    <div class="buttons-container w-100">
+                        <p class="float-left"></p>
+                        <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressGraph')">Close</b-button>                            
+                    </div>
+                </template>                         
+                
+            </b-modal>
+        </div>
+        <!-- [END] SCORE MODAL -->
 
     </div>
 </template>
 
 
 <script>
+
+import LineChart from '../../frontend/chart/lineChartComponent.vue';
+
 import * as Moment from 'moment';
 import TimeManagerComponent from '../../modules/TimeManagerComponent.vue';
 import TimeManagerProgressUpdateComponent from '../../modules/TimeManagerProgressUpdateComponent.vue';
@@ -170,14 +210,19 @@ import TimeManagerProgressUpdateComponent from '../../modules/TimeManagerProgres
 export default {   
     name: "member-time-manager-component",
     components: {    
-        TimeManagerComponent, TimeManagerProgressUpdateComponent
+        LineChart,
+        TimeManagerComponent, 
+        TimeManagerProgressUpdateComponent
     },     
     data() {
         return {
 
-
+            //charts
+            loaded: false,
+            datacollection: [],
+            extraOptions: [],
+        
             updateType: "",
-
             timer: null,
 
             //time manager content 
@@ -209,7 +254,9 @@ export default {
             contentData: {
                 course: "",   
                 materials: [],            
-            }
+            },
+
+            entries: ""
 
         }
     },
@@ -236,6 +283,7 @@ export default {
         {
             clearTimeout(this.timer);
         },
+
         getFormArray() {          
             var form = document.querySelector('#form-timemanager-'+this.content.course);
             var data = new FormData(form);
@@ -243,11 +291,78 @@ export default {
                 console.log(entry);
             }
         },
-        addProgress() {     
+        getTimeManagerProgressGraph() {
+
+            this.loaded = false;
+        
+
+            axios.post("/api/getTimeManagerProgressGraph?api_token=" + this.api_token, 
+            {
+                method      : "POST",
+                memberID    : this.memberinfo.user_id,
+                timeManagerID : this.content.id,
+
+            }).then(response => {    
+                       
+                this.loaded = true;
+
+                if (response.data.success === true) 
+                {
+
+                    $('#memberGraphModalMessage').hide();
+
+                    this.entries = response.data.entries;
+                    let entries = this.entries;
+
+                    let dates   = [];
+                    let minutes     = [];
+
+                    entries.forEach((entry)=> {
+                        dates.push(entry.date)
+                        minutes.push(entry.total_minutes)
+                    });
+                    
+                    console.log( dates, minutes)
+
+                    let randColor =  '#'+ Math.floor(Math.random()*16777215).toString(16); 
+                    let color = this.addAlpha(randColor, 0.4)
+
+                    this.datacollection = {
+                        labels: dates,  
+                        datasets: [
+                            {
+                                label: this.content.course,                                   
+                                backgroundColor: color,                     
+                                data: minutes,                   
+                            },
+                        ],                           
+                    } 
+                    
+                    if (this.isMobile() == true) {
+                        $(".modal-dialog").css({
+                            'max-width': '90%'
+                        });                  
+                    } 
+
+                } else {
+
+                    console.log("error retrieveing graph stats")
+                    
+                }
+
+            }).catch(function(error) {
+                console.log("Error " + error);
+            });
+        },
+
+        addProgress() 
+        {     
 
             //Determine Component Opened
             let progressUpdate = this.$refs['timeManagerProgressUpdate'];
             let updaterModal = progressUpdate.$refs[this.content.course + 'TimeManagerComponent'];
+
+            console.log(this.content.course + 'TimeManagerComponent')
 
             let date       = updaterModal.getDate();
             let minutes    = updaterModal.getMinutesData();
@@ -361,7 +476,7 @@ export default {
                     //when user opens to create it will show update info and update button
                     this.updateType = "update";
 
-                    let content= response.data.content;
+                    let content = response.data.content;
 
                     this.$nextTick(() => {
                         this.content = this.assignData(content);
@@ -387,7 +502,6 @@ export default {
             
             //this.$parent.$bvModal.hide('modalTimeManager');  
         },
-        
         resetData() {
 
             return  {
@@ -416,8 +530,8 @@ export default {
                     id: content.id,
                     course: content.course,   
                     courseTextValue: this.formatCourse(content.course),
-                    gradeLevel: content.gradeLevel,
-                    gradeLevelTextValue:  this.formatCourse(content.gradeLevel),
+                    gradeLevel: content.grade_level,
+                    gradeLevelTextValue:  this.formatCourse(content.grade_level),
 
                     startDate: content.start_date,
                     endDate: content.end_date,
@@ -442,18 +556,31 @@ export default {
             let words = wordArray.join(" ");
             return words;
         }, 
-        formatCourse(string) {
-
-            if (string) {
-                       
-            let newString = string.charAt(0).toUpperCase() + string.slice(1);
-            newString = this.removeUnderscore(newString);
-            return newString;
+        formatCourse(string) 
+        {
+            if (string) {                       
+                let newString = string.charAt(0).toUpperCase() + string.slice(1);
+                newString = this.removeUnderscore(newString);
+                return newString;
             }
-
-            
-
         },
+        capitalizeFirstLetter(string) {
+            let words = this.removeUnderscore(string);
+            let newString = words.charAt(0).toUpperCase() + words.slice(1); 
+            return newString.trim(); 
+        },  
+        addAlpha(color, opacity) {
+            // coerce values so ti is between 0 and 1.
+            var _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+            return color + _opacity.toString(16).toUpperCase();
+        },               
+        isMobile() {
+            if (window.innerWidth <= 1024 || screen.width  <= 1024 ) {
+                return true
+            } else {
+                return false
+            }
+        }        
     },     
 
     updated: function() {

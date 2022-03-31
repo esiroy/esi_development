@@ -2,181 +2,210 @@
 
     <!--[start] timeManager - EIKEN-->
     <div id="timeManager-EIKEN" class="d-none">
+    
+        <div class="message"></div> 
 
-
-        <div class="row">
-            <div :class="this.size.leftColumn">
-                <div class="pl-2 small"> <span class="text-danger">&nbsp;</span> Course </div>
+        <form name="form-timemanager-EIKEN" id="form-timemanager-EIKEN">
+        
+            <div class="row">
+                <div :class="this.size.leftColumn">
+                    <div class="pl-2 small"> <span class="text-danger">&nbsp;</span> Course </div>
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input type="text" id="course" :value="this.content.courseTextValue "
+                        disabled name="course"  :class="this.size.select +' form-control form-control-sm '">  
+                </div>
             </div>
-            <div :class="this.size.rightColumn">
-                <input type="text" id="course" :value="this.content.courseTextValue "
-                    disabled name="course"  :class="this.size.select +' form-control form-control-sm '">  
-            </div>
-        </div>
 
-        <div class="row pt-2">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small"> <span class="text-danger">*</span> Level of Examination </div>
-            </div>                   
-            <div :class="this.size.rightColumn">
-                <select id="gradeLevel" name="gradeLevel" v-model="gradeLevel" @change="handleChangeGradeLevel($event)" class="form-control form-control-sm">
-                    <option value="" class="mx-0 px-0">Select Grade Level</option>
-                    <option value="5" class="mx-0 px-0">Grade 5</option>
-                    <option value="4" class="mx-0 px-0">Grade 4</option>
-                    <option value="3" class="mx-0 px-0">Grade 3</option>
-                    <option value="pre_2" class="mx-0 px-0">Grade Pre 2</option>
-                    <option value="2" class="mx-0 px-0">Grade 2</option>
-                    <option value="pre_1" class="mx-0 px-0">Grade Pre 1</option> 
-                    <option value="1" class="mx-0 px-0">Grade 1</option> 
-                </select>       
-            </div>                     
-        </div>
+            <div class="row pt-2">
+                <div :class="this.size.leftColumn">
+                    <div class="pl-2 small"> <span class="text-danger">&nbsp;</span> Date </div>
+                </div>
+                <div :class="this.size.rightColumn">
+        
+                    <datepicker id="startDate" 
+                        name="startDate"                                          
+                        v-model="date"
+                        :value="date"
+                        :format="dateFormatter"
+                        :placeholder="'Select Date'"
+                        :input-class="[this.size.select +' form-control form-control-sm bg-white',  { 'is-invalid' : submitted  && $v.date.$error }] "
+                        :language="ja"
+                    ></datepicker>   
 
-
-        <div id="grade_5" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade 5</div>                
+                    <div v-if="submitted && !$v.date.required" class="invalid-feedback">
+                        date required
+                    </div>
+                                                
+                </div>
             </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_5" name="EIKEN-grade_5" v-model="data.grade_5"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                   
-            </div>
-        </div>
-
-
-        <div id="grade_4" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade 4</div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_4" name="EIKEN-grade_4" v-model="data.grade_4"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">
-            </div>
-        </div>
 
 
 
-        <div id="stage_1_separator" class="row pt-2">
-            <div class="col-12">                  
-                <div class="strike">
-                    <span class="text-secondary small">1st Stage</span>
-                </div>                
+            <div class="row pt-2">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small"> <span class="text-danger">*</span> Level of Examination </div>
+                </div>                   
+                <div :class="this.size.rightColumn">
+                    <select id="gradeLevel" name="gradeLevel" v-model="gradeLevel" @change="handleChangeGradeLevel($event)" class="form-control form-control-sm">
+                        <option value="" class="mx-0 px-0">Select Grade Level</option>
+                        <option value="5" class="mx-0 px-0">Grade 5</option>
+                        <option value="4" class="mx-0 px-0">Grade 4</option>
+                        <option value="3" class="mx-0 px-0">Grade 3</option>
+                        <option value="pre_2" class="mx-0 px-0">Grade Pre 2</option>
+                        <option value="2" class="mx-0 px-0">Grade 2</option>
+                        <option value="pre_1" class="mx-0 px-0">Grade Pre 1</option> 
+                        <option value="1" class="mx-0 px-0">Grade 1</option> 
+                    </select>       
+                </div>                     
             </div>
-        </div>
+
+
+            <div id="grade_5" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade 5</div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_5" name="grade_5" v-model="data.grade_5"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                   
+                </div>
+            </div>
+
+
+            <div id="grade_4" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade 4</div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_4" name="grade_4" v-model="data.grade_4"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">
+                </div>
+            </div>
 
 
 
-        <div id="grade_3_stage_1" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade 3 1st stage </div>                
+            <div id="stage_1_separator" class="row pt-2">
+                <div class="col-12">                  
+                    <div class="strike">
+                        <span class="text-secondary small">1st Stage</span>
+                    </div>                
+                </div>
             </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_3_1st_stage" name="EIKEN-grade_3_1st_stage" v-model="data.grade_3_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">
-                    
-            </div>
-        </div>         
 
 
-        <div id="grade_pre_2_stage_1" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 2 1st Stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_pre_2_1st_stage" name="EIKEN-grade_pre_2_1st_stage" v-model="data.grade_pre_2_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
-            </div>
-        </div>        
+
+            <div id="grade_3_stage_1" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade 3 1st stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_3_1st_stage" name="grade_3_1st_stage" v-model="data.grade_3_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">
+                        
+                </div>
+            </div>         
 
 
-        <div id="grade_2_stage_1" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade 2 1st stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_2_1st_stage" name="EIKEN-grade_2_1st_stage" v-model="data.grade_2_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                   
-            </div>
-        </div>           
+            <div id="grade_pre_2_stage_1" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 2 1st Stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_pre_2_1st_stage" name="grade_pre_2_1st_stage" v-model="data.grade_pre_2_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
+                </div>
+            </div>        
 
 
-        <div id="grade_pre_1_stage_1" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 1 1st Stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_pre_1_1st_stage" name="EIKEN-grade_pre_1_1st_stage" v-model="data.grade_pre_1_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                    
-            </div>
-        </div>        
-
-        <div id="grade_1_stage_1" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade 1 1st Stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_1_1st_stage" name="EIKEN-grade_1_1st_stage" v-model="data.grade_1_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                    
-            </div>
-        </div>     
-
-        <div id="stage_2_separator" class="row pt-2">
-            <div class="col-12">                  
-                <div class="strike">
-                    <span class="text-secondary small">2nd Stage</span>
-                </div>                
-            </div>
-        </div>
-
-        <!-- 2nd stage -->
-        <div id="grade_3_stage_2" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade 3 2nd stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_3_2nd_stage" name="EIKEN-grade_3_2nd_stage" v-model="data.grade_3_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                 
-            </div>
-        </div>                
-
-        <div id="grade_pre_2_stage_2" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 2 2nd Stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_pre_2_2nd_stage" name="EIKEN-grade_pre_2_2nd_stage" v-model="data.grade_pre_2_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
-            </div>
-        </div>        
+            <div id="grade_2_stage_1" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade 2 1st stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_2_1st_stage" name="grade_2_1st_stage" v-model="data.grade_2_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                   
+                </div>
+            </div>           
 
 
-        <div id="grade_2_stage_2" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade 2 2nd stage </div>                
+            <div id="grade_pre_1_stage_1" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 1 1st Stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_pre_1_1st_stage" name="grade_pre_1_1st_stage" v-model="data.grade_pre_1_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                    
+                </div>
+            </div>        
+
+            <div id="grade_1_stage_1" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade 1 1st Stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_1_1st_stage" name="grade_1_1st_stage" v-model="data.grade_1_1st_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                    
+                </div>
+            </div>     
+
+            <div id="stage_2_separator" class="row pt-2">
+                <div class="col-12">                  
+                    <div class="strike">
+                        <span class="text-secondary small">2nd Stage</span>
+                    </div>                
+                </div>
             </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_2_2nd_stage" name="EIKEN-grade_2_2nd_stage" v-model="data.grade_2_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
-            </div>
-        </div>           
+
+            <!-- 2nd stage -->
+            <div id="grade_3_stage_2" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade 3 2nd stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_3_2nd_stage" name="grade_3_2nd_stage" v-model="data.grade_3_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                 
+                </div>
+            </div>                
+
+            <div id="grade_pre_2_stage_2" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 2 2nd Stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_pre_2_2nd_stage" name="grade_pre_2_2nd_stage" v-model="data.grade_pre_2_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
+                </div>
+            </div>        
 
 
-        <div id="grade_pre_1_stage_2" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 1 2nd Stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_pre_1_2nd_stage" name="EIKEN-grade_pre_1_2nd_stage" v-model="data.grade_pre_1_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
-            </div>
-        </div>        
+            <div id="grade_2_stage_2" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade 2 2nd stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_2_2nd_stage" name="grade_2_2nd_stage" v-model="data.grade_2_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
+                </div>
+            </div>           
 
-        <div id="grade_1_stage_2" class="row pt-2 grade_level_container">
-            <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small"> <span class="text-danger">*</span> Grade 1 2nd Stage </div>                
-            </div>
-            <div :class="this.size.rightColumn">
-                <input @change="getTotal" id="EIKEN-grade_1_2nd_stage" name="EIKEN-grade_1_2nd_stage" v-model="data.grade_1_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                 
-            </div>
-        </div>             
 
-        <div class="row pt-2 total">
-            <div :class="this.size.leftColumn">
-                <div class="pl-2 small "> <span class="text-danger">*</span> Total</div>
+            <div id="grade_pre_1_stage_2" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 1 2nd Stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_pre_1_2nd_stage" name="grade_pre_1_2nd_stage" v-model="data.grade_pre_1_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                  
+                </div>
+            </div>        
+
+            <div id="grade_1_stage_2" class="minutes-entry row pt-2 grade_level_container">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small"> <span class="text-danger">*</span> Grade 1 2nd Stage </div>                
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input  v-on:keyup="getTotalMinutes" id="EIKEN-grade_1_2nd_stage" name="grade_1_2nd_stage" v-model="data.grade_1_2nd_stage"  placeholder="分 minutes" :class="this.size.select +' form-control form-control-sm'">                 
+                </div>
+            </div>             
+
+            <div class="row pt-2 total">
+                <div :class="this.size.leftColumn">
+                    <div class="pl-2 small "> <span class="text-danger">*</span> Total</div>
+                </div>
+                <div :class="this.size.rightColumn">
+                    <input type="text" id="total" disabled name="EIKENtotal" v-model="data.total" :class="this.size.select +' form-control form-control-sm '"> 
+                </div>
             </div>
-            <div :class="this.size.rightColumn">
-                <input type="text" id="total" disabled name="EIKENtotal" v-model="data.total" :class="this.size.select +' form-control form-control-sm '"> 
-            </div>
-        </div>
+        </form>
 
     </div>
     <!--[end]-->
@@ -185,13 +214,22 @@
 
 <script>
 
+import * as Moment from 'moment';
+import Datepicker from 'vuejs-datepicker';
+import {en, ja} from 'vuejs-datepicker/dist/locale'; 
+
 export default 
 {
     name: "EikenTimeManagerComponent",
     data() {
-        return {                 
+        return {        
+
+            ja: ja,
+            en: en,
+            submitted: false,
+
+            date: "",
             gradeLevel: "",
-            total: "",
 
             data: {
                     grade_5: "",
@@ -211,6 +249,9 @@ export default
                 },            
         }
     },
+    components: {    
+        Datepicker
+    },      
     props: {
         content: Object,
         size: Object,
@@ -282,31 +323,24 @@ export default
 
             }
         },
-        getTotal() 
+    
+        //Getter
+        getDate() {
+            return this.date;
+        },
+        getMinutesData() {
+            return this.data;
+        },
+        dateFormatter(date) 
         {
-            if (this.gradeLevel > 3) 
-            {
-            
-                this.total = this.getValue('EIKEN-grade_'+ this.gradeLevel);        
-                this.data.total  = this.total;
-
-            } else {
-            
-                let s1 = this.getValue('EIKEN-grade_'+ this.gradeLevel + "_1st_stage");        
-                let s2 = this.getValue('EIKEN-grade_'+ this.gradeLevel + "_2nd_stage");        
-                this.total = parseInt(s1) + parseInt(s2);
-
-                if (parseInt(this.total) >= 1) {
-                    this.data.total  = parseInt(this.total);
-                }
-            }
-            //let total =  this.$parent.$parent.$parent.$options.methods.getEikenTotalScore('EIKEN');
- 
-            if (this.$parent.$parent.$parent.submitted === true) {
-                // this.$parent.$parent.$parent.$options.methods.highlightExamElement();
-            }
-                    
-        }
+            let fdate = Moment(date).format('YYYY年 MM月 D日');  
+            return fdate;
+        },    
+        //get Total Minutes
+        getTotalMinutes()
+        {
+            this.data.total = this.$parent.$options.methods.getTotalMinutes(this.content.course);
+        }    
     },
     computed: {},
     updated: function () {

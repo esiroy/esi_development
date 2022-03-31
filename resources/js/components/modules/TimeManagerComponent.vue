@@ -249,8 +249,7 @@ export default {
     },
     mounted: function () 
 	{
-        this.data = this.content;        
-          
+        this.data = this.content;
     },    
     methods: {     
         resetTimeMangerEntryModal() {
@@ -261,7 +260,6 @@ export default {
                 material_checkbox: "",
                 course: "",
                 courseTextValue : "",
-                
                 gradeLevel: "",
                 gradeLevelTextValue: "",
                 startDate: "",
@@ -376,7 +374,12 @@ export default {
         {
             let index = event.target.value;
             let course = event.target.selectedOptions[0].text;
-            console.log(index + ": " + course)
+            //console.log(index + ": " + course)
+
+            if (typeof this.content.gradeLevel == 'undefined') {
+                 this.content.gradeLevel = "";
+            } 
+           
 		},
         showMaterials() {
             if (this.data.materials.length == 0) {
@@ -405,10 +408,9 @@ export default {
             {
 
                 if (Number.isNaN(requiredHours)) {
-                    alert ("null")
+                   
                 } else {
                     this.data.requiredHours = requiredHours;
-                
                 }   
             }
             

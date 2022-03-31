@@ -100,7 +100,7 @@ import Datepicker from 'vuejs-datepicker';
 import {en, ja} from 'vuejs-datepicker/dist/locale'; 
 
 export default {
-    name: "IELTScoreComponent",
+    name: "IELTSTimeManagerComponent",
     data() {
 
         return {      
@@ -139,22 +139,9 @@ export default {
             return fdate;
         },    
         getTotalMinutes()
-        {   
-            let values = Array.from(document.querySelectorAll('#timeManager-IELTS .minutes-entry input')).map(input => {
-                console.log(input.id)
-                return input.value
-            });
-            //get total
-            let total = 0;
-            for (var i = 0, n = values.length; i < n; ++i)
-            {
-                if (values[i]) {
-                    total = parseFloat(total) + parseFloat(values[i]);
-                }            
-            }
-
-            this.data.total = total;
-        }    
+        {
+            this.data.total = this.$parent.$options.methods.getTotalMinutes(this.content.course);
+        }
   },
   computed: {},
   updated: function () {
@@ -162,8 +149,7 @@ export default {
   },
   mounted: function () 
   {
-    //console.log("IELTS scores component mounted");
-    //console.log(this.size)
+
   },
 };
 

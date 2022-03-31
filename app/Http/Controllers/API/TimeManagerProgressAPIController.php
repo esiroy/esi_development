@@ -4,9 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-
-
 use App\Models\TimeManagerProgress;
 
 class TimeManagerProgressAPIController extends Controller
@@ -16,21 +13,32 @@ class TimeManagerProgressAPIController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function getTimeManagerProgressGraph(Request $request, TimeManagerProgress $timeManagerProgress)
     {
-        //
+        $entries = $timeManagerProgress->select('date','total_minutes')
+                    ->where('time_manager_id', $request['timeManagerID'])
+                    ->where('member_id', $request['memberID'])
+                    ->orderBy('date', 'ASC')->get();  
+
+        if ($entries) {
+        
+            return Response()->json([
+                "success"   => true,                
+                "entries"      => $entries,
+                "message"   => "time manager progress has been successfully fetched"
+            ]);    
+
+        } else {
+        
+            return Response()->json([
+                "success"   => false,
+                "message"   => "entry has been successfully saved",
+            ]);   
+        }
+
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {      
-
-           
-    }
+  
 
     /**
      * Store a newly created resource in storage.
@@ -53,7 +61,7 @@ class TimeManagerProgressAPIController extends Controller
         
             return Response()->json([
                 "success"   => false,
-                "message"   => "entry has been successfully saved",
+                "message"   => "error found, entry was not saved",
             ]);   
         }
         

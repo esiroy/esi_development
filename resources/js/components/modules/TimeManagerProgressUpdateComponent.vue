@@ -44,14 +44,15 @@
                     <div id="minutes-entry" class="card-body">
                         <IELTSTimeManagerComponent ref="IELTSTimeManagerComponent" :content="content" :size="this.size"></IELTSTimeManagerComponent>
                         <ToeflTimeManagerComponent ref="TOEFLTimeManagerComponent" :content="content" :size="this.size"></ToeflTimeManagerComponent>                      
-                        <ToeflJuniorTimeManagerComponent :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>                         
-                        <ToeflPrimaryStep1TimeManagerComponent :content="content" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
-                        <ToeflPrimaryStep2TimeManagerComponent :content="content" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
-                        <ToeicListeningAndReadingTimeManagerComponent :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
-                        <ToeicSpeakingTimeManagerComponent :content="content" :size="this.size"></ToeicSpeakingTimeManagerComponent>
-                        <ToeicWritingTimeManagerComponent :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>
-                        <EikenTimeManagerComponent :content="content" :size="this.size"></EikenTimeManagerComponent>
-                        <TeapTimeManagerComponent :content="content" :size="this.size"></TeapTimeManagerComponent>
+                        <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerComponent" :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>
+                        <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerComponent" :content="content" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
+                        <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerComponent" :content="content" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
+                        <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerComponent" :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
+                        <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerComponent" :content="content" :size="this.size"></ToeicSpeakingTimeManagerComponent>
+                        <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerComponent" :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>
+                        <EikenTimeManagerComponent  ref="EIKENTimeManagerComponent" :content="content" :size="this.size"></EikenTimeManagerComponent>
+                        <TeapTimeManagerComponent  ref="TEAPTimeManagerComponent" :content="content" :size="this.size"></TeapTimeManagerComponent>
+                        <OtherTimeManagerComponent  ref="Other_TestTimeManagerComponent" :content="content" :size="this.size"></OtherTimeManagerComponent>
                     </div>
                     
                 </div>
@@ -77,13 +78,16 @@ import ToeicSpeakingTimeManagerComponent from "../timemanagerprogress/ToeicSpeak
 import ToeicWritingTimeManagerComponent from "../timemanagerprogress/ToeicWritingTimeManagerComponent.vue";
 import EikenTimeManagerComponent from "../timemanagerprogress/EikenTimeManagerComponent.vue";
 import TeapTimeManagerComponent from "../timemanagerprogress/TeapTimeManagerComponent.vue";
+import OtherTimeManagerComponent from "../timemanagerprogress/OtherTimeManagerComponent.vue";
+
 
 export default {   
     name: "time-manager-progress-update-component",
     components: {    
         IELTSTimeManagerComponent, ToeflTimeManagerComponent, ToeflJuniorTimeManagerComponent,
         ToeflPrimaryStep1TimeManagerComponent, ToeflPrimaryStep2TimeManagerComponent, ToeicListeningAndReadingTimeManagerComponent,
-        ToeicSpeakingTimeManagerComponent, ToeicWritingTimeManagerComponent, EikenTimeManagerComponent, TeapTimeManagerComponent
+        ToeicSpeakingTimeManagerComponent, ToeicWritingTimeManagerComponent, EikenTimeManagerComponent, TeapTimeManagerComponent,
+        OtherTimeManagerComponent
     },      
     props: {
         memberinfo: Object,
@@ -94,6 +98,8 @@ export default {
     data() {
         return {
             submitted: "",
+
+            //adjust the column sizes of the entry component modals
             size: {
                 leftColumn  : "col-5",
                 rightColumn : "col-7",

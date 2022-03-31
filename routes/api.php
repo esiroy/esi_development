@@ -196,3 +196,6 @@ Route::middleware('auth:api')->post('/getTimeManagerProgress', 'API\TimeManagerP
 Route::middleware('auth:api')->post('/createTimeManagerProgress', 'API\TimeManagerProgressAPIController@store')->name('APICreateTimeManagerProgress');
 Route::middleware('auth:api')->post('/updateTimeManagerProgress', 'API\TimeManagerProgressAPIController@update')->name('APIUpdateTimeManagerProgress');
 Route::middleware('auth:api')->post('/deleteTimeManagerProgress', 'API\TimeManagerProgressAPIController@destroy')->name('APIDeleteTimeManagerProgress');
+
+Route::middleware('auth:api')->post('/getTimeManagerProgressGraph', 'API\TimeManagerProgressAPIController@getTimeManagerProgressGraph')->name('APIGetTimeManagerProgressGraph');
+

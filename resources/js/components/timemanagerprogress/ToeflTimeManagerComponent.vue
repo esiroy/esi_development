@@ -4,7 +4,7 @@
 
         <div class="message"></div>
 
-        <form name="form-timemanger-TOEFL" id="form-timemanger-TOEFL">
+        <form name="form-timemanager-TOEFL" id="form-timemanager-TOEFL">
 
             <div class="row">
                 <div :class="this.size.leftColumn">
@@ -126,11 +126,7 @@ export default {
     props: {
         content: Object,
         size: Object,
-    },  
-    props: {
-    size: Object,    
-    content: Object,
-    },
+    }, 
     methods: {
         getDate() {
             return this.date;

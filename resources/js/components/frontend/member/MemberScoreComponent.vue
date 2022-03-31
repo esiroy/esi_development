@@ -478,10 +478,11 @@
                 //slide: 0,
                 //sliding: null,
 
-                extraOptions: [],
+              
                 //charts
                 loaded: false,
                 datacollection: [],
+                extraOptions: [],
 
                 //this is for examp type column
                 size: {
@@ -591,8 +592,6 @@
     },
     methods: {   
         isMobile() {
-           
-
             if (window.innerWidth <= 1024 || screen.width  <= 1024 ) {
                 return true
             } else {
