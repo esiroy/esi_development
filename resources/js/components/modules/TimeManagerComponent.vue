@@ -279,6 +279,12 @@ export default {
 
             if (!this.$v.data.$invalid) 
             {                
+
+                //SHOW LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').hide();
+                $(document).find('.modal-footer').find('div.loading-container').show();
+
+
                 axios.post("/api/updateTimeManager?api_token=" + this.api_token, 
                 {
                     method          : "POST",
@@ -311,21 +317,35 @@ export default {
                                 percentTimeAchievement: 0
                             } 
 
+                             this.$parent.$parent.$parent.$bvModal.hide('modalTimeManager') 
                    
                         });
+                    } else {
+                        $(document).find('.modal-footer').find('div.buttons-container').show();
+                        $(document).find('.modal-footer').find('div.loading-container').hide();
+
                     }
+                    
                 }).catch(function(error) {
                     console.log(error);
+
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();                    
                 });
             }
         },        
 
         saveTimeManager() {
+
             this.submitted = true;
             this.$v.data.$touch();
 
             if (!this.$v.data.$invalid) 
             {                
+                //SHOW LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').hide();
+                $(document).find('.modal-footer').find('div.loading-container').show();
+
                 axios.post("/api/createTimeManager?api_token=" + this.api_token, 
                 {
                     method          : "POST",
@@ -361,11 +381,20 @@ export default {
                                 percentTimeAchievement: 0
                             } 
 
+
+                            this.$parent.$parent.$parent.$bvModal.hide('modalTimeManager')            
                    
                         });
+                    } else {
+                    
+                        $(document).find('.modal-footer').find('div.buttons-container').show();
+                        $(document).find('.modal-footer').find('div.loading-container').hide();     
+
                     }
                 }).catch(function(error) {
                     console.log(error);
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();                         
                 });
             }
         },        
