@@ -317,7 +317,8 @@ export default {
                                 percentTimeAchievement: 0
                             } 
 
-                             this.$parent.$parent.$parent.$bvModal.hide('modalTimeManager') 
+                             this.$parent.$parent.$parent.$bvModal.hide('modalTimeManager');
+                            
                    
                         });
                     } else {

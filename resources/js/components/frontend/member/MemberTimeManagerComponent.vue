@@ -434,6 +434,9 @@ export default {
                             scope.$bvModal.hide('modalTimeManagerProgressUpdate');
                         }, 2500, this);
 
+
+                        this.getTimeManager();
+
                         this.$forceUpdate();
                     });            
 
@@ -499,6 +502,7 @@ export default {
         updateTimeManager() 
         {
             this.$refs.timeManager.updateTimeManager();
+          
         },
         getTimeManager() 
         {
@@ -521,10 +525,9 @@ export default {
                         this.content = this.assignData(content);
                         this.contentData = this.assignData(content);
 
-
                         //GET CALCULATED THE PERECENTAGE OF PROGRESS
                         this.content.percentageLeft = response.data.percentageLeft;
-
+                        this.content.remainingDays = response.data.totalTimeLeft;
                     });
 
                 } else {
