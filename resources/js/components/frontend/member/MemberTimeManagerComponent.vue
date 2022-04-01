@@ -58,16 +58,25 @@
 
                     <div class="col-12">
                         <div class="small">
-                            <span class="font-weight-bold">Remaining Days </span>:
-                            <span>{{ this.content.remainingDays }} </span>
+                            <span class="font-weight-bold">Remaining Days</span>:
+                            <!--REMAINING DAYS LEFT-->
+                            <span v-if="this.content.percentageLeft < 100">{{ this.content.remainingDays }} </span>
+                            <span v-else>0</span>                            
                         </div> 
                     </div>
 
                     <div class="col-12 mt-2">
-                        <div class="small">
+                        <div class="small" >
                             <span class="font-weight-bold">Time Achievement </span>:
-                            <span>{{ this.content.percentageLeft }}% </span>
+                            <!--PERCENTAGE LEFT-->
+                            <span v-if="this.content.percentageLeft < 100">
+                                {{ this.content.percentageLeft }}% 
+                            </span>
+                            <span class="text-success" v-else>
+                                Completed
+                            </span>
                         </div> 
+                       
                     </div>                
 
                 </div>
@@ -79,11 +88,17 @@
             <div id="buttonContainer" class="row mt-2" v-show="this.updateType == 'update'">
                 <!-- View Scores -->
                 <div class="col-6 d-flex justify-content-end mx-0 px-0">
-                    <span v-b-modal.modalTimeManagerProgressUpdate >
-                        <b-button size="sm" block variant="dark"  pill>
+
+                    <span v-b-modal.modalTimeManagerProgressUpdate v-if="this.content.percentageLeft < 100">
+                        <b-button size="sm" block variant="dark"  pill >
                             <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
                         </b-button>                   
                     </span>
+                    <span  v-else>
+                        <b-button size="sm" block variant="dark"  pill disabled="true">
+                            <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
+                        </b-button>                   
+                    </span>                    
                     &nbsp;
                 </div>
 
