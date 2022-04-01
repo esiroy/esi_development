@@ -334,7 +334,7 @@ export default {
                         labels: dates,  
                         datasets: [
                             {
-                                label: this.content.course,                                   
+                                label: this.formatCourse(this.content.course),
                                 backgroundColor: color,                     
                                 data: hours,                   
                             },
