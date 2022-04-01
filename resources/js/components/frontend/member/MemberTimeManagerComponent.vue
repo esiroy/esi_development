@@ -48,20 +48,20 @@
                             <span>{{ this.content.requiredDays }} </span>
                         </div>
                     </div>
-                    <div class="col-12">
-                        <div class="small">
-                            <span class="font-weight-bold">Remaining Days </span>:
-                            <span>{{ this.content.remainingDays }} </span>
-                        </div> 
-                    </div>
 
-                 <div class="col-12">
+                    <div class="col-12">
                         <div class="small">
                             <span class="font-weight-bold">Required Hours</span>:
                             <span>{{ this.content.requiredHours }} </span>
                         </div> 
                     </div>
 
+                    <div class="col-12">
+                        <div class="small">
+                            <span class="font-weight-bold">Remaining Days </span>:
+                            <span>{{ this.content.remainingDays }} </span>
+                        </div> 
+                    </div>
 
                     <div class="col-12 mt-2">
                         <div class="small">
@@ -519,8 +519,6 @@ export default {
 
                     let content = response.data.content;
 
-                    
-
                     this.$nextTick(() => {
                         this.content = this.assignData(content);
                         this.contentData = this.assignData(content);
@@ -590,7 +588,8 @@ export default {
                     requiredDays: content.required_days,
 
                     remainingDays: content.remaining_days,
-                    requiredHours: content.required_hours,      
+                    requiredHours: content.required_hours,    
+
                     percentageLeft: content.percentageLeft   
 
                     //pre               

@@ -65,7 +65,6 @@ class dummyController extends Controller
         $minutesLeft = $requiredMinutes - $minutes;
 
         $percentageLeft = ($minutes / $requiredMinutes) * 100;
-
         $formatted_percentage= number_format($percentageLeft, 2, '.', '');
 
 

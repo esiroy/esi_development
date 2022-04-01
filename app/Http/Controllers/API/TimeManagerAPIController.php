@@ -26,7 +26,7 @@ class TimeManagerAPIController extends Controller
                         where('member_id', $memberID)
                         ->where('time_manager_id', $timeManager->id)
                         ->sum('total_minutes');
-                        
+
             $requiredMinutes = calculateHoursToMinutes($timeManager->required_hours);
             $minutesLeft = $requiredMinutes - $minutes;
 
@@ -37,7 +37,7 @@ class TimeManagerAPIController extends Controller
             return Response()->json([
                 "success"           => true,
                 "message"           => "entry has been successfully found",
-                "requiredMinutes " => $requiredMinutes,
+                "requiredMinutes "  => $requiredMinutes,
                 "totalTimeLeft"     => $totalTimeLeft,
                 "percentageLeft"    => $formatted_percentage,
                 "content"           => $timeManager,                
@@ -55,15 +55,15 @@ class TimeManagerAPIController extends Controller
         
         $inputData = $request->get('data');
 
-        $startDate = ESIDate($inputData['startDate']);
-        $endDate   = ESIDate($inputData['endDate']);
 
-        $requiredDays = getRemainingDays($startDate, $endDate);       
+        //CONVERT REQUIRED DAYS FROM STARD AND END DATE (OPTION 1)
+        //$startDate = ESIDate($inputData['startDate']);
+        //$endDate   = ESIDate($inputData['endDate']);        
+        //$requiredDays = getRemainingDays($startDate, $endDate);       
 
-        //calculated hours to days
-        //$requiredHours = calculateDaysToHours($requiredDays);
-
+        //CONVERT REQUIRED HOURS TO DAYS (OPTION 2)
         $requiredHours = $inputData['requiredHours'];
+        $requiredDays = calculateHoursToDays($requiredHours);
         
         $data = [
             'valid'             => true, 
@@ -116,13 +116,15 @@ class TimeManagerAPIController extends Controller
     {
         $memberID = $request->get('memberID');
         $inputData = $request->get('data');
+       
+        //CONVERT REQUIRED DAYS FROM STARD AND END DATE (OPTION 1)
         $startDate = ESIDate($inputData['startDate']);
-        $endDate   = ESIDate($inputData['endDate']);
-        $requiredDays = getRemainingDays($startDate, $endDate);  
+        $endDate   = ESIDate($inputData['endDate']);        
+        //$requiredDays = getRemainingDays($startDate, $endDate);       
 
-        //calculated hours to days
-        //$requiredHours = calculateDaysToHours($requiredDays);
+        //CONVERT REQUIRED HOURS TO DAYS (OPTION 2)
         $requiredHours = $inputData['requiredHours'];
+        $requiredDays = calculateHoursToDays($requiredHours);        
 
 
         $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();

@@ -124,10 +124,6 @@ export default {
             }
             return total;
         },
-        resetModal() {
-        
-        },
-        
         addProgress() {
             this.submitted = true;
             this.$v.content.$touch();
@@ -146,27 +142,22 @@ export default {
                 });
             }
         },        
-		handleCourseChange(event) {
-
+		handleCourseChange(event) 
+        {
             let index = event.target.value;
             let course = event.target.selectedOptions[0].text;
-
-            console.log(index + ": " + course)
+            //console.log(index + ": " + course)
 		},
 
         showElementId(id) {
             
-            if (document.getElementById(id)) {
-            
+            if (document.getElementById(id)) 
+            {            
                 document.getElementById(id).style.display = "block";
-                document.getElementById(id).className = "d-block";            
-            
+                document.getElementById(id).className = "d-block";
             } else {
                 console.log(id + " element does not exists");
-            }
-
-
-           
+            }           
         },        
         showMaterials() {
 
