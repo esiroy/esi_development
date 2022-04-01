@@ -22,6 +22,15 @@
                         <span id="course">{{ formatCourse(this.content.course) }}</span>
                     </div>
                 </div>
+                
+
+                <div class="row" v-if="this.content.course == 'EIKEN'">
+                    <div class="small col-12">
+                        <strong>Grade Level</strong>: 
+                        <span id="course">{{ formatCourse(this.content.gradeLevel) }}</span>
+                    </div>
+                </div>
+                                
 
                 <div class="row">
                     <div class="col-12">
@@ -95,7 +104,7 @@
                         </b-button>                   
                     </span>
                     <span  v-else>
-                        <b-button size="sm" block variant="dark"  pill disabled="true">
+                        <b-button size="sm" block variant="dark"  pill disabled="disabled">
                             <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
                         </b-button>                   
                     </span>                    

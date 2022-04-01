@@ -29,6 +29,7 @@
                         :format="dateFormatter"
                         :placeholder="'Select Date'"
                         :input-class="[this.size.select +' form-control form-control-sm bg-white',  { 'is-invalid' : submitted  && $v.date.$error }] "
+                        :disabledDates="disabledDates"
                         :language="ja"
                     ></datepicker>   
 
@@ -110,7 +111,9 @@ export default {
             en: en,
             submitted: false,
             date: "",
-
+            disabledDates: {
+                from: new Date(Date.now() + 8640000)
+            },
             data: {        
                 speaking: "",
                 reading: "",

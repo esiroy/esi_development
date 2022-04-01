@@ -29,6 +29,7 @@
 					:format="dateFormatter"
 					:placeholder="'Select Date'"
 					:input-class="[this.size.select +' form-control form-control-sm bg-white',  { 'is-invalid' : submitted  && $v.date.$error }] "
+					:disabledDates="disabledDates"
 					:language="ja"
 				></datepicker>   
 
@@ -84,16 +85,18 @@ export default {
   name: "TOEFL_Primary_Step_1_TimeManagerComponent",
   data() {
 	return {
-	  ja: ja,
-	  en: en,
-	  submitted: false,
-	  date: "",
-
-	  data: {
-		reading: "",
-		listening: "",
-		total: "",
-	  },
+		ja: ja,
+		en: en,
+		submitted: false,
+		date: "",
+		disabledDates: {
+			from: new Date(Date.now() + 8640000)
+		},
+		data: {
+			reading: "",
+			listening: "",
+			total: "",
+		},
 	};
   },
   components: {

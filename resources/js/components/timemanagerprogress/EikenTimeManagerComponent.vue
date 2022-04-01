@@ -17,6 +17,26 @@
                 </div>
             </div>
 
+
+           <div class="row pt-2">
+                <div :class="this.size.leftColumn">                       
+                    <div class="pl-2 small"> <span class="text-danger">*</span> Level of Examination </div>
+                </div>                   
+                <div :class="this.size.rightColumn">
+                    <select id="gradeLevel" name="gradeLevel" v-model="gradeLevel" @change="handleChangeGradeLevel($event)" class="form-control form-control-sm" disabled>
+                        <option value="" class="mx-0 px-0">Select Grade Level</option>
+                        <option value="5" class="mx-0 px-0">Grade 5</option>
+                        <option value="4" class="mx-0 px-0">Grade 4</option>
+                        <option value="3" class="mx-0 px-0">Grade 3</option>
+                        <option value="pre_2" class="mx-0 px-0">Grade Pre 2</option>
+                        <option value="2" class="mx-0 px-0">Grade 2</option>
+                        <option value="pre_1" class="mx-0 px-0">Grade Pre 1</option> 
+                        <option value="1" class="mx-0 px-0">Grade 1</option> 
+                    </select>       
+                </div>                     
+            </div>
+
+
             <div class="row pt-2">
                 <div :class="this.size.leftColumn">
                     <div class="pl-2 small"> <span class="text-danger">&nbsp;</span> Date </div>
@@ -31,6 +51,7 @@
                         :placeholder="'Select Date'"
                         :input-class="[this.size.select +' form-control form-control-sm bg-white',  { 'is-invalid' : submitted  && $v.date.$error }] "
                         :language="ja"
+                        :disabledDates="disabledDates"
                     ></datepicker>   
 
                     <div v-if="submitted && !$v.date.required" class="invalid-feedback">
@@ -42,23 +63,7 @@
 
 
 
-            <div class="row pt-2">
-                <div :class="this.size.leftColumn">                       
-                    <div class="pl-2 small"> <span class="text-danger">*</span> Level of Examination </div>
-                </div>                   
-                <div :class="this.size.rightColumn">
-                    <select id="gradeLevel" name="gradeLevel" v-model="gradeLevel" @change="handleChangeGradeLevel($event)" class="form-control form-control-sm">
-                        <option value="" class="mx-0 px-0">Select Grade Level</option>
-                        <option value="5" class="mx-0 px-0">Grade 5</option>
-                        <option value="4" class="mx-0 px-0">Grade 4</option>
-                        <option value="3" class="mx-0 px-0">Grade 3</option>
-                        <option value="pre_2" class="mx-0 px-0">Grade Pre 2</option>
-                        <option value="2" class="mx-0 px-0">Grade 2</option>
-                        <option value="pre_1" class="mx-0 px-0">Grade Pre 1</option> 
-                        <option value="1" class="mx-0 px-0">Grade 1</option> 
-                    </select>       
-                </div>                     
-            </div>
+ 
 
 
             <div id="grade_5" class="minutes-entry row pt-2 grade_level_container">
@@ -228,6 +233,10 @@ export default
             en: en,
             submitted: false,
 
+            disabledDates: {
+                from: new Date(Date.now() + 8640000)
+            },
+
             date: "",
             gradeLevel: "",
 
@@ -290,7 +299,11 @@ export default
         handleChangeGradeLevel() 
         {
             //change main exam level
-            this.$parent.$parent.$parent.examLevel = this.gradeLevel;
+            ///this.$parent.$parent.$parent.examLevel = this.gradeLevel;
+
+
+           
+
             this.total = "";
             this.data.total  = this.total;
             
@@ -349,7 +362,9 @@ export default
     mounted: function () 
     {
 
-        this.handleChangeGradeLevel()
+        this.gradeLevel = this.content.gradeLevel;
+
+        this.handleChangeGradeLevel();
        
     }
 };
