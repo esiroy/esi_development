@@ -22,7 +22,11 @@ class TimeManagerAPIController extends Controller
         {
             $timeManager->makeHidden(['created_at', 'updated_at']);
 
-            $minutes = TimeManagerProgress::where('member_id', $memberID)->sum('total_minutes');
+            $minutes = TimeManagerProgress::
+                        where('member_id', $memberID)
+                        ->where('time_manager_id', $timeManager->id)
+                        ->sum('total_minutes');
+                        
             $requiredMinutes = calculateHoursToMinutes($timeManager->required_hours);
             $minutesLeft = $requiredMinutes - $minutes;
 
