@@ -33,6 +33,7 @@ class TimeManagerAPIController extends Controller
             return Response()->json([
                 "success"           => true,
                 "message"           => "entry has been successfully found",
+                "requiredMinutes " => $requiredMinutes,
                 "totalTimeLeft"     => $totalTimeLeft,
                 "percentageLeft"    => $formatted_percentage,
                 "content"           => $timeManager,                
