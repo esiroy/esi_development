@@ -437,6 +437,16 @@ if (! function_exists('calculateHoursToMinutes'))
 }
 
 
+if (! function_exists('calculateMinutesToHours')) 
+{
+    function calculateMinutesToHours($minutes) {
+        $hours = floor($minutes / 60);
+        $min = $minutes - ($hours * 60);
+        return  $hours.".".$min;
+    }  
+}
+
+
 
 if (! function_exists('addSpaceBeforeCapitalizedLetters')) 
 {

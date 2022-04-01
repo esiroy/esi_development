@@ -15,7 +15,7 @@ class TimeManagerProgressAPIController extends Controller
      */
     public function getTimeManagerProgressGraph(Request $request, TimeManagerProgress $timeManagerProgress)
     {
-        $entries = $timeManagerProgress->select('date','total_minutes')
+        $entries = $timeManagerProgress->select('date','total_minutes', 'total_hours')
                     ->where('time_manager_id', $request['timeManagerID'])
                     ->where('member_id', $request['memberID'])
                     ->orderBy('date', 'ASC')->get();  

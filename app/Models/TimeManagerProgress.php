@@ -20,6 +20,7 @@ class TimeManagerProgress extends Model
             'date'          => mysql_format_date($data['date']),
             'minutes'       => json_encode($data['minutes']),
             'total_minutes' => $data['minutes']['total'],
+            'total_hours'   => calculateMinutesToHours($data['minutes']['total']),
         ]);
 
         if ($entry) {

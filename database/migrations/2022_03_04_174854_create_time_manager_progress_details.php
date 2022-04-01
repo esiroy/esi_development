@@ -19,6 +19,7 @@ class CreateTimeManagerProgressDetails extends Migration
             $table->unsignedBigInteger('member_id');
             $table->date('date')->index('date');
             $table->double('total_minutes', 18, 4);
+            $table->double('total_hours', 18, 4);
             $table->text('minutes');
             $table->timestamps();
         });

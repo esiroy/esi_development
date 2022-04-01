@@ -316,13 +316,14 @@ export default {
 
                     let dates   = [];
                     let minutes     = [];
+                    let hours     = [];
 
                     entries.forEach((entry)=> {
                         dates.push(entry.date)
-                        minutes.push(entry.total_minutes)
+                        hours.push(entry.total_hours)
                     });
                     
-                    console.log( dates, minutes)
+                   
 
                     //let randColor =  '#'+ Math.floor(Math.random()*16777215).toString(16); 
                     //let color = this.addAlpha(randColor, 0.4)
@@ -335,7 +336,7 @@ export default {
                             {
                                 label: this.content.course,                                   
                                 backgroundColor: color,                     
-                                data: minutes,                   
+                                data: hours,                   
                             },
                         ],                           
                     } 
