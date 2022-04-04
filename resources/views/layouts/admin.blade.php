@@ -7,7 +7,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="Description" content="{{ config('app.name', 'My Tutor')}} {{'- ' . ucwords(Request::segment(3)) ?? '' }} ">
     <title>
-    {{ config('app.name', 'My Tutor') }} {{ ":: " . ucwords( Str::of(Request::segment(3))->replace('-', ' ') ) ?? '' }} {{ " - " . ucwords( Str::of(Request::segment(2))->replace('-', ' ') ) ?? '' }}
+    {{ config('app.name', 'My Tutor') }} 
+
+    {{ " :: " . ucwords( Str::of(Request::segment(3))->replace('-', ' ')  ) ?? '' }} 
+
+    {{ ucwords( " - ". Str::of(Request::segment(2))->replace('-', ' ') ) ?? '' }}
+
+    {{ ucwords( Str::of(Request::segment(4))->replace('-', ' ') ) ?? '' }}
+
+    
+    
     </title>
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
