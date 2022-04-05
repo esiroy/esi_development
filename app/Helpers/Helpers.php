@@ -401,12 +401,43 @@ if (! function_exists('countWords'))
 
 if (! function_exists('minutesFormatter')) 
 {
-
     function minutesFormatter($minutes) {
         $d = floor ($minutes / 1440);
         $h = floor (($minutes - $d * 1440) / 60);
         $m = $minutes - ($d * 1440) - ($h * 60);
         return "{$d}d {$h}h {$m}m";
+    }
+}
+
+
+if (! function_exists('calculateDecimalHours')) 
+{
+    function calculateDecimalHours($dec) {
+        // start by converting to seconds
+        $seconds = ($dec * 3600);
+        // we're given hours, so let's get those the easy way
+        $hours = floor($dec);
+        // since we've "calculated" hours, let's remove them from the seconds variable
+        $seconds -= $hours * 3600;
+        // calculate minutes left
+        $minutes = floor($seconds / 60);
+        
+        // remove those from seconds as well
+        $seconds -= $minutes * 60;
+
+
+        if (intval($seconds) == 0) {
+            return lz($hours)."h ".lz($minutes)."m ";
+        } else {
+            return lz($hours)."h ".lz($minutes)."m ".lz( floor($seconds)) ."s";
+        }
+        
+    }
+
+    // lz = leading zero
+    function lz($num)
+    {
+        return (strlen($num) < 2) ? "0{$num}" : $num;
     }
 }
 
@@ -440,9 +471,8 @@ if (! function_exists('calculateHoursToMinutes'))
 if (! function_exists('calculateMinutesToHours')) 
 {
     function calculateMinutesToHours($minutes) {
-        $hours = floor($minutes / 60);
-        $min = $minutes - ($hours * 60);
-        return  $hours.".".$min;
+        $hours = ($minutes / 60);
+        return  $hours;
     }  
 }
 
@@ -452,7 +482,6 @@ if (! function_exists('addSpaceBeforeCapitalizedLetters'))
 {
     function addSpaceBeforeCapitalizedLetters($String) {
       $string =  preg_replace('/(?<!\ )[A-Z]/', ' $0', $String);
-
       return ucfirst($string);
     }  
 }

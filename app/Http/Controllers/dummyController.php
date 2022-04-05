@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Schema as Schema;
+
+
 use Illuminate\Http\Request;
 use App\Models\Folder;
 use App\Models\File;
@@ -18,6 +22,7 @@ use App\Models\WritingEntries;
 
 use App\Models\TimeManager;
 use App\Models\TimeManagerProgress;
+
 
 
 use App;
@@ -43,6 +48,11 @@ class dummyController extends Controller
     }
 
     public function  index(Request $request) {
+
+
+        echo calculateMinutesToHours(120);
+
+
 
         $memberID = 148;
 

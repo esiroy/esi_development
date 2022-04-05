@@ -152,6 +152,18 @@
                             </div>   
 
                         </div>   
+
+                        <div class="col-4">
+                            <div class="mt-4">
+
+                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/1215193414.html','必要な時間',900,820);" class="text-white">
+                                    <i class="fa fa-question-circle" aria-hidden="true"></i> <strong>必要な時間</strong>
+                                </a>
+
+                                <a href="#"><i class="fa fa-question-circle" aria-hidden="true"></i>必要な時間 </a>
+                            </div>
+                        </div>
+
                     </div>
 
 
@@ -160,7 +172,7 @@
                     <div id="timemanager-materials-container">
                         <input type="checkbox" name="material_checkbox" @change="showMaterials" v-model="data.material_checkbox"> 
 
-                        <span class="pl-2 small"> Non Mytutor Materials (5 materials max)</span>
+                        <span class="pl-2 small"> 受講者自身で用意した教材 (5 materials max)</span>
 
                         <div id="timemanager-materials" v-show="data.material_checkbox">
 

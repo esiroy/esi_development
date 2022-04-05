@@ -45,12 +45,64 @@
                     </div>
                 </div>
 
-                <div class="row  pt-2 ">
+                <div class="row  pt-2 mb-2">
                     <div class="col-12 small">
-                        {{ dateFormatter(this.content.startDate) }} - {{ dateFormatter(this.content.endDate) }}
+                        {{ dateFormatter(this.content.startDate) }} - {{ dateFormatter(this.content.endDate) }}                          
                     </div>
+                    <div class="col-12">
+                        <div class="small">
+                            <span class="font-weight-bold">Duration</span>:
+                            <span>{{ this.content.numberOfdays }} days </span>
+                        </div> 
+                    </div>                    
                 </div>
+
                 <div class="row">
+
+
+
+                    <div class="col-12">
+                        <div class="small">
+                            <span class="font-weight-bold">Required Hours</span>:
+                            <span>{{ this.content.requiredHoursFormatted }}  </span>
+                        </div> 
+                    </div>
+
+
+                    <div class="col-12">
+                        <div class="small">
+                            <span class="font-weight-bold">Average Hours Per Day</span>:
+                            <span>{{ this.content.averageHoursPerDay }}</span>
+                        </div> 
+                    </div>        
+
+
+                    <div class="col-12">
+                        <div class="small">
+                            <span class="font-weight-bold">Spent Hours</span>:
+                            <span>{{ this.content.spentHours }}</span>
+                        </div> 
+                    </div> 
+
+
+
+                    <div class="col-12">
+                        <div class="small">
+                            <span class="font-weight-bold">Remaining Hours</span>:
+                            <span>{{ this.content.remainingHours }}</span>
+                        </div> 
+                    </div> 
+
+
+                    <div class="col-12">
+                        <div class="small">
+                            <span class="font-weight-bold">Expected Hours</span>:
+                            <span>{{ this.content.expectedHours }}</span>
+                        </div> 
+                    </div> 
+
+
+                    <!--
                     <div class="col-12">
                         <div class="small">
                             <span class="font-weight-bold">Required Days</span>:
@@ -60,32 +112,52 @@
 
                     <div class="col-12">
                         <div class="small">
-                            <span class="font-weight-bold">Required Hours</span>:
-                            <span>{{ this.content.requiredHours }} </span>
-                        </div> 
-                    </div>
-
-                    <div class="col-12">
-                        <div class="small">
                             <span class="font-weight-bold">Remaining Days</span>:
-                            <!--REMAINING DAYS LEFT-->
                             <span v-if="this.content.percentageLeft < 100">{{ this.content.remainingDays }} </span>
                             <span v-else>0</span>                            
                         </div> 
-                    </div>
+                    </div> 
+                    -->
 
+
+        
                     <div class="col-12 mt-2">
+
+                        <!--
+
+                        num day {{ this.content.numberOfdays }} <br>
+                        elapse {{ this.content.ellapsedDays }} <br><br>
+                        Average Hours Per Day : {{ this.content.averageHoursPerDay }}<br>
+                        Spent Hours: {{ this.content.spentHours }}<br>
+                        Remaining Hours: {{ this.content.remainingHours }}<br>
+                        Expected Hours:{{ this.content.expectedHours }}<br><br>
+                        -->
+
                         <div class="small" >
                             <span class="font-weight-bold">Time Achievement </span>:
                             <!--PERCENTAGE LEFT-->
-                            <span v-if="this.content.percentageLeft < 100">
+                            <span class="text-danger" v-if="this.content.ellapsedDays > this.content.numberOfdays">
+                                Date Expired
+                            </span>                            
+                            <span v-else-if="this.content.percentageLeft < 100">
                                 {{ this.content.percentageLeft }}% 
-                            </span>
-                            <span class="text-success" v-else>
+                            </span>  
+                            <span class="text-success" v-else-if="this.content.percentageLeft >= 100">
                                 Completed
                             </span>
+                            <span class="text-danger" v-else-if="this.content.requiredHours <= 0">
+                                Please update required hours
+                            </span>                            
+                            <span class="text-success" v-else>
+                                Calculating...
+                            </span>
                         </div> 
-                       
+
+
+                        <div class="text-danger small" v-if="this.content.ellapsedDays >= 5 && this.content.currentDayProgressCounter == 0">
+                            <span class="pb-2 pt-2">警告！ 学習時間が大変遅れています。</span>
+                        </div>
+
                     </div>                
 
                 </div>
@@ -98,7 +170,7 @@
                 <!-- View Scores -->
                 <div class="col-6 d-flex justify-content-end mx-0 px-0">
 
-                    <span v-b-modal.modalTimeManagerProgressUpdate v-if="this.content.percentageLeft < 100">
+                    <span v-b-modal.modalTimeManagerProgressUpdate v-if="this.content.percentageLeft < 100 && this.content.ellapsedDays < this.content.numberOfdays">
                         <b-button size="sm" block variant="dark"  pill >
                             <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
                         </b-button>                   
@@ -128,8 +200,16 @@
 
             <time-manager-component ref="timeManager" :memberinfo="memberinfo"  :content="contentData" :csrf_token="csrf_token" :api_token="api_token"/>
 
+            <template #modal-title>     
+                Time Manager
+                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/1215193414.html','必要な時間',900,820);" class="text-primary small">
+                   <i class="fa fa-question-circle" aria-hidden="true"></i> 
+                   <!--<strong>必要な時間</strong>-->
+                </a>
+            </template>
 
             <template #modal-footer>
+
                 <div class="buttons-container w-100">                    
                     <div v-if="updateType == 'update' || updateType == 'edit'">
                         <!--[start] Edit-->
@@ -261,16 +341,29 @@ export default {
                 startDate: "",
                 endDate: "",
 
+
                 currentScore: "",
                 targetScore: "",
                 requiredHours: "",
+                requiredHoursFormatted: "",
 
                 materials: [],
 
                 //auto calculated
+                averageHours: "",
                 requiredDays: "",
                 remainingDays: "",
-                requiredHours: "",
+               
+                averageHoursPerDay: "",
+                spentHours: "",
+                remainingHours:"",
+                expectedHours: "",       
+
+                currentDayProgressCounter: 0,        
+                
+
+                ellapsedDays: "", 
+                numberOfdays:  "",
 
                 percentageLeft: 0,
             },
@@ -360,7 +453,10 @@ export default {
                             {
                                 label: this.formatCourse(this.content.course),
                                 backgroundColor: color,                     
-                                data: hours,                   
+                                data: hours,       
+                                pointRadius: 6,    
+                                pointHoverRadius: 8,
+                                fill: true,       
                             },
                         ],                           
                     } 
@@ -549,8 +645,23 @@ export default {
                         this.contentData = this.assignData(content);
 
                         //GET CALCULATED THE PERECENTAGE OF PROGRESS
+                        this.content.numberOfdays =  response.data.numberOfdays;
+                        this.content.ellapsedDays = response.data.ellapsedDays;  
+
+                        //display calculated avreate
+                        this.content.averageHoursPerDay = response.data.averageHoursPerDay;
+                        this.content.spentHours = response.data.spentHours;
+                        this.content.remainingHours = response.data.remainingHours;
+                        this.content.expectedHours = response.data.expectedHours;    
+                        
+                        this.content.requiredHoursFormatted = response.data.requiredHours;   
+
+                        //progress counter
+                        this.content.currentDayProgressCounter = response.data.currentDayProgressCounter;
+
+                        //percentage
                         this.content.percentageLeft = response.data.percentageLeft;
-                        this.content.remainingDays = response.data.totalTimeLeft;
+
                     });
 
                 } else {
@@ -587,9 +698,10 @@ export default {
                     requiredHours: "",
                     material_checkbox: false,
                     materials: [],
+                    averageHours: "",
                     requiredDays: "",
                     remainingDays: "",
-                    requiredHours: "",
+                   
                     percentageLeft: "",
                 }        
         
@@ -607,17 +719,13 @@ export default {
                     endDate: content.end_date,
                     currentScore: content.current_score,
                     targetScore: content.target_score,
-                    requiredHours: content.required_hours,
                     material_checkbox: content.has_materials,
                     materials: JSON.parse(content.materials),                
                     requiredDays: content.required_days,
-
+                    
                     remainingDays: content.remaining_days,
-                    requiredHours: content.required_hours,    
-
-                    percentageLeft: content.percentageLeft   
-
-                    //pre               
+                    requiredHours: content.required_hours,
+                    percentageLeft: content.percentageLeft
                 }
         },
         dateFormatter(date) 

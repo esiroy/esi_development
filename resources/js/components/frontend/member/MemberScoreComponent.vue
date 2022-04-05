@@ -373,7 +373,7 @@
 
                         <div class="row graph-list" v-if="isMobile() == false">
                             <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
-                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
+                                <bar-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></bar-chart>
                             </div>
                         </div>
 
@@ -386,7 +386,7 @@
                                     <b-collapse :id="'accordion-'+examScoreType" :visible=isAccordionExpanded(examScoreTypeIndex) accordion="my-accordion" role="tabpanel">
                                         <b-card-body>
                                             <b-card-text>
-                                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded" :options="extraOptions[examScoreType]"></line-chart>
+                                                <bar-chart :chart-data="datacollection[examScoreType]"  v-if="loaded" :options="extraOptions[examScoreType]"></bar-chart>
                                             </b-card-text>                                        
                                         </b-card-body>
                                     </b-collapse>
@@ -420,7 +420,7 @@
 </template>
 
 <script>
-    import LineChart from '../../frontend/chart/lineChartComponent.vue';
+    import BarChart from '../../frontend/chart/barChartComponent.vue';
     import Vuelidate from "vuelidate";
     Vue.use(Vuelidate);
     import PurposeComponent from "../../purpose/PurposeComponent.vue";
@@ -443,7 +443,7 @@
     {
         name: "MemberScoreComponent",
         components: {
-            LineChart,
+            BarChart,
             Datepicker, PurposeComponent,
             IELTScoreComponent, 
             ToeflScoreComponent, ToeflJuniorScoreComponent,

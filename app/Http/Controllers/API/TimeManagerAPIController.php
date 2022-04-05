@@ -14,32 +14,91 @@ class TimeManagerAPIController extends Controller
 
     public function get(request $request) 
     {
-        $memberID = $request->get('memberID');
-        
+        $memberID = $request->get('memberID');        
         $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+
+         
+        //Get Number of days
+        $today = date("Y-m-d");
+
+        if (isset($timeManager->start_date) && isset($timeManager->end_date)) {
+
+            //CONVERT REQUIRED DAYS FROM STARD AND END DATE (OPTION 1)
+            $startDate  = ESIDate($timeManager->start_date);
+            $endDate    = ESIDate($timeManager->end_date);
+
+            $numberOfDays    = getRemainingDays($startDate, $endDate) + 1;    
+            $ellapsedDays    = getRemainingDays($startDate, $today) - 1; //-1 disregard the day currently have
+
+        } else {
+            $numberOfDays    = 0;    
+            $ellapsedDays    = 0;
+        }
         
+
         if ($timeManager) 
         {
             $timeManager->makeHidden(['created_at', 'updated_at']);
 
-            $minutes = TimeManagerProgress::
-                        where('member_id', $memberID)
-                        ->where('time_manager_id', $timeManager->id)
-                        ->sum('total_minutes');
+            $minutes = TimeManagerProgress::where('member_id', $memberID)->where('time_manager_id', $timeManager->id)->sum('total_minutes');
 
+            //look for current day updates
+            $currentDayProgressCounter = TimeManagerProgress::where('member_id', $memberID)
+                                            ->where('time_manager_id', $timeManager->id)
+                                            ->whereDate('created_at', $today)
+                                            ->count();
+
+            $minutesProgress = calculateHoursToMinutes($currentDayProgressCounter);
             $requiredMinutes = calculateHoursToMinutes($timeManager->required_hours);
+
+
             $minutesLeft = $requiredMinutes - $minutes;
 
-            $totalTimeLeft = minutesFormatter($minutesLeft);  
+            //hours consumed the student progressed
+            $spentHours =  calculateMinutesToHours($minutes);
+
+            //remaining time in hours
+            $remainingHours = calculateMinutesToHours($minutesLeft);
+     
+
+            //percentage time left
             $percentageLeft = ($minutes / $requiredMinutes) * 100;
-            $formatted_percentage= number_format($percentageLeft, 2, '.', '');
+
+            $formatted_percentage = number_format($percentageLeft, 2, '.', '');
+
+            //average hours
+            $averageHoursPerDay = $timeManager->required_hours / $numberOfDays;
+
+            //Expected hours
+            if ($ellapsedDays >= 1) {
+                $expected_hours =  $averageHoursPerDay * $ellapsedDays;
+                $formatted_expected_hours = number_format($expected_hours, 2, '.', '');
+                $expected_hours_with_decimals = calculateDecimalHours($formatted_expected_hours);
+            } else {
+                $expected_hours_with_decimals = 0;
+            }
+
+
+           
+
 
             return Response()->json([
                 "success"           => true,
                 "message"           => "entry has been successfully found",
-                "requiredMinutes "  => $requiredMinutes,
-                "totalTimeLeft"     => $totalTimeLeft,
+                "requiredMinutes"   => $requiredMinutes,
+              
+                "numberOfdays"      => $numberOfDays,
+                "ellapsedDays"      => $ellapsedDays,
+                "today"             => $today,
                 "percentageLeft"    => $formatted_percentage,
+
+                "averageHoursPerDay"    => calculateDecimalHours($averageHoursPerDay),
+                "spentHours"            => calculateDecimalHours($spentHours),
+                "remainingHours"        => calculateDecimalHours($remainingHours),
+                "expectedHours"         => $expected_hours_with_decimals,
+                "currentDayProgressCounter" => $currentDayProgressCounter,
+                "requiredHours"     =>  calculateDecimalHours($timeManager->required_hours),
+
                 "content"           => $timeManager,                
             ]);
         } else {        
@@ -56,10 +115,7 @@ class TimeManagerAPIController extends Controller
         $inputData = $request->get('data');
 
 
-        //CONVERT REQUIRED DAYS FROM STARD AND END DATE (OPTION 1)
-        //$startDate = ESIDate($inputData['startDate']);
-        //$endDate   = ESIDate($inputData['endDate']);        
-        //$requiredDays = getRemainingDays($startDate, $endDate);       
+    
 
         //CONVERT REQUIRED HOURS TO DAYS (OPTION 2)
         $requiredHours = $inputData['requiredHours'];
