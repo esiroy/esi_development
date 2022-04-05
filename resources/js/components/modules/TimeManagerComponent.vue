@@ -156,11 +156,9 @@
                         <div class="col-4">
                             <div class="mt-4">
 
-                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/1215193414.html','必要な時間',900,820);" class="text-white">
+                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/1215193414.html','必要な時間',900,820);" class="text-primary">
                                     <i class="fa fa-question-circle" aria-hidden="true"></i> <strong>必要な時間</strong>
                                 </a>
-
-                                <a href="#"><i class="fa fa-question-circle" aria-hidden="true"></i>必要な時間 </a>
                             </div>
                         </div>
 
