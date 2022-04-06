@@ -159,6 +159,11 @@
                             <span class="pb-2 pt-2">警告！ 学習時間が大変遅れています。</span>
                         </div>
                         -->
+                        
+                        <div class="text-danger small" v-if="this.content.percentageLeft < 70">
+                            <span class="pb-2 pt-2">警告！ 学習時間が大変遅れています。</span>
+                        </div>
+                        
 
                     </div>                
 
