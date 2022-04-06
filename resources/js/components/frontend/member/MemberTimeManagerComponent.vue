@@ -1,6 +1,7 @@
 <template>
-    <div id="member-timemanager-component" class="">
-
+    <div id="time-manager-section" class="">
+        
+      
         <div class="bg-primary col-12 text-white pt-2 pb-2 text-center">
             <strong>Time Manager</strong>        
             <div class="btnAddScoreHolder float-right">
@@ -124,7 +125,6 @@
                     <div class="col-12 mt-2">
 
                         <!--
-
                         num day {{ this.content.numberOfdays }} <br>
                         elapse {{ this.content.ellapsedDays }} <br><br>
                         Average Hours Per Day : {{ this.content.averageHoursPerDay }}<br>
@@ -132,6 +132,7 @@
                         Remaining Hours: {{ this.content.remainingHours }}<br>
                         Expected Hours:{{ this.content.expectedHours }}<br><br>
                         -->
+                        
 
                         <div class="small" >
                             <span class="font-weight-bold">Time Achievement </span>:
@@ -153,10 +154,11 @@
                             </span>
                         </div> 
 
-
+                        <!--
                         <div class="text-danger small" v-if="this.content.ellapsedDays >= 5 && this.content.currentDayProgressCounter == 0">
                             <span class="pb-2 pt-2">警告！ 学習時間が大変遅れています。</span>
                         </div>
+                        -->
 
                     </div>                
 
@@ -170,16 +172,17 @@
                 <!-- View Scores -->
                 <div class="col-6 d-flex justify-content-end mx-0 px-0">
 
-                    <span v-b-modal.modalTimeManagerProgressUpdate v-if="this.content.percentageLeft < 100 && this.content.ellapsedDays < this.content.numberOfdays">
+                    <span v-if="this.content.ellapsedDays > this.content.numberOfdays || this.content.percentageLeft >= 100">
+                        <b-button size="sm" block variant="dark"  pill disabled="disabled">
+                            <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
+                        </b-button>                   
+                    </span>   
+                    <span v-b-modal.modalTimeManagerProgressUpdate v-else-if="this.content.percentageLeft < 100">
                         <b-button size="sm" block variant="dark"  pill >
                             <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
                         </b-button>                   
                     </span>
-                    <span  v-else>
-                        <b-button size="sm" block variant="dark"  pill disabled="disabled">
-                            <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
-                        </b-button>                   
-                    </span>                    
+                 
                     &nbsp;
                 </div>
 
@@ -329,6 +332,9 @@ export default {
             updateType: "",
             timer: null,
 
+            warningMessageValue: null,
+
+
             //time manager content 
             content: {
                 material_checkbox: "",
@@ -408,6 +414,71 @@ export default {
                 console.log(entry);
             }
         },
+
+
+        getTimeManager() 
+        {
+            axios.post("/api/getTimeManager?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                memberID        : this.memberinfo.user_id
+            }).then(response => {
+
+                if (response.data.success == true) 
+                {                
+                
+
+                    if (response.data.is_time_manager_notified == false) 
+                    {
+                        if (response.data.ellapsedDays >= 5 && response.data.currentDayProgressCounter == 0) 
+                        {
+                            //show only if ellapse days is 5 or greater;
+                            this.showWarningMessage(response.data.time_manager_no_progress_notification);
+
+                   
+                        }           
+                    }
+
+                    //when user opens to create it will show update info and update button
+                    this.updateType = "update";
+
+                    let content = response.data.content;
+
+                    this.$nextTick(() => {
+                        this.content = this.assignData(content);
+                        this.contentData = this.assignData(content);
+
+                        //GET CALCULATED THE PERECENTAGE OF PROGRESS
+                        this.content.numberOfdays =  response.data.numberOfdays;
+                        this.content.ellapsedDays = response.data.ellapsedDays;  
+
+                        //display calculated avreate
+                        this.content.averageHoursPerDay = response.data.averageHoursPerDay;
+                        this.content.spentHours = response.data.spentHours;
+                        this.content.remainingHours = response.data.remainingHours;
+                        this.content.expectedHours = response.data.expectedHours;    
+                        
+                        this.content.requiredHoursFormatted = response.data.requiredHours;   
+
+                        //progress counter
+                        this.content.currentDayProgressCounter = response.data.currentDayProgressCounter;
+
+                        //percentage
+                        this.content.percentageLeft = response.data.percentageLeft;
+
+                    });
+
+                } else {
+
+                     this.contentData = this.resetData();
+                     this.content = this.resetData();
+                     
+                     this.updateType = "new";
+                }
+            }).catch(function(error) {
+                console.log(error);
+            });        
+        },         
         getTimeManagerProgressGraph() {
 
             this.loaded = false;
@@ -426,6 +497,7 @@ export default {
                 if (response.data.success === true) 
                 {
 
+       
                     $('#memberGraphModalMessage').hide();
 
                     this.entries = response.data.entries;
@@ -467,7 +539,7 @@ export default {
                             {
                                 ticks: {
                                     min: 0,
-                                    max: this.content.requiredHours,
+                                    //max: this.content.requiredHours,
                                     stepSize: 1,
                                     reverse: false,
                                     beginAtZero: true
@@ -625,56 +697,28 @@ export default {
             this.$refs.timeManager.updateTimeManager();
           
         },
-        getTimeManager() 
-        {
-            axios.post("/api/getTimeManager?api_token=" + this.api_token, 
-            {
-                method          : "POST",
-                memberID        : this.memberinfo.user_id
-            }).then(response => {
 
-                if (response.data.success == true) 
-                {                    
-                    //when user opens to create it will show update info and update button
-                    this.updateType = "update";
+        showWarningMessage(message) {
 
-                    let content = response.data.content;
-
-                    this.$nextTick(() => {
-                        this.content = this.assignData(content);
-                        this.contentData = this.assignData(content);
-
-                        //GET CALCULATED THE PERECENTAGE OF PROGRESS
-                        this.content.numberOfdays =  response.data.numberOfdays;
-                        this.content.ellapsedDays = response.data.ellapsedDays;  
-
-                        //display calculated avreate
-                        this.content.averageHoursPerDay = response.data.averageHoursPerDay;
-                        this.content.spentHours = response.data.spentHours;
-                        this.content.remainingHours = response.data.remainingHours;
-                        this.content.expectedHours = response.data.expectedHours;    
-                        
-                        this.content.requiredHoursFormatted = response.data.requiredHours;   
-
-                        //progress counter
-                        this.content.currentDayProgressCounter = response.data.currentDayProgressCounter;
-
-                        //percentage
-                        this.content.percentageLeft = response.data.percentageLeft;
-
-                    });
-
-                } else {
-
-                     this.contentData = this.resetData();
-                     this.content = this.resetData();
-                     
-                     this.updateType = "new";
-                }
-            }).catch(function(error) {
-                console.log(error);
-            });        
-        },  
+            this.$bvModal.msgBoxOk(message, {
+                title: 'Confirmation',
+                size: 'md',
+                buttonSize: 'sm',
+                okVariant: 'primary',      
+                okTitle: 'Okay, I understand',         
+                headerClass: 'p-2 border-bottom-0',
+                footerClass: 'p-2 border-top-0',
+                centered: true
+            })
+            .then(value => {
+                this.warningMessageValue = value
+                window.location.href = window.location.href + "#time-manager-section";
+            })
+            .catch(err => {
+                // An error occurred
+            })
+        },
+ 
         create() 
         {
             //this.$refs.timeManager.saveTimeManager();
@@ -770,3 +814,11 @@ export default {
     }
 };
 </script>
+
+<style scoped>
+
+html {
+  scroll-behavior: smooth;
+}
+
+</style>

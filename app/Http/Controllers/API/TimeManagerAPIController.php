@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 
 use App\Models\TimeManager;
 use App\Models\TimeManagerProgress;
+use App\Models\MemberNotifier;
+
 
 class TimeManagerAPIController extends Controller
 {
@@ -28,7 +30,7 @@ class TimeManagerAPIController extends Controller
             $endDate    = ESIDate($timeManager->end_date);
 
             $numberOfDays    = getRemainingDays($startDate, $endDate) + 1;    
-            $ellapsedDays    = getRemainingDays($startDate, $today) - 1; //-1 disregard the day currently have
+            $ellapsedDays    = getRemainingDays($startDate, $today) -1;
 
         } else {
             $numberOfDays    = 0;    
@@ -59,10 +61,18 @@ class TimeManagerAPIController extends Controller
 
             //remaining time in hours
             $remainingHours = calculateMinutesToHours($minutesLeft);
+
+            if ($remainingHours < 0) {
+                $remainingHours = 0;
+            }
      
 
             //percentage time left
-            $percentageLeft = ($minutes / $requiredMinutes) * 100;
+            if ($requiredMinutes >= 1) {
+                $percentageLeft = ($minutes / $requiredMinutes) * 100;              
+            } else {                
+                $percentageLeft = 0;
+            }
 
             $formatted_percentage = number_format($percentageLeft, 2, '.', '');
 
@@ -71,7 +81,7 @@ class TimeManagerAPIController extends Controller
 
             //Expected hours
             if ($ellapsedDays >= 1) {
-                $expected_hours =  $averageHoursPerDay * $ellapsedDays;
+                $expected_hours =  $averageHoursPerDay * ($ellapsedDays + 1);
                 $formatted_expected_hours = number_format($expected_hours, 2, '.', '');
                 $expected_hours_with_decimals = calculateDecimalHours($formatted_expected_hours);
             } else {
@@ -79,28 +89,32 @@ class TimeManagerAPIController extends Controller
             }
 
 
-           
+            $notifications = new MemberNotifier();
+            $is_time_manager_notified = $notifications->is_time_manager_notified($memberID);
+            $time_manager_no_progress_notification = "警告！ 学習時間が大変遅れています。";
+
+
 
 
             return Response()->json([
                 "success"           => true,
                 "message"           => "entry has been successfully found",
-                "requiredMinutes"   => $requiredMinutes,
-              
+                "requiredMinutes"   => $requiredMinutes,              
                 "numberOfdays"      => $numberOfDays,
                 "ellapsedDays"      => $ellapsedDays,
                 "today"             => $today,
                 "percentageLeft"    => $formatted_percentage,
-
                 "averageHoursPerDay"    => calculateDecimalHours($averageHoursPerDay),
                 "spentHours"            => calculateDecimalHours($spentHours),
                 "remainingHours"        => calculateDecimalHours($remainingHours),
                 "expectedHours"         => $expected_hours_with_decimals,
                 "currentDayProgressCounter" => $currentDayProgressCounter,
-                "requiredHours"     =>  calculateDecimalHours($timeManager->required_hours),
-
+                "requiredHours"         =>  calculateDecimalHours($timeManager->required_hours),
+                "is_time_manager_notified"  => $is_time_manager_notified,
+                "time_manager_no_progress_notification" => $time_manager_no_progress_notification,
                 "content"           => $timeManager,                
             ]);
+
         } else {        
             return Response()->json([
                 "success"           => false,
