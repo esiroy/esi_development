@@ -188,7 +188,13 @@
 
                                 <td class="small">
 
-                                    @if ($transaction->transaction_type == "CANCEL_LESSON" || $transaction->transaction_type == "CANCEL_LESSON_B") 
+
+                                    @if ($transaction->transaction_type == "LESSON" &&  $transaction->reservation_type == "CLIENT_RESERVED") 
+
+                                         {{ strtoupper(formatStatus($transaction->transaction_type)) }} 
+
+                                    @elseif ($transaction->transaction_type == "CANCEL_LESSON" || $transaction->transaction_type == "CANCEL_LESSON_B") 
+                                 
                                         @if ($transaction->reservation_type == "CLIENT_RESERVED_B") 
                                             <div class="text-danger">
                                                 <strong> {{ "CANCEL LESSON"}} -   {{ "(CLIENT RESERVED B)" }}</strong>
