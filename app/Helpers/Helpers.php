@@ -410,9 +410,9 @@ if (! function_exists('minutesFormatter'))
 }
 
 
-if (! function_exists('calculateDecimalHours')) 
+if (! function_exists('HoursToTime')) 
 {
-    function calculateDecimalHours($dec) {
+    function HoursToTime($dec) {
         // start by converting to seconds
         $seconds = ($dec * 3600);
         // we're given hours, so let's get those the easy way
@@ -430,10 +430,12 @@ if (! function_exists('calculateDecimalHours'))
             return lz($hours)."h ".lz($minutes)."m ";
         } else {
             return lz($hours)."h ".lz($minutes)."m ".lz( floor($seconds)) ."s";
-        }
-        
+        }        
     }
+}
 
+if (! function_exists('lz')) 
+{
     // lz = leading zero
     function lz($num)
     {
@@ -441,6 +443,24 @@ if (! function_exists('calculateDecimalHours'))
     }
 }
 
+if (! function_exists('calculateDecimalHours')) 
+{
+    function calculateDecimalHours($dec) {
+        // start by converting to seconds
+        $seconds = ($dec * 3600);
+        // we're given hours, so let's get those the easy way
+        $hours = floor($dec);
+        // since we've "calculated" hours, let's remove them from the seconds variable
+        $seconds -= $hours * 3600;
+        // calculate minutes left
+        $minutes = floor($seconds / 60);
+        
+        // remove those from seconds as well
+        $seconds -= $minutes * 60;
+
+        return lz($hours).".".lz($minutes);
+    }
+}
 
 if (! function_exists('calculateHoursToDays')) 
 {

@@ -19,49 +19,47 @@ class TimeManagerAPIController extends Controller
         $memberID = $request->get('memberID');        
         $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
 
-         
-        //Get Number of days
-        $today = date("Y-m-d");
-
-        if (isset($timeManager->start_date) && isset($timeManager->end_date)) {
-
-            //CONVERT REQUIRED DAYS FROM STARD AND END DATE (OPTION 1)
-            $startDate  = ESIDate($timeManager->start_date);
-            $endDate    = ESIDate($timeManager->end_date);
-
-            $numberOfDays    = getRemainingDays($startDate, $endDate) + 1;    
-            $ellapsedDays    = getRemainingDays($startDate, $today) -1;
-
-        } else {
-            $numberOfDays    = 0;    
-            $ellapsedDays    = 0;
-        }
-        
-
         if ($timeManager) 
         {
             $timeManager->makeHidden(['created_at', 'updated_at']);
+         
+            //Get Number of days
+            $today = date("Y-m-d");
 
-            $minutes = TimeManagerProgress::where('member_id', $memberID)->where('time_manager_id', $timeManager->id)->sum('total_minutes');
+            if (isset($timeManager->start_date) && isset($timeManager->end_date)) {
 
-            //look for current day updates
+                //CONVERT REQUIRED DAYS FROM STARD AND END DATE (OPTION 1)
+                $startDate  = ESIDate($timeManager->start_date);
+                $endDate    = ESIDate($timeManager->end_date);
+
+                $numberOfDays    = getRemainingDays($startDate, $endDate) + 1;    
+                $ellapsedDays    = getRemainingDays($startDate, $today) -1;
+
+            } else {
+                $numberOfDays    = 0;    
+                $ellapsedDays    = 0;
+            }
+
+            //requried minutes
+            $requiredMinutes    = calculateHoursToMinutes($timeManager->required_hours);
+            $minutes            = TimeManagerProgress::where('member_id', $memberID)->where('time_manager_id', $timeManager->id)->sum('total_minutes');
+
+             //hours consumed the student progressed
+            $spentHours =  calculateMinutesToHours($minutes);
+            $minutesLeft = $requiredMinutes - $minutes;
+
+
+            //COUNT HOW MANY UPDATES CURRENT DAY
             $currentDayProgressCounter = TimeManagerProgress::where('member_id', $memberID)
                                             ->where('time_manager_id', $timeManager->id)
                                             ->whereDate('created_at', $today)
                                             ->count();
+        
 
-            $minutesProgress = calculateHoursToMinutes($currentDayProgressCounter);
-            $requiredMinutes = calculateHoursToMinutes($timeManager->required_hours);
-
-
-            $minutesLeft = $requiredMinutes - $minutes;
-
-            //hours consumed the student progressed
-            $spentHours =  calculateMinutesToHours($minutes);
+     
 
             //remaining time in hours
             $remainingHours = calculateMinutesToHours($minutesLeft);
-
             if ($remainingHours < 0) {
                 $remainingHours = 0;
             }
@@ -82,37 +80,46 @@ class TimeManagerAPIController extends Controller
             //Expected hours
             if ($ellapsedDays >= 1) {
                 $expected_hours =  $averageHoursPerDay * ($ellapsedDays + 1);
-                $formatted_expected_hours = number_format($expected_hours, 2, '.', '');
-                $expected_hours_with_decimals = calculateDecimalHours($formatted_expected_hours);
+                $total_expected_hours = number_format($expected_hours, 2, '.', '');
+
+                //Get the current progress percentage on exprected chours
+                $spentHourPercentage =  ($spentHours / $expected_hours) * 100 ;
+
             } else {
-                $expected_hours_with_decimals = 0;
+                $total_expected_hours = 0;
+                $spentHourPercentage = 0;
             }
 
 
+
+
+
+            //check if notified
             $notifications = new MemberNotifier();
             $is_time_manager_notified = $notifications->is_time_manager_notified($memberID);
             $time_manager_no_progress_notification = "警告！ 学習時間が大変遅れています。";
 
-
-
-
             return Response()->json([
-                "success"           => true,
-                "message"           => "entry has been successfully found",
-                "requiredMinutes"   => $requiredMinutes,              
-                "numberOfdays"      => $numberOfDays,
-                "ellapsedDays"      => $ellapsedDays,
-                "today"             => $today,
-                "percentageLeft"    => $formatted_percentage,
-                "averageHoursPerDay"    => calculateDecimalHours($averageHoursPerDay),
-                "spentHours"            => calculateDecimalHours($spentHours),
-                "remainingHours"        => calculateDecimalHours($remainingHours),
-                "expectedHours"         => $expected_hours_with_decimals,
-                "currentDayProgressCounter" => $currentDayProgressCounter,
-                "requiredHours"         =>  calculateDecimalHours($timeManager->required_hours),
+                "success"                   => true,
+                "message"                   => "entry has been successfully found",
+                "today"                     => $today,
+                "content"                   => $timeManager, 
+                "requiredMinutes"           => $requiredMinutes,              
+                "numberOfdays"              => $numberOfDays,
+                "ellapsedDays"              => $ellapsedDays,
+                "currentDayProgressCounter" => $currentDayProgressCounter,               
+                "percentageLeft"            => $formatted_percentage,
+
+                "spentHourPercentage"       => $spentHourPercentage,
+
+                "requiredHours"             => HoursToTime($timeManager->required_hours),
+                "expectedHours"             => HoursToTime($total_expected_hours),
+                "averageHoursPerDay"        => HoursToTime($averageHoursPerDay),
+                "spentHours"                => HoursToTime($spentHours),
+                "remainingHours"            => HoursToTime($remainingHours),                              
+                
                 "is_time_manager_notified"  => $is_time_manager_notified,
-                "time_manager_no_progress_notification" => $time_manager_no_progress_notification,
-                "content"           => $timeManager,                
+                "time_manager_no_progress_notification" => $time_manager_no_progress_notification,               
             ]);
 
         } else {        

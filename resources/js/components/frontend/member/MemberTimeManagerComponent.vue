@@ -131,6 +131,7 @@
                         Spent Hours: {{ this.content.spentHours }}<br>
                         Remaining Hours: {{ this.content.remainingHours }}<br>
                         Expected Hours:{{ this.content.expectedHours }}<br><br>
+                        {{ this.content.spentHourPercentage  }}
                         -->
                         
 
@@ -159,8 +160,8 @@
                             <span class="pb-2 pt-2">警告！ 学習時間が大変遅れています。</span>
                         </div>
                         -->
-                        
-                        <div class="text-danger small" v-if="this.content.percentageLeft < 70">
+
+                        <div class="text-danger small" v-if="this.content.spentHourPercentage < 70">
                             <span class="pb-2 pt-2">警告！ 学習時間が大変遅れています。</span>
                         </div>
                         
@@ -246,7 +247,7 @@
         </b-modal>
 
 
-        <b-modal id="modalTimeManagerProgressUpdate"   title="Time Manager Progress Update"  @hide="resetTimeManagerUpdateModal">
+        <b-modal id="modalTimeManagerProgressUpdate" title="Time Manager Progress Update"  @hide="resetTimeManagerUpdateModal">
         
             <time-manager-progress-update-component ref="timeManagerProgressUpdate" :memberinfo="memberinfo" :content="content" :csrf_token="csrf_token" :api_token="api_token"/>
 
@@ -262,17 +263,15 @@
                         Loading...
                     </b-button>
                 </div>
+            </template>
 
-
-
-            </template>             
         </b-modal>        
 
        
         <!-- [START] SCORE TIME PROGRESS GRAPH -->
         <div id="timeManagerProgressGraph" class="modal-container">
         
-            <b-modal id="modalTimeManagerProgressGraph"  title="Time Manager Graph" size="md" @show="getTimeManagerProgressGraph"> 
+            <b-modal id="modalTimeManagerProgressGraph"  title="Time Manager Graph" size="lg" @show="getTimeManagerProgressGraph"> 
 
                 <div v-if="loaded == true">
 
@@ -284,12 +283,11 @@
 
                     <div class="row graph-list" v-else>
                         <div class="col-12">
-                            <line-chart :chart-data="datacollection"  v-if="loaded"  :options="extraOptions"></line-chart>
+                            <horizontal-bar-chart :chart-data="datacollection"  v-if="loaded"  :options="extraOptions" :height="150"></horizontal-bar-chart>
                         </div>
                     </div>
 
                 </div>
-
 
                 <div v-else>
                     <div class="d-flex justify-content-center my-4">
@@ -313,7 +311,7 @@
 
 <script>
 
-import LineChart from '../../frontend/chart/lineChartComponent.vue';
+import HorizontalBarChart from '../../frontend/chart/horizontalBarChartComponent.vue';
 
 import * as Moment from 'moment';
 import TimeManagerComponent from '../../modules/TimeManagerComponent.vue';
@@ -322,7 +320,7 @@ import TimeManagerProgressUpdateComponent from '../../modules/TimeManagerProgres
 export default {   
     name: "member-time-manager-component",
     components: {    
-        LineChart,
+        HorizontalBarChart,
         TimeManagerComponent, 
         TimeManagerProgressUpdateComponent
     },     
@@ -376,6 +374,7 @@ export default {
                 ellapsedDays: "", 
                 numberOfdays:  "",
 
+                spentHourPercentage: 0,
                 percentageLeft: 0,
             },
 
@@ -431,16 +430,17 @@ export default {
 
                 if (response.data.success == true) 
                 {                
-                
-
                     if (response.data.is_time_manager_notified == false) 
                     {
                         if (response.data.ellapsedDays >= 5 && response.data.currentDayProgressCounter == 0) 
                         {
                             //show only if ellapse days is 5 or greater;
-                            this.showWarningMessage(response.data.time_manager_no_progress_notification);
-
-                   
+                            if (response.data.spentHourPercentage < 70) {                            
+                                this.showWarningMessage(response.data.time_manager_no_progress_notification);                   
+                            } else {
+                                console.log ("greater then 70, current percentage spent")
+                            }
+                            
                         }           
                     }
 
@@ -470,6 +470,8 @@ export default {
 
                         //percentage
                         this.content.percentageLeft = response.data.percentageLeft;
+
+                        this.content.spentHourPercentage =  response.data.spentHourPercentage;
 
                     });
 
@@ -501,53 +503,46 @@ export default {
 
                 if (response.data.success === true) 
                 {
-
-       
                     $('#memberGraphModalMessage').hide();
 
-                    this.entries = response.data.entries;
-                    let entries = this.entries;
+                    let colorb1 = this.addAlpha('#808080', 0.65);
+                    let colorb2 = this.addAlpha('#FFA500', 0.65); //orange
+                    let colorb3 = this.addAlpha('#0000FF', 0.65);
 
-                    let dates   = [];
-                    let minutes     = [];
-                    let hours     = [];
-
-                    entries.forEach((entry)=> {
-                        dates.push(entry.date)
-                        hours.push(entry.total_hours)
-                    });
-                    
-                   
-
-                    //let randColor =  '#'+ Math.floor(Math.random()*16777215).toString(16); 
-                    //let color = this.addAlpha(randColor, 0.4)
-                      
-                    let color = this.addAlpha('#2F5233', 0.4)
+                    this.entries = ["1"];
 
                     this.datacollection = {
-                        labels: dates,  
+                        labels: ['Required Hours', 'Epected Hours', 'Spent Hours'],  
                         datasets: [
                             {
+                                data: [response.data.requiredHours, response.data.expectedHours, response.data.spentHours, 99],
                                 label: this.formatCourse(this.content.course),
-                                backgroundColor: color,                     
-                                data: hours,       
-                                pointRadius: 6,    
-                                pointHoverRadius: 8,
-                                fill: true,       
-                            },
-                        ],                           
+                                backgroundColor: [colorb1, colorb2, colorb3],
+                                fill: false,       
+                            }
+
+                        ],   
+                                                
                     } 
 
                     this.extraOptions = { 
-                        scales: {
-                            yAxes: [
+                        indexAxis: 'y',
+                        scales: {          
+                            x: {
+                                stacked: true
+                            },
+                            y: {
+                                stacked: true
+                            },
+                            xAxes: [
                             {
                                 ticks: {
                                     min: 0,
                                     //max: this.content.requiredHours,
-                                    stepSize: 1,
+                                    stepSize: 25,
                                     reverse: false,
-                                    beginAtZero: true
+                                    beginAtZero: true,
+                                                              
                                 }
                             }]
                         }
