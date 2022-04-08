@@ -426,11 +426,7 @@ if (! function_exists('HoursToTime'))
         $seconds -= $minutes * 60;
 
 
-        if (intval($seconds) == 0) {
-            return lz($hours)."h ".lz($minutes)."m ";
-        } else {
-            return lz($hours)."h ".lz($minutes)."m ".lz( floor($seconds)) ."s";
-        }        
+        return lz($hours)."h ".lz($minutes)."m ";
     }
 }
 
