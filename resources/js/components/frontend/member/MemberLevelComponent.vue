@@ -102,7 +102,7 @@ export default {
             { 
                 null:  {
                         value: null,
-                        content: 'ご自身でレベルを入力してください'
+                        content: 'レベルを入力してください'
                     },
                 'C2': { 
                         value: 'C2',
