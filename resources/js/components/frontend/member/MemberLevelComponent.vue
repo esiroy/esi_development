@@ -12,9 +12,11 @@
             </div>
 
           <div class="col-md-12  pt-2 pb-2 ">
-                <div id="memberLevel" class="text-left small"> 
-                   Current Level  : {{  this.info[ this.updated ].value }} 
-                   <span v-if="this.info[ this.updated ].text"> {{ "(" +  this.info[ this.updated ].text + ")" }} </span>
+                <div id="memberLevel" class="text-left small"> Current Level: 
+                    <span v-if=" this.info[ this.updated ].value == null" class="small text-left">{{  this.info[ this.updated ].content}}</span>
+                    <span v-else>
+                        {{  this.info[ this.updated ].value }} ({{  this.info[ this.updated ].text }})
+                    </span>
                 </div>            
             </div>
 
@@ -51,7 +53,8 @@
 
                 <div class="row my-3">
                     <div class="col-12">
-                        <div v-if="this.info[ this.selected ]" class="small text-left">
+                        <div v-if="this.info[ this.selected ].value !== null" class="small text-left">
+                           
                             {{ "*" + this.info[ this.selected ].content }}
                         </div>
                     </div>
@@ -98,8 +101,8 @@ export default {
         info:
             { 
                 null:  {
-                        value: 'No level selected',
-                        content: 'No level selected'
+                        value: null,
+                        content: 'ご自身でレベルを入力してください'
                     },
                 'C2': { 
                         value: 'C2',
