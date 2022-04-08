@@ -131,9 +131,9 @@
                         Spent Hours: {{ this.content.spentHours }}<br>
                         Remaining Hours: {{ this.content.remainingHours }}<br>
                         Expected Hours:{{ this.content.expectedHours }}<br><br>
-                        {{ this.content.spentHourPercentage  }}
+                        Spent Hours Percentage / Expected Hours : {{ this.content.spentHourPercentage  }} %
                         -->
-                        
+                         
 
                         <div class="small" >
                             <span class="font-weight-bold">Time Achievement </span>:
