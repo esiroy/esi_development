@@ -116,6 +116,7 @@ export default {
         Datepicker
     },     
     props: {
+        mastercontent: Object,    
         content: Object,
         size: Object,
         type: String,        
@@ -142,13 +143,18 @@ export default {
   },
   mounted: function () 
   {
+  
         if (this.type == 'update') {
-            this.date = this.content.date;
             this.date = this.content.date;
             Object.keys(this.content).forEach(key => {          
                 this.data[key] = this.content[key];
             });
         }
+
+
+        this.content.course  = this.mastercontent.course;
+        this.content.courseTextValue = this.mastercontent.courseTextValue;
+        this.date = this.mastercontent.date;              
   },
 };
 

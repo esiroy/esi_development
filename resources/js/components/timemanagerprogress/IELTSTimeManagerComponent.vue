@@ -11,7 +11,7 @@
                     <div class="pl-2 small"> <span class="text-danger">&nbsp;</span> Course </div>
                 </div>
                 <div :class="this.size.rightColumn">
-                    <input type="text" id="course" :value="this.content.course "
+                    <input type="text" id="course" :value="this.content.course"
                         name="course"  :class="this.size.select +' form-control form-control-sm'"
                         disabled>  
                 </div>
@@ -127,6 +127,7 @@ export default {
         Datepicker
     },   
     props: {
+        mastercontent: Object,
         content: Object,
         size: Object,
         type: String,
@@ -157,12 +158,18 @@ export default {
   {
 
         if (this.type == 'update') {
-            this.date = this.content.date;
-            Object.keys(this.content).forEach(key => {          
-                this.data[key] = this.content[key];
+            Object.keys(this.content).forEach(key => 
+            {    
+                //since we add course textvalue and date, filter it 
+                if (key !== 'course' || key !== 'courseTextValue' || key !== 'date') {
+                    this.data[key] = this.content[key];
+                }                
             });
         }
 
+        this.content.course  = this.mastercontent.course;
+        this.content.courseTextValue = this.mastercontent.courseTextValue;
+        this.date = this.mastercontent.date;        
 
   },
 };

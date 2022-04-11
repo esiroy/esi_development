@@ -131,6 +131,7 @@ export default {
     Datepicker,
   },
   props: {
+    mastercontent: Object,
     size: Object,
     content: Object,
     type: String,    
@@ -155,12 +156,20 @@ export default {
   computed: {},
   updated: function () {},
   mounted: function () {
-    if (this.type == 'update') {
-        this.date = this.content.date;
-        Object.keys(this.content).forEach(key => {          
-            this.data[key] = this.content[key];
-        });
-    }
+
+        if (this.type == 'update') {
+            Object.keys(this.content).forEach(key => 
+            {    
+                //since we add course textvalue and date, filter it 
+                if (key !== 'course' || key !== 'courseTextValue' || key !== 'date') {
+                    this.data[key] = this.content[key];
+                }                
+            });
+        }
+
+        this.content.course  = this.mastercontent.course;
+        this.content.courseTextValue = this.mastercontent.courseTextValue;
+        this.date = this.mastercontent.date;   
   },
 };
 </script>

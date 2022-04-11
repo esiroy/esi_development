@@ -262,6 +262,7 @@ export default
         Datepicker
     },      
     props: {
+        mastercontent: Object,    
         content: Object,
         size: Object,
         type: String,        
@@ -366,13 +367,22 @@ export default
         this.gradeLevel = this.content.gradeLevel;
 
         this.handleChangeGradeLevel();
+
        
+
         if (this.type == 'update') {
-            this.date = this.content.date;
-            Object.keys(this.content).forEach(key => {          
-                this.data[key] = this.content[key];
+            Object.keys(this.content).forEach(key => 
+            {    
+                //since we add course textvalue and date, filter it 
+                if (key !== 'course' || key !== 'courseTextValue' || key !== 'date') {
+                    this.data[key] = this.content[key];
+                }                
             });
-        }       
+        }
+
+        this.content.course  = this.mastercontent.course;
+        this.content.courseTextValue = this.mastercontent.courseTextValue;
+        this.date = this.mastercontent.date;        
     }
 };
 </script>

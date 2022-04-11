@@ -4,17 +4,17 @@
         <div class="row">
             <div class="col">
                 <div id="minutes-entry" class="card-body">
-                    <IELTSTimeManagerComponent ref="IELTSTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></IELTSTimeManagerComponent>
-                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflTimeManagerComponent>                      
-                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflJuniorTimeManagerComponent>
-                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
-                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
-                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
-                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeicSpeakingTimeManagerComponent>
-                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeicWritingTimeManagerComponent>
-                    <EikenTimeManagerComponent  ref="EIKENTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></EikenTimeManagerComponent>
-                    <TeapTimeManagerComponent  ref="TEAPTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></TeapTimeManagerComponent>
-                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></OtherTimeManagerComponent>
+                    <IELTSTimeManagerComponent ref="IELTSTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></IELTSTimeManagerComponent>
+                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflTimeManagerComponent>                      
+                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflJuniorTimeManagerComponent>
+                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
+                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
+                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
+                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeicSpeakingTimeManagerComponent>
+                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeicWritingTimeManagerComponent>
+                    <EikenTimeManagerComponent  ref="EIKENTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></EikenTimeManagerComponent>
+                    <TeapTimeManagerComponent  ref="TEAPTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></TeapTimeManagerComponent>
+                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></OtherTimeManagerComponent>
                 </div>
             </div>
         </div>
@@ -60,7 +60,8 @@ export default {
         return {
             submitted: "",
 
-
+            masterContent: {},
+            
             newContent: {},
 
             //adjust the column sizes of the entry component modals
@@ -76,9 +77,10 @@ export default {
         //console.log( this.items[this.progressupdateindex].udate);
         //console.log( this.progressupdateid);
 
-        this.newContent.id      = this.progressupdateid;
-        this.newContent.course  = this.content.course;
-        this.newContent.date    = this.items[this.progressupdateindex].udate;
+        this.masterContent.id                  = this.progressupdateid;
+        this.masterContent.course              = this.content.course;
+        this.masterContent.courseTextValue     = this.content.course;
+        this.masterContent.date                = this.items[this.progressupdateindex].udate;
 
         let items = this.items[this.progressupdateindex].minutes;
 
