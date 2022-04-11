@@ -11,6 +11,43 @@ class TimeManagerProgressAPIController extends Controller
 {
 
 
+    public function getTimeManagerProgressList(Request $request, TimeManagerProgress $timeManagerProgress) 
+    {
+
+       
+        $memberID       = $request['memberID'];
+        $timeManager    = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+
+
+        $timeManager    = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+
+        if ($timeManager) {
+        
+            $progress = TimeManagerProgress::select('minutes')->where('member_id', $memberID)->where('time_manager_id', $timeManager->id)->get();
+
+
+            if ($progress) {
+            
+                return Response()->json([
+                    "success"   => true,
+                    "progress"  => json_decode($progress),
+                    "message"   => "time manager progress has been successfully fetched"
+                ]);
+
+            } else {
+            
+                return Response()->json([
+                    "success"           => false,
+                    "message"           => "fetching time manager progress failed "
+                ]);
+            
+            
+            }
+        }
+
+    }
+    
+    
     public function getTimeManagerProgressGraph(Request $request, TimeManagerProgress $timeManagerProgress)
     {          
        
@@ -66,9 +103,10 @@ class TimeManagerProgressAPIController extends Controller
             ]);
 
         } else {        
+
             return Response()->json([
                 "success"   => false,
-                "message"   => "entry has been successfully saved",
+                "message"   => "fetching entry failed",
             ]);   
         }
 
@@ -95,7 +133,7 @@ class TimeManagerProgressAPIController extends Controller
         
             return Response()->json([
                 "success"   => false,
-                "message"   => "entry has been successfully saved",
+                "message"   => "graph failed",
             ]);   
         }
 

@@ -254,7 +254,7 @@
                                      <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td>
-                                           <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','Level',900,820);">Level</a> :
+                                           <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0209160659.html','Level',900,820);">Level</a> :
                                         </td>
                                         <td>:</td>
                                         <td>

@@ -60,8 +60,6 @@
 
                 <div class="row">
 
-
-
                     <div class="col-12">
                         <div class="small">
                             <span class="font-weight-bold">Required Hours</span>:
@@ -101,24 +99,6 @@
                             <span>{{ this.content.expectedHours }}</span>
                         </div> 
                     </div> 
-
-
-                    <!--
-                    <div class="col-12">
-                        <div class="small">
-                            <span class="font-weight-bold">Required Days</span>:
-                            <span>{{ this.content.requiredDays }} </span>
-                        </div>
-                    </div>
-
-                    <div class="col-12">
-                        <div class="small">
-                            <span class="font-weight-bold">Remaining Days</span>:
-                            <span v-if="this.content.percentageLeft < 100">{{ this.content.remainingDays }} </span>
-                            <span v-else>0</span>                            
-                        </div> 
-                    </div> 
-                    -->
 
 
         
@@ -247,13 +227,53 @@
         </b-modal>
 
 
+        <b-modal id="modalTimeManagerProgressList" title="Time Manager Progress List" size="lg" @show="getTimeManagerProgressList">
+
+
+
+            <table class="table esi-table table-bordered table-striped">
+
+                <tr>
+                    <th v-for="(item, itemsIndex) in items[0]" :key="itemsIndex" v-show="item !== null">
+                        {{ itemsIndex }} 
+                    </th>
+                </tr>
+
+                <tr v-for="(item, itemsIndex) in items" :key="itemsIndex">
+                    <td v-for="(value, itemIndex) in item" :key="itemIndex" v-show="value !== null">
+                        {{ value }}
+                    </td>
+                </tr>                
+
+            </table>
+
+
+            <template #modal-footer>
+
+                <div class="buttons-container w-100">
+                    <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressList')">Cancel</b-button>                         
+                </div>
+
+                <div class="loading-container">
+                    <b-button variant="primary" size="sm" class="float-right mr">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </b-button>
+                </div>
+            </template>
+
+        </b-modal>    
+
         <b-modal id="modalTimeManagerProgressUpdate" title="Time Manager Progress Update"  @hide="resetTimeManagerUpdateModal">
         
             <time-manager-progress-update-component ref="timeManagerProgressUpdate" :memberinfo="memberinfo" :content="content" :csrf_token="csrf_token" :api_token="api_token"/>
 
             <template #modal-footer>
-                <div class="buttons-container w-100">                                        
-                    <b-button variant="primary" size="sm" class="float-right mr" id="create" v-on:click="addProgress">Progress Update</b-button>
+
+                <div class="buttons-container w-100">       
+                   <b-button variant="primary" size="sm" class="float-left mr" id="updateProgress" v-b-modal.modalTimeManagerProgressList>Progress List</b-button>
+
+                    <b-button variant="primary" size="sm" class="float-right mr" id="create" v-on:click="addProgress">Save Progress</b-button>
                     <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressUpdate')">Cancel</b-button>                         
                 </div>
 
@@ -265,7 +285,7 @@
                 </div>
             </template>
 
-        </b-modal>        
+        </b-modal>       
 
        
         <!-- [START] SCORE TIME PROGRESS GRAPH -->
@@ -337,6 +357,10 @@ export default {
 
             warningMessageValue: null,
 
+            //Progress Listing
+            perPage: 3,
+            currentPage: 1,
+            items: [],
 
             //time manager content 
             content: {
@@ -419,6 +443,57 @@ export default {
             }
         },
 
+
+        getTimeManagerProgressList() 
+        {
+            
+            $(document).find('.modal-footer').find('div.buttons-container').hide();
+            $(document).find('.modal-footer').find('div.loading-container').show();
+
+            axios.post("/api/getTimeManagerProgressList?api_token=" + this.api_token, 
+            {
+                'method'        : "POST",
+                'memberID'      : this.memberinfo.user_id,
+                'timeManagerID' : this.content.id,
+
+            }).then(response => {
+                if (response.data.success == true) 
+                {             
+                    let progress = response.data.progress;
+
+                    let list = [];
+
+                    progress.forEach((item) => {
+                        //console.log(item.minutes);
+                        list.push(JSON.parse(item.minutes));
+                    });
+
+
+
+                     this.items = list;
+
+                    console.log(list)
+
+                } else {
+
+                    //alert ("failed fetching progress list")
+
+                    //HIDE LOADER HERE 
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();
+                }
+
+            }).catch(function(error) {
+
+                console.log(error);
+                
+                //HIDE LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('.modal-footer').find('div.loading-container').hide();
+            });   
+
+        
+        },
 
         getTimeManager() 
         {
