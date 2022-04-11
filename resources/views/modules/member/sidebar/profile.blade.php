@@ -27,6 +27,17 @@
         </div>
 
         <div id="userDetails" class="row mx-2">
+
+            <div class="col-md-12">
+                <div class="text-secondary">ID:</div>
+            </div>
+            <div class="col-md-12">
+                <div class="text-dark">                    
+                    1{{ Auth::user()->id }}
+                </div>
+            </div>
+
+
             <div class="col-md-12">
                 <div class="text-secondary">Name:</div>
             </div>
