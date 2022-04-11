@@ -13,24 +13,48 @@ class TimeManagerProgressAPIController extends Controller
 
     public function getTimeManagerProgressList(Request $request, TimeManagerProgress $timeManagerProgress) 
     {
-
        
-        $memberID       = $request['memberID'];
-        $timeManager    = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+        $memberID           = $request['memberID'];
+        $timeManagerID       = $request['timeManagerID'];
+        
 
-
-        $timeManager    = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
-
+        $timeManager    = TimeManager::where('id', $timeManagerID)
+                            ->where('member_id', $memberID)                           
+                            ->where('valid', true)->first();
+                            
         if ($timeManager) {
         
-            $progress = TimeManagerProgress::select('minutes')->where('member_id', $memberID)->where('time_manager_id', $timeManager->id)->get();
+            $timeManagerProgress = TimeManagerProgress::where('member_id', $memberID)
+                        ->where('time_manager_id', $timeManagerID)
+                        ->orderBy('date', 'ASC')
+                        ->where('time_manager_id', $timeManager->id)->paginate(10);
 
+            if ($timeManagerProgress->total() >= 1) 
+            {
+                //pagination details
+                $currentPage = $timeManagerProgress->currentPage();
+                $perPage = $timeManagerProgress->perPage();
+                $rows = $timeManagerProgress->total();
 
-            if ($progress) {
-            
+                //Format
+                foreach ($timeManagerProgress as $progress) 
+                {
+                    $items[] = [
+                            'id'            => $progress->id,
+                            'date'          => JapaneseDateFormat($progress->date),
+                            'udate'         => $progress->date,
+                            'minutes'       => json_decode($progress->minutes),
+                            'total_minutes' => $progress->total_minutes,
+                            'total_hours'   => HoursToTime($progress->total_hours)
+                        ];
+                }
+
                 return Response()->json([
-                    "success"   => true,
-                    "progress"  => json_decode($progress),
+                    "success"   => true,                    
+                    'progress'  => $items,
+                    "rows"      => $rows,
+                    "currentPage" => $currentPage,
+                    'perPage'   => $perPage,
                     "message"   => "time manager progress has been successfully fetched"
                 ]);
 
@@ -38,6 +62,7 @@ class TimeManagerProgressAPIController extends Controller
             
                 return Response()->json([
                     "success"           => false,
+                    "rows"              => $timeManagerProgress->total(),
                     "message"           => "fetching time manager progress failed "
                 ]);
             
@@ -75,6 +100,7 @@ class TimeManagerProgressAPIController extends Controller
             //requried minutes
             $timeManager->makeHidden(['created_at', 'updated_at']);
             $requiredMinutes    = calculateHoursToMinutes($timeManager->required_hours);
+            
             $minutes            = TimeManagerProgress::where('member_id', $memberID)->where('time_manager_id', $timeManager->id)->sum('total_minutes');
 
             //hours consumed the student progressed
@@ -149,7 +175,7 @@ class TimeManagerProgressAPIController extends Controller
      */
     public function store(Request $request, TimeManagerProgress $timeManagerProgress)
     {
-        $response = $timeManagerProgress->add($request['data']);
+        $response = $timeManagerProgress->addEntry($request['data']);
 
         if ($response) {
         
@@ -166,31 +192,9 @@ class TimeManagerProgressAPIController extends Controller
             ]);   
         }
         
-        
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
+  
     /**
      * Update the specified resource in storage.
      *
@@ -198,9 +202,25 @@ class TimeManagerProgressAPIController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, TimeManagerProgress $timeManagerProgress)
     {
-        //
+        $id = $request['updateID'];
+        $response = $timeManagerProgress->updateEntry($id, $request['data']);
+
+        if ($response) {
+        
+            return Response()->json([
+                "success"   => true,
+                "message"   => "entry has been successfully saved"
+            ]);    
+
+        } else {
+        
+            return Response()->json([
+                "success"   => false,
+                "message"   => "error found, entry was not saved",
+            ]);   
+        }        
     }
 
     /**

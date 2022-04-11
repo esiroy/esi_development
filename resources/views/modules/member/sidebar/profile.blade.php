@@ -28,21 +28,12 @@
 
         <div id="userDetails" class="row mx-2">
 
-<<<<<<< HEAD
-        
-
-=======
->>>>>>> my_tutor_reservation_system
             <div class="col-md-12">
                 <div class="text-secondary">ID:</div>
             </div>
             <div class="col-md-12">
                 <div class="text-dark">                    
-<<<<<<< HEAD
-                    1{{ Auth::user()->id ) }}
-=======
                     1{{ Auth::user()->id }}
->>>>>>> my_tutor_reservation_system
                 </div>
             </div>
 

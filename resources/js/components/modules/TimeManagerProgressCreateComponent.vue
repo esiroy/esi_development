@@ -1,24 +1,27 @@
 <template>
 
-    <form id="formTimeManagerUpdate" name="formTimeManagerUpdate" @submit.prevent="create">  
+    <form id="formTimeManagerCreate" name="formTimeManagerCreate" @submit.prevent="create">
         <div class="row">
             <div class="col">
+            
                 <div id="minutes-entry" class="card-body">
-                    <IELTSTimeManagerComponent ref="IELTSTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></IELTSTimeManagerComponent>
-                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflTimeManagerComponent>                      
-                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflJuniorTimeManagerComponent>
-                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
-                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
-                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
-                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeicSpeakingTimeManagerComponent>
-                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></ToeicWritingTimeManagerComponent>
-                    <EikenTimeManagerComponent  ref="EIKENTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></EikenTimeManagerComponent>
-                    <TeapTimeManagerComponent  ref="TEAPTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></TeapTimeManagerComponent>
-                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerUpdateComponent" :type="'update'" :content="newContent" :size="this.size"></OtherTimeManagerComponent>
+                    <IELTSTimeManagerComponent ref="IELTSTimeManagerComponent" :content="content" :size="this.size"></IELTSTimeManagerComponent>
+                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerComponent" :content="content" :size="this.size"></ToeflTimeManagerComponent>                      
+                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerComponent" :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>
+                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerComponent" :content="content" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
+                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerComponent" :content="content" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
+                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerComponent" :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
+                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerComponent" :content="content" :size="this.size"></ToeicSpeakingTimeManagerComponent>
+                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerComponent" :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>
+                    <EikenTimeManagerComponent  ref="EIKENTimeManagerComponent" :content="content" :size="this.size"></EikenTimeManagerComponent>
+                    <TeapTimeManagerComponent  ref="TEAPTimeManagerComponent" :content="content" :size="this.size"></TeapTimeManagerComponent>
+                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerComponent" :content="content" :size="this.size"></OtherTimeManagerComponent>
                 </div>
+                
             </div>
         </div>
-    </form>   
+    </form>
+
 </template>
 
 <script>
@@ -48,9 +51,6 @@ export default {
         OtherTimeManagerComponent
     },      
     props: {
-        items: Array,
-        progressupdateid: Number,
-        progressupdateindex: Number,
         memberinfo: Object,
         content: Object,
         csrf_token: String,		
@@ -60,9 +60,6 @@ export default {
         return {
             submitted: "",
 
-
-            newContent: {},
-
             //adjust the column sizes of the entry component modals
             size: {
                 leftColumn  : "col-5",
@@ -71,28 +68,15 @@ export default {
             },
         }
     },
-    beforeMount: function () {
-
-        //console.log( this.items[this.progressupdateindex].udate);
-        //console.log( this.progressupdateid);
-
-        this.newContent.id      = this.progressupdateid;
-        this.newContent.course  = this.content.course;
-        this.newContent.date    = this.items[this.progressupdateindex].udate;
-
-        let items = this.items[this.progressupdateindex].minutes;
-
-        Object.keys(items).forEach(key => {
-            this.newContent[key] = items[key];
-        });
-        
-    },
     mounted: function () 
     {
-        this.showElementId('timeManager-'+  this.content.course);
+        this.showElementId('timeManager-'+  this.content.course)
     },             
     methods: {     
-        getTotalMinutes(course) {
+        getTotalMinutes(course) {          
+
+            console.log(course) ;
+
             let values = Array.from(document.querySelectorAll('#timeManager-'+ course +' .minutes-entry input')).map(input => input.value );
             //get total
             let total = 0;
@@ -118,13 +102,20 @@ export default {
 
                 });
             }
-        },
+        },        
+		handleCourseChange(event) 
+        {
+            let index = event.target.value;
+            let course = event.target.selectedOptions[0].text;
+            //console.log(index + ": " + course)
+		},
+
         showElementId(id) {
             
-            if (document.getElementById("formTimeManagerUpdate").querySelector("#"+id)) 
+            if (document.getElementById(id)) 
             {            
-                document.getElementById("formTimeManagerUpdate").querySelector("#"+id).style.display = "block";
-                document.getElementById("formTimeManagerUpdate").querySelector("#"+id).className = "d-block";
+                document.getElementById(id).style.display = "block";
+                document.getElementById(id).className = "d-block";
             } else {
                 console.log(id + " element does not exists");
             }           

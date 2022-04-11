@@ -47,7 +47,7 @@
                     <div class="pl-2 small"> <span class="text-danger">*</span> Speaking</div>
                 </div>
                 <div :class="this.size.rightColumn">            
-                <input v-on:keyup="getTotalMinutes" id="speaking" name="speaking" :class="this.size.select +' form-control form-control-sm'" placeholder="分 minutes">
+                <input v-on:keyup="getTotalMinutes" id="speaking" name="speaking" v-model="data.speaking" :class="this.size.select +' form-control form-control-sm'" placeholder="分 minutes">
 
                 </div>
             </div>
@@ -129,6 +129,7 @@ export default {
     props: {
         content: Object,
         size: Object,
+        type: String,
     },
     methods: 
     {     
@@ -154,6 +155,14 @@ export default {
   },
   mounted: function () 
   {
+
+        if (this.type == 'update') {
+            this.date = this.content.date;
+            Object.keys(this.content).forEach(key => {          
+                this.data[key] = this.content[key];
+            });
+        }
+
 
   },
 };

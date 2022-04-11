@@ -163,7 +163,8 @@
                             <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
                         </b-button>                   
                     </span>   
-                    <span v-b-modal.modalTimeManagerProgressUpdate v-else-if="this.content.percentageLeft < 100">
+
+                    <span v-b-modal.modalTimeManagerProgressCreate v-else-if="this.content.percentageLeft < 100">
                         <b-button size="sm" block variant="dark"  pill >
                             <b-icon-calculator></b-icon-calculator> <span class="small">Progress Update</span> 
                         </b-button>                   
@@ -227,54 +228,98 @@
         </b-modal>
 
 
-        <b-modal id="modalTimeManagerProgressList" title="Time Manager Progress List" size="lg" @show="getTimeManagerProgressList">
+        <b-modal id="modalTimeManagerProgressList" title="Time Manager Progress List" size="lg" @show="getTimeManagerProgressList(1)">
 
+            <div class="card esi-card">
+                <div class="car-body esi-card-body">
 
+                    <table class="table esi-table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th scope="col" class="small font-weight-bold">Date</th>
+                                <th scope="col" class="small font-weight-bold">Minutes</th>
+                                <th scope="col" class="small font-weight-bold">Total Minutes</th>
+                                <th scope="col" class="small font-weight-bold">Total Hours</th>
+                                <th scope="col" class="small font-weight-bold">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, itemsIndex) in items" :key="itemsIndex">
 
-            <table class="table esi-table table-bordered table-striped">
+                                <td>{{item.id}}</td>
+                                <td class="text-left pl-2">{{ item.date }}</td>
+                                <td class="text-left pl-2">
+                                    <div v-for="(value, itemIndex) in item.minutes" :key="itemIndex" v-show="value !== null && itemIndex !== 'total' ">
+                                        {{ capitalizeFirstLetter(itemIndex) }}: {{ value }}
+                                    </div>
+                                </td>   
+                                <td class="text-left pl-2">
+                                    {{ item.total_minutes}}
+                                </td>
+                                <td class="text-left pl-2">
+                                    {{ item.total_hours }}
+                                </td>
 
-                <tr>
-                    <th v-for="(item, itemsIndex) in items[0]" :key="itemsIndex" v-show="item !== null">
-                        {{ itemsIndex }} 
-                    </th>
-                </tr>
+                                <td class="text-center">                                    
+                                    <a href="#" @click.prevent="showUpdateTimeManagerForm(item.id, itemsIndex)" class="mr-1 text-primary">
+                                        <span class="h6 mb-2"><b-icon icon="pencil-square" aria-hidden="true"> </b-icon></span>
+                                    </a>
+                                    <a href="#" @click.prevent="deleteTimeManagerItem(item.id)">
+                                        <span class="h6 mb-2"><b-icon icon=" trash" aria-hidden="true"></b-icon></span>
+                                    </a>
+                                </td>      
 
-                <tr v-for="(item, itemsIndex) in items" :key="itemsIndex">
-                    <td v-for="(value, itemIndex) in item" :key="itemIndex" v-show="value !== null">
-                        {{ value }}
-                    </td>
-                </tr>                
+                            </tr>
+                        </tbody>
+                    </table>
 
-            </table>
+                    <div class="mt-4">                        
+                        <b-pagination
+                            v-model="currentPage"
+                            @input="changePage(currentPage)"
+                            :total-rows="rows"
+                            :per-page="perPage"
+                            first-text="<<"
+                            prev-text="<"
+                            next-text=">"
+                            last-text=">>"
+                            size="sm"
+                            align="center"                                            
+                        ></b-pagination>
+                    </div>
 
+                </div>
+            </div>
 
             <template #modal-footer>
 
-                <div class="buttons-container w-100">
-                    <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressList')">Cancel</b-button>                         
+                <div class="w-100" v-show="listLoaded"> 
+                    <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressList')">Cancel</b-button>   
                 </div>
 
-                <div class="loading-container">
+                <div class="w-100" v-show="!listLoaded">
                     <b-button variant="primary" size="sm" class="float-right mr">
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
                         Loading...
                     </b-button>
                 </div>
             </template>
+          
 
         </b-modal>    
 
-        <b-modal id="modalTimeManagerProgressUpdate" title="Time Manager Progress Update"  @hide="resetTimeManagerUpdateModal">
+        <b-modal id="modalTimeManagerProgressCreate" title="Time Manager Progress Create"  @hide="resetTimeManagerCreateModal">
         
-            <time-manager-progress-update-component ref="timeManagerProgressUpdate" :memberinfo="memberinfo" :content="content" :csrf_token="csrf_token" :api_token="api_token"/>
+            <time-manager-progress-create-component ref="timeManagerProgressCreate" :memberinfo="memberinfo" :content="content" :csrf_token="csrf_token" :api_token="api_token"/>
 
             <template #modal-footer>
 
                 <div class="buttons-container w-100">       
-                   <b-button variant="primary" size="sm" class="float-left mr" id="updateProgress" v-b-modal.modalTimeManagerProgressList>Progress List</b-button>
+                   <b-button variant="primary" size="sm" class="float-left mr" v-b-modal.modalTimeManagerProgressList>Progress List</b-button>
 
-                    <b-button variant="primary" size="sm" class="float-right mr" id="create" v-on:click="addProgress">Save Progress</b-button>
-                    <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressUpdate')">Cancel</b-button>                         
+                    <b-button variant="primary" size="sm" class="float-right mr" v-on:click="addProgress">Save Progress</b-button>
+                    <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressCreate')">Cancel</b-button>                         
                 </div>
 
                 <div class="loading-container">
@@ -287,6 +332,34 @@
 
         </b-modal>       
 
+
+        <b-modal id="modalTimeManagerProgressUpdate" title="Time Manager Progress Update"  @hide="resetTimeManagerUpdateModal">
+            
+            <time-manager-progress-update-component ref="timeManagerProgressUpdate" 
+                :items="items" 
+                :progressupdateid="progressUpdateID" 
+                :progressupdateindex="progressUpdateIndex"
+                :memberinfo="memberinfo" 
+                :content="content" 
+                :csrf_token="csrf_token" 
+                :api_token="api_token"/>
+
+            <template #modal-footer>
+
+                <div class="buttons-container w-100">       
+                    <b-button variant="primary" size="sm" class="float-right mr" v-on:click="updateProgress">Update Progress</b-button>
+                    <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressUpdate')">Cancel</b-button>                         
+                </div>
+
+                <div class="loading-container">
+                    <b-button variant="primary" size="sm" class="float-right mr">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                        Loading...
+                    </b-button>
+                </div>
+            </template>
+
+        </b-modal>    
        
         <!-- [START] SCORE TIME PROGRESS GRAPH -->
         <div id="timeManagerProgressGraph" class="modal-container">
@@ -335,14 +408,17 @@ import HorizontalBarChart from '../../frontend/chart/horizontalBarChartComponent
 
 import * as Moment from 'moment';
 import TimeManagerComponent from '../../modules/TimeManagerComponent.vue';
+import TimeManagerProgressCreateComponent from '../../modules/TimeManagerProgressCreateComponent.vue';
 import TimeManagerProgressUpdateComponent from '../../modules/TimeManagerProgressUpdateComponent.vue';
+
 
 export default {   
     name: "member-time-manager-component",
     components: {    
         HorizontalBarChart,
         TimeManagerComponent, 
-        TimeManagerProgressUpdateComponent
+        TimeManagerProgressCreateComponent,
+        TimeManagerProgressUpdateComponent,
     },     
     data() {
         return {
@@ -358,9 +434,15 @@ export default {
             warningMessageValue: null,
 
             //Progress Listing
-            perPage: 3,
+            listLoaded: false,
+            rows: 0,
+            perPage: 0,
             currentPage: 1,
             items: [],
+
+            //Progress Update ID
+            progressUpdateIndex: null,
+            progressUpdateID: null,
 
             //time manager content 
             content: {
@@ -427,74 +509,59 @@ export default {
 
     methods: {     
 
+        resetTimeManagerUpdateModal() {
+
+        },
         resetTimeManagerModal() {
             this.getTimeManager();
         },
-        resetTimeManagerUpdateModal() 
+        resetTimeManagerCreateModal() 
         {
             clearTimeout(this.timer);
         },
-
-        getFormArray() {          
-            var form = document.querySelector('#form-timemanager-'+this.content.course);
-            var data = new FormData(form);
-            for (let entry of data) {
-                console.log(entry);
-            }
+        TimeManagerEntry() {
         },
 
-
-        getTimeManagerProgressList() 
+        changePage(page) 
         {
+           this.getTimeManagerProgressList(page);
             
-            $(document).find('.modal-footer').find('div.buttons-container').hide();
-            $(document).find('.modal-footer').find('div.loading-container').show();
+        },
+        getTimeManagerProgressList(page) 
+        {            
+            this.listLoaded = false;
 
-            axios.post("/api/getTimeManagerProgressList?api_token=" + this.api_token, 
+            axios.post("/api/getTimeManagerProgressList?page="+ page +"&api_token=" + this.api_token, 
             {
                 'method'        : "POST",
                 'memberID'      : this.memberinfo.user_id,
-                'timeManagerID' : this.content.id,
-
+                'timeManagerID' : this.content.id
             }).then(response => {
+
                 if (response.data.success == true) 
                 {             
                     let progress = response.data.progress;
+                    this.items = progress;
 
-                    let list = [];
+                    //page details
+                    this.currentPage = response.data.currentPage;
+                    this.perPage = response.data.perPage;
+                    this.rows = response.data.rows;
 
-                    progress.forEach((item) => {
-                        //console.log(item.minutes);
-                        list.push(JSON.parse(item.minutes));
-                    });
-
-
-
-                     this.items = list;
-
-                    console.log(list)
+                    this.listLoaded = true;
 
                 } else {
-
-                    //alert ("failed fetching progress list")
-
-                    //HIDE LOADER HERE 
-                    $(document).find('.modal-footer').find('div.buttons-container').show();
-                    $(document).find('.modal-footer').find('div.loading-container').hide();
+                    this.items = [];
+                    this.listLoaded = true;
                 }
-
             }).catch(function(error) {
-
                 console.log(error);
-                
-                //HIDE LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').show();
-                $(document).find('.modal-footer').find('div.loading-container').hide();
+                this.items = [];
+                this.listLoaded = true;               
             });   
 
         
         },
-
         getTimeManager() 
         {
             axios.post("/api/getTimeManager?api_token=" + this.api_token, 
@@ -563,8 +630,7 @@ export default {
         },         
         getTimeManagerProgressGraph() {
 
-            this.loaded = false;
-        
+            this.loaded = false;        
 
             axios.post("/api/getTimeManagerProgressGraph?api_token=" + this.api_token, 
             {
@@ -639,15 +705,17 @@ export default {
                 console.log("Error " + error);
             });
         },
-
-        addProgress() 
-        {     
-
+        showUpdateTimeManagerForm(id, index) {
+            //get time manager id, and  index id for the list
+            this.progressUpdateID = id;
+            this.progressUpdateIndex = index;
+            this.$bvModal.show('modalTimeManagerProgressUpdate');  
+        },
+        updateProgress() 
+        {
             //Determine Component Opened
             let progressUpdate = this.$refs['timeManagerProgressUpdate'];
-            let updaterModal = progressUpdate.$refs[this.content.course + 'TimeManagerComponent'];
-
-            console.log(this.content.course + 'TimeManagerComponent')
+            let updaterModal = progressUpdate.$refs[this.content.course + 'TimeManagerUpdateComponent'];
 
             let date       = updaterModal.getDate();
             let minutes    = updaterModal.getMinutesData();
@@ -656,7 +724,6 @@ export default {
             let totalMinutes = minutes.total;
 
             if (date && totalMinutes > 0) {
-
                 //format data
                 let data = {
                     'memberID'      : this.memberinfo.user_id,
@@ -666,11 +733,84 @@ export default {
                     'gradelLevel'   : this.content.gradelLevel,
                     'minutes'       : minutes 
                 }
+                this.commitUpdateProgress(data);                
+            } else {            
+                alert ("you have to enter date and minutes")
+            }   
+        },
+        commitUpdateProgress(data) {
+         
+            //SHOW LOADER HERE
+            $(document).find('#modalTimeManagerProgressUpdate').find('.modal-footer').find('div.buttons-container').hide();
+            $(document).find('#modalTimeManagerProgressUpdate').find('.modal-footer').find('div.loading-container').show();
 
+            axios.post("/api/updateTimeManagerProgress?api_token=" + this.api_token, 
+            {
+                'method'      : "POST",
+                'updateID'    : this.progressUpdateID,
+                'data'        : data
+
+            }).then(response => {
+                if (response.data.success == true) 
+                {  
+                    this.$nextTick(() => {
+                 
+                        $(document).find('#modalTimeManagerProgressUpdate').find('.modal-footer').hide();                        
+                        $(document).find('#modalTimeManagerProgressUpdate').find('#timeManager-'+this.content.course).find('.message').html('<div class="alert alert-success text-center" role="alert">Thank you! Progress has been submitted</div>'); 
+                        $(document).find('#modalTimeManagerProgressUpdate').find('#form-timemanager-'+this.content.course).slideUp(500);        
+
+                        this.timer = setTimeout(function(scope) {
+                            scope.$bvModal.hide('modalTimeManagerProgressUpdate');
+                        }, 2500, this);
+
+                        this.getTimeManager();
+                        this.getTimeManagerProgressList(this.page)
+                        this.$forceUpdate();
+                    });            
+
+                } else {
+                    //show error message 
+
+                    //HIDE LOADER HERE
+                    $(document).find('#modalTimeManagerProgressUpdate').find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('#modalTimeManagerProgressUpdate').find('.modal-footer').find('div.loading-container').hide();
+
+                }
+
+            }).catch(function(error) {
+                console.log(error);
+                
+                //HIDE LOADER HERE
+                $(document).find('#modalTimeManagerProgressUpdate').find('.modal-footer').find('div.buttons-container').show();
+                $(document).find('#modalTimeManagerProgressUpdate').find('.modal-footer').find('div.loading-container').hide();
+            });   
+        },
+        addProgress() 
+        {
+            //Determine Component Opened
+            let progressUpdate = this.$refs['timeManagerProgressCreate'];
+            let updaterModal = progressUpdate.$refs[this.content.course + 'TimeManagerComponent'];
+
+           
+
+            let date       = updaterModal.getDate();
+            let minutes    = updaterModal.getMinutesData();
+
+            //Get the total from minutes object
+            let totalMinutes = minutes.total;
+
+            if (date && totalMinutes > 0) {
+                //format data
+                let data = {
+                    'memberID'      : this.memberinfo.user_id,
+                    'date'          : date,
+                    'id'            : this.content.id,
+                    'course'        : this.content.course,
+                    'gradelLevel'   : this.content.gradelLevel,
+                    'minutes'       : minutes 
+                }
                 this.saveProgress(data);
-
-            } else {
-            
+            } else {            
                 alert ("you have to enter date and minutes")
             }
         },
@@ -686,25 +826,17 @@ export default {
                 'data'        : data
 
             }).then(response => {
-
-
                 if (response.data.success == true) 
                 {  
                     this.$nextTick(() => {
                  
-                        $(document).find('.modal-footer').hide();
-                        
+                        $(document).find('.modal-footer').hide();                        
                         $(document).find('#timeManager-'+this.content.course).find('.message').html('<div class="alert alert-success text-center" role="alert">Thank you! Progress has been submitted</div>'); 
-
                         $(document).find('#form-timemanager-'+this.content.course).slideUp(500);             
-
                         this.timer = setTimeout(function(scope) {
-                            scope.$bvModal.hide('modalTimeManagerProgressUpdate');
+                            scope.$bvModal.hide('modalTimeManagerProgressCreate');
                         }, 2500, this);
-
-
                         this.getTimeManager();
-
                         this.$forceUpdate();
                     });            
 
@@ -770,9 +902,7 @@ export default {
         updateTimeManager() 
         {
             this.$refs.timeManager.updateTimeManager();
-          
         },
-
         showWarningMessage(message) {
 
             this.$bvModal.msgBoxOk(message, {

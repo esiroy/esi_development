@@ -17,7 +17,7 @@ class MemberExamController extends Controller
         $memberID = isset($request['memberID']) ? $request['memberID'] : Auth::user()->id;
 
         //get list of scores
-        $examScores = MemberExamScore::where('user_id', $memberID)->where('exam_type', $examType)->orderBy('id', 'DESC')->paginate(1);
+        $examScores = MemberExamScore::where('user_id', $memberID)->where('exam_type', $examType)->orderBy('created_at', 'DESC')->paginate(1);
         
         //pagination details
         $examScoreList[$examType]['currentPage'] = $examScores->currentPage();

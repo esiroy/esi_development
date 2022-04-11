@@ -105,6 +105,7 @@ export default {
 	props: {
 		content: Object,
 		size: Object,
+   		type: String,		
 	},
 	methods: {
         getDate() {
@@ -129,6 +130,12 @@ export default {
 	},
 	mounted: function () 
 	{
+        if (this.type == 'update') {
+            this.date = this.content.date;
+            Object.keys(this.content).forEach(key => {          
+                this.data[key] = this.content[key];
+            });
+        }	
 	
 	},
 };

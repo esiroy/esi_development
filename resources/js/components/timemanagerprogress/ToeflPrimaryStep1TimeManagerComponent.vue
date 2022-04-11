@@ -105,6 +105,7 @@ export default {
   props: {
 	content: Object,
 	size: Object,
+   	type: String,	
   },
   methods: {
 	getDate() {
@@ -126,7 +127,12 @@ export default {
   computed: {},
   updated: function () {},
   mounted: function () {
-	//console.log("TOEFL_Primary_Step_1- junior mounted")
+        if (this.type == 'update') {
+            this.date = this.content.date;
+            Object.keys(this.content).forEach(key => {          
+                this.data[key] = this.content[key];
+            });
+        }
   },
 };
 </script>

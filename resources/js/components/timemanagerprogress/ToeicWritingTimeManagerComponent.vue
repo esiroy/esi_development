@@ -91,9 +91,9 @@ export default {
 				from: new Date(Date.now() + 8640000)
 			},
 			data: {       
-				reading: "",
-				listening: "",
-				speaking: "",
+				//reading: "",
+				//listening: "",
+				//speaking: "",
 				writing: "",
 				total: ""
 			} 
@@ -105,6 +105,7 @@ export default {
 	props: {
 		content: Object,
 		size: Object,
+   		type: String,		
 	},
 	methods: {
         getDate() {
@@ -130,6 +131,13 @@ export default {
 	mounted: function () 
 	{
 	
+        if (this.type == 'update') {
+            this.date = this.content.date;
+            Object.keys(this.content).forEach(key => {          
+                this.data[key] = this.content[key];
+            });
+        }
+
 	},
 };
 
