@@ -236,7 +236,7 @@
                     <table class="table esi-table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>ID</th>
+                                <!--<th>ID</th>-->
                                 <th scope="col" class="small font-weight-bold">Date</th>
                                 <th scope="col" class="small font-weight-bold">Minutes</th>
                                 <th scope="col" class="small font-weight-bold">Total Minutes</th>
@@ -247,7 +247,8 @@
                         <tbody>
                             <tr v-for="(item, itemsIndex) in items" :key="itemsIndex">
 
-                                <td>{{item.id}}</td>
+                                <!--<td>{{item.id}}</td>-->
+                                
                                 <td class="text-left pl-2">{{ item.date }}</td>
                                 <td class="text-left pl-2">
                                     <div v-for="(value, itemIndex) in item.minutes" :key="itemIndex" v-show="value !== null && itemIndex !== 'total' ">
@@ -557,15 +558,31 @@ export default {
                 console.log(error);
                 this.items = [];
                 this.listLoaded = true;               
-            });   
-
-        
+            });        
         },
 
         deleteTimeManagerItem(id) {
 
-            alert (id);
-            
+           this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this progress.', {
+                title: 'Please Confirm',
+                size: 'sm',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                if (value == true) {
+                    this.commitDelete(id);
+                }              
+            }).catch(err => {
+                console.log("Error while Deleting: " +err)
+            });        },
+        commitDelete(id) {
+        
             axios.post("/api/deleteTimeManagerProgress?api_token=" + this.api_token, 
             {
                 method          : "POST",
@@ -574,20 +591,15 @@ export default {
             }).then(response => {
 
                 if (response.data.success == true) 
-                {         
-                
+                {
                     this.getTimeManagerProgressList(this.page)
                     this.$forceUpdate();
-
-
                 } else {
-
                     alert ("item was not")
                 }
-
             }); 
-        },
 
+        },
         getTimeManager() 
         {
             axios.post("/api/getTimeManager?api_token=" + this.api_token, 

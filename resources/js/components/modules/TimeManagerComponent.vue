@@ -13,7 +13,10 @@
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select Course</div>
 
-                            <select id="course" name="course" v-model="data.course" @change="handleCourseChange($event)" 
+                     
+                            <select id="course" name="course" 
+                                :disabled="this.$parent.$parent.$parent.updateType == 'update' ? '' : disabled"
+                                v-model="data.course" @change="handleCourseChange($event)" 
                                 class="form-control form-control-sm"  :class="{ 'is-invalid' : submitted && $v.data.course.$error }">
 
                                 <option value="" class="mx-0 px-0">Select Course</option>
