@@ -296,7 +296,7 @@
             <template #modal-footer>
 
                 <div class="w-100" v-show="listLoaded"> 
-                    <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressList')">Cancel</b-button>   
+                    <b-button variant="primary" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalTimeManagerProgressList')">Close List</b-button>   
                 </div>
 
                 <div class="w-100" v-show="!listLoaded">

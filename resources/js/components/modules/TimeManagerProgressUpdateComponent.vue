@@ -95,8 +95,10 @@ export default {
         this.showElementId('timeManager-'+  this.content.course);
     },             
     methods: {     
-        getTotalMinutes(course) {
-            let values = Array.from(document.querySelectorAll('#timeManager-'+ course +' .minutes-entry input')).map(input => input.value );
+        getTotalMinutes(course) 
+        {
+            let values = Array.from(document.getElementById("formTimeManagerUpdate").querySelectorAll('#timeManager-'+ course +' .minutes-entry input')).map(input => input.value );
+
             //get total
             let total = 0;
             for (var i = 0, n = values.length; i < n; ++i) {

@@ -39,13 +39,15 @@ class TimeManagerProgressAPIController extends Controller
                 //Format
                 foreach ($timeManagerProgress as $progress) 
                 {
+                    $hours = calculateMinutesToHours($progress->total_minutes);
+
                     $items[] = [
                             'id'            => $progress->id,
                             'date'          => JapaneseDateFormat($progress->date),
                             'udate'         => $progress->date,
                             'minutes'       => json_decode($progress->minutes),
                             'total_minutes' => $progress->total_minutes,
-                            'total_hours'   => HoursToTime($progress->total_hours)
+                            'total_hours'   => HoursToTime($hours)
                         ];
                 }
 

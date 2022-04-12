@@ -271,28 +271,32 @@ export default
     {
         hideFieldsContainer() 
         {
-            document.querySelectorAll('.grade_level_container').forEach(function(element) {
+            if (this.type == "update") {                
+                document.getElementById("formTimeManagerUpdate").querySelectorAll('.grade_level_container').forEach(function(element) {
                 element.style.display = 'none';
-            });  
-
+                });  
+            } else if (this.type == "create") {
+                document.getElementById("formTimeManagerCreate").querySelectorAll('.grade_level_container').forEach(function(element) {
+                    element.style.display = 'none';
+                });             
+            }
         },
         hideField(id) 
         {
-            if (this.type == "update") {
+            if (this.type == "update") {                
                 document.getElementById("formTimeManagerUpdate").querySelector("#"+id).style.display = "none";
-            } else {
-               //document.getElementById(id).style.display = "none";
+            } else if (this.type == "create") {
+                document.getElementById("formTimeManagerCreate").querySelector("#"+id).style.display = "none";           
             }
         },    
         showField(id) 
-        {         
+        {        
 
             if (this.type == "update") {
                 document.getElementById("formTimeManagerUpdate").querySelector("#"+id).style.display = "flex";
-            } else {
-               //document.getElementById(id).style.display = "flex";
+            } else if (this.type == "create") {
+                document.getElementById("formTimeManagerCreate").querySelector("#"+id).style.display = "flex";              
             }
-
         },
         resetField(id) {           
             this.data[id] = "";                  
@@ -322,10 +326,8 @@ export default
                 { 
                     this.showField('grade_'+ this.gradeLevel);
                     this.resetField("grade_" + this.gradeLevel);  
-
                     this.hideField('stage_1_separator');
-                    this.hideField('stage_2_separator');      
-                    
+                    this.hideField('stage_2_separator'); 
                                   
                 } else {
                 
@@ -368,6 +370,8 @@ export default
     mounted: function () 
     {
 
+        console.log(this.type);
+
         this.gradeLevel = this.content.gradeLevel;
         this.handleChangeGradeLevel();
 
@@ -380,9 +384,7 @@ export default
             {                   
                 this.data[key] = this.item.minutes[key];
             });
-        }  
-        
-        console.log(this.content.date)
+        } 
       
     }
 };
