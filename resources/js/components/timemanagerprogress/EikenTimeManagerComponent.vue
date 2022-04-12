@@ -281,7 +281,7 @@ export default
             if (this.type == "update") {
                 document.getElementById("formTimeManagerUpdate").querySelector("#"+id).style.display = "none";
             } else {
-               document.getElementById(id).style.display = "none";
+               //document.getElementById(id).style.display = "none";
             }
         },    
         showField(id) 
@@ -290,7 +290,7 @@ export default
             if (this.type == "update") {
                 document.getElementById("formTimeManagerUpdate").querySelector("#"+id).style.display = "flex";
             } else {
-               document.getElementById(id).style.display = "flex";
+               //document.getElementById(id).style.display = "flex";
             }
 
         },

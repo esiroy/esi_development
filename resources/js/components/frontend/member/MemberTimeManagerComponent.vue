@@ -691,7 +691,7 @@ export default {
                     this.entries = ["1"];
 
                     this.datacollection = {
-                        labels: ['Required Hours', 'Epected Hours', 'Spent Hours'],  
+                        labels: ['Required Hours', 'Expected Hours', 'Spent Hours'],  
                         datasets: [
                             {
                                 data: [response.data.requiredHours, response.data.expectedHours, response.data.spentHours, 99],
