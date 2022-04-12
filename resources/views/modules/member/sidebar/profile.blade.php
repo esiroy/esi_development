@@ -29,14 +29,8 @@
         <div id="userDetails" class="row mx-2">
 
             <div class="col-md-12">
-                <div class="text-secondary">ID:</div>
+                <span class="text-secondary">Member ID:</span> 1{{ Auth::user()->id }}
             </div>
-            <div class="col-md-12">
-                <div class="text-dark">                    
-                    1{{ Auth::user()->id }}
-                </div>
-            </div>
-
 
             <div class="col-md-12">
                 <div class="text-secondary">Name:</div>
