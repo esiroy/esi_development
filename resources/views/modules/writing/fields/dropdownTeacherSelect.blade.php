@@ -8,7 +8,16 @@
                 $tutor = new App\Models\Tutor();
                 $tutors = $tutor->getTutors();                                            
             @endphp        
-            <option value="">Please Select</option>@foreach($tutors as $tutor) <option value="{{ $tutor->user_id }}" >{{ $tutor->firstname }}</option> @endforeach
+            <option value="">Please Select</option>
+            @foreach($tutors as $tutor) 
+                @if ($tutor->user_id == 16800)
+                    <!-- Lei (not selectable)
+                        <option value="{{ $tutor->user_id }}" class="memberTeacherList" >{{ $tutor->firstname }}</option> 
+                     -->
+                @else 
+                    <option value="{{ $tutor->user_id }}" class="memberTeacherList" >{{ $tutor->firstname }}</option> 
+                @endif
+            @endforeach
         <select>
         <input name="appoint_teacher_field_id" type="hidden" value="{{ $id  }}" class="form-control">
         <div class="small">{!! $display_meta['description'] ?? "" !!}</div>

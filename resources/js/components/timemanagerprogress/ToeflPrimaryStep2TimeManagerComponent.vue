@@ -61,6 +61,7 @@
             v-on:keyup="getTotalMinutes"
             id="listening"
             name="listening"
+            placeholder="分 minutes"
             v-model="data.listening"
             :class="this.size.select + ' form-control form-control-sm'"
           />
@@ -78,6 +79,7 @@
             v-on:keyup="getTotalMinutes"
             id="writing"
             name="writing"
+            placeholder="分 minutes"
             v-model="data.reading"
             :class="this.size.select + ' form-control form-control-sm'"
           />

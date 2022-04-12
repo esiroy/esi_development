@@ -63,6 +63,7 @@
             v-on:keyup="getTotalMinutes"
             id="TOEIC_Listening_and_Reading-listening"
             name="listening"
+            placeholder="分 minutes"
             v-model="data.listening"
             :class="this.size.select + ' form-control form-control-sm'"
           />
@@ -80,6 +81,7 @@
             v-on:keyup="getTotalMinutes"
             id="TOEIC_Listening_and_Reading-reading"
             name="reading"
+            placeholder="分 minutes"
             v-model="data.reading"
             :class="this.size.select + ' form-control form-control-sm'"
           />

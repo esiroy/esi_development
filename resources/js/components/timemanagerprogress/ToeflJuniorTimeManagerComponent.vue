@@ -47,7 +47,7 @@
                     <div class="pl-2 small "> <span class="text-danger">*</span> Listening</div>                
                 </div>
                 <div :class="this.size.rightColumn">
-                    <input v-on:keyup="getTotalMinutes" id="TOEFL_Junior_listening" name="listening" v-model="data.listening" :class="this.size.select +' form-control form-control-sm'">                    
+                    <input v-on:keyup="getTotalMinutes" id="TOEFL_Junior_listening" name="listening" placeholder="分 minutes" v-model="data.listening" :class="this.size.select +' form-control form-control-sm'">                    
                 </div>
             </div>
 
@@ -57,7 +57,7 @@
                     <div class="pl-2 small "> <span class="text-danger">*</span> Language Form & Meaning</div>                
                 </div>
                 <div :class="this.size.rightColumn">
-                    <input v-on:keyup="getTotalMinutes" id="TOEFL_Junior_languageFormAndMeaning" name="language_form_and_meaning" v-model="data.languageFormAndMeaning" :class="this.size.select +' form-control form-control-sm'">                  
+                    <input v-on:keyup="getTotalMinutes" id="TOEFL_Junior_languageFormAndMeaning" name="language_form_and_meaning" placeholder="分 minutes" v-model="data.languageFormAndMeaning" :class="this.size.select +' form-control form-control-sm'">                  
                 </div>
             </div>
 

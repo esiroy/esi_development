@@ -46,7 +46,7 @@
                     <div class="pl-2 small  mb-2"> <span class="text-danger">*</span> Speaking</div>             
                 </div>
                 <div :class="this.size.rightColumn">            
-                    <input v-on:keyup="getTotalMinutes" id="speaking" name="speaking" v-model="data.speaking" :class="this.size.select +' form-control form-control-sm'">
+                    <input v-on:keyup="getTotalMinutes" id="speaking" name="speaking"  placeholder="分 minutes" v-model="data.speaking" :class="this.size.select +' form-control form-control-sm'">
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
                     <div class="pl-2 small "> <span class="text-danger">*</span> Writing</div>                
                 </div>
                 <div :class="this.size.rightColumn">            
-                    <input v-on:keyup="getTotalMinutes" id="writing" name="writing" v-model="data.writing" :class="this.size.select +' form-control form-control-sm'">
+                    <input v-on:keyup="getTotalMinutes" id="writing" name="writing"   placeholder="分 minutes" v-model="data.writing" :class="this.size.select +' form-control form-control-sm'">
                     
                 </div>
             </div>
@@ -65,7 +65,7 @@
                     <div class="pl-2 small "> <span class="text-danger">*</span> Reading</div>                
                 </div>
                 <div :class="this.size.rightColumn">
-                    <input v-on:keyup="getTotalMinutes" id="reading" name="reading" v-model="data.reading" :class="this.size.select +' form-control form-control-sm'">                 
+                    <input v-on:keyup="getTotalMinutes" id="reading" name="reading"  placeholder="分 minutes" v-model="data.reading" :class="this.size.select +' form-control form-control-sm'">                 
                 </div>
             </div>
 
@@ -74,7 +74,7 @@
                     <div class="pl-2 small "> <span class="text-danger">*</span> Listening</div>                
                 </div>
                 <div :class="this.size.rightColumn">
-                    <input v-on:keyup="getTotalMinutes" id="listening" name="listening" v-model="data.listening" :class="this.size.select +' form-control form-control-sm'">
+                    <input v-on:keyup="getTotalMinutes" id="listening" name="listening"  placeholder="分 minutes" v-model="data.listening" :class="this.size.select +' form-control form-control-sm'">
                 </div>
             </div>
 

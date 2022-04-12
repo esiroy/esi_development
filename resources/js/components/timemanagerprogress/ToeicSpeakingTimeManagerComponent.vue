@@ -45,7 +45,7 @@
 					<div class="pl-2 small "> <span class="text-danger">*</span> Speaking</div>                
 				</div>
 				<div :class="this.size.rightColumn">
-					<input v-on:keyup="getTotalMinutes" id="TOEIC_Speaking-speaking" name="speaking" v-model="data.speaking" :class="this.size.select +' form-control form-control-sm '">
+					<input v-on:keyup="getTotalMinutes" id="TOEIC_Speaking-speaking" name="speaking"  placeholder="分 minutes" v-model="data.speaking" :class="this.size.select +' form-control form-control-sm '">
 						
 				</div>
 			</div>

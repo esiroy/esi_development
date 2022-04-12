@@ -46,7 +46,7 @@
 					<div class="pl-2 small "> <span class="text-danger">*</span> Writing  </div>                
 				</div>
 				<div :class="this.size.rightColumn">
-					<input v-on:keyup="getTotalMinutes" id="TOEIC_Writing-writing" name="writing" v-model="data.writing" :class="this.size.select +' form-control form-control-sm'">					
+					<input v-on:keyup="getTotalMinutes" id="TOEIC_Writing-writing" name="writing"  placeholder="分 minutes" v-model="data.writing" :class="this.size.select +' form-control form-control-sm'">					
 				</div>
 			</div>
 
@@ -56,7 +56,7 @@
 				<div class="pl-2 small "> <span class="text-danger">*</span> Total Minutes</div>
 			</div>
 			<div :class="this.size.rightColumn">
-				<input type="text" id="total" disabled name="TOEIC_Writing_total" v-model="data.total" :class="this.size.select +' form-control form-control-sm '"> 
+				<input type="text" id="total" disabled name="TOEIC_Writing_total"  placeholder="分 minutes" v-model="data.total" :class="this.size.select +' form-control form-control-sm '"> 
 			</div>
 			</div>
 
