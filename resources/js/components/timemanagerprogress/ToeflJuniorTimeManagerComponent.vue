@@ -5,7 +5,7 @@
 
         <div class="message"></div> 
 
-        <form name="form-timemanager-IELTS" id="form-timemanager-IELTS">
+        <form name="form-timemanager-TOEFL_Junior" id="form-timemanager-TOEFL_Junior">
 
             <div class="row">
                 <div :class="this.size.leftColumn">
@@ -115,9 +115,9 @@ export default {
     components: {    
         Datepicker
     },     
-    props: {
-        mastercontent: Object,    
+    props: {         
         content: Object,
+        item: Object,  
         size: Object,
         type: String,        
     },
@@ -144,17 +144,17 @@ export default {
   mounted: function () 
   {
   
-        if (this.type == 'update') {
-            this.date = this.content.date;
-            Object.keys(this.content).forEach(key => {          
-                this.data[key] = this.content[key];
+        if (this.type == 'update') 
+        {
+            this.date = this.content.date;   
+            Object.keys(this.item.minutes).forEach(key => 
+            {                   
+                this.data[key] = this.item.minutes[key];
+                                       
             });
-        }
+        }  
 
-
-        this.content.course  = this.mastercontent.course;
-        this.content.courseTextValue = this.mastercontent.courseTextValue;
-        this.date = this.mastercontent.date;              
+           
   },
 };
 

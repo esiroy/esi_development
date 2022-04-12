@@ -1,8 +1,6 @@
 <template>
-
-    <!--[start] timeManager - EIKEN-->
     <div id="timeManager-EIKEN" class="d-none">
-    
+
         <div class="message"></div> 
 
         <form name="form-timemanager-EIKEN" id="form-timemanager-EIKEN">
@@ -18,7 +16,7 @@
             </div>
 
 
-           <div class="row pt-2">
+        <div class="row pt-2">
                 <div :class="this.size.leftColumn">                       
                     <div class="pl-2 small"> <span class="text-danger">*</span> Level of Examination </div>
                 </div>                   
@@ -63,7 +61,7 @@
 
 
 
- 
+
 
 
             <div id="grade_5" class="minutes-entry row pt-2 grade_level_container">
@@ -212,6 +210,8 @@
             </div>
         </form>
 
+        
+
     </div>
     <!--[end]-->
 
@@ -235,7 +235,7 @@ export default
 
             disabledDates: {
                 from: new Date(Date.now() + 8640000)
-            },
+            },           
 
             date: "",
             gradeLevel: "",
@@ -261,9 +261,9 @@ export default
     components: {    
         Datepicker
     },      
-    props: {
-        mastercontent: Object,    
+    props: {         
         content: Object,
+        item: Object,  
         size: Object,
         type: String,        
     },
@@ -278,16 +278,21 @@ export default
         },
         hideField(id) 
         {
-            let element =  document.getElementById(id);
-            if (element) {
-                element.style.display = 'none';
+            if (this.type == "update") {
+                document.getElementById("formTimeManagerUpdate").querySelector("#"+id).style.display = "none";
+            } else {
+               document.getElementById(id).style.display = "none";
             }
         },    
-        showField(id) {         
-            let element =  document.getElementById(id);
-            if (element) {
-                element.style.display = 'flex';
+        showField(id) 
+        {         
+
+            if (this.type == "update") {
+                document.getElementById("formTimeManagerUpdate").querySelector("#"+id).style.display = "flex";
+            } else {
+               document.getElementById(id).style.display = "flex";
             }
+
         },
         resetField(id) {           
             this.data[id] = "";                  
@@ -302,14 +307,11 @@ export default
         {
             //change main exam level
             ///this.$parent.$parent.$parent.examLevel = this.gradeLevel;
-
-
-           
-
             this.total = "";
             this.data.total  = this.total;
             
             this.hideFieldsContainer();
+
             if (this.gradeLevel === "" || this.gradeLevel === null || this.gradeLevel == null) {
                 //hide separators
                 this.hideField('stage_1_separator');
@@ -322,9 +324,11 @@ export default
                     this.resetField("grade_" + this.gradeLevel);  
 
                     this.hideField('stage_1_separator');
-                    this.hideField('stage_2_separator');                    
-                }
-                else {
+                    this.hideField('stage_2_separator');      
+                    
+                                  
+                } else {
+                
                     this.showField('grade_'+ this.gradeLevel + "_stage_1");
                     this.showField('grade_'+ this.gradeLevel + "_stage_2");
 
@@ -365,24 +369,21 @@ export default
     {
 
         this.gradeLevel = this.content.gradeLevel;
-
         this.handleChangeGradeLevel();
 
-       
+        
+        if (this.type == 'update') 
+        {
+            this.date = this.content.date;
 
-        if (this.type == 'update') {
-            Object.keys(this.content).forEach(key => 
-            {    
-                //since we add course textvalue and date, filter it 
-                if (key !== 'course' || key !== 'courseTextValue' || key !== 'date') {
-                    this.data[key] = this.content[key];
-                }                
+            Object.keys(this.item.minutes).forEach(key => 
+            {                   
+                this.data[key] = this.item.minutes[key];
             });
-        }
-
-        this.content.course  = this.mastercontent.course;
-        this.content.courseTextValue = this.mastercontent.courseTextValue;
-        this.date = this.mastercontent.date;        
+        }  
+        
+        console.log(this.content.date)
+      
     }
 };
 </script>

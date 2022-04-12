@@ -4,17 +4,17 @@
         <div class="row">
             <div class="col">
                 <div id="minutes-entry" class="card-body">
-                    <IELTSTimeManagerComponent ref="IELTSTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></IELTSTimeManagerComponent>
-                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflTimeManagerComponent>                      
-                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflJuniorTimeManagerComponent>
-                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
-                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
-                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
-                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeicSpeakingTimeManagerComponent>
-                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></ToeicWritingTimeManagerComponent>
-                    <EikenTimeManagerComponent  ref="EIKENTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></EikenTimeManagerComponent>
-                    <TeapTimeManagerComponent  ref="TEAPTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></TeapTimeManagerComponent>
-                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerUpdateComponent" :type="'update'" :content="newContent" :mastercontent="masterContent" :size="this.size"></OtherTimeManagerComponent>
+                    <IELTSTimeManagerComponent ref="IELTSTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></IELTSTimeManagerComponent>
+                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></ToeflTimeManagerComponent>                    
+                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></ToeflJuniorTimeManagerComponent>
+                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
+                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
+                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
+                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></ToeicSpeakingTimeManagerComponent>
+                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></ToeicWritingTimeManagerComponent>
+                    <EikenTimeManagerComponent  ref="EIKENTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></EikenTimeManagerComponent>
+                    <TeapTimeManagerComponent  ref="TEAPTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></TeapTimeManagerComponent>
+                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerUpdateComponent" :type="'update'" :content="newContent" :item="item" :size="this.size"></OtherTimeManagerComponent>                    
                 </div>
             </div>
         </div>
@@ -48,7 +48,7 @@ export default {
         OtherTimeManagerComponent
     },      
     props: {
-        items: Array,
+        items: Array,       
         progressupdateid: Number,
         progressupdateindex: Number,
         memberinfo: Object,
@@ -60,9 +60,9 @@ export default {
         return {
             submitted: "",
 
-            masterContent: {},
-            
+            //this will be passed to child
             newContent: {},
+            item: {},
 
             //adjust the column sizes of the entry component modals
             size: {
@@ -72,25 +72,26 @@ export default {
             },
         }
     },
-    beforeMount: function () {
-
+    beforeMount: function () 
+    {
         //console.log( this.items[this.progressupdateindex].udate);
         //console.log( this.progressupdateid);
 
-        this.masterContent.id                  = this.progressupdateid;
-        this.masterContent.course              = this.content.course;
-        this.masterContent.courseTextValue     = this.content.course;
-        this.masterContent.date                = this.items[this.progressupdateindex].udate;
+       
+        this.newContent = {
+            date    :   this.items[this.progressupdateindex].udate,
+            course  : this.content.course,
+            courseTextValue: this.content.courseTextValue,
+            gradeLevel: this.content.gradeLevel,
+        }
 
-        let items = this.items[this.progressupdateindex].minutes;
+        //the item will be passed here, together with the minutes
+        this.item = this.items[this.progressupdateindex];  
 
-        Object.keys(items).forEach(key => {
-            this.newContent[key] = items[key];
-        });
-        
     },
     mounted: function () 
     {
+        
         this.showElementId('timeManager-'+  this.content.course);
     },             
     methods: {     
@@ -132,8 +133,6 @@ export default {
             }           
         },        
         showMaterials() {
-
-            console.log(this.material_checkbox);
 
             if (this.content.materials.length == 0) {
                 this.content.materials.push({'id': 1, 'value': "" })

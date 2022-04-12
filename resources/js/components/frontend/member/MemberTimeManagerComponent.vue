@@ -309,7 +309,7 @@
 
         </b-modal>    
 
-        <b-modal id="modalTimeManagerProgressCreate" title="Time Manager Progress Create"  @hide="resetTimeManagerCreateModal">
+        <b-modal id="modalTimeManagerProgressCreate" title="Time Manager Progress Create"  @show="resetTimeManagerCreateModal">
         
             <time-manager-progress-create-component ref="timeManagerProgressCreate" :memberinfo="memberinfo" :content="content" :csrf_token="csrf_token" :api_token="api_token"/>
 
@@ -507,11 +507,7 @@ export default {
         api_token: String,
     },
 
-    methods: {     
-
-        resetTimeManagerUpdateModal() {
-
-        },
+    methods: {
         resetTimeManagerModal() {
             this.getTimeManager();
         },
@@ -519,9 +515,9 @@ export default {
         {
             clearTimeout(this.timer);
         },
-        TimeManagerEntry() {
-        },
-
+        resetTimeManagerUpdateModal() {
+            clearTimeout(this.timer);
+        },    
         changePage(page) 
         {
            this.getTimeManagerProgressList(page);
@@ -541,7 +537,10 @@ export default {
                 if (response.data.success == true) 
                 {             
                     let progress = response.data.progress;
+
                     this.items = progress;
+
+                    
 
                     //page details
                     this.currentPage = response.data.currentPage;
@@ -562,6 +561,33 @@ export default {
 
         
         },
+
+        deleteTimeManagerItem(id) {
+
+            alert (id);
+            
+            axios.post("/api/deleteTimeManagerProgress?api_token=" + this.api_token, 
+            {
+                method          : "POST",
+                memberID        : this.memberinfo.user_id,
+                itemID          : id,        
+            }).then(response => {
+
+                if (response.data.success == true) 
+                {         
+                
+                    this.getTimeManagerProgressList(this.page)
+                    this.$forceUpdate();
+
+
+                } else {
+
+                    alert ("item was not")
+                }
+
+            }); 
+        },
+
         getTimeManager() 
         {
             axios.post("/api/getTimeManager?api_token=" + this.api_token, 
@@ -830,9 +856,9 @@ export default {
                 {  
                     this.$nextTick(() => {
                  
-                        $(document).find('.modal-footer').hide();                        
+                        $(document).find('.modal-footer').hide(); 
                         $(document).find('#timeManager-'+this.content.course).find('.message').html('<div class="alert alert-success text-center" role="alert">Thank you! Progress has been submitted</div>'); 
-                        $(document).find('#form-timemanager-'+this.content.course).slideUp(500);             
+                        $(document).find('#formTimeManagerCreate').find('#form-timemanager-'+this.content.course).slideUp(300); ;  
                         this.timer = setTimeout(function(scope) {
                             scope.$bvModal.hide('modalTimeManagerProgressCreate');
                         }, 2500, this);

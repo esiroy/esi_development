@@ -5,17 +5,17 @@
             <div class="col">
             
                 <div id="minutes-entry" class="card-body">
-                    <IELTSTimeManagerComponent ref="IELTSTimeManagerComponent" :content="content" :size="this.size"></IELTSTimeManagerComponent>
-                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerComponent" :content="content" :size="this.size"></ToeflTimeManagerComponent>                      
-                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerComponent" :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>
-                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerComponent" :content="content" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
-                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerComponent" :content="content" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
-                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerComponent" :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
-                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerComponent" :content="content" :size="this.size"></ToeicSpeakingTimeManagerComponent>
-                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerComponent" :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>
-                    <EikenTimeManagerComponent  ref="EIKENTimeManagerComponent" :content="content" :size="this.size"></EikenTimeManagerComponent>
-                    <TeapTimeManagerComponent  ref="TEAPTimeManagerComponent" :content="content" :size="this.size"></TeapTimeManagerComponent>
-                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerComponent" :content="content" :size="this.size"></OtherTimeManagerComponent>
+                    <IELTSTimeManagerComponent ref="IELTSTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></IELTSTimeManagerComponent>
+                    <ToeflTimeManagerComponent ref="TOEFLTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></ToeflTimeManagerComponent>                      
+                    <ToeflJuniorTimeManagerComponent  ref="TOEFL_JuniorTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></ToeflJuniorTimeManagerComponent>
+                    <ToeflPrimaryStep1TimeManagerComponent  ref="TOEFL_Primary_Step_1TimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></ToeflPrimaryStep1TimeManagerComponent>
+                    <ToeflPrimaryStep2TimeManagerComponent  ref="TOEFL_Primary_Step_2TimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></ToeflPrimaryStep2TimeManagerComponent>
+                    <ToeicListeningAndReadingTimeManagerComponent  ref="TOEIC_Listening_and_ReadingTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></ToeicListeningAndReadingTimeManagerComponent>
+                    <ToeicSpeakingTimeManagerComponent  ref="TOEIC_SpeakingTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></ToeicSpeakingTimeManagerComponent>
+                    <ToeicWritingTimeManagerComponent  ref="TOEIC_WritingTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></ToeicWritingTimeManagerComponent>
+                    <EikenTimeManagerComponent  ref="EIKENTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></EikenTimeManagerComponent>
+                    <TeapTimeManagerComponent  ref="TEAPTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></TeapTimeManagerComponent>
+                    <OtherTimeManagerComponent  ref="Other_TestTimeManagerComponent" :mastercontent="masterContent" :content="content" :size="this.size"></OtherTimeManagerComponent>
                 </div>
                 
             </div>
@@ -60,6 +60,8 @@ export default {
         return {
             submitted: "",
 
+            masterContent: {},
+
             //adjust the column sizes of the entry component modals
             size: {
                 leftColumn  : "col-5",
@@ -68,6 +70,16 @@ export default {
             },
         }
     },
+    beforeMount: function () {
+
+        //console.log( this.items[this.progressupdateindex].udate);
+        //console.log( this.progressupdateid);
+
+     
+        this.masterContent.course              = this.content.course;
+        this.masterContent.courseTextValue     = this.content.course;
+
+    },    
     mounted: function () 
     {
         this.showElementId('timeManager-'+  this.content.course)

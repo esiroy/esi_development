@@ -126,11 +126,11 @@ export default {
     components: {    
         Datepicker
     },   
-    props: {
-        mastercontent: Object,
+    props: {         
         content: Object,
+        item: Object,  
         size: Object,
-        type: String,
+        type: String,        
     },
     methods: 
     {     
@@ -154,23 +154,17 @@ export default {
   updated: function () {
     
   },
+  
   mounted: function () 
   {
-
-        if (this.type == 'update') {
-            Object.keys(this.content).forEach(key => 
-            {    
-                //since we add course textvalue and date, filter it 
-                if (key !== 'course' || key !== 'courseTextValue' || key !== 'date') {
-                    this.data[key] = this.content[key];
-                }                
-            });
-        }
-
-        this.content.course  = this.mastercontent.course;
-        this.content.courseTextValue = this.mastercontent.courseTextValue;
-        this.date = this.mastercontent.date;        
-
+    if (this.type == 'update') 
+    {
+        this.date = this.content.date;   
+        Object.keys(this.item.minutes).forEach(key => 
+        {                   
+            this.data[key] = this.item.minutes[key];
+        });
+    }
   },
 };
 

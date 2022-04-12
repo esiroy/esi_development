@@ -229,8 +229,25 @@ class TimeManagerProgressAPIController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+         $timeManager = TimeManagerProgress::where('member_id', $request->get('memberID'))
+                        ->where('id',  $request->get('itemID'))->delete();
+
+        if ($timeManager) {
+
+            return Response()->json([
+                "success"           => true,
+                "message"           => "entry has been successfully removed",
+            ]);
+
+        } else {
+        
+            return Response()->json([
+                "success"           => false,
+                "message"           => "Error can't remove entry",
+            ]);
+        
+        }                        
     }
 }
