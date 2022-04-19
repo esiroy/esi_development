@@ -91,6 +91,11 @@ class dummyController extends Controller
         echo minutesFormatter($minutesLeft);    
     }
 
+    public function component_test() {
+        return view("dummy/index", ['title'=> "TEST"]);
+    }
+
+
     public function test($memberID  = 21402 ) 
     {
 
