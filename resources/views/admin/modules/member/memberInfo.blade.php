@@ -451,7 +451,7 @@
                                                 <div class="col-12 pt-2 pb-2">Time Manager </div>
                                             </div>
                                         </td>
-                                        <td> : </td>
+                                        <td> &nbsp; </td>
                                         <td class="red">
                                             <member-time-manager-viewer-component                                    
                                                 :memberinfo="{{ json_encode($memberInfo) }}"             
