@@ -98,26 +98,32 @@
 
                         <div class="" >
                             <span class="font-weight-bold">Time Achievement </span>:
+
                             <!--PERCENTAGE LEFT-->
                             <span class="text-danger" v-if="this.content.ellapsedDays > this.content.numberOfdays">
-                                Date Expired
+                                {{ this.content.percentageLeft }}%  Date Expired
                             </span>                            
                             <span v-else-if="this.content.percentageLeft < 100">
                                 {{ this.content.percentageLeft }}% 
                             </span>  
                             <span class="text-success" v-else-if="this.content.percentageLeft >= 100">
-                                Completed
+                                 Completed
                             </span>
                             <span class="text-danger" v-else-if="this.content.requiredHours <= 0">
-                                Please update required hours
+                               Please update required hours
                             </span>                            
                             <span class="text-success" v-else>
                                 Calculating...
                             </span>
                         </div> 
+
+                        <!--
                         <div class="text-danger small" v-if="this.content.spentHourPercentage < 70">
                             <span class="pb-2 pt-2">警告！ 学習時間が大変遅れています。</span>
                         </div>
+                        -->
+
+
                     </div>  
                 </div>
             </div>
