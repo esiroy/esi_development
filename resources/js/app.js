@@ -68,6 +68,9 @@ if (url[1] === 'admin') {
     Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
     Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
     Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);
+    Vue.component('member-account-merger-component', require('./components/frontend/member/MemberAccountMergerComponent.vue').default);
+
+
 
     //front end 
     switch (url[1]) {

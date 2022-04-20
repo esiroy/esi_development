@@ -2,6 +2,7 @@
     <div class="profile blueBox pt-0 px-0">
         <div class="col-md-12 bg-blue text-white pt-1 pb-1 text-center">
             <img src="{{ url('images/userMale.png') }}" align="absmiddle"> マイページ
+            
         </div>
         
         <div class="profile-image text-center mt-2">
