@@ -22,6 +22,8 @@ use App\Models\Purpose;
 use App\Models\MemberExamScore;
 use App\Models\Homework;
 use App\Models\MemberLevel;
+use App\Models\MergedAccount;
+
 
 
 use Auth, Hash, Storage;
@@ -174,6 +176,29 @@ class MemberController extends Controller
 
         if (isset($memberInfo)) 
         {
+
+         //search if user has merged account
+            $mergedAccount = MergedAccount::where('merged_member_id',  $memberID)->first();
+
+            if ($mergedAccount) {
+                //merged account
+                $mergedMemberInfo   = User::find($mergedAccount->member_id)->memberInfo;
+                $mergedType         = "secondary";
+
+                $mergedAccounts  = null;
+            } else {
+                //main account
+                $mergedMemberInfo = $memberInfo;   
+                $mergedType         = "main";
+
+                $mergedAccounts = MergedAccount::select('users.id', 'users.email', 'merged_accounts.created_at as date')
+                ->where('member_id', $memberID)
+                ->leftJoin('users', 'users.id', '=', 'merged_accounts.merged_member_id')
+                ->get();
+
+            }        
+
+
             if (isset($memberInfo->tutor_id)) {
                 $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
             } else {
@@ -222,7 +247,7 @@ class MemberController extends Controller
 
             return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 
                                                 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 
-                                                'currentMemberlevel', 'homework'));
+                                                'currentMemberlevel', 'homework', 'mergedMemberInfo', 'mergedType', 'mergedAccounts'));
         } else {
 
             abort(404, "Member Not Found");

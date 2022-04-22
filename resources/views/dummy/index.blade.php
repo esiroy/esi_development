@@ -2,7 +2,20 @@
 
 @section('content')
 
-    <Simple-Uploader-Component></Simple-uploader-component>
+    @php 
+
+        $category_id = 1;
+
+    @endphp
+
+
+    <questions-component 
+        :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
+        :category_id="{{ $category_id }}"
+        api_token="{{ Auth::user()->api_token }}" 
+        csrf_token="{{ csrf_token() }}"
+    >
+    </questions-component>
 
 @endsection
 

@@ -453,11 +453,81 @@
                                         </td>
                                         <td> &nbsp; </td>
                                         <td class="red">
-                                            <member-time-manager-viewer-component                                    
-                                                :memberinfo="{{ json_encode($memberInfo) }}"             
-                                                api_token="{{ Auth::user()->api_token }}" 
-                                                csrf_token="{{ csrf_token() }}"
-                                            />
+                                        
+                                            @if ($mergedType == 'secondary')
+                                                <div class="card border-lightblue mt-1 mb-4">
+                                                    <div class="card-header bg-darkblue text-white font-weight-bold">
+                                                    Main Account {{ "1" . $mergedMemberInfo->user_id}} ({{$mergedMemberInfo->user_id}})
+                                                    </div>
+                                                    <div class="card-body p-0 m-0 b-0">
+                                                        <table class="esi-table table table-bordered table-striped">
+                                                            <thead>
+                                                                    <td>Member ID</td>
+                                                                    <td>Email</td>
+                                                                    <!--
+                                                                    <td>Action</td>                                                        
+                                                                    -->
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td> 1{{ $mergedMemberInfo->user_id }}</td>
+                                                                    <td>{{ $mergedMemberInfo->user->email ?? ''}}</td>
+
+                                                                    <!--
+                                                                    <td>
+                                                                        <a href="#"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                                                    </td>
+                                                                    -->
+                                                                </tr>                        
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <div class="card border-lightblue mt-1 mb-4">
+                                                <div class="card-header bg-darkblue text-white font-weight-bold">
+                                                    Time Manager - Member 1{{ $mergedMemberInfo->user_id }} ({{$mergedMemberInfo->user_id}})
+                                                </div>
+                                                <div class="card-body b-0">
+                                                    <member-time-manager-viewer-component                                    
+                                                        :memberinfo="{{ json_encode($mergedMemberInfo) }}"             
+                                                        api_token="{{ Auth::user()->api_token }}" 
+                                                        csrf_token="{{ csrf_token() }}"
+                                                    />
+                                                </div>
+                                            </div>
+
+
+                                            @if ($mergedType == 'main')
+                                              <div class="card border-lightblue mt-1 mb-4">
+                                                    <div class="card-header bg-darkblue text-white font-weight-bold">
+                                                        Merged Accounts
+                                                    </div>
+                                                    <div class="card-body p-0 m-0 b-0">
+                                                        <table class="esi-table table table-bordered table-striped">
+                                                            <thead>
+                                                                    <td>Member ID</td>
+                                                                    <td>Email</td>
+                                                                    <!--<td>Action</td>                                                        -->
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach($mergedAccounts as $mergedAccount)
+                                                                <tr>
+                                                                    <td> 1{{ $mergedAccount->id }}</td>
+                                                                    <td>{{ $mergedAccount->email ?? ''}}</td>
+                                                                    <!--
+                                                                    <td>
+                                                                        <a href="#"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                                                    </td>-->
+                                                                </tr>    
+                                                                @endforeach                    
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>                                                
+                                            @endif
+
                                         </td>
                                           
                                     </tr>

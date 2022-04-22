@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('test', 'dummyController@index');
-
+Route::get('component_test', 'dummyController@component_test');
 
 
 /*************** 

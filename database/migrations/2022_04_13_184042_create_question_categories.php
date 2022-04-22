@@ -15,8 +15,11 @@ class CreateQuestionCategories extends Migration
     {
         Schema::create('question_categories', function (Blueprint $table) {
             $table->id();
-            $table->string("category", 50)->fullText('category');
-            $table->timestamps();
+            $table->string("slug", 160)->fullText('slug');
+            $table->string("name", 80);
+            $table->text('instruction')->nullable();
+            $table->integer('time_limit')->nullable();
+            $table->tinyInteger('valid');
         });
     }
 

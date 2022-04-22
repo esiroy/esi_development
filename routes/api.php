@@ -200,3 +200,22 @@ Route::middleware('auth:api')->post('/deleteTimeManagerProgress', 'API\TimeManag
 Route::middleware('auth:api')->post('/getTimeManagerProgressGraph', 'API\TimeManagerProgressAPIController@getTimeManagerProgressGraph')->name('APIGetTimeManagerProgressGraph');
 Route::middleware('auth:api')->post('/getTimeManagerProgressList', 'API\TimeManagerProgressAPIController@getTimeManagerProgressList')->name('APIGetTimeManagerProgressList');
 
+
+
+Route::middleware('auth:api')->post('/getQuestions', 'API\QuestionsAPIController@get')->name('APIGetQuesions');
+Route::middleware('auth:api')->post('/createQuestions', 'API\QuestionsAPIController@store')->name('APICreateQuesions');
+Route::middleware('auth:api')->post('/updateQuestions', 'API\QuestionsAPIController@update')->name('APIUpdateQuesions');
+Route::middleware('auth:api')->post('/deleteQuestions', 'API\QuestionsAPIController@destroy')->name('APIDeleteQuesions');
+
+Route::middleware('auth:api')->post('/getAnswers', 'API\AnswersAPIController@get')->name('APIGetAnswers');
+Route::middleware('auth:api')->post('/createAnswers', 'API\AnswersAPIController@store')->name('APIGetAnswers');
+Route::middleware('auth:api')->post('/postAnswers', 'API\AnswersAPIController@post')->name('APIPostAnswers');
+Route::middleware('auth:api')->post('/updateAnswers', 'API\AnswersAPIController@update')->name('APIUpdateAnswers');
+Route::middleware('auth:api')->post('/deleteAnswers', 'API\AnswersAPIController@destroy')->name('APIDeleteAnswers');
+
+
+Route::middleware('auth:api')->post('/getMergedAccounts', 'API\MergeAccountAPIController@get')->name('APIGetMergeAccounts');
+Route::middleware('auth:api')->post('/getMergedAccountType', 'API\MergeAccountAPIController@getType')->name('APIGetMergedAccountType');
+Route::middleware('auth:api')->post('/createMergedAccount', 'API\MergeAccountAPIController@store')->name('APIGetMergeAccount');
+Route::middleware('auth:api')->post('/updateMergedAccount', 'API\MergeAccountAPIController@update')->name('APIUpdateMergeAccount');
+Route::middleware('auth:api')->post('/deleteMergedAccount', 'API\MergeAccountAPIController@destroy')->name('APIDeleteMergeAccount');

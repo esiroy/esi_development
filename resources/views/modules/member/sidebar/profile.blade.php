@@ -1,8 +1,13 @@
 
     <div class="profile blueBox pt-0 px-0">
-        <div class="col-md-12 bg-blue text-white pt-1 pb-1 text-center">
+    
+        <div class="text-center col-md-12 bg-blue text-white pt-1 pb-1 text-center">
             <img src="{{ url('images/userMale.png') }}" align="absmiddle"> マイページ
-            
+            <member-account-merger-component 
+                :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
+                api_token="{{ Auth::user()->api_token }}" 
+                csrf_token="{{ csrf_token() }}">
+            </member-account-merger-component>
         </div>
         
         <div class="profile-image text-center mt-2">
