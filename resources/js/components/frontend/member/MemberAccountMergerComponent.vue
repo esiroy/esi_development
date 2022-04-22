@@ -69,7 +69,7 @@
                             <td>1{{ user.id }}</td>
                             <td>{{ user.email }}</td>
                             <td>
-                                <a href="#" @click.prevent="deleteMergedAccount(user.id)"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                <a href="#" @click.prevent="confirmDeleteMergedAccount(user.id)"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
                             </td>
                         </tr>                        
                     </tbody>
@@ -180,6 +180,30 @@ export default {
                 ///alert (this.user.password + "  : " + md5(this.user.password));
             });  
         },
+
+        confirmDeleteMergedAccount(memberID) {
+
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this merged account.', {
+                title: 'Please Confirm',
+                size: 'md',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                if (value == true) {
+                    this.deleteMergedAccount(memberID);
+                }
+              
+            }).catch(err => {
+                // An error occurred
+            });
+
+        },        
         async deleteMergedAccount(memberID) {
 
             let url = "/api/deleteMergedAccount?api_token=" + this.api_token;

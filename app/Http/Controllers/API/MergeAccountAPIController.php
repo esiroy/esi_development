@@ -135,9 +135,15 @@ class MergeAccountAPIController extends Controller
                         ]);        
                     }
 
+                    if (isset($request->owner_id)) {
+                        $owner_member_id = $request->owner_id;
+                    } else {
+                        $owner_member_id = Auth::user()->id;
+                    }
+
 
                     $mergedCreated = MergedAccount::create([
-                        'member_id' => Auth::user()->id,
+                        'member_id' => $owner_member_id,
                         'merged_member_id' => $memberID
                     ]);
 
@@ -184,10 +190,16 @@ class MergeAccountAPIController extends Controller
     }
 
 
-  public function destroy(Request $request) 
-    {
-    
-        $delete = MergedAccount::where('member_id', Auth::user()->id)
+  public function destroy(Request $request) {
+
+
+        if (isset($request->owner_id)) {
+            $owner_member_id = $request->owner_id;
+        } else {
+            $owner_member_id = Auth::user()->id;
+        }
+
+        $delete = MergedAccount::where('member_id', $owner_member_id)
                 ->where('merged_member_id', $request->member_id)
                 ->delete();
                 
@@ -208,7 +220,7 @@ class MergeAccountAPIController extends Controller
 
             return Response()->json([
                 "success"           => false,
-                "message"           => "Sorry, Account can't be merged right now.",
+                "message"           => "Sorry, Account can't be remove right now.",
             ]);
         }
 

@@ -785,7 +785,7 @@
                                                                 </tr>
                                                                 <tr v-for="(field, fieldKey) in examScoreList[examScoreType].fields" :key="fieldKey" >
                                                                     <td class="mb-4" >
-                                                                        {{ ucwords(FormatObjectKey(field)) }}
+                                                                        {{ ucwords(FormatObjectKey(removeUnderscore(field))) }}
                                                                     </td>
                                                                     <td class="mb-4" >
                                                                     <!-- {{ item[field] }} (reactive)-->
@@ -1270,6 +1270,85 @@
                 </div>
             </div>
 
+
+
+
+            <div id="member-desired-schedule" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">
+                        Merged Accounts
+                        <span class="btnAddScoreHolder ml-2">
+                            <span v-b-modal.modalAccountMerger class="p-1 bg-blue text-white">
+                                <i class="fas fa-plus"></i>
+                            </span>
+                        </span>                        
+                    
+                    </div>                                
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                                
+                        <table class="esi-table table table-bordered table-striped">
+                            <tbody>
+                                <tr>
+                                    <td>Member ID</td>
+                                    <td>Email</td>
+                                    <td>Action</td>
+                                </tr>
+                                <tr v-for="(user, userIndex) in mergedAccountUsers" :key="userIndex">
+                                    <td>1{{ user.id }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>
+                                        <a href="#" @click.prevent="confirmDeleteMergedAccount(user.id)"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                    </td>
+                                </tr>                        
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <b-modal id="modalAccountMerger" title="Account Merger" size="md" @show="resetAccountMergerFormData">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-4">                      
+                                <span class="text-danger">*</span> 
+                                <span class="small">Enter Member ID : </span>               
+                            </div>                
+                            <div class="col-6">
+                                <input type="text" v-model="user.memberID" class="form-control form-control-sm"/>
+                            </div>
+                        </div>
+                
+                        <div class="row pt-2">
+                            <div class="col-4">                      
+                                <span class="text-danger">*</span> 
+                                <span class="small">Enter Password: </span>               
+                            </div>                
+                            <div class="col-6">
+                                <input type="password" v-model="user.password" class="form-control form-control-sm"/>
+                            </div>
+                        </div>  
+                    </div>
+
+                    <template #modal-footer>
+                        <div class="buttons-container w-100"> 
+                            <b-button variant="primary" size="sm" class="float-right mr" v-on:click="mergeAccount">Merge Account</b-button>                  
+                            <b-button variant="danger" size="sm" class="float-right mr-2" @click="$bvModal.hide('modalAccountMerger')">Cancel</b-button>                         
+                        </div>
+                    
+
+                        <div class="loading-container">
+                        <b-button variant="primary" size="sm" class="float-right mr">
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                            Loading...
+                        </b-button>
+                    </div>
+                    </template>                  
+                </b-modal>
+
+            </div>
+
+
             <div id="submit-button" class="section row py-4">
                 <div class="col-2"></div>
                 <div class="col-3 text-left">
@@ -1284,6 +1363,8 @@
 </template>
 
 <script>
+import {Helpers} from "./helpers/helpers.js";
+
 import LineChart from './frontend/chart/lineChartComponent.vue'
 import PurposeComponent from "./purpose/PurposeComponent.vue";
 import IELTScoreComponent from "./scores/IELTScoreComponent.vue";
@@ -1372,6 +1453,10 @@ export default {
     },
     data() {
         return {
+
+            mergedAccountUsers: null,
+
+
             updateType: "",
 
             submitted: false,
@@ -1860,15 +1945,15 @@ export default {
     mounted: function () 
 	{
 
+        this.getMergedAccounts();
+
+
         if (this.currentmemberlevel) {
             this.selectedMemberLevel = this.currentmemberlevel.level;
         }  else {
             this.selectedMemberLevel = null;
         }
 
-        
-
-    
 
 
         //console.log(this.memberlatestexamscore, "latest score");
@@ -3094,7 +3179,136 @@ export default {
             } else {
                 console.log("not all filled!")
             }
-        },                
+        },  
+
+
+        resetAccountMergerFormData() {                            
+            this.user.memberID = "";
+            this.user.password = "";            
+            this.getMergedAccounts();
+        },
+
+        async getURL(url, data) {          
+            return Helpers.getURL(url, data);
+        },
+
+        async getMergedAccountType() {
+            let url = "/api/getMergedAccountType?api_token=" + this.api_token;
+            let data  = {
+                'member_id': this.memberinfo.user_id,
+            }
+
+            await this.getURL(url, data).then(response => 
+            {
+                if (response.data.success == true) 
+                {  
+                    this.accountType = response.data.type;
+                    this.mainAccount = response.data.main_account;
+
+                } else {                    
+                    this.accountType = response.data.type;                  
+                }
+
+            }).finally(() => {                            
+                ///alert (this.user.password + "  : " + md5(this.user.password));
+            });  
+        },
+        confirmDeleteMergedAccount(memberID) {
+
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this merged account.', {
+                title: 'Please Confirm',
+                size: 'md',
+                buttonSize: 'sm',
+                okVariant: 'danger',
+                okTitle: 'YES',
+                cancelTitle: 'NO',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true
+            })
+            .then(value => {
+                if (value == true) {
+                    this.deleteMergedAccount(memberID);
+                }
+              
+            }).catch(err => {
+                // An error occurred
+            });
+
+        },
+        async deleteMergedAccount(memberID) {
+
+            let url = "/api/deleteMergedAccount?api_token=" + this.api_token;
+            let data  = {
+                'owner_id': this.memberinfo.user_id,
+                'member_id':memberID
+            }
+
+            await this.getURL(url, data).then(response => 
+            {
+                if (response.data.success == true) 
+                {
+                   this.mergedAccountUsers = response.data.merged_accounts;
+
+                } else {
+                    
+                    alert (response.data.message)
+                }
+            }).finally(() => {          
+
+                 this.getMergedAccounts();
+            });  
+        
+        },
+        async getMergedAccounts() 
+        {
+
+            let url = "/api/getMergedAccounts?api_token=" + this.api_token;
+            let data  = {
+                'member_id': this.memberinfo.user_id
+            }
+
+            await this.getURL(url, data).then(response => 
+            {
+                if (response.data.success == true) 
+                {
+                   this.mergedAccountUsers = response.data.merged_accounts;
+
+                } else {
+                    
+                    alert (response.data.message)
+                }
+            }).finally(() => {     
+
+                ///alert (this.user.password + "  : " + md5(this.user.password));
+            });            
+        },         
+        async mergeAccount() 
+        {
+            let url = "/api/createMergedAccount?api_token=" + this.api_token;
+            let data  = {
+                'owner_id': this.memberinfo.user_id,
+                'member_id': this.user.memberID,
+                'password' : this.user.password,
+            }
+
+            await this.getURL(url, data).then(response => 
+            {
+                if (response.data.success == true) 
+                {
+                    alert (response.data.message);
+                    this.$bvModal.hide('modalAccountMerger')
+                    this.getMergedAccounts();
+                } else {                    
+                    alert (response.data.message)
+                }
+
+            }).finally(() => {                            
+                ///alert (this.user.password + "  : " + md5(this.user.password));
+
+                
+            });            
+        },                       
 
     },
     computed : {

@@ -94,10 +94,13 @@
                                             <!--@note: lesson limit (Class(月間使用可能ポイント)) -->
                                             @php 
                                                 $attribute = new App\Models\MemberAttribute();
-                                                $availableClasses = $attribute->getLessonLimit($member->user_id)
+                                                $availableClasses = $attribute->getCurrentMonthLessonLimit($member->user_id)
                                             @endphp
-                                        
-                                            {{ number_format($availableClasses, 0) }}          
+
+                                            @if ($availableClasses) 
+                                                {{ $availableClasses->lesson_limit }}
+                                            @endif
+                                            
                                         </td>
                                         <td>
                                             <!--@note: Credits-->
