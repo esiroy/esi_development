@@ -77,3 +77,17 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+## Live Version
+my_tutor_reservation_system     - current version with time manager
+
+## Development Versions
+time_manager_list_update        - time manager development directory
+
+
+## OLD Version
+my_tutor_reservation_system_v4  - previous version without time manager
+staging_v4                      - staging version
+staging_v2                      - prev
+

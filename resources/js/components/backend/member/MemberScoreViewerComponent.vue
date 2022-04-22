@@ -169,7 +169,7 @@
 
                         <div class="row">
                             <div class="col-4" v-for="(examScoreType, examScoreTypeIndex) in examScoreTypes" :key="examScoreTypeIndex">
-                                <line-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></line-chart>
+                                <bar-chart :chart-data="datacollection[examScoreType]"  v-if="loaded"  :options="extraOptions[examScoreType]"></bar-chart>
                             </div>
                         </div>
 
@@ -197,7 +197,7 @@
 </template>
 
 <script>
-    import LineChart from '../../frontend/chart/lineChartComponent.vue';
+    import BarChart from '../../frontend/chart/barChartComponent.vue';
     import Vuelidate from "vuelidate";
     Vue.use(Vuelidate);import PurposeComponent from "../../purpose/PurposeComponent.vue";
     //Import Score Types
@@ -219,7 +219,7 @@
     {
         name: "MemberScoreComponent",
         components: {
-            LineChart,
+            BarChart,
             Datepicker, PurposeComponent,
             IELTScoreComponent, 
             ToeflScoreComponent, ToeflJuniorScoreComponent,

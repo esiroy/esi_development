@@ -357,12 +357,6 @@
 
 
 
-                                                         
-
-
-
-
-
                                     <tr>
                                         <th colspan="13"> Recent Notes  </th>
                                     </tr>
@@ -384,8 +378,6 @@
                                         </td>
                                     </tr>
                                     
-
-
 
                                     <tr>
                                         <th colspan="13">Latest Writing Report Card</th>
@@ -442,6 +434,34 @@
                                             @endif
                                         </td>
                                     </tr>
+
+
+
+                                    <tr>
+                                        <td colspan="13">&nbsp;</th>
+                                    </tr>
+
+                                    <tr class="pt-4">
+                                        <th colspan="13">Time Manager </th>
+                                    </tr>
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>                                        
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-12 pt-2 pb-2">Time Manager </div>
+                                            </div>
+                                        </td>
+                                        <td> &nbsp; </td>
+                                        <td class="red">
+                                            <member-time-manager-viewer-component                                    
+                                                :memberinfo="{{ json_encode($memberInfo) }}"             
+                                                api_token="{{ Auth::user()->api_token }}" 
+                                                csrf_token="{{ csrf_token() }}"
+                                            />
+                                        </td>
+                                          
+                                    </tr>
+
 
                                 </tbody>
                             </table>

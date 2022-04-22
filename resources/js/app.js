@@ -39,11 +39,12 @@ if (url[1] === 'admin') {
                 Vue.component('member-create-component', require('./components/MemberCreateComponent.vue').default);
             }
 
-            //url == member/{$id}
+            //MEMBER INFO PAGE:  @url: member/{$id}
             if (url[3]) {
                 Vue.component('member-score-component', require('./components/backend/member/MemberScoreViewerComponent.vue').default);
                 Vue.component('member-purpose-viewer-component', require('./components/backend/member/MemberPurposeViewerComponent.vue').default);
                 Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
+                Vue.component('member-time-manager-viewer-component', require('./components/backend/member/MemberTimeManagerViewerComponent.vue').default);
             }
             break;
         case 'reportcard':
@@ -66,12 +67,10 @@ if (url[1] === 'admin') {
     Vue.component('member-purpose-component', require('./components/frontend/member/MemberPurposeComponent.vue').default)
     Vue.component('member-score-component', require('./components/frontend/member/MemberScoreComponent.vue').default);
     Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
+    Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);
 
     //front end 
     switch (url[1]) {
-        case 'time-manager':
-            //Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);        
-            break;
         case 'customerchatsupport':
             Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
             break;

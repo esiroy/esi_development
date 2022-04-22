@@ -1,6 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Schema as Schema;
+
+
 use Illuminate\Http\Request;
 use App\Models\Folder;
 use App\Models\File;
@@ -15,6 +19,12 @@ use App\Models\MemoReply;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 use App\Models\WritingEntries;
+
+use App\Models\TimeManager;
+use App\Models\TimeManagerProgress;
+
+
+
 use App;
 use Gate;
 use DB;
@@ -37,12 +47,54 @@ class dummyController extends Controller
     {
     }
 
+    public function  index(Request $request) {
 
+
+        echo calculateMinutesToHours(120);
+
+
+
+        $memberID = 148;
+
+        $timeManager = TimeManager::where('member_id', $memberID)->where('valid', true)->first();
+        $minutes = TimeManagerProgress::where('member_id', $memberID)->sum('total_minutes');
+
+        //$minutes = $request->get('minutes');
+       // $requriedHours = $request->get('requriedHours');
+
+        //get required hour
+        echo "Required Hours: " . $timeManager->required_hours;
+        echo "<BR>";
+
+
+        $requiredMinutes = calculateHoursToMinutes($timeManager->required_hours);
+        echo "Required Minutes : " .  $requiredMinutes;
+
+
+    
+        $minutesLeft = $requiredMinutes - $minutes;
+
+        $percentageLeft = ($minutes / $requiredMinutes) * 100;
+        $formatted_percentage= number_format($percentageLeft, 2, '.', '');
+
+
+        echo "<BR>";
+        echo "Percnetage: " . $formatted_percentage;
+        
+
+        echo "<BR>";
+
+        echo "Minutes Left : " . $minutesLeft ;
+
+        echo "<BR>";
+
+        echo minutesFormatter($minutesLeft);    
+    }
 
     public function test($memberID  = 21402 ) 
     {
 
- //start date
+        //start date
         $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-1 09:00:00')));
 
         //temporary end date since we need to get 12:30 which is the next date
@@ -98,10 +150,7 @@ class dummyController extends Controller
     }
 
 
-    public function  index() {
-    
-    
-    }
+
 
 
     public function getTotalreserved (ScheduleItem $scheduleItemObj) 

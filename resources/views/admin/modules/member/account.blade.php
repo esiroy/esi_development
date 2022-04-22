@@ -157,7 +157,7 @@
                     <table width="100%" id="agentTableList" class="tablesorter  table-striped" cellspacing="0" cellpadding="5">
                         <tbody>
                             <tr>
-                                <!--<th>Schedule <br/>ID</td>-->
+                                <th>Schedule <br/>ID</td>
                                 <th>Transaction Date</th>
                                 <th>Transaction</th>
                                 <th>Lesson Date</th> 
@@ -173,13 +173,15 @@
                                 $scheduleItem = \App\Models\ScheduleItem::where('id', $transaction->schedule_item_id)->first();
                             @endphp
                             <tr>
-                                <!--
+                               
                                 <td class="small">
                                     {{ $scheduleItem->id ?? ''}}
                                 </td>
-                                -->
+                                
                                 <td class="small">
                                     <input type="hidden" value="{{ $scheduleItem->id ?? ''}}">
+
+
                                     
                                     {{ date('F d, Y', strtotime($transaction->created_at)) }} 
                                    
@@ -187,7 +189,6 @@
                                 </td>
 
                                 <td class="small">
-
 
                                     @if ($transaction->transaction_type == "LESSON" &&  $transaction->reservation_type == "CLIENT_RESERVED") 
 
@@ -202,14 +203,18 @@
                                         @else 
                                              <strong> {{ "CANCEL LESSON"}} </strong>                                    
                                         @endif
+
                                     @elseif ($transaction->transaction_type == "OVERRIDE")  
+
                                         <p class="text-muted">{{ strtoupper(formatStatus($transaction->transaction_type)) }}</p>
 
                                     @elseif ($transaction->transaction_type == "DELETE" || $transaction->transaction_type == "DELETED")
+                                    
                                         <p class="text-danger"><i>{{ strtoupper(formatStatus($transaction->transaction_type)) }}</i></p>
 
                                     @else          
                                         @if (isset($scheduleItem->schedule_status)) 
+
                                             @if ($scheduleItem->schedule_status === "CLIENT_RESERVED_B" || $transaction->reservation_type == "CLIENT_RESERVED_B")
                                                 <div class="text-danger">
                                                     <strong>
