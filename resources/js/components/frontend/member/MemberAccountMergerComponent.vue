@@ -192,7 +192,7 @@ export default {
                 cancelTitle: 'NO',
                 footerClass: 'p-2',
                 hideHeaderClose: false,
-                centered: true
+                centered: false
             })
             .then(value => {
                 if (value == true) {

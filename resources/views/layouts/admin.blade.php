@@ -14,7 +14,8 @@
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
 
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <script src="{{ asset('js/admin.js') }}" defer></script>
+    <script src="{{ asset('js/admin.js') .'?id=version_4_3'  }}" defer></script>
+    
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>
