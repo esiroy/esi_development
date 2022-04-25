@@ -240,6 +240,8 @@ export default {
                 if (response.data.success == true) 
                 {
                    this.users = response.data.merged_accounts;
+                   let accountIds = this.users.map(({id})=>id).join(", ");
+                   document.getElementById('mergeAccountIDs').innerHTML = accountIds;
 
                 } else {
                     

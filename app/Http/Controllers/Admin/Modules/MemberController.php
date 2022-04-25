@@ -703,6 +703,10 @@ class MemberController extends Controller
             MemoReply::where('sender_id', $user->id)->delete();
             MemoReply::where('recipient_id', $user->id)->delete();
 
+
+            MergedAccount::where('member_id', $user->id)->delete();
+            MergedAccount::where('merged_member_id', $user->id)->delete();
+
             $member->delete();
             $user->forceDelete();
 

@@ -83,7 +83,12 @@ class MergeAccountAPIController extends Controller
         $memberID = substr($tempID, 1);
         $password = $request->password;
 
-       
+        if (isset($request->owner_id)) {
+            $owner_member_id = $request->owner_id;
+        } else {
+            $owner_member_id = Auth::user()->id;
+        }
+
 
         //Test if others have merge your account
         $mainAccounts = MergedAccount::where('member_id', $memberID )->first();
@@ -124,9 +129,9 @@ class MergeAccountAPIController extends Controller
 
                 $validCredentials = Hash::check($password, $user->password);
 
-                if ($validCredentials) {
-
-                    if ($memberID == Auth::user()->id) 
+                if ($validCredentials) 
+                {
+                    if ($memberID == $owner_member_id) 
                     {                
                         return Response()->json([
                             "success"           => false,
@@ -134,13 +139,6 @@ class MergeAccountAPIController extends Controller
                             
                         ]);        
                     }
-
-                    if (isset($request->owner_id)) {
-                        $owner_member_id = $request->owner_id;
-                    } else {
-                        $owner_member_id = Auth::user()->id;
-                    }
-
 
                     $mergedCreated = MergedAccount::create([
                         'member_id' => $owner_member_id,
@@ -166,7 +164,7 @@ class MergeAccountAPIController extends Controller
                 
                     return Response()->json([
                         "success"       => true,
-                        "message"       => "Sorry, user account can't be merged to your account",
+                        "message"       => "Sorry, we can't verify that you are the owner of this account.",
                     ]); 
                 }
 
