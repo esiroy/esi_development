@@ -46,7 +46,7 @@
                 @endphp
 
                 <span id="mergeAccountIDs">
-                    @foreach($mergedAccounts as $mergedAccountIndex => $mergeAccount){{$mergeAccount->merged_member_id}}@if(($mergedAccountIndex + 1) < count($mergedAccounts)){{','}}@endif @endforeach
+                    @foreach($mergedAccounts as $mergedAccountIndex => $mergeAccount){{'1'+$mergeAccount->merged_member_id}}@if(($mergedAccountIndex + 1) < count($mergedAccounts)){{','}}@endif @endforeach
                 </span>
 
             </div>
