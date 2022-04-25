@@ -123,6 +123,31 @@ class WritingController extends Controller
     }
 
 
+    /* 
+        Show an entry
+        @var $form_id : form id defaults to 1
+        @entry_id 
+        @tutor model
+    */
+    public function entry_test($form_id, $entry_id, Member $member, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
+    {
+
+        //get the posted grade
+        $postedEntries =  $writingEntryGrade->where('writing_entry_id', $entry_id)->orderby('created_at', 'DESC')->get();        
+
+        $entry     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->first();
+
+        $tutors      = $tutor->getTutors();
+
+        $memberInfo = $member->where('user_id', $entry->user_id)->first();
+        
+        return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entry', 'tutors', 'memberInfo', 'postedEntries'));
+       
+    }
+
+
+
+
     public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile, ScheduleItem $scheduleItem) 
     {      
         $writingEntry = WritingEntries::find($id);
