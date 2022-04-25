@@ -132,8 +132,18 @@ class WritingController extends Controller
     public function entry_test($form_id, $entry_id, Member $member, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
     {
 
+        echo $entry_id;
+
+
         //get the posted grade
         $postedEntries =  $writingEntryGrade->where('writing_entry_id', $entry_id)->orderby('created_at', 'DESC')->get();        
+
+
+        foreach ($postedEntries as $entry)  {
+            print_r ($entry);
+
+            echo "========";
+        }
 
         $entry     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->first();
 
