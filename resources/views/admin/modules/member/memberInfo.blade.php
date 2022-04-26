@@ -187,11 +187,20 @@
                                         </td>
                                         <td> : </td>
                                         <td >   
-                                            <member-score-component 
-                                                :memberinfo="{{ json_encode($memberInfo) }}" 
-                                                api_token="{{ Auth::user()->api_token }}" 
-                                                csrf_token="{{ csrf_token() }}"
-                                            ></member-score-component>
+
+                                            @if ($mergedAccount) 
+                                                <member-score-component 
+                                                    :memberinfo="{{ json_encode($mergedMemberInfo) }}" 
+                                                     api_token="{{ Auth::user()->api_token }}"  
+                                                    csrf_token="{{ csrf_token() }}"
+                                                ></member-score-component>
+                                            @else 
+                                                <member-score-component 
+                                                    :memberinfo="{{ json_encode($memberInfo) }}" 
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"
+                                                ></member-score-component>
+                                            @endif
                                         </td>                                                                                
                                     </tr>
 
@@ -205,11 +214,21 @@
                                         </td>
                                         <td>:</td>
                                         <td>
-                                            <member-purpose-viewer-component
-                                                :memberinfo="{{ json_encode($memberInfo) }}"                                                
-                                                api_token="{{ Auth::user()->api_token }}" 
-                                                csrf_token="{{ csrf_token() }}"                                             
-                                             ></member-notes-component>
+
+                                            @if ($mergedAccount) 
+                                                <member-purpose-viewer-component
+                                                    :memberinfo="{{ json_encode($mergedMemberInfo) }}"                                                
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"                                             
+                                                ></member-notes-component>
+                                            @else 
+                                                <member-purpose-viewer-component
+                                                    :memberinfo="{{ json_encode($memberInfo) }}"                                                
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"                                             
+                                                ></member-notes-component>
+                                            @endif
+
 
                                         </td>
                                     </tr>

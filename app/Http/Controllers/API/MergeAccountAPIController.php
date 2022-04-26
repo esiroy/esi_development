@@ -17,20 +17,24 @@ class MergeAccountAPIController extends Controller
         $memberID = $request->member_id;
       
         //Test if you have merge your account
-        $mergedAccount = MergedAccount::select('users.id', 'users.email', 'merged_accounts.created_at as date')
+        $mergedAccount = MergedAccount::select('users.id', 'users.email', 'merged_accounts.member_id', 'merged_accounts.created_at as date')
                         ->where('merged_member_id', $memberID )
                         ->leftJoin('users', 'users.id', '=', 'merged_accounts.merged_member_id')
                         ->first();
+
+
 
         if ($mergedAccount) {
 
             $accountType = "secondary";
 
+            $mainAccount = User::select('users.id', 'users.email')->find( $mergedAccount->member_id );
+
             return Response()->json([
                 "success"       => true,
                 "message"       => "Account is secondary",
                 "type"          => "secondary",
-                "main_account"  => $mergedAccount
+                "main_account"  => $mainAccount
             ]);
 
         } else {
@@ -188,7 +192,7 @@ class MergeAccountAPIController extends Controller
     }
 
 
-  public function destroy(Request $request) {
+    public function destroy(Request $request) {
 
 
         if (isset($request->owner_id)) {
@@ -222,5 +226,107 @@ class MergeAccountAPIController extends Controller
             ]);
         }
 
-    }    
+    }   
+
+
+    public function adminMergedAccount(Request $request) {
+
+        //remove first (1) since we added 1
+        $tempID = $request->member_id;
+        $memberID = substr($tempID, 1);
+     
+
+        if (isset($request->owner_id)) {
+            $owner_member_id = $request->owner_id;
+        } else {
+            $owner_member_id = Auth::user()->id;
+        }
+
+
+        //Test if others have merge your account
+        $mainAccounts = MergedAccount::where('member_id', $memberID )->first();
+
+        if ($mainAccounts) 
+        {
+            return Response()->json([
+                "success"           => false,
+                "message"           => "Sorry, Account ID ". $memberID ." has already been assigned as a main account",
+            ]);        
+        }
+
+
+        //Test if others have merge your account
+        $otherAccounts = MergedAccount::where('member_id', '!=', Auth::user()->id)
+                ->where('merged_member_id', $memberID )
+                ->first();
+
+        if ($otherAccounts) 
+        {
+            return Response()->json([
+                "success"           => false,
+                "message"           => "Other account has already merged this account",
+            ]);        
+        }
+
+        //Test if you have merge your account
+        $mergedAccount = MergedAccount::where('member_id', Auth::user()->id)
+                ->where('merged_member_id', $memberID )
+                ->first();
+                
+
+        if (!$mergedAccount) 
+        {
+            $user = User::where('id', $memberID)->first();
+
+            if ($user) {
+
+              
+                if ($memberID == $owner_member_id) 
+                {                
+                    return Response()->json([
+                        "success"           => false,
+                        "message"           => "Users can't merge their your own account.",    
+                        
+                    ]);        
+                }
+
+                $mergedCreated = MergedAccount::create([
+                    'member_id' => $owner_member_id,
+                    'merged_member_id' => $memberID
+                ]);
+
+                if ($mergedCreated) {
+                
+                    return Response()->json([
+                        "success"       => true,
+                        "message"       => "user has been successfully found and successfully merged",
+                    ]);
+
+                } else {
+    
+                    return Response()->json([
+                        "success"           => false,
+                        "message"           => "Sorry, Account can't be merged right now.",
+                    ]);
+                }
+
+            } else {
+            
+                return Response()->json([
+                    "success"       => true,
+                    "message"       => "Sorry, we can't find any account with your member ID.",
+                ]); 
+            }
+
+         
+        } else {
+        
+                return Response()->json([
+                    "success"           => false,
+                    "message"           => "Sorry, Account is already merged with your account",    
+                   
+                ]);
+        }
+    
+    }     
 }

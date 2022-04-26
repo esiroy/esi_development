@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') .'?id=version_4_3'  }}" defer ></script>
+    <script src="{{ asset('js/app.js') .'?id=version_4_26'  }}" defer ></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />

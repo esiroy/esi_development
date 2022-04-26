@@ -38,18 +38,28 @@
                 <span class="text-secondary">Member ID:</span> 1{{ Auth::user()->id }}
             </div>
 
-           <div class="col-md-12">
-                <span class="text-secondary">Merged ID(s):</span> 
-                
-                @php 
-                    $mergedAccounts = Auth::user()->mergedAccounts 
-                @endphp
+           @if (!$mergedAccount) 
+            <div class="col-md-12">
+                    <span class="text-secondary">Merged ID(s):</span> 
+                    
+                    @php 
+                        $mergedAccounts = Auth::user()->mergedAccounts 
+                    @endphp
 
-                <span id="mergeAccountIDs">
-                    @foreach($mergedAccounts as $mergedAccountIndex => $mergeAccount){{'1'+$mergeAccount->merged_member_id}}@if(($mergedAccountIndex + 1) < count($mergedAccounts)){{','}}@endif @endforeach
-                </span>
-
-            </div>
+                    <span id="mergeAccountIDs">
+                        @foreach($mergedAccounts as $mergedAccountIndex => $mergeAccount){{'1'.$mergeAccount->merged_member_id}}@if(($mergedAccountIndex + 1) < count($mergedAccounts)){{','}}@endif @endforeach
+                    </span>
+                </div>
+            @else 
+                <div class="col-md-12">
+                    <span class="text-secondary">{{ "Main Account Member ID" }} :</span>
+                    <span>{{ '1'. $mainAccount->id ?? '' }}</span>
+                </div>
+                <div class="col-md-12">
+                    <span class="text-secondary">{{ "Main Account E-Mail" }} :</span>
+                    <span>{{ $mainAccount->email ?? ''  }}</span>
+                </div>                
+            @endif
 
             <div class="col-md-12">
                 <div class="text-secondary">Name:</div>

@@ -1319,15 +1319,7 @@
                             </div>
                         </div>
                 
-                        <div class="row pt-2">
-                            <div class="col-4">                      
-                                <span class="text-danger">*</span> 
-                                <span class="small">Enter Password: </span>               
-                            </div>                
-                            <div class="col-6">
-                                <input type="password" v-model="user.password" class="form-control form-control-sm"/>
-                            </div>
-                        </div>  
+                        
                     </div>
 
                     <template #modal-footer>
@@ -3285,11 +3277,10 @@ export default {
         },         
         async mergeAccount() 
         {
-            let url = "/api/createMergedAccount?api_token=" + this.api_token;
+            let url = "/api/createAdminMergedAccount?api_token=" + this.api_token;
             let data  = {
                 'owner_id': this.memberinfo.user_id,
-                'member_id': this.user.memberID,
-                'password' : this.user.password,
+                'member_id': this.user.memberID
             }
 
             await this.getURL(url, data).then(response => 

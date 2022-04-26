@@ -15,7 +15,7 @@
 
                      
                             <select id="course" name="course" 
-                                :disabled="this.$parent.$parent.$parent.updateType == 'update' ? '' : disabled"
+                                :disabled="this.$parent.$parent.$parent.updateType == 'update' ? '' : 'disabled'"
                                 v-model="data.course" @change="handleCourseChange($event)" 
                                 class="form-control form-control-sm"  :class="{ 'is-invalid' : submitted && $v.data.course.$error }">
 
