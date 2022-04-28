@@ -2,8 +2,12 @@
     <div class="account-merger-container float-right">  
 
       
-        <span class="btnUpdatePurpose"  v-b-modal.modalAccountMerger v-if="accountType =='main'">
-            <i class="fas fa-plus pt-2"></i>
+        <span class="btnUpdatePurpose"  v-b-modal.modalAccountMerger v-if="accountType =='unlinked'">
+            <i class="fas fa-plus pt-2" aria-hidden="true"></i>
+        </span>
+        
+        <span id="linked-account"  v-b-modal.modalAccountMerger v-if="accountType =='main'">
+            <i class="fa fa-link pt-2" aria-hidden="true"></i>
         </span>
 
         <span class="btnUpdatePurpose"  v-b-modal.modalShowMainAccount v-if="accountType =='secondary'">
@@ -34,12 +38,12 @@
         </b-modal>
 
 
-        <b-modal id="modalAccountMerger" title="Account Merger" size="md" @show="resetData">
+        <b-modal id="modalAccountMerger" title="Account Merger" size="lg" @show="resetData">
             <div class="container">
                 <div class="row">
                     <div class="col-4">                      
                         <span class="text-danger">*</span> 
-                        <span class="small">Enter Member ID : </span>               
+                        <span class="small">Enter Member ID / Email Address  : </span>               
                     </div>                
                     <div class="col-6">
                         <input type="text" v-model="user.memberID" class="form-control form-control-sm"/>
@@ -160,6 +164,7 @@ export default {
         },
 
         async getMergedAccountType() {
+        
             let url = "/api/getMergedAccountType?api_token=" + this.api_token;
             let data  = {
                 'member_id': this.memberinfo.user_id,
@@ -171,18 +176,30 @@ export default {
                 {  
                     this.accountType = response.data.type;
                     this.mainAccount = response.data.main_account;
-
                 } else {                    
                     this.accountType = response.data.type;                  
                 }
 
-            }).finally(() => {                            
-                ///alert (this.user.password + "  : " + md5(this.user.password));
+            }).finally(() => {     
+
+                /*
+                let linkedIconElement   = document.getElementById('linked-account');             
+                let linkedAccountText  = document.getElementById('linked-account-text');          
+                let mergedAccountsList  = document.getElementById('merged-accounts'); 
+
+                if (this.accountType === 'main') {
+                    linkedIconElement.classList.remove("d-none");
+                    linkedAccountText.classList.remove("d-none");                    
+                    mergedAccountsList.classList.remove("d-none");
+                } else {
+                    linkedIconElement.classList.add("d-none");
+                    linkedAccountText.classList.add("d-none");
+                    mergedAccountsList.classList.add("d-none");
+                }*/
             });  
         },
-
-        confirmDeleteMergedAccount(memberID) {
-
+        confirmDeleteMergedAccount(memberID) 
+        {
             this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this merged account.', {
                 title: 'Please Confirm',
                 size: 'md',
@@ -215,15 +232,15 @@ export default {
             {
                 if (response.data.success == true) 
                 {
-                   this.users = response.data.merged_accounts;
-
+                    this.users = response.data.merged_accounts;
+                    this.getMergedAccounts();
+                    this.getMergedAccountType();
                 } else {
-                    
                     alert (response.data.message)
                 }
             }).finally(() => {          
 
-                 this.getMergedAccounts();
+
             });  
         
         },
@@ -240,18 +257,49 @@ export default {
                 if (response.data.success == true) 
                 {
                    this.users = response.data.merged_accounts;
-                   let accountIds = this.users.map(({id})=> "1"+id).join(", ");
-                   document.getElementById('mergeAccountIDs').innerHTML = accountIds;
+
+                    if (this.users.length >= 1) {
+                        let accountIds = this.users.map(({id})=> "1"+id).join(", ");
+                        document.getElementById('mergeAccountsContainer').classList.remove("d-none");
+                        document.getElementById('mergeAccountIDs').innerHTML = accountIds;
+                    }
+
+                   this.getMergedAccountType();
 
                 } else {
-                    
+
                     alert (response.data.message)
                 }
-            }).finally(() => {     
 
-                ///alert (this.user.password + "  : " + md5(this.user.password));
+            }).finally(() => {    
+
             });            
         },         
+        async mergeSecondaryToMainAccount() {
+        
+            let url = "/api/mergeSecondaryToMain?api_token=" + this.api_token;
+            let data  = {
+                'member_id': this.user.memberID,
+                'password' : this.user.password,
+            }
+
+            await this.getURL(url, data).then(response => 
+            {
+                if (response.response.success == true) {
+                
+                }
+
+            }).then(value => {
+                if (value == true) 
+                {
+                    this.mergeSecondaryToMainAccount();
+                }
+            }).catch(err => {
+                // An error occurred
+            });
+
+
+        },
         async mergeAccount() 
         {
             let url = "/api/createMergedAccount?api_token=" + this.api_token;
@@ -262,16 +310,53 @@ export default {
 
             await this.getURL(url, data).then(response => 
             {
-                if (response.data.success == true) 
+
+                if (response.data.success == false && response.data.type == 'main') 
+                {
+                    //CONFIRM MERGE SECONDARY TO MAIN ACCCOUNT
+                    this.$bvModal.msgBoxConfirm(response.data.message, 
+                    {
+                        title: 'Please confirm merging to main account',
+                        size: 'md',
+                        buttonSize: 'sm',
+                        okVariant: 'primary',
+                        okTitle: 'YES, LINK TO MAIN ACCOUNT',
+
+                        cancelTitle: 'NO',
+                        cancelVariant: 'danger',
+                        footerClass: 'p-2',
+                        hideHeaderClose: false,
+                        centered: false
+                    })
+                    .then(value => {
+                        if (value == true) 
+                        {
+                            this.mergeSecondaryToMainAccount();
+                        }
+                    }).catch(err => {
+                        // An error occurred
+                    });
+
+                }
+                else if (response.data.success == true) 
                 {
                     alert (response.data.message);
+
+                    this.user.memberID = "";
+                    this.user.password = "";
+
                     this.getMergedAccounts();
+                    this.getMergedAccountType();
+                    
+              
+
+
                 } else {                    
                     alert (response.data.message)
                 }
 
             }).finally(() => {                            
-                ///alert (this.user.password + "  : " + md5(this.user.password));
+                
             });            
         },  
     },

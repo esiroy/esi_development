@@ -16,14 +16,25 @@ class MergeAccountAPIController extends Controller
     
         $memberID = $request->member_id;
       
+
+        //is Main Account?
+        $isMainMerged = MergedAccount::select('users.id', 'users.email', 'merged_accounts.member_id', 'merged_accounts.created_at as date')
+                        ->where('member_id', $memberID )
+                        ->leftJoin('users', 'users.id', '=', 'merged_accounts.merged_member_id')
+                        ->first();
+
+        if ($isMainMerged) {
+            $linkedMainAccount = true;            
+        } else {
+            $linkedMainAccount = false;
+        }
+
         //Test if you have merge your account
         $mergedAccount = MergedAccount::select('users.id', 'users.email', 'merged_accounts.member_id', 'merged_accounts.created_at as date')
                         ->where('merged_member_id', $memberID )
                         ->leftJoin('users', 'users.id', '=', 'merged_accounts.merged_member_id')
                         ->first();
-
-
-
+                        
         if ($mergedAccount) {
 
             $accountType = "secondary";
@@ -38,11 +49,17 @@ class MergeAccountAPIController extends Controller
             ]);
 
         } else {
+
+            if ($linkedMainAccount) {
+                $type = "main";
+            } else {
+                $type = "unlinked";
+            }
         
             return Response()->json([
                 "success"           => false,
                 "message"           => "Account is a main account",
-                "type"              => "main"
+                "type"              => $type
             ]);        
         
         }
@@ -53,7 +70,6 @@ class MergeAccountAPIController extends Controller
     public function get(Request $request) 
     {
         $memberID = $request->member_id;
-
         $mergedAccounts = MergedAccount::select('users.id', 'users.email', 'merged_accounts.created_at as date')
                 ->where('member_id', $memberID)
                 ->leftJoin('users', 'users.id', '=', 'merged_accounts.merged_member_id')
@@ -79,13 +95,20 @@ class MergeAccountAPIController extends Controller
 
 
 
-    public function store(Request $request) {
+    public function store(Request $request) 
+    {
 
         //remove first (1) since we added 1
         $tempID = $request->member_id;
 
+        //trim first number which is 1
         $memberID = substr($tempID, 1);
         $password = $request->password;
+
+        //or try to search if this is an email
+        $email = $request->member_id;
+
+        $user = User::where('id', $memberID)->orWhere('email', $email )->first();
 
         if (isset($request->owner_id)) {
             $owner_member_id = $request->owner_id;
@@ -95,20 +118,21 @@ class MergeAccountAPIController extends Controller
 
 
         //Test if others have merge your account
-        $mainAccounts = MergedAccount::where('member_id', $memberID )->first();
+        $mainAccounts = MergedAccount::where('member_id', $user->id )->first();
 
         if ($mainAccounts) 
         {
             return Response()->json([
+                "type"              => "main",
                 "success"           => false,
-                "message"           => "Sorry, Account ID ". $memberID ." has already been assigned as a main account",
+                "message"           => "Account ID 1$user->id with an email address of $user->email has already been assigned as a main account, do you want to link to this main account instead?",
             ]);        
         }
 
 
         //Test if others have merge your account
-        $otherAccounts = MergedAccount::where('member_id', '!=', Auth::user()->id)
-                ->where('merged_member_id', $memberID )
+        $otherAccounts = MergedAccount::where('member_id', '!=', $owner_member_id )
+                ->where('merged_member_id', $user->id)
                 ->first();
 
         if ($otherAccounts) 
@@ -120,22 +144,20 @@ class MergeAccountAPIController extends Controller
         }
 
         //Test if you have merge your account
-        $mergedAccount = MergedAccount::where('member_id', Auth::user()->id)
-                ->where('merged_member_id', $memberID )
+        $mergedAccount = MergedAccount::where('member_id', $owner_member_id)
+                ->where('merged_member_id', $user->id )
                 ->first();
                 
 
         if (!$mergedAccount) 
         {
-            $user = User::where('id', $memberID)->first();
-
             if ($user) {
 
                 $validCredentials = Hash::check($password, $user->password);
 
                 if ($validCredentials) 
                 {
-                    if ($memberID == $owner_member_id) 
+                    if ($user->id == $owner_member_id) 
                     {                
                         return Response()->json([
                             "success"           => false,
@@ -146,7 +168,7 @@ class MergeAccountAPIController extends Controller
 
                     $mergedCreated = MergedAccount::create([
                         'member_id' => $owner_member_id,
-                        'merged_member_id' => $memberID
+                        'merged_member_id' =>  $user->id
                     ]);
 
                     if ($mergedCreated) {
@@ -192,6 +214,7 @@ class MergeAccountAPIController extends Controller
     }
 
 
+    
     public function destroy(Request $request) {
 
 
@@ -228,6 +251,10 @@ class MergeAccountAPIController extends Controller
 
     }   
 
+
+    public function mergeSecondaryToMain(Request $request) {
+    
+    }
 
     public function adminMergedAccount(Request $request) {
 
