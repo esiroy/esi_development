@@ -220,5 +220,8 @@ Route::middleware('auth:api')->post('/createMergedAccount', 'API\MergeAccountAPI
 Route::middleware('auth:api')->post('/updateMergedAccount', 'API\MergeAccountAPIController@update')->name('APIUpdateMergeAccount');
 Route::middleware('auth:api')->post('/deleteMergedAccount', 'API\MergeAccountAPIController@destroy')->name('APIDeleteMergeAccount');
 
+//merge secondary to main
+Route::middleware('auth:api')->post('/mergeSecondaryToMain', 'API\MergeAccountAPIController@mergeSecondaryToMain')->name('APIMergeSecondaryToMain');
+
 //Admin Merging
 Route::middleware('auth:api')->post('/createAdminMergedAccount', 'API\MergeAccountAPIController@adminMergedAccount')->name('APIAdminAddMergeAccount');

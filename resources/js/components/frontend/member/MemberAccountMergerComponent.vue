@@ -285,18 +285,20 @@ export default {
 
             await this.getURL(url, data).then(response => 
             {
-                if (response.response.success == true) {
-                
+                if (response.data.success === true) {
+                    alert (response.data.message);
+
+                    location.reload()
+
+
+                } else {
+
+                    alert (response.data.message);
                 }
 
-            }).then(value => {
-                if (value == true) 
-                {
-                    this.mergeSecondaryToMainAccount();
-                }
-            }).catch(err => {
-                // An error occurred
-            });
+            }).finally(() => {    
+
+            }); 
 
 
         },
@@ -320,7 +322,7 @@ export default {
                         size: 'md',
                         buttonSize: 'sm',
                         okVariant: 'primary',
-                        okTitle: 'YES, LINK TO MAIN ACCOUNT',
+                        okTitle: 'YES, LINK ME AS A MEBER ACCOUNT',
 
                         cancelTitle: 'NO',
                         cancelVariant: 'danger',

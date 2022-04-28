@@ -1,22 +1,14 @@
 {
-<<<<<<< HEAD
-    "/js/admin.js": "/js/admin.js?id=562f7c49157d5825faab",
-    "/js/app.js": "/js/app.js?id=d3eeb6a97969994b9c91",
-    "/css/app.css": "/css/app.css?id=711c68139349dda74830",
-    "/css/admin.css": "/css/admin.css?id=f9dd8ae646cb32556d7b",
-    "/css/steps/steps.css": "/css/steps/steps.css?id=ad4cf4455be97223e3f3",
-=======
-    "/js/admin.js": "/js/admin.js?id=6583e117ca3d0446da00",
-    "/js/admin.js.map": "/js/admin.js.map?id=9393f0de1c7c0c48689a",
-    "/js/app.js": "/js/app.js?id=98a0b5abfca037d84cd8",
-    "/css/app.css": "/css/app.css?id=717cddf8b1f246b8d803",
+    "/js/admin.js": "/js/admin.js?id=e508f0d85c05ce47c2f8",
+    "/js/admin.js.map": "/js/admin.js.map?id=e1b52902b0fa1449a5ed",
+    "/js/app.js": "/js/app.js?id=6c2759d6bce512141db1",
+    "/css/app.css": "/css/app.css?id=b770f96c2800d1b9706d",
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
     "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
-    "/js/app.js.map": "/js/app.js.map?id=2df214d1918138db0ec4",
-    "/css/app.css.map": "/css/app.css.map?id=60076f9217d3eaa11387",
+    "/js/app.js.map": "/js/app.js.map?id=ce20a313796030561df6",
+    "/css/app.css.map": "/css/app.css.map?id=092bb11efc997051f37e",
     "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
     "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",
->>>>>>> my_tutor_reservation_system
     "/js/jquery/jquery-ui.js": "/js/jquery/jquery-ui.js?id=06c8b12668dc0e45a4c4",
     "/js/jquery/jquery-ui.min.js": "/js/jquery/jquery-ui.min.js?id=777b80b520786cf6f0ce",
     "/images/arrow.png": "/images/arrow.png?id=c21f8cc8e414ad52881d",

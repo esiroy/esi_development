@@ -125,7 +125,7 @@ class MergeAccountAPIController extends Controller
             return Response()->json([
                 "type"              => "main",
                 "success"           => false,
-                "message"           => "Account ID 1$user->id with an email address of $user->email has already been assigned as a main account, do you want to link to this main account instead?",
+                "message"           => "Account ID 1$user->id with an email address of $user->email has already been assigned as a main account, do you want to link as member account instead?",
             ]);        
         }
 
@@ -254,6 +254,50 @@ class MergeAccountAPIController extends Controller
 
     public function mergeSecondaryToMain(Request $request) {
     
+
+        //remove first (1) since we added 1
+        $tempID = $request->member_id;
+
+        //trim first number which is 1
+        $memberID = substr($tempID, 1);
+        $password = $request->password;
+
+        //or try to search if this is an email
+        $email = $request->member_id;
+
+        $user = User::where('id', $memberID)->orWhere('email', $email )->first();
+
+        if (isset($request->owner_id)) {
+            $owner_member_id = $request->owner_id;
+        } else {
+            $owner_member_id = Auth::user()->id;
+        }
+
+        $mainAccount = MergedAccount::where('member_id', $user->id )->first();
+
+        if ($mainAccount) 
+        {
+            $merged = MergedAccount::create([
+                'member_id'         => $user->id,
+                'merged_member_id'  => $owner_member_id,
+            ]);
+
+            if ($merged) {
+
+                return Response()->json([
+                    "success"           => true,
+                    "message"           => "Successfully linked to main account",
+                ]);  
+
+            } else {
+            
+                return Response()->json([
+                    "success"           => true,
+                    "message"           => "We can't link your account due to an error",
+                ]);              
+            }
+
+        }
     }
 
     public function adminMergedAccount(Request $request) {
