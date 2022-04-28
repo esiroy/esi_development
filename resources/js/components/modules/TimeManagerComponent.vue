@@ -12,10 +12,8 @@
                     <div class="row">
                         <div class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select Course</div>
-
-                     
                             <select id="course" name="course" 
-                                :disabled="this.$parent.$parent.$parent.updateType == 'update' ? '' : 'disabled'"
+                                :disabled="this.$parent.$parent.$parent.updateType == 'update'"
                                 v-model="data.course" @change="handleCourseChange($event)" 
                                 class="form-control form-control-sm"  :class="{ 'is-invalid' : submitted && $v.data.course.$error }">
 
@@ -39,13 +37,13 @@
                         </div>
 
 
-                        <div class="col-4">
+                        <div id="startDateContainer" class="col-4">
                             <div class="small"><span class="text-danger">*</span> Select Start Date</div>
                              
-                            <datepicker id="startDate" 
-                              
+                            <datepicker id="startDate"
                                 name="startDate"                                          
                                 v-model="data.startDate"
+                                @input="checkStartDate()"
                                 :value="data.startDate"
                                 :format="dateFormatter"
                                 :placeholder="'Select Start Date'"
@@ -55,6 +53,10 @@
 
                             <div v-if="submitted && !$v.data.startDate.required" class="text-danger small pt-1">
                                 start date required
+                            </div>
+
+                            <div v-if="error.startDateError" class="text-danger small pt-1">
+                                start date must not be greater than end date
                             </div>
 
                         </div>
@@ -228,6 +230,10 @@ export default {
             en: en,        
             submitted: "",
 
+            error: {
+                startDateError: ""
+            },
+
             data: {
                 material_checkbox: "",
                 course: "",
@@ -286,12 +292,101 @@ export default {
                 remainingDays: ""                
             }
         },
+        checkStartDate() 
+        {
+            let sdate = new Date(this.data.startDate);
+            let edate = new Date(this.data.endDate);            
+            let e = document.getElementById('startDate');
+
+            if (sdate > edate) {
+                this.error.startDateError = true;
+                e.classList.add('is-invalid');
+                return false;
+            } else {
+                this.error.startDateError = null;  
+                e.classList.remove('is-invalid'); 
+                return true;
+            }
+
+        },
+        saveTimeManager() {
+
+            this.submitted = true;
+            this.$v.data.$touch();
+
+            if (!this.$v.data.$invalid) 
+            {
+
+                if (!this.checkStartDate()) {
+                    return false;                    
+                } 
+
+                //SHOW LOADER HERE
+                $(document).find('.modal-footer').find('div.buttons-container').hide();
+                $(document).find('.modal-footer').find('div.loading-container').show();
+
+                axios.post("/api/createTimeManager?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    memberID        : this.memberinfo.user_id,
+                    data            : this.data
+                }).then(response => {
+
+                    if (response.data.success == true) 
+                    {                    
+                     
+                        let content= response.data.content;
+
+                        this.$nextTick(() => {
+
+                            //this.data.requiredHours = content.required_hours;
+
+                            this.$parent.$parent.$parent.updateType = "update";
+                            
+
+                            this.$parent.$parent.$parent.content = {
+                                course: content.course,
+                                gradeLevel: content.gradeLevel,
+                                startDate: content.start_date,
+                                endDate: content.end_date,
+                                currentScore: content.current_score,
+                                targetScore: content.target_score,
+                                requiredHours: content.required_hours,
+                                material_checkbox: content.has_materials,
+                                materials: content.materials,                
+                                requiredDays: content.required_days,
+                                remainingDays: content.remaining_days,
+                                requiredHours: content.required_hours,
+                                percentTimeAchievement: 0
+                            } 
+
+
+                            this.$parent.$parent.$parent.$bvModal.hide('modalTimeManager')            
+                   
+                        });
+                    } else {
+                    
+                        $(document).find('.modal-footer').find('div.buttons-container').show();
+                        $(document).find('.modal-footer').find('div.loading-container').hide();     
+
+                    }
+                }).catch(function(error) {
+                    console.log(error);
+                    $(document).find('.modal-footer').find('div.buttons-container').show();
+                    $(document).find('.modal-footer').find('div.loading-container').hide();                         
+                });
+            }
+        },
         updateTimeManager() {
             this.submitted = true;
             this.$v.data.$touch();
 
             if (!this.$v.data.$invalid) 
-            {                
+            {             
+                if (!this.checkStartDate()) {
+                    return false;
+                }
+                   
 
                 //SHOW LOADER HERE
                 $(document).find('.modal-footer').find('div.buttons-container').hide();
@@ -349,69 +444,6 @@ export default {
             }
         },        
 
-        saveTimeManager() {
-
-            this.submitted = true;
-            this.$v.data.$touch();
-
-            if (!this.$v.data.$invalid) 
-            {                
-                //SHOW LOADER HERE
-                $(document).find('.modal-footer').find('div.buttons-container').hide();
-                $(document).find('.modal-footer').find('div.loading-container').show();
-
-                axios.post("/api/createTimeManager?api_token=" + this.api_token, 
-                {
-                    method          : "POST",
-                    memberID        : this.memberinfo.user_id,
-                    data            : this.data
-                }).then(response => {
-
-                    if (response.data.success == true) 
-                    {                    
-                     
-                        let content= response.data.content;
-
-                        this.$nextTick(() => {
-
-                            //this.data.requiredHours = content.required_hours;
-
-                            this.$parent.$parent.$parent.updateType = "update";
-                            
-
-                            this.$parent.$parent.$parent.content = {
-                                course: content.course,
-                                gradeLevel: content.gradeLevel,
-                                startDate: content.start_date,
-                                endDate: content.end_date,
-                                currentScore: content.current_score,
-                                targetScore: content.target_score,
-                                requiredHours: content.required_hours,
-                                material_checkbox: content.has_materials,
-                                materials: content.materials,                
-                                requiredDays: content.required_days,
-                                remainingDays: content.remaining_days,
-                                requiredHours: content.required_hours,
-                                percentTimeAchievement: 0
-                            } 
-
-
-                            this.$parent.$parent.$parent.$bvModal.hide('modalTimeManager')            
-                   
-                        });
-                    } else {
-                    
-                        $(document).find('.modal-footer').find('div.buttons-container').show();
-                        $(document).find('.modal-footer').find('div.loading-container').hide();     
-
-                    }
-                }).catch(function(error) {
-                    console.log(error);
-                    $(document).find('.modal-footer').find('div.buttons-container').show();
-                    $(document).find('.modal-footer').find('div.loading-container').hide();                         
-                });
-            }
-        },        
 
 		handleCourseChange(event) 
         {

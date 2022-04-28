@@ -75,7 +75,12 @@ class TimeManagerAPIController extends Controller
             $formatted_percentage = number_format($percentageLeft, 2, '.', '');
 
             //average hours
-            $averageHoursPerDay = $timeManager->required_hours / $numberOfDays;
+            if ($numberOfDays >= 1) {
+                 $averageHoursPerDay = $timeManager->required_hours / $numberOfDays;
+            } else {
+                $averageHoursPerDay = 0;
+            }
+           
 
             //Expected hours
             if ($ellapsedDays >= 1) {

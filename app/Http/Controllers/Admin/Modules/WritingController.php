@@ -81,7 +81,7 @@ class WritingController extends Controller
             //get form fields for name of header
             $formFields  = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
             //Get Entry of data
-            $entries     = WritingEntries::where('form_id', $form_id)->orderBy('id', 'DESC')->paginate(Auth::user()->items_per_page ?? 15);
+            $entries     = WritingEntries::where('form_id', $form_id)->orderBy('id', 'DESC')->paginate(10);
             $tutors      = $tutor->getTutors();            
             return view('admin.modules.writing.entries', compact('form_id','entries','formFields', 'tutors'));
 
@@ -121,6 +121,41 @@ class WritingController extends Controller
            // abort(401, "User is not authorized");
         //}
     }
+
+
+    /* 
+        Show an entry
+        @var $form_id : form id defaults to 1
+        @entry_id 
+        @tutor model
+    */
+    public function entry_test($form_id, $entry_id, Member $member, Tutor $tutor, WritingEntryGrade $writingEntryGrade)  
+    {
+
+        echo $entry_id;
+
+
+        //get the posted grade
+        $postedEntries =  $writingEntryGrade->where('writing_entry_id', $entry_id)->orderby('created_at', 'DESC')->get();        
+
+
+        foreach ($postedEntries as $entry)  {
+            print_r ($entry);
+
+            echo "========";
+        }
+
+        $entry     = WritingEntries::where('form_id', $form_id)->where('id', $entry_id)->first();
+
+        $tutors      = $tutor->getTutors();
+
+        $memberInfo = $member->where('user_id', $entry->user_id)->first();
+        
+        return view('admin.modules.writing.entry', compact('form_id', 'entry_id', 'entry', 'tutors', 'memberInfo', 'postedEntries'));
+       
+    }
+
+
 
 
     public function postGrade($id, Request $request, Member $member, WritingEntries $writingEntries, WritingEntryGrade $writingEntryGrade, UploadFile $uploadFile, ScheduleItem $scheduleItem) 

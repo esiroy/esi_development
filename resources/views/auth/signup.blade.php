@@ -199,7 +199,7 @@
                             <label for="nickname" class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left">
                                 <span class="font-weight-bold">
                                     ニックネーム<br>
-                                    (半角英数10文字以内)                                    
+                                    (アルファベット)                                    
                                 </span>
                             </label>
 
