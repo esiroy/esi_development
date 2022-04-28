@@ -68,23 +68,14 @@
                         $mergedAccounts = Auth::user()->mergedAccounts 
                     @endphp
 
-                    @if (count($mergedAccounts) >= 1) 
-                        <div class="col-md-12">
-                            <span class="text-secondary">Merged ID(s):</span> 
-                            <span id="mergeAccountIDs">
-                                @foreach($mergedAccounts as $mergedAccountIndex => $mergeAccount){{'1'.$mergeAccount->merged_member_id}}@if(($mergedAccountIndex + 1) < count($mergedAccounts)){{','}}@endif @endforeach
-                            </span>
-                        </div>
-                    @else 
-
-                        <div id="mergeAccountsContainer" class="d-none col-md-12" >
-                            <span class="text-secondary">Merged ID(s):</span> 
-                            <span id="mergeAccountIDs">
-
-                            </span>
-                        </div>                    
-
-                    @endif
+                   
+                    <div id="mergeAccountsContainer" class="col-md-12 d-none">
+                        <span class="text-secondary">Merged ID(s):</span> 
+                        <span id="mergeAccountIDs">
+                            @foreach($mergedAccounts as $mergedAccountIndex => $mergeAccount){{'1'.$mergeAccount->merged_member_id}}@if(($mergedAccountIndex + 1) < count($mergedAccounts)){{','}}@endif @endforeach
+                        </span>
+                    </div>
+               
 
                 @else 
                     <div class="col-md-12">

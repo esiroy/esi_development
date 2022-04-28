@@ -234,7 +234,7 @@ export default {
                 {
                     this.users = response.data.merged_accounts;
                     this.getMergedAccounts();
-                    this.getMergedAccountType();
+                   
                 } else {
                     alert (response.data.message)
                 }
@@ -260,8 +260,14 @@ export default {
 
                     if (this.users.length >= 1) {
                         let accountIds = this.users.map(({id})=> "1"+id).join(", ");
+
                         document.getElementById('mergeAccountsContainer').classList.remove("d-none");
                         document.getElementById('mergeAccountIDs').innerHTML = accountIds;
+
+                    } else {
+                    
+                        document.getElementById('mergeAccountsContainer').classList.add("d-none");
+                        document.getElementById('mergeAccountIDs').innerHTML = "";
                     }
 
                    this.getMergedAccountType();
@@ -287,12 +293,8 @@ export default {
             {
                 if (response.data.success === true) {
                     alert (response.data.message);
-
                     location.reload()
-
-
                 } else {
-
                     alert (response.data.message);
                 }
 
@@ -343,15 +345,9 @@ export default {
                 else if (response.data.success == true) 
                 {
                     alert (response.data.message);
-
                     this.user.memberID = "";
-                    this.user.password = "";
 
                     this.getMergedAccounts();
-                    this.getMergedAccountType();
-                    
-              
-
 
                 } else {                    
                     alert (response.data.message)
