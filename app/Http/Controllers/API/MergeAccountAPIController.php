@@ -125,7 +125,7 @@ class MergeAccountAPIController extends Controller
             return Response()->json([
                 "type"              => "main",
                 "success"           => false,
-                "message"           => "Account ID 1$user->id with an email address of $user->email has already been assigned as a main account, do you want to link as merged account instead?",
+                "message"           => "Account ID 1$user->id with an email address of $user->email has already been assigned as a main account, do you want to link as a merged account instead?",
             ]);        
         }
 
