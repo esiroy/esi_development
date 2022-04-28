@@ -324,7 +324,7 @@ export default {
                         size: 'md',
                         buttonSize: 'sm',
                         okVariant: 'primary',
-                        okTitle: 'YES, LINK ME AS A MEMBER ACCOUNT',
+                        okTitle: 'YES, LINK ME AS A MERGED ACCOUNT',
 
                         cancelTitle: 'NO',
                         cancelVariant: 'danger',
