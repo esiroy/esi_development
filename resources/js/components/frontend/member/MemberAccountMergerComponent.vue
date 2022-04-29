@@ -43,7 +43,7 @@
                 <div class="row">
                     <div class="col-4">                      
                         <span class="text-danger">*</span> 
-                        <span class="small">Enter Member ID / Email Address  : </span>               
+                        <span class="small">Enter Member ID or Email Address  : </span>               
                     </div>                
                     <div class="col-6">
                         <input type="text" v-model="user.memberID" class="form-control form-control-sm"/>
