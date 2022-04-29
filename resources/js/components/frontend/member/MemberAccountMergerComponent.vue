@@ -182,20 +182,24 @@ export default {
 
             }).finally(() => {     
 
-                /*
-                let linkedIconElement   = document.getElementById('linked-account');             
                 let linkedAccountText  = document.getElementById('linked-account-text');          
                 let mergedAccountsList  = document.getElementById('merged-accounts'); 
 
                 if (this.accountType === 'main') {
-                    linkedIconElement.classList.remove("d-none");
+
                     linkedAccountText.classList.remove("d-none");                    
                     mergedAccountsList.classList.remove("d-none");
+
+                } else if (this.accountType === 'secondary') {
+
+                    linkedAccountText.classList.remove("d-none");                    
+                    mergedAccountsList.classList.remove("d-none");
+                    linkedAccountText.innerHTML = "(merged account)";
+
                 } else {
-                    linkedIconElement.classList.add("d-none");
                     linkedAccountText.classList.add("d-none");
                     mergedAccountsList.classList.add("d-none");
-                }*/
+                }
             });  
         },
         confirmDeleteMergedAccount(memberID) 
