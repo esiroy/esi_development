@@ -110,6 +110,13 @@ class MergeAccountAPIController extends Controller
 
         $user = User::where('id', $memberID)->orWhere('email', $email )->first();
 
+        if (!$user) {
+            return Response()->json([
+                "success"           => false,
+                "message"           => "Sorry, User account not found please check again later",
+            ]);
+        }
+
         if (isset($request->owner_id)) {
             $owner_member_id = $request->owner_id;
         } else {
