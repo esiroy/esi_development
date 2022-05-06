@@ -10,9 +10,9 @@
                 <li class="breadcrumb-item"><a href="{{ url('/admin/minitest/categories') }}">Minitest</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.minitest.questions.index', ['category_id'=> $category_id]) }}">Questions</a></li>
 
-                <!--
-                <li class="breadcrumb-item active"> <a href="{{ route('admin.minitest.questions.edit', ['category_id'=> $category_id, 'question'=> $item ]) }}">{{ $item->question }} </a></li>
-                -->
+               
+                <li class="breadcrumb-item active"> <a href="{{ route('admin.minitest.questions.edit', ['category_id'=> $category_id, 'question'=> $item ]) }}">{{ ucwords($item->question) }} </a></li>
+                
 
 
                 <li class="breadcrumb-item active" aria-current="page">Choices</li>
@@ -145,7 +145,7 @@
                             <div class="col-2"></div>
                             <div class="col-3 text-left">
                                 <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                                <a href="{{ route('admin.minitest.questions.index',  ['question_id'=> $question_id, 'category_id'=> $category_id]) }}" class="btn btn-danger btn-sm">Cancel</a>
+                                <a href="{{ route('admin.minitest.questions.index',  ['category_id'=> $category_id]) }}" class="btn btn-danger btn-sm">Cancel</a>
                             </div>
                         </div>
 

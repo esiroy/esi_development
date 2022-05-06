@@ -95,7 +95,11 @@ class MiniTestChoicesController extends Controller
     public function edit($category_id, $question_id, $choice_id)
     {   
         $item = MiniTestChoice::where('id', $choice_id)->where('valid', true)->first();
-        return view('admin.modules.minitest.choices.edit', compact('item', 'category_id', 'question_id'));
+
+        //Info Current page
+        $question = MiniTestQuestion::where('id', $question_id)->where('valid', true)->first();
+
+        return view('admin.modules.minitest.choices.edit', compact('item', 'question', 'category_id', 'question_id'));
     }
 
     /**

@@ -10,9 +10,14 @@
                 <li class="breadcrumb-item"><a href="{{ url('/admin/minitest/categories') }}">Minitest</a></li>
                 <li class="breadcrumb-item"><a href="{{ route('admin.minitest.questions.index', ['category_id'=> $category_id]) }}">Questions</a></li>
 
+                <li class="breadcrumb-item active"> <a href="{{ route('admin.minitest.questions.edit', ['category_id'=> $category_id, 'question'=> $question ]) }}">{{ ucwords($question->question) }} </a></li>
+
+
                 <li class="breadcrumb-item">
                     <a href="{{ route('admin.minitest.choices.index',  ['question_id'=> $question_id, 'category_id'=> $category_id]) }}" >Choices</a>               
                 </li>
+
+
  
                 <li class="breadcrumb-item active" aria-current="page"> {{  $item->id .' - ' . $item->choice }} </li>
             </ol>
@@ -52,7 +57,7 @@
                                         <input id="choice" type="choice" required class="form-control form-control-sm @error('choice') is-invalid @enderror" name="choice" 
                                          value="{{ old('choice', isset($item->choice) ? $item->choice: '') }}"
                                         >
-                                        
+
                                         @error('choice')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
