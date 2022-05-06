@@ -80,7 +80,7 @@
                                     ({{$materialCount . " Files"}})
                                 </td>
                                 <td>
-                                    {{ \App\Models\CourseCategory::find($category->parent_course_category)['name']}}               
+                                    {{ \App\Models\CourseCategory::find($category->parent_course_category)['name'] ?? '' }}               
                                 </td>
                                 <td>
                                     <a href="{{ route('admin.course.edit', ['course' => $category->id]) }}">Edit</a> |

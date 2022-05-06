@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+
 Route::get('test', 'dummyController@index');
 Route::get('component_test', 'dummyController@component_test');
 
@@ -274,6 +275,12 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
     Route::group(['middleware' => 'admin.auth'], function()
     {
+
+        Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController',  ['names' => 'minitest.categories' ]);
+		Route::resource('/minitest/categories/{category_id}/questions', 'Modules\MiniTestQuestionController',  ['names' => 'minitest.questions' ]);
+
+		Route::resource('/minitest/categories/{category_id}/questions/{question_id}/choices', 'Modules\MiniTestChoicesController',  ['names' => 'minitest.choices' ]);
+
        
         Route::resource('/attachfile', 'Modules\AttachFileController');
 
@@ -378,6 +385,10 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/lessons', 'Modules\ReportController');
         Route::resource('/salary', 'Modules\SalaryReportController');
 
+
+        //Route::resource('/minitest', 'Modules\MiniTestController');
+      //  Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
+      
 
 
 

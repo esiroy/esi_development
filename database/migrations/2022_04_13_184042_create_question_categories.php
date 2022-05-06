@@ -17,7 +17,7 @@ class CreateQuestionCategories extends Migration
             $table->id();
             $table->string("slug", 160)->fullText('slug');
             $table->string("name", 80);
-            $table->text('instruction')->nullable();
+            $table->text('instructions')->nullable();
             $table->integer('time_limit')->nullable();
             $table->tinyInteger('valid');
         });

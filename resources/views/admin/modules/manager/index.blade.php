@@ -227,7 +227,7 @@
                         <div class="col-2"></div>
                         <div class="col-3 text-left">
                             <button type="submit" class="btn btn-primary btn-sm">Save</button>
-                            <button type="clear" class="btn btn-primary btn-sm">Cancel</button>
+                            <button type="reset" class="btn btn-primary btn-sm">Cancel</button>
                         </div>
                     </div>
 
