@@ -14,12 +14,14 @@ class MiniTestQuestion extends Model
     protected $guarded = [];  
 
     public function choices()
-    {
-        return $this->hasMany(MiniTestChoice::class, 'question_id', 'id');
+    {       
+        $choices = $this->hasMany(MiniTestChoice::class, 'question_id', 'id');
+        return $choices->where('valid', true);
     }
 
-    public function answer() {
-         return $this->hasOne(MiniAnswerKey::class, 'question_id', 'id');        
+    public function answer() 
+    {
+         return $this->hasOne(MiniTestAnswerKey::class, 'question_id', 'id');        
     }
 
     public function answerText($choice_id) {

@@ -39,8 +39,9 @@
             
                <!-- add question -->
 
-                <form method="POST" action="{{ route('admin.minitest.choices.store',  ['question_id'=> $question_id, 'category_id'=> $category_id] ) }}">
+                <form method="POST" action="{{ route('admin.minitest.choices.update',  ['question_id'=> $question_id, 'category_id'=> $category_id, 'choice' => $item] ) }}">
                     @csrf
+                    @method('PATCH')
 
                     <div class="card-header esi-card-header">Add New Choice</div>
 
@@ -72,7 +73,7 @@
                                         <label for="choice" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Mark Correct Answer <div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6 pt-2">
-                                        <input id="correct" type="checkbox" class="" name="correct" value="{{ old('correct') }}">                                    
+                                        <input id="correct" type="checkbox" class="" name="correct" value="true">                                    
                                     </div>
                                 </div>
 

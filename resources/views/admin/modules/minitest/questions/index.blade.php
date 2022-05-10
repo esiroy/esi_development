@@ -67,7 +67,7 @@
                                             @if (isset($item->answer->choice_id))                                                 
                                                 {{  $item->answerText($item->answer->choice_id) }}
                                             @else 
-                                                <div class="text-center text-danger p-2">Warning: No Answer Added</div>
+                                                <div class="text-center text-danger p-2">Warning: No Choice selected or Added</div>
                                            @endif
                                         </td>
                                                     

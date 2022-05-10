@@ -18,6 +18,10 @@ Route::get('test', 'dummyController@index');
 Route::get('component_test', 'dummyController@component_test');
 
 
+Route::resource('minitest', 'MemberMiniTestController');
+
+
+
 /*************** 
  * AGENT IMPORTER
  ****************/

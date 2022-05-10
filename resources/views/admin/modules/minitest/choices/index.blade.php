@@ -79,7 +79,17 @@
                                             <!-- edit choice -->
                                             <a href="{{ route('admin.minitest.choices.edit', ['question_id'=> $question_id, 'category_id'=> $category_id, 'choice'=> $item] ) }}" class="btn btn-sm btn-info mr-1">Edit </a>                                           
                                             
-                                        
+                                            <!-- delete question -->
+                                            @if (Auth::user()->user_type == "ADMINISTRATOR")
+                                            <form action="{{ route('admin.minitest.choices.destroy',  ['question_id'=> $question_id, 'category_id'=> $category_id, 'choice'=> $item] ) }}" method="POST" onsubmit="return confirm('{{ trans('global.areYouSure') }}');"
+                                                style="display: inline-block;">
+                                                <input type="hidden" name="_method" value="DELETE">
+                                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                                <input type="submit" class="btn btn-sm btn-danger" value="{{ trans('global.delete') }}">
+                                            </form>                                            
+                                            @endif                                           
+
+
                                         </td>
                                     </tr>
                                     @endforeach
@@ -133,7 +143,7 @@
                                         <label for="choice" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Mark Correct Answer <div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6 pt-2">
-                                        <input id="correct" type="checkbox" class="" name="correct" value="{{ old('correct') }}">                                    
+                                        <input id="correct" type="checkbox" class="" name="correct" value="true">                                    
                                     </div>
                                 </div>
 

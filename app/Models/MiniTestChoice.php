@@ -15,7 +15,7 @@ class MiniTestChoice extends Model
 
     public function isCorrect() 
     {
-        return $this->hasOne(MiniAnswerKey::class, 'choice_id', 'id');               
+        return $this->hasOne(MiniTestAnswerKey::class, 'choice_id', 'id');               
     }
 
 }
