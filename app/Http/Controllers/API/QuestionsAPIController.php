@@ -26,9 +26,13 @@ class QuestionsAPIController extends Controller
 
         if (count($questions) >= 1) {
 
-            foreach ($questions as $question) {
-                $question_items[$question->id] =  $question;
-                $question_items[$question->id]['choices'] = MiniTestChoice::where('question_id', $question->id)->get();
+            foreach ($questions as $key => $question) {
+                //$question_items[$question->id] =  $question;
+                //$question_items[$question->id]['choices'] = MiniTestChoice::where('question_id', $question->id)->where('valid', true)->get();
+
+                $question_items[$key] =  $question;
+                $question_items[$key]['choices'] = MiniTestChoice::where('question_id', $question->id)->where('valid', true)->get();
+
             }
 
             return Response()->json([
@@ -37,6 +41,7 @@ class QuestionsAPIController extends Controller
                 "questions"    => $question_items,
                   
             ]);
+
         } else {        
             return Response()->json([
                 "success"           => false,

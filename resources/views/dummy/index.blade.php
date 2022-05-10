@@ -1,17 +1,18 @@
-@extends('layouts.admin')
+@extends('layouts.esi-app')
+
 
 @section('content')
 
-    @php 
-
-        $category_id = 1;
-
+    @php
+        $multiple = 'false';
+       
     @endphp
 
 
     <questions-component 
+        :multiple="{{ $multiple }}"
         :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
-        :category_id="{{ $category_id }}"
+        :category="{{ $category }}"
         api_token="{{ Auth::user()->api_token }}" 
         csrf_token="{{ csrf_token() }}"
     >
