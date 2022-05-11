@@ -5,8 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\Questions;
-use App\Models\Choices;
+use App\Models\MiniTestQuestion;
+use App\Models\MiniTestChoice;
 
 class QuestionsAPIController extends Controller
 {
@@ -21,14 +21,18 @@ class QuestionsAPIController extends Controller
         $category_id = $request->category_id;
 
 
-        $questions = Questions::where('category_id', $category_id)
+        $questions = MiniTestQuestion::where('category_id', $category_id)
                             ->where('valid', true)->get();
 
         if (count($questions) >= 1) {
 
-            foreach ($questions as $question) {
-                $question_items[$question->id] =  $question;
-                $question_items[$question->id]['choices'] = Choices::where('question_id', $question->id)->get();
+            foreach ($questions as $key => $question) {
+                //$question_items[$question->id] =  $question;
+                //$question_items[$question->id]['choices'] = MiniTestChoice::where('question_id', $question->id)->where('valid', true)->get();
+
+                $question_items[$key] =  $question;
+                $question_items[$key]['choices'] = MiniTestChoice::where('question_id', $question->id)->where('valid', true)->get();
+
             }
 
             return Response()->json([
@@ -36,7 +40,6 @@ class QuestionsAPIController extends Controller
                 "message"       => "list has been successfully found",
                 "questions"    => $question_items,                  
             ]);
-            
         } else {        
             return Response()->json([
                 "success"           => false,
