@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MiniTestAnswerKey;
 use App\Models\MiniTestChoice;
 use App\Models\MiniTestQuestion;
+use App\Models\MiniTestCategory;
 use Auth;
 use Illuminate\Http\Request;
 
@@ -21,6 +22,9 @@ class MiniTestChoicesController extends Controller
 
         $added_choice_id = $request->added_choice_id ?? null;
         $updated_choice_id = $request->updated_choice_id ?? null;
+
+
+        $category = MiniTestCategory::find($category_id);
      
         $items = MiniTestChoice::where('question_id', $question_id)
             ->where('valid', true)
@@ -30,7 +34,7 @@ class MiniTestChoicesController extends Controller
         //Info Current page
         $item = MiniTestQuestion::where('id', $question_id)->where('valid', true)->first();
 
-        return view('admin.modules.minitest.choices.index', compact('items', 'item', 'category_id', 'question_id', 'added_choice_id', 'updated_choice_id'));
+        return view('admin.modules.minitest.choices.index', compact('items', 'item', 'category', 'category_id', 'question_id', 'added_choice_id', 'updated_choice_id'));
     }
 
     /**
@@ -109,10 +113,14 @@ class MiniTestChoicesController extends Controller
     {
         $item = MiniTestChoice::where('id', $choice_id)->where('valid', true)->first();
 
+
+        $category = MiniTestCategory::find($category_id);
+
+
         //Info Current page
         $question = MiniTestQuestion::where('id', $question_id)->where('valid', true)->first();
 
-        return view('admin.modules.minitest.choices.edit', compact('item', 'question', 'category_id', 'question_id'));
+        return view('admin.modules.minitest.choices.edit', compact('item', 'question', 'category', 'category_id', 'question_id'));
     }
 
     /**

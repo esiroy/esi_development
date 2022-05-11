@@ -3,16 +3,22 @@
 @section('content')
 <div class="container bg-light px-0">
     <div class="esi-box">
-
+  
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ url('/admin/minitest/categories') }}">Minitest</a></li>
-                <li class="breadcrumb-item"><a href="{{ route('admin.minitest.questions.index', ['category_id'=> $category_id]) }}">Questions</a></li>
 
-               
-                <li class="breadcrumb-item active"> <a href="{{ route('admin.minitest.questions.edit', ['category_id'=> $category_id, 'question'=> $item ]) }}">{{ ucwords($item->question) }} </a></li>
-                
+
+                 <li class="breadcrumb-item" aria-current="page">
+                    <a href="{{ route('admin.minitest.questions.index', ['category_id' => $category_id ]) }}"> {{ $category->name ?? '' }} </a>
+                </li>
+                                
+                <li class="breadcrumb-item"><a href="{{ route('admin.minitest.questions.index', ['category_id'=> $category_id]) }}">Questions</a></li>
+                                
+                                
+                <li class="breadcrumb-item active">{{ ucwords($item->question) }} </li>
+
 
 
                 <li class="breadcrumb-item active" aria-current="page">Choices</li>

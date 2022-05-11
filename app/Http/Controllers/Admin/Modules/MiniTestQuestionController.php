@@ -19,17 +19,17 @@ class MiniTestQuestionController extends Controller
      */
     public function index($id, Request $request)
     {
-
-
         $added_question_id = $request->added_question_id ?? null;
         $updated_question_id = $request->updated_question_id ?? null;
+
+        $category = MiniTestCategory::find($id);
         
         $items = MiniTestQuestion::where('category_id', $id)
                     ->where('valid', true)
                     ->orderBy('id', 'DESC')
                     ->paginate(Auth::user()->items_per_page);
 
-        return view('admin.modules.minitest.questions.index', compact('items', 'id', 'added_question_id', 'updated_question_id'));
+        return view('admin.modules.minitest.questions.index', compact('category', 'items', 'id', 'added_question_id', 'updated_question_id'));
     }
 
     /**
@@ -85,12 +85,16 @@ class MiniTestQuestionController extends Controller
      */
     public function edit($category_id, $question_id)
     {
+
+       $category = MiniTestCategory::find($category_id);
+
+
         $item = MiniTestQuestion::where('category_id', $category_id)
                     ->where('id', $question_id)
                     ->where('valid', true)
                     ->first();
 
-        return view('admin.modules.minitest.questions.edit', compact('item', 'category_id', 'question_id'));
+        return view('admin.modules.minitest.questions.edit', compact('item', 'category', 'category_id', 'question_id'));
     }
 
     /**

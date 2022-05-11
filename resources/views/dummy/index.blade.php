@@ -4,7 +4,7 @@
 @section('content')
 
     @php
-        $multiple = 'false';
+        $multiple = 'true';
        
     @endphp
 

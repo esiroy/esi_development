@@ -1,14 +1,24 @@
+<!--
+
+@page : Question Index page
+
+-->
 @extends('layouts.admin')
 
 @section('content')
 <div class="container bg-light px-0">
-    <div class="esi-box">
+    <div class="esi-box">   
 
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ url('/admin/minitest/categories') }}">Minitest</a></li>
+                
+                <li class="breadcrumb-item active" aria-current="page">{{ $category->name ?? '' }} </li>
+
+                 
                 <li class="breadcrumb-item active" aria-current="page">Questions</li>
+               
             </ol>
         </nav>
 

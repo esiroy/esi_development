@@ -19,6 +19,7 @@ class CreateQuestionCategories extends Migration
             $table->string("name", 80);
             $table->text('instructions')->nullable();
             $table->integer('time_limit')->nullable();
+            $table->boolean('show_multiple');
             $table->tinyInteger('valid');
         });
     }

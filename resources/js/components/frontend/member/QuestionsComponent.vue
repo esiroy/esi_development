@@ -42,7 +42,7 @@
                 </div>
 
                 <div class="mt-4">
-                    <button v-on:click="checkMultiSubmitAnswers()"> Submit Answers </button>   
+                    <button class="btn btn-success" v-on:click="checkMultiSubmitAnswers()"> Submit Answers </button>   
                 </div>            
                 
             </div>
@@ -153,7 +153,7 @@
 
                 myIntervalTimer: null,
 
-                timerSpeed: 1,
+                timerSpeed: 1000,
 
                 timer: 0,
                 timerValue: 0,

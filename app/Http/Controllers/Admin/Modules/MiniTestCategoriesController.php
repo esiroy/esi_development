@@ -47,11 +47,15 @@ class MiniTestCategoriesController extends Controller
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
+
+        $showMultiple = $request->show_multiple;        
         
         $created = MiniTestCategory::create([
             'name'  => $name,
+            'slug'  => str_replace(' ', '_', $name),
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
+            'show_multiple' => (isset($showMultiple)) ? true : false,
             'valid' => true,
         ]);
 
@@ -97,19 +101,20 @@ class MiniTestCategoriesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update($id, Request $request)
-    {
-        
+    {        
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
-
+        $showMultiple = $request->show_multiple;        
 
         $category = MiniTestCategory::where('id', $id)->first();
 
         $updated = $category->update([
             'name'  => $name,
+            'slug'  => str_replace(' ', '_', $name),
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
+            'show_multiple' => (isset($showMultiple)) ? true : false,
             'valid' => true,
         ]);        
 

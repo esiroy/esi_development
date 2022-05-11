@@ -3,14 +3,10 @@
 
 @section('content')
 
-    @php
-        $multiple = 'false';
-       
-    @endphp
 
 
     <questions-component 
-        :multiple="{{ $multiple }}"
+        :multiple="{{ ($category->show_multiple == true) ? 'true': 'false' }}"
         :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
         :category="{{ $category }}"
         api_token="{{ Auth::user()->api_token }}" 

@@ -9,7 +9,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Minitest</li>
+                <li class="breadcrumb-item active" aria-current="page">Minitest</li>                
             </ol>
         </nav>
 
@@ -38,22 +38,36 @@
                                 <table id="dataTable" class="table esi-table table-bordered table-striped table-hover datatable dataTable no-footer">
                                 <thead>
                                     <tr>  
-                                        <th class="small text-center">ID</th>
-                                        <th class="small text-center">Name</th>  
-                                        <th class="small text-center">Instructions</th>  
+                                        <!--<th class="small text-center">ID</th>-->
+                                        <th class="w-25 small text-center">
+                                            Name                                        
+                                        </th>  
+                                        <th class="w-25 small text-center">Instructions</th>  
                                         <th class="small text-center">Time Limit</th> 
+                                        <th class="small text-center">Show Mulitple</th> 
                                         <th class="small text-center">Action</th>                                    
                                     </tr>
                                 </thead>
                                 <tbody>
                                 @if (isset($items))
                                     @foreach ($items as  $item)
-                                    <tr data-entry-id="{{  $item->id }}">
-                                        
-                                        <td class="small text-center">{{ $item->id}}</td>
-                                        <td class="small text-center">{{ $item->name ?? "" }}</td>    
+                                    <tr data-entry-id="{{  $item->id }}">                                        
+                                        <!--<td class="small text-center">{{ $item->id}}</td>-->
+                                        <td class="small text-center">
+                                            {{ $item->name ?? "" }}
+                                            <div class="">
+                                                <span class="small text-secondary">Slug: {{ $item->slug ?? '' }}</span>
+                                            </div>
+                                        </td>
                                         <td class="small text-center">{{ $item->instructions ?? "" }}</td>    
-                                        <td class="small text-center">{{ $item->time_limit ." Minutes" ?? "" }}</td>                    
+                                        <td class="small text-center">{{ $item->time_limit ." Minutes" ?? "" }}</td>
+                                         <td class="small text-center">
+                                            @if (isset($item->show_multiple) && $item->show_multiple == true) 
+                                                <span class="text-success"><i class="fa fa-check" aria-hidden="true"></i></span>
+                                            @else 
+                                                <span class="text-danger"><i class="fa fa-times" aria-hidden="true"></i></span>                                             
+                                            @endif
+                                        </td>
                                         <td class="small text-center">
 
                                             <a href="{{ route('admin.minitest.questions.index', ['category_id'=> $item->id]) }}" class="btn btn-sm btn-info mr-1">Questions</a> 
@@ -155,7 +169,21 @@
 
                                 </div>
                             </div>
-                        </div>                        
+                        </div>          
+
+                        <div class="row pt-2">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-4 small pr-0">
+                                        <label for="time_limit" class="px-0 col-md-12 col-form-label">                                        
+                                        Show Multiple Questions? <div class="float-right">:</div></label>
+                                    </div>
+                                    <div class="col-2 pt-2 mr-0">                                       
+                                        <input type="checkbox" name="show_multiple" value="true">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                       
                         
 
                         <div class="row py-4">
