@@ -82,7 +82,11 @@
                                         <label for="choice" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Mark Correct Answer <div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6 pt-2">
-                                        <input id="correct" type="checkbox" class="" name="correct" value="true">                                    
+                                        @if (isset($item->isCorrect->choice_id) && $item->id == $item->isCorrect->choice_id )
+                                            <input id="correct" type="checkbox" checked name="correct" value="true">                                    
+                                        @else 
+                                            <input id="correct" type="checkbox" name="correct" value="true">                                    
+                                        @endif
                                     </div>
                                 </div>
 

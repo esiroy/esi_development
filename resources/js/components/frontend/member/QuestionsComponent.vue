@@ -2,8 +2,6 @@
 
     <div class="container bg-light">
 
-
-
         <div class="intro p-4" v-show="this.started == false">
             <p>Test Category : {{ this.category.name }}</p>
             <p>Instructions  : {{ this.category.instructions }}</p>    
@@ -89,11 +87,8 @@
                 </div>
 
                  <div v-for="(question, questionIndex) in questions" :key="questionIndex" class="mb-3">
-
-                      <div class="font-weight-bold">{{ (questionIndex+ 1) + "." }} {{ question.question }}</div>
-
-                    <div v-if="results[question.id]">                        
-                        {{ results[question.id].question }}
+                    <div class="font-weight-bold">{{ (questionIndex+ 1) + "." }} {{ question.question }}</div>
+                    <div v-if="results[question.id]">                       
                         <div>Your Answer: {{ results[question.id].your_answer }} </div>
                         <div>Correct Answer: {{ results[question.id].correct_answer }} </div>
                         <div v-if="results[question.id].is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
@@ -203,42 +198,54 @@
             checkMinute() {
 
                 this.seconds++;
-
-                if (this.secondsHand == 0) 
-                {                
-                    this.secondsHand = 60;                
-                }
-
-                if (this.secondsHand == 60) {
-                    this.timerValue --;
-                }
-
-                this.secondsHand--;
+                this.secondsHand--;           
 
                 let minutesTaken = parseInt(this.seconds / 60);
                 let remainingMinutes = this.timerMax - minutesTaken;
 
-                if ( this.secondsHand < 10) 
-                {
-                    let timer = parseFloat(remainingMinutes + ".0" + this.secondsHand);
-                    this.flashTimer(timer);
-                }  else {
-                    let timer = parseFloat(remainingMinutes + "." + this.secondsHand);
-                    this.flashTimer(timer);
+                if (minutesTaken == 0 && this.secondsHand == 60) {
+                    remainingMinutes --;
+                }
+                else if (this.secondsHand == 0) 
+                {      
+                    this.secondsHand = 60;                            
                 }
 
 
-                this.$forceUpdate();                
+                //Flash Time logic
+                if (this.secondsHand == 60) 
+                {                
+                    //reached minimum minute with zero seconds
+                    let minuteMin = remainingMinutes + 1;
+                    let timer = parseFloat(minuteMin + ".00");
+                    this.flashTimer(timer);
+                    this.$forceUpdate();  
+                }
+                else if (this.secondsHand < 10) 
+                {
+                    let timer = parseFloat(remainingMinutes + ".0" + this.secondsHand);
+                    this.flashTimer(timer);
+                    this.$forceUpdate();    
+
+                }  else {
+                    let timer = parseFloat(remainingMinutes + "." + this.secondsHand);
+                    this.flashTimer(timer);
+                    this.$forceUpdate();    
+                }
+
+
+                            
             },
-            flashTimer(timer) {
+            flashTimer(timer) 
+            {
 
                 this.timerValue = timer;
 
+                console.log(this.timerValue);
+
                 if ( parseFloat(this.timerValue) <= 0) {
-
                     clearInterval(this.myIntervalTimer);                
-                     this.submitAnswers();                   
-
+                    this.submitAnswers();
                 }
             
             },

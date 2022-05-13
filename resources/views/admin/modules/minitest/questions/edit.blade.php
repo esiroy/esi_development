@@ -57,7 +57,8 @@
                                     </div>
                                     <div class="col-6">
                                         <input id="question" type="question" class="form-control form-control-sm @error('name') is-invalid @enderror" name="question" 
-                                        value="{{ old('question', isset($item->question) ? $item->question: '') }}" required autocomplete="question"
+                                        value="{{ old('question', isset($item->question) ? $item->question: '') }}" 
+                                        required autocomplete="question"
                                         >
                                         @error('question')
                                         <span class="invalid-feedback" role="alert">

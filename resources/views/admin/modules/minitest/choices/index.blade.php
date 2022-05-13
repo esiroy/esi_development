@@ -8,19 +8,11 @@
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Home</a></li>
                 <li class="breadcrumb-item"><a href="{{ url('/admin/minitest/categories') }}">Minitest</a></li>
-
-
                  <li class="breadcrumb-item" aria-current="page">
                     <a href="{{ route('admin.minitest.questions.index', ['category_id' => $category_id ]) }}"> {{ $category->name ?? '' }} </a>
-                </li>
-                                
+                </li>                                
                 <li class="breadcrumb-item"><a href="{{ route('admin.minitest.questions.index', ['category_id'=> $category_id]) }}">Questions</a></li>
-                                
-                                
                 <li class="breadcrumb-item active">{{ ucwords($item->question) }} </li>
-
-
-
                 <li class="breadcrumb-item active" aria-current="page">Choices</li>
                
             </ol>
@@ -52,7 +44,7 @@
                                 <thead>
                                     <tr>  
                                         <th class="small text-center">ID</th>                                   
-                                        <th class="small text-center">Choice</th> 
+                                        <th class="w-25 small text-center">Choice</th> 
                                         <th class="small text-center">Correct Choice</th> 
                                         <th class="small text-center">Action</th>                                    
                                     </tr>
