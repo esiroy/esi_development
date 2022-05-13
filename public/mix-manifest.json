@@ -1,7 +1,6 @@
 {
-    "/js/admin.js": "/js/admin.js?id=711b4e4ece967352dd92",
-    "/js/app.js": "/js/app.js?id=b593c5f1b656e02eb4c4",
-    "/css/app.css": "/css/app.css?id=03253d5fd2a9bb27ccdb",
+    "/js/admin.js": "/js/admin.js?id=62bbeb4bdc066cb28c04",
+    "/js/app.js": "/js/app.js?id=87627b273cb51bb39f60",
     "/css/admin.css": "/css/admin.css?id=f9dd8ae646cb32556d7b",
     "/css/steps/steps.css": "/css/steps/steps.css?id=ad4cf4455be97223e3f3",
     "/js/jquery/jquery-ui.js": "/js/jquery/jquery-ui.js?id=06c8b12668dc0e45a4c4",
@@ -72,5 +71,6 @@
     "/css/jquery/jquery-ui.min.css": "/css/jquery/jquery-ui.min.css?id=8dcebf12fbabea677390",
     "/css/jquery/images/ui-icons_444444_256x240.png": "/css/jquery/images/ui-icons_444444_256x240.png?id=e2a5dae7004f24d9f4a0",
     "/css/croppie.css": "/css/croppie.css?id=537c93ed28fd3291621c",
-    "/css/dropzone/dropzone.min.css": "/css/dropzone/dropzone.min.css?id=a7b0ef1d7c2016826a3e"
+    "/css/dropzone/dropzone.min.css": "/css/dropzone/dropzone.min.css?id=a7b0ef1d7c2016826a3e",
+    "/css/app.css": "/css/app.css?id=e3bd688618a08ca41e77"
 }

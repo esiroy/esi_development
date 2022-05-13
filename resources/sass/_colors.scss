@@ -54,6 +54,11 @@
     background-color: #8c1a00;
 }
 
+.btn-pink {
+    background-color: #FFC0CB;
+}
+
+
 /* button gradients */
 .btn-yellow {
     border: 1px solid #fcbf1b;
@@ -85,6 +90,20 @@
     padding-left: 22px !important;
     padding-right: 22px !important;   
 }
+
+
+
+.btn-pink-gradient {  
+    border: 1px solid #ffacba !important;
+    background-image: linear-gradient(#FFC0CB, #d9abb1);
+    border-radius: 22px !important;
+    padding-left: 22px !important;
+    padding-right: 22px !important;     
+}
+
+
+
+/* Background */
 
 .bg-brown {
    background-color: #8B4513

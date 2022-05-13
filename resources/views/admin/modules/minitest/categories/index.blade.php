@@ -4,6 +4,15 @@
 <div class="container bg-light px-0">
 
 
+    <div class="bg-lightblue2">
+        <div class="container px-0">
+            <nav class="submenu nav nav-pills flex-column flex-sm-row">
+                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-left-0 border-primary text-white" href="{{ url('admin/minitest/category/type') }}">Question Category Types</a>               
+                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-primary  active" href="{{  url('admin/minitest/categories') }}">Question Categories</a>
+            </nav>
+        </div>
+    </div>
+
 
     <div class="esi-box">
         <nav aria-label="breadcrumb">
@@ -39,6 +48,7 @@
                                 <thead>
                                     <tr>  
                                         <!--<th class="small text-center">ID</th>-->
+                                        <th class="small text-center">Type</th>
                                         <th class="w-25 small text-center">
                                             Name                                        
                                         </th>  
@@ -53,6 +63,9 @@
                                     @foreach ($items as  $item)
                                     <tr data-entry-id="{{  $item->id }}">                                        
                                         <!--<td class="small text-center">{{ $item->id}}</td>-->
+
+                                        <td class="small text-center">{{ $item->getType->name }}</td>
+                                        
                                         <td class="small text-center">
                                             {{ $item->name ?? "" }}
                                             <div class="">
@@ -108,6 +121,39 @@
                     <div class="card-header esi-card-header">Add New Category</div>
 
                     <div class="card-body">
+
+
+                        <div class="row pt-2">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-4 small pr-0">
+                                        <label for="parent_id" class="px-0 col-md-12 col-form-label">    
+                                        <span class="text-danger">*</span>                                     
+                                        Category Type
+                                         <div class="float-right">:</div></label>
+                                    </div>
+                                    <div class="col-6">
+                                       
+                                        <select name="parent_id" required class="form-control form-control-sm">
+                                            <option value="">-- Select --</option>
+                                           
+                                            @foreach($types as $type)
+                                                @php 
+                                                    $typeOption = new \App\Models\MiniTestCategoryType();
+                                                @endphp  
+
+                                                <option value="{{$type->id}}" >
+                                                    {!! $typeOption->getParentNames($type->id) !!}
+                                                </option>
+                                            @endforeach
+
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="row pt-2">
                             <div class="col-6">
@@ -184,6 +230,8 @@
                                 </div>
                             </div>
                         </div>                       
+                        
+
                         
 
                         <div class="row py-4">

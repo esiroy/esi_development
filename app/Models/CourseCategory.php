@@ -10,8 +10,6 @@ class CourseCategory extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
-    protected $name;
-
     public function getParents()
     {
         return CourseCategory::where('course_category.valid', 1)->where('parent_course_category', null)->orderBy('sequence_number', 'asc')->get();

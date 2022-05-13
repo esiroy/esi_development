@@ -3,8 +3,6 @@
 
 @section('content')
 
-
-
     <questions-component 
         :multiple="{{ ($category->show_multiple == true) ? 'true': 'false' }}"
         :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 

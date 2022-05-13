@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-
+use App\Models\MiniTestCategoryType;
 use App\Models\MiniTestCategory;
 
 class MemberMiniTestController extends Controller
@@ -15,26 +15,17 @@ class MemberMiniTestController extends Controller
     }
 
     
-    public function index() 
+    public function index(MiniTestCategoryType $miniTestCategoryType) 
     {
 
-        $category = MiniTestCategory::where('slug', "default")->where('valid', true)->first();
-
-
-        if ($category) {
-        
-            return view("minitest/index", ['title'=> $category->name, 'category'=> $category ]);   
-
-        } else {
-        
-            return abort('404');
-        
-        } 
+        $parents = $miniTestCategoryType->getCategoryTypeParentLinks();
+        return view("modules.minitest.index", ['parents'=> $parents ]); 
     }
 
 
-    public function show($slug) 
+    public function show($slug, $categoryType = null) 
     {
+
 
         //@todo:fix slug on add and edit in admin
 

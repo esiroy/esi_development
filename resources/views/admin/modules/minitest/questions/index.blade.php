@@ -45,10 +45,10 @@
                                 <thead>
                                     <tr>  
                                         <th class="small text-center">ID</th>
-                                        <th class="w-50 small text-center">Question</th> 
+                                        <th class="w-25 small text-center">Question</th> 
                                         <th class="small text-center">Choices</th> 
                                         <th class="small text-center">Correct Choice</th> 
-                                        <th class="small text-center">Action</th>                                    
+                                        <th class="w-25 small text-center">Action</th>                                    
                                     </tr>
                                 </thead>
                                 <tbody>

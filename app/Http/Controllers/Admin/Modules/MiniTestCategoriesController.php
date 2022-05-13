@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\MiniTestCategory;
-use App\Models\MiniTest;
+use App\Models\MiniTestCategoryType;
+
 
 use Auth;
+use Illuminate\Validation\Rule;
+use Validator;
 
 class MiniTestCategoriesController extends Controller
 {
@@ -19,11 +22,17 @@ class MiniTestCategoriesController extends Controller
      */
     public function index()
     {
+
+        $types = MiniTestCategoryType::where('valid', true)
+                    ->orderBy('id', 'DESC')
+                    ->paginate(Auth::user()->items_per_page);    
+
+
         $items = MiniTestCategory::where('valid', true)
                     ->orderBy('id', 'DESC')
                     ->paginate(Auth::user()->items_per_page);
 
-        return view('admin.modules.minitest.categories.index', compact('items'));
+        return view('admin.modules.minitest.categories.index', compact('items', 'types'));
     }
 
     /**
@@ -47,10 +56,26 @@ class MiniTestCategoriesController extends Controller
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
-
         $showMultiple = $request->show_multiple;        
+
+        //disallow duplicate name
+        $validator = Validator::make($request->all(), 
+        [
+            'name' => [
+                'required',
+                'max:80',
+                Rule::unique('question_categories')->where('valid', true),
+            ],           
+        ]);
+
+        if ($validator->fails()) 
+        {
+            return redirect()->route('admin.minitest.categories.index')->withErrors($validator)->withInput()->with('error_message', 'Error, category name is already taken!');
+        } 
+
         
         $created = MiniTestCategory::create([
+            'question_category_type_id' => $request->parent_id,
             'name'  => $name,
             'slug'  => str_replace(' ', '_', $name),
             'instructions'  => $instructions,
@@ -88,9 +113,14 @@ class MiniTestCategoriesController extends Controller
      */
     public function edit($id)
     {
+
+        $types = MiniTestCategoryType::where('valid', true)
+                    ->orderBy('id', 'DESC')
+                    ->paginate(Auth::user()->items_per_page);    
+
         $item = MiniTestCategory::where('valid', true)->where('id', $id)->first();
 
-        return view('admin.modules.minitest.categories.edit', compact('item'));
+        return view('admin.modules.minitest.categories.edit', compact('item', 'types'));
     }
 
     /**
@@ -107,9 +137,29 @@ class MiniTestCategoriesController extends Controller
         $timeLimit = $request->time_limit;
         $showMultiple = $request->show_multiple;        
 
+
+        //disallow duplicate name
+        $validator = Validator::make($request->all(), 
+        [
+            'name' => [
+                'required',
+                'max:80',
+                Rule::unique('question_categories')->ignore($id)->where('valid', true),
+            ],           
+        ]);
+
+        if ($validator->fails()) 
+        {
+            //return redirect()->route('admin.minitest.categories.index')->withErrors($validator)->withInput()->with('error_message', 'Error, category name is already taken!');
+            return redirect()->back()->withErrors($validator)->withInput()->with('error_message', 'Error, category name is already taken!');
+        } 
+
+
+
         $category = MiniTestCategory::where('id', $id)->first();
 
         $updated = $category->update([
+            'question_category_type_id' => $request->parent_id,
             'name'  => $name,
             'slug'  => str_replace(' ', '_', $name),
             'instructions'  => $instructions,
@@ -138,17 +188,17 @@ class MiniTestCategoriesController extends Controller
     {
         $item = MiniTestCategory::where('valid', true)->where('id', $id)->first();
 
-        $updated = $item->update([
+        $deleted = $item->update([
             'valid' => false
         ]);
 
-        if ($updated) 
+        if ($deleted) 
         {        
-            return redirect()->route('admin.minitest.categories.index')->with('message', 'Category updated successfully!');
+            return redirect()->route('admin.minitest.categories.index')->with('message', 'Category deleted successfully!');
 
         } else {
         
-            return redirect()->route('admin.minitest.categories.index')->with('error_message', 'Category was not updated due to an error, please try again!');
+            return redirect()->route('admin.minitest.categories.index')->with('error_message', 'Category was not deleted due to an error, please try again!');
         
         }
     }

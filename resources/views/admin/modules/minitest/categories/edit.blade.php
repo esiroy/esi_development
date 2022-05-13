@@ -4,7 +4,16 @@
 <div class="container bg-light px-0">
 
 
+    <div class="bg-lightblue2">
+        <div class="container px-0">
+            <nav class="submenu nav nav-pills flex-column flex-sm-row">
+                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-left-0 border-primary text-white" href="{{ url('admin/minitest/category/type') }}">Question Category Type</a>               
+                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-primary  active" href="{{  url('admin/minitest/categories') }}">Question Categories</a>
+            </nav>
+        </div>
+    </div>
 
+    
     <div class="esi-box">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
@@ -37,6 +46,41 @@
                     <form method="POST" action="{{ route('admin.minitest.categories.update', $item->id) }}">
                         @csrf
                         @method('PATCH')
+
+
+                        <div class="row pt-2">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-4 small pr-0">
+                                        <label for="parent_id" class="px-0 col-md-12 col-form-label">    
+                                        <span class="text-danger">*</span>                                     
+                                        Category Type
+                                         <div class="float-right">:</div></label>
+                                    </div>
+                                    <div class="col-6">
+                                       
+                                        <select name="parent_id" required class="form-control form-control-sm">
+                                            <option value="">-- Select --</option>
+                                           
+                                            @foreach($types as $type)
+                                                @php 
+                                                    $typeOption = new \App\Models\MiniTestCategoryType();
+                                                @endphp  
+
+                                                <option value="{{ $type->id }}" @if ($item->question_category_type_id == $type->id) {{ ' selected ' }} @endif>
+
+                                                    {!! $typeOption->getParentNames($type->id) !!}
+                                                </option>
+
+                                            @endforeach
+
+                                        </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
 
                         <div class="row pt-2">
                             <div class="col-6">

@@ -20,6 +20,7 @@ Route::get('component_test', 'dummyController@component_test');
 
 Route::resource('minitest', 'MemberMiniTestController');
 
+Route::resource('minitest/category', 'MemberMiniTestCategoryController');
 
 
 /*************** 
@@ -280,9 +281,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::group(['middleware' => 'admin.auth'], function()
     {
 
+
+        Route::resource('/minitest/category/type', 'Modules\MiniTestCategoryTypeController',  ['names' => 'minitest.category.type' ]);
+
         Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController',  ['names' => 'minitest.categories' ]);
 		Route::resource('/minitest/categories/{category_id}/questions', 'Modules\MiniTestQuestionController',  ['names' => 'minitest.questions' ]);
-
 		Route::resource('/minitest/categories/{category_id}/questions/{question_id}/choices', 'Modules\MiniTestChoicesController',  ['names' => 'minitest.choices' ]);
 
        
