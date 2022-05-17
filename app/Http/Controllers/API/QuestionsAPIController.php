@@ -22,11 +22,14 @@ class QuestionsAPIController extends Controller
 
 
         $questions = MiniTestQuestion::where('category_id', $category_id)
-                            ->where('valid', true)->get();
+                            //->where('valid', true)->get();
+                            ->where('valid', true)->inRandomOrder()->get();
 
-        if (count($questions) >= 1) {
+        if (count($questions) >= 1) 
+        {
 
-            foreach ($questions as $key => $question) {
+            foreach ($questions as $key => $question) 
+            {
                 //$question_items[$question->id] =  $question;
                 //$question_items[$question->id]['choices'] = MiniTestChoice::where('question_id', $question->id)->where('valid', true)->get();
 
@@ -43,6 +46,7 @@ class QuestionsAPIController extends Controller
             ]);
 
         } else {        
+        
             return Response()->json([
                 "success"           => false,
                 "message"           => "We have no questions for this category, please check again later",     

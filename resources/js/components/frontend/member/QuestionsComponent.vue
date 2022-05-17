@@ -1,41 +1,78 @@
 <template>
 
     <div class="container bg-light">
+       
 
-        <div class="intro p-4" v-show="this.started == false">
-            <p>Test Category : {{ this.category.name }}</p>
-            <p>Instructions  : {{ this.category.instructions }}</p>    
-            <p>Time Limit : {{ this.category.time_limit + " Minutes " }}  </p>
-            <button v-on:click="start()" class="btn btn-success"> Start Test </button>   
+        <div v-if="this.categoryLoading == true" class="text-center">  
+
+            <div class="pt-4 text-secondary">
+                {{ "Loading, Please wait " }}
+            </div>
+
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>
 
-       <div class="mini-test pt-3" v-show="this.started == true">
 
-            <div id="progress" v-if="this.started == true && submitted == false">
+        <div class="intro pt-4">
+            <h4 class="text-primary">{{ this.category.name }}</h4>
+            <div class="text-success">Instructions  : {{ this.category.instructions }}</div>
+            <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
+
+            <div v-show="this.started == false">
+                <button v-on:click="start()" class="btn btn-success" >
+                    <i class="fa fa-list-alt" aria-hidden="true"></i>
+                    Start Test 
+                </button>
+            </div>
+        </div>
+
+
+        <div class="mini-test" v-show="this.started == true && this.loading == true">
+
+            <div class="pt-4 text-secondary">
+                {{ "Please wait while we load your test" }}
+            </div>
+
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
+
+        </div>
+
+
+       <div class="mini-test" v-show="this.started == true && this.loading == false">
+
+            <div id="progress" class="mb-4" v-if="this.started == true && submitted == false">
                 <b-progress :max="timerMax">
                 <b-progress-bar :value="timerValue">
                     <span> <strong>{{ timerValue.toFixed(2) }} / {{ timerMax }} Minute(s)</strong></span>
                 </b-progress-bar>
                 </b-progress>
-
             </div>
          
             <div v-if="multiple == true && submitted == false">
 
-                <div id="questions" class="row" v-for="(question, questionIndex) in this.questions" :key="questionIndex">                            
-                    <div class="col-12">
+                <div id="questions" 
+                    class="row" 
+                    v-for="(question, questionIndex) in this.questions"
+                    :key="questionIndex"> 
 
-                        <span class="font-weight-bold mb-3">{{ (questionIndex+1)  +"." }} {{ question.question }}</span>
+                    <div class="col-12">
+                        <span class="font-weight-bold mb-3">{{ (questionIndex + 1)  +"." }} {{ question.question }}</span>
 
                         <b-form-group>
                             <b-form-radio 
-                                :name="''+ question.id +''"
+                                :name="'question_'+ question.id +''"
                                 v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
                                 v-on:change="updateSelected(question, choice)"
-                                v-bind:value="{ id: choice.id, choice: choice.choice }"
+                                v-bind:value="choice.id"
 
                                 >{{ choice.choice }}</b-form-radio>                     
                         </b-form-group>
+
+
                     </div>
                 </div>
 
@@ -45,7 +82,6 @@
                 
             </div>
 
-
             <div class="row" v-if="multiple == false && submitted == false">
 
                 <div id="question_container" class="col-7">
@@ -54,7 +90,10 @@
                             <span class="font-weight-bold mb-3">{{ (count)  +"." }} {{ questionViewer.question }}</span>                          
                         </div>
 
-                        <div :class="'choice_container'" v-for="(choice, choiceIndex) in questionViewer.choices" :key="choiceIndex">
+                        <div :class="'choice_container'" 
+                        v-for="(choice, choiceIndex) in questionViewer.choices" 
+                        :key="choiceIndex">
+
                             <input type="radio"
                                 v-model="selected_choice" 
                                 :name="choice.id" 
@@ -80,43 +119,46 @@
             </div>
 
 
-            <div class="answer p-4" v-if="submitted == true">  
+            <div class="answer" v-if="submitted == true && loading == false">  
 
-                <div class="text-primary mb-2"> 
-                    <strong> Your Test Result </strong>
+                <h4 class="text-primary mb-1"> <strong> Your Test Result </strong></h4>
+
+                <h5 class="mb-4 text-dark">                       
+                    Your have {{ totalCorrectAnswers }} correct answers out of {{ totalQuestions}}                  
+                </h5>                
+
+
+                <h4 class="text-primary mb-1"> <strong> Test Summary </strong></h4>
+
+                <div class="summary">
+
+
+                    <div v-for="(result, resultIndex) in results" :key="'result_'+resultIndex" class="mb-3">
+                        <div class="font-weight-bold">
+                            {{ resultIndex +"." }}  {{ result.question }} 
+                        </div>
+                        <div>Correct Answer: {{ result.correct_answer }} </div>
+                        <div v-if="result.your_answer === null">
+                            <i class="fa fa-question text-secondary" aria-hidden="true"></i>  {{ "No Answer" }}
+                        </div>
+                        <div v-else>
+                            <div class="text-primary">Your Answer: {{ result.your_answer }} </div>                                       
+                            <div v-if="result.is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
+                            <div v-else-if="result.is_correct == false" class="text-danger font-weight-bold"> <i class="fa fa-times" aria-hidden="true"></i> Incorrect </div>
+                        </div>
+                    </div>
                 </div>
 
-                 <div v-for="(question, questionIndex) in questions" :key="questionIndex" class="mb-3">
-                    <div class="font-weight-bold">{{ (questionIndex+ 1) + "." }} {{ question.question }}</div>
-                    <div v-if="results[question.id]">                       
-                        <div>Your Answer: {{ results[question.id].your_answer }} </div>
-                        <div>Correct Answer: {{ results[question.id].correct_answer }} </div>
-                        <div v-if="results[question.id].is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
-                        <div v-else-if="results[question.id].is_correct == false" class="text-danger font-weight-bold"> <i class="fa fa-times" aria-hidden="true"></i> Incorrect </div>
-                    </div>
-                    <div v-else>
-                        No answer
-                    </div>
-
-                 </div>
 
 
-                <!--
-                <div v-for="(result, resultIndex) in results" :key="resultIndex" class="mb-3">
-                    <div class="font-weight-bold">
-                        {{ resultIndex +"." }} 
-                        Question {{ result.question }} 
-                    </div>
-                    <div>Your Answer: {{ result.your_answer }} </div>
-                    <div>Correct Answer: {{ result.correct_answer }} </div>
-                    
-                    <div v-if="result.is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
-                    <div v-else-if="result.is_correct == false" class="text-danger font-weight-bold"> <i class="fa fa-times" aria-hidden="true"></i> Incorrect </div>
-                </div>
-                -->
+                <h4 class="text-primary mb-1"> <strong> Your Test Result </strong></h4>
+
+                <h5 class="mb-4 text-dark">                       
+                    Your have {{ totalCorrectAnswers }} correct answers out of {{ totalQuestions}}                  
+                </h5>                
+              
 
             </div>
-
         </div>
 
     </div>
@@ -142,6 +184,12 @@
         },        
         data() {
             return {
+
+                miniTestID: null,
+
+
+                categoryLoading: true,
+                loading: true,
 
                 started: false,
                 submitted: false,
@@ -176,26 +224,61 @@
 
                 orderedAnswers: [],
 
+                choiceAnswers: [],
+
                 results: [],            
             }
         },
-         methods: {
+         methods: 
+         {
 
             start() {
                 this.started = true;
+                this.loading = false;
 
                 this.startTimer();
+                this.recordStartTime();
             },
-            getChoices(questionID) 
-            {
-                this.choices = this.choices[questionID]
+
+        
+            async getList() 
+            {    
+
+                this.categoryLoading = true;        
+
+                let url = "/api/getQuestions?api_token=" + this.api_token;
+                let data = { 
+                    'category_id': this.category.id
+                };
+
+
+                await this.getURL(url, data).then(response => {
+
+                    if (response.data.success == true) 
+                    {
+                        this.questions = response.data.questions;
+                        this.choices = response.data.choices;
+                        this.questionsLength = Object.keys(this.questions).length    
+                        this.questionViewer = this.questions[this.questionIndex];
+
+                    } else {
+                        alert (response.data.message)
+                    }
+
+                }).finally((url) => {      
+                                
+                    this.categoryLoading = false;        
+
+                });
             },
+
             startTimer() {
                 this.seconds = 60;
                 this.secondsHand = 60;
-                this.myIntervalTimer = setInterval(this.checkMinute, this.timerSpeed)
+                this.myIntervalTimer = setInterval(this.checkMinute, this.timerSpeed);
             },
-            checkMinute() {
+            checkMinute() 
+            {
 
                 this.seconds++;
                 this.secondsHand--;           
@@ -231,23 +314,15 @@
                     let timer = parseFloat(remainingMinutes + "." + this.secondsHand);
                     this.flashTimer(timer);
                     this.$forceUpdate();    
-                }
-
-
-                            
+                }     
             },
             flashTimer(timer) 
             {
-
                 this.timerValue = timer;
-
-                console.log(this.timerValue);
-
                 if ( parseFloat(this.timerValue) <= 0) {
                     clearInterval(this.myIntervalTimer);                
                     this.submitAnswers();
                 }
-            
             },
             updateSelected(questionViewer, choice) 
             {
@@ -350,75 +425,150 @@
                 return Helpers.getURL(url, data);
             },
             checkSubmitAnswers() {
-                if (this.selected_choice == null) {
-                    alert ("no choice selected");
-                    return null;
-                } else {
+                //if (this.selected_choice == null) {
+                   // alert ("no choice selected");
+                    //return null;
+                //} else {
                     this.submitAnswers();
-                }          
+                //}          
             },
-            checkMultiSubmitAnswers() {
-
-                if (this.questionsLength == this.answers.length) {
-
-                    this.submitAnswers();
-                  
-                } else {
-                    alert ("please answer all");
-                }
-
-            },
-            async submitAnswers() 
+            getAnswers() 
             {
-                let url = "/api/postAnswers?api_token=" + this.api_token;
-                let data  = {
-                    'category_id': this.category.id,
-                    //'answers' : this.answers,
-                    'answers' : this.orderedAnswers,
-                    'member_id': this.memberinfo.id,
-                }
+                this.choiceAnswers = [];
+
+                this.questions.forEach((question, index) => 
+                {
+                    let selected_element = document.querySelector('input[name=question_'+question.id +']:checked');  
+                    
+                    if (selected_element) 
+                    {
+
+                        let choices     = question.choices;
+                        let choiceText  = "";
+
+                        choices.forEach((choice, choicesIndex) => 
+                        {
+
+                            if (choice.id == selected_element.value) {
+                                choiceText = choice.choice;
+                            }                            
+                        });
+
+                        this.choiceAnswers.push({
+                            question_id             : question.id,
+                            question_text           : question.question,
+                            choices                 : question.choices,
+                            selected_choice_id      : selected_element.value,
+                            selected_choice_text    : choiceText,
+                        });
+
+                    } else {
+
+                        this.choiceAnswers.push({
+                            question_id         : question.id,
+                            question_text      : question.question,
+                            choices             : question.choices,
+                            selected_choice_id  : null,
+                            selected_choice_text: null,
+                        });
+
+                     
+                    }
+
+                });
+
+
+            },
+            checkMultiSubmitAnswers() 
+            {
+
+                this.loading = true;
+                this.getAnswers();
                 
-                await this.getURL(url, data).then(response => {
+               // if (this.questionsLength == this.answers.length) {
 
-                    if (response.data.success == true) {
+                this.submitAnswers();
+                  
+               // } else {
+                  //  alert ("please answer all");
+              //  }
+            },
+            async recordStartTime() 
+            {
+                //add this with null values to record exams
+                this.getAnswers(); 
+                this.loading = true;
+            
+                let url = "/api/addAnswerStartTime?api_token=" + this.api_token;
+                let data  = {
+                    'member_id': this.memberinfo.id,
+                    'category_id': this.category.id,    
+                    'answers' : this.choiceAnswers,               
+                }
 
-                        this.submitted = true;
+                await this.getURL(url, data).then(response => 
+                {
+                    if (response.data.success == true)
+                    {
 
-                        this.results = response.data.results;
+                        this.miniTestID = response.data.id;
                     }
 
                 }).finally(() => {                  
 
+         
+
+                    this.loading = false;
+                                
+                });  
+
+
+            },
+            async submitAnswers() 
+            {
+
+                this.loading = true;
+
+                let url = "/api/postAnswers?api_token=" + this.api_token;
+                let data  = {
+
+                    'miniTestID': this.miniTestID, //we need to just update
+
+                    'member_id': this.memberinfo.id,
+                    'category_id': this.category.id,
+                    'answers' : this.choiceAnswers,
+                }
+                
+                await this.getURL(url, data).then(response => 
+                {
+
+                    if (response.data.success == true)
+                     {
+                        this.submitted = true;
+                        this.results = response.data.results;
+
+                        this.totalCorrectAnswers  = response.data.total_correct_answers;
+                        this.totalQuestions         = response.data.total_questions;
+
+
+                    } else {
+                    
+
+
+                        alert (response.data.message)
+                
+                    
+                    }
+
+                }).finally(() => {                  
+
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                    this.loading = false;
                                 
                 });            
             },            
-            async getList() 
-            {            
-
-                let url = "/api/getQuestions?api_token=" + this.api_token;
-                let data = { 
-                    'category_id': this.category.id
-                };
-
-
-                await this.getURL(url, data).then(response => {
-
-                    if (response.data.success == true) {
-                        this.questions = response.data.questions;
-                        this.choices = response.data.choices;
-                        this.questionsLength = Object.keys(this.questions).length                    
-                        
-
-                        this.questionViewer = this.questions[this.questionIndex];
-
-                    } else {
-                        alert (response.data.message)
-                    }
-
-                }).finally((url) => {      
-                                
-                });
-            }        
+              
         },        
         mounted () 
         {          
