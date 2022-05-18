@@ -1,10 +1,8 @@
 <template>
 
-    <div class="container bg-light">
-       
+    <div class="container bg-light">      
 
         <div v-if="this.categoryLoading == true" class="text-center">  
-
             <div class="pt-4 text-secondary">
                 {{ "Loading, Please wait " }}
             </div>
@@ -20,14 +18,29 @@
             <div class="text-success">Instructions  : {{ this.category.instructions }}</div>
             <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
 
-            <div v-show="this.started == false">
+            <!-- ADD A MEMBER POINT INFORMATION -->
+            <div id="point-information" class="border p-4 mb-4" v-show="this.started == false">
+                <span class="font-weight-bold">
+                  
+                    <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left,  You will be deducted 1 free point if you proceed </span>
+
+                    <span class="text-danger" v-else>  Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 point if you proceed </span>                   
+                </span>                
+                
+                <div class="mt-2 text-secondary">
+                    You have {{ this.miniTestSubmittedCount }} sumbitted Mini Test in last 7 days: 
+                </div>                
+            </div>
+
+            <!-- BUTTON TO START -->
+            <div v-show="this.started == false" class="mt-4">
                 <button v-on:click="start()" class="btn btn-success" >
                     <i class="fa fa-list-alt" aria-hidden="true"></i>
                     Start Test 
                 </button>
             </div>
-        </div>
 
+        </div>
 
         <div class="mini-test" v-show="this.started == true && this.loading == true">
 
@@ -59,21 +72,32 @@
                     v-for="(question, questionIndex) in this.questions"
                     :key="questionIndex"> 
 
-                    <div class="col-12">
-                        <span class="font-weight-bold mb-3">{{ (questionIndex + 1)  +"." }} {{ question.question }}</span>
+                    <div class="question container col-12">
 
-                        <b-form-group>
-                            <b-form-radio 
-                                :name="'question_'+ question.id +''"
-                                v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
-                                v-on:change="updateSelected(question, choice)"
-                                v-bind:value="choice.id"
+                        <span class="font-weight-bold mb-3">
+                            {{ (questionIndex + 1)  +"." }} {{ question.question }}
+                        </span>
 
-                                >{{ choice.choice }}</b-form-radio>                     
+
+
+                        <b-form-group >
+
+                            <b-form-radio
+                            :name="'question_'+ question.id +''"
+                            v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
+                            v-on:change="updateSelected(question, choice)"
+                            v-bind:value="choice.id"
+                            class="ml-3 pt-2">
+                                {{ choice.choice }}
+                            </b-form-radio>
+
+                            <div class="pb-3 mb-0 small lh-sm border-bottom w-100"></div>          
+
                         </b-form-group>
 
-
                     </div>
+
+
                 </div>
 
                 <div class="mt-4">
@@ -83,6 +107,8 @@
             </div>
 
             <div class="row" v-if="multiple == false && submitted == false">
+
+
 
                 <div id="question_container" class="col-7">
                     <div id="questions">
@@ -132,20 +158,39 @@
 
                 <div class="summary">
 
+                    <div v-for="(result, resultKey) in results" :key="'result_'+resultKey" class="mb-3">
 
-                    <div v-for="(result, resultIndex) in results" :key="'result_'+resultIndex" class="mb-3">
                         <div class="font-weight-bold">
-                            {{ resultIndex +"." }}  {{ result.question }} 
+                           {{ resultKey + 1 }}{{"."}} {{ result.question }} 
                         </div>
-                        <div>Correct Answer: {{ result.correct_answer }} </div>
-                        <div v-if="result.your_answer === null">
-                            <i class="fa fa-question text-secondary" aria-hidden="true"></i>  {{ "No Answer" }}
+
+                        <div class="answer-container ml-3 mt-2">
+
+                            <div class="font-weight-bold">
+                                Correct Answer: 
+                                <span class="text-orange">
+                                    {{ result.correct_answer }}
+                                </span>
+                            </div>
+
+                            
+                            <div v-if="result.your_answer === null" class="pt-2 text-secondary">
+                                <i class="fa fa-question " aria-hidden="true"></i>  {{ "No Answer" }}
+                            </div>
+
+                            <div v-else class="pt-2">
+                                <div class="font-weight-bold">
+                                    Your Answer: 
+                                    <span class="text-primary">
+                                        {{ result.your_answer }} 
+                                    </span>
+                                </div>                                       
+                                <div v-if="result.is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
+                                <div v-else-if="result.is_correct == false" class="text-danger font-weight-bold"> <i class="fa fa-times" aria-hidden="true"></i> Incorrect </div>
+                            </div>
+
                         </div>
-                        <div v-else>
-                            <div class="text-primary">Your Answer: {{ result.your_answer }} </div>                                       
-                            <div v-if="result.is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
-                            <div v-else-if="result.is_correct == false" class="text-danger font-weight-bold"> <i class="fa fa-times" aria-hidden="true"></i> Incorrect </div>
-                        </div>
+                    
                     </div>
                 </div>
 
@@ -186,6 +231,9 @@
             return {
 
                 miniTestID: null,
+                miniTestSubmittedCount: 0,
+                freeMiniTest: 0,
+                limit: 2,
 
 
                 categoryLoading: true,
@@ -233,15 +281,16 @@
          {
 
             start() {
-                this.started = true;
-                this.loading = false;
 
-                this.startTimer();
                 this.recordStartTime();
             },
 
+            countFreeMiniTest() 
+            {            
+                this.freeMiniTest = this.limit - this.miniTestSubmittedCount;
+            },
         
-            async getList() 
+            async getQuestions() 
             {    
 
                 this.categoryLoading = true;        
@@ -261,21 +310,79 @@
                         this.questionsLength = Object.keys(this.questions).length    
                         this.questionViewer = this.questions[this.questionIndex];
 
+
+                        this.miniTestSubmittedCount = response.data.miniTestSubmittedCount;
+                        this.countFreeMiniTest();     
+
                     } else {
                         alert (response.data.message)
                     }
 
                 }).finally((url) => {      
                                 
-                    this.categoryLoading = false;        
-
+                    this.categoryLoading = false;  
                 });
             },
+            async recordStartTime() 
+            {
+                //add this with null values to record exams
+                this.getAnswers(); 
+                this.loading = true;
+            
+                let url = "/api/addAnswerStartTime?api_token=" + this.api_token;
+                let data  = {
+                    'member_id': this.memberinfo.id,
+                    'category_id': this.category.id,    
+                    'answers' : this.choiceAnswers,               
+                }
 
+                await this.getURL(url, data).then(response => 
+                {
+                    if (response.data.success == true)
+                    {
+                        //RECORD START TIME, AND get the id for minitest to update the TABLE END TIME WHEN SUBMITTED
+                        this.miniTestID = response.data.id;
+
+
+                        //update mini test count
+                        this.miniTestSubmittedCount = response.data.miniTestSubmittedCount;
+                        this.countFreeMiniTest(); 
+
+                        document.getElementById("total_credits").innerHTML = response.data.totalCreditsFormatted;
+                        //total credits
+                        
+
+                        this.startTimer();
+                        
+                    } else {
+                    
+                    
+                        alert (response.data.message);
+
+
+                    }
+
+                }).finally(() => {  
+
+                    this.loading = false;
+
+                    
+
+                });  
+
+
+            },
             startTimer() {
+
+
                 this.seconds = 60;
                 this.secondsHand = 60;
                 this.myIntervalTimer = setInterval(this.checkMinute, this.timerSpeed);
+
+
+                this.started = true;
+                this.loading = false;
+
             },
             checkMinute() 
             {
@@ -493,37 +600,7 @@
                   //  alert ("please answer all");
               //  }
             },
-            async recordStartTime() 
-            {
-                //add this with null values to record exams
-                this.getAnswers(); 
-                this.loading = true;
-            
-                let url = "/api/addAnswerStartTime?api_token=" + this.api_token;
-                let data  = {
-                    'member_id': this.memberinfo.id,
-                    'category_id': this.category.id,    
-                    'answers' : this.choiceAnswers,               
-                }
 
-                await this.getURL(url, data).then(response => 
-                {
-                    if (response.data.success == true)
-                    {
-
-                        this.miniTestID = response.data.id;
-                    }
-
-                }).finally(() => {                  
-
-         
-
-                    this.loading = false;
-                                
-                });  
-
-
-            },
             async submitAnswers() 
             {
 
@@ -572,7 +649,7 @@
         },        
         mounted () 
         {          
-            this.getList();
+            this.getQuestions();
 
             this.timerMax = this.category.time_limit;
             this.timerValue = this.category.time_limit;

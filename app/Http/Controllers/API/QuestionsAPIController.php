@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 
 use App\Models\MiniTestQuestion;
 use App\Models\MiniTestChoice;
+use App\Models\MiniTestResult;
+
+use Auth;
 
 class QuestionsAPIController extends Controller
 {
@@ -15,15 +18,22 @@ class QuestionsAPIController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function get(Request $request)
+    public function get(Request $request, MiniTestResult $miniTestResult)
     {
-       
+
+
         $category_id = $request->category_id;
 
 
         $questions = MiniTestQuestion::where('category_id', $category_id)
                             //->where('valid', true)->get();
                             ->where('valid', true)->inRandomOrder()->get();
+
+
+        //@get how many results submitted for past sevent days
+        $miniTestCount = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
+
+
 
         if (count($questions) >= 1) 
         {
@@ -39,9 +49,10 @@ class QuestionsAPIController extends Controller
             }
 
             return Response()->json([
-                "success"       => true,
-                "message"       => "list has been successfully found",
-                "questions"    => $question_items,
+                "success"                   => true,
+                "message"                   => "list has been successfully found",
+                'miniTestSubmittedCount'    => $miniTestCount,
+                "questions"                 => $question_items,
                   
             ]);
 
@@ -55,40 +66,4 @@ class QuestionsAPIController extends Controller
     }
 
 
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-  
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
 }

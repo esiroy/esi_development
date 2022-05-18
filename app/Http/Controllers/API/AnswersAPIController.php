@@ -10,6 +10,8 @@ use App\Models\Questions;
 use App\Models\Answers;
 use App\Models\AnswerKey;
 use App\Models\MiniTestResult;
+use App\Models\AgentTransaction;
+
 
 use Auth;
 
@@ -18,16 +20,13 @@ class AnswersAPIController extends Controller
 {
 
 
-    public function addAnswerStartTime(Request $request)  
+    public function addAnswerStartTime(Request $request, MiniTestResult $miniTestResult, AgentTransaction $agentTransaction)  
     {
-      
-
-        //get how many test in the last 7 days from miniTest Result table
-
-
 
         $categoryID = $request->get('category_id');
         $answers    = $request->get('answers');
+
+
 
         //get answer keys
         $answerKeys = Questions::select('question_answer_key.question_id', 'question_answer_key.choice_id', 'question_choices.choice')
@@ -89,15 +88,72 @@ class AnswersAPIController extends Controller
 
 
         if ($created) 
-        {        
+        {     
 
-            //@todo: get how many left
-        
-            return Response()->json([
-                "success"               => true,            
-                "message"               => "answers has initialized",
-                'id'                     => $created->id
-            ]);
+            $credits = $agentTransaction->getCredits(Auth::user()->id);
+
+            if ($credits >= 1) {
+            
+              
+                $miniTestCount = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
+
+                if ($miniTestCount > 2) 
+                {
+                     /* deduction */
+                    $deduction = 1;
+
+                   
+                     /* Deduct Point */
+                    $agentCredit = [
+                        'valid' => 1,
+                        'transaction_type' => 'AGENT_SUBTRACT',
+                        'agent_id' => Auth::user()->memberInfo->agent_id,
+                        'member_id' => Auth::user()->memberInfo->user_id,
+                        'lesson_shift_id' =>  Auth::user()->memberInfo->lesson_shift_id,
+                        'created_by_id' => Auth::user()->id,
+                        'amount' => $deduction,
+                        'price' => 1,
+                        'remarks' => "MINITEST - ANSWERS QUESTION | minitest count - $miniTestCount", 
+                    ];
+                    AgentTransaction::create($agentCredit); 
+                
+
+                } else {
+                
+                    $deduction = 0;
+                }
+
+                $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
+
+            
+                return Response()->json([
+                    "success"                   => true,            
+                    "message"                   => "answers has initialized",
+                    'id'                        => $created->id,
+                    'miniTestSubmittedCount'    => $miniTestCount,
+                    'deduction'                 => $deduction,
+                    'totalCredits'              => $totalCredits,
+                    'totalCreditsFormatted'     => "(". number_format($totalCredits, 2) .")"
+                
+                ]);
+
+            
+            } else {
+
+
+                 $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
+            
+                return Response()->json([
+                    "success"                   => false,            
+                    "message"                   => "You have insufficient credit",
+                    'totalCredits'              => $totalCredits,
+                    'totalCreditsFormatted'     => "(". number_format($totalCredits, 2) .")"
+                
+                ]);
+            
+            }
+
+
 
         } else {
         
@@ -162,10 +218,10 @@ class AnswersAPIController extends Controller
                 //correct answers
                 $correctAnswerCount++;
             
-                $results[$answer_question_id] = [
+                //$results[$answer_question_id] = [
+                $results[] = [
                     'question'              => $question,
                     'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],
-
                     "question_id"           => $answer['question_id'],
                     'answer_choice_id'      => $answer_choice_id,
 
@@ -175,9 +231,13 @@ class AnswersAPIController extends Controller
 
             } else if ($answer_choice_id != $correctAnswers[$answer_question_id]['choice_id']) {
 
-                $results[$answer_question_id] = [
+                //$results[$answer_question_id] = [
+                $results[] = [
                     'question'              => $question,
                     'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],
+                    "question_id"           => $answer['question_id'],
+                    'answer_choice_id'      => $answer_choice_id,
+
                     'your_answer'           => $selected_choice_text,
                     'is_correct'            => false,
                 ];             
@@ -185,9 +245,14 @@ class AnswersAPIController extends Controller
             } else {
             
         
-                $results[$answer_question_id] = [
+                //$results[$answer_question_id] = [
+                $results[] = [
+                
                     'question'              => $question,
                     'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],
+                    "question_id"           => $answer['question_id'],
+                    'answer_choice_id'      => null,
+
                     'your_answer'           => null,
                     'is_correct'            => null,
                 ];            
@@ -209,7 +274,7 @@ class AnswersAPIController extends Controller
                 'time_ended'                  => now(),
                 'total_questions'             => $totalQuestionCount,
                 'correct_answers'             => $correctAnswerCount,
-                'member_answers'              => json_encode($answers) 
+                'member_answers'              => json_encode($results) 
             ]);        
         
 
