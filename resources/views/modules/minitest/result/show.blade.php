@@ -19,24 +19,18 @@
 
         <div class="container">
 
-            <!--
-            +"question_id": 4
-            +"question_text": "The effect on birth weight ______ depending on the prevalence of iron deficiency."
-            +"choices": array:3 [▶]
-            +"selected_choice_id": "10"
-            +"selected_choice_text": "can vary"
-            -->
 
 
-            @if (count($items) == 0) 
+            @if (!$result) 
                 {{ "No Result Found" }}
-            @else 
+            @else
+
 
                 @foreach($items as $key => $item)
                     <div id="{{ $item->question_id ?? '' }}" class="mb-4">
 
                             <div class="font-weight-bold">
-                                {{ $ctr++ . ". " }} {{ $item->question }}
+                                {{ $ctr++ . ". " }} {{ $item->question  ?? '' }}
                             </div>
 
                             <div class="ml-4">
@@ -44,7 +38,7 @@
                                 <div class="mt-2 font-weight-bold">
                                     Correct Answer: 
                                     <span class="text-orange">
-                                        {{ $item->correct_answer }}
+                                        {{ $item->correct_answer ?? '' }}
                                     </span>
                                 </div>
                                 
@@ -91,7 +85,9 @@
                     </div>
                 @endforeach
 
-            @endif
+            @endif 
+
+
 
         </div>
     </div>

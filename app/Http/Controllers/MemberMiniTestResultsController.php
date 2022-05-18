@@ -64,17 +64,16 @@ class MemberMiniTestResultsController extends Controller
                                   ->where('id', $id)
                                   ->first();
 
-        if (isset($result))
+
+        if ($result)
         {
             $items = json_decode($result->member_answers);
-            return view("modules.minitest.result.show", compact('items', 'ctr')); 
+            return view("modules.minitest.result.show", compact('result', 'items', 'ctr', )); 
 
         } else {
 
-            $items = [];
-        
-         
-            return view("modules.minitest.result.show", compact('items', 'ctr')); 
+            
+            return view("modules.minitest.result.show", compact('result', 'ctr')); 
         }
 
     }
