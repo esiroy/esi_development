@@ -7,7 +7,7 @@
 
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Lesson Record</li>
             </ol>
         </nav>
@@ -22,6 +22,7 @@
                 
 
                 <div class="col-md-9">
+
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
                             受講履歴
@@ -98,6 +99,7 @@
                             添削履歴
                         </div>
                         <div class="card-body">
+
                             <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
@@ -139,6 +141,78 @@
 
                         </div>
                     </div>
+
+
+                     <div class="card esi-card mt-4">
+                        <div class="card-header esi-card-header">
+                            Mini Test Results
+                        </div>
+
+                        <div class="card-body">
+
+
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="small text-center bg-light text-dark font-weight-bold">Time Started - Time Ended</th>
+                                        <th class="small text-center bg-light text-dark font-weight-bold">Score</th>
+                                        <th class="small text-center bg-light text-dark font-weight-bold">View</th>
+                                    </tr>
+                                </thead>
+                               
+                                <tbody id="reportCardBody">
+
+                                    @if(count($miniTestResults) >= 1)
+                                        @foreach ($miniTestResults as $result)
+                                        <tr>
+                                            <td class="text-center">
+
+                                                {{ ESIDateTimeFormat($result->time_started)  ." - " }} 
+
+                                              
+
+                                                @if(!(int)$result->time_ended) 
+                                                
+                                                    <span class="text-danger">{{ "Unfinished" }}</span>
+
+                                                @else 
+
+                                                    <span > {{ ESIDateTimeFormat($result->time_ended) }} </span>
+                                                    
+                                                @endif
+
+                                            
+                                            
+                                        
+                                            </td>
+                                            <td class="text-center">
+                                                {{ $result->correct_answers }} / {{ $result->total_questions }}
+                                            </td>
+                                            <td class="text-center"><a href="minitest/results/{{$result->id}}">» 見る</a></td>
+                                        </tr>
+                                        @endforeach
+                                    @else 
+                                        <tr>
+                                            <td class="text-center text-primary small" colspan="3">
+                                                {{ "No Minitest Submitted" }}
+                                            </td>
+                                        </tr>
+                                    @endif
+
+                                </tbody>
+                            </table> 
+                                
+                            <div class="float-right mt-4">
+                                <ul class="pagination pagination-sm">
+                                    {{ $miniTestResults->appends(request()->query())->links() }}
+                                </ul>
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
                 </div>
 
             </div>

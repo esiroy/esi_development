@@ -208,6 +208,7 @@ Route::middleware('auth:api')->post('/updateQuestions', 'API\QuestionsAPIControl
 Route::middleware('auth:api')->post('/deleteQuestions', 'API\QuestionsAPIController@destroy')->name('APIDeleteQuesions');
 
 Route::middleware('auth:api')->post('/getAnswers', 'API\AnswersAPIController@get')->name('APIGetAnswers');
+Route::middleware('auth:api')->post('/addAnswerStartTime', 'API\AnswersAPIController@addAnswerStartTime')->name('APIAddAnswerStartTime');
 Route::middleware('auth:api')->post('/createAnswers', 'API\AnswersAPIController@store')->name('APICreateAnswers');
 Route::middleware('auth:api')->post('/postAnswers', 'API\AnswersAPIController@post')->name('APIPostAnswers');
 Route::middleware('auth:api')->post('/updateAnswers', 'API\AnswersAPIController@update')->name('APIUpdateAnswers');

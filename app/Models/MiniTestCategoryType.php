@@ -35,11 +35,7 @@ class MiniTestCategoryType extends Model
                 {
                     $this->typeName = $type->name . " >> " . $this->typeName;
 
-                } else {
-
-                    //current path
-                   
-                }
+                } 
 
                 return $this->getParentNames($type->parent_id);
 

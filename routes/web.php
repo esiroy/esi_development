@@ -19,7 +19,7 @@ Route::get('component_test', 'dummyController@component_test');
 
 
 Route::resource('minitest', 'MemberMiniTestController');
-
+Route::resource('minitest/results', 'MemberMiniTestResultsController');
 Route::resource('minitest/category', 'MemberMiniTestCategoryController');
 
 

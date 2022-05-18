@@ -15,6 +15,7 @@ use App\Models\ScheduleItem;
 use App\Models\ReportCard;
 use App\Models\ReportCardDate;
 use App\Models\Homework;
+use App\Models\MiniTestResult;
 
 use Gate;
 use Validator;
@@ -49,8 +50,13 @@ class LessonRecordController extends Controller
                 'skypeID'   => $skypeID,            
             ];  
             
-            $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'datereportcards');    
+            $datereportcards = ReportCardDate::where('member_id', $member->user_id)->orderBy('created_at', 'DESC')->paginate(Auth::user()->items_per_page,['*'], 'datereportcards');    
             $latestReportCard = $reportcards->getLatest($member->user_id);
+
+            
+        
+
+            
 
 
             if ($request->display == 'none') 
@@ -59,7 +65,7 @@ class LessonRecordController extends Controller
                 $reportcards = Questionnaire::where('member_id',  $member->user_id)
                                 ->orderBy('created_at', 'DESC')
                                 ->where('valid', true)
-                                ->paginate(30,['*'], 'reportcards');
+                                ->paginate(Auth::user()->items_per_page,['*'], 'reportcards');
                 
                 //@todo: (update to model)
                 $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
@@ -72,15 +78,18 @@ class LessonRecordController extends Controller
 
             } else {
 
-                $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(30,['*'], 'reportcards');
+                $reportcards = ReportCard::where('member_id',  $member->user_id)->orderBy('created_at', 'DESC')->paginate(Auth::user()->items_per_page,['*'], 'reportcards');
 
                 $scheduleItems = ScheduleItem::where('member_id',  $member->user_id)
                                 ->where('schedule_status', '!=', 'TUTOR_CANCELLED')
                                 //->where('valid', true)
                                 ->orderBy('lesson_time', 'DESC')                                
-                                ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');                
+                                ->paginate(Auth::user()->items_per_page, ['*'], 'reportcards');   
 
-                return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'scheduleItems', 'datereportcards', 'latestReportCard'));
+                $miniTestResults = MiniTestResult::where('user_id', $member->user_id)
+                                    ->paginate(Auth::user()->items_per_page, ['*'], 'minitest');
+
+                return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'scheduleItems', 'datereportcards', 'latestReportCard', 'miniTestResults'));
             }
         } else {
             abort(404);
