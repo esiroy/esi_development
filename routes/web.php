@@ -295,6 +295,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/writing', 'Modules\WritingController');
         Route::get('writing/entries/{form_id}', 'Modules\WritingController@entries')->name('writing.entries');
         Route::get('writing/entry/{form_id}/{entry_id}', 'Modules\WritingController@entry')->name('writing.entry');
+
+        Route::get('writing/entry_test/{form_id}/{entry_id}', 'Modules\WritingController@entry_test')->name('writing.entry_test');
            
         Route::get('/writing', 'Modules\WritingController@index')->name('writing.index');        
         Route::post('/writing/{id}', 'Modules\WritingController@update')->name('writing.updateFields');

@@ -138,7 +138,7 @@ class User extends Authenticatable implements MustVerifyEmail
     //Agents
     public function agents()
     {
-        return $this->belongsToMany(Agent::class);
+        return $this->hasOne(Agent::class);
     } 
     
     public function agentInfo() 
@@ -146,5 +146,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne('App\Models\Agent');
     }    
 
+
+    public function mergedAccounts() {
+    
+        return $this->hasMany(MergedAccount::class, 'member_id', 'id');
+    } 
 
 }

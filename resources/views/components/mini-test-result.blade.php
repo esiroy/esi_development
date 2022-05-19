@@ -1,4 +1,34 @@
-<div>
+
+
+<div id="miniTestResult">
+
+
+    <div class="text-primary pt-2">
+        <strong> Time Taken: {{ ESIDateTimeFormat($result->time_started) }} </strong>
+    </div>
+
+    <div class="text-primary pt-2">
+        <strong> Time Ended: 
+                @if(!(int)$result->time_ended)                                                 
+                    <span class="text-danger">{{ "Unfinished" }}</span>
+                @else 
+                    <span > {{ ESIDateTimeFormat($result->time_ended) }} </span>                                                    
+                @endif   
+        </strong>
+    </div>
+
+
+
+    <h6 class="text-primary pt-4">
+        <strong> Your Test Result </strong>
+    </h6>
+
+
+    <h6 class="mb-4 text-success font-weight-bold">                       
+        Your have {{ $result->correct_answers }} correct answers out of {{ $result->total_questions }}                  
+    </h6>
+
+
 
     @foreach($items as $key => $item)
 
@@ -9,6 +39,8 @@
             </div>
 
             <div class="ml-4">
+
+
 
                 <div class="mt-2 font-weight-bold">
                     Correct Answer: 
@@ -62,4 +94,16 @@
         
 
     @endforeach
+
+    <h6 class="text-primary pt-2">
+        <strong> Your Test Result </strong>
+    </h6>
+
+
+    <h6 class="mb-4 text-success font-weight-bold">                       
+        Your have {{ $result->correct_answers }} correct answers out of {{ $result->total_questions }}                  
+    </h6>
+
+
+
 </div>

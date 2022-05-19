@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\MiniTestResult;
 
 
+use Auth;
+
 class MemberMiniTestResultsController extends Controller
 {
     
@@ -68,6 +70,7 @@ class MemberMiniTestResultsController extends Controller
         
               abort(404);
         }
+
     }
 
     /**

@@ -13,7 +13,7 @@
         </div>
 
 
-        <div class="intro pt-4">
+        <div v-if="this.categoryLoading == false"  class="intro pt-4">
             <h4 class="text-primary">{{ this.category.name }}</h4>
             <div class="text-success">Instructions  : {{ this.category.instructions }}</div>
             <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
@@ -45,7 +45,7 @@
         <div class="mini-test" v-show="this.started == true && this.loading == true">
 
             <div class="pt-4 text-secondary">
-                {{ "Please wait while we load your test" }}
+                {{ "Please wait.." }}
             </div>
 
             <div class="spinner-border text-primary" role="status">

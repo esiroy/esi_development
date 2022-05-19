@@ -22,6 +22,8 @@ use App\Models\Purpose;
 use App\Models\MemberExamScore;
 use App\Models\Homework;
 use App\Models\MemberLevel;
+use App\Models\MergedAccount;
+
 
 
 use Auth, Hash, Storage;
@@ -174,6 +176,60 @@ class MemberController extends Controller
 
         if (isset($memberInfo)) 
         {
+
+            //search if user has merged account
+            $mergedAccount = MergedAccount::where('merged_member_id',  $memberID)->first();
+
+            if ($mergedAccount) {
+
+                //merged account
+                $mergedMemberInfo   = User::find($mergedAccount->member_id)->memberInfo;
+                $mergedType         = "secondary";
+
+                $mergedAccounts  = null;
+
+
+            //report cards
+                $reportCard = new ReportCard();
+                $latestReportCard = $reportCard->getLatest($mergedAccount->member_id);
+
+                //member CEFR Level
+                $memberLevel = new MemberLevel();      
+                $currentMemberlevel = $memberLevel->getLevel($mergedAccount->member_id);
+                
+
+                                //writing report cards
+                $reportCardDate = new ReportCardDate();
+                $latestWritingReport = $reportCardDate->getLatest($mergedAccount->member_id);
+
+            } else {
+
+
+                //main account
+                $mergedMemberInfo = $memberInfo;   
+                $mergedType         = "main";
+
+                $mergedAccounts = MergedAccount::select('users.id', 'users.email', 'merged_accounts.created_at as date')
+                ->where('member_id', $memberID)
+                ->leftJoin('users', 'users.id', '=', 'merged_accounts.merged_member_id')
+                ->get();
+
+                //report cards
+                $reportCard = new ReportCard();
+                $latestReportCard = $reportCard->getLatest($memberID);
+
+                //member CEFR Level
+                $memberLevel = new MemberLevel();      
+                $currentMemberlevel = $memberLevel->getLevel($memberID);
+
+
+                //writing report cards
+                $reportCardDate = new ReportCardDate();
+                $latestWritingReport = $reportCardDate->getLatest($memberID);
+
+            }        
+
+
             if (isset($memberInfo->tutor_id)) {
                 $tutorInfo = Tutor::where('user_id', $memberInfo->tutor_id)->first();
             } else {
@@ -191,13 +247,7 @@ class MemberController extends Controller
             $goals = new LessonGoals();
             $lessonGoals = $goals->getLessonGoals($memberID);
 
-            //report cards
-            $reportCard = new ReportCard();
-            $latestReportCard = $reportCard->getLatest($memberID);
-
-            //member CEFR Level
-            $memberLevel = new MemberLevel();      
-            $currentMemberlevel = $memberLevel->getLevel($memberID);
+  
            
 
 
@@ -208,9 +258,7 @@ class MemberController extends Controller
                 $homework = null;
             }
 
-            //writing report cards
-            $reportCardDate = new ReportCardDate();
-            $latestWritingReport = $reportCardDate->getLatest($memberID);
+
 
 
             //get purpose (new)       
@@ -222,7 +270,7 @@ class MemberController extends Controller
 
             return view('admin.modules.member.memberInfo', compact('memberInfo', 'tutorInfo', 'agentInfo', 'lessonGoals', 
                                                 'latestReportCard', 'latestWritingReport', 'purpose', 'memberLatestExamScore', 
-                                                'currentMemberlevel', 'homework'));
+                                                'currentMemberlevel', 'homework', 'mergedMemberInfo', 'mergedAccount', 'mergedType', 'mergedAccounts'));
         } else {
 
             abort(404, "Member Not Found");
@@ -677,6 +725,10 @@ class MemberController extends Controller
 
             MemoReply::where('sender_id', $user->id)->delete();
             MemoReply::where('recipient_id', $user->id)->delete();
+
+
+            MergedAccount::where('member_id', $user->id)->delete();
+            MergedAccount::where('merged_member_id', $user->id)->delete();
 
             $member->delete();
             $user->forceDelete();

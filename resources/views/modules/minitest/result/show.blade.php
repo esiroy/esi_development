@@ -11,9 +11,9 @@
                     <a href="{{ url('/') }}">Home</a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a href="{{ url('/minitest') }}">Minitest</a>
+                    <a href="{{ url('/lessonrecord') }}">Lesson Record</a>
                 </li>
-                <li class="breadcrumb-item active" aria-current="page">Result</li>
+                <li class="breadcrumb-item active" aria-current="page">Minitest Result</li>
             </ol>
         </nav>
 
@@ -34,8 +34,9 @@
                     </div>
                     <div class="card-body esi-card-body">
                         <!-- get mini test result view component -->
-                        <x-mini-test-result :items="$items" :ctr="$ctr"></x-mini-test-result>
+                        <x-mini-test-result :result="$result" :items="$items" :ctr="$ctr"></x-mini-test-result>
                     </div>
+            
 
                 </div>
 

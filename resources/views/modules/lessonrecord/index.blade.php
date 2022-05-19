@@ -154,6 +154,7 @@
                             <table class="table table-bordered table-sm">
                                 <thead>
                                     <tr>
+                                        <th class="small text-center bg-light text-dark font-weight-bold">Test</th>
                                         <th class="small text-center bg-light text-dark font-weight-bold">Time Started - Time Ended</th>
                                         <th class="small text-center bg-light text-dark font-weight-bold">Score</th>
                                         <th class="small text-center bg-light text-dark font-weight-bold">View</th>
@@ -165,25 +166,16 @@
                                     @if(count($miniTestResults) >= 1)
                                         @foreach ($miniTestResults as $result)
                                         <tr>
-                                            <td class="text-center">
-
+                                            <td class="text-left pl-4 small">
+                                                {{ $result->name }}
+                                            </td>
+                                            <td class="text-left pl-4 small">
                                                 {{ ESIDateTimeFormat($result->time_started)  ." - " }} 
-
-                                              
-
-                                                @if(!(int)$result->time_ended) 
-                                                
+                                                @if(!(int)$result->time_ended)                                                 
                                                     <span class="text-danger">{{ "Unfinished" }}</span>
-
                                                 @else 
-
-                                                    <span > {{ ESIDateTimeFormat($result->time_ended) }} </span>
-                                                    
-                                                @endif
-
-                                            
-                                            
-                                        
+                                                    <span > {{ ESIDateTimeFormat($result->time_ended) }} </span>                                                    
+                                                @endif                                        
                                             </td>
                                             <td class="text-center">
                                                 {{ $result->correct_answers }} / {{ $result->total_questions }}

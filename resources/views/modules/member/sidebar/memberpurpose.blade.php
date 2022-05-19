@@ -1,7 +1,7 @@
-@php
-    $memberInfo = \App\Models\Member::where('user_id', Auth::user()->id)->first();
+@php  
+
     $purposeModel = new \App\Models\Purpose();        
-    $purpose = $purposeModel->getMemberPurpose(Auth::user()->id);
+    $purpose = $purposeModel->getMemberPurpose( $memberInfo->user_id );
 @endphp
 
 <member-purpose-component 

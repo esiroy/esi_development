@@ -24,12 +24,10 @@ export const Helpers = {
             },
 			data
         })
-
-        if(response.status == 200){
-            // test for status you want, etc
-            console.log(response.status)
-			
-        }     
+		/*
+        if(response.status == 200){            
+            console.log(response.status)			
+        } */
         // Don't forget to return something   
 		return response
         

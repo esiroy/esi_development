@@ -187,11 +187,20 @@
                                         </td>
                                         <td> : </td>
                                         <td >   
-                                            <member-score-component 
-                                                :memberinfo="{{ json_encode($memberInfo) }}" 
-                                                api_token="{{ Auth::user()->api_token }}" 
-                                                csrf_token="{{ csrf_token() }}"
-                                            ></member-score-component>
+
+                                            @if ($mergedAccount) 
+                                                <member-score-component 
+                                                    :memberinfo="{{ json_encode($mergedMemberInfo) }}" 
+                                                     api_token="{{ Auth::user()->api_token }}"  
+                                                    csrf_token="{{ csrf_token() }}"
+                                                ></member-score-component>
+                                            @else 
+                                                <member-score-component 
+                                                    :memberinfo="{{ json_encode($memberInfo) }}" 
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"
+                                                ></member-score-component>
+                                            @endif
                                         </td>                                                                                
                                     </tr>
 
@@ -205,11 +214,21 @@
                                         </td>
                                         <td>:</td>
                                         <td>
-                                            <member-purpose-viewer-component
-                                                :memberinfo="{{ json_encode($memberInfo) }}"                                                
-                                                api_token="{{ Auth::user()->api_token }}" 
-                                                csrf_token="{{ csrf_token() }}"                                             
-                                             ></member-notes-component>
+
+                                            @if ($mergedAccount) 
+                                                <member-purpose-viewer-component
+                                                    :memberinfo="{{ json_encode($mergedMemberInfo) }}"                                                
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"                                             
+                                                ></member-notes-component>
+                                            @else 
+                                                <member-purpose-viewer-component
+                                                    :memberinfo="{{ json_encode($memberInfo) }}"                                                
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"                                             
+                                                ></member-notes-component>
+                                            @endif
+
 
                                         </td>
                                     </tr>
@@ -357,12 +376,6 @@
 
 
 
-                                                         
-
-
-
-
-
                                     <tr>
                                         <th colspan="13"> Recent Notes  </th>
                                     </tr>
@@ -384,8 +397,6 @@
                                         </td>
                                     </tr>
                                     
-
-
 
                                     <tr>
                                         <th colspan="13">Latest Writing Report Card</th>
@@ -442,6 +453,106 @@
                                             @endif
                                         </td>
                                     </tr>
+
+
+
+                                    <tr>
+                                        <td colspan="13">&nbsp;</th>
+                                    </tr>
+
+                                    <tr class="pt-4">
+                                        <th colspan="13">Time Manager </th>
+                                    </tr>
+                                    <tr valign="top">
+                                        <td class="red">&nbsp;</td>                                        
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-12 pt-2 pb-2">Time Manager </div>
+                                            </div>
+                                        </td>
+                                        <td> &nbsp; </td>
+                                        <td class="red">
+                                        
+                                            @if ($mergedType == 'secondary')
+                                                <div class="card border-lightblue mt-1 mb-4">
+                                                    <div class="card-header bg-darkblue text-white font-weight-bold">
+                                                    Main Account {{ "1" . $mergedMemberInfo->user_id}} ({{$mergedMemberInfo->user_id}})
+                                                    </div>
+                                                    <div class="card-body p-0 m-0 b-0">
+                                                        <table class="esi-table table table-bordered table-striped">
+                                                            <thead>
+                                                                    <td>Member ID</td>
+                                                                    <td>Email</td>
+                                                                    <!--
+                                                                    <td>Action</td>                                                        
+                                                                    -->
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td> 1{{ $mergedMemberInfo->user_id }}</td>
+                                                                    <td>{{ $mergedMemberInfo->user->email ?? ''}}</td>
+
+                                                                    <!--
+                                                                    <td>
+                                                                        <a href="#"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                                                    </td>
+                                                                    -->
+                                                                </tr>                        
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <div class="card border-lightblue mt-1 mb-4">
+                                                <div class="card-header bg-darkblue text-white font-weight-bold">
+                                                    Time Manager - Member 1{{ $mergedMemberInfo->user_id }} ({{$mergedMemberInfo->user_id}})
+                                                </div>
+                                                <div class="card-body b-0">
+                                                    <member-time-manager-viewer-component                                    
+                                                        :memberinfo="{{ json_encode($mergedMemberInfo) }}"             
+                                                        api_token="{{ Auth::user()->api_token }}" 
+                                                        csrf_token="{{ csrf_token() }}"
+                                                    />
+                                                </div>
+                                            </div>
+
+
+                                            @if ($mergedType == 'main')
+                                                @if ( count($mergedAccounts) >= 1)
+                                                    <div class="card border-lightblue mt-1 mb-4">
+                                                        <div class="card-header bg-darkblue text-white font-weight-bold">
+                                                            Merged Accounts
+                                                        </div>
+                                                        <div class="card-body p-0 m-0 b-0">
+                                                            <table class="esi-table table table-bordered table-striped">
+                                                                <thead>
+                                                                        <td>Member ID</td>
+                                                                        <td>Email</td>
+                                                                        <!--<td>Action</td>                                                        -->
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($mergedAccounts as $mergedAccount)
+                                                                    <tr>
+                                                                        <td> 1{{ $mergedAccount->id }}</td>
+                                                                        <td>{{ $mergedAccount->email ?? ''}}</td>
+                                                                        <!--
+                                                                        <td>
+                                                                            <a href="#"><b-icon icon=" trash" aria-hidden="true"></b-icon></a>
+                                                                        </td>-->
+                                                                    </tr>    
+                                                                    @endforeach                    
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endif
+
+                                        </td>
+                                          
+                                    </tr>
+
 
                                 </tbody>
                             </table>

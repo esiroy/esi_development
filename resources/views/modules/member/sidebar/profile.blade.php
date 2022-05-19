@@ -1,7 +1,32 @@
 
     <div class="profile blueBox pt-0 px-0">
-        <div class="col-md-12 bg-blue text-white pt-1 pb-1 text-center">
+    
+        <div class="text-center col-md-12 bg-blue text-white pt-1 pb-1 text-center">
+
+            <!--
+            <span id="linked-account" class="d-none float-left pt-1">
+                <i class="fa fa-link" aria-hidden="true"></i>
+            </span>
+            -->
+
             <img src="{{ url('images/userMale.png') }}" align="absmiddle"> マイページ
+
+            <span id="linked-account-help" class="pl-2 float-right pt-1">
+                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0429212109.html','Merged Account Help',900,820);" class="text-white">
+                    <i class="fa fa-question" aria-hidden="true"></i>
+                </a>
+            </span>
+
+
+            <span class="pl-3 float-right">
+                <member-account-merger-component 
+                    :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
+                    api_token="{{ Auth::user()->api_token }}" 
+                    csrf_token="{{ csrf_token() }}">
+                </member-account-merger-component>
+            </span>
+
+
         </div>
         
         <div class="profile-image text-center mt-2">
@@ -30,6 +55,38 @@
 
             <div class="col-md-12">
                 <span class="text-secondary">Member ID:</span> 1{{ Auth::user()->id }}
+
+                <span id="linked-account-text" class="d-none small">
+                   (main account)
+                </span>
+
+            </div>
+
+            <div id="merged-accounts">
+                @if (!$mergedAccount) 
+                    @php 
+                        $mergedAccounts = Auth::user()->mergedAccounts 
+                    @endphp
+
+                   
+                    <div id="mergeAccountsContainer" class="col-md-12 d-none">
+                        <span class="text-secondary">Merged ID(s):</span> 
+                        <span id="mergeAccountIDs">
+                            @foreach($mergedAccounts as $mergedAccountIndex => $mergeAccount){{'1'.$mergeAccount->merged_member_id}}@if(($mergedAccountIndex + 1) < count($mergedAccounts)){{','}}@endif @endforeach
+                        </span>
+                    </div>
+               
+
+                @else 
+                    <div class="col-md-12">
+                        <span class="text-secondary">{{ "Main Account Member ID" }} :</span>
+                        <span>{{ '1'. $mainAccount->id ?? '' }}</span>
+                    </div>
+                    <div class="col-md-12">
+                        <span class="text-secondary">{{ "Main Account E-Mail" }} :</span>
+                        <span>{{ $mainAccount->email ?? ''  }}</span>
+                    </div>                
+                @endif
             </div>
 
             <div class="col-md-12">

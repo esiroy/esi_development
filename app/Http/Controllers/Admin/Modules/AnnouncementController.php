@@ -150,7 +150,8 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
-        $announcement->delete();
+        $announcement->update(['valid'=> false, 'is_hidden' => true]);
+        
         return redirect()->back()->with('message','Announcement has been deleted successfully');
     }
 }

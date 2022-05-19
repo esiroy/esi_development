@@ -3,7 +3,10 @@
         
       
         <div class="bg-primary col-12 text-white pt-2 pb-2 text-center">
-            <strong>Time Manager</strong>        
+            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0413231541.html','Time Manager',900,820);" class="text-white">
+                <!--<i class="fa fa-question-circle" aria-hidden="true"></i> -->
+                <strong>Time Manager</strong>   
+            </a>
             <div class="btnAddScoreHolder float-right">
                 <span v-b-modal.modalTimeManager><i class="fas fa-plus"></i></span>
             </div>

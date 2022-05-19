@@ -83,7 +83,7 @@ class AnswersAPIController extends Controller
             //'time_ended'                  => null,
             'total_questions'             => $totalQuestionCount,
             'correct_answers'             => 0,
-            'member_answers'              => json_encode($answers) 
+            'member_answers'              => json_encode($results) 
         ]);
 
 

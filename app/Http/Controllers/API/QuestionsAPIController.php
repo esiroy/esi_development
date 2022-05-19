@@ -55,7 +55,6 @@ class QuestionsAPIController extends Controller
                 "questions"                 => $question_items,
                   
             ]);
-
         } else {        
         
             return Response()->json([

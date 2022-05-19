@@ -215,3 +215,14 @@ Route::middleware('auth:api')->post('/updateAnswers', 'API\AnswersAPIController@
 Route::middleware('auth:api')->post('/deleteAnswers', 'API\AnswersAPIController@destroy')->name('APIDeleteAnswers');
 
 
+Route::middleware('auth:api')->post('/getMergedAccounts', 'API\MergeAccountAPIController@get')->name('APIGetMergeAccounts');
+Route::middleware('auth:api')->post('/getMergedAccountType', 'API\MergeAccountAPIController@getType')->name('APIGetMergedAccountType');
+Route::middleware('auth:api')->post('/createMergedAccount', 'API\MergeAccountAPIController@store')->name('APIAddMergeAccount');
+Route::middleware('auth:api')->post('/updateMergedAccount', 'API\MergeAccountAPIController@update')->name('APIUpdateMergeAccount');
+Route::middleware('auth:api')->post('/deleteMergedAccount', 'API\MergeAccountAPIController@destroy')->name('APIDeleteMergeAccount');
+
+//merge secondary to main
+Route::middleware('auth:api')->post('/mergeSecondaryToMain', 'API\MergeAccountAPIController@mergeSecondaryToMain')->name('APIMergeSecondaryToMain');
+
+//Admin Merging
+Route::middleware('auth:api')->post('/createAdminMergedAccount', 'API\MergeAccountAPIController@adminMergedAccount')->name('APIAdminAddMergeAccount');
