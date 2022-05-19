@@ -58,16 +58,15 @@ class MemberMiniTestResultsController extends Controller
     {
 
         $ctr    = 1;
-        $result = MiniTestResult::find($id);
-
+        $result = MiniTestResult::leftJoin('question_categories', 'question_categories.id', '=', 'member_test_results.question_category_id')
+                        ->where('member_test_results.id', $id)->first();
         if ($result) 
         {
             $items = json_decode($result->member_answers);
-
-
-           
-
-            return view("modules.minitest.result.show", compact('items', 'ctr')); 
+            return view("modules.minitest.result.show", compact('result', 'items', 'ctr')); 
+        } else {
+        
+              abort(404);
         }
     }
 
