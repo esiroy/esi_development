@@ -45,6 +45,7 @@ if (url[1] === 'admin') {
                 Vue.component('member-purpose-viewer-component', require('./components/backend/member/MemberPurposeViewerComponent.vue').default);
                 Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
                 Vue.component('member-time-manager-viewer-component', require('./components/backend/member/MemberTimeManagerViewerComponent.vue').default);
+                Vue.component('member-mini-test-viewer-component', require('./components/backend/member/MemberMiniTestViewerComponent.vue').default);
             }
             break;
         case 'reportcard':

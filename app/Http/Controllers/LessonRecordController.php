@@ -88,8 +88,9 @@ class LessonRecordController extends Controller
 
                 $miniTestResults = MiniTestResult::select('question_categories.name', 'member_test_results.*')
                                     ->leftJoin('question_categories', 'question_categories.id', '=', 'member_test_results.question_category_id')                        
-                                    ->where('user_id', $member->user_id)
-                                    ->orderBy('time_started', 'DESC')             
+                                    ->where('member_test_results.user_id', $member->user_id)
+                                    ->where('member_test_results.valid', true)
+                                    ->orderBy('member_test_results.time_started', 'DESC')             
                                     ->paginate(Auth::user()->items_per_page, ['*'], 'minitest');
 
                 return view('modules.lessonrecord.index', compact('member', 'data', 'reportcards', 'scheduleItems', 'datereportcards', 'latestReportCard', 'miniTestResults'));

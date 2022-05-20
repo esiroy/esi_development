@@ -27,9 +27,10 @@ class CreateMemberTestResults extends Migration
             //member result 
             $table->integer('total_questions');
             $table->integer('correct_answers');
-            $table->text('member_answers');           
-         
-     
+            $table->text('member_answers');         
+
+            
+            $table->tinyInteger('valid');
 
             //foreign key references
              $table->foreign('question_category_id')->references('id')->on('question_categories');            

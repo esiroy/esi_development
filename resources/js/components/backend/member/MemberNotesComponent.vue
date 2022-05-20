@@ -24,17 +24,20 @@
 							<thead>
 								<tr>
 									<!--<td style="width:50px">Note ID</td>-->
-									<td>Tutor Info</td> 
+									<!--<td>Tutor Info</td>-->
 									<td>Note</td> 
 									<td>Actions </td>
 								</tr>
 							</thead>
 							<tbody>
 								<tr :id="'note_' + note.note_id" v-for="note in notes" :key="note.id">
-									<!--<td> {{ note.note_id }}</td>-->
-									
-									<td class="w-25 p-1" v-html="createImage(note.tutor_photo) + createTutorNameWrapper(note.tutor_name) "> </td>
-									<td class="text-left p-3">{{note.note}}</td>
+									<!--<td> {{ note.note_id }}</td>-->									
+									<!--<td class="w-25 p-1" v-html="createImage(note.tutor_photo) + createTutorNameWrapper(note.tutor_name) "> </td>-->
+
+									<td class="text-left p-3">
+										<div v-html="note.note"></div>
+										<div class="text-secondary pt-1"> Author : {{ note.tutor_name }}</div>
+									</td>
 
 									<td class="w-25 p-1">
 

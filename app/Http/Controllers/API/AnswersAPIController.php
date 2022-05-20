@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 
-use App\Models\Questions;
-use App\Models\Answers;
-use App\Models\AnswerKey;
+use App\Models\MiniTestQuestion;
+use App\Models\MiniTestAnswers;
+use App\Models\MiniTestAnswerKey;
 use App\Models\MiniTestResult;
 use App\Models\AgentTransaction;
 
@@ -29,7 +29,7 @@ class AnswersAPIController extends Controller
 
 
         //get answer keys
-        $answerKeys = Questions::select('question_answer_key.question_id', 'question_answer_key.choice_id', 'question_choices.choice')
+        $answerKeys = MiniTestQuestion::select('question_answer_key.question_id', 'question_answer_key.choice_id', 'question_choices.choice')
                         ->leftJoin('question_answer_key', 'questions.id', '=', 'question_answer_key.question_id')
                         ->leftJoin('question_choices', 'question_choices.id', '=', 'question_answer_key.choice_id')
                         ->where('category_id', $categoryID)
@@ -45,7 +45,7 @@ class AnswersAPIController extends Controller
 
         //note: answer into correct answers
         if ($answerKeys) 
-        {                  
+        {          
             foreach ($answerKeys as $answerKey) 
             {
                 $correctAnswers[$answerKey->question_id]['choice_id']   = $answerKey->choice_id;
@@ -60,10 +60,15 @@ class AnswersAPIController extends Controller
             $answer_question_id     = $answer['question_id'];
             $question               = $answer['question_text'];
             $selected_choice_text   = $answer['selected_choice_text'];
+            $choices                = $answer['choices'];
 
-            $results[$answer_question_id] = [
+            //$results[$answer_question_id] = [
+
+            $results[] = [
                 
                 'question'              => $question,
+                'choices'               => $choices,
+
                 'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],                
                 
                 "question_id"           => $answer['question_id'],
@@ -83,7 +88,8 @@ class AnswersAPIController extends Controller
             //'time_ended'                  => null,
             'total_questions'             => $totalQuestionCount,
             'correct_answers'             => 0,
-            'member_answers'              => json_encode($results) 
+            'member_answers'              => json_encode($results),
+            'valid'                         => true,
         ]);
 
 
@@ -179,7 +185,7 @@ class AnswersAPIController extends Controller
         $answers    = $request->get('answers');
 
         //get answer keys
-        $answerKeys = Questions::select('question_answer_key.question_id', 'question_answer_key.choice_id', 'question_choices.choice')
+        $answerKeys = MiniTestQuestion::select('question_answer_key.question_id', 'question_answer_key.choice_id', 'question_choices.choice')
                         ->leftJoin('question_answer_key', 'questions.id', '=', 'question_answer_key.question_id')
                         ->leftJoin('question_choices', 'question_choices.id', '=', 'question_answer_key.choice_id')
                         ->where('category_id', $categoryID)
@@ -211,6 +217,7 @@ class AnswersAPIController extends Controller
             $answer_question_id     = $answer['question_id'];
             $question               = $answer['question_text'];
             $selected_choice_text   = $answer['selected_choice_text'];
+            $choices                = $answer['choices'];
 
             if ($answer_choice_id == $correctAnswers[$answer_question_id]['choice_id']) 
             {
@@ -221,6 +228,8 @@ class AnswersAPIController extends Controller
                 //$results[$answer_question_id] = [
                 $results[] = [
                     'question'              => $question,
+                    'choices'               => $choices,
+
                     'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],
                     "question_id"           => $answer['question_id'],
                     'answer_choice_id'      => $answer_choice_id,
@@ -234,6 +243,8 @@ class AnswersAPIController extends Controller
                 //$results[$answer_question_id] = [
                 $results[] = [
                     'question'              => $question,
+                    'choices'               => $choices,
+
                     'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],
                     "question_id"           => $answer['question_id'],
                     'answer_choice_id'      => $answer_choice_id,
@@ -249,6 +260,8 @@ class AnswersAPIController extends Controller
                 $results[] = [
                 
                     'question'              => $question,
+                    'choices'               => $choices,
+
                     'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],
                     "question_id"           => $answer['question_id'],
                     'answer_choice_id'      => null,
@@ -308,7 +321,7 @@ class AnswersAPIController extends Controller
 
         
 
-        $answerKeys = Questions::select('question_answer_key.question_id', 'question_answer_key.choice_id', 'question_choices.choice')
+        $answerKeys = MiniTestQuestion::select('question_answer_key.question_id', 'question_answer_key.choice_id', 'question_choices.choice')
                         ->leftJoin('question_answer_key', 'questions.id', '=', 'question_answer_key.question_id')
                         ->leftJoin('question_choices', 'question_choices.id', '=', 'question_answer_key.choice_id')
                         ->where('category_id', $categoryID)

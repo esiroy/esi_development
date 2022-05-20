@@ -161,6 +161,7 @@
                                 :desiredschedule="{{ json_encode($desiredSchedule) }}" 
                                 :latestreportcard="{{ json_encode($latestReportCard) }}" 
                                 :currentmemberlevel="{{ json_encode($currentMemberlevel) }}" 
+                                usertype="{{ Auth::user()->user_type }}"                  
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />
                         </div>

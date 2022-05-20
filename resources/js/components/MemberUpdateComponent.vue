@@ -1272,7 +1272,6 @@
 
 
 
-
             <div id="member-desired-schedule" class="section">
                 <div class="card-title bg-gray p-1 mt-4">
                     <div class="pl-2 font-weight-bold small">
@@ -1341,6 +1340,34 @@
             </div>
 
 
+
+            <div id="member-desired-schedule" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Mini-Test Results</div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small text-center">
+                                {{ "Mini-Test" }}
+                            </div>
+                            <div class="col-10">
+                                <member-mini-test-viewer-component               
+                                        :usertype="this.usertype"
+                                        :memberinfo="this.memberinfo"             
+                                        :api_token="this.api_token" 
+                                        :csrf_token="this.csrf_token"
+                                    />    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+      
+
             <div id="submit-button" class="section row py-4">
                 <div class="col-2"></div>
                 <div class="col-3 text-left">
@@ -1370,6 +1397,7 @@ import EikenScoreComponent from "./scores/EikenScoreComponent.vue";
 import TeapScoreComponent from "./scores/TeapScoreComponent.vue";
 import ToeicWritingScoreComponent from "./scores/ToeicWritingScoreComponent.vue";
 
+import MemberMiniTestViewerComponent from './backend/member/MemberMiniTestViewerComponent.vue'
 
 import Vuelidate from "vuelidate";
 import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
@@ -1391,6 +1419,7 @@ export default {
         ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, ToeicWritingScoreComponent, 
         EikenScoreComponent,
         TeapScoreComponent,
+        MemberMiniTestViewerComponent,
     },
     props: {
         agentinfo: {
@@ -1436,6 +1465,10 @@ export default {
         shifts : {
             type: Array
         },        
+
+        usertype: {
+            type: String
+        },
 		csrf_token: {
 			type: String
 		},
