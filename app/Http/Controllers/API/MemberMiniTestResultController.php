@@ -17,7 +17,7 @@ class MemberMiniTestResultController extends Controller
      */
     public function get(Request $request, MiniTestResult $miniTestResult)
     {        
-        try {           
+        try {     
 
             $memberID = $request->get('memberID');
 
