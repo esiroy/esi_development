@@ -1,6 +1,6 @@
 <template>
 
-    <div class="container">      
+    <div class="container" v-if="questions.length >= 1">      
 
         <div v-if="this.categoryLoading == true" class="text-center">  
             <div class="pt-4 text-secondary">
@@ -185,15 +185,20 @@
 
                 <h5 class="mb-4 text-dark">                       
                     Your have {{ totalCorrectAnswers }} correct answers out of {{ totalQuestions}}                  
-                </h5>                
-              
+                </h5>      
+
+
+                <button class="btn btn-primary mb-4" v-on:click="redirectHomePage()"> Finish </button>   
+                
 
             </div>
+        </div>   
+    </div>
 
-
-
+    <div v-else>
+        <div class="py-4 text-center small text-danger">
+            Sorry, we still don't have any question for this test category, please check back later.
         </div>
-
     </div>
 
 </template>
@@ -201,8 +206,6 @@
 <script>
     import {Helpers} from "../../helpers/helpers.js";
     import HelpersComponents from "../../helpers/helper_components.js";
-
-    name: "questions-component";
     
     export default {   
         name: "questions-component",
@@ -620,8 +623,11 @@
                     this.loading = false;
                                 
                 });            
-            },            
-              
+            },
+            redirectHomePage() {
+            
+                 window.location.replace('/home');
+            }
         },        
         mounted () 
         {          
