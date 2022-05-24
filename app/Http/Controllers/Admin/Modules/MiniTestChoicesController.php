@@ -7,7 +7,9 @@ use App\Models\MiniTestAnswerKey;
 use App\Models\MiniTestChoice;
 use App\Models\MiniTestQuestion;
 use App\Models\MiniTestCategory;
-use Auth;
+
+use Auth, Gate, Validator;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 
 class MiniTestChoicesController extends Controller
@@ -19,6 +21,8 @@ class MiniTestChoicesController extends Controller
      */
     public function index($category_id, $question_id, Request $request)
     {
+
+        abort_if(Gate::denies('minitest_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $added_choice_id = $request->added_choice_id ?? null;
         $updated_choice_id = $request->updated_choice_id ?? null;
@@ -44,7 +48,7 @@ class MiniTestChoicesController extends Controller
      */
     public function create()
     {
-        //
+         abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
     }
 
     /**
@@ -55,6 +59,8 @@ class MiniTestChoicesController extends Controller
      */
     public function store($category_id, $question_id, Request $request)
     {
+
+        abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $created = MiniTestChoice::create([
             'question_id' => $question_id,
@@ -100,7 +106,7 @@ class MiniTestChoicesController extends Controller
      */
     public function show($id)
     {
-        //
+        abort_if(Gate::denies('minitest_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');   
     }
 
     /**
@@ -111,6 +117,10 @@ class MiniTestChoicesController extends Controller
      */
     public function edit($category_id, $question_id, $choice_id)
     {
+
+        abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         $item = MiniTestChoice::where('id', $choice_id)->where('valid', true)->first();
 
 
@@ -132,6 +142,8 @@ class MiniTestChoicesController extends Controller
      */
     public function update($category_id, $question_id, $choice_id, MiniTestChoice $miniTestChoice, Request $request)
     {
+
+        abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $choice = $miniTestChoice->where('id', $choice_id)->first();
 
@@ -189,6 +201,9 @@ class MiniTestChoicesController extends Controller
      */
     public function destroy($category_id, $question_id, $choice_id)
     {
+
+        abort_if(Gate::denies('minitest_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $item = MiniTestChoice::where('valid', true)->where('id', $choice_id)->first();
 
         if ($item) {

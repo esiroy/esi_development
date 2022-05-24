@@ -11,11 +11,11 @@
 
 
 
-                @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER' || Auth::user()->user_type == 'TUTOR' )
+                @can('manage_access', Auth::user())
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/minitest/categories') }}">
                   Mini Test
                 </a>
-                @endif
+                @endcan
 
                 
                 @can('report_access', Auth::user())

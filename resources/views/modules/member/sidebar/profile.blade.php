@@ -135,7 +135,10 @@
                     <!--(test total reserved current month: ) {{ $scheduleItemObj->getTotalReservedForCurrentMonth($memberInfo->user_id) }}-->
 
                     <div class="text-secondary" title="lessonLimit">Class: 月額会員対象</div>
-                    <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>
+                    <div>
+                        毎月 <span id="lessonLimit">{{ $memberInfo->getLessonLimit() }}</span>回クラス (あと　残り 
+                        <span id="monthlyLessonsLeft"> {{ $memberInfo->getMonthlyLessonsLeft() }}</span> 回)
+                    </div>
 
                 @else
 
