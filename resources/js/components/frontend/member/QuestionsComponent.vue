@@ -1,6 +1,6 @@
 <template>
 
-    <div class="container bg-light">      
+    <div class="container">      
 
         <div v-if="this.categoryLoading == true" class="text-center">  
             <div class="pt-4 text-secondary">
@@ -11,9 +11,9 @@
                 <span class="sr-only">Loading...</span>
             </div>
         </div>
+       
 
-
-        <div v-if="this.categoryLoading == false"  class="intro pt-4">
+        <div v-if="this.categoryLoading == false"  class="intro py-4">
             <h4 class="text-primary">{{ this.category.name }}</h4>
             <div class="text-success">Instructions  : {{ this.category.instructions }}</div>
             <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
@@ -23,17 +23,23 @@
                 <span class="font-weight-bold">
                   
                     <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left,  You will be deducted 1 free point if you proceed </span>
-
-                    <span class="text-danger" v-else>  Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 point if you proceed </span>                   
+                    <span class="text-danger" v-else>  
+                        <div v-if="memberinfo['membership'] == 'Monthly'">
+                            Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 monthly credit if you proceed 
+                        </div>
+                        <div v-else>  
+                            Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 point if you proceed 
+                        </div>
+                    </span>
                 </span>                
                 
                 <div class="mt-2 text-secondary">
-                    You have {{ this.miniTestSubmittedCount }} sumbitted Mini Test in last 7 days: 
+                    You have {{ this.miniTestSubmittedCount }} submitted Minitest in last 7 days: 
                 </div>                
             </div>
 
             <!-- BUTTON TO START -->
-            <div v-show="this.started == false" class="mt-4">
+            <div v-show="this.started == false" class="my-4">
                 <button v-on:click="start()" class="btn btn-success" >
                     <i class="fa fa-list-alt" aria-hidden="true"></i>
                     Start Test 
@@ -65,89 +71,68 @@
                 </b-progress>
             </div>
          
-            <div v-if="multiple == true && submitted == false">
+            <div id="multipleViewQuestions" v-if="multiple == true && submitted == false">
 
-                <div id="questions" 
-                    class="row" 
-                    v-for="(question, questionIndex) in this.questions"
-                    :key="questionIndex"> 
+                <div class="questions row" v-for="(question, qIndex) in this.questions" :key="qIndex"> 
 
                     <div class="question container col-12">
+                        <span class="font-weight-bold">
+                            {{ (qIndex + 1)  +"." }} {{ question.question }}
+                        </span>
+                        <b-form-group>
+                            <b-form-radio :name="'question_'+ question.id +''"
+                            v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
+                            v-bind:value="choice.id"
+                            class="ml-3 pt-2"> {{ choice.choice }} </b-form-radio>
+                        </b-form-group>
+                    </div>
+
+                     <div class="my-3 small lh-sm border-bottom w-100"></div>          
+
+                </div>
+
+                <div class="py-4">
+                    <button class="btn btn-success" v-on:click="checkSubmittedAnswers()"> Submit Answers </button>   
+                </div>
+            </div>
+
+
+            <!-- START SINGLE VIEWER -->
+            <div id="singleViewQuestions" v-if="multiple == false && submitted == false">
+
+                <div class="questions row" v-for="(question, qIndex) in this.questions" :key="qIndex"> 
+                    
+                    <div class="question container col-12" v-show="qIndex == questionIndex">
 
                         <span class="font-weight-bold mb-3">
-                            {{ (questionIndex + 1)  +"." }} {{ question.question }}
+                            {{ (qIndex + 1)  +"." }} {{ question.question }}
                         </span>
-
-
-
-                        <b-form-group >
-
-                            <b-form-radio
-                            :name="'question_'+ question.id +''"
-                            v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
-                            v-on:change="updateSelected(question, choice)"
+                        <b-form-group>
+                            <b-form-radio :name="'question_'+ question.id +''" v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
                             v-bind:value="choice.id"
-                            class="ml-3 pt-2">
-                                {{ choice.choice }}
-                            </b-form-radio>
+                            class="ml-3 pt-2"> {{ choice.choice }} </b-form-radio>
 
                             <div class="pb-3 mb-0 small lh-sm border-bottom w-100"></div>          
 
                         </b-form-group>
-
                     </div>
-
 
                 </div>
 
-                <div class="mt-4">
-                    <button class="btn btn-success" v-on:click="checkMultiSubmitAnswers()"> Submit Answers </button>   
-                </div>            
+                <div class="py-4">
+                    <button class="btn btn-primary" v-on:click="getPrevQuestion()" v-show="(count - 1) >= 1"> Previous {{ count - 1 }} </button>     
+                    <button class="btn btn-primary" v-on:click="getNextQuestion()" v-show="count < this.questionsLength"> Next {{ count }} </button>
+                    <button class="btn btn-success" v-on:click="checkSubmittedAnswers()" v-show="count >= this.questionsLength"> Submit Answers </button>   
+                </div>          
                 
             </div>
 
-            <div class="row" v-if="multiple == false && submitted == false">
+            
+            <div id="result" v-if="submitted == true && loading == false">
 
-
-
-                <div id="question_container" class="col-7">
-                    <div id="questions">
-                        <div class="py-2">                           
-                            <span class="font-weight-bold mb-3">{{ (count)  +"." }} {{ questionViewer.question }}</span>                          
-                        </div>
-
-                        <div :class="'choice_container'" 
-                        v-for="(choice, choiceIndex) in questionViewer.choices" 
-                        :key="choiceIndex">
-
-                            <input type="radio"
-                                v-model="selected_choice" 
-                                :name="choice.id" 
-                                :id="choice.id"
-                                @click="updateSelected(questionViewer, choice)"                            
-                                v-bind:value="{ id: choice.id, choice: choice.choice }">
-
-                                <label :for="choice.choice">{{ choice.choice }}</label><br>
-                        </div>   
-
-                        <div class="mt-4">
-                            <button class="btn btn-primary" v-on:click="getPrevQuestion()" v-show="(count - 1) >= 1"> 
-                                Previous <!--{{ count - 1 }}--> 
-                            </button>     
-                            <button class="btn btn-primary" v-on:click="getNextQuestion()" v-show="count < this.questionsLength">
-                                Next <!--{{ count }}--> 
-                             </button>
-
-                            <button class="btn btn-success" v-on:click="checkSubmitAnswers()" v-show="count >= this.questionsLength"> Submit Answers </button>   
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="answer" v-if="submitted == true && loading == false">  
-
-                <h4 class="text-primary mb-1"> <strong> Your Test Result </strong></h4>
+                <h4 class="text-primary mb-1"> 
+                    <strong> Your Test Result </strong>
+                </h4>
 
                 <h5 class="mb-4 text-dark">                       
                     Your have {{ totalCorrectAnswers }} correct answers out of {{ totalQuestions}}                  
@@ -204,6 +189,9 @@
               
 
             </div>
+
+
+
         </div>
 
     </div>
@@ -215,10 +203,11 @@
     import HelpersComponents from "../../helpers/helper_components.js";
 
     name: "questions-component";
+    
     export default {   
-        name: "member-time-manager-component",
+        name: "questions-component",
         components: {    
-            HelpersComponents
+            HelpersComponents,
         }, 
         props: {
             category: Object,
@@ -230,10 +219,15 @@
         data() {
             return {
 
+                
+
                 miniTestID: null,
                 miniTestSubmittedCount: 0,
                 freeMiniTest: 0,
                 limit: 2,
+
+                totalQuestions: 0,
+                totalCorrectAnswers: 0,
 
 
                 categoryLoading: true,
@@ -245,7 +239,6 @@
                 myIntervalTimer: null,
 
                 timerSpeed: 1000,
-
                 timer: 0,
                 timerValue: 0,
                 timerMax: 0,
@@ -259,21 +252,17 @@
 
                 //query
                 questionsLength: 0,
+
                 questions: [],
                 choices: [],
 
                 selected_choice: null,
-                //
-                multiple_selected_choice: [],
+         
 
 
                 //member answers list
-                answers: [],
-
-                orderedAnswers: [],
-
-                choiceAnswers: [],
-
+                answeredQuestionCount: 0,
+                answers: [],       
                 results: [],            
             }
         },
@@ -307,9 +296,7 @@
                     {
                         this.questions = response.data.questions;
                         this.choices = response.data.choices;
-                        this.questionsLength = Object.keys(this.questions).length    
-                        this.questionViewer = this.questions[this.questionIndex];
-
+                        this.questionsLength = Object.keys(this.questions).length  
 
                         this.miniTestSubmittedCount = response.data.miniTestSubmittedCount;
                         this.countFreeMiniTest();     
@@ -333,7 +320,7 @@
                 let data  = {
                     'member_id': this.memberinfo.id,
                     'category_id': this.category.id,    
-                    'answers' : this.choiceAnswers,               
+                    'answers' : this.answers,               
                 }
 
                 await this.getURL(url, data).then(response => 
@@ -342,17 +329,31 @@
                     {
                         //RECORD START TIME, AND get the id for minitest to update the TABLE END TIME WHEN SUBMITTED
                         this.miniTestID = response.data.id;
+                        this.startTimer();
 
 
-                        //update mini test count
-                        this.miniTestSubmittedCount = response.data.miniTestSubmittedCount;
-                        this.countFreeMiniTest(); 
-
-                        document.getElementById("total_credits").innerHTML = response.data.totalCreditsFormatted;
-                        //total credits
+                        if (response.data.membershipType == "Monthly")  
+                        {
+                        
+                            //update mini test count
+                            this.miniTestSubmittedCount = response.data.miniTestSubmittedCount;
+                            this.countFreeMiniTest(); 
+                            
+                            //total monthly credits
+                            document.getElementById("monthlyLessonsLeft").innerHTML = response.data.totalMonthlyCredits;
+                        
+                        } else if (response.data.membershipType == "Point Balance" || response.data.membershipType  == "Both") {
                         
 
-                        this.startTimer();
+                            //update mini test count
+                            this.miniTestSubmittedCount = response.data.miniTestSubmittedCount;
+                            this.countFreeMiniTest(); 
+
+                            //total credits
+                            document.getElementById("total_credits").innerHTML = response.data.totalCreditsFormatted;
+                        
+                        }
+
                         
                     } else {
                     
@@ -366,23 +367,16 @@
 
                     this.loading = false;
 
-                    
-
                 });  
 
 
             },
             startTimer() {
-
-
                 this.seconds = 60;
                 this.secondsHand = 60;
                 this.myIntervalTimer = setInterval(this.checkMinute, this.timerSpeed);
-
-
                 this.started = true;
                 this.loading = false;
-
             },
             checkMinute() 
             {
@@ -400,7 +394,6 @@
                 {      
                     this.secondsHand = 60;                            
                 }
-
 
                 //Flash Time logic
                 if (this.secondsHand == 60) 
@@ -426,122 +419,56 @@
             flashTimer(timer) 
             {
                 this.timerValue = timer;
-                if ( parseFloat(this.timerValue) <= 0) {
+                if ( parseFloat(this.timerValue) <= 0) 
+                {
                     clearInterval(this.myIntervalTimer);                
                     this.submitAnswers();
                 }
             },
-            updateSelected(questionViewer, choice) 
-            {
-                const index = this.answers.findIndex((obj) => obj.question_id === questionViewer.id);
-
-                if (index === -1) {
-                    this.answers.push({
-                        question_id: questionViewer.id,
-                        question:    questionViewer.question,
-                        choice_id:  choice.id,                            
-                        choice:    choice.choice,    
-                    });
-                } else {
-
-                    this.answers[index] = {
-                        question_id: questionViewer.id,
-                        question:    questionViewer.question,
-                        choice_id:  choice.id,                            
-                        choice:    choice.choice,                            
-                    }
-                }
-
-
-                let QuestionIndex = this.questions.findIndex((obj) => obj.id === questionViewer.id);
-
-                this.orderedAnswers[QuestionIndex] = {                
-                    question_id: questionViewer.id,
-                    question:    questionViewer.question,
-                    choice_id:  choice.id,                            
-                    choice:    choice.choice,                    
-                }
-
-                this.$forceUpdate();
-            },
-            autoSelect() {            
-                const index = this.answers.findIndex((obj) => {
-                    if (obj.question_id === this.questionViewer.id) {
-                        document.getElementById(obj.choice_id).checked = true;
-                        this.selected_choice = { id: obj.choice_id, choice: obj.choice }
-                    }
-                });
-                return index;
-            },
             getPrevQuestion() {
                 this.count--;
                 this.questionIndex--;
-
-                //show the current question
-                this.questionViewer = this.questions[this.questionIndex];
-
-                this.$nextTick(() => {
-                    let isElementFound = document.getElementById(this.questionViewer.id);
-                    this.autoSelect();
-                    if (isElementFound) {
-                        document.getElementById(this.questionViewer.id).checked = false;
-                    }                    
-                });
             },
             getNextQuestion() 
-            {               
-                if (this.selected_choice == null) {
-                    alert ("no choice selected");
-                    return null;
-                } else {
+            {   
+                let question = this.questions[this.questionIndex];
+                let selected_element = document.querySelector('input[name=question_'+ question.id +']:checked');  
 
-                    const index = this.answers.findIndex((obj) => obj.question_id === this.questionViewer.id);
-                    if (index === -1) {
-                        this.answers.push({
-                            question_id: this.questionViewer.id,
-                            question:    this.questionViewer.question,
-                            choice_id:  this.selected_choice.id,
-                            choice:    this.selected_choice.choice
-                        });
-                    } else {
-                        this.answers[index] = {
-                            question_id: this.questionViewer.id,
-                            question:    this.questionViewer.question,
-                            choice_id:  this.selected_choice.id,                            
-                            choice:    this.selected_choice.choice,                            
-                        }
-                    }
+                if (selected_element) 
+                {
+                    this.questionIndex++;
+                    this.count++;
+
+                } else {                
+
+                    this.$bvModal.msgBoxOk('Please select your answer', {
+                        title: 'Notification',
+                        size: 'md',
+                        buttonSize: 'sm',
+                        okVariant: 'primary',
+                        headerClass: 'p-2 border-bottom-0',
+                        footerClass: 'p-2 border-top-0',
+                        centered: true
+                    })
+                    .then(value => {
+                        //this.value = value
+                    })
+                    .catch(err => {
+                        // An error occurred
+                    })
+                    
                 }
-
-                //increment show the next question
-                this.count++;
-                this.questionIndex++;
-
-                this.questionViewer = this.questions[this.questionIndex];
-
-                this.$nextTick(() => {
-                     this.selected_choice = null;
-                     this.autoSelect();
-                        let isElementFound = document.getElementById(this.questionViewer.id);
-                        if (isElementFound) {
-                            document.getElementById(this.questionViewer.id).checked = false;
-                        }
-                });                
             },
+
             async getURL(url, data) {          
                 return Helpers.getURL(url, data);
             },
-            checkSubmitAnswers() {
-                //if (this.selected_choice == null) {
-                   // alert ("no choice selected");
-                    //return null;
-                //} else {
-                    this.submitAnswers();
-                //}          
-            },
+           
             getAnswers() 
             {
-                this.choiceAnswers = [];
+                this.answeredQuestionCount = 0; //reset
+
+                this.answers = [];
 
                 this.questions.forEach((question, index) => 
                 {
@@ -549,6 +476,8 @@
                     
                     if (selected_element) 
                     {
+
+                        this.answeredQuestionCount++ 
 
                         let choices     = question.choices;
                         let choiceText  = "";
@@ -561,7 +490,7 @@
                             }                            
                         });
 
-                        this.choiceAnswers.push({
+                        this.answers.push({
                             question_id             : question.id,
                             question_text           : question.question,
                             choices                 : question.choices,
@@ -571,7 +500,7 @@
 
                     } else {
 
-                        this.choiceAnswers.push({
+                        this.answers.push({
                             question_id         : question.id,
                             question_text      : question.question,
                             choices             : question.choices,
@@ -583,22 +512,73 @@
                     }
 
                 });
-
-
             },
-            checkMultiSubmitAnswers() 
+            checkSubmittedAnswers() 
             {
+                if (this.multiple == true) 
+                {
+                    this.getAnswers();
 
-                this.loading = true;
-                this.getAnswers();
+                    console.log( this.questionsLength + "  ==  " +  this.answeredQuestionCount )
+
+                    if (this.questionsLength == this.answeredQuestionCount) 
+                    {
+                        this.loading = true;
+                        this.submitAnswers();                    
+                    } else {
+                     
+                        this.$bvModal.msgBoxOk('You still have time left, please answer all questions', {
+                            title: 'Notification',
+                            size: 'md',
+                            buttonSize: 'sm',
+                            okVariant: 'primary',
+                            headerClass: 'p-2 border-bottom-0',
+                            footerClass: 'p-2 border-top-0',
+                            centered: true
+                        })
+                        .then(value => {
+                            //this.value = value
+                        })
+                        .catch(err => {
+                            // An error occurred
+                        })
+
+                    }                
                 
-               // if (this.questionsLength == this.answers.length) {
+                } else {
+                
+                    let question = this.questions[this.questionIndex];
+                    let selected_element = document.querySelector('input[name=question_'+ question.id +']:checked');  
 
-                this.submitAnswers();
-                  
-               // } else {
-                  //  alert ("please answer all");
-              //  }
+                    if (selected_element) {
+
+                        this.loading = true;
+                        this.getAnswers();
+                        this.submitAnswers();
+
+                    } else {                
+                    
+
+                       this.$bvModal.msgBoxOk('Please select your answer', {
+                            title: 'Notification',
+                            size: 'md',
+                            buttonSize: 'sm',
+                            okVariant: 'primary',
+                            headerClass: 'p-2 border-bottom-0',
+                            footerClass: 'p-2 border-top-0',
+                            centered: true
+                        })
+                        .then(value => {
+                            //this.value = value
+                        })
+                        .catch(err => {
+                            // An error occurred
+                        })
+
+                    }
+
+                }
+
             },
 
             async submitAnswers() 
@@ -613,7 +593,7 @@
 
                     'member_id': this.memberinfo.id,
                     'category_id': this.category.id,
-                    'answers' : this.choiceAnswers,
+                    'answers' : this.answers,
                 }
                 
                 await this.getURL(url, data).then(response => 
@@ -629,11 +609,7 @@
 
 
                     } else {
-                    
-
-
                         alert (response.data.message)
-                
                     
                     }
 

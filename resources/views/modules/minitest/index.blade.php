@@ -19,6 +19,7 @@
                 <!--[start sidebar]-->
                 @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->
+
                 <div class="col-md-9">
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
@@ -65,5 +66,5 @@
 
 
 </div>
-</div>
+
 @endsection

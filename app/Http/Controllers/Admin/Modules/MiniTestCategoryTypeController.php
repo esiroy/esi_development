@@ -7,10 +7,10 @@ use Illuminate\Http\Request;
 
 use App\Models\MiniTestCategoryType;
 
-use Auth;
-
+use Auth, Gate, Validator;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\Rule;
-use Validator;
+
 
 class MiniTestCategoryTypeController extends Controller
 {
@@ -21,6 +21,10 @@ class MiniTestCategoryTypeController extends Controller
      */
     public function index()
     {
+
+        abort_if(Gate::denies('minitest_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         $items = MiniTestCategoryType::where('valid', true)->orderBy('id', 'DESC')->paginate(Auth::user()->items_per_page);     
 
         return view('admin.modules.minitest.type.index', compact('items'));
@@ -33,7 +37,7 @@ class MiniTestCategoryTypeController extends Controller
      */
     public function create()
     {
-        //
+         abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
     }
 
     /**
@@ -44,6 +48,9 @@ class MiniTestCategoryTypeController extends Controller
      */
     public function store(Request $request)
     {
+
+        abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $name = $request->name;
         $parent_id = $request->parent_id;
 
@@ -87,7 +94,7 @@ class MiniTestCategoryTypeController extends Controller
      */
     public function show($id)
     {
-        //
+        abort_if(Gate::denies('minitest_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');   
     }
 
     /**
@@ -98,6 +105,8 @@ class MiniTestCategoryTypeController extends Controller
      */
     public function edit($id)
     {
+
+        abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $types = MiniTestCategoryType::where('valid', true)
                     ->orderBy('id', 'DESC')
@@ -166,6 +175,9 @@ class MiniTestCategoryTypeController extends Controller
      */
     public function destroy($id)
     {
+
+        abort_if(Gate::denies('minitest_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $item = MiniTestCategoryType::where('valid', true)->where('id', $id)->first();
 
         $deleted = $item->update([

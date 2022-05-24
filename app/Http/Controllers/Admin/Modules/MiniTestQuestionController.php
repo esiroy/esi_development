@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\MiniTestCategory;
 use App\Models\MiniTestQuestion;
 
-use Auth;
+use Auth, Gate, Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class MiniTestQuestionController extends Controller
 {
@@ -19,6 +20,9 @@ class MiniTestQuestionController extends Controller
      */
     public function index($id, Request $request)
     {
+
+        abort_if(Gate::denies('minitest_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
         $added_question_id = $request->added_question_id ?? null;
         $updated_question_id = $request->updated_question_id ?? null;
 
@@ -39,7 +43,7 @@ class MiniTestQuestionController extends Controller
      */
     public function create()
     {
-        //
+         abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
     }
 
     /**
@@ -50,6 +54,10 @@ class MiniTestQuestionController extends Controller
      */
     public function store(Request $request)
     {
+
+        abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         $created = MiniTestQuestion::create([
             'category_id'   => $request->category_id,
             'question'      => $request->question,
@@ -74,6 +82,10 @@ class MiniTestQuestionController extends Controller
      */
     public function show($id)
     {
+
+        abort_if(Gate::denies('minitest_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');   
+
+
         echo "showing test question not available";
     }
 
@@ -85,6 +97,9 @@ class MiniTestQuestionController extends Controller
      */
     public function edit($category_id, $question_id)
     {
+
+        abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
 
        $category = MiniTestCategory::find($category_id);
 
@@ -137,6 +152,8 @@ class MiniTestQuestionController extends Controller
      */
     public function destroy($category_id, $id)
     {
+         abort_if(Gate::denies('minitest_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+         
         $item = MiniTestQuestion::where('valid', true)->where('id', $id)->first();
 
         if ($item) {

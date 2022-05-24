@@ -50,13 +50,33 @@ class dummyController extends Controller
 
     public function index(MiniTestResult $miniTestResult) 
     {
+
+        $today = date('Y-m-d');     
+        $todayDateToUpper = date('Y-m-d 23:59:59');
+
     
+        $prevDate = date('Y-m-d',(strtotime ( "-7 day" , strtotime ($todayDateToUpper) ) ));        
+        echo "PREVIOUS DATE: " . $prevDate ." - " .  $todayDateToUpper ."<BR>";
 
-        echo Auth::user()->memberInfo->lesson_shift_id ."<BR>";
 
-        $count = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
 
-        echo $count;
+        $items = MiniTestResult::where('user_id', 148)
+            ->where('valid', true)    
+            ->whereBetween('time_started', array($prevDate, $todayDateToUpper))
+            ->orderBy('time_started', 'ASC') 
+            ->get();
+
+
+        foreach($items as $item) {
+            echo $item->time_started;
+            echo "<BR>";
+
+        }
+
+    
+        //$count = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
+
+        //echo $count;
     }
     public function testMinites(Request $request) {
 

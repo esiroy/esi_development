@@ -1,17 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\Admin\Modules;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\MiniTestCategory;
 use App\Models\MiniTestCategoryType;
 
-
-use Auth;
+use Auth, Gate, Validator;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\Rule;
-use Validator;
+
 
 class MiniTestCategoriesController extends Controller
 {
@@ -22,6 +21,9 @@ class MiniTestCategoriesController extends Controller
      */
     public function index()
     {
+
+        abort_if(Gate::denies('minitest_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
 
         $types = MiniTestCategoryType::where('valid', true)
                     ->orderBy('id', 'DESC')
@@ -42,7 +44,7 @@ class MiniTestCategoriesController extends Controller
      */
     public function create()
     {
-        //
+        abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
     }
 
     /**
@@ -53,6 +55,10 @@ class MiniTestCategoriesController extends Controller
      */
     public function store(Request $request)
     {
+
+        abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
@@ -102,7 +108,8 @@ class MiniTestCategoriesController extends Controller
      */
     public function show($id)
     {
-        //
+        abort_if(Gate::denies('minitest_show'), Response::HTTP_FORBIDDEN, '403 Forbidden');   
+      
     }
 
     /**
@@ -113,6 +120,9 @@ class MiniTestCategoriesController extends Controller
      */
     public function edit($id)
     {
+
+        abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
 
         $types = MiniTestCategoryType::where('valid', true)
                     ->orderBy('id', 'DESC')
@@ -132,6 +142,10 @@ class MiniTestCategoriesController extends Controller
      */
     public function update($id, Request $request)
     {        
+
+        abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
@@ -186,6 +200,10 @@ class MiniTestCategoriesController extends Controller
      */
     public function destroy($id)
     {
+
+        abort_if(Gate::denies('minitest_delete'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+
         $item = MiniTestCategory::where('valid', true)->where('id', $id)->first();
 
         $deleted = $item->update([
