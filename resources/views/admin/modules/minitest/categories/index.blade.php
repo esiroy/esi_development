@@ -9,7 +9,10 @@
             <nav class="submenu nav nav-pills flex-column flex-sm-row">
                 <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-left-0 border-primary text-white" href="{{ url('admin/minitest/category/type') }}">Question Category Types</a>               
                 <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-primary  active" href="{{  url('admin/minitest/categories') }}">Question Categories</a>
+                <a class="flex-sm text-sm-center nav-link font-weight-bold rounded-0 border-right border-left-0 border-primary text-white" href="{{ url('admin/minitest/category/settings') }}">Settings</a>               
+                
             </nav>
+            
         </div>
     </div>
 

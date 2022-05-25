@@ -288,7 +288,11 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 		Route::resource('/minitest/categories/{category_id}/questions', 'Modules\MiniTestQuestionController',  ['names' => 'minitest.questions' ]);
 		Route::resource('/minitest/categories/{category_id}/questions/{question_id}/choices', 'Modules\MiniTestChoicesController',  ['names' => 'minitest.choices' ]);
 
-       
+        //settings
+        Route::resource('/minitest/category/settings', 'Modules\MiniTestSettingsController',  ['names' => 'minitest.category.settings' ]);
+
+
+
         Route::resource('/attachfile', 'Modules\AttachFileController');
 
         //Admin Writing

@@ -8,7 +8,7 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/home') }}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Minitest</li>
+                <li class="breadcrumb-item active" aria-current="page">Mini Test</li>
             </ol>
         </nav>
 
@@ -22,7 +22,7 @@
                 <div class="col-md-9">
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
-                            Minitest
+                            Mini Test
                         </div>
 
                         <div class="card-body">
