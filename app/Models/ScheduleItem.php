@@ -450,7 +450,9 @@ class ScheduleItem extends Model
         $writingPoints = WritingEntries::where('user_id', $memberID)->where('type', 'Monthly')->sum('total_points');
 
 
-        $miniTestCount =  MiniTestResult::where('user_id', $memberID)->count();
+        $miniTestCount =  MiniTestResult::where('user_id', $memberID)
+                            ->where('type', 'Monthly')
+                            ->count();
 
 
         $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints + $miniTestCount;
