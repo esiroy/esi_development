@@ -356,6 +356,9 @@
 
                             //total credits
                             document.getElementById("total_credits").innerHTML = response.data.totalCreditsFormatted;
+
+                            //Sidebar
+                            document.getElementById("creditsLeft").innerHTML = response.data.totalCredits;
                         
                         }
 

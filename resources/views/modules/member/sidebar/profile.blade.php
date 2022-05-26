@@ -107,9 +107,9 @@
 
                  
                         @if ($memberInfo->isMemberCreditExpired(Auth::user()->id)) 
-                            <span class="text-danger">{{ "0" }}</span>
+                            <span  id="creditsLeft" class="text-danger">{{ "0" }}</span>
                         @else 
-                            <span>
+                            <span  id="creditsLeft">
                                 @php
                                 $transaction = new \App\Models\AgentTransaction();
                                 echo $transaction->getCredits(Auth::user()->id);
@@ -146,17 +146,19 @@
 
                         <div class="pt-1">
                             <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :</span>                            
-                            <span>
+                           
                                     
                                 @if ($memberInfo->isMemberCreditExpired(Auth::user()->id)) 
                                     <span class="text-danger">{{ "0" }}</span>
                                 @else 
+                                    <span id="creditsLeft">
                                     @php
                                     $transaction = new \App\Models\AgentTransaction();
                                     echo $transaction->getCredits(Auth::user()->id);
                                     @endphp
+                                    </span>
                                 @endif
-                            </span>                            
+                                                       
                         </div>                       
 
                         <div class="pt-2">
