@@ -24,7 +24,7 @@
                 <div id="point-information" class="border p-4 mb-4" v-show="this.started == false">
                     <span class="font-weight-bold">
                     
-                        <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left,  You will be deducted 1 free point if you proceed </span>
+                        <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left</span>
                         <span class="text-danger" v-else>  
                             <div v-if="memberinfo['membership'] == 'Monthly'">
                                 Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 monthly credit if you proceed 
