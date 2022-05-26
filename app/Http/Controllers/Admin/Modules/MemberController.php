@@ -189,9 +189,10 @@ class MemberController extends Controller
                 $mergedAccounts  = null;
 
 
-            //report cards
+                //report cards
                 $reportCard = new ReportCard();
-                $latestReportCard = $reportCard->getLatest($mergedAccount->member_id);
+                //$latestReportCard = $reportCard->getLatest($mergedAccount->member_id);
+                $latestReportCard = $reportCard->getLatest($memberID);
 
                 //member CEFR Level
                 $memberLevel = new MemberLevel();      
