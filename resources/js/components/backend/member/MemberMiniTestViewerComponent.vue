@@ -25,13 +25,15 @@
                     <tbody>
 						
 						<tr v-if="items.length == 0">
-							<td>No result Found</td>
+							<td>No Result Found</td>
 						</tr>
 
                         <tr v-for="item in items" :key="item.id">
 							<td class="p-1">{{ item.id }}</td>
-							<td class="p-1">{{ item.name }}</td>
-							<td class="p-1">{{ item.type }}</td>
+							<td class="p-1">
+								<a href="" @click.prevent="showTestDetailModal(item)" >{{ item.name }}</a>
+							</td>
+							<td class="p-1" >{{ item.type }}</td>
                             <td class="p-1">{{ item.time_started }}</td>
 							<td class="p-1">{{ item.time_ended }}</td>
 							
@@ -65,21 +67,28 @@
 
 
 		<!--Note Modal -->
-		<b-modal id="miniTestDetailModal" title="Add Member Notes" size="xl" ok-only ok-title="Close">
+		<b-modal id="miniTestDetailModal" title="Mini-Test Result" size="xl" ok-only ok-title="Close">
 			<div class="row">
 				<div class="col-12" v-if="item !== null">
 
 					<h5 class="text-primary font-weight-bold">Category: {{ item.name }}</h5>
-					<h6 class="text-dark">Type: {{ item.type }}</h6>
+
+					<h6 class="font-weight-bold">Member Score: 
+						<span class="text-primary">{{ item.correct_answers }} / {{ item.total_questions }}</span>
+					</h6>
+
+					<h6 class="text-dark font-weight-bold">Type:
+						<span class="text-primary">{{ item.type }}</span>
+					</h6>
 
 					<div class="mt-4">
 						<div>
 							<span class="font-weight-bold">Time Started: </span>
-							{{ item.time_started }}
+							<span class="text-primary">{{ item.time_started }}</span>
 						</div>
 						<div>
 							<span class="font-weight-bold">Time Ended: </span>
-							{{ item.time_ended }}
+							<span class="text-primary">{{ item.time_ended }}</span>
 						</div>
 					</div>
 
@@ -134,6 +143,12 @@
 					</div>
 
 
+
+					<h6 class="font-weight-bold">Member Score: 
+						<span class="text-primary">{{ item.correct_answers }} / {{ item.total_questions }}</span>
+					</h6>
+			
+
 				</div>
 			</div>
 		</b-modal>
@@ -166,8 +181,9 @@ export default {
             perPage: 1
         };
     },
-    mounted: function() {
-       this. getMiniTests(1) 
+    mounted: function() 
+	{
+       this.getMiniTests(1) 
     },
     methods: {
 		confirmDelete(item) {
@@ -208,7 +224,7 @@ export default {
 					this.getNotes(this.currentPage);
 
 				} else {
-					alert ("error")
+					alert ("Error deleting please try again later")
 				}
 			})
 			.catch(function (error) {
@@ -244,11 +260,13 @@ export default {
 					this.items = response.data.items.data;
 
 				} else {
-					alert("error");
+
+					alert( response.data.items.message );
 				}
 			})
 			.catch(function(error) {
-				console.log("Error " + error);
+
+				alert("Error " + error);
 			});
 			
         }
