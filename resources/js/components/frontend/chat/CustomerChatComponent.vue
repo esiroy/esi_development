@@ -134,7 +134,7 @@
             post-action="/uploader/fileUploader"            
             :data="{ 
                 'current_chatbox_userid': this.current_chatbox_userid,
-                'message_type': 'MEMBER',
+                'message_type': 'MEMBER',            
                 'folder': 'notes',                
             }"
             :headers="{'X-CSRF-TOKEN': this.csrf_token }"
