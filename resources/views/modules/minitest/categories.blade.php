@@ -8,7 +8,8 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/home') }}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Mini Test</li>
+                <li class="breadcrumb-item active" aria-current="page">Mini Test</li> 
+                
             </ol>
         </nav>
 
@@ -29,6 +30,11 @@
 
                             <div class="text-secondary py-2">
                                Please select a test
+
+                               <span class="ml-2">
+                                    <a href="#">Mini Test  について</a>
+                                </span>
+
                             </div>
 
 
@@ -39,6 +45,7 @@
 
                                         <a href="{{ url('minitest/'. $category->slug) }}">
                                             {{ $category->name }}
+                                            {{ $category->description }}
                                         </a>
 
                                     </div>

@@ -31,7 +31,9 @@
 
                             <div class="text-secondary py-2">
                                 Select test category
-
+                               <span class="ml-2">
+                                    <a href="#">Mini Test  について</a>
+                                </span>
                             </div>
 
 
@@ -39,7 +41,6 @@
                                 @foreach($parents as $parent) 
 
                                     <div class="small">
-
                                         <a href="{{  URL::current() .'/category/'. $parent->id }}">
                                             {{ $parent->name }}
                                         </a>

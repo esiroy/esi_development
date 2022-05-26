@@ -1,6 +1,6 @@
 <template>
 
-    <div class="container" v-if="questions.length >= 1">      
+    <div class="container">      
 
         <div v-if="this.categoryLoading == true" class="text-center">  
             <div class="pt-4 text-secondary">
@@ -14,38 +14,46 @@
        
 
         <div v-if="this.categoryLoading == false"  class="intro py-4">
-            <h4 class="text-primary">{{ this.category.name }}</h4>
-            <div class="text-success">Instructions  : {{ this.category.instructions }}</div>
-            <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
+            <div v-if="questions.length >= 1">
+            
+                <h4 class="text-primary">{{ this.category.name }}</h4>
+                <div class="text-success">Instructions  : {{ this.category.instructions }}</div>
+                <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
 
-            <!-- ADD A MEMBER POINT INFORMATION -->
-            <div id="point-information" class="border p-4 mb-4" v-show="this.started == false">
-                <span class="font-weight-bold">
-                  
-                    <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left</span>
-                    <span class="text-danger" v-else>  
-                        <div v-if="memberinfo['membership'] == 'Monthly'">
-                            Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 monthly credit if you proceed 
-                        </div>
-                        <div v-else>  
-                            Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 point if you proceed 
-                        </div>
-                    </span>
-                </span>                
-                
-                <div class="mt-2 text-secondary">
-                    You have {{ this.miniTestSubmittedCount }} submitted Minitest in last 7 days: 
-                </div>                
+                <!-- ADD A MEMBER POINT INFORMATION -->
+                <div id="point-information" class="border p-4 mb-4" v-show="this.started == false">
+                    <span class="font-weight-bold">
+                    
+                        <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left,  You will be deducted 1 free point if you proceed </span>
+                        <span class="text-danger" v-else>  
+                            <div v-if="memberinfo['membership'] == 'Monthly'">
+                                Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 monthly credit if you proceed 
+                            </div>
+                            <div v-else>  
+                                Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 point if you proceed 
+                            </div>
+                        </span>
+                    </span>                
+                    
+                    <div class="mt-2 text-secondary">
+                        You have {{ this.miniTestSubmittedCount }} submitted Minitest in last 7 days: 
+                    </div>                
+                </div>
+
+                <!-- BUTTON TO START -->
+                <div v-show="this.started == false" class="my-4">
+                    <button v-on:click="start()" class="btn btn-success" >
+                        <i class="fa fa-list-alt" aria-hidden="true"></i>
+                        Start Test 
+                    </button>
+                </div>
+                            
             </div>
-
-            <!-- BUTTON TO START -->
-            <div v-show="this.started == false" class="my-4">
-                <button v-on:click="start()" class="btn btn-success" >
-                    <i class="fa fa-list-alt" aria-hidden="true"></i>
-                    Start Test 
-                </button>
+            <div v-else>
+                <div class="py-4 text-center small text-danger">
+                    Sorry, we still don't have any question for this test category, please check back later.
+                </div>
             </div>
-
         </div>
 
         <div class="mini-test" v-show="this.started == true && this.loading == true">
@@ -193,12 +201,6 @@
 
             </div>
         </div>   
-    </div>
-
-    <div v-else>
-        <div class="py-4 text-center small text-danger">
-            Sorry, we still don't have any question for this test category, please check back later.
-        </div>
     </div>
 
 </template>
