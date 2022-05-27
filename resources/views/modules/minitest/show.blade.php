@@ -16,7 +16,7 @@
                 </li>
                 {!! $breadcrumbs !!}
 
-                <li class="breadcrumb-item"> 
+                <li class="breadcrumb-item active"> 
                     {{ $category->name }}
                 </li>
             </ol>
