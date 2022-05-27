@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-})->where('any', '.*');
 
 
 
@@ -492,10 +491,12 @@ Route::get('public/{any}', function ($any)
 
           return redirect(url("/$any"));
     }
+})->where('any', '.*');
+
 */
 
 
 Route::get('/{any}', function ($any) {  
   echo "ANY : " . $any;
-  
+
 });
