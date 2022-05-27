@@ -1,6 +1,29 @@
 <?php
 
 /**
+* Custom  Redirect Home Page if first sgemetn is public/index.php
+*/
+$host = 'http://'.$_SERVER['HTTP_HOST'];
+
+$uri_segments = explode('/', substr($_SERVER['REQUEST_URI'], 1), 3);
+
+if ($uri_segments[0] == 'public' && $uri_segments[1] == 'index.php') {
+
+    if (isset($uri_segments[2])) {        
+        header("Location: $host/$uri_segments[2]"); 
+    } else {    
+        header("Location: $host"); 
+    }
+    exit();
+
+} else if ($uri_segments[0] == 'public' ) {
+
+    header("Location: $host"); 
+    exit();
+}
+
+
+/**
  * Laravel - A PHP Framework For Web Artisans
  *
  * @package  Laravel
