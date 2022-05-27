@@ -13,6 +13,31 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('public', function() {  
+  return redirect(url('/'));  
+})->where('any', '.*');
+
+
+Route::get('public/{any}', function ($any) 
+{    
+    if (Request::segment(1) == 'public' && Request::segment(2) == 'index.php') 
+    {        
+        $page = Request::segment(3);
+
+        if (isset($page)) {
+        
+            return redirect(url("/$page"));
+        
+        } else {
+            return redirect(url('/'));
+        }    
+
+    } else if (Request::segment(1) == 'public' && isset($any)) {
+
+          return redirect(url("/$any"));
+    }
+})->where('any', '.*');
+
 
 
 Route::get('test', 'dummyController@index');
@@ -467,27 +492,3 @@ Route::get('/{any}', function ($any) {
 
 */
 
-Route::get('public', function() {  
-  return redirect(url('/'));  
-})->where('any', '.*');
-
-
-Route::get('public/{any}', function ($any) 
-{    
-    if (Request::segment(1) == 'public' && Request::segment(2) == 'index.php') 
-    {        
-        $page = Request::segment(3);
-
-        if (isset($page)) {
-        
-            return redirect(url("/$page"));
-        
-        } else {
-            return redirect(url('/'));
-        }    
-
-    } else if (Request::segment(1) == 'public' && isset($any)) {
-
-          return redirect(url("/$any"));
-    }
-})->where('any', '.*');
