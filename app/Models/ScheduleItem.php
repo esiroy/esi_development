@@ -447,13 +447,17 @@ class ScheduleItem extends Model
                         ->count();
                         
 
-        $writingPoints = WritingEntries::where('user_id', $memberID)->where('type', 'Monthly')->sum('total_points');
+        $writingPoints = WritingEntries::where('user_id', $memberID)
+                            ->whereBetween('created_at', [$startDate, $endDate])
+                            ->where('type', 'Monthly')
+                            ->sum('total_points');
 
 
         $miniTestCount =  MiniTestResult::where('user_id', $memberID)
-                            ->where('type', 'Monthly')
-                            ->count();
+                            ->whereBetween('time_started', [$startDate, $endDate])
+                            ->where('type', 'Monthly')->count();
 
+        
 
         $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints + $miniTestCount;
 
@@ -500,13 +504,17 @@ class ScheduleItem extends Model
 
       
         $writingPoints = WritingEntries::where('user_id', $memberID)
+                                ->whereBetween('created_at', [$startDate, $endDate])
                                 ->where('type', 'Monthly')
                                 ->sum('total_points');
 
 
         $miniTestCount =  MiniTestResult::where('user_id', $memberID)
+                            ->whereBetween('time_started', [$startDate, $endDate])
                             ->where('type', 'Monthly')
                             ->count();
+
+      
 
         $reserveCount = $reserved + $reserved_b + $completed + $not_available + $writingPoints + $miniTestCount ;
                     
