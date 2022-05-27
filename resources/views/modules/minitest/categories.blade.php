@@ -35,31 +35,34 @@
 
                         <div class="card-body">
 
-
-                        <div style="border-bottom:1px dashed #d4d4d4">
+                    
+                        <div >
 
                             <div class="my-4">
                                 <h4 class="card-title">{{ $categoryType->name ?? '' }}</h4>
                                 <h5 class="card-subtitle mb-2 text-muted">{{ $categoryType->description ?? '' }}</h5>
                             </div>
-
-                            <!--<strong> Select List  </strong>-->
+                           
 
                             <div class="pb-2 pl-4">
-                                @foreach($categories as $category)
-                                    <div class="mb-">
-                                        <a href="{{ url('minitest/'. $category->slug) }}" class="small">
-                                            <strong>{{ $category->name }} </strong>
-                                        </a> 
-                                        <div class="small text-muted">{{ $category->instructions }}</div>
-                                        <div class="small text-muted"> Time Limit : {{ $category->time_limit }} Minutes </div>
-                                      
-                                    </div>
-                                @endforeach
+                                @if (count($categories) > 0)
+                                    @foreach($categories as $category)
+                                        <div class="pb-3 mb-2" style="border-bottom:1px dashed #d4d4d4">
+                                            <a href="{{ url('minitest/'. $category->slug) }}" class="small">
+                                                <strong>{{ $category->name }} </strong>
+                                            </a> 
+                                            <div class="small text-muted">{{ $category->instructions }}</div>
+                                            <div class="small text-muted"> Time Limit : {{ $category->time_limit }} Minutes </div>
+                                        
+                                        </div>
+                                    @endforeach
+                                @else 
+                                    <p class="text-danger"> Sorry, there is no questions for this test, please come back later <p>
+                                @endif
+
                             </div>
-
-
                         </div>
+
 
                     </div>
 
