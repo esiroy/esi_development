@@ -495,6 +495,11 @@ Route::get('public/{any}', function ($any)
 
 */
 
+Route::get('public/index.php/home', function() {  
+  return redirect(url('/'));  
+});
+
+
 
 Route::get('/{any}', function ($any) {  
   echo "ANY : " . $any;
