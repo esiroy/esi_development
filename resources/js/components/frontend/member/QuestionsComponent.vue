@@ -429,7 +429,10 @@
                 this.timerValue = timer;
                 if ( parseFloat(this.timerValue) <= 0) 
                 {
-                    clearInterval(this.myIntervalTimer);                
+                    clearInterval(this.myIntervalTimer);  
+
+                    this.loading = true;
+                    this.getAnswers();               
                     this.submitAnswers();
                 }
             },
