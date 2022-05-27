@@ -3,7 +3,7 @@
 /**
 * Custom  Redirect Home Page if first sgemetn is public/index.php
 */
-$host = 'http://'.$_SERVER['HTTP_HOST'];
+$host = 'https://'.$_SERVER['HTTP_HOST'];
 
 $uri_segments = explode('/', substr($_SERVER['REQUEST_URI'], 1), 3);
 
