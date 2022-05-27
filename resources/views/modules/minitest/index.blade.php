@@ -22,21 +22,19 @@
 
                 <div class="col-md-9">
                     <div class="card esi-card">
+
                         <div class="card-header esi-card-header">
                             Mini Test
+                            <span class="text-secondary small float-right">
+                                <a href="#">Mini Test  について</a>                               
+                            </span>
                         </div>
 
                         <div class="card-body">
 
 
-                            <div class="text-secondary py-2">
-                                Select test category
-                               <span class="ml-2">
-                                    <a href="#">Mini Test  について</a>
-                                </span>
-                            </div>
 
-
+                            <!--
                             <div class="pb-2">
                                 @foreach($parents as $parent) 
 
@@ -51,7 +49,28 @@
 
                                 @endforeach
                             </div>
+                            -->
 
+                            @foreach($parents as $parent)
+                            <div style="border-bottom:1px dashed #d4d4d4">
+                                <div class="text-left pl-2 py-4">
+                                    <table>
+                                        <tr>
+                                            <td class="pl-4 pr-4 align-top">                                            
+                                                <a href="{{  URL::current() .'/category/'. $parent->id }}">
+                                                    {{ $parent->name }}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="pl-4 pr-4 align-top text-secondary">
+                                                {{ $parent->description }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                            @endforeach
 
                         </div>
 

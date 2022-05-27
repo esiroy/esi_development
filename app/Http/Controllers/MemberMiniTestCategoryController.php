@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\MiniTestCategory;
+use App\Models\MiniTestCategoryType;
+
+
 
 
 class MemberMiniTestCategoryController extends Controller
@@ -46,12 +49,23 @@ class MemberMiniTestCategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, MiniTestCategoryType $miniTestcategoryType)
     {
-       
-        $categories = MiniTestCategory::where('valid', true)->where('question_category_type_id', $id)->get();
 
-        return view("modules.minitest.categories", ['categories'=> $categories ]); 
+        $categoryType = MiniTestCategoryType::where('valid', true)->where('id', $id)->first();
+        $categories = MiniTestCategory::where('valid', true)->where('question_category_type_id', $id)->get();
+       
+
+        $breadcrumbs = $miniTestcategoryType->getParentLinks($id);
+
+      
+
+         //Get List 
+        $categorySubTypes = MiniTestCategoryType::where('parent_id', $categoryType->id)->get();
+
+        
+
+        return view("modules.minitest.categories", compact('categoryType', 'categories', 'categorySubTypes', 'breadcrumbs')); 
     }
 
     /**

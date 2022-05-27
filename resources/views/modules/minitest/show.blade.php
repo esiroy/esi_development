@@ -11,7 +11,14 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/home') }}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Mini Test</li>
+                <li class="breadcrumb-item">
+                    <a href="{{ url('/minitest') }}">Mini Test</a>
+                </li>
+                {!! $breadcrumbs !!}
+
+                <li class="breadcrumb-item"> 
+                    {{ $category->name }}
+                </li>
             </ol>
         </nav>
 

@@ -23,17 +23,20 @@ class MemberMiniTestController extends Controller
     }
 
 
-    public function show($slug, $categoryType = null) 
+    public function show($slug, MiniTestCategoryType $miniTestCategoryType) 
     {
-
-
-        //@todo:fix slug on add and edit in admin
 
         $category = MiniTestCategory::where('slug', $slug)->where('valid', true)->first();
 
+
         if ($category) {
+
+
+            $breadcrumbs = $miniTestCategoryType->getParentLinks($category->question_category_type_id, true);
+
+           
         
-            return view("modules/minitest/show", ['title'=> $category->name, 'category'=> $category ]);   
+            return view("modules/minitest/show", compact('category', 'breadcrumbs') );   
 
         } else {
         

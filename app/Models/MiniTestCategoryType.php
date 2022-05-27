@@ -13,7 +13,7 @@ class MiniTestCategoryType extends Model
 
     public $timestamps = false;
 
-    protected $guarded = [];
+    protected $guarded = array('created_at', 'updated_at');
 
     private $typeName = null;
 
@@ -56,6 +56,59 @@ class MiniTestCategoryType extends Model
         } else {
 
         }
+    }
+
+
+    public function getParentLinks($id, $activate_all_links = false) {
+   
+        $type = MiniTestCategoryType::where('id', $id)->first();
+
+        if ($type) 
+        {
+            if (isset($type->parent_id)) 
+            {
+                if (isset($this->typeName)) 
+                {
+                    $url  = url("minitest/category/".$type->id);
+                    $link = "<li class='breadcrumb-item'><a href='$url'>$type->name</a></li>";
+
+                    $this->typeName = $link . $this->typeName;
+
+                } else {
+
+                    $this->typeName = "<li class='breadcrumb-item active'>" . $type->name ."<li>";
+                }
+
+                return $this->getParentLinks($type->parent_id);
+
+            } else {
+
+                if (isset($this->typeName)) 
+                {
+                    $url  = url("minitest/category/".$type->id);
+                    $link = "<li class='breadcrumb-item'><a href='$url'>$type->name</a></li>";
+
+                    return $link . $this->typeName;
+
+                    
+                } else {
+
+                    if ($activate_all_links == true) {
+
+                        $url  = url("minitest/category/".$type->id);
+                        $link = "<li class='breadcrumb-item'><a href='$url'>$type->name </a></li>";
+
+                        return $link;
+                    }
+                    else {
+                        return "<li class='breadcrumb-item active'>" . $type->name ."<li>";
+                    }
+                    
+                }
+
+            }
+
+        } 
     }
 
 
