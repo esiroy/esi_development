@@ -6,12 +6,17 @@ use Illuminate\Http\Request;
 
 use App\Models\MiniTestCategoryType;
 use App\Models\MiniTestCategory;
+use App\Models\User;
+use Auth, Gate;
+
 
 class MemberMiniTestController extends Controller
 {
     public function __construct()
     {
         $this->middleware('auth');
+
+        $this->middleware('redirectAdmin');
     }
 
     

@@ -12,6 +12,8 @@ use App\Models\MiniTestAnswerKey;
 use App\Models\MiniTestResult;
 use App\Models\ScheduleItem;
 use App\Models\AgentTransaction;
+use App\Models\MiniTestSetting;
+
 
 use Auth, DB;
 
@@ -20,7 +22,10 @@ class AnswersAPIController extends Controller
 {
 
 
-    public function addAnswerStartTime(Request $request, MiniTestResult $miniTestResult, AgentTransaction $agentTransaction, MiniTestAnswerKey $miniTestAnswerKey)  
+    public function addAnswerStartTime(Request $request, MiniTestResult $miniTestResult, 
+            AgentTransaction $agentTransaction, MiniTestAnswerKey $miniTestAnswerKey,
+            MiniTestSetting $miniTestSetting
+        )  
     {
 
         $categoryID = $request->get('category_id');
@@ -38,7 +43,11 @@ class AnswersAPIController extends Controller
         $totalQuestionCount = count($answerKeys);
 
         //Type of mini-test Transaction
-        $type = ($miniTestCount >= 2) ? $memberInfo->membership : 'Free';
+        //$type = ($miniTestCount >= 2) ? $memberInfo->membership : 'Free';
+        
+        //Type of mini-test Transaction (NEW UPDATED TO DYANMIC LIMIT (DEFAULT TO: 2 FREE))
+        $miniTestlimit = $miniTestSetting->getMiniTestLimit();
+        $type = ($miniTestCount >= $miniTestlimit) ? $memberInfo->membership : 'Free';
 
 
         if ($type == "Monthly") 
@@ -173,162 +182,6 @@ class AnswersAPIController extends Controller
                 "message"               => "Error: Answers has failed to initialized",
             ]);
         }
-
-
-
-        /*
-        if ($created) 
-        {     
-
-       
-            
-
-            if ($memberInfo->membership == "Monthly") 
-            {
-                if ($miniTestCount > 2) 
-                {
-
-                 
-                    $deduction = 1;
-
-                    //only (00,30) allowed
-                    $minutes = date('i');
-
-                    if ($minutes > 30) {
-                        $min = 30;
-                    } else {
-                        $min =  00;
-                    }
-                
-                    $lessonData = [
-                        'lesson_time'       => date('Y-m-d H:i:00', strtotime(date('Y-m-d H:'.$min.':00'))),
-                        'member_id'         => Auth::user()->id,
-                        'tutor_id'          => null,
-                        'schedule_status'   => "MINITEST", 
-                        "memo"              => "MINITEST - ANSWERS QUESTION | minitest count - $miniTestCount",                      
-                        'valid'             => 0,
-                    ];
-
-                    $schedule = ScheduleItem::create($lessonData);
-
-                    if ($schedule) {
-                    
-                        return Response()->json([
-                            "success"                   => true,  
-                            "membershipType"            => $memberInfo->membership,       
-                            "message"                   => "answers has initialized",
-                            'id'                        => $created->id,
-                            'miniTestSubmittedCount'    => $miniTestCount,
-                            'deduction'                 => $deduction,
-                            'totalMonthlyCredits'       => $totalMonthlyCredits,
-                            'totalMonthlyCreditsFormatted'     => "(". number_format($totalMonthlyCredits, 2) .")"
-                        ]); 
-
-                    }   
-                  
-                } else {
-                
-                    $totalMonthlyCredits = $memberInfo->getMonthlyLessonsLeft();
-                  
-                
-                    return Response()->json([
-                        "success"                       => true,      
-                        "membershipType"                => $memberInfo->membership,          
-                        "message"                   => "answers has initialized",
-                        'miniTestSubmittedCount'        => $miniTestCount,
-                        'deduction'                     => 0, //override dediction
-                        'totalMonthlyCredits'           => $totalMonthlyCredits,
-                        'totalMonthlyCreditsFormatted'  => "(". number_format($totalMonthlyCredits, 2) .")"
-                    
-                    ]);                   
-                }
-
-
-            } 
-            else if ($memberInfo->membership == "Point Balance" || $memberInfo->membership == "Both")             
-            {      
-
-                $credits = $agentTransaction->getCredits(Auth::user()->id);
-
-                if ($credits >= 1) 
-                {
-                   
-
-                    if ($miniTestCount > 2) 
-                    {
-                       
-                        $deduction = 1;
-
-                    
-                       
-                        $agentCredit = [
-                            'valid' => 1,
-                            'transaction_type' => 'AGENT_SUBTRACT',
-                            'agent_id' => Auth::user()->memberInfo->agent_id,
-                            'member_id' => Auth::user()->memberInfo->user_id,
-                            'lesson_shift_id' =>  Auth::user()->memberInfo->lesson_shift_id,
-                            'created_by_id' => Auth::user()->id,
-                            'amount' => $deduction,
-                            'price' => 1,
-                            'remarks' => "MINITEST - ANSWERS QUESTION | minitest count - $miniTestCount", 
-                        ];
-                        AgentTransaction::create($agentCredit); 
-                    
-
-                    } else {
-                    
-                        $deduction = 0;
-                    }
-
-                    $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
-
-                
-                    return Response()->json([
-                        "success"                   => true,        
-                        "membershipType"            => $memberInfo->membership,     
-                        "message"                   => "answers has initialized",
-                        'id'                        => $created->id,
-                        'miniTestSubmittedCount'    => $miniTestCount,
-                        'deduction'                 => $deduction,
-                        'totalCredits'              => $totalCredits,
-                        'totalCreditsFormatted'     => "(". number_format($totalCredits, 2) .")"
-                    
-                    ]);
-
-                
-                } else {
-
-
-                    $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
-                
-                    return Response()->json([
-                        "success"                   => false,      
-                        "membershipType"            => $memberInfo->membership,          
-                        "message"                   => "You have insufficient credit",
-                        'totalCredits'              => $totalCredits,
-                        'totalCreditsFormatted'     => "(". number_format($totalCredits, 2) .")"
-                    
-                    ]);
-                
-                }
-
-
-
-            } 
-
-
-
-
-        } else {
-        
-            return Response()->json([
-                "success"               => false,            
-                "message"               => "Error: Answers has failed to initialized",
-               
-            ]);
-        
-        }
-        */
 
     }
 

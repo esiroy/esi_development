@@ -292,7 +292,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 		Route::resource('/minitest/categories/{category_id}/questions/{question_id}/choices', 'Modules\MiniTestChoicesController',  ['names' => 'minitest.choices' ]);
 
         //settings
-        Route::resource('/minitest/category/settings', 'Modules\MiniTestSettingsController',  ['names' => 'minitest.category.settings' ]);
+        Route::resource('/minitest/category/settings', 'Modules\MiniTestSettingsController',  ['names' => 'minitest.settings' ]);
 
 
 

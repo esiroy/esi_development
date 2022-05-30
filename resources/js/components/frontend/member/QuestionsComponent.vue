@@ -36,7 +36,7 @@
                     </span>                
                     
                     <div class="mt-2 text-secondary">
-                        You have {{ this.miniTestSubmittedCount }} submitted Minitest in last 7 days: 
+                        You have {{ this.miniTestSubmittedCount }} submitted Minitest in last {{ this.duration }} days: 
                     </div>                
                 </div>
 
@@ -229,7 +229,10 @@
                 miniTestID: null,
                 miniTestSubmittedCount: 0,
                 freeMiniTest: 0,
-                limit: 2,
+
+                limit: 2, //mini test limit (default 2 free)
+                duration: 7, //duration for minitest in days to refresh (default 7 day )
+
 
                 totalQuestions: 0,
                 totalCorrectAnswers: 0,
@@ -304,6 +307,9 @@
                         this.questionsLength = Object.keys(this.questions).length  
 
                         this.miniTestSubmittedCount = response.data.miniTestSubmittedCount;
+                        this.limit = response.data.miniTestLimit;
+                        this.duration = response.data.miniTestDuration;
+
                         this.countFreeMiniTest();     
 
                     } else {
