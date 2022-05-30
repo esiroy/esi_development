@@ -134,7 +134,7 @@
                                         <label for="question" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Question <div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6">
-                                        <input id="question" type="question" class="form-control form-control-sm @error('name') is-invalid @enderror" name="question" value="{{ old('name') }}" required autocomplete="question">
+                                        <input id="question" type="question" class="form-control form-control-sm @error('name') is-invalid @enderror" name="question" value="{{ old('question') }}" required autocomplete="question">
                                         @error('question')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>

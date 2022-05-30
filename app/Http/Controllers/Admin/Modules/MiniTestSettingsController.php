@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\MiniTestSetting;
 
-use Auth, Gate, Validator;
+use Auth, Gate, Validator, DB;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\Rule;
 
@@ -22,10 +22,10 @@ class MiniTestSettingsController extends Controller
     {
         abort_if(Gate::denies('minitest_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
         
-        $miniTestLimit = $miniTestSetting->getMiniTestLimit();
-
-
-        return view('admin.modules.minitest.settings.index', compact('miniTestLimit'));
+        $miniTestLimit      = $miniTestSetting->getMiniTestLimit();
+        $miniTestDuration   = $miniTestSetting->getMiniTestDuration();
+    
+        return view('admin.modules.minitest.settings.index', compact('miniTestLimit', 'miniTestDuration'));
     }
 
     /**
@@ -35,7 +35,7 @@ class MiniTestSettingsController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -44,9 +44,40 @@ class MiniTestSettingsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, MiniTestSetting $miniTestSetting)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+
+            if (isset($request->limit)) 
+            {
+                $limit = $request->limit;
+                $miniTestSetting->createOrUpdateLimit($limit);
+            }
+
+            if (isset($request->duration)) {
+                $duration =  $request->duration;
+                $miniTestSetting->createOrUpdateDuration($duration);
+            }
+
+
+             DB::commit();
+
+             return redirect()->route('admin.minitest.settings.index')->with('message', 'Settings added successfully!');
+
+        
+        } catch (\Exception $e) {
+            
+
+            DB::rollBack();
+
+           $error = $e->getMessage();
+    
+           
+           return redirect()->route('admin.minitest.settings.index')->with('error_message', "Error: Settings was not updated, please try again later! <br> $error");
+        }
+         
     }
 
     /**

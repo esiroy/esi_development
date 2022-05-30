@@ -17,7 +17,8 @@
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
                 <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Minitest</li>                
+                 <li class="breadcrumb-item"><a href="{{ url('/admin/minitest/categories') }}">Minitest</a></li>     
+                 <li class="breadcrumb-item active" aria-current="page">Types</li>     
             </ol>
         </nav>
 

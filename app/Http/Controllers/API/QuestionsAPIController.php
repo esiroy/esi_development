@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\MiniTestQuestion;
 use App\Models\MiniTestChoice;
 use App\Models\MiniTestResult;
+use App\Models\MiniTestSetting;
+
 
 use Auth;
 
@@ -18,7 +20,7 @@ class QuestionsAPIController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function get(Request $request, MiniTestResult $miniTestResult)
+    public function get(Request $request, MiniTestResult $miniTestResult, MiniTestSetting $miniTestSetting)
     {
 
 
@@ -30,10 +32,11 @@ class QuestionsAPIController extends Controller
                             ->where('valid', true)->inRandomOrder()->get();
 
 
-        //@get how many results submitted for past sevent days
+        //@get how many results submitted for past seven days
         $miniTestCount = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
 
 
+        
 
         if (count($questions) >= 1) 
         {
@@ -49,10 +52,12 @@ class QuestionsAPIController extends Controller
             }
 
             return Response()->json([
-                "success"                   => true,
+                "success"                   => true,                
                 "message"                   => "list has been successfully found",
                 'miniTestSubmittedCount'    => $miniTestCount,
                 "questions"                 => $question_items,
+                'miniTestLimit'             => $miniTestSetting->getMiniTestLimit(),
+                'miniTestDuration'          => $miniTestSetting->getMiniTestDuration()
                   
             ]);
         } else {        
