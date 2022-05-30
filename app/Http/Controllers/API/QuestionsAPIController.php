@@ -33,7 +33,8 @@ class QuestionsAPIController extends Controller
 
 
         //@get how many results submitted for past seven days
-        $miniTestCount = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
+        $duration = $miniTestSetting->getMiniTestDuration();
+        $miniTestCount = $miniTestResult->countPreviousResults(Auth::user()->id, $duration);
 
 
         
