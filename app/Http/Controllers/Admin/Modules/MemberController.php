@@ -390,7 +390,10 @@ class MemberController extends Controller
             }
     
             $totalReserved = $scheduleItem->getTotalLessonForCurrentMonth($memberID);
-            $memberLessonsRemaining = $lessonLimit - $totalReserved;    
+            
+            //$memberLessonsRemaining = $lessonLimit - $totalReserved;    
+
+            $memberLessonsRemaining  = $memberInfo->getMemberMonthlyLessonsLeft($memberID);
 
             return view('admin.modules.member.schedulelist', compact('schedules', 'lessonLimit', 'totalReserved', 'memberLessonsRemaining', 'member', 'memberInfo', 'agentInfo', 'tutorInfo', 'memberAttribute'));
             

@@ -171,7 +171,9 @@ class AgentTransaction extends Model
                 $credits = $credits - $transaction->amount;
             }
         }
-        return $credits;
+
+
+        return ($credits >= 0) ? $credits : 0;
     }
 
 

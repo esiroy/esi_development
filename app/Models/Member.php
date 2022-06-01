@@ -115,7 +115,22 @@ class Member extends Model
     public function getMonthlyLessonsLeft() {
         $credits = $this->getLessonLimit();
         $consumed = $this->getLessonConsumed();
-        return $credits - $consumed;
+        
+        $remainingMonthlyCredits = $credits - $consumed;
+
+        return ($remainingMonthlyCredits >= 0) ? $remainingMonthlyCredits : 0;
+    }
+
+
+    /* Member ID */
+    public function getMemberMonthlyLessonsLeft($memberID) 
+    {
+        $credits = $this->getMemberLessonLimit($memberID);
+        $consumed = $this->getLessonMemberConsumed($memberID);
+        $remainingMonthlyCredits = $credits - $consumed;
+
+        return ($remainingMonthlyCredits >= 0) ? $remainingMonthlyCredits : 0;
+    
     }
 
 
@@ -143,13 +158,6 @@ class Member extends Model
 
 
 
-    public function getMemberMonthlyLessonsLeft($memberID) 
-    {
-        $credits = $this->getMemberLessonLimit($memberID);
-        $consumed = $this->getLessonMemberConsumed($memberID);
-        return $credits - $consumed;
-    
-    }
 
 
 
