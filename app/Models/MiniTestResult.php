@@ -84,7 +84,7 @@ class MiniTestResult extends Model
         Add Member Test Schedule (Overridden) Status with test count 
     */
 
-    public function addMemberMiniTestSchedule( $miniTestCount) 
+    public function addMemberMiniTestSchedule( $miniTestCount, $type) 
     {
             //only (00,30) allowed
         $minutes = date('i');
@@ -100,7 +100,7 @@ class MiniTestResult extends Model
             'member_id'         => Auth::user()->id,
             'tutor_id'          => null,
             'schedule_status'   => "MINITEST", 
-            "memo"              => "MINITEST - ANSWERS QUESTION | minitest count - $miniTestCount",                      
+            "memo"              => "MINITEST - ANSWERS QUESTION | minitest count - $miniTestCount | Type: ($type)",                      
             'valid'             => 0, //Overrided
         ];
 
@@ -113,8 +113,6 @@ class MiniTestResult extends Model
     public function initializeMiniTest($type, $categoryID, $answerKeys) 
     {
 
-      
-
         $created = MiniTestResult::create([
             'user_id'                     => Auth::user()->id,
             'type'                        => $type,
@@ -125,8 +123,7 @@ class MiniTestResult extends Model
             'correct_answers'             => 0,
             'valid'                       => true,
         ]); 
-        DB::commit();
-
+        
         return $created;
 
     }

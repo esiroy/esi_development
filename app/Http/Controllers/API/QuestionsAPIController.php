@@ -9,6 +9,8 @@ use App\Models\MiniTestQuestion;
 use App\Models\MiniTestChoice;
 use App\Models\MiniTestResult;
 use App\Models\MiniTestSetting;
+use App\Models\MemberMiniTestSetting;
+
 
 
 use Auth;
@@ -20,7 +22,8 @@ class QuestionsAPIController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function get(Request $request, MiniTestResult $miniTestResult, MiniTestSetting $miniTestSetting)
+    public function get(Request $request, MiniTestResult $miniTestResult, MiniTestSetting $miniTestSetting,
+        MemberMiniTestSetting $memberMiniTestSetting)
     {
 
 
@@ -33,10 +36,23 @@ class QuestionsAPIController extends Controller
 
 
         //@get how many results submitted for past seven days
-        $duration = $miniTestSetting->getMiniTestDuration();
-        $miniTestCount = $miniTestResult->countPreviousResults(Auth::user()->id, $duration);
 
 
+        if ($memberMiniTestSetting->hasOverride() == true) {
+
+            $duration           = $memberMiniTestSetting->getMiniTestDuration(Auth::user()->id);   
+            $miniTestlimit      = $memberMiniTestSetting->getMiniTestLimit(Auth::user()->id);   
+
+            $miniTestCount      = $miniTestResult->countPreviousResults(Auth::user()->id, $duration);
+
+        } else {
+        
+            $duration           = $miniTestSetting->getMiniTestDuration();
+            $miniTestlimit      = $miniTestSetting->getMiniTestLimit(); 
+
+            $miniTestCount      = $miniTestResult->countPreviousResults(Auth::user()->id, $duration);
+        
+        }
         
 
         if (count($questions) >= 1) 
@@ -57,8 +73,8 @@ class QuestionsAPIController extends Controller
                 "message"                   => "list has been successfully found",
                 'miniTestSubmittedCount'    => $miniTestCount,
                 "questions"                 => $question_items,
-                'miniTestLimit'             => $miniTestSetting->getMiniTestLimit(),
-                'miniTestDuration'          => $miniTestSetting->getMiniTestDuration()
+                'miniTestLimit'             => $miniTestlimit,
+                'miniTestDuration'          => $duration,
                   
             ]);
         } else {        

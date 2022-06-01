@@ -23,7 +23,8 @@ use App\Models\MemberExamScore;
 use App\Models\Homework;
 use App\Models\MemberLevel;
 use App\Models\MergedAccount;
-
+   
+use App\Models\MemberMiniTestSetting;
 
 
 use Auth, Hash, Storage;
@@ -548,10 +549,23 @@ class MemberController extends Controller
         $memberDesiredSchedule = new MemberDesiredSchedule();
         $desiredSchedule = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
 
+
+        //@todo: get User Mini Test 
+        $memberMiniTestSetting = new MemberMiniTestSetting();
+
+        $minitest['memberMiniTestHasOverride']    = $memberMiniTestSetting->hasOverride($memberID);
+        $minitest['memberMiniTestLimit']          = $memberMiniTestSetting->getMiniTestLimit($memberID);
+        $minitest['memberMiniTestDuration']       = $memberMiniTestSetting->getMiniTestDuration($memberID);
+
+
+
+
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
-            'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel'));
+            'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel',
+            'minitest',
+            ));
 
     }
 

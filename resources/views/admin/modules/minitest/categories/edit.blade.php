@@ -58,7 +58,7 @@
                                          <div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6">
-                                       
+
                                         <select name="parent_id" required class="form-control form-control-sm">
                                             <option value="">-- Select --</option>
                                            

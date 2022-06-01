@@ -147,6 +147,7 @@
 
                             <member-update-component 
                                 ref="MemberUpdateComponent"
+                                :minitest="{{ json_encode($minitest) }}"
                                 :memberships="{{ json_encode($memberships) }}" 
                                 :attributes="{{ json_encode($attributes) }}" 
                                 :shifts="{{ json_encode($shifts) }}" 

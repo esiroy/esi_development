@@ -28,7 +28,7 @@
 							<td>No Result Found</td>
 						</tr>
 
-                        <tr v-for="item in items" :key="item.id">
+                        <tr v-for="(item, key) in items" :key="key">
 							<td class="p-1">{{ item.id }}</td>
 							<td class="p-1">
 								<a href="" @click.prevent="showTestDetailModal(item)" >{{ item.name }}</a>
@@ -41,7 +41,7 @@
                             <td class="p-1">
 								<a href="" @click.prevent="showTestDetailModal(item)">View</a>
 							
-								<span v-if="usertype == 'ADMINISTRATOR'" > | <a href="" @click.prevent="confirmDelete(item)">Delete</a></span>
+								<span v-if="usertype == 'ADMINISTRATOR'" > | <a href="" @click.prevent="confirmDelete(item, key)">Delete</a></span>
 								
 							</td>
                         </tr>
@@ -186,7 +186,7 @@ export default {
        this.getMiniTests(1) 
     },
     methods: {
-		confirmDelete(item) {
+		confirmDelete(item, key) {
 		
 			this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this mini-test result.', {
 				title: 'Please Confirm',
@@ -205,24 +205,24 @@ export default {
 			.then(value => {
 
 				if (value == true ) {
-					this.deleteResult(item.id)
+					this.deleteResult(item, key);
 				}
 			})
 			.catch(err => {
 				// An error occurred
 			})
 		},	
-		deleteResult(id) {
+		deleteResult(item, key) {
 		
-			axios.post("/api/deleteMemberMiniTestResult/"+ id +"?api_token=" + this.api_token, {
+			axios.post("/api/deleteMemberMiniTestResult/"+ item.id +"?api_token=" + this.api_token, {
 				method: "POST",
-				id: id,
+				id: item.id,
 
 			}).then((response) => {
-				if (response.data.success === true) 
-				{	
-					this.getNotes(this.currentPage);
-
+				if (response.data.success === true) {	
+					this.items.splice(key, 1);
+					//this.getMiniTests(this.currentPage);
+					//this.$forceUpdate;
 				} else {
 					alert ("Error deleting please try again later")
 				}

@@ -63,7 +63,7 @@
                                         <label for="limit" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Limit <div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6">
-                                        <input id="limit" type="limit" class="form-control form-control-sm @error('name') is-invalid @enderror" name="limit" 
+                                        <input id="limit" name="limit" type="number" min="0" class="form-control form-control-sm @error('limit') is-invalid @enderror"  
                                         value="{{ old('limit', isset($miniTestLimit) ? $miniTestLimit: '') }}" 
                                         required autocomplete="limit">
                                         @error('limit')
@@ -79,7 +79,7 @@
                                         <label for="duration" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Duration in Days <div class="float-right">:</div></label>
                                     </div>
                                     <div class="col-6">
-                                        <input id="duration" type="duration" class="form-control form-control-sm @error('name') is-invalid @enderror" name="duration" 
+                                        <input id="duration" type="number" min="0" class="form-control form-control-sm @error('duration') is-invalid @enderror" name="duration" 
                                          value="{{ old('duration', isset($miniTestDuration) ? $miniTestDuration: '') }}" 
                                         required autocomplete="duration">
                                         @error('duration')

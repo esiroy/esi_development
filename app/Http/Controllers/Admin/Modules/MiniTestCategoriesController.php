@@ -126,7 +126,7 @@ class MiniTestCategoriesController extends Controller
 
         $types = MiniTestCategoryType::where('valid', true)
                     ->orderBy('id', 'DESC')
-                    ->paginate(Auth::user()->items_per_page);    
+                    ->get();    
 
         $item = MiniTestCategory::where('valid', true)->where('id', $id)->first();
 

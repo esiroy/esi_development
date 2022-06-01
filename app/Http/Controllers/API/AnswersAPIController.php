@@ -13,6 +13,8 @@ use App\Models\MiniTestResult;
 use App\Models\ScheduleItem;
 use App\Models\AgentTransaction;
 use App\Models\MiniTestSetting;
+use App\Models\MemberMiniTestSetting;
+
 
 
 use Auth, DB;
@@ -24,30 +26,45 @@ class AnswersAPIController extends Controller
 
     public function addAnswerStartTime(Request $request, MiniTestResult $miniTestResult, 
             AgentTransaction $agentTransaction, MiniTestAnswerKey $miniTestAnswerKey,
-            MiniTestSetting $miniTestSetting
+            MiniTestSetting $miniTestSetting, MemberMiniTestSetting $memberMiniTestSetting
         )  
     {
 
-        $categoryID = $request->get('category_id');
-        $answers    = $request->get('answers');
 
         $user = Auth::user();
         $memberInfo = Auth::user()->memberInfo;
 
-        $miniTestCount = $miniTestResult->countPreviousResults($user->id, 7);
+        $categoryID = $request->get('category_id');
+        $answers    = $request->get('answers');
+
+        //get answer keys and count questions
+        $answerKeys             = $miniTestAnswerKey->getAnswerKey($categoryID, $answers);        
+        $totalQuestionCount     = count($answerKeys);
 
 
-        //get answer keys
-        $answerKeys = $miniTestAnswerKey->getAnswerKey($categoryID, $answers);
+        if ($memberMiniTestSetting->hasOverride() == true) {
+
+            //Member Settings overrides General Settings
+            $duration      = $memberMiniTestSetting->getMiniTestDuration($user->id);   
+            $miniTestlimit = $memberMiniTestSetting->getMiniTestLimit($user->id);   
         
-        $totalQuestionCount = count($answerKeys);
+            //count results for minitest
+            $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);
+              
 
-        //Type of mini-test Transaction
-        //$type = ($miniTestCount >= 2) ? $memberInfo->membership : 'Free';
-        
-        //Type of mini-test Transaction (NEW UPDATED TO DYANMIC LIMIT (DEFAULT TO: 2 FREE))
-        $miniTestlimit = $miniTestSetting->getMiniTestLimit();
-        $type = ($miniTestCount >= $miniTestlimit) ? $memberInfo->membership : 'Free';
+            $type = ($miniTestCount >= $miniTestlimit) ? $memberInfo->membership : 'Free';      
+
+        } else {        
+
+            //General Mini Test Settings 
+            $duration      = $miniTestSetting->getMiniTestDuration(); 
+            $miniTestlimit = $miniTestSetting->getMiniTestLimit(); 
+
+            //count results for minitest
+            $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);         
+
+            $type = ($miniTestCount >= $miniTestlimit) ? $memberInfo->membership : 'Free';        
+        }
 
 
         if ($type == "Monthly") 
@@ -61,7 +78,7 @@ class AnswersAPIController extends Controller
 
                 $created = $miniTestResult->initializeMiniTest($type, $categoryID, $answerKeys);
 
-                $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount );
+                $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
 
                 DB::commit();
             
@@ -99,7 +116,7 @@ class AnswersAPIController extends Controller
 
                 $created = $miniTestResult->initializeMiniTest($type, $categoryID, $answerKeys);
 
-                $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount );
+                $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
 
                 DB::commit();
             
@@ -150,7 +167,7 @@ class AnswersAPIController extends Controller
 
             $freeCreated = $miniTestResult->initializeMiniTest($type, $categoryID, $answerKeys);
 
-            $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount );
+            $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
 
             DB::commit();
         
@@ -159,7 +176,7 @@ class AnswersAPIController extends Controller
 
                 $getUpdatedMonthlyCredits = $memberInfo->getMonthlyLessonsLeft();
             
-                 $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
+                $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
 
                 return Response()->json([
                     "success"                           => true,  
