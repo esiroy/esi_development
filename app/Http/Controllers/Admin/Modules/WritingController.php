@@ -166,13 +166,14 @@ class WritingController extends Controller
 
 
         /*******************************************************************************
-        *          UPDATE WRITING ENTRY FOR DEDUCTION ONLY AND WITH ATTACMENTS SINCE NO ATTACHMENT DEDUCTS (1 POINT OR 2)
+        *          UPDATE WRITING ENTRY FOR DEDUCTION ONLY AND WITH ATTACHMENTS SINCE NO ATTACHMENT DEDUCTS (1 POINT OR 2)
         *********************************************************************************/
+
         if ($writingEntry) {
 
-            if (isset($request->hasAttachement)) {
-                $hasAttachement = $request->hasAttachement;
-                if ($hasAttachement == true) 
+            if (isset($request->hasAttachment)) {
+                $hasAttachment = $request->hasAttachment;
+                if ($hasAttachment == true) 
                 {
                     $words = $request->words;
                     $writingCredit = $writingEntry->total_points;                
