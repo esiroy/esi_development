@@ -26,8 +26,7 @@ class AnswersAPIController extends Controller
 
     public function addAnswerStartTime(Request $request, MiniTestResult $miniTestResult, 
             AgentTransaction $agentTransaction, MiniTestAnswerKey $miniTestAnswerKey,
-            MiniTestSetting $miniTestSetting, MemberMiniTestSetting $memberMiniTestSetting
-        )  
+            MiniTestSetting $miniTestSetting, MemberMiniTestSetting $memberMiniTestSetting)  
     {
 
 
@@ -41,8 +40,8 @@ class AnswersAPIController extends Controller
         $answerKeys             = $miniTestAnswerKey->getAnswerKey($categoryID, $answers);        
         $totalQuestionCount     = count($answerKeys);
 
-
-        if ($memberMiniTestSetting->hasOverride() == true) {
+        //Member Settings has overrides minitest duration settings and minitest limit
+        if ($memberMiniTestSetting->hasOverride($user->id) == true) {
 
             //Member Settings overrides General Settings
             $duration      = $memberMiniTestSetting->getMiniTestDuration($user->id);   
@@ -50,9 +49,6 @@ class AnswersAPIController extends Controller
         
             //count results for minitest
             $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);
-              
-
-            $type = ($miniTestCount >= $miniTestlimit) ? $memberInfo->membership : 'Free';      
 
         } else {        
 
@@ -61,10 +57,11 @@ class AnswersAPIController extends Controller
             $miniTestlimit = $miniTestSetting->getMiniTestLimit(); 
 
             //count results for minitest
-            $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);         
-
-            $type = ($miniTestCount >= $miniTestlimit) ? $memberInfo->membership : 'Free';        
+            $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);  
         }
+
+
+        $type = ($miniTestCount >= $miniTestlimit) ? $memberInfo->membership : 'Free';  
 
 
         if ($type == "Monthly") 
@@ -76,9 +73,8 @@ class AnswersAPIController extends Controller
             {
                 DB::beginTransaction();
 
-                $created = $miniTestResult->initializeMiniTest($type, $categoryID, $answerKeys);
-
-                $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
+                $created        = $miniTestResult->initializeMiniTest($type, $categoryID, $answerKeys);
+                $scheduleAdded  = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
 
                 DB::commit();
             
@@ -119,6 +115,10 @@ class AnswersAPIController extends Controller
                 $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
 
                 DB::commit();
+
+
+                //Update MiniTest Count after adding
+                $miniTestCount = $miniTestResult->countPreviousResults($user->id, $duration);     
             
                 if ($created) 
                 {                       
@@ -168,6 +168,24 @@ class AnswersAPIController extends Controller
             $freeCreated = $miniTestResult->initializeMiniTest($type, $categoryID, $answerKeys);
 
             $scheduleAdded = $miniTestResult->addMemberMiniTestSchedule( $miniTestCount, $type );
+
+
+            if ($memberInfo->membership  == "Point Balance") 
+            {
+                $agentCredit = [
+                    'valid' => 1,
+                    'transaction_type'  => 'AGENT_SUBTRACT',
+                    'agent_id'          => $memberInfo->agent_id,
+                    'member_id'         => $memberInfo->user_id,
+                    'lesson_shift_id'   => $memberInfo->lesson_shift_id,
+                    'created_by_id'     => $memberInfo->user_id,
+                    'amount'            => 0,
+                    'price'             => 0,
+                    'remarks'           => "MINITEST - ANSWERS QUESTION | $type | minitest count - $miniTestCount", 
+                ];
+                AgentTransaction::create($agentCredit); 
+            }
+
 
             DB::commit();
         

@@ -14,10 +14,11 @@ class MemberMiniTestSetting extends Model
 
 
     /* defaults to 2 if not set */
-    public function hasOverride()
+    public function hasOverride($userID)
     {
         $override = MemberMiniTestSetting::select('name', 'value')
             ->where('name', 'minitest_override')
+            ->where('user_id', $userID)
             ->where('valid', true)
             ->first();
 

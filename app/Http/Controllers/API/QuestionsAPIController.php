@@ -10,9 +10,6 @@ use App\Models\MiniTestChoice;
 use App\Models\MiniTestResult;
 use App\Models\MiniTestSetting;
 use App\Models\MemberMiniTestSetting;
-
-
-
 use Auth;
 
 class QuestionsAPIController extends Controller
@@ -26,6 +23,7 @@ class QuestionsAPIController extends Controller
         MemberMiniTestSetting $memberMiniTestSetting)
     {
 
+        $user = Auth::user();
 
         $category_id = $request->category_id;
 
@@ -36,21 +34,19 @@ class QuestionsAPIController extends Controller
 
 
         //@get how many results submitted for past seven days
+        if ($memberMiniTestSetting->hasOverride($user->id) == true) {
 
+            $duration           = $memberMiniTestSetting->getMiniTestDuration($user->id);   
+            $miniTestlimit      = $memberMiniTestSetting->getMiniTestLimit($user->id);   
 
-        if ($memberMiniTestSetting->hasOverride() == true) {
-
-            $duration           = $memberMiniTestSetting->getMiniTestDuration(Auth::user()->id);   
-            $miniTestlimit      = $memberMiniTestSetting->getMiniTestLimit(Auth::user()->id);   
-
-            $miniTestCount      = $miniTestResult->countPreviousResults(Auth::user()->id, $duration);
+            $miniTestCount      = $miniTestResult->countPreviousResults($user->id, $duration);
 
         } else {
         
             $duration           = $miniTestSetting->getMiniTestDuration();
             $miniTestlimit      = $miniTestSetting->getMiniTestLimit(); 
 
-            $miniTestCount      = $miniTestResult->countPreviousResults(Auth::user()->id, $duration);
+            $miniTestCount      = $miniTestResult->countPreviousResults($user->id, $duration);
         
         }
         

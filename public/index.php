@@ -2,7 +2,9 @@
 /**
 * Custom  Redirect Home Page if first sgemetn is public/index.php
 */
-$PROTOCOL = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443 || $_SERVER['HTTP_X_FORWARDED_PORT'] == 443) ? "https://" : "http://";
+//$PROTOCOL = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443 || $_SERVER['HTTP_X_FORWARDED_PORT'] == 443) ? "https://" : "http://";
+
+$PROTOCOL = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ) ? "https://" : "http://";
 
 $host = $PROTOCOL. $_SERVER['HTTP_HOST'];
 
