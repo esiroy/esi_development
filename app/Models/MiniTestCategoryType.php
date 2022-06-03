@@ -155,7 +155,7 @@ class MiniTestCategoryType extends Model
     {
         $items = MiniTestCategoryType::where('parent_id', $parentID)
                 ->where('valid', true)
-                ->orderBy('id', 'DESC')
+                ->orderBy('sequence_number', 'ASC')
                 ->get();
 
         return $items;
