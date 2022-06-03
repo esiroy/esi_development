@@ -83,11 +83,12 @@
 
                 <div class="questions row" v-for="(question, qIndex) in this.questions" :key="qIndex"> 
 
-                    <div class="question container col-12">
-                        <span class="font-weight-bold">
-                            {{ (qIndex + 1)  +"." }} {{ question.question }}
-                        </span>
-                        <b-form-group>
+                    <div class="col-12">
+
+                        <span class="font-weight-bold float-left pr-1 small">{{ (qIndex + 1)  +"." }} </span>
+                        <span class="question font-weight-bold d-inline-block" v-html="formatter(question.question)"></span>                        
+
+                        <b-form-group class="questionChoicesContainer">
                             <b-form-radio :name="'question_'+ question.id +''"
                             v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
                             v-bind:value="choice.id"
@@ -281,7 +282,9 @@
 
                 this.recordStartTime();
             },
-
+            formatter(text) {
+                return Helpers.capitalizeFirstLetter(text)
+            },
             countFreeMiniTest() 
             {            
                 this.freeMiniTest = this.limit - this.miniTestSubmittedCount;
@@ -658,5 +661,9 @@
 
     html {
         scroll-behavior: smooth;
+    }
+
+    .question {
+        font-size: 13px;
     }
 </style>

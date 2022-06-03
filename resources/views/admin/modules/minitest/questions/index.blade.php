@@ -128,21 +128,19 @@
                     <div class="card-body">
 
                         <div class="row pt-2">
-                            <div class="col-6">
-                                <div class="row">
-                                    <div class="col-4 small pr-0">
-                                        <label for="question" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Question <div class="float-right">:</div></label>
-                                    </div>
-                                    <div class="col-6">
-                                        <input id="question" type="question" class="form-control form-control-sm @error('name') is-invalid @enderror" name="question" value="{{ old('question') }}" required autocomplete="question">
-                                        @error('question')
-                                        <span class="invalid-feedback" role="alert">
-                                            <strong>{{ $message }}</strong>
-                                        </span>
-                                        @enderror
-                                    </div>
-                                </div>
+                         
+                            <div class="col-2 small ">
+                                <label for="question" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Question </label>
                             </div>
+                            <div class="col-9">
+                                <input id="question" type="question" class="form-control form-control-sm @error('name') is-invalid @enderror" name="question" value="{{ old('question') }}" required autocomplete="question">
+                                @error('question')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                                @enderror
+                            </div>
+
                         </div>
 
 
@@ -180,10 +178,38 @@
 @endsection
 
 @section('scripts')
+<script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
+<script type="text/javascript">
+
+function addTextFormatter(id) {
+    CKEDITOR.replace( id , {
+        toolbarGroups: [
+                { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                { name: 'forms', groups: [ 'forms' ] },
+                
+                { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                { name: 'links', groups: [ 'links' ] },
+                { name: 'insert', groups: [ 'insert' ] },
+                
+                { name: 'styles', groups: [ 'styles' ] },
+                { name: 'colors', groups: [ 'colors' ] },
+                { name: 'tools', groups: [ 'tools' ] },
+                { name: 'others', groups: [ 'others' ] },
+                
+            ],
+        removePlugins: 'easyimage, exportpdf, cloudservices',
+        extraPlugins: 'html5audio',                        
+        removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
+    });
+}
+</script>
 @parent
 <script type="text/javascript">
     window.addEventListener('load', function() {
-      
+        addTextFormatter("question");  
     });
 
 </script>
