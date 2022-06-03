@@ -113,10 +113,10 @@
                     
                     <div class="question container col-12" v-show="qIndex == questionIndex">
 
-                        <span class="font-weight-bold mb-3">
-                            {{ (qIndex + 1)  +"." }} {{ question.question }}
-                        </span>
-                        <b-form-group>
+                        <span class="font-weight-bold float-left pr-1 small">{{ (qIndex + 1)  +"." }} </span>
+                        <span class="question font-weight-bold d-inline-block" v-html="formatter(question.question)"></span>
+
+                        <b-form-group class="questionChoicesContainer">
                             <b-form-radio :name="'question_'+ question.id +''" v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
                             v-bind:value="choice.id"
                             class="ml-3 pt-2"> {{ choice.choice }} </b-form-radio>
@@ -154,9 +154,14 @@
 
                     <div v-for="(result, resultKey) in results" :key="'result_'+resultKey" class="mb-3">
 
+                        <!--
                         <div class="font-weight-bold">
                            {{ resultKey + 1 }}{{"."}} {{ result.question }} 
                         </div>
+                        -->
+
+                        <span class="font-weight-bold float-left pr-1 small">{{ (resultKey + 1)  +"." }} </span>
+                        <span class="question font-weight-bold d-inline-block" v-html="formatter(result.question)"></span>
 
                         <div class="answer-container ml-3 mt-2">
 
@@ -208,12 +213,13 @@
 
 <script>
     import {Helpers} from "../../helpers/helpers.js";
-    import HelpersComponents from "../../helpers/helper_components.js";
+    import {StringHelpers} from "../../helpers/StringHelpers.js";
+    
     
     export default {   
         name: "questions-component",
         components: {    
-            HelpersComponents,
+          
         }, 
         props: {
             category: Object,
@@ -283,7 +289,7 @@
                 this.recordStartTime();
             },
             formatter(text) {
-                return Helpers.capitalizeFirstLetter(text)
+                return StringHelpers.capitalizeFirstLetter(text)
             },
             countFreeMiniTest() 
             {            

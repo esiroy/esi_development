@@ -98,11 +98,17 @@
 							<tr v-for="(row, index) in JSON.parse(item.member_answers)" :key="index">
 								<td class="pb-4">
 
+									<!--
 									<span class="font-weight-bold">
 										{{ index + 1 }} {{ "." }} {{ row.question}}
 									</span>
+									-->
 
-									<div class="choices ml-3">
+									<span class="font-weight-bold float-left pr-1 small">{{ (index + 1)  +"." }} </span>
+									<span class="question font-weight-bold d-inline-block" v-html="formatter(row.question)"></span>
+
+
+									<div class="choices mt-2 ml-3">
 										<span class="font-weight-bold"> Choices: </span>
 										<span class="pl-4"  v-for="(choice, choiceIndex) in row.choices" :key="choiceIndex">
 											{{ choiceIndex+1 }}{{ ".)"}} {{ choice.choice }} &nbsp;
@@ -114,8 +120,9 @@
 										</div>
 										
 
-										<div v-if="row.your_answer === null" class="pt-2 text-secondary">
-											<i class="fa fa-question " aria-hidden="true"></i>  {{ "No Answer" }}
+										<div v-if="row.your_answer === null" class="pt-2">
+											<span class="font-weight-bold">Submitted Answer:  </span>
+											<i class="fa fa-question text-secondary" aria-hidden="true"></i>  {{ "No Answer" }}
 										</div>
 
 										<div v-else class="pt-2">
@@ -159,6 +166,10 @@
 </template>
 
 <script>
+
+import {StringHelpers} from "../../helpers/StringHelpers.js";
+
+
 export default {
     name: "member-minitest-viewer-component",
     components: {},
@@ -186,6 +197,9 @@ export default {
        this.getMiniTests(1) 
     },
     methods: {
+		formatter(text) {
+			return StringHelpers.capitalizeFirstLetter(text)
+		},
 		confirmDelete(item, key) {
 		
 			this.$bvModal.msgBoxConfirm('Please confirm that you want to delete this mini-test result.', {
