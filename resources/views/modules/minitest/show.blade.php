@@ -34,6 +34,9 @@
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
                             Mini Test
+                            <span class="text-secondary small float-right">
+                                <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0607200521.html','Mini Test',900,820)">Mini Test  について</a> 
+                            </span>                            
                         </div>
 
                         <div class="card-body">
