@@ -54,13 +54,13 @@
                             </a>
 
 
-                            <!--
+                            
                             <a href="{{ url('minitest') }}">
                                 <button type="button" class="btn btn-sm btn-pink-gradient" alt="Minitest" title="Minitest">
                                     Mini Test
                                 </button>
                             </a>
-                            -->
+                            
 
 
                         </div>
