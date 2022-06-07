@@ -1,4 +1,34 @@
 <?php
+/**
+* Custom  Redirect Home Page if first sgemetn is public/index.php
+*/
+//$PROTOCOL = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') || $_SERVER['SERVER_PORT'] == 443 || $_SERVER['HTTP_X_FORWARDED_PORT'] == 443) ? "https://" : "http://";
+
+$PROTOCOL = ((!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') ) ? "https://" : "http://";
+
+$host = $PROTOCOL. $_SERVER['HTTP_HOST'];
+
+$uri_segments = explode('/', substr($_SERVER['REQUEST_URI'], 1), 3);
+
+if ($uri_segments[0] == 'public' && $uri_segments[1] == 'index.php') {
+
+    if (isset($uri_segments[2])) {        
+        header("Location: $host/$uri_segments[2]"); 
+    } else {    
+        header("Location: $host"); 
+    }
+    exit();
+
+} else if ($uri_segments[0] == 'public' ) {
+
+    if (isset($uri_segments[1])) {        
+        header("Location: $host/$uri_segments[1]"); 
+    } else {    
+        header("Location: $host"); 
+    }
+    exit();
+}
+
 
 /**
 * Custom  Redirect Home Page if first sgemetn is public/index.php

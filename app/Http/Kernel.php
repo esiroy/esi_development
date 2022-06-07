@@ -68,5 +68,8 @@ class Kernel extends HttpKernel
 
         //administrator authentication
         'admin.auth' => \App\Http\Middleware\AdminAuthenticate::class,
+
+        //Redirect to Admin
+        'redirectAdmin'   => \App\Http\Middleware\RedirectAdmin::class
     ];
 }

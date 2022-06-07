@@ -23,6 +23,7 @@ use App\Models\WritingEntries;
 use App\Models\TimeManager;
 use App\Models\TimeManagerProgress;
 
+use App\Models\MiniTestResult;
 
 
 use App;
@@ -47,7 +48,37 @@ class dummyController extends Controller
     {
     }
 
-    public function  index(Request $request) {
+    public function index(MiniTestResult $miniTestResult) 
+    {
+
+        $today = date('Y-m-d');     
+        $todayDateToUpper = date('Y-m-d 23:59:59');
+
+    
+        $prevDate = date('Y-m-d',(strtotime ( "-7 day" , strtotime ($todayDateToUpper) ) ));        
+        echo "PREVIOUS DATE: " . $prevDate ." - " .  $todayDateToUpper ."<BR>";
+
+
+
+        $items = MiniTestResult::where('user_id', 148)
+            ->where('valid', true)    
+            ->whereBetween('time_started', array($prevDate, $todayDateToUpper))
+            ->orderBy('time_started', 'ASC') 
+            ->get();
+
+
+        foreach($items as $item) {
+            echo $item->time_started;
+            echo "<BR>";
+
+        }
+
+    
+        //$count = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
+
+        //echo $count;
+    }
+    public function testMinites(Request $request) {
 
 
         echo calculateMinutesToHours(120);
@@ -91,7 +122,8 @@ class dummyController extends Controller
         echo minutesFormatter($minutesLeft);    
     }
 
-    public function component_test() {
+    public function component_test() 
+    {
         return view("dummy/index", ['title'=> "TEST"]);
     }
 

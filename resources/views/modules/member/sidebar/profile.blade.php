@@ -107,9 +107,9 @@
 
                  
                         @if ($memberInfo->isMemberCreditExpired(Auth::user()->id)) 
-                            <span class="text-danger">{{ "0" }}</span>
+                            <span  id="creditsLeft" class="text-danger">{{ "0" }}</span>
                         @else 
-                            <span>
+                            <span  id="creditsLeft">
                                 @php
                                 $transaction = new \App\Models\AgentTransaction();
                                 echo $transaction->getCredits(Auth::user()->id);
@@ -135,7 +135,10 @@
                     <!--(test total reserved current month: ) {{ $scheduleItemObj->getTotalReservedForCurrentMonth($memberInfo->user_id) }}-->
 
                     <div class="text-secondary" title="lessonLimit">Class: 月額会員対象</div>
-                    <span>毎月 {{ $memberInfo->getLessonLimit() }} 回クラス (あと　残り {{ $memberInfo->getMonthlyLessonsLeft() }} 回)</span>
+                    <div>
+                        毎月 <span id="lessonLimit">{{ $memberInfo->getLessonLimit() }}</span>回クラス (あと　残り 
+                        <span id="monthlyLessonsLeft"> {{ $memberInfo->getMonthlyLessonsLeft() }}</span> 回)
+                    </div>
 
                 @else
 
@@ -143,17 +146,19 @@
 
                         <div class="pt-1">
                             <span class="text-secondary" title="point"> 現在の残ポイント: ポイント会員対象 :</span>                            
-                            <span>
+                           
                                     
                                 @if ($memberInfo->isMemberCreditExpired(Auth::user()->id)) 
                                     <span class="text-danger">{{ "0" }}</span>
                                 @else 
+                                    <span id="creditsLeft">
                                     @php
                                     $transaction = new \App\Models\AgentTransaction();
                                     echo $transaction->getCredits(Auth::user()->id);
                                     @endphp
+                                    </span>
                                 @endif
-                            </span>                            
+                                                       
                         </div>                       
 
                         <div class="pt-2">

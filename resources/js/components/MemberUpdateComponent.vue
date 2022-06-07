@@ -1272,8 +1272,7 @@
 
 
 
-
-            <div id="member-desired-schedule" class="section">
+            <div id="member-account-mergers" class="section">
                 <div class="card-title bg-gray p-1 mt-4">
                     <div class="pl-2 font-weight-bold small">
                         Merged Accounts
@@ -1341,6 +1340,81 @@
             </div>
 
 
+
+            <div id="member-minitest-viewer" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Mini-Test Results</div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small text-center">
+                                {{ "Mini-Test" }}
+                            </div>
+                            <div class="col-10">
+                                <member-mini-test-viewer-component               
+                                        :usertype="this.usertype"
+                                        :memberinfo="this.memberinfo"             
+                                        :api_token="this.api_token" 
+                                        :csrf_token="this.csrf_token"
+                                    />    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+           <div id="member-minitest-settings" class="section">
+                <div class="card-title bg-gray p-1 mt-4">
+                    <div class="pl-2 font-weight-bold small">Mini-Test User Setting Override</div>
+                </div>
+                <div class="row pt-2">
+                    <div class="col-12">
+
+
+                        <div class="row">
+                            <div class="col-2 small text-center">
+                                {{ "Mini-Test Override" }}
+                            </div>
+                            <div class="col-10 text-left">
+                                <input id="isMinitestOverrided" name="isMinitestOverrided"  
+                                    type="checkbox" 
+                                    v-model="minitest.memberMiniTestHasOverride">
+                            </div>
+                        </div>
+
+
+
+                        <div class="row mt-2">
+                            <div class="col-2 small text-center">
+                                {{ "Mini-Test Limit" }}
+                            </div>
+                            <div class="col-10">
+                                <input id="limit" name="limit" type="number" min="0" 
+                                    class="form-control form-control-sm col-2"  
+                                    v-model="minitest.memberMiniTestLimit">
+                            </div>
+                        </div>
+
+
+                        <div class="row mt-2">
+                            <div class="col-2 small text-center">
+                                {{ "Mini-Test Duration" }}
+                            </div>
+                            <div class="col-10">
+                                <input id="duration" name="duration" type="number" min="0"
+                                    class="form-control form-control-sm col-2" 
+                                    v-model="minitest.memberMiniTestDuration">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+
             <div id="submit-button" class="section row py-4">
                 <div class="col-2"></div>
                 <div class="col-3 text-left">
@@ -1370,6 +1444,7 @@ import EikenScoreComponent from "./scores/EikenScoreComponent.vue";
 import TeapScoreComponent from "./scores/TeapScoreComponent.vue";
 import ToeicWritingScoreComponent from "./scores/ToeicWritingScoreComponent.vue";
 
+import MemberMiniTestViewerComponent from './backend/member/MemberMiniTestViewerComponent.vue'
 
 import Vuelidate from "vuelidate";
 import { required, email, minLength, sameAs } from "vuelidate/lib/validators";
@@ -1391,6 +1466,7 @@ export default {
         ToeicListeningAndReadingScoreComponent, ToeicSpeakingScoreComponent, ToeicWritingScoreComponent, 
         EikenScoreComponent,
         TeapScoreComponent,
+        MemberMiniTestViewerComponent,
     },
     props: {
         agentinfo: {
@@ -1436,6 +1512,14 @@ export default {
         shifts : {
             type: Array
         },        
+
+        minitest: {
+            type: Object
+        },
+
+        usertype: {
+            type: String
+        },
 		csrf_token: {
 			type: String
 		},
@@ -1930,12 +2014,20 @@ export default {
                 desiredScheduleList: [],
             },
             
-
+            /*
+            minitest: {
+                override: false,
+                limit: 2,  //default limit 
+                duration: 7, //default 7 days duration 
+            }*/
 
         };
     },      
     mounted: function () 
 	{
+
+        console.log(this.minitest);
+
 
         this.getMergedAccounts();
 
@@ -2227,7 +2319,8 @@ export default {
                 method          : "POST",
                 user            : JSON.stringify(this.user),
                 purposeList     : JSON.stringify(this.purposeList),
-                level           : this.selectedMemberLevel
+                level           : this.selectedMemberLevel,
+                minitest        : this.minitest,
             })
             .then(response => 
             {

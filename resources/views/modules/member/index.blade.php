@@ -51,7 +51,18 @@
                                 <button type="button" class="btn btn-sm btn-green-gradient" alt="添削くん" title="添削くん">
                                     添削くん
                                 </button>
-                            </a>                      
+                            </a>
+
+
+                            <!--
+                            <a href="{{ url('minitest') }}">
+                                <button type="button" class="btn btn-sm btn-pink-gradient" alt="Minitest" title="Minitest">
+                                    Mini Test
+                                </button>
+                            </a>
+                            -->
+
+
                         </div>
                     </div>
 

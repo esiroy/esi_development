@@ -78,9 +78,9 @@ class FileUploadController extends Controller
                 $ext = pathinfo($path, PATHINFO_EXTENSION);
 
                 if ($ext == 'jpg' || $ext == 'png' || $ext == 'gif' || $ext == 'jpeg') {
-                    $file = "<a target='_blank' href='$url'><img src='$url' class='img_preview'></a>";
+                    $file = "<a class='img_preview' target='_blank' href='$url'><img src='$url' class='img_preview'></a>";
                 } else {
-                    $file = "<a target='_blank' href='$url'><i class='fas fa-file-pdf custom-pdf'></i></a> ";
+                    $file = "<a class='img_preview' target='_blank' href='$url'><i class='fas fa-file-pdf custom-pdf'></i></a> ";
                     $file .= "<div>". $request->file('file')->getClientOriginalName() ."</div>";
                 }
                 

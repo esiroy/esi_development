@@ -147,6 +147,7 @@
 
                             <member-update-component 
                                 ref="MemberUpdateComponent"
+                                :minitest="{{ json_encode($minitest) }}"
                                 :memberships="{{ json_encode($memberships) }}" 
                                 :attributes="{{ json_encode($attributes) }}" 
                                 :shifts="{{ json_encode($shifts) }}" 
@@ -161,6 +162,7 @@
                                 :desiredschedule="{{ json_encode($desiredSchedule) }}" 
                                 :latestreportcard="{{ json_encode($latestReportCard) }}" 
                                 :currentmemberlevel="{{ json_encode($currentMemberlevel) }}" 
+                                usertype="{{ Auth::user()->user_type }}"                  
                                 api_token="{{ Auth::user()->api_token }}" 
                                 csrf_token="{{ csrf_token() }}" />
                         </div>

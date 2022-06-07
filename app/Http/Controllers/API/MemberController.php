@@ -23,6 +23,8 @@ use App\Models\QuestionnaireItem;
 use App\Models\LessonMailer;
 use App\Models\Purpose;
 use App\Models\MemberLevel;
+use App\Models\MemberMiniTestSetting;
+
 
 use Auth, App;
 use DB;
@@ -1420,9 +1422,10 @@ class MemberController extends Controller
         //abort_if(Gate::denies('member_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $data = json_decode($request['user']);
+        
+        $memberID = $data->user_id;
+
         $purposeList = json_decode($request['purposeList']);
-
-
 
         //disallow duplicate email and username
         $validator = Validator::make(
@@ -1611,12 +1614,8 @@ class MemberController extends Controller
                     $memberLevel->saveLevel($memberlevelData);                
                 } else {
                     
-                    MemberLevel::where('member_id', $data->user_id)->delete();
-                 
-                }
-                    
-
-              
+                    MemberLevel::where('member_id', $data->user_id)->delete();                 
+                }              
 
                 /********************************************
                             UPDATE MEMBER PURPOSE [update]
@@ -1675,9 +1674,6 @@ class MemberController extends Controller
 
 
 
-
-
-
                 //Member Attribute (update)
                 $lessonClasses = [];
                 foreach ($data->preference->lessonClasses as $class) {
@@ -1712,6 +1708,17 @@ class MemberController extends Controller
                 MemberDesiredSchedule::where('member_id', $data->user_id)->delete();
                 MemberDesiredSchedule::insert($desiredSchedules);
 
+
+
+                $memberMiniTestSetting = new MemberMiniTestSetting(); 
+
+                $minitestData = $request->minitest;
+
+                $memberMiniTestSetting->createOrUpdateOverride($memberID, $minitestData['memberMiniTestHasOverride']);
+                $memberMiniTestSetting->createOrUpdateLimit($memberID, $minitestData['memberMiniTestLimit']);
+                $memberMiniTestSetting->createOrUpdateDuration($memberID, $minitestData['memberMiniTestDuration']);
+
+
                 DB::commit();
 
                 return Response()->json([
@@ -1720,6 +1727,8 @@ class MemberController extends Controller
                     "userData" => $request['user'],
                     "test" => $targetScore
                 ]);
+
+
             } catch (\Exception $e) {
                 return Response()->json([
                     "success" => false,

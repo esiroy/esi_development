@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Choices extends Model
+class GeneralSetting extends Model
 {
 
-   public $table = 'question_choices';
+    public $timestamps = false;  
 
-    
+    protected $table = 'settings';
+
     protected $guarded = array('created_at', 'updated_at');
 }

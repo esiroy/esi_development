@@ -29,6 +29,8 @@
                                         <th colspan="13">Personal Information</th>
                                     </tr>
 
+
+
                                     <tr valign="top">
                                         <td class="red">&nbsp;</td>
                                         <td width="200px">Agent</td>
@@ -511,7 +513,7 @@
                                                 <div class="card-body b-0">
                                                     <member-time-manager-viewer-component                                    
                                                         :memberinfo="{{ json_encode($mergedMemberInfo) }}"             
-                                                        api_token="{{ Auth::user()->api_token }}" 
+                                                        api_token="{{ Auth::user()->api_token }}"                                                         
                                                         csrf_token="{{ csrf_token() }}"
                                                     />
                                                 </div>
@@ -553,6 +555,31 @@
                                           
                                     </tr>
 
+
+
+
+                                    <tr>
+                                        <td colspan="13">&nbsp;</th>
+                                    </tr>
+
+                                    <tr class="pt-4">
+                                        <th colspan="13">Member Mini-Test</th>
+                                    </tr>
+                                    <tr valign="center">
+                                        <td>&nbsp;</td>                                        
+                                        <td>Results</td>
+                                        <td>&nbsp;</td>
+                                        <td class="py-3">
+
+                                            <member-mini-test-viewer-component               
+                                                    usertype="{{ Auth::user()->user_type }}"                     
+                                                    :memberinfo="{{ json_encode($memberInfo) }}"             
+                                                    api_token="{{ Auth::user()->api_token }}" 
+                                                    csrf_token="{{ csrf_token() }}"
+                                                />
+                                                
+                                        </td>
+                                    </tr>
 
                                 </tbody>
                             </table>
