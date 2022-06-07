@@ -12,7 +12,7 @@
                     <a href="{{ route('admin.minitest.questions.index', ['category_id' => $category_id ]) }}"> {{ $category->name ?? '' }} </a>
                 </li>                                
                 <li class="breadcrumb-item"><a href="{{ route('admin.minitest.questions.index', ['category_id'=> $category_id]) }}">Questions</a></li>
-                <li class="breadcrumb-item active">{{ ucwords($item->question) }} </li>
+                <li class="breadcrumb-item active">{!! ucwords($item->question) !!} </li>
                 <li class="breadcrumb-item active" aria-current="page">Choices</li>
                
             </ol>

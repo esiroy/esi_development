@@ -17,7 +17,7 @@
 
                 <li class="breadcrumb-item"><a href="{{ route('admin.minitest.questions.index', ['category_id'=> $category_id]) }}">Questions</a></li>
                 <li class="breadcrumb-item active">
-                     <a href="{{ route('admin.minitest.choices.index',  ['question_id'=> $question_id, 'category_id'=> $category_id]) }}" >{{ ucwords($question->question) }}</a>     
+                     <a href="{{ route('admin.minitest.choices.index',  ['question_id'=> $question_id, 'category_id'=> $category_id]) }}" >{!! ucwords($question->question) ?? '' !!}</a>     
                 </li>
 
                 <li class="breadcrumb-item">
