@@ -149,7 +149,7 @@ class ReportCardController extends Controller
                 'lesson_material'       => $request->lessonMaterial,                        
                 'lesson_subject'        => $request->lessonSubject,
                 'member_id'             => $scheduleItem['member_id'],
-                'lesson_level'          => $request->lessonLevel,                        
+                //'lesson_level'          => $request->lessonLevel,                        
             ];
             $reportCard->update($reportData);  
 

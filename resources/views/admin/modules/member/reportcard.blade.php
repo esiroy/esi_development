@@ -54,11 +54,14 @@
                                                 value="@if(isset($reportCard->lesson_subject)){{$reportCard->lesson_subject}}@else{{$latestReportCard->lesson_subject??''}} @endif" size="50">
                                             </td>
                                         </tr>
+
+                                        <!--
                                         <tr>
                                             <td>
                                                 Lesson Level
                                             </td>
                                             <td colspan="6">
+                                           
                                                 @php 
                                                     if (isset($reportCard->lesson_level)){
                                                         $lesson_level = $reportCard->lesson_level;
@@ -73,6 +76,8 @@
                                                     }
                                                 @endphp
 
+                                                
+
                                                 <select name="lessonLevel" class="form-control form-control-sm col-md-3">
                                                     <option value="1" @if ($lesson_level == '1') {{ 'selected' }}  @endif>1</option>
                                                     <option value="2" @if ($lesson_level == '2') {{ 'selected' }}  @endif>2</option>
@@ -85,8 +90,11 @@
                                                     <option value="9" @if ($lesson_level == '9') {{ 'selected' }}  @endif>9</option>
                                                     <option value="10" @if ($lesson_level == '10') {{ 'selected' }}  @endif>10</option>
                                                 </select>
+                                               
+
                                             </td>
-                                        </tr>
+
+                                        </tr>-->
 
                                         <tr>
                                             <td colspan="7">
