@@ -364,12 +364,14 @@ export default {
         },
         showReportCard(data) {
             try {
+                let baseURI = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];                  
-                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/reportcard?scheduleitemid="+lessonData.id, "_self");                
+                    window.open(baseURI + "/admin/reportcard?scheduleitemid="+lessonData.id, "_self");                
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];                 
-                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/reportcard?scheduleitemid="+lessonData.id, "_self");                  
+                    window.open(baseURI + "/admin/reportcard?scheduleitemid="+lessonData.id, "_self");                  
                 }                        
             }
             catch(err) { return false; }           

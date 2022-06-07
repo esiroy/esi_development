@@ -37,6 +37,8 @@
                     
                     <div class="mt-2 text-secondary">
                         You have {{ this.miniTestSubmittedCount }} submitted Minitest in last {{ this.duration }} days: 
+
+                        <span class="float-right text-danger" v-if="this.freeMiniTest <= 0">{{ "有料（1 ポイント)" }}</span>
                     </div>                
                 </div>
 

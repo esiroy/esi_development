@@ -13,8 +13,8 @@
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
 
    <!-- Styles -->
-    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_4_30'  }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_4_30'  }}">
+    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_1'  }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_5_1'  }}">
     
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') .'?id=version_4_30'  }}" defer ></script>

@@ -67,7 +67,7 @@
                                     <tr data-entry-id="{{  $item->id }}">                                        
                                         <!--<td class="small text-center">{{ $item->id}}</td>-->
 
-                                        <td class="small text-center">{{ $item->getType->name }}</td>
+                                        <td class="small text-center">{{ $item->getType->name ?? '' }}</td>
                                         
                                         <td class="small text-center">
                                             {{ $item->name ?? "" }}
