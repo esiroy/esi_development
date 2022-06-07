@@ -15,6 +15,7 @@ class CreateMemberTestResults extends Migration
     {
         Schema::create('member_test_results', function (Blueprint $table) {
             $table->id();
+             $table->string("type", 15);
             $table->unsignedBigInteger('question_category_id');
             //$table->unsignedBigInteger('question_category_type_id');            
             //$table->unsignedBigInteger('question_id');            
