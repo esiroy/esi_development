@@ -19,15 +19,6 @@ if ($uri_segments[0] == 'public' && $uri_segments[1] == 'index.php') {
     }
     exit();
 
-} else if ($uri_segments[0] == 'index.php' || $uri_segments[0] == 'index' ) {
-
-    if (isset($uri_segments[1])) {        
-        header("Location: $host/$uri_segments[1]"); 
-    } else {    
-        header("Location: $host"); 
-    }
-    exit();
-
 } else if ($uri_segments[0] == 'public' ) {
 
     if (isset($uri_segments[1])) {        
