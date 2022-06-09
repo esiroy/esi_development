@@ -16,7 +16,7 @@ class Notes extends Model
 
     function getMemberNotes($memberID) 
     {        
-        return Notes::select('member_notes.id as note_id', 'member_notes.tutor_id', 'member_notes.member_id', 'member_notes.note as note',
+        return Notes::select('member_notes.id as note_id', 'member_notes.tutor_id', 'member_notes.member_id', 'member_notes.note as note', 'member_notes.updated_at',
                         'user_image.original as tutor_photo',  
                         'users.firstname as tutor_name'
                     )

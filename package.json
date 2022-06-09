@@ -33,6 +33,7 @@
         "datatables.net": "^1.10.22",
         "font-awesome": "^4.7.0",
         "md5": "^2.3.0",
+        "moment-timezone": "^0.5.34",
         "qs": "^6.9.4",
         "v-select2-component": "^0.4.3",
         "vue-chartjs": "^3.5.1",

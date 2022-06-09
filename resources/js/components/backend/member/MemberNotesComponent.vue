@@ -35,8 +35,9 @@
 									<!--<td class="w-25 p-1" v-html="createImage(note.tutor_photo) + createTutorNameWrapper(note.tutor_name) "> </td>-->
 
 									<td class="text-left p-3">
-										<div v-html="note.note"></div>
+										<div v-html="note.note"></div>										
 										<div class="text-secondary pt-1"> Author : {{ note.tutor_name }}</div>
+										<div class="text-secondary pt-1"> Last Updated : {{ dateFormatter(note.updated_at) }}</div>
 									</td>
 
 									<td class="w-25 p-1">
@@ -116,6 +117,9 @@
 </template>
 
 <script>
+
+import Moment from "moment-timezone";
+
 export default {
   name: "member-notes-component",
   components: {},
@@ -263,6 +267,10 @@ export default {
         	console.log("Error " + error);
         });
     },	
+	dateFormatter(date) 
+	{
+		return Moment(date).tz('japan').format('YYYY年 MM月 D日 HH:mm'); 
+	},
 	updateNote() 
 	{
 
