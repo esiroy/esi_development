@@ -57,7 +57,7 @@
                                     <tr data-entry-id="{{  $item->id }}" class="@if ($added_question_id == $item->id || $updated_question_id == $item->id) {{ 'table-success' }} @endif">
                                         
                                         <td class="small text-center">{{ $item->id }}</td>
-                                        <td class="small text-center">{{ $item->question ?? "" }}</td>                                           
+                                        <td class="small text-center">{!! $item->question ?? "" !!}</td>
                                         <td class="small text-left">                                        
                                             @if (count($item->choices) >= 1)
                                                 <ol>
@@ -133,7 +133,14 @@
                                 <label for="question" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Question </label>
                             </div>
                             <div class="col-9">
-                                <input id="question" type="question" class="form-control form-control-sm @error('name') is-invalid @enderror" name="question" value="{{ old('question') }}" required autocomplete="question">
+
+                               <textarea id="question"  name="question"  required type="question" 
+                               class="form-control form-control-sm @error('question') is-invalid @enderror"
+                                value="{{ old('question') ? old('question') : '' }}" 
+                                required autocomplete="question"
+                                >{{ old('question') ? old('question') : '' }}</textarea>
+
+
                                 @error('question')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>

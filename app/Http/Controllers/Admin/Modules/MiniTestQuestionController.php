@@ -57,21 +57,33 @@ class MiniTestQuestionController extends Controller
 
         abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-
-        $created = MiniTestQuestion::create([
-            'category_id'   => $request->category_id,
-            'question'      => $request->question,
-            'valid'         => true
+        //Validate Form
+        $validator = Validator::make($request->all(), [
+            'question' => ['required'],
         ]);
 
-        if ($created) {
-        
-            return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'added_question_id' => $created->id ])->with('message', 'Question added successfully!');
+        if ($validator->fails()) {
 
-        } else {        
+            return redirect()->back()->withErrors($validator)->withInput()->with('error_message', 'Question is required');
 
-            return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'added_question_id' => $created->id ])->with('error_message', 'Question was not added due to an error, please try again!');        
-        }        
+        } else {
+
+
+            $created = MiniTestQuestion::create([
+                'category_id'   => $request->category_id,
+                'question'      => $request->question,
+                'valid'         => true
+            ]);
+
+            if ($created) {
+            
+                return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'added_question_id' => $created->id ])->with('message', 'Question added successfully!');
+
+            } else {        
+
+                return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'added_question_id' => $created->id ])->with('error_message', 'Question was not added due to an error, please try again!');        
+            }        
+        }
     }
 
     /**
@@ -100,8 +112,7 @@ class MiniTestQuestionController extends Controller
 
         abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-
-       $category = MiniTestCategory::find($category_id);
+        $category = MiniTestCategory::find($category_id);
 
 
         $item = MiniTestQuestion::where('category_id', $category_id)
@@ -110,6 +121,8 @@ class MiniTestQuestionController extends Controller
                     ->first();
 
         return view('admin.modules.minitest.questions.edit', compact('item', 'category', 'category_id', 'question_id'));
+
+       
     }
 
     /**
@@ -122,26 +135,41 @@ class MiniTestQuestionController extends Controller
     public function update(Request $request, $category_id, $question_id)
     {
 
-        $item = MiniTestQuestion::where('category_id', $category_id)
-                    ->where('id', $question_id)
-                    ->first();
+         abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $updated = $item->update([
-            'id'            => $question_id,
-            'category_id'   => $category_id,
-            'question'      => $request->question,
-            'valid'         => true
+          //Validate Form
+        $validator = Validator::make($request->all(), [
+            'question' => ['required'],
         ]);
 
+        if ($validator->fails()) {
 
-        if ($updated) {
-        
-            return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'updated_question_id' => $question_id ])->with('message', 'Question added successfully!');
+            return redirect()->back()->withErrors($validator)->withInput()->with('error_message', 'Question is required');
 
-        } else {        
+        } else {
 
-            return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'updated_question_id' => $question_id ])->with('error_message', 'Question was not added due to an error, please try again!');        
-        }      
+
+            $item = MiniTestQuestion::where('category_id', $category_id)
+                        ->where('id', $question_id)
+                        ->first();
+
+            $updated = $item->update([
+                'id'            => $question_id,
+                'category_id'   => $category_id,
+                'question'      => $request->question,
+                'valid'         => true
+            ]);
+
+
+            if ($updated) {
+            
+                return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'updated_question_id' => $question_id ])->with('message', 'Question added successfully!');
+
+            } else {        
+
+                return redirect()->route('admin.minitest.questions.index', [ 'category_id'=> $request->category_id, 'updated_question_id' => $question_id ])->with('error_message', 'Question was not added due to an error, please try again!');        
+            }      
+        }
     }
 
     /**
