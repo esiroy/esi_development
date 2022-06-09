@@ -200,7 +200,7 @@ class MiniTestResult extends Model
     {
         return Response()->json([
             "success"                       => false,          
-            "message"                       => 'Your credits are already expired',            
+            "message"                       => 'Your credits has already expired',            
         ]);
     }
 

@@ -204,6 +204,15 @@ class AnswersAPIController extends Controller
             
                 $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
 
+                if ($memberInfo->isMemberCreditExpired($user->id) == true) {
+            
+                     $totalCredits = 0;
+
+                } else {
+                
+                    $totalCredits = $agentTransaction->getCredits(Auth::user()->id);
+                }
+
                 return Response()->json([
                     "success"                           => true,  
                     "membershipType"                    => $memberInfo->membership,       
