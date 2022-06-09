@@ -194,4 +194,14 @@ class MiniTestResult extends Model
             "message"                       => 'You have insufficient '. strtolower($type) .' credit',            
         ]);
     }
+
+
+    public function  responseMemberExpiredCredit($type) 
+    {
+        return Response()->json([
+            "success"                       => false,          
+            "message"                       => 'Your credits are already expired',            
+        ]);
+    }
+
 }

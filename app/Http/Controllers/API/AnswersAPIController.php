@@ -102,7 +102,15 @@ class AnswersAPIController extends Controller
             }
 
         } else if ($type == "Point Balance" || $type == "Both") {
- 
+            
+            
+            if ($memberInfo->isMemberCreditExpired($user->id) == true) {
+            
+                return $miniTestResult->responseMemberExpiredCredit($type);
+                exit();
+            }
+
+
             $credits = $agentTransaction->getCredits(Auth::user()->id);
 
             if ($credits > 0) 
