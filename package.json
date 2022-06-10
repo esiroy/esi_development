@@ -12,6 +12,7 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
+        "@babel/preset-react": "^7.17.12",
         "@fortawesome/fontawesome-free": "^5.15.2",
         "axios": "^0.19.2",
         "bootstrap": "^4.5.3",
@@ -44,5 +45,8 @@
         "vue-upload-component": "^2.8.22",
         "vuejs-datepicker": "^1.6.2",
         "vuelidate": "^0.7.5"
-    }
+    },
+    "presets": [
+        "@babel/preset-react"
+    ]
 }

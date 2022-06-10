@@ -73,6 +73,7 @@ if (url[1] === 'admin') {
     Vue.component('questions-component', require('./components/frontend/member/QuestionsComponent.vue').default);
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
 
+    Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
 
     //front end 
     switch (url[1]) {
