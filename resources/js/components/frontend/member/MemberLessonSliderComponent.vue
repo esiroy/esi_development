@@ -1,98 +1,132 @@
 <template>
-    <div id="MemberSliderComponent">
-        <div class="row">
-            <div class="col-6">
+    <div class="custom-editor">
 
-                <canvas
-                    id="paint-canvas"
-                    width="620"
-                    height="420"
-                    style="border:1px solid #000"
-                    class="mt-2"
-                    v-show="this.slide == 1"
-                ></canvas>
+        <div id="editor" class="row my-2" >
 
-                <canvas
-                    id="paint-canvas-2"
-                    width="620"
-                    height="420"
-                    style="border:1px solid #000"
-                    class="mt-2"
-                    v-show="this.slide == 2"
-                ></canvas>
-
-
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-6">
-                <div class="row">
-
-					<div class="col-1">		
-						<div class="text-container mt-2 ">				
-							<button type="button" class="btn btn-sm btn-light border border-primary" @click="showTextInput">
-							    <b-icon icon="fonts" variant="primary"></b-icon>
-							</button>
-
-
-						</div>
-					</div>
-
-                    <div class="col-4">
-                        <div class="colors mt-2">
-                            <button type="button" value="#0000ff"></button>
-                            <button type="button" value="#009fff"></button>
-                            <button type="button" value="#0fffff"></button>
-                            <button type="button" value="#bfffff"></button>
-                            <button type="button" value="#000000"></button>
-                            <button type="button" value="#333333"></button>
-                            <button type="button" value="#666666"></button>
-                            <button type="button" value="#999999"></button>
-                            <button type="button" value="#ffcc66"></button>
-                            <button type="button" value="#ffcc00"></button>
-                            <button type="button" value="#ffff00"></button>
-                            <button type="button" value="#ffff99"></button>
-                            <button type="button" value="#003300"></button>
-                            <button type="button" value="#555000"></button>
-                            <button type="button" value="#00ff00"></button>
-                            <button type="button" value="#99ff99"></button>
-                            <button type="button" value="#f00000"></button>
-                            <button type="button" value="#ff6600"></button>
-                            <button type="button" value="#ff9933"></button>
-                            <button type="button" value="#f5deb3"></button>
-                            <button type="button" value="#330000"></button>
-                            <button type="button" value="#663300"></button>
-                            <button type="button" value="#cc6600"></button>
-                            <button type="button" value="#deb887"></button>
-                            <button type="button" value="#aa0fff"></button>
-                            <button type="button" value="#cc66cc"></button>
-                            <button type="button" value="#ff66ff"></button>
-                            <button type="button" value="#ff99ff"></button>
-                            <button type="button" value="#e8c4e8"></button>
-                            <button type="button" value="#ffffff"></button>
-                        </div>
+            <div class="tool-container">
+            
+                <div class="tool-wrapper">
+                    <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector(1)">
+                        <i class="fa fa-mouse-pointer" aria-hidden="true" ></i>
                     </div>
 
-                    <div class="col-3">
-                        <div class="brushes">
-                            <button type="button" value="1"></button>
-                            <button type="button" value="2"></button>
-                            <button type="button" value="3"></button>
-                            <button type="button" value="4"></button>
-                            <button type="button" value="5"></button>
-                        </div>
-                    </div>
-
-                    <div class="col-3">
-                        <div class="buttons">
-                            <button id="clear" type="button">Clear</button>
-                            <button id="save" type="button">Save</button>
-                        </div>
+                    <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                      <i class="fa fa-font" aria-hidden="true"></i>
                     </div>
                 </div>
+
+                 <div class="tool-wrapper">
+                    <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil(1)">
+                        <i class="fa fa-pen" aria-hidden="true" ></i>
+                    </div>                    
+                    <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush(1)">
+                        <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
+                    </div>                        
+                 </div>
+
+                 <div class="tool-wrapper">
+                    <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine(1)">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </div>        
+                          
+                    <div :class="['tool', (isCircle) ? 'active' : '']"  @click="activateCircle(1)">
+                        <b-icon icon="circle" font-scale="1"> </b-icon>
+                    </div> 
+                                                       
+                 </div>
+
+                <!--            
+                 <div class="tool-wrapper">
+                    <div :class="['tool', (isSquare) ? 'active' : '']"  @click="activateSquare(1)">
+                        <i class="fa fa-pen" aria-hidden="true" ></i>
+                    </div>                    
+                    <div :class="['tool', (isSpray) ? 'active' : '']"  @click="activateSpray(1)">
+                        <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
+                    </div>                        
+                 </div>
+                 -->
+
+
+                 <!-- ADDITIONAL OPTIONS -->
+                 <div class="tool-wrapper mt-2">
+                    <div class="brushes" v-show="isBrush || isLine">
+                        <button type="button" value="5" :class="['brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                        <button type="button" value="10" :class="['brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                        <button type="button" value="15" :class="['brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                        <button type="button" value="20" :class="['brush', (stroke == 20) ? 'active' : '']"  @click="setBrushStroke(1, 20)"></button>
+                    </div> 
+                </div>         
+
             </div>
+
+            <div class="canvas-container" style="display:inline-block;">
+                <div id="editor1">
+                    <canvas
+                        ref="canvas1"
+                        id="canvas1"
+                        :width="canvasWidth"
+                        :height="canvasHeight"
+                        style="border:1px solid #333"                        
+                    ></canvas>
+                </div>
+            </div>
+
+            <div v-show="isBrush || isPencil "> </div>
+
+            <div class="colors-container">
+                <div class="colors-wrapper">
+
+                    <div class="color-selected color-shadow ">
+                        <div class="color-preview" :style="colorPreviewStyle"></div>
+                    </div>
+
+                    <div class="colors mt-2" >
+                        <button type="button" value="#0000ff"></button>
+                        <button type="button" value="#009fff"></button>
+                        <button type="button" value="#0fffff"></button>
+                        <button type="button" value="#bfffff"></button>
+                        <button type="button" value="#000000"></button>
+                        <button type="button" value="#333333"></button>
+                        <button type="button" value="#666666"></button>
+                        <button type="button" value="#999999"></button>
+                        <button type="button" value="#ffcc66"></button>
+                        <button type="button" value="#ffcc00"></button>
+                        <button type="button" value="#ffff00"></button>
+                        <button type="button" value="#ffff99"></button>
+                        <button type="button" value="#003300"></button>
+                        <button type="button" value="#555000"></button>
+                        <button type="button" value="#00ff00"></button>
+                        <button type="button" value="#99ff99"></button>
+                        <button type="button" value="#f00000"></button>
+                        <button type="button" value="#ff6600"></button>
+                        <button type="button" value="#ff9933"></button>
+                        <button type="button" value="#f5deb3"></button>
+                        <button type="button" value="#330000"></button>
+                        <button type="button" value="#663300"></button>
+                        <button type="button" value="#cc6600"></button>
+                        <button type="button" value="#deb887"></button>
+                        <button type="button" value="#aa0fff"></button>
+                        <button type="button" value="#cc66cc"></button>
+                        <button type="button" value="#ff66ff"></button>
+                        <button type="button" value="#ff99ff"></button>
+                        <button type="button" value="#e8c4e8"></button>
+                        <button type="button" value="#ffffff"></button>
+                    </div> 
+                </div>
+            </div>        
         </div>
+
+        <!--Mirror 
+        <div id="Mirror">
+            <canvas
+                ref="canvas2"
+                id="canvas2"
+                :width="canvasWidth"
+                :height="canvasHeight"
+                style="border:1px solid #333"
+            ></canvas>
+        </div>
+        -->
 
         <b-modal
             id="modalAddInputText"
@@ -100,429 +134,538 @@
             title="Add Text"
             @show="resetInputTextModal"
             @hidden="resetInputTextModal"
-            @ok="addInputText"
-        >
-            <form ref="form" @submit.stop.prevent="handleSubmit">
-                <b-form-group
-                    label="Text"
-                    label-for="name-input"
-                    invalid-feedback="Text is required"
-                 
-                >
-                    <b-form-input
-                    id="name-input"
-                    v-model="inputText"
-                    required
-                    ></b-form-input>
+            @ok="addInputText">
+            <form ref="form" @submit.stop.prevent="handleSubmit"> 
+                <b-form-group label="Text" label-for="textInput" invalid-feedback="Text is required">
+                    <b-form-input id="textInput" v-model="inputText" required></b-form-input>
                 </b-form-group>
             </form>
         </b-modal>
+
 
     </div>
 </template>
 
 <script>
-import Moment from "moment-timezone";
+import { fabric } from "fabric";
 
 export default {
-    name: "member-slider-component",
-
-    components: {},
+    name: "Editor",
     props: {
-        tutorinfo: Object,
-        memberinfo: Object,
-        api_token: String,
-        csrf_token: String
+        canvasWidth: {
+            type: [String, Number],
+            required: true
+        },
+        canvasHeight: {
+            type: [String, Number],
+            required: true
+        },
+        editorId: {
+            type: String,
+            default: "c",
+            required: false
+        }
     },
     data() {
         return {
+            canvas: [],
 
-            slide: 1,
+            //Modes
+            isSelector: false,
+            isText: false,
+            isBrush: false, 
+            isPencil: false,
+            isCircle: false,
 
+            //Action
+            isDrawing: false,
+            isDrawingLine:false,            
+            isDrawingCircle:false, 
+
+            //Line
+            isLine: false,
+            Line: null,
+            
+            history: [],
+
+            currentSlide: 1,
+            slides: 10,
+
+            //brush
+            stroke: 5,
+            brushColor: 'black',
+
+
+
+            //input text
+           
             inputText: "",
 
-            canvas: "",
+            //mouseX
+            mouseX: 0,
+            mouseY: 0,
+
+            //original set mouseX
+            originX: 0,
+            originY: 0,
+
+
+            colorPreviewStyle:{
+                backgroundColor: "#000" 
+            }
+
            
-
-            ctx: "",
-            canvasOffset: "",
-            offsetX: "",
-            offsetY: "",
-            scrollX: "",
-            scrollY: "",
-
-            // variables to save last mouse position
-            // used to see how far the user dragged the mouse
-            // and then move the text by that distance
-            startX: "",
-            startY: "",
-
-            // an array to hold text objects
-            texts: [],
-
-            // this will hold the index of the hit-selected tex,
-            selectedText: -1,
-
-            //history
-            mouseDrag: false,
-            //isMouseDown: false,
-            points: [],
-                        
         };
     },
-    mounted: function() {
+    mounted() {
+        const ref1 = this.$refs["canvas1"];
+        const ref2 = this.$refs["canvas2"];
 
-        this.draw("paint-canvas");
-        this.draw("paint-canvas-2");
+        this.canvas[1] = new fabric.Canvas(ref1, { selection: true });
+        this.canvas[2] = new fabric.Canvas(ref2, { selection: true });
 
-        this.loadImage('https://pbs.twimg.com/profile_images/1498641868397191170/6qW2XkuI_400x400.png');
+        this.customSelectorBounds(fabric);
+        this.mouseClickHandler();
+        this.keyPressHandler();
+        this.handleBrushColors();
 
-        this.canvas = document.getElementById("paint-canvas");
-        this.ctx = this.canvas.getContext("2d");
-
-        
-        this.canvasOffset = this.getOffset("#paint-canvas");
-     
-        this.offsetX = this.canvasOffset.left;
-        this.offsetY = this.canvasOffset.top;
-
-
+        //default selected      
+        this.activatePencil(1);
 
     },
     methods: {
+        customSelectorBounds(fabric) {
+            fabric.Object.prototype.transparentCorners = false;
+            fabric.Object.prototype.cornerColor = 'blue';
+            fabric.Object.prototype.cornerStyle = 'circle';
+        },
+        keyPressHandler(e) {
+            window.onkeydown = (event) => {
+                if (event.key === "Delete") {
+                    this.deleteObj();
+                    return false;
+                };                   
+            };
+        },
+        mouseClickHandler() 
+        {
+            this.canvas[1].on('mouse:down', (options) => {
 
-        getDrawing() {
-        
-        },
-        getOffset(element) 
-        {        
-            let elem = document.querySelector(element)
-            if (elem) {
-                let clientRect = elem.getBoundingClientRect();
-                let offset = { 
-                    top: clientRect.top + window.scrollY, 
-                    left: clientRect.left + window.scrollX, 
-                };
-                return offset;                
-            }
-        },
-        textHittest(x, y, textIndex) {
-            let text = this.texts[textIndex];
-            return (x >= text.x && x <= text.x + text.width && y >= text.y - text.height && y <= text.y);
-        }, 
-        // done dragging
-        handleMouseUp(e) {          
-            this.selectedText = -1;
-            this.mouseDrag = false;
-            console.log("done")
-            e.preventDefault();
-        },
-        handleMouseOut(e) 
-        {            
-            this.selectedText = -1;
-            this.mouseDrag = false;
-            console.log("done")
-            e.preventDefault();
-        },
-        handleMouseDown(e) {
-            e.preventDefault();
-            this.startX = parseInt(e.clientX - this.offsetX);
-            this.startY = parseInt(e.clientY - this.offsetY);
-            // Put your mousedown stuff here
-            for (var i = 0; i < this.texts.length; i++) {
-                if (this.textHittest(this.startX, this.startY, i)) {
-                    this.selectedText = i;
-                    this.mouseDrag = true;
-                } else {
-                    //this.mouseDrag = false;
-                }
-            }
-        },
+                console.log(this.isText);
 
-        handleMouseMove(e) {
-            if (this.selectedText < 0) {
-                return;
-            }
-            e.preventDefault();
+                if (this.isText == true) 
+                {
+                    this.mouseX = options.pointer.x;
+                    this.mouseY = options.pointer.y; 
+
+                    var selectedObj = this.canvas[1].getActiveObject();
+                    
+                    if (!selectedObj) 
+                    {  
+                        this.$bvModal.show('modalAddInputText');
+                    } else {
+
+                        this.resetModes();                    
+                        this.isSelector = true;
+                    }
+                    
+                }                
+            });
+        },   
+
+        resetModes()  {
+
+            this.canvas[1].isDrawingMode = false;
+
+            this.isDrawingLine      = false;
+            this.isDrawing          = false;
+            this.isDrawingCircle    = false;
             
-            this.mouseX = parseInt(e.clientX - this.offsetX);
-            this.mouseY = parseInt(e.clientY - this.offsetY);
 
-            // Put your mousemove stuff here
-            var dx = this.mouseX - this.startX;
-            var dy = this.mouseY - this.startY;
+            //modes
+            this.isSelector     = false
+            this.isText         = false;
+            this.isBrush        = false;
+            this.isPencil       = false;
+            this.isLine         = false;
+            this.isCircle       = false;
+        },
+        addInputText() 
+        {
+            let id = (new Date()).getTime().toString().substr(5);
+            let text = new fabric.IText(this.inputText, {
+                id: id,
+                objecttype: 'text',
+                left: this.mouseX,
+                top: this.mouseY,
+                            
+                fontFamily: 'Times New Roman',
+                fill: "blue",
+                fontSize: '40',
+                fontWeight: "bold",
+                fontStyle: 'normal',
 
-            this.startX = this.mouseX;
-            this.startY = this.mouseY;
+                //stroke: "red",
+                //textBackgroundColor: "green",
+                //strokeWidth: "1",                
+                //"underline: false
+                //"overline: false
+                //"linethrough: false"
+                //deltaY: false
+            });
 
-            var text = this.texts[this.selectedText];
-            text.x += dx;
-            text.y += dy;
-
-            this.textDraw();
+            this.canvas[1].add(text);
         },
 
+        handleBrushColors() {                
+            let colors = document.getElementsByClassName("colors")[0];
 
+            colors.addEventListener("click", (event) => {
+                this.brushColor = event.target.value || "black";
+
+                if (this.isBrush) {
+                    this.activateBrush(1)  
+                } else if(this.isPencil) {
+                    this.activatePencil(1)
+                } else if (this.isLine) {
+                    this.activateLine(1)
+                 } 
+
+                //set Preview
+                this.setPreviewColor( this.brushColor )                  
+            });
+        },
+        setPreviewColor(color) {
+            this.colorPreviewStyle.backgroundColor = color;
+        },
+        setBrushColor(canvasNum, color) {
+            this.brushColor = color;
+            this.activateBrush(canvasNum);
+        },
+        setBrushStroke(canvasNum, stroke) {
+            this.stroke = stroke;
+
+            //this.activateBrush(canvasNum);
+        },
+
+        activateTextEditor() 
+        {           
+            this.resetModes();
+            this.isText = true;
+            this.mouseClickHandler();
+        },
+        activateSelector(num) {
+            this.removeEvents(num);
+            this.resetModes();
+
+            this.isSelector = true;           
+            this.changeObjectSelection(num, true);
+
+            this.canvas[num].selection = true;
+
+            this.mouseClickHandler();
+        },
+        activateBrush(num) 
+        {
+             this.removeEvents(1); 
+
+            this.resetModes();
+            this.isBrush = true;
+
+            this.draw(num);
+        },        
+        activatePencil(num)  
+        {
+           
+            this.removeEvents(1);
+            this.resetModes();
+            this.isPencil = true;   
+
+            this.draw(num);
+        },
+        activateLine(num) {
+
+             this.removeEvents(1)   
+            this.resetModes();
+           
+            this.isLine = true;
+
+            this.drawLine();
+        },
+        activateCircle(num) {
+
+            this.resetModes(1);
+            this.removeEvents(1);
+            
+           
+            this.isCircle = true;
+
+            this.drawCircle();                  
+        },
+        drawCircle() {
+            
+            this.canvas[1].on('mouse:down', (object) => {
+                this.isDrawingCircle = true;
+
+                var pointer = this.canvas[1].getPointer(object.e);
+
+                this.origX = pointer.x;
+                this.origY = pointer.y;
+
+                this.circle = new fabric.Circle({
+                    left: pointer.x,
+                    top: pointer.y,
+                    radius: 1,
+                    strokeWidth: this.stroke,
+                    fill: 'transparent',
+                    stroke: this.brushColor,
+                    selectable: true,
+                   // originX: 'center',
+                   // originY: 'center'
+                });
+                     
+
+                 this.canvas[1].add(this.circle);
+
+            }).on('mouse:move', (object) => {
+
+                if (!this.isDrawingCircle ) return;
+                var pointer = this.canvas[1].getPointer(object.e);
+
+                
+                this.circle.set({
+                    radius: Math.abs(this.origX - pointer.x)
+                });
+
+                this.circle.setCoords();
+                this.canvas[1].renderAll();                
+                              
+
+            }).on('mouse:up', (object) => {
+                this.isDrawingCircle = false;
+            });
+
+        },        
+        drawLine() {
+            
+            this.canvas[1].on('mouse:down', (object) => {
+                this.isDrawingLine = true;
+                var pointer = this.canvas[1].getPointer(object.e);
+                var points = [ pointer.x, pointer.y, pointer.x, pointer.y ];
+
+                this.line = new fabric.Line(points, {
+                    strokeWidth: this.stroke,
+                    //strokeDashArray: [15, 5],
+                    fill: this.brushColor,
+                    stroke: this.brushColor,
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: true,
+                });
+
+                 this.canvas[1].add(this.line);
+
+            }).on('mouse:move', (object) => {
+
+                if (this.isDrawingLine ) {
+
+                    var pointer = this.canvas[1].getPointer(object.e);
+                    this.line.set({ x2: pointer.x, y2: pointer.y });
+                    this.line.setCoords();
+
+                    this.canvas[1].renderAll();
+                }
+
+
+            }).on('mouse:up', (object) => {
+                this.isDrawingLine = false;
+
+                
+            });
+
+        },
+        draw(num) 
+        {
+            this.isDrawing = false;
+          
+            this.canvas[num].freeDrawingBrush.color = this.brushColor;   
+
+            if (this.isPencil) {
+
+                this.canvas[num].freeDrawingBrush.width = 1;
+                this.canvas[num].isDrawingMode = true;
+
+              
+
+            } else if (this.isBrush) {
+            
+                this.canvas[num].freeDrawingBrush.width = this.stroke;  
+                this.canvas[num].isDrawingMode = true;
+                
+                  
+                                      
+            } else {
+                 this.canvas[num].isDrawingMode = false;
+
+                
+            }
+
+            this.canvas[num].on('mouse:down', ({e})  => {
+
+                if (this.isBrush || this.isPencil) {
+                    this.isDrawing = true;
+                } else {
+                    this.isDrawing = false;
+                }
+                
+            }).on('mouse:up', ({e}) => {
+                this.isDrawing = false;
+            
+            }).on('mouse:move', (e) => {
+
+                
+                if (this.isDrawing) {
+                    //const pointer = this.canvas[num].getPointer(e);
+                    //this.drawRealTime(e, pointer);
+                }
+            });            
+
+        },
         resetInputTextModal() {
             this.inputText = "";
         },
-		addInputText() 
-		{
-
-            // calc the y coordinate for this text on the canvas
-            var y = this.texts.length * 20 + 20;
-
-            // get the text from the input element
-            var text = {
-                text: this.inputText,
-                x: 20,
-                y: y
-            };
-
-            // calc the size of this text for hit-testing purposes
-            this.ctx.font = "16px verdana";
-            text.width = this.ctx.measureText(text.text).width;
-            text.height = 16;
-
-            // put this new text in the texts array
-            this.texts.push(text);
-
-            this.textDraw();
-           
-          
-            
-
-		},
-        textDraw() 
-        {        
-
-            // redraw everything
-            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-            
-
-            for (var i = 0; i < this.texts.length; i++) {
-                var text = this.texts[i];
-                this.ctx.fillText(text.text, text.x, text.y);
-            }
-
-            this.redrawAll();           
+        drawRealTime(e, pointer) {
+            this.canvas2.freeDrawingBrush.onMouseMove(pointer);
         },
-        showTextInput() {
-            this.box = "";
-            this.$bvModal.show('modalAddInputText');
-        },		
-        loadImage(imageURL) 
-        {
-
-            var canvas = document.getElementById('paint-canvas');                       
-            let ctx = canvas.getContext("2d");
-
-            canvas.width = 934;
-            canvas.height = 622;
-
-
-            var background = new Image();
-            background.src = imageURL;
-
-            background.onload = function(){
-                ctx.drawImage(background,0,0);   
+        
+        removeEvents(num) {
+            this.canvas[num].isDrawingMode = false;
+            this.canvas[num].selection = false;
+            this.canvas[num].off('mouse:down');
+            this.canvas[num].off('mouse:up');
+            this.canvas[num].off('mouse:move');
+        },
+        changeObjectSelection(num, value) {
+            this.canvas[num].forEachObject(function (obj) {
+                obj.selectable = value;
+            });
+            this.canvas[num].renderAll();
+        },
+        setText() {
+            var obj = this.canvas[1].getActiveObject();
+            if (obj) {
+                if (param == 'color') {
+                    obj.setColor(value);
+                } else {
+                    obj.set(param, value);
+                }
+                this.canvas[1].renderAll();
             } 
-
-            background.setAttribute('crossorigin', 'anonymous'); // works for me
-
         },
+        deleteObj()
+        {
+            var selectedObj = this.canvas[1].getActiveObject();
 
-
-        redrawAll() {
-
-            if (this.points.length == 0) {
-                return;
+            if (selectedObj) 
+            {            
+                if (selectedObj.type === 'activeSelection') {
+                    selectedObj.canvas = this.canvas[1];
+                    selectedObj.forEachObject(function(obj) {
+                        selectedObj.canvas.remove(obj);
+                    });
+                } else if(selectedObj !== null ) {
+                    this.canvas[1].remove(selectedObj);                    
+                }
+                
             }
 
-            //this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.mouseClickHandler();
 
-            for (var i = 0; i < this.points.length; i++) {
-
-                var pt = this.points[i];
-
-                var begin = false;
-
-                if (this.ctx.lineWidth != pt.size) {
-                    this.ctx.lineWidth = pt.size;
-                    begin = true;
-                }
-                if (this.ctx.strokeStyle != pt.color) {
-                    this.ctx.strokeStyle = pt.color;
-                    begin = true;
-                }
-                if (pt.mode == "begin" || begin) {
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(pt.x, pt.y);
-                }
-
-                this.ctx.lineTo(pt.x, pt.y);
-
-                if (pt.mode == "end" || (i == this.points.length - 1)) {
-                    this.ctx.stroke();
-                }
-            }
-            this.ctx.stroke();
-        },
-
-
-        draw(element) {
-            // Definitions
-            var canvas = document.getElementById(element);
-            var context = canvas.getContext("2d");
-            var boundings = canvas.getBoundingClientRect();
-
-            // Specifications
-            var mouseX = 0;
-            var mouseY = 0;
-            context.strokeStyle = "black"; // initial brush color
-            context.lineWidth = 1; // initial brush width
-            var isDrawing = false;
-
-            // Handle Colors
-            var colors = document.getElementsByClassName("colors")[0];
-
-            colors.addEventListener("click", function(event) {
-                context.strokeStyle = event.target.value || "black";
-            });
-
-            // Handle Brushes
-            var brushes = document.getElementsByClassName("brushes")[0];
-
-            brushes.addEventListener("click", function(event) {
-                context.lineWidth = event.target.value || 1;
-            });
-
-
-            canvas.addEventListener("mousedown", (event) => {
-                setMouseCoordinates(event);
-                isDrawing = true;
-
-                // Start Drawing
-                context.beginPath();
-                context.moveTo(mouseX, mouseY);
-
-                //Drag and Drop Text
-                this.handleMouseDown(event);
-                    
-                //History
-                this.points.push({
-                    x: mouseX,
-                    y: mouseY,
-                    size: context.lineWidth,
-                    color: context.strokeStyle,
-                    mode: "begin"
-                });
-
-            });            
-
-            // Mouse Move Event
-            canvas.addEventListener("mousemove", (event) => {
-                setMouseCoordinates(event);
-
-                if (isDrawing) {
-
-                    if (this.mouseDrag == false) 
-                    {   
-                        context.lineTo(mouseX, mouseY);
-                        context.stroke();
-                        
-                        //History
-                        this.points.push({
-                            x: mouseX,
-                            y: mouseY,
-                            size: context.lineWidth,
-                            color: context.strokeStyle,
-                            mode: "draw"
-                        });          
-                    } 
-
-                }
-
-                this.handleMouseMove(event);
-
-            });
-
-
-
-
-            // Mouse Up Event
-            canvas.addEventListener("mouseup", (event) => {
-                setMouseCoordinates(event);
-                isDrawing = false;
-
-               
-
-                console.log(this.mouseDrag + "... [end]")
-
-                if (this.mouseDrag == false) 
-                {
-
-                    //History
-                    this.points.push({
-                        x: mouseX,
-                        y: mouseY,
-                        size: context.lineWidth,
-                        color: context.strokeStyle,
-                        mode: "end"
-                    });        
-                }        
-
-
-                 this.handleMouseUp(event);
-            });
-    
-
-
-            // Handle Mouse Coordinates
-            function setMouseCoordinates(event) {
-                mouseX = event.clientX - boundings.left;
-                mouseY = event.clientY - boundings.top;
-            }
-
-            // Handle Clear Button
-            var clearButton = document.getElementById("clear");
-
-            clearButton.addEventListener("click", () => 
-            {
-                this.points = [];
-                this.texts  = [];
-                context.clearRect(0, 0, canvas.width, canvas.height);
-             
-            });
-
-
-            this.drawingCanvas = canvas.toDataURL();
-
-            // Handle Save Button
-            var saveButton = document.getElementById("save");
-
-            saveButton.addEventListener("click", function() {
-                var imageName = prompt("Please enter image name");
-                var canvasDataURL = canvas.toDataURL();
-                var a = document.createElement("a");
-                a.href = canvasDataURL;
-                a.download = imageName || "drawing";
-                a.click();
-            });
         }
-    },
-    computed: {},
-    updated: function() {}
+
+    }
 };
 </script>
-
-<style type="text/css" scoped>
-.colors {
-    background-color: #ece8e8;
-    text-align: center;
-    padding-bottom: 5px;
-    padding-top: 10px;
+<style>
+.upper-canvas {
+    z-index: 1;
 }
+
+.tools {
+    display: flex;
+    height: 200px; 
+    width: 50px;    
+}
+
+.tool {
+    width:50%; 
+    border:1px solid #000;
+    text-align:center;
+    margin: 0;
+    padding-right: 4px;
+    width: 25px;
+    height: 25px;
+    border: 0;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    background: transparent;
+    outline: 0;
+}
+
+.tool-wrapper {
+    display: flow-root;
+    width: 100%;
+}
+
+
+.colors-container {   
+    background-color: #c0c0c0;
+    margin:0px 5px 0px;
+    width: 100%;
+}
+
+.colors-wrapper {
+    display: inline-block;
+}
+
+.color-selected {    
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
+    border:1px solid #ccc;
+    width: 45px;
+    height: 45px;
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin: 0px 0px 0px 5px;
+}
+
+.color-shadow {
+    border-top: 1px solid #7B7B7B;
+    border-left: 1px solid #7B7B7B;
+    border-right: 1px solid #BBBBBB;
+    border-bottom: 1px solid #BBBBBB;
+    box-shadow: 1px 1px 0px black inset;
+}
+
+.colors {
+    display: inline-block;
+    text-align: center;
+    width: 370px;    
+}
+
+.color-preview {
+    width: 15px;
+    height: 15px;    
+    text-align: center;
+    margin: 13px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #7B7B7B;
+    border-bottom: 2px solid #7B7B7B;    
+}
+
+
 
 .colors button {
     display: inline-block;
@@ -656,7 +799,7 @@ export default {
 }
 
 .brushes {
-    padding-top: 5px;
+    padding-top: 2px;
 }
 
 .brushes button {
@@ -720,6 +863,12 @@ export default {
     font-size: 16px;
 }
 
+
+button.brush.active {
+    background-color: #04127b;
+}
+
+
 .right-block {
     width: 640px;
 }
@@ -727,4 +876,44 @@ export default {
 #paint-canvas {
     cursor: crosshair;
 }
+
+
+
+/*tool*/
+.tool-container {
+
+    width: 102px;
+    display: inline-block;
+    padding: 4px 4px 4px;
+    margin: 0px 0px 0px 5px;
+    background: #c0c0c0;
+
+}
+.tool {
+    float: left;
+    width: 47px;
+    height: 25px;
+    
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid #7b7b7b;
+    border-bottom: 1px solid #7b7b7b;    
+}
+
+.tool.active {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border-top: 1px solid #7b7b7b;
+    border-left: 1px solid #7b7b7b;
+    border-right: 1px solid #bdbdbd;
+    border-bottom: 1px solid #bdbdbd;   
+}
+
 </style>
