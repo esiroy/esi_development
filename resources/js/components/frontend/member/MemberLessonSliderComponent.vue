@@ -50,10 +50,11 @@
                  <!-- ADDITIONAL OPTIONS -->
                  <div class="tool-wrapper mt-2">
                     <div class="brushes" v-show="isBrush || isLine">
-                        <button type="button" value="5" :class="['brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                        <button type="button" value="5" :class="['brush', (stroke == 1) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
                         <button type="button" value="10" :class="['brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
                         <button type="button" value="15" :class="['brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
-                        <button type="button" value="20" :class="['brush', (stroke == 20) ? 'active' : '']"  @click="setBrushStroke(1, 20)"></button>
+                        <button type="button" value="20" :class="['brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                        <button type="button" value="20" :class="['brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
                     </div> 
                 </div>         
 
@@ -345,7 +346,10 @@ export default {
         setBrushStroke(canvasNum, stroke) {
             this.stroke = stroke;
 
-            //this.activateBrush(canvasNum);
+            if (this.isBrush) {
+                this.activateBrush(canvasNum);
+            }
+            
         },
 
         activateTextEditor() 
@@ -486,28 +490,22 @@ export default {
         },
         draw(num) 
         {
-            this.isDrawing = false;
-          
+            this.isDrawing = false;          
             this.canvas[num].freeDrawingBrush.color = this.brushColor;   
 
             if (this.isPencil) {
-
                 this.canvas[num].freeDrawingBrush.width = 1;
                 this.canvas[num].isDrawingMode = true;
 
-              
-
             } else if (this.isBrush) {
-            
+
+           
+
                 this.canvas[num].freeDrawingBrush.width = this.stroke;  
                 this.canvas[num].isDrawingMode = true;
-                
-                  
-                                      
+
             } else {
                  this.canvas[num].isDrawingMode = false;
-
-                
             }
 
             this.canvas[num].on('mouse:down', ({e})  => {
@@ -523,7 +521,8 @@ export default {
             
             }).on('mouse:move', (e) => {
 
-                
+                 console.log(this.stroke)
+
                 if (this.isDrawing) {
                     //const pointer = this.canvas[num].getPointer(e);
                     //this.drawRealTime(e, pointer);
@@ -824,24 +823,26 @@ export default {
 }
 
 .brushes button:nth-of-type(1):after {
-    height: 1px;
-}
-
-.brushes button:nth-of-type(2):after {
-    height: 2px;
-}
-
-.brushes button:nth-of-type(3):after {
     height: 3px;
 }
 
+.brushes button:nth-of-type(2):after {
+    height: 5px;
+}
+
+.brushes button:nth-of-type(3):after {
+    height: 10px;
+}
+
 .brushes button:nth-of-type(4):after {
-    height: 4px;
+    height: 15px;
 }
 
 .brushes button:nth-of-type(5):after {
-    height: 5px;
+    height: 20px;
 }
+
+
 
 .buttons {
     height: 80px;
