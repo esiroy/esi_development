@@ -31,10 +31,15 @@
                             </div>
                             @endif
                         </div>
+                        
                                 
                         <div class="col-12">
                             <div class="card esi-card mb-3">
-                                <h5 class="card-header esi-card-header py-2">Writing Service</h5>
+                                <div class="card-header esi-card-header py-2">
+                                    Writing Service
+                                   
+                                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
+                                </div>
                                 <div class="card-body">
                                     <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                                         @csrf
