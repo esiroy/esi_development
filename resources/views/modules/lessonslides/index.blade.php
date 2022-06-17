@@ -8,7 +8,7 @@
         <div class="col-12">
             <lesson-slider-component 
                 editor-Id="canvas"                
-                canvas-Width="640"
+                canvas-Width="500"
                 canvas-Height="500"
                 :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
                 api_token="{{ Auth::user()->api_token }}" 

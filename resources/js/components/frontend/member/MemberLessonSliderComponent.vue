@@ -134,6 +134,21 @@
                 <button>Previous Notes</button>
 
             </div>
+
+            <div id="member-mirror">
+
+                <h4>Member Data Preview</h4>
+
+                <canvas
+                :ref="'canvasMirror'"
+                :id="'canvasMirror'"
+                :width="canvasWidth"
+                :height="canvasHeight"
+                style="border:1px solid #ccc;"                        
+                ></canvas>
+
+            </div>
+
   
         </div>
 
@@ -178,6 +193,7 @@ export default {
     data() {
         return {
             canvas: [],
+            canvasMirror: null,
 
             currentSlide: 1,
             slides: 5,
@@ -234,6 +250,12 @@ export default {
     },
     mounted() {
      
+
+        this.canvasMirror  = new fabric.Canvas('canvasMirror', {
+            backgroundColor : "#fff",
+        });
+
+
         for (var i = 1; i <= this.slides; i++) {
             this.canvas[i]  = new fabric.Canvas('canvas'+i, {
                 backgroundColor : "#fff",
@@ -324,8 +346,6 @@ export default {
         {
             this.canvas[this.currentSlide].on('mouse:down', (options) => {
 
-             
-
                 if (this.isText == true) 
                 {
                     this.mouseX = options.pointer.x;
@@ -343,6 +363,11 @@ export default {
                     }
                     
                 }                
+            }).on('mouse:up', () => {
+
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);    
+
             });
         },   
 
@@ -363,33 +388,6 @@ export default {
             this.isLine         = false;
             this.isCircle       = false;
         },
-        addInputText() 
-        {
-            let id = (new Date()).getTime().toString().substr(5);
-            let text = new fabric.IText(this.inputText, {
-                id: id,
-                objecttype: 'text',
-                left: this.mouseX,
-                top: this.mouseY,
-                            
-                fontFamily: 'Times New Roman',
-                fill: this.brushColor,
-                fontSize: '40',
-                fontWeight: "bold",
-                fontStyle: 'normal',
-
-                //stroke: "red",
-                //textBackgroundColor: "green",
-                //strokeWidth: "1",                
-                //"underline: false
-                //"overline: false
-                //"linethrough: false"
-                //deltaY: false
-            });
-
-            this.canvas[this.currentSlide].add(text);
-        },
-
         handleBrushColors() {                
             let colors = document.getElementsByClassName("colors")[0];
 
@@ -417,11 +415,9 @@ export default {
         },
         setBrushStroke(canvasNum, stroke) {
             this.stroke = stroke;
-
             if (this.isBrush) {
                 this.activateBrush(canvasNum);
             }
-            
         },
 
         activateTextEditor() 
@@ -472,13 +468,45 @@ export default {
             this.isCircle = true;
             this.drawCircle();                  
         },
+
+        addInputText() 
+        {
+            let id = (new Date()).getTime().toString().substr(5);
+            let text = new fabric.IText(this.inputText, {
+                id: id,
+                objecttype: 'text',
+                left: this.mouseX,
+                top: this.mouseY,
+                            
+                fontFamily: 'Times New Roman',
+                fill: this.brushColor,
+                fontSize: '40',
+                fontWeight: "bold",
+                fontStyle: 'normal',
+
+                //stroke: "red",
+                //textBackgroundColor: "green",
+                //strokeWidth: "1",                
+                //"underline: false
+                //"overline: false
+                //"linethrough: false"
+                //deltaY: false
+            });
+
+            this.canvas[this.currentSlide].add(text);
+
+            let data = this.canvasGetJSON();
+            this.canvasSendJSON(this.canvasMirror, data);            
+        },        
         drawCircle() {
             
-            this.canvas[this.currentSlide].on('mouse:down', (object) => {
+            let canvas = this.canvas[this.currentSlide];
+
+            canvas.on('mouse:down', (object) => {
 
                 this.isDrawingCircle = true;
                
-                var pointer = this.canvas[this.currentSlide].getPointer(object.e);
+                var pointer = canvas.getPointer(object.e);
                 
                 this.origX = pointer.x;
                 this.origY = pointer.y;
@@ -497,19 +525,16 @@ export default {
                     hasControls: false
                 });
 
-                
-                  
-
-                 this.canvas[this.currentSlide].add(this.circle).setActiveObject(this.circle);
+               canvas.add(this.circle).setActiveObject(this.circle);
 
             }).on('mouse:move', (object) => {
 
-
-
                 if (this.isDrawingCircle ) {
 
-                    var pointer = this.canvas[this.currentSlide].getPointer(object.e);
-                    var activeObj =  this.canvas[this.currentSlide].getActiveObject();
+                    this.disableSelect();
+
+                    var pointer =canvas.getPointer(object.e);
+                    var activeObj = canvas.getActiveObject();
 
                     if (this.origX > pointer.x) {
                         activeObj.set({
@@ -532,13 +557,14 @@ export default {
                     });
 
                     activeObj.setCoords();
-                    this.canvas[this.currentSlide].renderAll(); 
-
-                    
+                    canvas.renderAll(); 
                 }         
 
-            }).on('mouse:up', (object) => {
+            }).on('mouse:up', (object) => {                
                 this.isDrawingCircle = false;
+                this.disableSelect();
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);                
             });
 
         },        
@@ -573,6 +599,9 @@ export default {
             }).on('mouse:up', (object) => {
                 this.disableSelect();
                 this.isDrawingLine = false;
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);
+
             });
 
         },
@@ -601,23 +630,36 @@ export default {
                     this.isDrawing = false;
                 }
                 
-            }).on('mouse:up', ({e}) => {
+            }).on('mouse:up', (object) => {
                 this.isDrawing = false;
+
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);
             
-            }).on('mouse:move', (e) => {
+            }).on('mouse:move', (object) => {
                 if (this.isDrawing) {
-                    //const pointer = this.canvas[this.currentSlide].getPointer(e);
-                    //this.drawRealTime(e, pointer);
+                    const pointer = this.canvas[this.currentSlide].getPointer(object);
+                    const options = {pointer, e:{}} // required for Fabric 4.3.1
+                    //this.drawRealTime(pointer, options);
                 }
             });            
 
         },
+        canvasSendJSON(canvas, data) {
+            console.log(data)
+            this.canvasMirror.loadFromJSON(data,this.canvasMirror.renderAll.bind(this.canvasMirror));
+        },
+        canvasGetJSON() {
+            return this.canvas[this.currentSlide].toJSON();           
+        },        
+        drawRealTime(pointer, options) {
+            if (this.isDrawing) {
+                 this.canvasMirror.freeDrawingBrush.onMouseMove(pointer, options);               
+            }
+        },         
         resetInputTextModal() {
             this.inputText = "";
         },
-        drawRealTime(e, pointer) {
-            this.canvas2.freeDrawingBrush.onMouseMove(pointer);
-        },        
         removeEvents() {
 
             this.canvas[this.currentSlide].isDrawingMode = false;
@@ -663,6 +705,7 @@ export default {
                 }
                 this.canvas[this.currentSlide].renderAll();
             } 
+            this.mouseClickHandler() 
         },
         deleteObj()
         {
