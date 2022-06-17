@@ -477,43 +477,67 @@ export default {
             this.canvas[this.currentSlide].on('mouse:down', (object) => {
 
                 this.isDrawingCircle = true;
-                this.disableSelect();
-
+               
                 var pointer = this.canvas[this.currentSlide].getPointer(object.e);
-
+                
                 this.origX = pointer.x;
                 this.origY = pointer.y;
 
-                this.circle = new fabric.Circle({
-                    left: pointer.x,
-                    top: pointer.y,
-                    radius: 1,
+                this.circle = new fabric.Ellipse({
+                    left:   this.origX,
+                    top:    this.origY,
+                    rx: 0,
+                    ry: 0, 
                     strokeWidth: this.stroke,
                     fill: 'transparent',
                     stroke: this.brushColor,
-                    selectable: true,
-                   // originX: 'center',
-                   // originY: 'center'
+                    selectable: false,
+                    transparentCorners: false,
+                    hasBorders: false,
+                    hasControls: false
                 });
-                     
 
-                 this.canvas[this.currentSlide].add(this.circle);
+                
+                  
+
+                 this.canvas[this.currentSlide].add(this.circle).setActiveObject(this.circle);
 
             }).on('mouse:move', (object) => {
 
+
+
                 if (this.isDrawingCircle ) {
-                    this.disableSelect();   
+
                     var pointer = this.canvas[this.currentSlide].getPointer(object.e);
-                    this.circle.set({
-                        radius: Math.abs(this.origX - pointer.x)
+                    var activeObj =  this.canvas[this.currentSlide].getActiveObject();
+
+                    if (this.origX > pointer.x) {
+                        activeObj.set({
+                            left: Math.abs(pointer.x)
+                        });
+                    }
+
+                    if (this.origY > pointer.y) {
+                        activeObj.set({
+                            top: Math.abs(pointer.y)
+                        });
+                    }
+                                        
+                    activeObj.set({
+                        rx: Math.abs(this.origX - pointer.x) / 2
                     });
-                    this.circle.setCoords();
+
+                    activeObj.set({
+                        ry: Math.abs(this.origY - pointer.y) / 2
+                    });
+
+                    activeObj.setCoords();
                     this.canvas[this.currentSlide].renderAll(); 
+
+                    
                 }         
 
             }).on('mouse:up', (object) => {
-
-                this.disableSelect();       
                 this.isDrawingCircle = false;
             });
 
