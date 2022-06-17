@@ -113,6 +113,20 @@
 
             <div class="right-container">
 
+
+                <div id="member-mirror">
+                    <h4>Member Data Preview</h4>
+                    <canvas
+                    :ref="'canvasMirror'"
+                    :id="'canvasMirror'"
+                    :width="canvasWidth"
+                    :height="canvasHeight"
+                    style="border:1px solid #ccc;"                        
+                    ></canvas>
+                </div>
+
+
+
                 <h2> Teacher's Note </h2>
 
                 <div style="width:375px; border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
@@ -133,23 +147,10 @@
                 <button>Next Notes </button>
                 <button>Previous Notes</button>
 
-            </div>
 
-            <div id="member-mirror">
+   
 
-                <h4>Member Data Preview</h4>
-
-                <canvas
-                :ref="'canvasMirror'"
-                :id="'canvasMirror'"
-                :width="canvasWidth"
-                :height="canvasHeight"
-                style="border:1px solid #ccc;"                        
-                ></canvas>
-
-            </div>
-
-  
+            </div>  
         </div>
 
         <b-modal
@@ -519,7 +520,7 @@ export default {
                     strokeWidth: this.stroke,
                     fill: 'transparent',
                     stroke: this.brushColor,
-                    selectable: false,
+                    selectable: true,
                     transparentCorners: false,
                     hasBorders: false,
                     hasControls: false
@@ -681,6 +682,7 @@ export default {
             this.canvas[this.currentSlide].forEachObject(function (obj) {
                 obj.selectable = true;
                 obj.evented = true;
+                obj.hasControls = true;
             });
             this.canvas[this.currentSlide].renderAll();        
         },
@@ -715,11 +717,16 @@ export default {
             {            
                 if (selectedObj.type === 'activeSelection') {
                     selectedObj.canvas = this.canvas[this.currentSlide];
-                    selectedObj.forEachObject(function(obj) {
+                    selectedObj.forEachObject((obj)=> {
                         selectedObj.canvas.remove(obj);
+                        let data = this.canvasGetJSON();
+                        this.canvasSendJSON(this.canvasMirror, data);                                        
                     });
                 } else if(selectedObj !== null ) {
-                    this.canvas[this.currentSlide].remove(selectedObj);                    
+                    this.canvas[this.currentSlide].remove(selectedObj);     
+
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvasMirror, data);                
                 }                
             }
             this.mouseClickHandler();
