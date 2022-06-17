@@ -1,141 +1,168 @@
 <template>
-    <div class="container">
+    <div class="custom-editor">
 
-        <div id="editor" class="row my-2">
+        Current Slide : {{ currentSlide }}
 
-            <div class="left-container">
+        <div id="editor" class="row my-2" >
 
-                <div class="tool-container">
-
-                    <div class="tool-wrapper">
-
-                        <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
-                            <i class="fa fa-mouse-pointer" aria-hidden="true" ></i>
-                        </div>
-
-
-                        <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
-                            <i class="fa fa-font" aria-hidden="true"></i>
-                        </div>
+            <div class="tool-container">
             
-                        <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
-                            <i class="fa fa-pen" aria-hidden="true" ></i>
-                        </div>                    
-                        <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
-                            <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
-                        </div>                        
-                
-                        <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
-                            <i class="fa fa-minus" aria-hidden="true"></i>
-                        </div>        
-                                
-                        <div :class="['tool', (isCircle) ? 'active' : '']"  @click="activateCircle">
-                            <b-icon icon="circle" font-scale="1"> </b-icon>
-                        </div> 
+                <div class="tool-wrapper">
+                    <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
+                        <i class="fa fa-mouse-pointer" aria-hidden="true" ></i>
                     </div>
 
-                   
+                    <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                      <i class="fa fa-font" aria-hidden="true"></i>
+                    </div>
+                </div>
+
+                <div class="tool-wrapper">
+                <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
+                    <i class="fa fa-pen" aria-hidden="true" ></i>
+                </div>                    
+                <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
+                    <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
+                </div>                        
+                </div>
+
+                <div class="tool-wrapper">
+                    <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
+                        <i class="fa fa-minus" aria-hidden="true"></i>
+                    </div>        
+                            
+                    <div :class="['tool', (isCircle) ? 'active' : '']"  @click="activateCircle">
+                        <b-icon icon="circle" font-scale="1"> </b-icon>
+                    </div>                          
+                </div>
+
+                <div class="tool-wrapper" style="position:relative">
+                    <div id="next" class="tool" @click="prevSlide">
+                        <i class="fa fa-fast-backward" aria-hidden="true"></i>
+                    </div>
+                    <div id="next" class="tool" @click="nextSlide">
+                        <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                    </div>
+                </div>                
+
+                <!--            
+                 <div class="tool-wrapper">
+                    <div :class="['tool', (isSquare) ? 'active' : '']"  @click="activateSquare(1)">
+                        <i class="fa fa-pen" aria-hidden="true" ></i>
+                    </div>                    
+                    <div :class="['tool', (isSpray) ? 'active' : '']"  @click="activateSpray(1)">
+                        <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
+                    </div>                        
+                 </div>
+                 -->
 
 
-                    <!-- ADDITIONAL OPTIONS -->
-                    <div class="tool-wrapper">
-
-                        <div class="tool">
-                            <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
-                        </div>             
-                      
-                        <!-- Strokes-->
-                        <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
-                            <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
-                            <div id="brushStrokes" class="collapse" style="z-index:9999">
-                                <div class="brushes-container">
-                                    <div class="brushes">
-                                        <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
-                                        <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
-                                        <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
-                                        <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
-                                        <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
-                                    </div> 
-                                </div>
-                            </div>
-                        </div>                                   
+                 <!-- ADDITIONAL OPTIONS -->
+                 <div class="tool-wrapper mt-2">
+                    <div class="brushes" v-show="isBrush || isLine || isCircle">
+                        <button type="button" value="5" :class="['brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                        <button type="button" value="10" :class="['brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                        <button type="button" value="15" :class="['brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                        <button type="button" value="20" :class="['brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                        <button type="button" value="20" :class="['brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
+                    </div> 
+                </div>         
 
 
+      
+            </div>
 
+            <div class="canvas-container">
+
+                <div :id="'editor'+slide" v-for="slide in slides" :key="slide" v-show="slide == currentSlide" style="float:left">                    
+                    <canvas
+                        :ref="'canvas'+slide"
+                        :id="'canvas'+slide"
+                        :width="canvasWidth"
+                        :height="canvasHeight"
+                        style="border:1px solid #333"                        
+                    ></canvas>
+                </div>
+
+                <div style="float:right;">
+
+                    <div style="width:375px; border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
+                        {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
+                        {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
+                        <br>
+
+                        {{ "Text Information here. " }} <br><br>
+
+                        {{ "Text Information here. " }} <br><br><br>
+
+                        {{ "Text Information here. " }} <br><br><br><br>
+
+                        {{ "Text Information here. " }} <br><br><br><br>
+
+                    </div>
+
+                    <button>Next Notes </button>
+                    <button>Previous Notes</button>
+
+                </div>   
+            </div>
+
+
+            <div class="colors-container">
+
+                <div class="colors-wrapper">
+
+                    <div class="color-selected color-shadow ">
+                        <div class="color-preview" :style="colorPreviewStyle"></div>
+                    </div>
+
+                    <div class="colors mt-2" >
+                        <button type="button" value="#0000ff"></button>
+                        <button type="button" value="#009fff"></button>
+                        <button type="button" value="#0fffff"></button>
+                        <button type="button" value="#bfffff"></button>
+                        <button type="button" value="#000000"></button>
+                        <button type="button" value="#333333"></button>
+                        <button type="button" value="#666666"></button>
+                        <button type="button" value="#999999"></button>
+                        <button type="button" value="#ffcc66"></button>
+                        <button type="button" value="#ffcc00"></button>
+                        <button type="button" value="#ffff00"></button>
+                        <button type="button" value="#ffff99"></button>
+                        <button type="button" value="#003300"></button>
+                        <button type="button" value="#555000"></button>
+                        <button type="button" value="#00ff00"></button>
+                        <button type="button" value="#99ff99"></button>
+                        <button type="button" value="#f00000"></button>
+                        <button type="button" value="#ff6600"></button>
+                        <button type="button" value="#ff9933"></button>
+                        <button type="button" value="#f5deb3"></button>
+                        <button type="button" value="#330000"></button>
+                        <button type="button" value="#663300"></button>
+                        <button type="button" value="#cc6600"></button>
+                        <button type="button" value="#deb887"></button>
+                        <button type="button" value="#aa0fff"></button>
+                        <button type="button" value="#cc66cc"></button>
+                        <button type="button" value="#ff66ff"></button>
+                        <button type="button" value="#ff99ff"></button>
+                        <button type="button" value="#e8c4e8"></button>
+                        <button type="button" value="#ffffff"></button>
                     </div> 
                 </div>
-
-                <div class="canvas-container">
-                    <div :id="'editor'+slide" v-for="slide in slides" :key="slide" v-show="slide == currentSlide">                    
-                        <canvas
-                            :ref="'canvas'+slide"
-                            :id="'canvas'+slide"
-                            :width="canvasWidth"
-                            :height="canvasHeight"
-                            style="border:1px solid #ccc;"                        
-                        ></canvas>
-                    </div>
-                </div>
-
-                <div class="info-container">
-
-                     <div class="d-flex justify-content-center">
-                        Total Time {{ this.getTime() }} 
-                     </div>
-
-                </div>
-
-                <div class="buttons-container mt-3">
-                    <div class="d-flex justify-content-center">
-                        <div id="prev" class="tool" @click="startSlide">
-                            <i class="fa fa-fast-backward" aria-hidden="true"></i>
-                        </div>  
-
-                        <div id="prev" class="tool" @click="prevSlide">
-                            <i class="fa fa-backward" aria-hidden="true"></i>
-                        </div>
-
-                        <div id="prev" class="tool font-weight-strong" style="width:150px">
-                            Slide {{ this.currentSlide }} of {{ this.slides }}
-                        </div>
-
-                        <div id="next" class="tool" @click="nextSlide">
-                            <i class="fa fa-forward" aria-hidden="true"></i>
-                        </div>
-
-                        <div id="next" class="tool" @click="lastSlide">
-                            <i class="fa fa-fast-forward" aria-hidden="true"></i>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="right-container">
-
-                <h2> Teacher's Note </h2>
-
-                <div style="width:375px; border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
-                    {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                    {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                    <br>
-
-                    {{ "Text Information here. " }} <br><br>
-
-                    {{ "Text Information here. " }} <br><br><br>
-
-                    {{ "Text Information here. " }} <br><br><br><br>
-
-                    {{ "Text Information here. " }} <br><br><br><br>
-
-                </div>
-
-                <button>Next Notes </button>
-                <button>Previous Notes</button>
-
-            </div>
-  
+            </div>        
         </div>
+
+        <!--Mirror 
+        <div id="Mirror">
+            <canvas
+                ref="canvas2"
+                id="canvas2"
+                :width="canvasWidth"
+                :height="canvasHeight"
+                style="border:1px solid #333"
+            ></canvas>
+        </div>
+        -->
 
         <b-modal
             id="modalAddInputText"
@@ -205,7 +232,7 @@ export default {
 
             //brush
             stroke: 5,
-            brushColor: '#000000',
+            brushColor: 'black',
 
 
 
@@ -224,80 +251,42 @@ export default {
 
             colorPreviewStyle:{
                 backgroundColor: "#000" 
-            },
+            }
 
-            myIntervalTimer: null,
-            timerSpeed: 1000,
-            timer: 0,
            
         };
     },
     mounted() {
+        //const ref1 = this.$refs["canvas1"];
+        //const ref2 = this.$refs["canvas2"];
+        //this.canvas[this.currentSlide] = new fabric.Canvas(ref1, { selection: true });
+        //this.canvas[2] = new fabric.Canvas(ref2, { selection: true });
+
      
         for (var i = 1; i <= this.slides; i++) {
-            this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                backgroundColor : "#fff",
-            });
+            console.log(i); // index
+            this.canvas[i]  = new fabric.Canvas('canvas'+i);
         }
+
 
         this.customSelectorBounds(fabric);
         this.mouseClickHandler();
         this.keyPressHandler();
-       // this.handleBrushColors();
+        this.handleBrushColors();
 
         //default selected      
         this.activatePencil();
-        this.startTimer();
+
     },
     methods: {
-        getTime() {
-            return this.secondsToHms(this.timer);
-        },
-        startTimer() {
-            this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);
-        },
-        stopTimer() {
-            clearInterval(this.myIntervalTimer); 
-        },
-        secondsToHms(d) {
-            d = Number(d);
-            var h = Math.floor(d / 3600);
-            var m = Math.floor(d % 3600 / 60);
-            var s = Math.floor(d % 3600 % 60);
-            var hDisplay = h > 9 ? h+":" : "0"+h+":";
-            var mDisplay = m > 9 ? m+":" : "0"+m+":";
-            var sDisplay = s > 9 ? s : "0"+s;
-            return hDisplay + mDisplay + sDisplay; 
-        },        
-        updateTimer() {
-            this.timer++;
-        },
-        changeColor() {
-            this.setPreviewColor( this.brushColor )
-            this.autoSelectTool();
-        },
-        startSlide() {
-            if (this.currentSlide > 1) {
-                this.currentSlide = 1;
-                this.autoSelectTool();
-            }        
-        },
-        lastSlide() {
-            this.currentSlide = this.slides;
-            this.autoSelectTool();
-        },
+
         prevSlide() {
-            if (this.currentSlide >= 1) {
-                this.currentSlide --;
-                this.autoSelectTool();
-            }
+            this.currentSlide --;
+            this.autoSelectTool();
         },
         nextSlide() {
-
-            if (this.currentSlide < this.slides) {
-                this.currentSlide ++;
-                this.autoSelectTool(); 
-            } 
+            this.currentSlide ++;
+            this.autoSelectTool(); 
         },
         autoSelectTool() {
             if (this.isSelector) this.activateSelector();
@@ -324,7 +313,7 @@ export default {
         {
             this.canvas[this.currentSlide].on('mouse:down', (options) => {
 
-             
+                console.log(this.isText);
 
                 if (this.isText == true) 
                 {
@@ -373,7 +362,7 @@ export default {
                 top: this.mouseY,
                             
                 fontFamily: 'Times New Roman',
-                fill: this.brushColor,
+                fill: "blue",
                 fontSize: '40',
                 fontWeight: "bold",
                 fontStyle: 'normal',
@@ -394,7 +383,7 @@ export default {
             let colors = document.getElementsByClassName("colors")[0];
 
             colors.addEventListener("click", (event) => {
-                this.brushColor = event.target.value || "#000000";
+                this.brushColor = event.target.value || "black";
 
                 if (this.isBrush) {
                     this.activateBrush()  
@@ -664,7 +653,6 @@ export default {
 <style>
 .upper-canvas {
     z-index: 1;
-    
 }
 
 .tools {
@@ -693,54 +681,6 @@ export default {
     width: 100%;
 }
 
-.left-container {
-    background-color: #ececec;
-    border-radius: 15px;
-    margin-right: 10px;
-    padding: 20px 15px 20px;
-}
-
-.right-container {
-    background-color: #ececec;
-    border-radius: 15px;
-    margin-right: 10px;
-    padding: 20px 15px 20px;
-}
-
-/*tool*/
-.tool-container {
-    width: 100%;
-    display: inline-block;
-    margin: 0px ;}
-
-.tool {
-    float: left;
-    width: 47px;
-    height: 25px;
-    
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    border-top: 1px solid white;
-    border-left: 1px solid white;
-    border-right: 1px solid #7b7b7b;
-    border-bottom: 1px solid #7b7b7b;    
-}
-
-.tool.active {
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    border-top: 1px solid #7b7b7b;
-    border-left: 1px solid #7b7b7b;
-    border-right: 1px solid #bdbdbd;
-    border-bottom: 1px solid #bdbdbd;   
-}
-
-
 
 .colors-container {   
     background-color: #c0c0c0;
@@ -750,18 +690,6 @@ export default {
 
 .colors-wrapper {
     display: inline-block;
-}
-
-.color-button {
-
-    width: 100% !important;
-    height: 100% !important;
-    padding: 0px !important;
-    margin: 0px;
-    border: none;
-    background-color: transparent;
-    text-align: center;
-    margin: auto;
 }
 
 .color-selected {    
@@ -814,31 +742,124 @@ export default {
     margin-bottom: 5px;
 }
 
-.tool .collapsing {
-     -webkit-transition: none;
-     transition: none;
+.colors button:nth-of-type(1) {
+    background-color: #0000ff;
 }
 
-.brushes-container {
+.colors button:nth-of-type(2) {
+    background-color: #009fff;
+}
 
-    background-color: #ececec;
-    
-    width: 235px;
-    float: left;
-    /* width: 47px; */
-    height: 36px;
-    /* top: 0px; */
-    /* left: 0px; */
-    /* right: 0px; */
-    /* bottom: 0px; */
-    border-top: 1px solid white;
-    border-left: 1px solid white;
-    border-right: 1px solid #7b7b7b;
-    border-bottom: 1px solid #7b7b7b;    
+.colors button:nth-of-type(3) {
+    background-color: #0fffff;
+}
 
-    position: relative;
-    z-index: 99999;
+.colors button:nth-of-type(4) {
+    background-color: #bfffff;
+}
 
+.colors button:nth-of-type(5) {
+    background-color: #000000;
+}
+
+.colors button:nth-of-type(6) {
+    background-color: #333333;
+}
+
+.colors button:nth-of-type(7) {
+    background-color: #666666;
+}
+
+.colors button:nth-of-type(8) {
+    background-color: #999999;
+}
+
+.colors button:nth-of-type(9) {
+    background-color: #ffcc66;
+}
+
+.colors button:nth-of-type(10) {
+    background-color: #ffcc00;
+}
+
+.colors button:nth-of-type(11) {
+    background-color: #ffff00;
+}
+
+.colors button:nth-of-type(12) {
+    background-color: #ffff99;
+}
+
+.colors button:nth-of-type(13) {
+    background-color: #003300;
+}
+
+.colors button:nth-of-type(14) {
+    background-color: #555000;
+}
+
+.colors button:nth-of-type(15) {
+    background-color: #00ff00;
+}
+
+.colors button:nth-of-type(16) {
+    background-color: #99ff99;
+}
+
+.colors button:nth-of-type(17) {
+    background-color: #f00000;
+}
+
+.colors button:nth-of-type(18) {
+    background-color: #ff6600;
+}
+
+.colors button:nth-of-type(19) {
+    background-color: #ff9933;
+}
+
+.colors button:nth-of-type(20) {
+    background-color: #f5deb3;
+}
+
+.colors button:nth-of-type(21) {
+    background-color: #330000;
+}
+
+.colors button:nth-of-type(22) {
+    background-color: #663300;
+}
+
+.colors button:nth-of-type(23) {
+    background-color: #cc6600;
+}
+
+.colors button:nth-of-type(24) {
+    background-color: #deb887;
+}
+
+.colors button:nth-of-type(25) {
+    background-color: #aa0fff;
+}
+
+.colors button:nth-of-type(26) {
+    background-color: #cc66cc;
+}
+
+.colors button:nth-of-type(27) {
+    background-color: #ff66ff;
+}
+
+.colors button:nth-of-type(28) {
+    background-color: #ff99ff;
+}
+
+.colors button:nth-of-type(29) {
+    background-color: #e8c4e8;
+}
+
+.colors button:nth-of-type(30) {
+    background-color: #ffffff;
 }
 
 .brushes {
@@ -846,8 +867,8 @@ export default {
 }
 
 .brushes button {
-    display: inline-block;
-    width: 20%;
+    display: block;
+    width: 100%;
     border: 0;
     border-radius: 0;
     background-color: #ece8e8;
@@ -857,7 +878,6 @@ export default {
     outline: none;
     position: relative;
     cursor: pointer;
-    vertical-align: top;
 }
 
 .brushes button:after {
@@ -925,5 +945,41 @@ button.brush.active {
 
 
 
+/*tool*/
+.tool-container {
+
+    width: 102px;
+    display: inline-block;
+    padding: 4px 4px 4px;
+    margin: 0px 0px 0px 5px;
+    background: #c0c0c0;
+
+}
+.tool {
+    float: left;
+    width: 47px;
+    height: 25px;
+    
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid #7b7b7b;
+    border-bottom: 1px solid #7b7b7b;    
+}
+
+.tool.active {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border-top: 1px solid #7b7b7b;
+    border-left: 1px solid #7b7b7b;
+    border-right: 1px solid #bdbdbd;
+    border-bottom: 1px solid #bdbdbd;   
+}
 
 </style>
