@@ -74,6 +74,8 @@
   * 
  */
 
+/*! Fabric.js Copyright 2008-2015, Printio (Juriy Zaytsev, Maxim Chernyak) */
+
 /*! https://mths.be/utf8js v2.1.2 by @mathias */
 
 /**
