@@ -287,8 +287,8 @@ export default {
             this.autoSelectTool();
         },
         prevSlide() {
-            if (this.currentSlide >= 1) {
-                this.currentSlide --;
+            if (this.currentSlide > 1) {
+                this.currentSlide--;
                 this.autoSelectTool();
             }
         },
