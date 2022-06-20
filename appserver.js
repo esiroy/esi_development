@@ -1,25 +1,31 @@
-var serverPort = 30002;
+var fs = require('fs');
+var https = require('https');
 
+var express = require('express');
+var app = express();
 
-const express = require('express');
-const app = express();
+var options = {
+    key: fs.readFileSync('./file.pem'),
+    cert: fs.readFileSync('./file.crt')
+};
+var serverPort = 30001;
 
-const server = app.listen(serverPort, function() {
-    console.log('server running on port 3002');
-});
-
-const io = require('socket.io')(server);
-
-
+var server = https.createServer(options, app);
+//var io = require('socket.io')(server);
+var io = require('socket.io')(server, { wsEngine: 'ws' });
 
 app.get('/', function(req, res) {
-
+    //res.sendFile(__dirname + '/public/index.html');
     res.send('<h1>Chat server</h1>');
 });
 
+server.listen(serverPort, function() {
+    console.log('server up and running at %s port', serverPort);
+});
+
+
+
 var users = [];
-
-
 
 io.on('connection', function(socket) {
     //console.log("user connected, with id " + socket.id)
