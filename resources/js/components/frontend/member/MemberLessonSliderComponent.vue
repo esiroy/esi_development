@@ -1,6 +1,5 @@
 <template>
     <div class="container">
-
         <div id="editor" class="row my-2">
 
             <div class="left-container">
@@ -8,7 +7,6 @@
                 <div class="tool-container">
 
                     <div class="tool-wrapper">
-
                         <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
                             <i class="fa fa-mouse-pointer" aria-hidden="true" ></i>
                         </div>
@@ -173,10 +171,19 @@
 
 <script>
 import { fabric } from "fabric";
+import io from "socket.io-client";
 
 export default {
     name: "Editor",
     props: {
+        memberInfo: {
+             type: [Object, String],
+              required: true
+        },
+        canvasServer: {
+            type: [String],
+            required: true        
+        },
         canvasWidth: {
             type: [String, Number],
             required: true
@@ -187,7 +194,7 @@ export default {
         },
         editorId: {
             type: String,
-            default: "c",
+            default: "canvas",
             required: false
         }
     },
@@ -195,6 +202,8 @@ export default {
         return {
             canvas: [],
             canvasMirror: null,
+
+            socket: null,
 
             currentSlide: 1,
             slides: 5,
@@ -251,6 +260,25 @@ export default {
     },
     mounted() {
      
+        this.socket = io.connect(this.canvasServer);
+
+        //register as user
+        let user = {
+            userid: this.memberInfo.user_id ,
+            username: "test",
+            nickname: this.memberInfo.nickname,            
+            type: "MEMBER",      
+        }    
+        this.socket.emit('REGISTER', user);     
+
+
+        this.socket.on('update_user_list', users => {
+           console.log("registered ", users);
+        });
+
+
+
+
 
         this.canvasMirror  = new fabric.Canvas('canvasMirror', {
             backgroundColor : "#fff",
@@ -271,8 +299,57 @@ export default {
         //default selected      
         this.activatePencil();
         this.startTimer();
+
+
+        this.socket.on('UPDATE_DRAWING', (response) => {
+            console.log("drawing IS UPDATED!  ", response.canvasData);
+            this.updateCanvas(this.canvasMirror, response.canvasData)
+        });
+
     },
     methods: {
+
+        getRecipients() {
+        
+            let recipient = {
+                userid: this.memberInfo.user_id ,
+                username: "test",
+                nickname: this.memberInfo.nickname,            
+                type: "MEMBER",      
+            }  
+
+            return recipient;
+        },
+        updateCanvas(canvas, data){
+            canvas.loadFromJSON(data, canvas.renderAll.bind(canvas));
+        },
+        canvasSendJSON(canvas, data) 
+        {          
+            let recipients = this.getRecipients();
+
+            let canvasData = {
+                'recipient'    : recipients,
+                'canvasData'   :   data,
+            };
+            this.socket.emit('SEND_DRAWING', canvasData);  
+
+            
+        },
+        canvasGetJSON() {
+            return this.canvas[this.currentSlide].toJSON();           
+        },        
+        drawRealTime(pointer, options) {
+            if (this.isDrawing) {
+                 this.canvasMirror.freeDrawingBrush.onMouseMove(pointer, options);               
+            }
+        },
+        sendCavasData() {
+
+            let recipient  = this.getRecipients();
+
+            socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
+        },       
+
         getTime() {
             return this.secondsToHms(this.timer);
         },
@@ -303,16 +380,25 @@ export default {
             if (this.currentSlide > 1) {
                 this.currentSlide = 1;
                 this.autoSelectTool();
+
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);                   
             }        
         },
         lastSlide() {
             this.currentSlide = this.slides;
             this.autoSelectTool();
+
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);               
         },
         prevSlide() {
             if (this.currentSlide > 1) {
                 this.currentSlide--;
                 this.autoSelectTool();
+
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);                    
             }
         },
         nextSlide() {
@@ -320,6 +406,10 @@ export default {
             if (this.currentSlide < this.slides) {
                 this.currentSlide ++;
                 this.autoSelectTool(); 
+
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvasMirror, data);    
+
             } 
         },
         autoSelectTool() {
@@ -340,7 +430,12 @@ export default {
                 if (event.key === "Delete") {
                     this.deleteObj();
                     return false;
-                };                   
+                } else {
+                
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvasMirror, data);  
+
+                };
             };
         },
         mouseClickHandler() 
@@ -559,11 +654,15 @@ export default {
 
                     activeObj.setCoords();
                     canvas.renderAll(); 
+
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvasMirror, data);         
                 }         
 
             }).on('mouse:up', (object) => {                
                 this.isDrawingCircle = false;
                 this.disableSelect();
+
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvasMirror, data);                
             });
@@ -596,6 +695,9 @@ export default {
                     this.line.set({ x2: pointer.x, y2: pointer.y });
                     this.line.setCoords();
                     this.canvas[this.currentSlide].renderAll();
+
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvasMirror, data);         
                 }
             }).on('mouse:up', (object) => {
                 this.disableSelect();
@@ -642,22 +744,15 @@ export default {
                     const pointer = this.canvas[this.currentSlide].getPointer(object);
                     const options = {pointer, e:{}} // required for Fabric 4.3.1
                     //this.drawRealTime(pointer, options);
+
+                    console.log("draw!")
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvasMirror, data);      
                 }
             });            
 
         },
-        canvasSendJSON(canvas, data) {
-            console.log(data)
-            this.canvasMirror.loadFromJSON(data,this.canvasMirror.renderAll.bind(this.canvasMirror));
-        },
-        canvasGetJSON() {
-            return this.canvas[this.currentSlide].toJSON();           
-        },        
-        drawRealTime(pointer, options) {
-            if (this.isDrawing) {
-                 this.canvasMirror.freeDrawingBrush.onMouseMove(pointer, options);               
-            }
-        },         
+       
         resetInputTextModal() {
             this.inputText = "";
         },
@@ -719,6 +814,7 @@ export default {
                     selectedObj.canvas = this.canvas[this.currentSlide];
                     selectedObj.forEachObject((obj)=> {
                         selectedObj.canvas.remove(obj);
+
                         let data = this.canvasGetJSON();
                         this.canvasSendJSON(this.canvasMirror, data);                                        
                     });
