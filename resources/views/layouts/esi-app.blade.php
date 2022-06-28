@@ -242,6 +242,39 @@
             </div>
         </main>
 
+        <div class="footer-container">
+            <div class="member-floating-chat">
+
+            @php
+                $userImageObj = new \App\Models\UserImage;
+                $memberObj = new \App\Models\Member;
+
+                $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
+
+                if ($userImage == null) {
+                    $memberProfileImage = Storage::url('user_images/noimage.jpg');
+                } else {
+                    $memberProfileImage = Storage::url("$userImage->original");
+                }
+
+                $member =  $memberObj->where('user_id', Auth::user()->id)->first();
+                $nickname = $member->nickname;
+                
+            @endphp 
+
+                <member-floating-chat-component
+                        userid="{{ Auth::user()->id }}" 
+                        username="{{ Auth::user()->username }}"
+                        user_image="{{ $memberProfileImage }}"
+                        nickname="{{ $nickname }}"
+                        api_token="{{ Auth::user()->api_token }}"
+                        csrf_token="{{ csrf_token() }}"            
+                    >
+                </member-floating-chat-component>                  
+            </div>
+        </div>
+        
+
     </div>
 
     <script type="text/javascript">

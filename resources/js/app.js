@@ -80,7 +80,8 @@ if (url[1] === 'admin') {
             Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
             break;
         default:
-            console.log("default front end")
+            Vue.component('member-floating-chat-component', require('./components/frontend/chat/MemberFloatingChatComponent.vue').default);
+            //console.log("default front end")
     }
 }
 
