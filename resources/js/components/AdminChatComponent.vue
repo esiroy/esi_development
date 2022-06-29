@@ -471,6 +471,7 @@ export default {
              this.chatFetchStatus = "FETCHING";
 
             let historyNotifier1 = document.getElementById("history-notify");
+            
             if (historyNotifier1) {
                 historyNotifier1.style.display = "inline-block";  
                 document.getElementById("floating-history-btn").style.display = "none";

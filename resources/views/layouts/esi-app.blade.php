@@ -262,15 +262,7 @@
                 
             @endphp 
 
-                <member-floating-chat-component
-                        userid="{{ Auth::user()->id }}" 
-                        username="{{ Auth::user()->username }}"
-                        user_image="{{ $memberProfileImage }}"
-                        nickname="{{ $nickname }}"
-                        api_token="{{ Auth::user()->api_token }}"
-                        csrf_token="{{ csrf_token() }}"            
-                    >
-                </member-floating-chat-component>                  
+                   
             </div>
         </div>
         
