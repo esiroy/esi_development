@@ -88,6 +88,7 @@ Route::middleware('auth:api')->post('/getMemberInbox', 'API\MemberController@get
 
 //[start](CHAT SUPPORT)
 Route::middleware('auth:api')->post('/getChathistory', 'API\ChatSupportController@getChathistory')->name('APIGetChathistory');
+Route::middleware('auth:api')->post('/getChatUnread', 'API\ChatSupportController@getChatUnread')->name('APIGetChatUnread');
 Route::middleware('auth:api')->post('/saveCustomerSupportChat', 'API\ChatSupportController@saveCustomerSupportChat')->name('APISaveCustomerSupportChat');
 
 

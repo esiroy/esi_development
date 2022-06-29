@@ -47,8 +47,11 @@
         <member-floating-chat-component
         userid="{{ Auth::user()->id }}" 
         username="{{ Auth::user()->username }}"
-        user_image="{{ $memberProfileImage }}"
+        user_image="{{ $memberProfileImage }}"        
         nickname="{{ $nickname }}"
+        
+        customer_support_image="{{ url('images/cs-profile.png') }}"
+
         api_token="{{ Auth::user()->api_token }}"
         csrf_token="{{ csrf_token() }}"            
         >

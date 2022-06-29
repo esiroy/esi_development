@@ -9,7 +9,7 @@
                 <tr>
                     <td valign="top" width="65px">
                         <div class="pl-2">
-                            <img src="/images/cs.jpg" width="60px">
+                            <img :src="this.customer_support_image" width="60px">
                         </div>
                     </td>
 
@@ -66,7 +66,7 @@
 
             <div class="chatboxes">
 
-                <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="'chatbox_' + index" style="width:420px">
+                <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="'chatbox_' + index" style="width:490px;">
                 
                     <div class="card">
                         <div class="card-header rounded-top bg-blue text-white" style="padding: 4px 10px 0px;">
@@ -79,41 +79,51 @@
 
                             <div id="user-chatlog" class="user-chatlog border rounded text-center">
 
-                                <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary">
+                                <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" v-show="historyNotifier">
                                     Fetch History                                                
                                 </button>
 
-                                <div v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+ chatlogIndex">
+                                <div class="chatlog-wrapper">
 
-                                    <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">                  
-                                        <div class="col-md-9 pl-4">
-                                            <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                           
-                                                <span class="small">{{ chatlog.sender.nickname }}, {{ chatlog.time  }}</span>                              
-                                            </div>
-                                            <div class="chat-support-message" v-html="chatlog.sender.message"></div>
-                                        </div>
-                                    </div>
+                                    <div class="chat" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+ chatlogIndex">
 
+                                        <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">  
 
-                                    <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >    
+                                        
+                                            <div class="col-md-2">   
+                                                <div class="p-0" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">  
 
-                                   
-                                        <div class="col-md-10">                    
-                                            <div class="member-info" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">    
-                                            <span class="small">{{ chatlog.sender.nickname }}, {{ chatlog.time  }}</span>                       
-                                            </div>
-
-                                            <div class="member-message-container">
-                                            <div class="member-message" v-html="chatlog.sender.message"></div>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-md-2">
-                                            <div class="member-info" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">
-                                            <img :src="chatlog.sender.user_image" class="img-fluid member-image"/> 
+                                                    <b-img thumbnail fluid :src="customer_support_image" rounded="circle" alt="CHAT_SUPPORT"></b-img>                                               
+                                                </div>
+                                            </div>      
+                                            <div class="col-md-10 pl-0">
+                                                <div class="small text-left mt-2" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                           
+                                                    {{ chatlog.sender.nickname }}, {{ chatlog.time  }}                             
+                                                </div>
+                                                <div class="chat-support-message" v-html="chatlog.sender.message"></div>
                                             </div>
                                         </div>
-                                     
+
+
+                                        <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >   
+                                            <div class="col-md-10">       
+
+                                                <div class="member-info" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">    
+                                                    <span class="small">{{ chatlog.sender.nickname }}, {{ chatlog.time  }}</span>                       
+                                                </div>
+
+                                                <div class="member-message-container">
+                                                    <div class="member-message" v-html="chatlog.sender.message"></div>
+                                                </div>
+
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="p-0" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">
+                                                    <b-img thumbnail fluid :src="chatlog.sender.user_image" rounded="circle" alt="Circle image"></b-img>     
+                                                </div>
+                                            </div>
+                                        
+                                        </div>
                                     </div>
                                 </div>
 
@@ -239,14 +249,16 @@ export default {
 
         //History Loaders
         loadingHistory: false,
-
+        historyNotifier: true,
 
         //buttons
         ButtonSend: null,
         ButtonUpload: null,
 
         //page
-        page:[]
+        page:[],
+
+  
 
 
     
@@ -258,7 +270,8 @@ export default {
     nickname: String,
     user_image: String,
     api_token: String,
-    csrf_token: String,      
+    csrf_token: String,   
+    customer_support_image: String,
   },
   methods: 
   {
@@ -266,11 +279,10 @@ export default {
     {        
         this.chatFetchStatus = "FETCHING";
 
-        let historyNotifier1 = document.getElementById("history-notify");
-        if (historyNotifier1) {
-            historyNotifier1.style.display = "inline-block";  
-            document.getElementById("floating-history-btn").style.display = "none";
-        }
+ 
+
+        console.log(this.page[this.userid])
+
 
         //user is the sender
         axios.post("/api/getChathistory?api_token=" + this.api_token, 
@@ -281,24 +293,24 @@ export default {
             page                : this.page[this.userid]                   
 
         }).then(response => 
-        {                
-          
-
+        {  
+        
             if (response.data.success === true) 
             {               
                 
-                let historyNotifier = document.getElementById("history-notify");
-
-                if (historyNotifier) {
-                    historyNotifier.style.display = "none";  
-                }
-
+             
                 let chatboxUsername = null;
                 let chatboxNickname = null;
                 let chatboxImage = null;
 
-                this.page[user.userid] =  +this.page[user.userid] + 1;
+                this.page[this.userid] = response.data.chatHistoryItems.current_page + 1;
 
+                
+                //DETERMIN IF THE LAST PAGE
+                if (response.data.chatHistoryItems.last_page == response.data.chatHistoryItems.current_page) {
+                    //hide button for history
+                    this.historyNotifier = false;                
+                }
                 
                 let chatHistoryItems = response.data.chatHistoryItems.data;
 
@@ -307,10 +319,9 @@ export default {
                     if (data.message_type == "MEMBER") {
 
                         let member = this.getUser();
-
                         chatboxUsername = member.username;
                         chatboxNickname = member.nickname;
-                        chatboxImage = user.user_image;       
+                        chatboxImage = this.user_image;       
 
                     } else {
                         chatboxUsername = "CUSTOMER SUPPORT";
@@ -355,12 +366,9 @@ export default {
                 this.chatFetchStatus = "ACTIVE";
 
             } else {
-                //@todo: HIGHLIGHT error
-                let historyNotifier = document.getElementById("history-notify");
-
-                if (historyNotifier) {
-                    historyNotifier.style.display = "none";  
-                }                    
+                
+                //hide button for history
+                this.historyNotifier = false;
             }
         
         }).catch(function(error) {
@@ -372,19 +380,20 @@ export default {
         this.$forceUpdate();
 
         var container = this.$el.querySelector("#user-chatlog");
-        if(container){            
-            container.scrollTop = 250;
+        if(container) {            
+            container.scrollTop = 0;
         }
     },
     scrollToEnd: function() 
     {
-        this.$forceUpdate();      
+        this.$forceUpdate();   
+
         this.$nextTick(function()
         {      
             var container = this.$el.querySelector("#user-chatlog");
             if(container){
                 container.scrollTop = container.scrollHeight;
-                //console.log("scrloginoll to end")   
+                console.log(container.scrollHeight)   
             }
         });
 
@@ -534,19 +543,25 @@ export default {
 
     closeChatBox() {
          this.showChatbox = false;
+        this.unread_message_count = 0;
     },
-    openChatBox() {
-
+    openChatBox() 
+    {
         this.showChatbox = true;
+        this.unread_message_count = 0;
+
 
         let user = this.getUser();
 
+        this.getUnreadMessage(user);
+
+
         if (isNaN(this.page[user.userid])) {
-            this.page[user.userid] = 1;
+            this.page[user.userid] = 1;            
         }
 
-
-    },
+        this.scrollToEnd();
+    },    
     getUser() {
         return {
             userid: this.$props.userid ,
@@ -556,6 +571,7 @@ export default {
             type: "MEMBER",      
         } 
     },
+
     addChatEventListener() {
 
         socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
@@ -576,15 +592,17 @@ export default {
                 userid: 1,
                 username: "admin",
             }
-            this.openChatBox(admin);
-                
-            if (data.sender.username  == this.username) {
+
+            if (data.sender.username  == this.username) 
+            {
+                //user sent
             
                 let sender = {
                     'userid': data.sender.userid,
                     'username': data.sender.username,   
                     'nickname': data.sender.nickname,
                     'message': data.sender.message,
+                    'user_image': this.user_image,      
                     'type': data.sender.type,             
                 };
                 
@@ -594,6 +612,7 @@ export default {
                 });   
 
                 this.$forceUpdate();  
+
                 this.$nextTick(function()
                 {
                     this.scrollToEnd();        
@@ -602,6 +621,9 @@ export default {
 
             if (data.recipient.userid == this.userid) 
             {
+
+                this.openChatBox(admin);
+
                 //console.log("sent from support")
 
                 this.unread_message_count++;
@@ -621,6 +643,7 @@ export default {
                         //message: data.sender.message        
                 });      
                 this.$forceUpdate();  
+
                 this.$nextTick(function()
                 {
                     this.scrollToEnd();        
@@ -666,6 +689,11 @@ export default {
                 this.prepareButtons(); 
             });            
         }    
+    },
+    getUnreadMessage(user) {
+
+        console.log(user.userid)
+    
     },
     sendMessage: function(chatbox, index) 
     {
@@ -790,10 +818,12 @@ export default {
     },
   	scrollToEnd: function() 
     {
-        this.$forceUpdate();      
+        this.$forceUpdate();
+              
         this.$nextTick(function()
         {
-            var container = this.$el.querySelector("#chatlogs");
+            var container = this.$el.querySelector("#user-chatlog");
+            
             if (container) {
                 container.scrollTop = container.scrollHeight;         
             }            
@@ -807,7 +837,7 @@ export default {
   },
   mounted: function () 
   {
-  
+
     window.addEventListener("keyup", (e) =>
     {
         this.prepareButtons();       
@@ -854,12 +884,26 @@ export default {
         right: 75px;
         z-index: 9999;
     }
-    
-    #floating-history-btn, 
+    #floating-history-btn {
+        font-size: 11px;
+        padding: 2px 5px 2px;
+        position: absolute;
+        top: 42px;
+        left: 215px;
+        border: 1px solid #704646;
+        z-index: 1;
+    }
+ 
+
     .btn-xs {
         font-size: 11px;
         padding: 2px 5px 2px;
     }
+
+    .chatlog-wrapper {
+        margin-top: 30px;
+    }
+
 
     .chat-button {
         border-radius: 50%;
@@ -871,9 +915,9 @@ export default {
 
     .user-chatlog {
         border: 1px solid #ececec;
-        padding: 5px;
-        min-height: 300px;
-        max-height: 300px;
+        padding: 5px 5px 15px;
+        min-height: 380px;
+        max-height: 380px;
         margin-bottom: 3px;
         overflow-x: hidden;
         overflow-y: scroll;
@@ -891,32 +935,33 @@ export default {
     }
  
 
-  .chat-support-message {   
-    color: #242322;
-    background-color: #F2F6F9;
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
-    display: block;
-    margin-top: 3px;
-    position: relative;
-    padding: 7px 12px 7px;  
-  }
+    .chat-support-message {   
+        color: #242322;
+        background-color: #F2F6F9;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        display: block;
+        margin-top: 5px;
+        padding: 7px 25px 7px; 
+        border-radius: 15px;
+    }
 
-  .member-message-container {    
-    position: relative;
-    float:right
-  }
+    .member-message-container {    
+        position: relative;
+        float:right
+    }
 
    .member-message {
-    color: #242322;
-    background-color: #DBF4FC;
-    width: -webkit-fit-content;
-    width: -moz-fit-content;
-    width: fit-content;
-    display: block;
-    margin-top: 5px;
-    padding: 7px 22px 7px;
+        color: #242322;
+        background-color: #DBF4FC;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        display: block;
+        margin-top: 5px;
+        padding: 7px 25px 7px;
+        border-radius: 15px;
   }
 
 

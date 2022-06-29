@@ -43,6 +43,37 @@ class ChatSupportController extends Controller
 
     }
 
+    /* @sender_id -  user ID of the user that need that chat unread query */
+
+    public function getChatUnread(Request $request, ChatSupportHistory $chatSupportHistory) 
+    {
+        $sender_id = $request->sender_id;
+
+        $chatHistoryItems = $chatSupportHistory
+                            ->where('active', 1)
+                            ->where('is_read', 0)
+                            ->where('sender_id', $sender_id)
+                            ->orWhere('recipient_id', $sender_id)                            
+                            ->orderby('id', "DESC")->get();
+
+        if ($chatHistoryItems->count() > 0)  {
+            return Response()->json([
+                "success"           => true,                
+                "chatHistoryItems"  => $chatHistoryItems,                
+            ]);
+        } else {
+            return Response()->json([
+                "success"           => false,                
+                "message"           => "no more history found"
+            ]);            
+        }
+        
+                            
+    }
+
+
+
+
     public function getAllChathistory(Request $request, ChatSupportHistory $chatSupportHistory) {      
         $sender_id = $request->sender_id;
         $recipient_id = $request->recipient_id;
