@@ -1,11 +1,11 @@
-var serverPort = 30002;
+var serverPort = 50001;
 
 
 const express = require('express');
 const app = express();
 
 const server = app.listen(serverPort, function() {
-    console.log('server running on port 3002');
+    console.log('server running on port ' + serverPort);
 });
 
 const io = require('socket.io')(server);
