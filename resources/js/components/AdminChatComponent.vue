@@ -212,11 +212,8 @@
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
 
-var socket = io.connect('http://localhost:3002');
+var socket = null;
 
-
-
-//const socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
 export default {
   name: "chat-component",
@@ -259,7 +256,8 @@ export default {
         username: String,
         nickname: String,
         api_token: String,    
-        csrf_token: String,        
+        csrf_token: String,  
+        chatserver_url: String,              
     },
     methods: 
     {
@@ -809,6 +807,11 @@ export default {
 	computed: {},
 	updated: function () {},
 	mounted: function () {  
+
+        socket = io.connect(this.$props.chatserver_url);
+
+
+
 
         let adminChat = document.getElementById("AdminChat");        
         adminChat.style.display = 'none';

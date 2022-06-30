@@ -628,7 +628,8 @@ export default {
 
                 this.$nextTick(function()
                 {
-                    this.scrollToEnd();        
+                    this.scrollToEnd();  
+                   
                 });             
             }
 
@@ -637,8 +638,7 @@ export default {
 
                 this.openChatBox(admin);
 
-                //console.log("sent from support")
-
+                console.log("sent from support")
                 this.unread_message_count++;
 
 
@@ -754,6 +754,7 @@ export default {
         {
             method           : "POST",
             userID           : userid,
+            message_type     : 'CHAT_SUPPORT'
         }).then(response => {  
 
             if (response.data.success === true) 

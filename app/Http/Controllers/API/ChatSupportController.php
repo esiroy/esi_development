@@ -76,9 +76,10 @@ class ChatSupportController extends Controller
     {
 
         $userID = $request->userID;
+        $message_type = $request->message_type;
 
         $chatItems = $chatSupportHistory
-                    ->where('message_type', 'CHAT_SUPPORT')
+                    ->where('message_type', $message_type) //->where('message_type', 'CHAT_SUPPORT')
                     ->where('recipient_id', $userID)
                     ->where('valid', 1)
                     ->where('is_read', 0)
