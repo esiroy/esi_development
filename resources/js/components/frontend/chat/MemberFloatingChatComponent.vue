@@ -69,6 +69,8 @@
                 <div class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="'chatbox_' + index" style="width:490px;">
                 
                     <div class="card">
+
+                       
                         <div class="card-header rounded-top bg-blue text-white" style="padding: 4px 10px 0px;">
                             <div class="small float-left font-weight-bold">Customer Support</div>
                             <span class="float-right">
@@ -79,9 +81,16 @@
 
                             <div id="user-chatlog" class="user-chatlog border rounded text-center">
 
-                                <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" v-show="historyNotifier">
+                                <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" v-show="historyNotifier == true && isFetching == false">
                                     Fetch History                                                
                                 </button>
+
+                                <button v-show="historyNotifier == true && isFetching == true"  id="floating-history-btn" class="btn btn-xs btn-primary">
+                                    <i class="fas fa-sync fa-spin"></i>  Loading
+                                </button>
+
+
+                             
 
                                 <div class="chatlog-wrapper">
 
@@ -211,9 +220,8 @@
 <script>
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
-//const socket = io.connect("http://localhost:30001");
 
-let socket = "";
+var socket = null;
 
 export default {
   name: "member-floating-chat-component",
@@ -223,7 +231,10 @@ export default {
   data() {
     return {            
 
-            //first load on opening chatbox
+        //history is fetching status
+        isFetching: false,
+
+        //first load on opening chatbox
         firstLoad: true,     
 
 
@@ -257,10 +268,6 @@ export default {
 
         //page
         page:[],
-
-  
-
-
     
     };
   },
@@ -271,18 +278,27 @@ export default {
     user_image: String,
     api_token: String,
     csrf_token: String,   
+    chatserver_url: String,
     customer_support_image: String,
   },
   methods: 
   {
+    getAdmin() {
+        return {
+            userid: 1,
+            username: "admin",
+            status: 'offline',
+        }
+    },
     getChatHistory: function(user, scrollToBottom) 
     {        
-        this.chatFetchStatus = "FETCHING";
+        this.isFetching = true;
 
- 
-
-        console.log(this.page[this.userid])
-
+        if (this.page[this.userid] == 1) 
+        {        
+            /*[note] - first page we will remove current message since we will get it again on first page */
+            this.chatlogs[user.userid] = [];
+        }
 
         //user is the sender
         axios.post("/api/getChathistory?api_token=" + this.api_token, 
@@ -292,12 +308,12 @@ export default {
             recipient_id        : user.userid, //chatbox user id (overrided to admin)
             page                : this.page[this.userid]                   
 
-        }).then(response => 
-        {  
+        }).then(response => {  
         
             if (response.data.success === true) 
             {               
                 
+                this.isFetching = false;
              
                 let chatboxUsername = null;
                 let chatboxNickname = null;
@@ -346,7 +362,6 @@ export default {
                     this.chatlogs[user.userid].unshift({
                         time: data.created_at,
                         sender: sender,   
-                                
                     });
                 });
                 let reversedChatHistory =  this.chatlogs[user.userid];
@@ -369,9 +384,14 @@ export default {
                 
                 //hide button for history
                 this.historyNotifier = false;
+
+                this.isFetching = false;
             }
         
         }).catch(function(error) {
+
+            this.isFetching = false;
+
             console.log("Error " + error);                
         });
 
@@ -406,7 +426,6 @@ export default {
             
         });
     },
-
     updatetValue(value) {
         //this.files = value;
     },
@@ -540,27 +559,24 @@ export default {
             }
         }        
     },    
-
     closeChatBox() {
-         this.showChatbox = false;
+        this.showChatbox = false;
         this.unread_message_count = 0;
     },
     openChatBox() 
     {
         this.showChatbox = true;
         this.unread_message_count = 0;
-
-
         let user = this.getUser();
-
-        this.getUnreadMessage(user);
 
 
         if (isNaN(this.page[user.userid])) {
             this.page[user.userid] = 1;            
         }
-
         this.scrollToEnd();
+
+        //marke read
+        this.markMessagesRead(this.userid);
     },    
     getUser() {
         return {
@@ -571,10 +587,7 @@ export default {
             type: "MEMBER",      
         } 
     },
-
     addChatEventListener() {
-
-        socket = io.connect("https://chatserver.mytutor-jpn.info:30001");
 
     
         let user = this.getUser();
@@ -669,6 +682,8 @@ export default {
         for (var i in this.chatboxes) {
             if (user.username == this.chatboxes[i].username) {
                 found = true;
+
+                 console.log(user);
             }
         }
 
@@ -680,6 +695,8 @@ export default {
             //instantiate chat log for when send message logs it does not empty out
             this.chatlogs[user.userid] = [];
 
+           
+
             this.$forceUpdate();
 
             this.$nextTick(function()
@@ -690,10 +707,60 @@ export default {
             });            
         }    
     },
-    getUnreadMessage(user) {
+    getUnreadMemberMessages(userid) 
+    {
+        axios.post("/api/getUnreadChatMessages?api_token=" + this.api_token, 
+        {
+            method           : "POST",
+            userID           : userid,
+        }).then(response => {  
 
-        console.log(user.userid)
-    
+            if (response.data.success === true) 
+            {
+
+                this.unread_message_count = response.data.unreadMessageCount;
+
+                response.data.chatItems.forEach(data => {
+
+                    let chatSupportMessages = {
+                        'msgCtr': 0,
+                        'userid': data.sender_id, //id of chat support                        
+                        'nickname': this.nickname,
+                        'username': this.username,          
+                        'user_image': this.customer_support_image,
+                        'message': data.message,                            
+                        'type': data.message_type
+                    };
+
+                    //the admin is the customer support
+                    let admin = this.getAdmin();
+                    this.chatlogs[admin.userid].push({
+                            time: data.time,
+                            sender: chatSupportMessages,
+                    }); 
+                });
+
+
+                this.$forceUpdate();
+            } else {
+            
+                this.unread_message_count = response.data.unreadMessageCount;
+            }
+        });
+    },
+    markMessagesRead(userid) {
+
+        axios.post("/api/markChatMessagesRead?api_token=" + this.api_token, 
+        {
+            method           : "POST",
+            userID           : userid,
+        }).then(response => {  
+
+            if (response.data.success === true) 
+            {              
+                this.unread_message_count = 0;
+            } 
+        });    
     },
     sendMessage: function(chatbox, index) 
     {
@@ -777,7 +844,8 @@ export default {
             let userMessage = this.message[index];
 
             //scroll to end then save to table
-            this.$nextTick(() => {           
+            this.$nextTick(() => {  
+
                 axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
                 {
                     method              : "POST",
@@ -832,31 +900,22 @@ export default {
     }    
   },
   computed: {},
-  updated: function () {
-    
-  },
   mounted: function () 
   {
-
+    socket = io.connect(this.$props.chatserver_url);
     window.addEventListener("keyup", (e) =>
     {
         this.prepareButtons();       
     });
-    
 
-    
-    //automatically open for admin when popup is created.
-    let admin = {
-      userid: 1,
-      username: "admin",
-      status: 'offline',
-    }
+    let admin = this.getAdmin();
+
     this.initializeChatBox(admin);
 
+    this.addChatEventListener();
 
-    this.addChatEventListener()   
-
-
+    //This will get all the message from the customer support
+    this.getUnreadMemberMessages(this.userid);
 
   },
 };
@@ -890,7 +949,6 @@ export default {
         position: absolute;
         top: 42px;
         left: 215px;
-        border: 1px solid #704646;
         z-index: 1;
     }
  
@@ -934,7 +992,7 @@ export default {
         border: 3px solid #ededed;
     }
  
-
+    /*
     .chat-support-message {   
         color: #242322;
         background-color: #F2F6F9;
@@ -946,6 +1004,34 @@ export default {
         padding: 7px 25px 7px; 
         border-radius: 15px;
     }
+    */
+
+    .chat-support-message {
+        position: relative;
+        background: #F2F6F9;
+        border-radius: .4em;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        width: fit-content;
+        display: block;
+        margin-top: 5px;
+        padding: 7px 25px 7px;     
+    }
+
+    .chat-support-message:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border: 18px solid transparent;
+        border-right-color: #f2f6f9;
+        border-left: 0;
+        border-top: 0;
+        margin-top: -12px;
+        margin-left: -18px;
+    }    
 
     .member-message-container {    
         position: relative;
@@ -955,14 +1041,29 @@ export default {
    .member-message {
         color: #242322;
         background-color: #DBF4FC;
+        border-radius: .4em;        
         width: -webkit-fit-content;
         width: -moz-fit-content;
         width: fit-content;
         display: block;
         margin-top: 5px;
         padding: 7px 25px 7px;
-        border-radius: 15px;
   }
 
+
+    .member-message:after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        width: 0;
+        height: 0;
+        border: 18px solid transparent;
+        border-left-color: #DBF4FC;
+        border-right: 0;
+        border-top: 0;
+        margin-top: -12px;
+        margin-right: -16px;
+    }
 
 </style>

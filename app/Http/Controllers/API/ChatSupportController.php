@@ -45,30 +45,57 @@ class ChatSupportController extends Controller
 
     /* @sender_id -  user ID of the user that need that chat unread query */
 
-    public function getChatUnread(Request $request, ChatSupportHistory $chatSupportHistory) 
+    public function getUnreadChatMessages(Request $request, ChatSupportHistory $chatSupportHistory) 
     {
-        $sender_id = $request->sender_id;
+        $userID = $request->userID;
 
-        $chatHistoryItems = $chatSupportHistory
-                            ->where('active', 1)
+        $chatItems = $chatSupportHistory
+                            ->where('message_type', 'CHAT_SUPPORT')
+                            ->where('recipient_id', $userID)
+                            ->where('valid', 1)
                             ->where('is_read', 0)
-                            ->where('sender_id', $sender_id)
-                            ->orWhere('recipient_id', $sender_id)                            
                             ->orderby('id', "DESC")->get();
 
-        if ($chatHistoryItems->count() > 0)  {
+        if ($chatItems->count() > 0)  {
             return Response()->json([
-                "success"           => true,                
-                "chatHistoryItems"  => $chatHistoryItems,                
+                "success"                => true,                
+                "chatItems"             => $chatItems,
+                "unreadMessageCount"    => $chatItems->count(),    
+                "message"               => "Unread Messages Found"            
             ]);
         } else {
             return Response()->json([
-                "success"           => false,                
-                "message"           => "no more history found"
+                "success"               => false,            
+                "unreadMessageCount"    => 0,       
+                "message"               => "No Unread Messages found"
             ]);            
-        }
-        
-                            
+        }                  
+    }
+
+    public function markChatMessagesRead(Request $request, ChatSupportHistory $chatSupportHistory)
+    {
+
+        $userID = $request->userID;
+
+        $chatItems = $chatSupportHistory
+                    ->where('message_type', 'CHAT_SUPPORT')
+                    ->where('recipient_id', $userID)
+                    ->where('valid', 1)
+                    ->where('is_read', 0)
+                    ->update(['is_read' => 1]);
+
+        if ($chatItems)  {
+            return Response()->json([
+                "success"               => true, 
+                "message"               => "Unread Messages marked as read"            
+            ]);
+
+        } else {
+            return Response()->json([
+                "success"               => false,   
+                "message"               => "No Unread Messages found"
+            ]);            
+        }                       
     }
 
 
