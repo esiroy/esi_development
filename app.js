@@ -5,8 +5,8 @@ var express = require('express');
 var app = express();
 
 var options = {
-  key: fs.readFileSync('./file.pem'),
-  cert: fs.readFileSync('./file.crt')
+    key: fs.readFileSync('./file.pem'),
+    cert: fs.readFileSync('./file.crt')
 };
 var serverPort = 30001;
 
@@ -15,23 +15,22 @@ var server = https.createServer(options, app);
 var io = require('socket.io')(server, { wsEngine: 'ws' });
 
 app.get('/', function(req, res) {
-  //res.sendFile(__dirname + '/public/index.html');
-  res.send('<h1>Chat server</h1>');
+    //res.sendFile(__dirname + '/public/index.html');
+    res.send('<h1>Chat server</h1>');
 });
 
 server.listen(serverPort, function() {
-  console.log('server up and running at %s port', serverPort);
+    console.log('server up and running at %s port', serverPort);
 });
 
 
 
 var users = [];
 
-io.on('connection', function(socket) 
-{
+io.on('connection', function(socket) {
     //console.log("user connected, with id " + socket.id)
 
-    socket.on("SEND_USER_MESSAGE", function (data){
+    socket.on("SEND_USER_MESSAGE", function(data) {
 
         console.log("send user ", data.recipient.username);
 
@@ -47,19 +46,18 @@ io.on('connection', function(socket)
         }*/
 
         io.sockets.emit("PRIVATE_MESSAGE", data);
-        
+
         //this.handleUserPrivateMsg(data);
     });
 
-    socket.on("SEND_OWNER_MESSAGE", function (data){
+    socket.on("SEND_OWNER_MESSAGE", function(data) {
 
         io.emit('OWNER_MESSAGE', data);
         //this.handleUserPrivateMsg(data);
-    });    
+    });
 
     /*Register connected user*/
-    socket.on('REGISTER',function(user)
-    {
+    socket.on('REGISTER', function(user) {
         console.log("user connected, with id " + socket.id + " " + user.username)
 
         //remove if ever there is same userid
@@ -71,34 +69,33 @@ io.on('connection', function(socket)
             }
         }*/
 
-        users = users.filter(function( element ) {
-          return element !== undefined;
-        });        
-        
-        users.push({
-                        'id': socket.id, 
-                        'userid': user.userid,
-                        'username': user.username,
-                        'user_image': user.user_image,
-                        'nickname': user.nickname,
-                        'type': user.type,
-                    });
+        users = users.filter(function(element) {
+            return element !== undefined;
+        });
 
-                    
+        users.push({
+            'id': socket.id,
+            'userid': user.userid,
+            'username': user.username,
+            'user_image': user.user_image,
+            'nickname': user.nickname,
+            'status': user.status,
+            'type': user.type,
+        });
+
+
         update_user_list();
     });
 
 
     //THIS WILL EMIT THE USER LIST TO CLIENT SIDE
-    function update_user_list() 
-    {
-       
+    function update_user_list() {
+
         io.emit('update_user_list', users);
     }
 
     //Removing the socket on disconnect
-    socket.on('disconnect', function () 
-    {
+    socket.on('disconnect', function() {
         for (var i in users) {
             if (users[i].id === socket.id) {
                 delete users[i];
@@ -106,16 +103,16 @@ io.on('connection', function(socket)
             }
         }
 
-        users = users.filter(function( element ) {
-          return element !== undefined;
+        users = users.filter(function(element) {
+            return element !== undefined;
         });
 
         update_user_list();
-    });    
+    });
 
     //default (public)
     socket.on('SEND_MESSAGE', function(data) {
         io.emit('MESSAGE', data)
     });
-    
+
 });
