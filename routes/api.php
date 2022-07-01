@@ -88,6 +88,8 @@ Route::middleware('auth:api')->post('/getMemberInbox', 'API\MemberController@get
 
 //[start](CHAT SUPPORT)
 Route::middleware('auth:api')->post('/getChathistory', 'API\ChatSupportController@getChathistory')->name('APIGetChathistory');
+Route::middleware('auth:api')->post('/getRecentUserChatList', 'API\ChatSupportController@getRecentUserChatList')->name('APIGetRecentUserChatList');
+
 Route::middleware('auth:api')->post('/getUnreadChatMessages', 'API\ChatSupportController@getUnreadChatMessages')->name('APIGetUnreadChatMessages');
 Route::middleware('auth:api')->post('/markChatMessagesRead', 'API\ChatSupportController@markChatMessagesRead')->name('APIGetUnreadChatMessages');
 Route::middleware('auth:api')->post('/saveCustomerSupportChat', 'API\ChatSupportController@saveCustomerSupportChat')->name('APISaveCustomerSupportChat');

@@ -10,16 +10,19 @@
                         Users
                     </div>
                     <div class="card-body">
-                        <div :id="'member-'+user.userid" class="member-information-container" v-show="user.userid !== userid" v-for="(user, index) in this.users" :key="'user_'+ index"  v-on:click="openChatBox(user)" >
+                        <div :id="'member-'+user.userid" class="member-information-container" 
+                        v-show="user.userid !== userid" 
+                        v-for="(user, index) in this.users" :key="'user_'+ index"  v-on:click="openChatBox(user)" >
                             <div class="member" v-if="user.userid !== userid">
                             <div class="profile-photo">
-                                <img :src="user.user_image"  class="img-fluid">
+                                <img :src="formatImage(user.user_image)"  class="img-fluid">
                             </div>
                             <div class="profile-user-info">
                                 <a class="">{{ user.username }}</a> 
                                 <span class="badge badge-danger" v-show="chatCount[user.userid] >= 1">
                                 {{ chatCount[user.userid] }}
                                 </span>
+                                status: {{ user.status }}
                             </div>
                             
                             </div>                    
@@ -249,6 +252,8 @@ export default {
             page: [],
 
             chatFetchStatus: "ACTIVE",
+
+            usersOffline: [],
         };
     },
     props: {
@@ -756,17 +761,59 @@ export default {
                 sendBtn.style.display = "block";
             }        
         },
+        formatImage(image) {
+            console.log(image)
+            return image;
+        },
+        appendRecentUserChatList(onlineUsers) 
+        {
+            axios.post("/api/getRecentUserChatList?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+            }).then(response => {
+
+                if (response.data.success === true)
+                 {
+                     this.users = [];
+
+                    let offlineUsers = response.data.recentUsers;
+
+                    offlineUsers.forEach((offlineUser) => 
+                    {
+                        const found = onlineUsers.find(onlineUser => onlineUser.userid == offlineUser.userid);
+                        if (found) {
+                              this.users.push(found) 
+                        } else {
+                            this.users.push(offlineUser) 
+                        }
+                    });
+
+                } else {
+                
+                    //no recent users leave it blank
+                }
+
+            }).catch(function(error) {
+                console.log("Error " + error);                
+            }); 
+        },
         updateUserList: function(users) 
         {
 
-            //filter duplicates
-            let uniqueUsers = this.filterUnique(users);
-
             //filter chat support, we will not show on the list if the users is a chat support
-            let fusers = uniqueUsers.filter(user => user.type !== "CHAT_SUPPORT");
-            this.users = fusers;
+            let fusers = users.filter(user => user.type !== "CHAT_SUPPORT");
+            
+            //filter duplicates
+            let onlineUsers = this.filterUnique(fusers);
+
+            this.appendRecentUserChatList(onlineUsers) 
+
             this.$forceUpdate();
         }, 
+        filterUserByID: function (users) {
+
+
+        },        
         filterUnique: function (users) {
           let result = users.reduce((unique, o) => {
               if(!unique.some(obj => obj.username === o.username )) {
@@ -792,6 +839,7 @@ export default {
                 userid: this.userid,
                 username: this.username,
                 nickname: "Customer Support",
+                status: "online",
                 type: "CHAT_SUPPORT",
             }
             socket.emit('REGISTER', user);
@@ -809,10 +857,6 @@ export default {
 	mounted: function () {  
 
         socket = io.connect(this.$props.chatserver_url);
-
-
-
-
         let adminChat = document.getElementById("AdminChat");        
         adminChat.style.display = 'none';
 

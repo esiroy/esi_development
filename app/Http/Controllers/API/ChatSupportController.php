@@ -6,11 +6,16 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\ChatSupportHistory;
+use App\Models\User;
+use App\Models\UserImage;
 
+
+use DB;
 
 class ChatSupportController extends Controller
 {
 
+      
     public function getChathistory(Request $request, ChatSupportHistory $chatSupportHistory) {
 
         $page = $request->page;
@@ -43,8 +48,71 @@ class ChatSupportController extends Controller
 
     }
 
-    /* @sender_id -  user ID of the user that need that chat unread query */
+    /* 
+        GET ALL THE MEMBERS THAT RECENTLY CHATTED 
+    */
+  
+    public function getRecentUserChatList(Request $request, UserImage $userImage, ChatSupportHistory $chatSupportHistory) 
+    {
+        $userID = $request->userID;
 
+
+
+        $recentUsers = $chatSupportHistory
+                        ->select('sender_id')
+                        ->distinct()
+                        ->where('chatsupport_history.message_type', 'MEMBER')
+                        ->get();  
+
+                        
+        /*
+        
+        $recentUsers = $chatSupportHistory
+                        ->select(
+                            'users.id as userid',
+                            'users.username', 
+                            'members.nickname', 
+                            'chatsupport_history.message_type as type',
+                            DB::raw('COUNT(chatsupport_history.is_read) as unread_count'),
+                           'user_image.original as user_image'
+                        ) 
+                        
+                        ->leftJoin('users', 'chatsupport_history.sender_id', '=', 'users.id')
+                        ->leftJoin('members', 'chatsupport_history.sender_id', '=', 'members.user_id')
+                        ->leftJoin('user_image', 'chatsupport_history.sender_id', '=', 'user_image.user_id')
+                      
+                        ->where('chatsupport_history.message_type', 'MEMBER')
+                        ->get();
+        */
+
+        foreach ($recentUsers as $key => $recentUser) {
+
+            $user = User::find($recentUser->sender_id);
+
+            $recentUsers[$key]['userid']    = $user->id;
+            $recentUsers[$key]['username']  = $user->username;
+            $recentUsers[$key]['nickname']  = $user->memberInfo->nickname ?? '-';
+         
+            $recentUsers[$key]['status'] = 'offline';
+            $recentUsers[$key]['user_image']  = asset('storage/'. $userImage->getMemberPhotoByID($user->id)->original);
+            
+         }
+
+        if ($recentUsers->count() > 0)  {
+            return Response()->json([
+                "success"           => true,                
+                "recentUsers"       => $recentUsers,
+            ]);
+        } else {
+            return Response()->json([
+                "success"           => false,                
+                "message"           => "no more user found"
+            ]);            
+        }
+    }
+
+
+    /* @sender_id -  user ID of the user that need that chat unread query */
     public function getUnreadChatMessages(Request $request, ChatSupportHistory $chatSupportHistory) 
     {
         $userID = $request->userID;

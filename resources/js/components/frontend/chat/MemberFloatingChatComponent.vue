@@ -583,7 +583,8 @@ export default {
             userid: this.$props.userid ,
             username: this.username,
             nickname: this.nickname,
-            user_image: this.user_image,      
+            user_image: this.user_image,    
+            status: 'online',     
             type: "MEMBER",      
         } 
     },

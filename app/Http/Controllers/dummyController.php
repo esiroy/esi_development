@@ -24,7 +24,7 @@ use App\Models\TimeManager;
 use App\Models\TimeManagerProgress;
 
 use App\Models\MiniTestResult;
-
+use App\Models\ChatSupportHistory;
 
 use App;
 use Gate;
@@ -33,6 +33,7 @@ use Auth;
 use Config;
 use Mail;
 use App\Models\LessonMailer;
+
 use App\Mail\CustomerSupport as CustomerSupportMail;
 use App\Models\PhpSpreadsheetFontStyle as Style;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -48,8 +49,22 @@ class dummyController extends Controller
     {
     }
 
-    public function index(MiniTestResult $miniTestResult) 
+    public function index(ChatSupportHistory $chatSupportHistory) 
     {
+
+        $recentUsers = $chatSupportHistory
+                        ->select('sender_id')
+                        ->distinct()
+                        ->where('chatsupport_history.message_type', 'MEMBER')
+                        ->get();  
+                        
+        foreach ($recentUsers as $key => $user) {
+          echo ($user->sender_id) ."<BR>";
+        }
+    }
+
+    public function mintest() {
+    
 
         $today = date('Y-m-d');     
         $todayDateToUpper = date('Y-m-d 23:59:59');
@@ -77,6 +92,8 @@ class dummyController extends Controller
         //$count = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
 
         //echo $count;
+
+
     }
     public function testMinites(Request $request) {
 
