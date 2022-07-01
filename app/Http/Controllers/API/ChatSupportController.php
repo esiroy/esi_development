@@ -94,7 +94,16 @@ class ChatSupportController extends Controller
             $recentUsers[$key]['nickname']  = $user->memberInfo->nickname ?? '-';
          
             $recentUsers[$key]['status'] = 'offline';
-            $recentUsers[$key]['user_image']  = asset('storage/'. $userImage->getMemberPhotoByID($user->id)->original);
+
+            $userPhoto = $userImage->getMemberPhotoByID($user->id);
+
+            if ($userPhoto) {
+                $recentUsers[$key]['user_image']  = asset('storage/'. $userPhoto->original);
+            } else {
+            
+                $recentUsers[$key]['user_image']  = asset('images/samplePictureNoImage.jpg');
+            }
+
             
          }
 
