@@ -1,10 +1,9 @@
 <template>
 
     <div class="container">
-       
-
+        
         <!--[start] Sidebar Chat Button -->
-        <table cellpadding="4" cellspacing="0" class="mt-2">
+        <table cellpadding="4" cellspacing="0" class="mt-2" v-show="this.$props.show_sidebar == true">
             <tbody>
                 <tr>
                     <td valign="top" width="65px">
@@ -280,6 +279,7 @@ export default {
     csrf_token: String,   
     chatserver_url: String,
     customer_support_image: String,
+    show_sidebar: Boolean
   },
   methods: 
   {
@@ -735,7 +735,7 @@ export default {
 
                     //the admin is the customer support
                     let admin = this.getAdmin();
-                    this.chatlogs[admin.userid].push({
+                    this.chatlogs[admin.userid].unshift({
                             time: data.time,
                             sender: chatSupportMessages,
                     }); 

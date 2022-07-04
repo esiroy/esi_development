@@ -91,8 +91,12 @@ Route::middleware('auth:api')->post('/getChathistory', 'API\ChatSupportControlle
 Route::middleware('auth:api')->post('/getRecentUserChatList', 'API\ChatSupportController@getRecentUserChatList')->name('APIGetRecentUserChatList');
 
 Route::middleware('auth:api')->post('/getUnreadChatMessages', 'API\ChatSupportController@getUnreadChatMessages')->name('APIGetUnreadChatMessages');
-Route::middleware('auth:api')->post('/markChatMessagesRead', 'API\ChatSupportController@markChatMessagesRead')->name('APIGetUnreadChatMessages');
+Route::middleware('auth:api')->post('/markChatMessagesRead', 'API\ChatSupportController@markChatMessagesRead')->name('APIMarkChatMessagesRead');
 Route::middleware('auth:api')->post('/saveCustomerSupportChat', 'API\ChatSupportController@saveCustomerSupportChat')->name('APISaveCustomerSupportChat');
+
+Route::middleware('auth:api')->post('/getAdminUnreadChatMessages', 'API\ChatSupportController@getAdminUnreadChatMessages')->name('APIGetUnreadAdminChatMessages');
+Route::middleware('auth:api')->post('/markAdminChatMessagesRead', 'API\ChatSupportController@markAdminChatMessagesRead')->name('APIMarkAdminChatMessagesRead');
+
 
 
 //[start](TUTOR CONTROL PANEL)  memo chat system 

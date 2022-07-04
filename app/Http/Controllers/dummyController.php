@@ -51,15 +51,36 @@ class dummyController extends Controller
 
     public function index(ChatSupportHistory $chatSupportHistory) 
     {
+    
 
-        $recentUsers = $chatSupportHistory
-                        ->select('sender_id')
+        $recentUsers_sender = $chatSupportHistory
+                        ->select('sender_id as userid')
                         ->distinct()
                         ->where('chatsupport_history.message_type', 'MEMBER')
-                        ->get();  
+                        ->pluck('userid')
+                        ->toArray();
                         
-        foreach ($recentUsers as $key => $user) {
-          echo ($user->sender_id) ."<BR>";
+
+       $recentUsers_recipient = $chatSupportHistory
+                        ->select('recipient_id as userid')
+                        ->distinct()
+                        ->where('chatsupport_history.message_type', 'CHAT_SUPPORT')
+                        ->pluck('userid')
+                        ->toArray();
+
+        $recentUsers = array_merge($recentUsers_sender, $recentUsers_recipient); 
+        $uniqueUsers = array_unique($recentUsers);
+        
+    
+        $userList =  [];
+                        
+        foreach ($uniqueUsers as $key => $recentUser) 
+        {
+            echo $key;
+            $user = User::find($recentUser);
+
+            $userList[$key]['userid']    = $user->id;
+          
         }
     }
 

@@ -54,7 +54,8 @@
             customer_support_image="{{ url('images/cs-profile.png') }}"        
             chatserver_url="{{ $chatserver_url }}"
             api_token="{{ Auth::user()->api_token }}"
-            csrf_token="{{ csrf_token() }}"            
+            csrf_token="{{ csrf_token() }}"    
+            :show_sidebar="true"        
         >
         </member-floating-chat-component>  
 

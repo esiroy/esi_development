@@ -260,7 +260,28 @@
                 $member =  $memberObj->where('user_id', Auth::user()->id)->first();
                 $nickname = $member->nickname;
                 
+                $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
             @endphp 
+
+           
+
+            @if (Request::segment(1) == "memberschedule")
+
+            <member-floating-chat-component                
+                userid="{{ Auth::user()->id }}" 
+                username="{{ Auth::user()->username }}"
+                user_image="{{ $memberProfileImage }}"        
+                nickname="{{ $nickname }}"        
+                customer_support_image="{{ url('images/cs-profile.png') }}"        
+                chatserver_url="{{ $chatserver_url }}"
+                api_token="{{ Auth::user()->api_token }}"
+                csrf_token="{{ csrf_token() }}"
+                :show_sidebar="false"
+            >
+            </member-floating-chat-component>  
+
+            @endif
+
 
                    
             </div>

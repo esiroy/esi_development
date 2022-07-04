@@ -4,30 +4,45 @@
         <div class="container  bg-light">
             <div class="row">
 
-                <div class="col-md-4">
+                 <div class="col-md-4">
                     <div class="card memberlist-panel mt-2">
-                    <div class="card-header">
-                        Users
-                    </div>
-                    <div class="card-body">
-                        <div :id="'member-'+user.userid" class="member-information-container" 
-                        v-show="user.userid !== userid" 
-                        v-for="(user, index) in this.users" :key="'user_'+ index"  v-on:click="openChatBox(user)" >
-                            <div class="member" v-if="user.userid !== userid">
-                            <div class="profile-photo">
-                                <img :src="formatImage(user.user_image)"  class="img-fluid">
-                            </div>
-                            <div class="profile-user-info">
-                                <a class="">{{ user.username }}</a> 
-                                <span class="badge badge-danger" v-show="chatCount[user.userid] >= 1">
-                                {{ chatCount[user.userid] }}
-                                </span>
-                                status: {{ user.status }}
-                            </div>
-                            
-                            </div>                    
+                        <div class="card-header">
+                            Users
                         </div>
-                    </div>
+                        <div class="card-body">
+                            <div :id="'member-'+user.userid" class="member-information-container" 
+                                v-show="user.userid !== userid" v-for="(user, index) in this.users" :key="'user_'+ index"  
+                                v-on:click="openChatBox(user)" 
+                            >
+                                    
+                                <div class="member" v-if="user.userid !== userid">
+                                    <div class="profile-photo">
+                                        <img :src="user.user_image"  class="img-fluid">
+                                    </div>
+                                    <div class="profile-user-info align-bottom">
+                                        <div class="align-bottom">
+                                            <div class="username">{{ user.username }}</div>
+
+                                            <div class="small float-left">
+                                                <span class="badge badge-pill badge-success" v-show="user.status == 'online'">{{ user.status }}</span>
+                                                <span class="badge badge-pill badge-secondary" v-show="user.status == 'offline'">{{ user.status }}</span>
+                                            </div>
+
+                                            <div class="small float-left ml-1">
+                                                <span class="badge badge-danger small" v-show="chatCount[user.userid] >= 1">
+                                                    {{ chatCount[user.userid] }}
+                                                </span>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                            
+                                </div> 
+                                                
+                            </div>
+
+                        </div>
+                        
                     </div>
                 </div>
 
@@ -53,22 +68,25 @@
                                     <form :name="chatbox.userid" onsubmit="return false;">
                                     
                                     <div class="text-center floating-history-fetcher">                                        
-                                        <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-sm btn-secondary" style="display:none">
+                                        <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-sm btn-secondary" style="display:inline-block">
                                             Fetch History                                                
                                         </button>
                                       
-
-                                        <button id="history-notify" class="btn btn-sm btn-primary" style="display:inline-block">
+                                        
+                                        <button id="history-notify" class="btn btn-sm btn-primary" style="display:none">
                                             Fetching History...
                                         </button>                                        
                                     </div>
 
                                     <div id="user-chatlog" class="user-chatlog">
-                                        <div class="container" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+chatlogIndex">                                               
+                                        <div class="container" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+chatlogIndex">
+                                           
                                             <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">
                                             <div class="col-md-3">&nbsp;</div>
                                             <div class="col-md-9">
                                                 <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                                                                                      
+
+
                                                 <chatsupport-info-component 
                                                     :userid="chatlog.sender.userid"
                                                     :image="chatlog.sender.user_image"
@@ -85,7 +103,8 @@
 
                                             <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >
                                                 <div class="col-md-9">
-                                                    <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">                                                                                      
+                                                    <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">       
+                                                                
                                                     <member-info-component 
                                                         :userid="chatlog.sender.userid"
                                                         :image="chatlog.sender.user_image"
@@ -239,6 +258,8 @@ export default {
             current_chatbox_userid: "",
             current_chatbox_username: "",
             current_chatbox_nickname: "",
+
+            current_user: null, 
 
             //WINDOW STATUS FOR TAB TITLE BLINKER
             TabTitle: "",
@@ -397,12 +418,14 @@ export default {
         scrollToEnd: function() 
         {
             this.$forceUpdate();      
+            
             this.$nextTick(function()
             {      
                 var container = this.$el.querySelector("#user-chatlog");
-                if(container){
+                if(container)
+                {
                     container.scrollTop = container.scrollHeight;
-                    //console.log("scrloginoll to end")   
+                   
                 }
             });
 
@@ -456,7 +479,7 @@ export default {
                     };
 
                     if (this.chatFetchStatus == "ACTIVE") {
-                        this.getChatHistory(user, false)
+                        this.getChatHistory(user, false);
                     }
 
                     document.getElementById("floating-history-btn").style.display = "none";
@@ -471,6 +494,88 @@ export default {
                 
             });            
         },
+
+        getUnreadMemberMessages(user) 
+        {
+            axios.post("/api/getAdminUnreadChatMessages?api_token=" + this.api_token, 
+            {
+                method           : "POST",
+                sender_id         : user.userid,
+            }).then(response => {  
+
+                if (response.data.success === true) 
+                {
+
+                    this.unread_message_count = response.data.unreadMessageCount;
+
+                    response.data.chatItems.forEach(data => {
+
+                        let chatboxUsername = null;
+                        let chatboxNickname = null;
+                        let chatboxImage = null;
+
+                        if (data.message_type == "MEMBER") {
+                            chatboxUsername = user.username;
+                            chatboxNickname = user.nickname   
+                            chatboxImage = user.user_image;                         
+                        } else {
+                            chatboxUsername = this.username;
+                            chatboxNickname = this.nickname
+                            chatboxImage = this.user_image;
+                        }
+
+
+                        //console.log(data);                
+                        let sender = {
+                            'msgCtr': 0,
+                            'userid': data.userid,
+                            'nickname': chatboxNickname,
+                            'username': chatboxUsername,          
+                            'user_image': chatboxImage,
+                            'message': data.message,                            
+                            'type': data.message_type
+                        };
+
+                        this.chatlogs[user.userid].unshift({
+                                time: data.time,
+                                sender: sender,
+                        }); 
+                   
+
+                    });
+
+
+                    this.$forceUpdate();
+
+                    this.$nextTick(function()
+                    {
+                        this.scrollToEnd();   
+                                
+                    });
+
+
+
+                } else {
+                
+                    this.unread_message_count = response.data.unreadMessageCount;
+                }
+            });
+        },
+        markMessagesRead(user) {
+
+            axios.post("/api/markAdminChatMessagesRead?api_token=" + this.api_token, 
+            {
+                method           : "POST",
+                userID           : user.userid,
+                message_type     : 'MEMBER'
+            }).then(response => {  
+
+                if (response.data.success === true) 
+                {              
+                   // this.unread_message_count = 0;
+                } 
+            });    
+        },        
         getChatHistory: function(user, scrollToBottom) 
         {        
              //console.log("current_page : " + this.page[user.userid]);
@@ -577,13 +682,20 @@ export default {
             });
 
         },
+
         openChatBox: function(user) 
         {   
+
+           this.current_user = user;
+
             //this.chatboxes.push(user); /* {this will open new window} */
             this.chatboxes = [user];
             this.prepareChatBox(user);
 
-            //@note: user is the sender     
+              //get the unread messages
+          
+
+
             if (isNaN(this.page[user.userid])) {
                 this.page[user.userid] = 1;
                 //console.log("page initialized")
@@ -592,8 +704,14 @@ export default {
             if (this.current_chatbox_userid !== user.userid) {
                 //console.log("new chatbox")
                 this.chatlogs[user.userid] = []
+                
+
+                //get chat history on
                 this.page[user.userid] = 1;
-                this.getChatHistory(user, true);
+
+                 
+                
+                
             }     
 
 
@@ -603,18 +721,27 @@ export default {
                 elements[i].style.removeProperty("background");
             }
 
-            //change color for selected item
-            document.getElementById("member-"+user.userid).style.background = "#C7EDFB";    
-
-
-            
-
             this.$forceUpdate();
 
             this.$nextTick(function()
             {
                 this.scrollToEnd();
                 this.prepareButtons(); 
+
+                let memberChatBox = document.getElementById("member-"+user.userid);
+
+                if (memberChatBox) {
+                    document.getElementById("member-"+user.userid).style.background = "#C7EDFB";   
+                }            
+
+             
+               //This will get all the message from the customer support
+                this.getChatHistory(user, true);
+
+
+                this.markMessagesRead(user); 
+
+                         
             });
 
             this.chatCount[user.userid] = 0;
@@ -628,8 +755,13 @@ export default {
         {
             if (typeof this.chatlogs[user.userid] !== 'undefined' &&  this.chatlogs[user.userid].length > 0) {
                 //chatlogs has an array, we will not instantiate the array again. 
+
+
             } else {
                 this.chatlogs[user.userid] = [];
+
+                // this.getUnreadMemberMessages(user);
+                 
             }
         },
         sendMessage: function(chatbox, index) 
@@ -761,10 +893,6 @@ export default {
                 sendBtn.style.display = "block";
             }        
         },
-        formatImage(image) {
-            console.log(image)
-            return image;
-        },
         appendRecentUserChatList(onlineUsers) 
         {
             axios.post("/api/getRecentUserChatList?api_token=" + this.api_token, 
@@ -773,24 +901,66 @@ export default {
             }).then(response => {
 
                 if (response.data.success === true)
-                 {
-                     this.users = [];
+                {
 
-                    let offlineUsers = response.data.recentUsers;
-
-                    offlineUsers.forEach((offlineUser) => 
+                    this.$nextTick(function()
                     {
-                        const found = onlineUsers.find(onlineUser => onlineUser.userid == offlineUser.userid);
-                        if (found) {
-                              this.users.push(found) 
-                        } else {
-                            this.users.push(offlineUser) 
+                        let onlineUsersList = [];
+                        let offlineUserList = [];
+
+                        let recentUsers = response.data.recentUsers;
+
+                        //recent users filter the online list
+                        Object.keys(recentUsers).forEach(key => 
+                        {
+                            let isOnline = onlineUsers.find(onlineUser => onlineUser.userid == recentUsers[key].userid);
+
+                            this.chatCount[recentUsers[key].userid] = recentUsers[key].unreadMsg;
+
+                            //We will push all online users
+                            if (isOnline) {
+
+                                //Online User with chat messages
+                                onlineUsersList.push(isOnline);
+
+                            } else {
+
+                                //Offline User with chat messages
+                                offlineUserList.push(recentUsers[key])
+                            }
+
+                        });
+
+
+                        //Online Users without recent chats
+                        onlineUsers.forEach((onlineUser) => 
+                        {
+                            let inRecentUsers =  onlineUsersList.find(userList => userList.userid == onlineUser.userid);
+                            if (inRecentUsers) {
+                                //user is found in recent user list (do not add)
+                            } else {
+                                onlineUsersList.push(onlineUser);
+                            }
+                        });
+
+
+                        this.users = onlineUsersList.concat(offlineUserList);
+
+                        if (this.current_user !== null) {
+                            this.openChatBox(this.current_user);
                         }
+                            
                     });
+                   
 
                 } else {
                 
-                    //no recent users leave it blank
+                    //show only online users (no recent users)
+                    this.users = onlineUsers;
+
+                    if (this.current_user !== null) {
+                        this.openChatBox(this.current_user);
+                    }
                 }
 
             }).catch(function(error) {
@@ -799,21 +969,17 @@ export default {
         },
         updateUserList: function(users) 
         {
-
             //filter chat support, we will not show on the list if the users is a chat support
             let fusers = users.filter(user => user.type !== "CHAT_SUPPORT");
             
             //filter duplicates
-            let onlineUsers = this.filterUnique(fusers);
+            let onlineUsers = this.filterUnique(fusers);   
 
+            //Append Users to chat list
             this.appendRecentUserChatList(onlineUsers) 
 
             this.$forceUpdate();
-        }, 
-        filterUserByID: function (users) {
-
-
-        },        
+        },      
         filterUnique: function (users) {
           let result = users.reduce((unique, o) => {
               if(!unique.some(obj => obj.username === o.username )) {
@@ -986,6 +1152,9 @@ export default {
             }             
 
         });
+
+
+          
     },
 };
 
