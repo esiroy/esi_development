@@ -397,6 +397,29 @@ export default {
                         };
 
                         socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });   
+
+
+                        //get the sender from props (user)
+                        let broadcast_recipient = {
+                            'id': this.id,
+                            'userid': this.userid,
+                            'username':  this.username,
+                        };
+
+
+                        //get the sender from props  (admin)
+                        let broadcast_sender = {
+                            'msgCtr': 0,
+                            'userid': chatbox.userid,
+                            'nickname': chatbox.nickname,
+                            'username': chatbox.username,          
+                            'message': this.message[index],
+                            'user_image': chatbox.user_image, //@todo: make this for customer support 
+                            'type': "CHAT_SUPPORT"
+                        };
+
+                        socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender }); 
+
                     }
                 }
             }
@@ -746,20 +769,18 @@ export default {
 
             if (isNaN(this.page[user.userid])) {
                 this.page[user.userid] = 1;
+                 console.log("new chatbox")
             }
 
             if (this.current_chatbox_userid !== user.userid) {
-                console.log("new chatbox")
-
-
+                console.log("switched chatbox")
                 this.chatlogs[user.userid] = []
+
                 //get chat history on
                 this.page[user.userid] = 1;
 
                 //get the unread messages
                 this.getUnreadMemberMessages(user);
-              
- 
                 //This will get all the message from the customer support
                 //this.getChatHistory(user, true);                
                 
@@ -803,9 +824,6 @@ export default {
             }
         },
         sendMessage(chatbox, index) {
-
-         
-        
 
             //files is empty and message is empty, stop sending message
             if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
@@ -883,6 +901,28 @@ export default {
 
                 //semd
                 socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
+
+
+                //get the sender from props (user)
+                let broadcast_recipient = {
+                    'id': this.id,
+                    'userid': this.userid,
+                    'username':  this.username,
+                };
+
+
+                //get the sender from props  (admin)
+                let broadcast_sender = {
+                    'msgCtr': 0,
+                    'userid': chatbox.userid,
+                    'nickname': chatbox.nickname,
+                    'username': chatbox.username,          
+                    'message': this.message[index],
+                    'user_image': chatbox.user_image, //@todo: make this for customer support 
+                    'type': "CHAT_SUPPORT"
+                };
+
+                socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });
 
 
                 //clean up and sae
@@ -1209,7 +1249,10 @@ export default {
         });
 
 	    socket.on("OWNER_MESSAGE", data => {            
-            //console.log(data.broadcast_recipient.userid + " owner => " + this.userid);
+
+            
+           // console.log(data, data.broadcast_recipient.userid + " message from owner => " + this.userid);
+
 		    if (data.broadcast_recipient.userid == this.userid) 
             {
                 //console.log(" owner is me");
@@ -1228,26 +1271,56 @@ export default {
                     'type': data.broadcast_sender.type,          
                 };
 
-               
+               /*
                 this.chatlogs[data.broadcast_sender.userid].push({
                         time: data.time,
                         sender: sender            
                 });
-                
+                */
+
                 this.$forceUpdate();
                 
                 this.$nextTick(function()
                 {
                     this.scrollToEnd();
-			    }); 			
+			    });
+                
             } else {
-                //console.log("this is from member");
+                console.log("this is from other users");
+
+                this.prepareChatBox(data.broadcast_sender);
+
+                let sender = {
+                    'msgCtr': 1,
+                    'userid': data.broadcast_sender.userid,
+                    'username': data.broadcast_sender.username, 
+                    'nickname':  "Customer Support",
+                    'message': data.broadcast_sender.message,
+                    'user_image': data.broadcast_sender.user_image,   
+                    'type': data.broadcast_sender.type,          
+                };
+
+
+                this.chatlogs[data.broadcast_sender.userid].push({
+                        time: data.time,
+                        sender: sender            
+                });
+
+                this.$forceUpdate();
+                
+                this.$nextTick(function()
+                {
+                    this.scrollToEnd();
+			    });
             }	
 	    });
 
         socket.on('PRIVATE_MESSAGE', data => 
         {
             this.prepareChatBox(data.sender);
+
+
+            
 
             let sender = {
                 'msgCtr': 1,
@@ -1274,11 +1347,15 @@ export default {
                 //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
                 //THIS WILL BE DISCREGARDED IF WINDOWSTATUS IS BLURRED
                 if (this.windowStatus == "FOCUSED") {
+                    this.stopBlink();
                     this.markSeenMessages();                
                 }
                 
                 if (this.windowStatus == "BLURRED") {
-                    this.blink();
+
+                    if (data.sender.type !== "CHAT_SUPPORT") {
+                        this.blink();
+                    }                    
                     //console.log("window status ", this.windowStatus);                
                 }
 
