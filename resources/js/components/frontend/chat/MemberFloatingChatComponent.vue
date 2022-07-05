@@ -725,11 +725,30 @@ export default {
 
                 response.data.chatItems.forEach(data => {
 
+                    let chatboxUsername = null;
+                    let chatboxNickname = null;
+                    let chatboxImage = null;
+
+
+                    if (data.message_type == "MEMBER") {
+
+                        let member = this.getUser();
+                        chatboxUsername = member.username;
+                        chatboxNickname = member.nickname;
+                        chatboxImage = this.user_image;       
+
+                    } else {
+                        chatboxUsername = "CUSTOMER SUPPORT";
+                        chatboxNickname = "CUSTOMER SUPPORT"
+                        chatboxImage = this.user_image;
+                    }
+
+
                     let chatSupportMessages = {
                         'msgCtr': 0,
                         'userid': data.sender_id, //id of chat support                        
                         'nickname': this.nickname,
-                        'username': this.username,          
+                        'username': chatboxUsername,          
                         'user_image': this.customer_support_image,
                         'message': data.message,                            
                         'type': data.message_type
@@ -737,6 +756,7 @@ export default {
 
                     //the admin is the customer support
                     let admin = this.getAdmin();
+
                     this.chatlogs[admin.userid].unshift({
                             time: data.time,
                             sender: chatSupportMessages,
