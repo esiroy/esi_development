@@ -80,7 +80,8 @@
 
                             <div id="user-chatlog" class="user-chatlog border rounded text-center">
 
-                                <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" v-show="historyNotifier == true && isFetching == false">
+                                <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" 
+                                    v-show="historyNotifier == true && isFetching == false">
                                     Fetch History                                                
                                 </button>
 
@@ -171,6 +172,7 @@
                                     <input id="message" 
                                         v-on:keyup.13="sendMessage(chatbox, index)"  
                                         type="text" 
+                                        autocomplete="off"
                                         class="form-control form-control-sm mb-1" 
                                         v-model="message[index]" 
                                         placeholder="Type a message" 
@@ -322,7 +324,7 @@ export default {
                 this.page[this.userid] = response.data.chatHistoryItems.current_page + 1;
 
                 
-                //DETERMIN IF THE LAST PAGE
+                //DETERMINE IF THE LAST PAGE
                 if (response.data.chatHistoryItems.last_page == response.data.chatHistoryItems.current_page) {
                     //hide button for history
                     this.historyNotifier = false;                

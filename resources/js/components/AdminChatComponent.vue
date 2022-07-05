@@ -1,233 +1,256 @@
 <template>
-<div class="AdminChatWrapper">
-    <div id="AdminChat" class="adminChat">
-        <div class="container  bg-light">
-            <div class="row">
+    <div class="AdminChatWrapper">
+        <div id="AdminChat" class="adminChat">
+            <div class="container  bg-light">
+                <div class="row">
 
-                 <div class="col-md-4">
-                    <div class="card memberlist-panel mt-2">
-                        <div class="card-header">
-                            Users
-                        </div>
-                        <div class="card-body">
-                            <div :id="'member-'+user.userid" class="member-information-container" 
-                                v-show="user.userid !== userid" v-for="(user, index) in this.users" :key="'user_'+ index"  
-                                v-on:click="openChatBox(user)" 
-                            >
-                                    
-                                <div class="member" v-if="user.userid !== userid">
-                                    <div class="profile-photo">
-                                        <img :src="user.user_image"  class="img-fluid">
-                                    </div>
-                                    <div class="profile-user-info align-bottom">
-                                        <div class="align-bottom">
-                                            <div class="username">{{ user.username }}</div>
-
-                                            <div class="small float-left">
-                                                <span class="badge badge-pill badge-success" v-show="user.status == 'online'">{{ user.status }}</span>
-                                                <span class="badge badge-pill badge-secondary" v-show="user.status == 'offline'">{{ user.status }}</span>
-                                            </div>
-
-                                            <div class="small float-left ml-1">
-                                                <span class="badge badge-danger small" v-show="chatCount[user.userid] >= 1">
-                                                    {{ chatCount[user.userid] }}
-                                                </span>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                            
-                                </div> 
-                                                
+                    <div class="col-md-4">
+                        <div class="card memberlist-panel mt-2">
+                            <div class="card-header">
+                                Users
                             </div>
+                            <div class="card-body">
+                                <div :id="'member-'+user.userid" class="member-information-container" 
+                                    v-show="user.userid !== userid" v-for="(user, index) in this.users" :key="'user_'+ index"  
+                                    v-on:click="openChatBox(user)" 
+                                >
+                                        
+                                    <div class="member" v-if="user.userid !== userid">
+                                        <div class="profile-photo">
+                                            <img :src="user.user_image"  class="img-fluid">
+                                        </div>
+                                        <div class="profile-user-info align-bottom">
+                                            <div class="align-bottom">
+                                                <div class="username">{{ user.username }}</div>
 
-                        </div>
-                        
-                    </div>
-                </div>
+                                                <div class="small float-left">
+                                                    <span class="badge badge-pill badge-success" v-show="user.status == 'online'">{{ user.status }}</span>
+                                                    <span class="badge badge-pill badge-secondary" v-show="user.status == 'offline'">{{ user.status }}</span>
+                                                </div>
 
-                <div class="col-md-8">
+                                                <div class="small float-left ml-1">
+                                                    <span class="badge badge-danger small" v-show="chatCount[user.userid] >= 1">
+                                                        {{ chatCount[user.userid] }}
+                                                    </span>
+                                                </div>
 
-                    <div class="chatboxes mt-2">
-
-                        <div :id="'chatbox-'+chatbox.userid" class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="index">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div style="float:left">                            
-                                        <h5>{{ chatbox.nickname }}</h5>
-                                        <!--<div class="small">{{ chatbox.username }}</div>-->
-                                        <div class="small">ID Number: {{ chatbox.userid }}</div>
-                                    </div>
-
-                                    <div style="float:right">          
-                                        <button v-on:click="deleteChatbox(index)" style="border:none">X</button>
-                                    </div>
+                                            </div>
+                                        </div>
+                                
+                                    </div> 
+                                                    
                                 </div>
 
-                                <div class="card-body">
-                                    <form :name="chatbox.userid" onsubmit="return false;">
-                                    
-                                    <div class="text-center floating-history-fetcher">                                        
-                                        <button v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-sm btn-secondary" style="display:inline-block">
-                                            Fetch History                                                
-                                        </button>
-                                      
-                                        
-                                        <button id="history-notify" class="btn btn-sm btn-primary" style="display:none">
-                                            Fetching History...
-                                        </button>                                        
+                            </div>
+                            
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+
+                        <div class="chatboxes mt-2">
+
+                            <div :id="'chatbox-'+chatbox.userid" class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="index">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div style="float:left">                            
+                                            <h5>{{ chatbox.nickname }}</h5>
+                                            <!--<div class="small">{{ chatbox.username }}</div>-->
+                                            <div class="small">ID Number: {{ chatbox.userid }}</div>
+                                        </div>
+
+                                        <div style="float:right">          
+                                            <button v-on:click="deleteChatbox(index)" style="border:none">X</button>
+                                        </div>
                                     </div>
 
-                                    <div id="user-chatlog" class="user-chatlog">
-                                        <div class="container" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+chatlogIndex">
-                                           
-                                            <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">
-                                            <div class="col-md-3">&nbsp;</div>
-                                            <div class="col-md-9">
-                                                <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                                                                                      
+                                    <div class="card-body">
+                                        <form :name="chatbox.userid" onsubmit="return false;">
+                                        
+                                        <div class="text-center floating-history-fetcher"> 
 
-
-                                                <chatsupport-info-component 
-                                                    :userid="chatlog.sender.userid"
-                                                    :image="chatlog.sender.user_image"
-                                                    :nickname="chatlog.sender.nickname" 
-                                                    :time="chatlog.time">
-                                                    </chatsupport-info-component>
-                                                </div>
-
-                                                <div style="float:right">
-                                                <div class="chatsupport-message" v-html="chatlog.sender.message"></div>
-                                                </div>
-                                            </div>
+                                            <div v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" 
+                                                v-show="historyNotifier == true && isFetching == false">
+                                                Fetch History                                                
                                             </div>
 
-                                            <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >
+                                            <div v-show="historyNotifier == true && isFetching == true"  id="floating-history-btn" class="btn btn-xs btn-primary">
+                                                <i class="fas fa-sync fa-spin"></i>  Loading
+                                            </div>
+
+
+                                            <!--
+                                            <button v-on:click="getChatHistory(chatbox, false)" 
+                                            id="floating-history-btn" class="btn btn-sm btn-secondary" v-show="chatFetchStatus == 'ACTIVE'">
+                                                Fetch History                                                
+                                            </button>
+                                        
+                                            
+                                            <button id="history-notify" class="btn btn-sm btn-primary" v-show="chatFetchStatus !== 'ACTIVE'">
+                                                Fetching History...
+                                            </button>                          
+                                            -->
+
+
+                                        </div>
+
+                                        <div id="user-chatlog" class="user-chatlog">
+                                            <div class="container" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+chatlogIndex">
+                                            
+                                                <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">
+                                                <div class="col-md-3">&nbsp;</div>
                                                 <div class="col-md-9">
-                                                    <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">       
-                                                                
-                                                    <member-info-component 
+                                                    <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                                                                                      
+
+
+                                                    <chatsupport-info-component 
                                                         :userid="chatlog.sender.userid"
                                                         :image="chatlog.sender.user_image"
                                                         :nickname="chatlog.sender.nickname" 
                                                         :time="chatlog.time">
-                                                        </member-info-component>
+                                                        </chatsupport-info-component>
                                                     </div>
-                                                    <div class="member-message" v-html="chatlog.sender.message"></div>
+
+                                                    <div style="float:right">
+                                                    <div class="chatsupport-message" v-html="chatlog.sender.message"></div>
+                                                    </div>
                                                 </div>
-                                                <div class="col-md-3">&nbsp;</div>
-                                            </div>
+                                                </div>
 
-                                        </div>
-                                    </div>
-
-                                    <div class="input-group mt-3">
-
-                                        <div style="background-color:#F1F1F4; display:inline-block; padding: 5px; width: 88%; margin-right: 8px">
-                                            <div style="border:1px solid #ccc; width: 100%">
-                                                <div v-for="(file, index) in files" :key="file.id" style="display:inline-block; padding:5px; " class="image-prieview-container">
-
-                                                    <div class="remove-image-upload" style="float:right;">
-                                                        <a class="" href="#" @click.prevent="$refs.upload.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
-                                                    </div>
-
-                                                    <img v-if="file.type == 'image/jpeg' || file.type == 'image/png'" :src="file.thumb" style="width:150px" :id="'image-preview-'+index">  
-                                                    <div v-else>
-                                                        <div>
-                                                            <i class="far fa-file" style="font-size:110px"></i>
+                                                <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >
+                                                    <div class="col-md-9">
+                                                        <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">       
+                                                                    
+                                                        <member-info-component 
+                                                            :userid="chatlog.sender.userid"
+                                                            :image="chatlog.sender.user_image"
+                                                            :nickname="chatlog.sender.nickname" 
+                                                            :time="chatlog.time">
+                                                            </member-info-component>
                                                         </div>
+                                                        <div class="member-message" v-html="chatlog.sender.message"></div>
                                                     </div>
+                                                    <div class="col-md-3">&nbsp;</div>
+                                                </div>
 
-                                                    <div class="progress" v-if="file.active || file.progress !== '0.00'">
-                                                        <div :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"
-                                                            role="progressbar"
-                                                            :style="{width: file.progress + '%'}"
-                                                        >{{file.progress}}%</div>
-                                                    </div>
-
-                                                </div>                                                                               
                                             </div>
-                                    
-                                            <input id="message" v-on:keyup.13="sendMessage(chatbox, index)"  type="text" class="form-control" v-model="message[index]" placeholder="Type a message" aria-label="Type a message" >
                                         </div>
 
-                                        <div style="background-color:#fff; display:inline-block">
+                                        <div class="input-group mt-3">
+
+                                            <div style="background-color:#F1F1F4; display:inline-block; padding: 5px; width: 88%; margin-right: 8px">
+                                                <div style="border:1px solid #ccc; width: 100%">
+                                                    <div v-for="(file, index) in files" :key="file.id" style="display:inline-block; padding:5px; " class="image-prieview-container">
+
+                                                        <div class="remove-image-upload" style="float:right;">
+                                                            <a class="" href="#" @click.prevent="$refs.upload.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
+                                                        </div>
+
+                                                        <img v-if="file.type == 'image/jpeg' || file.type == 'image/png'" :src="file.thumb" style="width:150px" :id="'image-preview-'+index">  
+                                                        <div v-else>
+                                                            <div>
+                                                                <i class="far fa-file" style="font-size:110px"></i>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="progress" v-if="file.active || file.progress !== '0.00'">
+                                                            <div :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"
+                                                                role="progressbar"
+                                                                :style="{width: file.progress + '%'}"
+                                                            >{{file.progress}}%</div>
+                                                        </div>
+
+                                                    </div>                                                                               
+                                                </div>
                                         
-                                            <label id="file-select-button" for="file" class="btn btn-lg btn-outline-dark" 
-                                                    style="margin:0px;font-size:20px">
-                                                <i class="fas fa-paperclip"></i>
-                                            </label>
-
-                                            <div id="send-button" class="input-group-append" style="display:inline-block;">
-                                                <button type="button" :id="'btn_'+chatbox.userid" 
-                                                    @click.prevent="$refs.upload.active = false; sendMessage(chatbox, index); "
-                                                    class="btn btn-lg btn-primary">
-                                                        <i class="far fa-share-square"></i>
-                                                </button>
+                                                <input id="message" 
+                                                v-on:keyup.13="sendMessage(chatbox, index)"  
+                                                type="text" 
+                                                class="form-control" 
+                                                autocomplete="off"
+                                                v-model.lazy="message[index]" 
+                                                placeholder="Type a message" 
+                                                aria-label="Type a message" >
                                             </div>
 
-                                            <span class="button-controls" style=" display:none">
-                                                <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
-                                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
-                                                </button>
-
-                                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
-                                                    <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
-                                                </button>
-                                            </span>
+                                            <div style="background-color:#fff; display:inline-block">
                                             
+                                                <label id="file-select-button" for="file" class="btn btn-lg btn-outline-dark" 
+                                                        style="margin:0px;font-size:20px">
+                                                    <i class="fas fa-paperclip"></i>
+                                                </label>
+
+                                                <div id="send-button" class="input-group-append" style="display:inline-block;">
+                                                    <button type="button" :id="'btn_'+chatbox.userid" 
+                                                        @click.prevent="$refs.upload.active = false; sendMessage(chatbox, index); "
+                                                        class="btn btn-lg btn-primary">
+                                                            <i class="far fa-share-square"></i>
+                                                    </button>
+                                                </div>
+
+                                                <span class="button-controls" style=" display:none">
+                                                    <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                                                        <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
+                                                    </button>
+
+                                                    <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                                                        <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
+                                                    </button>
+                                                </span>
+                                                
+
+                                            </div>
 
                                         </div>
+                                        
+                                        </form>
+
 
                                     </div>
-                                    
-                                    </form>
-
-
                                 </div>
+
+
+
                             </div>
-
-
-
-                        </div>
-                    </div>                            
+                        </div>                            
+                    </div>
                 </div>
+            </div>
+
+            <div style="display:none">
+                <file-upload
+                    name="file"
+                    class="btn btn-primary"
+                    extensions="jpeg,jpg,gif,pdf,png,webp"
+                    accept="image/png, application/pdf, image/prigif, image/jpeg, image/webp"
+                    v-model="files"
+                    post-action="/uploader/fileUploader"            
+                    :data="{ 
+                        'message_type': 'CHAT_SUPPORT',
+                        'current_chatbox_userid': this.current_chatbox_userid
+                    }"
+                    :headers="{'X-CSRF-TOKEN': this.csrf_token }"
+                    :multiple="true"
+                    :drop="true"
+                    :drop-directory="true"
+                    @input="updatetValue"
+                    @input-file="inputFile"
+                    @input-filter="inputFilter" ref="upload">      
+                </file-upload>
+            </div>
+
+        </div>
+
+
+        <div id="enterChat"  class="container bg-light text-center">       
+            <button type="button" class="btn btn-success my-5" v-on:click="enterAdminChat()">Enter Administrator Chat</button>
+            <div>
+                <small>You must click "Enter Administrator Chat" button to enter</small>
+                <small>Sorry for the inconvenience</small>
             </div>
         </div>
 
-        <div style="display:none">
-            <file-upload
-                name="file"
-                class="btn btn-primary"
-                extensions="jpeg,jpg,gif,pdf,png,webp"
-                accept="image/png, application/pdf, image/prigif, image/jpeg, image/webp"
-                v-model="files"
-                post-action="/uploader/fileUploader"            
-                :data="{ 
-                    'message_type': 'CHAT_SUPPORT',
-                    'current_chatbox_userid': this.current_chatbox_userid
-                }"
-                :headers="{'X-CSRF-TOKEN': this.csrf_token }"
-                :multiple="true"
-                :drop="true"
-                :drop-directory="true"
-                @input="updatetValue"
-                @input-file="inputFile"
-                @input-filter="inputFilter" ref="upload">      
-            </file-upload>
-        </div>
-
     </div>
-
-
-    <div id="enterChat"  class="container bg-light text-center">       
-        <button type="button" class="btn btn-success my-5" v-on:click="enterAdminChat()">Enter Administrator Chat</button>
-        <div>
-            <small>You must click "Enter Administrator Chat" button to enter</small>
-            <small>Sorry for the inconvenience</small>
-        </div>
-    </div>
-
-</div>
 </template>
 
 <script>
@@ -244,6 +267,14 @@ export default {
   },  
     data() {
         return {
+
+            //history is fetching status
+            isFetching: false,
+
+            //History Loaders
+            loadingHistory: false,
+            historyNotifier: true,
+
             message: [],
             users: [],
             chatCount: [],
@@ -425,13 +456,14 @@ export default {
                 if(container)
                 {
                     container.scrollTop = container.scrollHeight;
-                   
                 }
             });
 
             this.$nextTick(function() {
-                if (this.chatFetchStatus == "ACTIVE") {
-                    this.getPaginatedHistory();
+                if (this.chatFetchStatus == "ACTIVE") 
+                {
+                    //this.getPaginatedHistory();
+
                 } else {
                     //console.log("unable to fetch chat history result still busy, please try again")
                 }
@@ -448,6 +480,9 @@ export default {
         },
         getPaginatedHistory: function() 
         {             
+
+            /*  
+
             let chatScrubber = document.getElementById("user-chatlog");
             let total = parseInt(chatScrubber.scrollTop);          
 
@@ -493,6 +528,8 @@ export default {
                 }
                 
             });            
+
+            */
         },
 
         getUnreadMemberMessages(user) 
@@ -503,10 +540,14 @@ export default {
                 sender_id         : user.userid,
             }).then(response => {  
 
-                if (response.data.success === true) 
-                {
+                if (response.data.success === true) {
 
                     this.unread_message_count = response.data.unreadMessageCount;
+
+                    if (this.unread_message_count >= 1) {                    
+                        this.markMessagesRead(user); 
+                    }                   
+
 
                     response.data.chatItems.forEach(data => {
 
@@ -553,8 +594,6 @@ export default {
                                 
                     });
 
-
-
                 } else {
                 
                     this.unread_message_count = response.data.unreadMessageCount;
@@ -576,21 +615,25 @@ export default {
                 } 
             });    
         },        
+        getMemberHistory(chatbox) {
+            console.log(chatbox)
+        },
         getChatHistory: function(user, scrollToBottom) 
         {        
-             //console.log("current_page : " + this.page[user.userid]);
 
-             this.chatFetchStatus = "FETCHING";
+            this.isFetching = true;
 
-            let historyNotifier1 = document.getElementById("history-notify");
-            
-            if (historyNotifier1) {
-                historyNotifier1.style.display = "inline-block";  
-                document.getElementById("floating-history-btn").style.display = "none";
+
+            console.log(this.page[user.userid])
+
+
+            if (this.page[user.userid] == 1) {
+
+               
+                this.chatlogs[user.userid] = [];
             }
-
           
-
+          
             //user is the sender
             axios.post("/api/getChathistory?api_token=" + this.api_token, 
             {
@@ -605,23 +648,26 @@ export default {
                 if (response.data.success === true) 
                 {               
                     
-                    let historyNotifier = document.getElementById("history-notify");
-
-                    if (historyNotifier) {
-                        historyNotifier.style.display = "none";  
-                    }
+                    this.isFetching = false;
 
                     let chatboxUsername = null;
                     let chatboxNickname = null;
                     let chatboxImage = null;
 
-                    this.page[user.userid] =  +this.page[user.userid] + 1;
 
-                   
+                    console.log(response.data.chatHistoryItems.current_page)
+
+                    this.page[user.userid] = response.data.chatHistoryItems.current_page + 1;
+
+
+                    //DETERMINE IF THE LAST PAGE
+                    if (response.data.chatHistoryItems.last_page == response.data.chatHistoryItems.current_page) {
+                        //hide button for history
+                        this.historyNotifier = false;                
+                    }
+
+
                     let chatHistoryItems = response.data.chatHistoryItems.data;
-                    
-                    //{ LOOP HERE FOR CHAT HISTORY }
-                    //response.data.chatHistoryItems.data.forEach(data => {
 
                     chatHistoryItems.forEach(data => {
 
@@ -652,13 +698,19 @@ export default {
                             sender: sender,                                
                         });
                     });
+                    
                     let reversedChatHistory =  this.chatlogs[user.userid];
 
-                    this.chatlogs[user.userid] = reversedChatHistory;
+       
 
                     this.$nextTick(()=>
                     {  
-                        this.$forceUpdate();
+                        
+
+                     this.chatlogs[user.userid] = reversedChatHistory;
+
+                    this.$forceUpdate();                        
+                        
                         if (scrollToBottom == true) {
                             this.scrollToEnd();
                         } else {
@@ -669,12 +721,10 @@ export default {
                     this.chatFetchStatus = "ACTIVE";
 
                 } else {
-                    //@todo: HIGHLIGHT error
-                    let historyNotifier = document.getElementById("history-notify");
+                    //hide button for history
+                        this.historyNotifier = false;
 
-                    if (historyNotifier) {
-                        historyNotifier.style.display = "none";  
-                    }                    
+                        this.isFetching = false;                   
                 }
             
             }).catch(function(error) {
@@ -686,31 +736,37 @@ export default {
         openChatBox: function(user) 
         {   
 
-           this.current_user = user;
+            this.current_user = user;
+
+            let historyNotifier = document.getElementById("history-notify");
+
+            if (historyNotifier) {
+                this.chatFetchStatus = "ACTIVE";
+              
+            }   
 
             //this.chatboxes.push(user); /* {this will open new window} */
             this.chatboxes = [user];
             this.prepareChatBox(user);
 
-              //get the unread messages
-          
-
-
             if (isNaN(this.page[user.userid])) {
                 this.page[user.userid] = 1;
-                //console.log("page initialized")
             }
 
             if (this.current_chatbox_userid !== user.userid) {
-                //console.log("new chatbox")
-                this.chatlogs[user.userid] = []
-                
+                console.log("new chatbox")
 
+
+                this.chatlogs[user.userid] = []
                 //get chat history on
                 this.page[user.userid] = 1;
 
-                 
-                
+                //get the unread messages
+                this.getUnreadMemberMessages(user);
+              
+ 
+                //This will get all the message from the customer support
+                //this.getChatHistory(user, true);                
                 
             }     
 
@@ -732,16 +788,7 @@ export default {
 
                 if (memberChatBox) {
                     document.getElementById("member-"+user.userid).style.background = "#C7EDFB";   
-                }            
-
-             
-               //This will get all the message from the customer support
-                this.getChatHistory(user, true);
-
-
-                this.markMessagesRead(user); 
-
-                         
+                }       
             });
 
             this.chatCount[user.userid] = 0;
@@ -755,18 +802,111 @@ export default {
         {
             if (typeof this.chatlogs[user.userid] !== 'undefined' &&  this.chatlogs[user.userid].length > 0) {
                 //chatlogs has an array, we will not instantiate the array again. 
-
-
             } else {
                 this.chatlogs[user.userid] = [];
-
-                // this.getUnreadMemberMessages(user);
-                 
+                
             }
         },
-        sendMessage: function(chatbox, index) 
-        {
+        sendMessage(chatbox, index) {
+
+         
+        
+
+            //files is empty and message is empty, stop sending message
+            if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
+            {           
+                return false;
+            }
+
+            document.getElementById("startUpload").click();
+
+            if (this.message[index] === "" || this.message[index] === undefined) {
+
+               //No message just upload
+
+            } else {
+
+                //recipient
+                let id = chatbox.id;     
+
+                var currentTime = new Date();
+                let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+                //get the sender from props (user)
+                let recipient = {
+                    'id': chatbox.id,
+                    'userid': chatbox.userid,
+                    'username':  chatbox.username,
+                };
+
+
+                //get the sender from props  (admin)
+                let sender = {
+                    'msgCtr': 0,
+                    'userid': this.userid,
+                    'nickname': this.nickname,
+                    'username': this.username,          
+                    'message': this.message[index],
+                    'user_image': this.user_image, //@todo: make this for customer support 
+                    'type': "CHAT_SUPPORT"
+                };
             
+               
+                this.chatlogs[chatbox.userid].push({
+                    sender: sender,
+                    message: this.message[index],
+                    time: time
+                });
+                
+            
+                let userMessage = this.message[index];
+
+                
+                //scroll to end then save to table
+                this.$nextTick(() => {           
+
+                    axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
+                    {
+                        method              : "POST",
+                        sender_id           : this.userid,
+                        recipient_id        : chatbox.userid,
+                        message             : userMessage,
+                        is_read             : false,
+                        valid               : true,
+                        message_type        : "CHAT_SUPPORT",
+                    }).then(response => {
+                        if (response.data.success === true) {
+
+                        } else {
+                            //@todo: HIGHLIGHT error
+                        }
+                    }).catch(function(error) {
+                        console.log("Error " + error);                
+                    });                     
+
+                });      
+
+                //semd
+                socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
+
+
+                //clean up and sae
+                this.message[index] = "";
+                this.$forceUpdate();
+
+         
+
+                this.$nextTick(function()
+                {            
+                    this.scrollToEnd();
+                    this.prepareButtons();
+                });
+            }         
+            
+
+        },
+        sendMessage_OLD: function(chatbox, index) 
+        {           
 
             //files is empty and message is empty, stop sending message
             if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
@@ -819,6 +959,7 @@ export default {
 
                 //scroll to end then save to table
                 this.$nextTick(() => {           
+
                     axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
                     {
                         method              : "POST",
@@ -868,6 +1009,8 @@ export default {
 
                 //clean up and sae
                 this.message[index] = "";
+
+
                 this.$forceUpdate();
 
                 this.$nextTick(function()
@@ -994,7 +1137,13 @@ export default {
             if (isOpenChatbox) {
                 setTimeout(function () {
                     this.chatCount[this.current_chatbox_userid] = 0;
+
+                    if (this.current_user !== null) {
+                        this.markMessagesRead(this.current_user);
+                    }
+
                     this.$forceUpdate();
+
                 }.bind(this), 1500)            
             }            
         },
@@ -1034,15 +1183,21 @@ export default {
         this.windowStatus = "FOCUSED";
         this.TabTitle =  document.title;
 
+        /*
         window.addEventListener("keyup", (e) =>
         {
-            this.prepareButtons();       
+
+          this.prepareButtons();       
         });        
+        */
+
 
         window.addEventListener("focus", (e) => {
             this.windowStatus = "FOCUSED";            
-            this.stopBlink();
+            this.stopBlink();            
             this.markSeenMessages();
+            console.log("got focus")
+
         });
 
 
@@ -1085,6 +1240,7 @@ export default {
                 });
                 
                 this.$forceUpdate();
+                
                 this.$nextTick(function()
                 {
                     this.scrollToEnd();
@@ -1096,11 +1252,8 @@ export default {
 
         socket.on('PRIVATE_MESSAGE', data => 
         {
-
-            //this.openChatBox(data.sender)
             this.prepareChatBox(data.sender);
 
-            
             let sender = {
                 'msgCtr': 1,
                 'userid': data.sender.userid,
@@ -1110,16 +1263,30 @@ export default {
                 'user_image': data.sender.user_image,   
                 'type': data.sender.type,          
             };
-
             
             this.chatlogs[data.sender.userid].push({
                     time: data.time,
                     sender: sender            
             });
-
             this.$forceUpdate();
+
             this.$nextTick(function() {
+
                 this.scrollToEnd();
+
+
+                //DETECTION FOR OPENED CHATBOX,
+                //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
+                //THIS WILL BE DISCREGARDED IF WINDOWSTATUS IS BLURRED
+                if (this.windowStatus == "FOCUSED") {
+                    this.markSeenMessages();                
+                }
+                
+                if (this.windowStatus == "BLURRED") {
+                    this.blink();
+                    //console.log("window status ", this.windowStatus);                
+                }
+
             });             
 
             this.$nextTick(function()
@@ -1131,17 +1298,7 @@ export default {
                 }
             }); 
 
-            //DETECTION FOR OPENED CHATBOX,
-            //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
-            //THIS WILL BE DISCREGARDED IF WINDOWSTATUS IS BLURRED
-            if (this.windowStatus == "FOCUSED") {
-                this.markSeenMessages();
-            }
-            
-            if (this.windowStatus == "BLURRED") {
-                this.blink();
-                //console.log("window status ", this.windowStatus);                
-            }
+ 
             
             //console.log("private MSG", data);
             
@@ -1318,5 +1475,15 @@ Vue.component("chatsupport-info-component", {
   background: #333; 
 }  
 
+
+#floating-history-btn {
+    font-size: 11px;
+}
+ 
+
+.btn-xs {
+    font-size: 11px;
+    padding: 2px 5px 2px;
+}
 
 </style>

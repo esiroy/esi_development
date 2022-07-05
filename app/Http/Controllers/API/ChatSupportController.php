@@ -8,14 +8,10 @@ use Illuminate\Http\Request;
 use App\Models\ChatSupportHistory;
 use App\Models\User;
 use App\Models\UserImage;
-
-
 use DB;
 
 class ChatSupportController extends Controller
 {
-
-  
 
     public function getChathistory(Request $request, ChatSupportHistory $chatSupportHistory) 
     {
@@ -31,13 +27,12 @@ class ChatSupportController extends Controller
         $itemsPerPage = 15;
 
     
+
         
         $chatHistoryItems = $chatSupportHistory
                             ->where('sender_id', $sender_id)
                             ->orWhere('recipient_id', $sender_id)
-                            ->where('is_read', 1)
-                            ->orWhere('is_read', 0)
-                            ->where('valid', 1)
+                     
                             ->orderby('id', "DESC")
                             ->paginate($itemsPerPage, ['*'], 'page', $page);
 
@@ -64,25 +59,30 @@ class ChatSupportController extends Controller
     {
 
         $userList =  [];
-        
+
+
         $recentUsers_sender = $chatSupportHistory
-                        ->select('sender_id as userid')
+                        ->select('sender_id as userid', 'created_at')
+                        ->orderBy('created_at', 'DESC')
+                        ->where('chatsupport_history.message_type', 'MEMBER')   
+                        ->latest()
                         ->distinct()
-                        ->where('chatsupport_history.message_type', 'MEMBER')
                         ->pluck('userid')
                         ->toArray();
-                        
-
-       $recentUsers_recipient = $chatSupportHistory
-                        ->select('recipient_id as userid')
-                        ->distinct()
+        
+        //Append user with sent messages from chat support
+        $recentUsers_recipient = $chatSupportHistory
+                        ->select('recipient_id as userid', 'created_at')
                         ->where('chatsupport_history.message_type', 'CHAT_SUPPORT')
+                        ->orderBy('created_at', 'DESC')
+                        ->latest()
+                        ->distinct()
                         ->pluck('userid')
                         ->toArray();
-
+      
 
         $recentUsers = array_merge($recentUsers_sender, $recentUsers_recipient); 
-        $uniqueUsers = array_unique($recentUsers);
+        $uniqueUsers = array_unique($recentUsers);   
 
         foreach ($uniqueUsers as $key => $recentUser) 
         {
@@ -111,7 +111,7 @@ class ChatSupportController extends Controller
             }            
         }
 
-        if (count($recentUsers) > 0)  {
+        if (count($userList) > 0)  {
             return Response()->json([
                 "success"           => true,                
                 "recentUsers"       => $userList,
@@ -138,7 +138,8 @@ class ChatSupportController extends Controller
                             ->where('is_read', 0)
                             ->orderby('id', "DESC")->get();
 
-        $unReadItems = $chatSupportHistory
+        /*
+        $unReadSentItems = $chatSupportHistory
                             //->where('message_type', 'MEMBER')
                             ->where('sender_id', 1)
                             ->where('recipient_id', $sender_id )
@@ -147,14 +148,14 @@ class ChatSupportController extends Controller
                             ->orderby('id', "DESC")
                             ->get();   
 
-        $chatItems->push(...$unReadItems);
+        $chatItems->push(...$unReadSentItems);
+        */
 
 
         if ($chatItems->count() > 0)  {
             return Response()->json([
                 "success"                   => true,                
                 "chatItems"                 => $chatItems,
-                "unreadMemberChatItems"     => $unReadItems, 
                 "unreadMessageCount"        => $chatItems->count(),    
                 "message"                   => "Unread Messages Found"            
             ]);
