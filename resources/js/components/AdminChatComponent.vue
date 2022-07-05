@@ -738,12 +738,7 @@ export default {
 
             this.current_user = user;
 
-            let historyNotifier = document.getElementById("history-notify");
-
-            if (historyNotifier) {
-                this.chatFetchStatus = "ACTIVE";
-              
-            }   
+            this.historyNotifier = true;
 
             //this.chatboxes.push(user); /* {this will open new window} */
             this.chatboxes = [user];
