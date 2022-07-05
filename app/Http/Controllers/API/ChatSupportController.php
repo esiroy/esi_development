@@ -65,6 +65,7 @@ class ChatSupportController extends Controller
                         ->select('sender_id as userid', 'created_at')
                         ->orderBy('created_at', 'DESC')
                         ->where('chatsupport_history.message_type', 'MEMBER')   
+                         ->where('chatsupport_history.sender_id', '!=', 1)
                         ->latest()
                         ->distinct()
                         ->pluck('userid')
@@ -74,6 +75,7 @@ class ChatSupportController extends Controller
         $recentUsers_recipient = $chatSupportHistory
                         ->select('recipient_id as userid', 'created_at')
                         ->where('chatsupport_history.message_type', 'CHAT_SUPPORT')
+                        ->where('chatsupport_history.recipient_id', '!=', 1)
                         ->orderBy('created_at', 'DESC')
                         ->latest()
                         ->distinct()
@@ -86,6 +88,7 @@ class ChatSupportController extends Controller
 
         foreach ($uniqueUsers as $key => $recentUser) 
         {
+
             $user = User::find($recentUser);
 
             $unread = $chatSupportHistory->where('message_type', 'MEMBER')->where('sender_id', $user->id)
