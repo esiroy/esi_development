@@ -234,10 +234,12 @@ export default {
 
         //history is fetching status
         isFetching: false,
+        interval: "",
 
         //first load on opening chatbox
-        firstLoad: true,     
+        firstLoad: true,   
 
+     
 
         message: [],
 
@@ -568,17 +570,14 @@ export default {
     openChatBox() 
     {
         this.showChatbox = true;
-        this.unread_message_count = 0;
         let user = this.getUser();
-
-
         if (isNaN(this.page[user.userid])) {
             this.page[user.userid] = 1;            
         }
         this.scrollToEnd();
 
-        //marke read
-        this.markMessagesRead(this.userid);
+        //mark read after opening
+        this.delayandMarkUnread();
     },    
     getUser() {
         return {
@@ -590,6 +589,7 @@ export default {
             type: "MEMBER",      
         } 
     },
+
     addChatEventListener() {
 
     
@@ -642,6 +642,7 @@ export default {
                 this.openChatBox(admin);
 
                 console.log("sent from support")
+
                 this.unread_message_count++;
 
 
@@ -658,11 +659,13 @@ export default {
                         sender: sender_customer_support,
                         //message: data.sender.message        
                 });      
+
                 this.$forceUpdate();  
 
                 this.$nextTick(function()
                 {
-                    this.scrollToEnd();        
+                    this.scrollToEnd(); 
+
                 });
             
                 //play audio
@@ -698,14 +701,11 @@ export default {
             //instantiate chat log for when send message logs it does not empty out
             this.chatlogs[user.userid] = [];
 
-           
-
             this.$forceUpdate();
 
             this.$nextTick(function()
             {
                 this.scrollToEnd();
-
                 this.prepareButtons(); 
             });            
         }    
@@ -723,21 +723,27 @@ export default {
 
                 this.unread_message_count = response.data.unreadMessageCount;
 
+                if (this.unread_message_count >= 1) {
+                    this.delayandMarkUnread();
+                }
+
                 response.data.chatItems.forEach(data => {
 
                     let chatboxUsername = null;
                     let chatboxNickname = null;
                     let chatboxImage = null;
 
-
                     if (data.message_type == "MEMBER") {
 
                         let member = this.getUser();
+
                         chatboxUsername = member.username;
                         chatboxNickname = member.nickname;
-                        chatboxImage = this.user_image;       
+                        chatboxImage = this.user_image; 
 
                     } else {
+
+
                         chatboxUsername = "CUSTOMER SUPPORT";
                         chatboxNickname = "CUSTOMER SUPPORT"
                         chatboxImage = this.user_image;
@@ -747,7 +753,7 @@ export default {
                     let chatSupportMessages = {
                         'msgCtr': 0,
                         'userid': data.sender_id, //id of chat support                        
-                        'nickname': this.nickname,
+                        'nickname': chatboxNickname,
                         'username': chatboxUsername,          
                         'user_image': this.customer_support_image,
                         'message': data.message,                            
@@ -758,7 +764,7 @@ export default {
                     let admin = this.getAdmin();
 
                     this.chatlogs[admin.userid].unshift({
-                            time: data.time,
+                            time: data.created_at,
                             sender: chatSupportMessages,
                     }); 
                 });
@@ -771,7 +777,16 @@ export default {
             }
         });
     },
+    delayandMarkUnread() {
+        console.log("delay fired")
+        this.interval = setInterval(this.prepeareMarkRead, 1500);
+    },
+    prepeareMarkRead() {
+        this.markMessagesRead(this.userid)
+    },
     markMessagesRead(userid) {
+
+        console.log("marking read")
 
         axios.post("/api/markChatMessagesRead?api_token=" + this.api_token, 
         {
@@ -783,8 +798,15 @@ export default {
             if (response.data.success === true) 
             {              
                 this.unread_message_count = 0;
-            } 
+
+                 clearInterval(this.interval);
+            } else {
+                clearInterval(this.interval);
+            }
+
+           
         });    
+        
     },
     sendMessage: function(chatbox, index) 
     {

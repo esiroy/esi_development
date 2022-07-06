@@ -601,7 +601,7 @@ export default {
                         };
 
                         this.chatlogs[user.userid].unshift({
-                                time: data.time,
+                                time: data.created_at,
                                 sender: sender,
                         }); 
                    
