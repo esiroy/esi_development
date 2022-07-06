@@ -723,10 +723,6 @@ export default {
 
                 this.unread_message_count = response.data.unreadMessageCount;
 
-                if (this.unread_message_count >= 1) {
-                    this.delayandMarkUnread();
-                }
-
                 response.data.chatItems.forEach(data => {
 
                     let chatboxUsername = null;
