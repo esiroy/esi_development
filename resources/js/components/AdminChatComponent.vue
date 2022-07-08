@@ -966,7 +966,7 @@ export default {
         this.TabTitle =  document.title;
 
         window.addEventListener("keyup", (e) =>
-{
+        {
             this.prepareButtons();       
         });
 
@@ -995,7 +995,7 @@ export default {
 	    socket.on("OWNER_MESSAGE", data => {            
 
             
-           // console.log(data, data.broadcast_recipient.userid + " message from owner => " + this.userid);
+            console.log(data, data.broadcast_recipient.userid + " message from owner => " + this.userid);
 
 		    if (data.broadcast_recipient.userid == this.userid) 
             {
@@ -1031,16 +1031,22 @@ export default {
                 
             } else {
 
-                 //console.log("this message is received from other users");
+                 console.log("this message is received from other users");
 
 
                 //reset unread message to 0
                 let userIndex = this.users.findIndex(user => user.userid == data.broadcast_sender.userid)
                 this.users[userIndex].unreadMsg    = 0;  
-               
+                
                 //log and simultainously show to other admin 
-                if (data.broadcast_sender.userid == this.current_user.userid) 
+              
+                if (data.broadcast_sender.userid == this.activeUserID) 
                 {
+
+
+                    console.log(data.broadcast_recipient.userid);
+
+
                     this.prepareChatBox(data.broadcast_sender);
 
                  
