@@ -12,6 +12,7 @@
 
 
 <admin-chat-component 
+        ref="adminChatComponent"
         userid="{{ Auth::user()->id }}" 
         username="{{ Auth::user()->username }}"
         user_image="{{ $memberProfileImage }}"

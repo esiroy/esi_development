@@ -1,27 +1,39 @@
 <template>
     <div class="AdminChatWrapper">
+
         <div id="AdminChat" class="adminChat">
-            <div class="container  bg-light">
+
+            <div class="container bg-light">
                 <div class="row">
 
-                    <div class="col-md-4">
+                    <!-- USER LIST CONTAINER -->
+                    <div class="col-md-4 pr-1">
+
                         <div class="card memberlist-panel mt-2">
-                            <div class="card-header">
-                                Users
-                            </div>
+                            <div class="card-header">Users</div>
+                            
                             <div class="card-body">
-                                <div :id="'member-'+user.userid" class="member-information-container" 
-                                    v-show="user.userid !== userid" v-for="(user, index) in this.users" :key="'user_'+ index"  
-                                    v-on:click="openChatBox(user)" 
-                                >
-                                        
-                                    <div class="member" v-if="user.userid !== userid">
-                                        <div class="profile-photo">
-                                            <img :src="user.user_image"  class="img-fluid">
-                                        </div>
-                                        <div class="profile-user-info align-bottom">
-                                            <div class="align-bottom">
-                                                <div class="username">{{ user.username }}</div>
+
+                                <div v-for="(user, index) in this.users" :key="'user_'+ index" v-on:click="openChatBox(user)" > 
+
+                                    <div id="user-list" v-if="user.userid !== userid" >
+
+                                        <div v-if="user.totalMsg > 0" :class="[user.userid == activeUserID ? 'active' : '', 'user-info']">
+                                           
+                                         
+
+                                            <div class="profile-photo align-top">
+                                                <img :src="user.user_image"  class="img-fluid rounded">
+                                            </div>
+
+                                            <div class="profile-user-info align-bottom">
+
+                                                <div class="username small font-weight-bold">{{ user.username }}</div>
+                                                <div class="nickname small text-secondary">{{ user.nickname }}</div>
+                                                <div id="user-recent-message" class="small text-secondary">
+                                                    {{ user.recentMsg }}
+                                                </div>
+
 
                                                 <div class="small float-left">
                                                     <span class="badge badge-pill badge-success" v-show="user.status == 'online'">{{ user.status }}</span>
@@ -29,193 +41,154 @@
                                                 </div>
 
                                                 <div class="small float-left ml-1">
-                                                    <span class="badge badge-danger small" v-show="chatCount[user.userid] >= 1">
-                                                        {{ chatCount[user.userid] }}
+                                                    <span id="message_counter" class="badge badge-danger small" v-if="user.unreadMsg > 0" >
+                                                        {{ user.unreadMsg }}
                                                     </span>
                                                 </div>
-
                                             </div>
-                                        </div>
-                                
-                                    </div> 
-                                                    
-                                </div>
 
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
                             </div>
                             
                         </div>
                     </div>
+                    <!-- [end] USER LIST -->
 
-                    <div class="col-md-8">
+                    <div class="col-md-8 pl-1">
+                        <div class="chatbox mt-2">    
 
-                        <div class="chatboxes mt-2">
-
-                            <div :id="'chatbox-'+chatbox.userid" class="chatbox" v-for="(chatbox, index) in this.chatboxes" :key="index">
+                            <div v-if="this.current_user !== null">
+                            
+                                <!--[start] card -->
                                 <div class="card">
-                                    <div class="card-header">
-                                        <div style="float:left">                            
-                                            <h5>{{ chatbox.nickname }}</h5>
-                                            <!--<div class="small">{{ chatbox.username }}</div>-->
-                                            <div class="small">ID Number: {{ chatbox.userid }}</div>
-                                        </div>
 
-                                        <div style="float:right">          
-                                            <button v-on:click="deleteChatbox(index)" style="border:none">X</button>
-                                        </div>
-                                    </div>
+                                   <!--[start] User Information Header -->
+                                    <current-user-component :user="this.current_user"></current-user-component>
+                                    <!--[end] User Information Header -->
 
+                                    <!-- Chat Log Information Header -->
                                     <div class="card-body">
-                                        <form :name="chatbox.userid" onsubmit="return false;">
-                                        
-                                        <div class="text-center floating-history-fetcher"> 
-
-                                            <div v-on:click="getChatHistory(chatbox, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" 
-                                                v-show="historyNotifier == true && isFetching == false">
-                                                Fetch History                                                
-                                            </div>
-
-                                            <div v-show="historyNotifier == true && isFetching == true"  id="floating-history-btn" class="btn btn-xs btn-primary">
-                                                <i class="fas fa-sync fa-spin"></i>  Loading
-                                            </div>
 
 
-                                            <!--
-                                            <button v-on:click="getChatHistory(chatbox, false)" 
-                                            id="floating-history-btn" class="btn btn-sm btn-secondary" v-show="chatFetchStatus == 'ACTIVE'">
-                                                Fetch History                                                
-                                            </button>
-                                        
-                                            
-                                            <button id="history-notify" class="btn btn-sm btn-primary" v-show="chatFetchStatus !== 'ACTIVE'">
-                                                Fetching History...
-                                            </button>                          
-                                            -->
+                                        <div v-if="isLoading == true" class="loading-container text-center">
 
-
+                                            <div class="btn btn-xs btn-secondary">
+                                                <i class="fas fa-sync fa-spin"></i> 
+                                                Loading...
+                                            </div>                                             
                                         </div>
 
-                                        <div id="user-chatlog" class="user-chatlog">
-                                            <div class="container" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+chatlogIndex">
-                                            
-                                                <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">
-                                                <div class="col-md-3">&nbsp;</div>
-                                                <div class="col-md-9">
-                                                    <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                                                                                      
+                                        <div id="user-chatlog" class="border rounded" v-else-if="isLoading == false" > 
 
 
-                                                    <chatsupport-info-component 
-                                                        :userid="chatlog.sender.userid"
-                                                        :image="chatlog.sender.user_image"
-                                                        :nickname="chatlog.sender.nickname" 
-                                                        :time="chatlog.time">
-                                                        </chatsupport-info-component>
-                                                    </div>
+                                            <chatlogs-component :chatlogs="chatlogsHistory"></chatlogs-component>
 
-                                                    <div style="float:right">
-                                                    <div class="chatsupport-message" v-html="chatlog.sender.message"></div>
+                                            <div v-if="chatlogsUnread.length == 0 " >
+                                                <div class="text-center mb-5" v-if="chatlogs.length == 0 && chatlogsUnread.length == 0">
+                                                    <div class="hr-center small"> Unread Messages </div>
+                                                    <div class="badge badge-xs badge-light text-secondary small rounded p-2">
+                                                        You have no unread messages
                                                     </div>
                                                 </div>
-                                                </div>
-
-                                                <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >
-                                                    <div class="col-md-9">
-                                                        <div v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'MEMBER'">       
-                                                                    
-                                                        <member-info-component 
-                                                            :userid="chatlog.sender.userid"
-                                                            :image="chatlog.sender.user_image"
-                                                            :nickname="chatlog.sender.nickname" 
-                                                            :time="chatlog.time">
-                                                            </member-info-component>
-                                                        </div>
-                                                        <div class="member-message" v-html="chatlog.sender.message"></div>
-                                                    </div>
-                                                    <div class="col-md-3">&nbsp;</div>
-                                                </div>
-
                                             </div>
+
+                                            <div v-if="chatlogsUnread.length >= 1">
+                                                <div class="hr-center small" v-if="chatlogs.length == 0"> Unread Messages </div>
+                                                <div class="hr-center small" v-if="chatlogs.length >= 1">{{ chatlogsUnread[0].time }}</div>
+                                                <chatlogs-component :chatlogs="chatlogsUnread"></chatlogs-component>
+                                            </div>
+
+
+                                            <div v-if="chatlogs.length >= 1">
+                                                <div class="hr-center small"> Just Now </div>
+                                                <chatlogs-component :chatlogs="chatlogs"></chatlogs-component>
+                                            </div>
+                                            
                                         </div>
 
-                                        <div class="input-group mt-3">
 
-                                            <div style="background-color:#F1F1F4; display:inline-block; padding: 5px; width: 88%; margin-right: 8px">
-                                                <div style="border:1px solid #ccc; width: 100%">
-                                                    <div v-for="(file, index) in files" :key="file.id" style="display:inline-block; padding:5px; " class="image-prieview-container">
+                                        <div id="attached-progress-report" class="mt-2" >
+                                            <div v-for="(file, index) in files" :key="file.id" style="display:inline-block; padding:5px; " class="image-prieview-container">
 
-                                                        <div class="remove-image-upload" style="float:right;">
-                                                            <a class="" href="#" @click.prevent="$refs.upload.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
-                                                        </div>
-
-                                                        <img v-if="file.type == 'image/jpeg' || file.type == 'image/png'" :src="file.thumb" style="width:150px" :id="'image-preview-'+index">  
-                                                        <div v-else>
-                                                            <div>
-                                                                <i class="far fa-file" style="font-size:110px"></i>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="progress" v-if="file.active || file.progress !== '0.00'">
-                                                            <div :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"
-                                                                role="progressbar"
-                                                                :style="{width: file.progress + '%'}"
-                                                            >{{file.progress}}%</div>
-                                                        </div>
-
-                                                    </div>                                                                               
+                                                <div class="remove-image-upload" style="float:right;">
+                                                    <a class="" href="#" @click.prevent="$refs.upload.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
                                                 </div>
-                                        
-                                                <input id="message" 
-                                                v-on:keyup.13="sendMessage(chatbox, index)"  
-                                                type="text" 
-                                                class="form-control" 
-                                                autocomplete="off"
-                                                v-model.lazy="message[index]" 
+
+                                                <img v-if="file.type == 'image/jpeg' || file.type == 'image/png'" :src="file.thumb" style="width:150px" :id="'image-preview-'+index">  
+                                                <div v-else>
+                                                    <div>
+                                                        <i class="far fa-file" style="font-size:110px"></i>
+                                                    </div>
+                                                </div>
+
+                                                <div class="progress" v-if="file.active || file.progress !== '0.00'">
+                                                    <div :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}" role="progressbar" :style="{width: file.progress + '%'}">{{file.progress}}%</div>
+                                                </div>
+
+                                            </div>                                                                               
+                                        </div>
+
+
+                                        <div class="d-inline-block" style="width:90%">
+                                            <input type="text"  
+                                                v-on:keyup.13="sendMessage"
+                                                autocomplete="off" 
+                                                v-model="message" 
                                                 placeholder="Type a message" 
-                                                aria-label="Type a message" >
-                                            </div>
+                                                class="form-control form-control-sm mb-1" 
+                                                aria-label="Type a message"/>
+                                        </div>
 
-                                            <div style="background-color:#fff; display:inline-block">
-                                            
-                                                <label id="file-select-button" for="file" class="btn btn-lg btn-outline-dark" 
-                                                        style="margin:0px;font-size:20px">
+                                        <div class="d-inline-block">
+                                        
+                                        
+                                            <div id="attach-button" class="input-group-append d-inline-block">
+                                                <label id="file-select-button" for="file" class="btn btn-primary btn-sm mb-0">
                                                     <i class="fas fa-paperclip"></i>
                                                 </label>
+                                            </div>                                            
 
-                                                <div id="send-button" class="input-group-append" style="display:inline-block;">
-                                                    <button type="button" :id="'btn_'+chatbox.userid" 
-                                                        @click.prevent="$refs.upload.active = false; sendMessage(chatbox, index); "
-                                                        class="btn btn-lg btn-primary">
-                                                            <i class="far fa-share-square"></i>
-                                                    </button>
-                                                </div>
-
-                                                <span class="button-controls" style=" display:none">
-                                                    <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
-                                                        <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
-                                                    </button>
-
-                                                    <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
-                                                        <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
-                                                    </button>
-                                                </span>
-                                                
-
+                                            <div id="send-button" class="input-group-append d-inline-block">
+                                                <label :id="'btn_'+ current_user.userid" class="btn btn-primary mr-1 btn-sm mb-0" @click.prevent="$refs.upload.active = false; sendMessage(); ">                                                    
+                                                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                                </label>
                                             </div>
 
+                                            <span class="button-controls" style=" display:none">
+                                                <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                                                    <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
+                                                </button>
+
+                                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                                                    <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
+                                                </button>
+                                            </span>
+                                            
+
                                         </div>
-                                        
-                                        </form>
 
 
                                     </div>
                                 </div>
+                                <!--[end] card -->
+
 
 
 
                             </div>
-                        </div>                            
+
+
+                        </div>
                     </div>
+
                 </div>
             </div>
+
 
             <div style="display:none">
                 <file-upload
@@ -227,7 +200,7 @@
                     post-action="/uploader/fileUploader"            
                     :data="{ 
                         'message_type': 'CHAT_SUPPORT',
-                        'current_chatbox_userid': this.current_chatbox_userid
+                        'current_chatbox_userid': this.activeUserID
                     }"
                     :headers="{'X-CSRF-TOKEN': this.csrf_token }"
                     :multiple="true"
@@ -239,7 +212,10 @@
                 </file-upload>
             </div>
 
+
         </div>
+
+        
 
 
         <div id="enterChat"  class="container bg-light text-center">       
@@ -259,38 +235,33 @@ import FileUpload from 'vue-upload-component'
 
 var socket = null;
 
-
 export default {
-  name: "chat-component",
-  components: {
-    FileUpload,
-  },  
+    name: "chatComponent",
+    components: {
+        FileUpload,
+    },  
     data() {
         return {
+            adminUser : null,
+
+            users: [],              // list for all users (online and offline)
+            onlineUsers: [],        // list for online users
+            recentUsers: [],        //the list recently messaged user (offline)            
+            current_user: null,     //all info of current uses         
+            activeUserID: null,     //this will hold the current active userid  
+
+            chatlogsHistory: [],    //Old Read chats
+            chatlogsUnread: [],     //Unread Chats
+            chatlogs: [],           //live chat logs
+
+            message: "",
+
+            // Loaders
+            isLoading: false,
+            historyNotifier: true,
 
             //history is fetching status
             isFetching: false,
-
-            //History Loaders
-            loadingHistory: false,
-            historyNotifier: true,
-
-            message: [],
-            users: [],
-            chatCount: [],
-
-            //chat boxes
-            chatboxes: [],
-            chatlogs: [],
-            message_count: 0,
-            test: 0,
-
-            //this will hold the current recipient userid
-            current_chatbox_userid: "",
-            current_chatbox_username: "",
-            current_chatbox_nickname: "",
-
-            current_user: null, 
 
             //WINDOW STATUS FOR TAB TITLE BLINKER
             TabTitle: "",
@@ -300,12 +271,7 @@ export default {
 
             //uploader
             files: [],
-
             page: [],
-
-            chatFetchStatus: "ACTIVE",
-
-            usersOffline: [],
         };
     },
     props: {
@@ -316,8 +282,500 @@ export default {
         csrf_token: String,  
         chatserver_url: String,              
     },
-    methods: 
-    {
+    methods: {
+        openChatBox(currentUser) 
+        {
+            this.page = 1;
+            this.chatlogsHistory    = [];
+            this.chatlogsUnread     = [];
+            this.chatlogs           = [];
+            this.current_user       = currentUser;
+            this.activeUserID       = currentUser.userid;
+            
+            this.getUnreadMemberMessages(currentUser);
+
+            //currentUser.unreadMsg = 0;
+            this.$forceUpdate();
+        },
+        hideChatBox() {
+            this.current_user = null;
+        },
+        getChatHistory(user, scrollToBottom) {        
+
+            this.isFetching = true;
+
+            if (this.page == 1) 
+            {
+                this.chatlogsHistory = [];
+            }
+          
+          
+            //user is the sender
+            axios.post("/api/getAdminChatHistory?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+                sender_id           : user.userid,
+                recipient_id        : this.userid,
+                page                : this.page
+
+            }).then(response => {                
+               
+                if (response.data.success === true) 
+                {               
+                    
+                    this.isFetching = false;
+
+                    let chatboxUsername = null;
+                    let chatboxNickname = null;
+                    let chatboxImage = null;
+
+                    this.page = response.data.chatHistoryItems.current_page + 1;
+
+
+                    //DETERMINE IF THE LAST PAGE
+                    if (response.data.chatHistoryItems.last_page == response.data.chatHistoryItems.current_page) {
+                        //hide button for history
+                        this.historyNotifier = false;                
+                    }
+
+
+                    let chatHistoryItems = response.data.chatHistoryItems.data;
+
+                    chatHistoryItems.forEach(data => {
+
+                        if (data.message_type == "MEMBER") {
+                            chatboxUsername = user.username;
+                            chatboxNickname = user.nickname   
+                            chatboxImage = user.user_image;                         
+                        } else {
+                            chatboxUsername = this.username;
+                            chatboxNickname = this.nickname
+                            chatboxImage = this.user_image;
+                        }
+                       
+                        let sender = {
+                            'msgCtr': 0,
+                            'userid': data.userid,
+                            'nickname': chatboxNickname,
+                            'username': chatboxUsername,          
+                            'user_image': chatboxImage,
+                            'message': data.message,                            
+                            'type': data.message_type
+                        };
+
+                        this.chatlogsHistory.unshift({
+                            time: data.created_at,
+                            sender: sender,                                
+                        });
+                    });
+                    
+                    //let reversedChatHistory =  this.chatlogs[user.userid];       
+
+                    this.$nextTick(() => {                      
+                        this.$forceUpdate();                        
+                        if (scrollToBottom == true) {
+                            this.scrollToEnd();
+                        } else {
+                            this.scrollToTop();
+                        }
+                        //this.markMessagesRead(user);
+                    });
+
+                } else {
+                    //hide button for history
+                    this.historyNotifier = false;
+                    this.isFetching = false;        
+
+                    
+
+                    this.$nextTick(() => {                        
+                        this.$forceUpdate();                        
+                        if (scrollToBottom == true) {
+                            this.scrollToEnd();
+                        } else {
+                            this.scrollToTop();
+                        }
+                        //this.markMessagesRead(user)
+                    });           
+                }
+            
+            }).catch(function(error) {
+                console.log("Error " + error);                
+            });
+
+        },        
+        getUnreadMemberMessages(user) 
+        {
+
+            this.isLoading = true;
+
+            axios.post("/api/getAdminUnreadChatMessages?api_token=" + this.api_token, 
+            {
+                method           : "POST",
+                sender_id         : user.userid,
+            }).then(response => {  
+
+                if (response.data.success === true) {
+                    response.data.chatItems.forEach(data => {
+
+                        let chatboxUsername = null;
+                        let chatboxNickname = null;
+                        let chatboxImage = null;
+
+                        if (data.message_type == "MEMBER") {
+                            chatboxUsername = user.username;
+                            chatboxNickname = user.nickname   
+                            chatboxImage = user.user_image;                         
+                        } else {
+                            chatboxUsername = this.username;
+                            chatboxNickname = this.nickname
+                            chatboxImage = this.user_image;
+                        }
+
+                        let sender = {
+                            'msgCtr': 0,
+                            'userid': data.userid,
+                            'nickname': chatboxNickname,
+                            'username': chatboxUsername,          
+                            'user_image': chatboxImage,
+                            'message': data.message, 
+                            'is_read': data.is_read,                           
+                            'type': data.message_type
+                        };
+
+                        this.chatlogsUnread.unshift({
+                                time: data.created_at,
+                                sender: sender,
+                        });  
+                    });
+                    
+
+                    this.$nextTick(function(){
+                        this.$forceUpdate();
+                        this.getChatHistory(user, true);
+                        //this.unread_message_count = response.data.unreadMessageCount;
+                         this.isLoading = false;
+
+                    });
+
+                } else {
+                    this.$nextTick(function() {
+                        this.$forceUpdate();
+                        this.getChatHistory(user, true);
+                        //this.unread_message_count = response.data.unreadMessageCount;
+                         this.isLoading = false;
+                    });
+                }
+                
+            });
+        },      
+        scrollToTop: function() {
+            this.$forceUpdate();
+            var container = this.$el.querySelector("#user-chatlog");
+            if(container){            
+                container.scrollTop = 0;
+            }
+        },          
+        scrollToEnd: function() {
+            this.$nextTick(() => {    
+                this.$forceUpdate();
+                var container = this.$el.querySelector("#user-chatlog");
+                if(container) {
+                    container.scrollTop = container.scrollHeight;
+                    console.log( container.scrollHeight);
+                }
+            });
+        },
+        markMessagesRead(user) 
+        {
+            axios.post("/api/markAdminChatMessagesRead?api_token=" + this.api_token, 
+            {
+                method           : "POST",
+                userID           : user.userid,
+                message_type     : 'MEMBER'
+            }).then(response => {  
+
+                if (response.data.success === true) 
+                { 
+                   console.log(response.data.message);
+                } 
+            });    
+        },  
+        prepareChatBox: function(user) 
+        {
+            if (typeof this.chatlogs !== 'undefined' &&  this.chatlogs.length > 0) {
+                //chatlogs has an array, we will not instantiate the array again. 
+            } else {
+                this.chatlogs = [];                            
+            }
+
+            if (isNaN(this.page)) {
+                this.page = 1;                
+            }
+
+        },
+        sendMessage() {
+
+            console.log(this.current_user);
+
+            //files is empty and message is empty, stop sending message
+            if (this.files.length == 0 && (this.message === "" || this.message === undefined)) 
+            {           
+                return false;
+            }
+
+            document.getElementById("startUpload").click();
+
+            if (this.message === "" || this.message === undefined) {
+
+               //No message just upload
+
+            } else {
+
+                let id = this.current_user.id; 
+
+                var currentTime = new Date();
+                let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+                //get the sender from props (user)
+                let recipient = {
+                    'id': this.current_user.id,
+                    'userid': this.current_user.userid,
+                    'username':  this.current_user.username,
+                };
+
+
+                //get the sender from props  (admin)
+                let sender = {
+                    'msgCtr': 0,
+                    'userid': this.userid,
+                    'nickname': this.nickname,
+                    'username': this.username,          
+                    'message': this.message,
+                    'user_image': this.user_image, //@todo: make this for customer support 
+                    'type': "CHAT_SUPPORT"
+                };
+            
+               
+                this.chatlogs.push({
+                    sender: sender,
+                    message: this.message,
+                    time: time
+                });
+                
+
+                let userMessage = this.message;
+
+
+                //scroll to end then save to table
+                this.$nextTick(() => {           
+
+                    axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
+                    {
+                        method              : "POST",
+                        sender_id           : this.userid,
+                        recipient_id        : this.current_user.userid,
+                        message             : userMessage,
+                        is_read             : false,
+                        valid               : true,
+                        message_type        : "CHAT_SUPPORT",
+                    }).then(response => {
+                        if (response.data.success === true) {
+
+                            //User replied (marked)
+                            this.markMessagesRead(this.current_user);
+
+                             let userIndex = this.users.findIndex(user => user.userid == this.current_user.userid)
+
+                            if (this.users[userIndex]) {
+                                this.users[userIndex].unreadMsg = 0;
+                            }
+
+                        } else {
+                            //@todo: (error sending messages)
+                        }
+                    }).catch(function(error) {
+                        console.log("Error " + error);                
+                    });                     
+
+                });      
+
+                //semd
+                socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
+
+
+                //get the sender from props (user)
+                let broadcast_recipient = {
+                    'id': this.id,
+                    'userid': this.userid,
+                    'username':  this.username,
+                };
+
+
+                //get the sender from props  (admin)
+                let broadcast_sender = {
+                    'msgCtr': 0,
+                    'userid': this.current_user.userid,
+                    'nickname': this.current_user.nickname,
+                    'username': this.current_user.username,          
+                    'message': this.message,
+                    'user_image': this.current_user.user_image, //@todo: make this for customer support 
+                    'type': "CHAT_SUPPORT"
+                };
+
+                socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });
+
+                this.$forceUpdate();
+                this.$nextTick(function()
+                {          
+                    //clear (always at bottom)
+                    this.message = "";
+
+                    this.scrollToEnd();
+                    this.prepareButtons();
+                });
+            }         
+            
+
+        },            
+        prepareButtons: function() {
+           
+            let fileSelectBtn = document.getElementById("file-select-button");
+            let sendBtn = document.getElementById("send-button");        
+            
+            if (this.message == "" && this.files.length == 0) {            
+                fileSelectBtn.style.display = "block";
+                sendBtn.style.display = "none";                
+            } else {
+                fileSelectBtn.style.display = "none";            
+                sendBtn.style.display = "block";
+            }        
+        },
+        appendRecentUserChatList(onlineUsers) {
+
+            axios.post("/api/getRecentUserChatList?api_token=" + this.api_token, 
+            {
+                method              : "POST",
+                
+            }).then(response => {
+
+                if (response.data.success === true)
+                {
+                    this.$nextTick(() => {
+
+                        let onlineUsersList = [];
+                        let offlineUserList = [];
+
+                        let users = [];
+                        
+                        this.recentUsers = response.data.recentUsers;
+
+                        //recent users filter the online list
+                        Object.keys(this.recentUsers ).forEach(index => 
+                        {
+                            let isOnline = onlineUsers.find(onlineUser => onlineUser.userid == this.recentUsers[index].userid); 
+
+                            //We will push all online users together with recent users with chat messages
+                            if (isOnline) {
+                                this.recentUsers[index].status = 'online'
+
+                                //Online User with chat messages
+                                users.push(this.recentUsers[index]);
+
+                            } else {
+
+                                //Offline User with chat messages
+                                users.push(this.recentUsers[index])
+                            }
+
+                        });
+
+
+                        //Online Users without recent chats
+                        onlineUsers.forEach((onlineUser) => 
+                        {
+                            let inRecentUsers =  onlineUsersList.find(userList => userList.userid == onlineUser.userid);
+
+                            if (inRecentUsers) {
+                                //user is found in recent user list (do not add)
+                            } else {
+                                //user is online but no messages
+                                onlineUser['unreadMsg'] =  0;                                
+                                onlineUser['totalMsg'] =  0;
+                                onlineUser['recentMsg'] =  "";
+                                //onlineUsersList.push(onlineUser);
+                            }
+                        });
+
+
+                        this.users = users;
+
+
+                        if (this.current_user !== null) {
+                            //this.openChatBox(this.current_user);
+                        }
+                            
+                    });
+                   
+
+                } else {
+                
+                    //show only online users (no recent users)
+                    this.users = onlineUsers;
+
+                    if (this.current_user !== null) {
+                        this.openChatBox(this.current_user);
+                    }
+                }
+
+            }).catch(function(error) {
+                console.log("Error " + error);                
+            }); 
+        },
+        updateUserList: function(users) 
+        {
+            //filter chat support, we will not show on the list if the users is a chat support
+            let fusers = users.filter(user => user.type !== "CHAT_SUPPORT");
+            
+            //filter duplicates
+            this.onlineUsers = this.filterUnique(fusers);   
+
+            //Append Users to chat list
+            this.appendRecentUserChatList(this.onlineUsers) 
+
+            this.$forceUpdate();
+        },      
+        filterUnique: function (users) {
+          let result = users.reduce((unique, o) => {
+              if(!unique.some(obj => obj.username === o.username )) {
+                unique.push(o);
+              }
+              return unique;
+          },[]);          
+          return result;
+        },
+        markSeenMessages() {          
+            this.markMessagesRead(this.current_user);            
+        },
+        enterAdminChat: function() {
+         
+            this.adminUser = {            
+                userid: this.userid,
+                username: this.username,
+                nickname: "Customer Support",
+                status: "online",
+                type: "CHAT_SUPPORT",
+            }
+            socket.emit('REGISTER', this.adminUser);
+
+            let adminChat = document.getElementById("AdminChat");        
+            adminChat.style.display = 'block';
+
+            let enterChat = document.getElementById("enterChat");
+            enterChat.style.display = 'none';            
+        },       
+
+
         windowTitleToggle() {
             if (this.tabTitle == "") {
                 this.tabTitle = "You have a message";
@@ -345,6 +803,7 @@ export default {
         inputFile: function(newFile, oldFile) 
         {
 
+            
             this.prepareButtons();
 
             if (newFile && oldFile && !newFile.active && oldFile.active) 
@@ -378,7 +837,7 @@ export default {
                             'type': "CHAT_SUPPORT"
                         };
                     
-                        this.chatlogs[newFile.response.recipient_id].push({
+                        this.chatlogs.push({
                             sender: sender,
                             message: newFile.response.image,
                             time: time
@@ -410,11 +869,11 @@ export default {
                         //get the sender from props  (admin)
                         let broadcast_sender = {
                             'msgCtr': 0,
-                            'userid': chatbox.userid,
-                            'nickname': chatbox.nickname,
-                            'username': chatbox.username,          
-                            'message': this.message[index],
-                            'user_image': chatbox.user_image, //@todo: make this for customer support 
+                            'userid': this.current_user.userid,
+                            'nickname': this.current_user.nickname,
+                            'username': this.current_user.username,          
+                            'message': this.message,
+                            'user_image': this.current_user.user_image, //@todo: make this for customer support 
                             'type': "CHAT_SUPPORT"
                         };
 
@@ -461,752 +920,14 @@ export default {
                 }
             }
         },
-        scrollToTop: function() {
-            this.$forceUpdate();
 
-            var container = this.$el.querySelector("#user-chatlog");
-            if(container){            
-                container.scrollTop = 250;
-            }
-        },
-        scrollToEnd: function() 
-        {
-            this.$forceUpdate();      
-            
-            this.$nextTick(function()
-            {      
-                var container = this.$el.querySelector("#user-chatlog");
-                if(container)
-                {
-                    container.scrollTop = container.scrollHeight;
-                }
-            });
-
-            this.$nextTick(function() {
-                if (this.chatFetchStatus == "ACTIVE") 
-                {
-                    //this.getPaginatedHistory();
-
-                } else {
-                    //console.log("unable to fetch chat history result still busy, please try again")
-                }
-                
-            });
-        },
-        deleteChatbox: function(index) {
-            this.files = [];
-            this.chatboxes.splice(index, 1)
-        },
-        clearMsgCount: function(userid)  {
-           // console.log(userid, "clearing count")
-            this.chatCount[userid] = 0;
-        },
-        getPaginatedHistory: function() 
-        {             
-
-            /*  
-
-            let chatScrubber = document.getElementById("user-chatlog");
-            let total = parseInt(chatScrubber.scrollTop);          
-
-            if (typeof this.page[this.current_chatbox_userid] !== 'undefined' &&  this.page[this.current_chatbox_userid].length > 0) {
-                //chatlogs has an array, we will not instantiate the array again. 
-            } else {
-               //this.chatlogs[this.current_chatbox_userid] = [];
-                //this.page[this.current_chatbox_userid] = 1;
-            }
-            
-            chatScrubber.addEventListener("scroll", (event) => {
-                //console.log(chatScrubber.scrollTop);                          
-                var shot = parseInt(total) - parseInt(chatScrubber.scrollTop);
-
-                var percent = parseInt((shot / total) * 100);
-
-                //REACHED TOP OF SCROLL
-                if (!isNaN(percent) && percent == 100) 
-                {
-                    console.log("compute precentage : " + shot + " " + total + " : "  + percent)
-                    //this.page[this.current_chatbox_userid] = +this.page[this.current_chatbox_userid] + 1;
-
-                    //console.log(this.page[this.current_chatbox_userid]);
-
-                    let user = {
-                        'userid': this.current_chatbox_userid,
-                        'username': this.current_chatbox_username,
-                        'nickname': this.current_chatbox_nickname,
-                    };
-
-                    if (this.chatFetchStatus == "ACTIVE") {
-                        this.getChatHistory(user, false);
-                    }
-
-                    document.getElementById("floating-history-btn").style.display = "none";
-                } else {
-
-                    if (this.chatFetchStatus !== "ACTIVE") {
-                        document.getElementById("floating-history-btn").style.display = "none";
-                    } else {
-                        document.getElementById("floating-history-btn").style.display = "inline-block";
-                    }
-                }
-                
-            });            
-
-            */
-        },
-
-        getUnreadMemberMessages(user) 
-        {
-            axios.post("/api/getAdminUnreadChatMessages?api_token=" + this.api_token, 
-            {
-                method           : "POST",
-                sender_id         : user.userid,
-            }).then(response => {  
-
-                if (response.data.success === true) {
-
-                    this.unread_message_count = response.data.unreadMessageCount;
-
-                    if (this.unread_message_count >= 1) {                    
-                        this.markMessagesRead(user); 
-                    }                   
-
-
-                    response.data.chatItems.forEach(data => {
-
-                        let chatboxUsername = null;
-                        let chatboxNickname = null;
-                        let chatboxImage = null;
-
-                        if (data.message_type == "MEMBER") {
-                            chatboxUsername = user.username;
-                            chatboxNickname = user.nickname   
-                            chatboxImage = user.user_image;                         
-                        } else {
-                            chatboxUsername = this.username;
-                            chatboxNickname = this.nickname
-                            chatboxImage = this.user_image;
-                        }
-
-
-                        //console.log(data);                
-                        let sender = {
-                            'msgCtr': 0,
-                            'userid': data.userid,
-                            'nickname': chatboxNickname,
-                            'username': chatboxUsername,          
-                            'user_image': chatboxImage,
-                            'message': data.message,                            
-                            'type': data.message_type
-                        };
-
-                        this.chatlogs[user.userid].unshift({
-                                time: data.created_at,
-                                sender: sender,
-                        }); 
-                   
-
-                    });
-
-
-                    this.$forceUpdate();
-
-                    this.$nextTick(function()
-                    {
-                        this.scrollToEnd();   
-                                
-                    });
-
-                } else {
-                
-                    this.unread_message_count = response.data.unreadMessageCount;
-                }
-            });
-        },
-        markMessagesRead(user) {
-
-            axios.post("/api/markAdminChatMessagesRead?api_token=" + this.api_token, 
-            {
-                method           : "POST",
-                userID           : user.userid,
-                message_type     : 'MEMBER'
-            }).then(response => {  
-
-                if (response.data.success === true) 
-                {              
-                   // this.unread_message_count = 0;
-                } 
-            });    
-        },        
-        getMemberHistory(chatbox) {
-            console.log(chatbox)
-        },
-        getChatHistory: function(user, scrollToBottom) 
-        {        
-
-            this.isFetching = true;
-
-
-            console.log(this.page[user.userid])
-
-
-            if (this.page[user.userid] == 1) {
-
-               
-                this.chatlogs[user.userid] = [];
-            }
-          
-          
-            //user is the sender
-            axios.post("/api/getChathistory?api_token=" + this.api_token, 
-            {
-                method              : "POST",
-                sender_id           : user.userid,
-                recipient_id        : this.userid,
-                page                : this.page[user.userid]                   
-            }).then(response => 
-            {                
-                //this.chatlogs[user.userid] = [];  //@NOTE: *** EMPTY CHAT LOGS EVERY QUERY ****
-
-                if (response.data.success === true) 
-                {               
-                    
-                    this.isFetching = false;
-
-                    let chatboxUsername = null;
-                    let chatboxNickname = null;
-                    let chatboxImage = null;
-
-
-                    console.log(response.data.chatHistoryItems.current_page)
-
-                    this.page[user.userid] = response.data.chatHistoryItems.current_page + 1;
-
-
-                    //DETERMINE IF THE LAST PAGE
-                    if (response.data.chatHistoryItems.last_page == response.data.chatHistoryItems.current_page) {
-                        //hide button for history
-                        this.historyNotifier = false;                
-                    }
-
-
-                    let chatHistoryItems = response.data.chatHistoryItems.data;
-
-                    chatHistoryItems.forEach(data => {
-
-                        if (data.message_type == "MEMBER") {
-                            chatboxUsername = user.username;
-                            chatboxNickname = user.nickname   
-                            chatboxImage = user.user_image;                         
-                        } else {
-                            chatboxUsername = this.username;
-                            chatboxNickname = this.nickname
-                            chatboxImage = this.user_image;
-                        }
-
-
-                        //console.log(data);                
-                        let sender = {
-                            'msgCtr': 0,
-                            'userid': data.userid,
-                            'nickname': chatboxNickname,
-                            'username': chatboxUsername,          
-                            'user_image': chatboxImage,
-                            'message': data.message,                            
-                            'type': data.message_type
-                        };
-
-                        this.chatlogs[user.userid].unshift({
-                            time: data.created_at,
-                            sender: sender,                                
-                        });
-                    });
-                    
-                    let reversedChatHistory =  this.chatlogs[user.userid];
-
-       
-
-                    this.$nextTick(()=>
-                    {  
-                        
-
-                     this.chatlogs[user.userid] = reversedChatHistory;
-
-                    this.$forceUpdate();                        
-                        
-                        if (scrollToBottom == true) {
-                            this.scrollToEnd();
-                        } else {
-                            this.scrollToTop();
-                        }     
-                    });
-
-                    this.chatFetchStatus = "ACTIVE";
-
-                } else {
-                    //hide button for history
-                        this.historyNotifier = false;
-
-                        this.isFetching = false;                   
-                }
-            
-            }).catch(function(error) {
-                console.log("Error " + error);                
-            });
-
-        },
-
-        openChatBox: function(user) 
-        {   
-
-            this.current_user = user;
-
-            this.historyNotifier = true;
-
-            //this.chatboxes.push(user); /* {this will open new window} */
-            this.chatboxes = [user];
-            this.prepareChatBox(user);
-
-            if (isNaN(this.page[user.userid])) {
-                this.page[user.userid] = 1;
-                 console.log("new chatbox")
-            }
-
-            if (this.current_chatbox_userid !== user.userid) {
-                console.log("switched chatbox")
-                this.chatlogs[user.userid] = []
-
-                //get chat history on
-                this.page[user.userid] = 1;
-
-                //get the unread messages
-                this.getUnreadMemberMessages(user);
-                //This will get all the message from the customer support
-                //this.getChatHistory(user, true);                
-                
-            }     
-
-
-            //reset bg color      
-            var elements = document.getElementsByClassName("member-information-container");
-            for(var i = 0; i < elements.length; i++){
-                elements[i].style.removeProperty("background");
-            }
-
-            this.$forceUpdate();
-
-            this.$nextTick(function()
-            {
-                this.scrollToEnd();
-                this.prepareButtons(); 
-
-                let memberChatBox = document.getElementById("member-"+user.userid);
-
-                if (memberChatBox) {
-                    document.getElementById("member-"+user.userid).style.background = "#C7EDFB";   
-                }       
-            });
-
-            this.chatCount[user.userid] = 0;
-
-            
-            this.current_chatbox_userid = user.userid;
-            this.current_chatbox_username = user.username;
-            this.current_chatbox_nickname = user.nickname;
-        },
-        prepareChatBox: function(user) 
-        {
-            if (typeof this.chatlogs[user.userid] !== 'undefined' &&  this.chatlogs[user.userid].length > 0) {
-                //chatlogs has an array, we will not instantiate the array again. 
-            } else {
-                this.chatlogs[user.userid] = [];
-                
-            }
-        },
-        sendMessage(chatbox, index) {
-
-            //files is empty and message is empty, stop sending message
-            if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
-            {           
-                return false;
-            }
-
-            document.getElementById("startUpload").click();
-
-            if (this.message[index] === "" || this.message[index] === undefined) {
-
-               //No message just upload
-
-            } else {
-
-                //recipient
-                let id = chatbox.id;     
-
-                var currentTime = new Date();
-                let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-
-                //get the sender from props (user)
-                let recipient = {
-                    'id': chatbox.id,
-                    'userid': chatbox.userid,
-                    'username':  chatbox.username,
-                };
-
-
-                //get the sender from props  (admin)
-                let sender = {
-                    'msgCtr': 0,
-                    'userid': this.userid,
-                    'nickname': this.nickname,
-                    'username': this.username,          
-                    'message': this.message[index],
-                    'user_image': this.user_image, //@todo: make this for customer support 
-                    'type': "CHAT_SUPPORT"
-                };
-            
-               
-                this.chatlogs[chatbox.userid].push({
-                    sender: sender,
-                    message: this.message[index],
-                    time: time
-                });
-                
-            
-                let userMessage = this.message[index];
-
-                
-                //scroll to end then save to table
-                this.$nextTick(() => {           
-
-                    axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
-                    {
-                        method              : "POST",
-                        sender_id           : this.userid,
-                        recipient_id        : chatbox.userid,
-                        message             : userMessage,
-                        is_read             : false,
-                        valid               : true,
-                        message_type        : "CHAT_SUPPORT",
-                    }).then(response => {
-                        if (response.data.success === true) {
-
-                        } else {
-                            //@todo: HIGHLIGHT error
-                        }
-                    }).catch(function(error) {
-                        console.log("Error " + error);                
-                    });                     
-
-                });      
-
-                //semd
-                socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
-
-
-                //get the sender from props (user)
-                let broadcast_recipient = {
-                    'id': this.id,
-                    'userid': this.userid,
-                    'username':  this.username,
-                };
-
-
-                //get the sender from props  (admin)
-                let broadcast_sender = {
-                    'msgCtr': 0,
-                    'userid': chatbox.userid,
-                    'nickname': chatbox.nickname,
-                    'username': chatbox.username,          
-                    'message': this.message[index],
-                    'user_image': chatbox.user_image, //@todo: make this for customer support 
-                    'type': "CHAT_SUPPORT"
-                };
-
-                socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });
-
-
-                //clean up and sae
-                this.message[index] = "";
-                this.$forceUpdate();
-
-         
-
-                this.$nextTick(function()
-                {            
-                    this.scrollToEnd();
-                    this.prepareButtons();
-                });
-            }         
-            
-
-        },
-        sendMessage_OLD: function(chatbox, index) 
-        {           
-
-            //files is empty and message is empty, stop sending message
-            if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
-            {           
-                return false;
-            }
-
-            document.getElementById("startUpload").click();
-
-            if (this.message[index] === "" || this.message[index] === undefined) {
-
-               //No message just upload
-
-            } else {
-
-                //recipient
-                let id = chatbox.id;     
-
-                var currentTime = new Date();
-                let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-
-                //get the sender from props (user)
-                let recipient = {
-                    'id': chatbox.id,
-                    'userid': chatbox.userid,
-                    'username':  chatbox.username,
-                };
-
-
-                //get the sender from props  (admin)
-                let sender = {
-                    'msgCtr': 0,
-                    'userid': this.userid,
-                    'nickname': this.nickname,
-                    'username': this.username,          
-                    'message': this.message[index],
-                    'user_image': this.user_image, //@todo: make this for customer support 
-                    'type': "CHAT_SUPPORT"
-                };
-            
-                /*
-                this.chatlogs[chatbox.userid].push({
-                    sender: sender,
-                    message: this.message[index],
-                    time: time
-                });
-                */
-            
-                let userMessage = this.message[index];
-
-                //scroll to end then save to table
-                this.$nextTick(() => {           
-
-                    axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
-                    {
-                        method              : "POST",
-                        sender_id           : this.userid,
-                        recipient_id        : chatbox.userid,
-                        message             : userMessage,
-                        is_read             : false,
-                        valid               : true,
-                        message_type        : "CHAT_SUPPORT",
-                    }).then(response => {
-                        if (response.data.success === true) {
-
-                        } else {
-                            //@todo: HIGHLIGHT error
-                        }
-                    }).catch(function(error) {
-                        console.log("Error " + error);                
-                    });                     
-
-                });      
-
-                //semd
-                socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
-
-
-
-                //get the sender from props (user)
-                let broadcast_recipient = {
-                    'id': this.id,
-                    'userid': this.userid,
-                    'username':  this.username,
-                };
-
-
-                //get the sender from props  (admin)
-                let broadcast_sender = {
-                    'msgCtr': 0,
-                    'userid': chatbox.userid,
-                    'nickname': chatbox.nickname,
-                    'username': chatbox.username,          
-                    'message': this.message[index],
-                    'user_image': chatbox.user_image, //@todo: make this for customer support 
-                    'type': "CHAT_SUPPORT"
-                };
-
-                socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender }); 
-
-                //clean up and sae
-                this.message[index] = "";
-
-
-                this.$forceUpdate();
-
-                this.$nextTick(function()
-                {            
-                    this.scrollToEnd();
-                    this.prepareButtons();
-                });
-            }
-        },        
-        prepareButtons: function() 
-        {
-            //console.log(this.files.length);
-
-            let message = document.getElementById("message").value;  
-            let fileSelectBtn = document.getElementById("file-select-button");
-            let sendBtn = document.getElementById("send-button");        
-            
-            if (message == "" && this.files.length == 0) {            
-                fileSelectBtn.style.display = "block";
-                sendBtn.style.display = "none";                
-            } else {
-                fileSelectBtn.style.display = "none";            
-                sendBtn.style.display = "block";
-            }        
-        },
-        appendRecentUserChatList(onlineUsers) 
-        {
-            axios.post("/api/getRecentUserChatList?api_token=" + this.api_token, 
-            {
-                method              : "POST",
-            }).then(response => {
-
-                if (response.data.success === true)
-                {
-
-                    this.$nextTick(function()
-                    {
-                        let onlineUsersList = [];
-                        let offlineUserList = [];
-
-                        let recentUsers = response.data.recentUsers;
-
-                        //recent users filter the online list
-                        Object.keys(recentUsers).forEach(key => 
-                        {
-                            let isOnline = onlineUsers.find(onlineUser => onlineUser.userid == recentUsers[key].userid);
-
-                            this.chatCount[recentUsers[key].userid] = recentUsers[key].unreadMsg;
-
-                            //We will push all online users
-                            if (isOnline) {
-
-                                //Online User with chat messages
-                                onlineUsersList.push(isOnline);
-
-                            } else {
-
-                                //Offline User with chat messages
-                                offlineUserList.push(recentUsers[key])
-                            }
-
-                        });
-
-
-                        //Online Users without recent chats
-                        onlineUsers.forEach((onlineUser) => 
-                        {
-                            let inRecentUsers =  onlineUsersList.find(userList => userList.userid == onlineUser.userid);
-                            if (inRecentUsers) {
-                                //user is found in recent user list (do not add)
-                            } else {
-                                onlineUsersList.push(onlineUser);
-                            }
-                        });
-
-
-                        this.users = onlineUsersList.concat(offlineUserList);
-
-                        if (this.current_user !== null) {
-                            this.openChatBox(this.current_user);
-                        }
-                            
-                    });
-                   
-
-                } else {
-                
-                    //show only online users (no recent users)
-                    this.users = onlineUsers;
-
-                    if (this.current_user !== null) {
-                        this.openChatBox(this.current_user);
-                    }
-                }
-
-            }).catch(function(error) {
-                console.log("Error " + error);                
-            }); 
-        },
-        updateUserList: function(users) 
-        {
-            //filter chat support, we will not show on the list if the users is a chat support
-            let fusers = users.filter(user => user.type !== "CHAT_SUPPORT");
-            
-            //filter duplicates
-            let onlineUsers = this.filterUnique(fusers);   
-
-            //Append Users to chat list
-            this.appendRecentUserChatList(onlineUsers) 
-
-            this.$forceUpdate();
-        },      
-        filterUnique: function (users) {
-          let result = users.reduce((unique, o) => {
-              if(!unique.some(obj => obj.username === o.username )) {
-                unique.push(o);
-              }
-              return unique;
-          },[]);          
-          return result;
-        },
-        markSeenMessages() {
-            let isOpenChatbox = document.getElementById("chatbox-"+this.current_chatbox_userid);
-            if (isOpenChatbox) {
-                setTimeout(function () {
-                    this.chatCount[this.current_chatbox_userid] = 0;
-
-                    if (this.current_user !== null) {
-                        this.markMessagesRead(this.current_user);
-                    }
-
-                    this.$forceUpdate();
-
-                }.bind(this), 1500)            
-            }            
-        },
-        enterAdminChat: function() {
-            //console.log("chat activated");
-            //(force TYPE as CHAT_SUPPORT) register as user
-            let user = {            
-                userid: this.userid,
-                username: this.username,
-                nickname: "Customer Support",
-                status: "online",
-                type: "CHAT_SUPPORT",
-            }
-            socket.emit('REGISTER', user);
-
-            let adminChat = document.getElementById("AdminChat");        
-            adminChat.style.display = 'block';
-
-
-            let enterChat = document.getElementById("enterChat");
-            enterChat.style.display = 'none';            
-        },        
   	},
 	computed: {},
 	updated: function () {},
 	mounted: function () {  
 
         socket = io.connect(this.$props.chatserver_url);
+        
         let adminChat = document.getElementById("AdminChat");        
         adminChat.style.display = 'none';
 
@@ -1218,19 +939,16 @@ export default {
         this.windowStatus = "FOCUSED";
         this.TabTitle =  document.title;
 
-        /*
         window.addEventListener("keyup", (e) =>
-        {
-
-          this.prepareButtons();       
-        });        
-        */
+{
+            this.prepareButtons();       
+        });
 
 
         window.addEventListener("focus", (e) => {
             this.windowStatus = "FOCUSED";            
             this.stopBlink();            
-            this.markSeenMessages();
+            //this.markSeenMessages();
             console.log("got focus")
 
         });
@@ -1286,41 +1004,52 @@ export default {
 			    });
                 
             } else {
-                console.log("this is from other users");
 
-                this.prepareChatBox(data.broadcast_sender);
-
-                let sender = {
-                    'msgCtr': 1,
-                    'userid': data.broadcast_sender.userid,
-                    'username': data.broadcast_sender.username, 
-                    'nickname':  "Customer Support",
-                    'message': data.broadcast_sender.message,
-                    'user_image': data.broadcast_sender.user_image,   
-                    'type': data.broadcast_sender.type,          
-                };
+                 //console.log("this message is received from other users");
 
 
-                this.chatlogs[data.broadcast_sender.userid].push({
+                //reset unread message to 0
+                let userIndex = this.users.findIndex(user => user.userid == data.broadcast_sender.userid)
+                this.users[userIndex].unreadMsg    = 0;  
+               
+                //log and simultainously show to other admin 
+                if (data.broadcast_sender.userid == this.current_user.userid) 
+                {
+                    this.prepareChatBox(data.broadcast_sender);
+
+                 
+
+                    let sender = {
+                        'msgCtr': 1,
+                        'userid': data.broadcast_sender.userid,
+                        'username': data.broadcast_sender.username, 
+                        'nickname':  "Customer Support",
+                        'message': data.broadcast_sender.message,
+                        'user_image': data.broadcast_sender.user_image,   
+                        'type': data.broadcast_sender.type,          
+                    };
+
+            
+                    this.chatlogs.push({
                         time: data.time,
                         sender: sender            
-                });
+                    });
+                    
 
-                this.$forceUpdate();
-                
-                this.$nextTick(function()
-                {
-                    this.scrollToEnd();
-			    });
+                    this.$forceUpdate();
+                    
+                    this.$nextTick(function()
+                    {
+                        this.scrollToEnd();
+                    });
+
+                }
             }	
 	    });
 
         socket.on('PRIVATE_MESSAGE', data => 
         {
             this.prepareChatBox(data.sender);
-
-
-            
 
             let sender = {
                 'msgCtr': 1,
@@ -1329,14 +1058,21 @@ export default {
                 'nickname': data.sender.nickname,
                 'message': data.sender.message,
                 'user_image': data.sender.user_image,   
-                'type': data.sender.type,          
+                'type': data.sender.type, 
             };
             
-            this.chatlogs[data.sender.userid].push({
+
+
+            if (this.current_user !== null && this.current_user.userid == data.sender.userid) 
+            {
+                this.chatlogs.push({
                     time: data.time,
                     sender: sender            
-            });
-            this.$forceUpdate();
+                });
+                this.$forceUpdate();
+            }
+ 
+
 
             this.$nextTick(function() {
 
@@ -1347,14 +1083,14 @@ export default {
                 //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
                 //THIS WILL BE DISCREGARDED IF WINDOWSTATUS IS BLURRED
                 if (this.windowStatus == "FOCUSED") {
-                    this.stopBlink();
-                    this.markSeenMessages();                
+                    //this.stopBlink();
+                   // this.markSeenMessages();                
                 }
                 
                 if (this.windowStatus == "BLURRED") {
 
                     if (data.sender.type !== "CHAT_SUPPORT") {
-                        this.blink();
+                        //this.blink();
                     }                    
                     //console.log("window status ", this.windowStatus);                
                 }
@@ -1363,11 +1099,54 @@ export default {
 
             this.$nextTick(function()
             {
-                if (isNaN(this.chatCount[data.sender.userid])) {
-                    this.chatCount[data.sender.userid] = 1;
+                //let chatMessage = this.users.find(user => user.userid == data.sender.userid);
+
+                var length = 30;
+                let string = data.sender.message                
+                var trimmedString = string.length > length ? string.substring(0, length - 3) + "..." : string;
+               
+
+                let userIndex = this.users.findIndex(user => user.userid == data.sender.userid)
+
+                if (this.users[userIndex]) 
+                {
+                    //user is on the admin users list, let just update the unread counter
+                    // and move the first
+
+                    console.log(data.sender)
+                    if (data.sender.type == "CHAT_SUPPORT") {
+                        //chat support is sending a message
+                    } else {
+                        this.users[userIndex].unreadMsg++;
+                        this.users[userIndex].totalMsg++;
+                        this.users[userIndex].recentMsg = trimmedString; 
+                        this.users.unshift(this.users.splice(userIndex, 1)[0])
+                    }
+
                 } else {
-                    this.chatCount[data.sender.userid] += 1;
+
+                    if (data.sender.type == "CHAT_SUPPORT") {
+                        //chat support is sending a message
+                    } else {
+
+                        //the user is online but not on the list since he has no recent messages, 
+                        //append the online uses to recent user list and initiazlie unread messages and total messages
+
+                        data.sender.unreadMsg    = 1;
+                        data.sender.totalMsg     = 1;
+                        data.sender.recentMsg    = trimmedString; 
+                        data.sender.status      = "online"; 
+
+                        this.users.unshift(data.sender);
+                    }
+                
                 }
+
+ 
+               // this.markSeenMessages()
+
+            
+
             }); 
 
  
@@ -1386,6 +1165,91 @@ export default {
           
     },
 };
+
+
+Vue.component("chatlogs-component", {
+  props: ['chatlogs'],
+  data: function () {
+    return {};
+  },
+  methods: {
+
+  },
+  template:
+    `<div>
+        <div class="container" v-for="(chatlog, chatlogIndex) in chatlogs" :key="'chatlog_'+chatlogIndex">
+
+            <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">
+                <div class="col-md-3">&nbsp;</div>
+                <div class="col-md-9">
+                
+                    <div v-if="chatlogIndex == 0 || chatlogs[chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">  
+                        <chatsupport-info-component 
+                        :userid="chatlog.sender.userid"
+                        :image="chatlog.sender.user_image"
+                        :nickname="chatlog.sender.nickname" 
+                        :time="chatlog.time">
+                        </chatsupport-info-component>
+                    </div>
+
+                    <div style="float:right">
+                    <div class="chatsupport-message" v-html="chatlog.sender.message"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row" v-if="chatlog.sender.type == 'MEMBER'" >
+                <div class="col-md-9">
+                    <div v-if="chatlogIndex == 0 || chatlogs[chatlogIndex - 1].sender.type !== 'MEMBER' ">       
+                                
+                        <member-info-component 
+                            :userid="chatlog.sender.userid"
+                            :image="chatlog.sender.user_image"
+                            :nickname="chatlog.sender.nickname" 
+                            :time="chatlog.time">
+                        </member-info-component>
+                    </div>
+                    <div class="member-message" v-html="chatlog.sender.message"></div>
+                </div>
+                <div class="col-md-3">&nbsp;</div>
+            </div>
+        </div>
+    </div>`
+    ,
+});
+
+
+
+
+Vue.component("current-user-component", {
+  props: ['user'],
+  data: function () {
+    return {};
+  },
+  methods: {
+    closeChat() {
+        //this.$parent.hideChatBox()
+        this.$root.$refs["adminChatComponent"].hideChatBox()
+    }
+  },
+  template:
+    `<div class="card-header">
+        <div class="float-left">
+            <div class="h5 mb-0">{{ user.nickname}}</div>
+            <div class="small">{{  user.username }}</div>
+            <div class="small">ID Number: {{ user.userid }}</div>
+        </div>
+
+        <div class="float-right">          
+            <button v-on:click="closeChat()" style="border:none">X</button>
+        </div>
+    </div>`
+    ,    
+});
+
+
+
 
 
 Vue.component("member-info-component", {
@@ -1410,7 +1274,6 @@ Vue.component("chatsupport-info-component", {
   template:
     `<div style='text-align:right'>      
       <span class="pl-3 small">{{ nickname }}, {{ time }}</span>
-      
     </div>`
     ,    
 });
@@ -1427,7 +1290,7 @@ Vue.component("chatsupport-info-component", {
 }
 </style>
 
-<style scoped>
+<style >
 .floating-history-fetcher {
     position: absolute;
     top: 65px;
@@ -1459,13 +1322,17 @@ Vue.component("chatsupport-info-component", {
   
 }
 
-.member-information-container {
-  padding: 15px 3px 15px;
-  border-bottom:1px solid rgb(253, 253, 253)
+.user-info { 
+    padding: 8px 3px 8px; border-bottom:1px solid rgb(236, 236, 236);
+    cursor: pointer;
 }
 
-.member-information-container:hover {
-   background-color: #e1f6fd;
+.user-info:hover { 
+    background-color: #e1f6fd;
+}
+
+.user-info.active { 
+    background-color: #b8ebfc;
 }
 
 .member .profile-photo img {
@@ -1497,7 +1364,7 @@ Vue.component("chatsupport-info-component", {
   float: left;
 }
 
-.user-chatlog {
+#user-chatlog, .loading-container {
   padding:5px;
   height: 420px;
   overflow-y: auto;
@@ -1556,6 +1423,28 @@ Vue.component("chatsupport-info-component", {
 .btn-xs {
     font-size: 11px;
     padding: 2px 5px 2px;
+}
+
+.hr-center {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    color: rgba(0, 0, 0, 0.35);
+    margin: 8px 0px;
+}
+.hr-center:before,
+.hr-center:after {
+    content: "";
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.35);
+    height: 1px;
+    font-size: 0px;
+    line-height: 0px;
+    margin: 0px 8px;
+}
+
+#attached-progress-report {
+    width: 100%;
 }
 
 </style>

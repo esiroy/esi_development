@@ -963,9 +963,22 @@ export default {
 };
 </script>
 
+
+<style>
+.img_preview {
+    width: 100%;
+}
+.custom-pdf {
+    font-size: 100px;
+}
+</style>
+
+
 <style scoped>
 
-
+    .img_preview {
+        width: 100px;
+    }
     #fileUpload {
         display: none;
     }

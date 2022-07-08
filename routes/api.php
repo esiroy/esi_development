@@ -94,6 +94,7 @@ Route::middleware('auth:api')->post('/getUnreadChatMessages', 'API\ChatSupportCo
 Route::middleware('auth:api')->post('/markChatMessagesRead', 'API\ChatSupportController@markChatMessagesRead')->name('APIMarkChatMessagesRead');
 Route::middleware('auth:api')->post('/saveCustomerSupportChat', 'API\ChatSupportController@saveCustomerSupportChat')->name('APISaveCustomerSupportChat');
 
+Route::middleware('auth:api')->post('/getAdminChatHistory', 'API\ChatSupportController@getAdminChatHistory')->name('APIGetAdminChathistory');
 Route::middleware('auth:api')->post('/getAdminUnreadChatMessages', 'API\ChatSupportController@getAdminUnreadChatMessages')->name('APIGetUnreadAdminChatMessages');
 Route::middleware('auth:api')->post('/markAdminChatMessagesRead', 'API\ChatSupportController@markAdminChatMessagesRead')->name('APIMarkAdminChatMessagesRead');
 

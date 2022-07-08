@@ -8,10 +8,92 @@ use Illuminate\Http\Request;
 use App\Models\ChatSupportHistory;
 use App\Models\User;
 use App\Models\UserImage;
-use DB;
+use DB, Str;
 
 class ChatSupportController extends Controller
 {
+
+
+
+    public function getAdminChatHistory(Request $request, ChatSupportHistory $chatSupportHistory) 
+    {
+
+        $page = $request->page;
+        $sender_id = $request->sender_id;
+        $recipient_id = $request->recipient_id;
+
+        if ($page == null) {
+            $page = 1;
+        }
+
+        $itemsPerPage = 10;
+
+        /*
+        $chatHistoryItems = $chatSupportHistory
+                            ->where('sender_id', $sender_id)
+                            ->orWhere('recipient_id', $sender_id)
+                            ->orderby('id', "DESC")
+                            ->paginate($itemsPerPage, ['*'], 'page', $page);
+        */
+
+        
+        $chatHistoryItems =  $chatSupportHistory
+        ->where('sender_id', $sender_id)
+        ->where('valid', 1)
+        ->where('is_read', 1)
+        ->orderby('id', "DESC")->orWhere(function ($q) use ($sender_id) 
+        {
+                //show my from member
+                $q->orWhere('recipient_id', $sender_id)                
+                ->where('valid', 1)
+                //->where('is_read', 1)
+                ->orderby('id', "DESC");
+
+        })->paginate($itemsPerPage, ['*'], 'page', $page);    
+
+        if ($chatHistoryItems->count() > 0)  {
+            return Response()->json([
+                "success"           => true,                
+                "chatHistoryItems"  => $chatHistoryItems,                
+            ]);
+        } else {
+            return Response()->json([
+                "success"           => false,                
+                "message"           => "no more history found"
+            ]);            
+        }
+    }
+
+    /* ADMIN GET UNREAD MESSAGES */
+    public function getAdminUnreadChatMessages(Request $request, ChatSupportHistory $chatSupportHistory) 
+    {
+        $sender_id = $request->sender_id;
+
+       
+        $chatItems = $chatSupportHistory
+                            //->where('message_type', 'MEMBER')
+                            ->where('sender_id', $sender_id)
+                            ->where('recipient_id', 1 )
+                            ->where('valid', 1)
+                            ->where('is_read', 0)
+                            ->orderby('id', "DESC")->get();
+
+        if ($chatItems->count() > 0)  {
+            return Response()->json([
+                "success"                   => true,                
+                "chatItems"                 => $chatItems,
+                "unreadMessageCount"        => $chatItems->count(),    
+                "message"                   => "Unread Messages Found"            
+            ]);
+        } else {
+            return Response()->json([
+                "success"               => false,            
+                "unreadMessageCount"    => 0,       
+                "message"               => "No Unread Messages found"
+            ]);            
+        }                  
+    }
+
 
     public function getChathistory(Request $request, ChatSupportHistory $chatSupportHistory) 
     {
@@ -24,11 +106,8 @@ class ChatSupportController extends Controller
             $page = 1;
         }
 
-        $itemsPerPage = 15;
+        $itemsPerPage = 5;
 
-    
-
-        
         $chatHistoryItems = $chatSupportHistory
                             ->where('sender_id', $sender_id)
                             ->orWhere('recipient_id', $sender_id)
@@ -91,10 +170,16 @@ class ChatSupportController extends Controller
 
             $user = User::find($recentUser);
 
-            $unread = $chatSupportHistory->where('message_type', 'MEMBER')->where('sender_id', $user->id)
+            $unread = $chatSupportHistory
+                            ->where('message_type', 'MEMBER')->where('sender_id', $user->id)
                             ->where('valid', 1)
                             ->where('is_read', 0)
-                            ->orderby('id', "DESC")->count();            
+                            ->orderby('id', "DESC");
+           
+            $totalMsg = $chatSupportHistory->where('message_type', 'MEMBER')->where('sender_id', $user->id)->where('valid', 1)->orderby('id', "DESC")->count();
+
+            $unreadMsgCtr = $unread->count(); 
+            $recentMsg = $unread->limit(1)->first();
 
             $userList[$key]['id']           = $user->id;
             $userList[$key]['userid']       = $user->id;
@@ -103,12 +188,19 @@ class ChatSupportController extends Controller
             $userList[$key]['status']       = 'offline';
             $userList[$key]['type']         = $user->user_type;
 
-            $userList[$key]['unreadMsg']       = $unread;
+            $userList[$key]['totalMsg']     = $totalMsg;
+            $userList[$key]['unreadMsg']    = $unreadMsgCtr;
+            //add most recent message
+            $userList[$key]['recentMsg']    = Str::limit($recentMsg->message  ?? null, 30) ;
 
             $userPhoto = $userImage->getMemberPhotoByID($user->id);
 
             if ($userPhoto) {
-                $userList[$key]['user_image']  = asset('storage/'. $userPhoto->original);
+
+                if (file_exists(public_path('storage/'. $userPhoto->original)))
+                    $userList[$key]['user_image']  = asset('storage/'. $userPhoto->original);
+                else
+                   $userList[$key]['user_image']  = asset('images/samplePictureNoImage.jpg');
             } else {            
                 $userList[$key]['user_image']  = asset('images/samplePictureNoImage.jpg');
             }            
@@ -128,48 +220,7 @@ class ChatSupportController extends Controller
     }
 
 
-    /* ADMIN GET UNREAD MESSAGES */
-    public function getAdminUnreadChatMessages(Request $request, ChatSupportHistory $chatSupportHistory) 
-    {
-        $sender_id = $request->sender_id;
 
-        $chatItems = $chatSupportHistory
-                            //->where('message_type', 'MEMBER')
-                            ->where('sender_id', $sender_id)
-                            ->where('recipient_id', 1 )
-                            ->where('valid', 1)
-                            ->where('is_read', 0)
-                            ->orderby('id', "DESC")->get();
-
-        /*
-        $unReadSentItems = $chatSupportHistory
-                            //->where('message_type', 'MEMBER')
-                            ->where('sender_id', 1)
-                            ->where('recipient_id', $sender_id )
-                            ->where('valid', 1)
-                            ->where('is_read', 0)
-                            ->orderby('id', "DESC")
-                            ->get();   
-
-        $chatItems->push(...$unReadSentItems);
-        */
-
-
-        if ($chatItems->count() > 0)  {
-            return Response()->json([
-                "success"                   => true,                
-                "chatItems"                 => $chatItems,
-                "unreadMessageCount"        => $chatItems->count(),    
-                "message"                   => "Unread Messages Found"            
-            ]);
-        } else {
-            return Response()->json([
-                "success"               => false,            
-                "unreadMessageCount"    => 0,       
-                "message"               => "No Unread Messages found"
-            ]);            
-        }                  
-    }
 
 
     public function markAdminChatMessagesRead(Request $request, ChatSupportHistory $chatSupportHistory)
@@ -188,7 +239,7 @@ class ChatSupportController extends Controller
         if ($chatItems)  {
             return Response()->json([
                 "success"               => true, 
-                "message"               => "Unread Messages marked as read"            
+                "message"               => "All Unread Messages marked as read"            
             ]);
 
         } else {
