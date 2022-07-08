@@ -385,6 +385,8 @@ export default {
                         this.$forceUpdate();                        
                         if (scrollToBottom == true) {
                             this.scrollToEnd();
+
+                             this.addAutoPaginatedHistory();
                         } else {
                             this.scrollToTop();
                         }
@@ -483,7 +485,7 @@ export default {
             this.$forceUpdate();
             var container = this.$el.querySelector("#user-chatlog");
             if(container){            
-                container.scrollTop = 100;
+                container.scrollTop = 500;
             }
         },          
         scrollToEnd() {
@@ -492,7 +494,6 @@ export default {
                 var container = this.$el.querySelector("#user-chatlog");
                 if(container) {
                     container.scrollTop = container.scrollHeight;
-                    this.addAutoPaginatedHistory();
                 }
             });
         },
@@ -501,12 +502,11 @@ export default {
             let total = parseInt(chatScrubber.scrollTop);
             
             chatScrubber.addEventListener("scroll", (event) => {
-                console.log(chatScrubber.scrollTop);                          
-                var shot = parseInt(total) - parseInt(chatScrubber.scrollTop);
-                var percent = parseInt((shot / total) * 100);
+                console.log(chatScrubber.scrollTop ); 
 
                 //REACHED TOP OF SCROLL
-                if (!isNaN(percent) && percent == 100) {
+                if (chatScrubber.scrollTop == 0) {
+
                     this.getChatHistory(this.current_user, false);
                 } 
             });
@@ -541,8 +541,6 @@ export default {
 
         },
         sendMessage() {
-
-            console.log(this.current_user);
 
             //files is empty and message is empty, stop sending message
             if (this.files.length == 0 && (this.message === "" || this.message === undefined)) 
@@ -582,12 +580,13 @@ export default {
                     'type': "CHAT_SUPPORT"
                 };
             
-               
+                /*   
                 this.chatlogs.push({
                     sender: sender,
                     message: this.message,
                     time: time
                 });
+                */
                 
 
                 let userMessage = this.message;
@@ -992,18 +991,13 @@ export default {
             this.updateUserList(users); 
         });
 
-	    socket.on("OWNER_MESSAGE", data => {            
-
-            
-            console.log(data, data.broadcast_recipient.userid + " message from owner => " + this.userid);
-
-		    if (data.broadcast_recipient.userid == this.userid) 
+	    socket.on("OWNER_MESSAGE", data => 
+        {
+            if (data.broadcast_recipient.userid == this.userid) 
             {
-                //console.log(" owner is me");
+             
 
                 this.prepareChatBox(data.broadcast_recipient);
-
-                //console.log("owner message", data);
 
                 let sender = {
                     'msgCtr': 1,
@@ -1015,41 +1009,52 @@ export default {
                     'type': data.broadcast_sender.type,          
                 };
 
-               /*
-                this.chatlogs[data.broadcast_sender.userid].push({
-                        time: data.time,
-                        sender: sender            
-                });
-                */
-
-                this.$forceUpdate();
-                
-                this.$nextTick(function()
+               
+                if (this.current_user !== null && this.current_user.userid == data.broadcast_sender.userid) 
                 {
-                    this.scrollToEnd();
-			    });
+
+                    console.log("owner message");
+
+                    this.chatlogs.push({
+                            time: data.time,
+                            sender: sender            
+                    });
+
+                    this.$forceUpdate();
+                    
+                    this.$nextTick(function()
+                    {
+                        this.scrollToEnd();
+                    });
+
+                }
+
                 
             } else {
 
-                 console.log("this message is received from other users");
-
+                console.log("this is from other users");
 
                 //reset unread message to 0
-                let userIndex = this.users.findIndex(user => user.userid == data.broadcast_sender.userid)
-                this.users[userIndex].unreadMsg    = 0;  
+
+                if (data.broadcast_sender.type !== 'MEMBER') {
+
+
+                    let userIndex = this.users.findIndex(user => user.userid == data.broadcast_sender.userid)
+
+                    if (userIndex) {
+                        this.users[userIndex].unreadMsg  = 0;  
+                    }
+
+                }
+
+
                 
+
                 //log and simultainously show to other admin 
               
-                if (data.broadcast_sender.userid == this.activeUserID) 
-                {
+                if (data.broadcast_sender.userid == this.activeUserID) {
 
-
-                    console.log(data.broadcast_recipient.userid);
-
-
-                    this.prepareChatBox(data.broadcast_sender);
-
-                 
+                    this.prepareChatBox(data.broadcast_sender);                 
 
                     let sender = {
                         'msgCtr': 1,
@@ -1066,10 +1071,8 @@ export default {
                         time: data.time,
                         sender: sender            
                     });
-                    
 
                     this.$forceUpdate();
-                    
                     this.$nextTick(function()
                     {
                         this.scrollToEnd();
@@ -1081,6 +1084,9 @@ export default {
 
         socket.on('PRIVATE_MESSAGE', data => 
         {
+
+            
+
             this.prepareChatBox(data.sender);
 
             let sender = {
@@ -1097,10 +1103,15 @@ export default {
 
             if (this.current_user !== null && this.current_user.userid == data.sender.userid) 
             {
+                
+                console.log("PRIVATE_MESSAGE");
+
+
                 this.chatlogs.push({
                     time: data.time,
                     sender: sender            
                 });
+
                 this.$forceUpdate();
             }
  
@@ -1142,34 +1153,65 @@ export default {
 
                 if (this.users[userIndex]) 
                 {
-                    //user is on the admin users list, let just update the unread counter
-                    // and move the first
+                    //USER IS ON THE LIST 
 
-                    console.log(data.sender)
                     if (data.sender.type == "CHAT_SUPPORT") {
                         //chat support is sending a message
                     } else {
-                        this.users[userIndex].unreadMsg++;
-                        this.users[userIndex].totalMsg++;
+
+                        console.log("Private chat message + indexed for new user")
+
+                      
+                        if (isNaN(this.users[userIndex].unreadMsg)) {
+                            this.users[userIndex].unreadMsg = 1;
+                        } else {
+                            this.users[userIndex].unreadMsg++;
+                        }
+
+                        if (isNaN(this.users[userIndex].totalMsg)) {
+                            this.users[userIndex].totalMsg = 1;
+                        } else {
+                            this.users[userIndex].totalMsg++;
+                        }      
+
                         this.users[userIndex].recentMsg = trimmedString; 
+
+                        console.log(this.users[userIndex])
+
+                       
                         this.users.unshift(this.users.splice(userIndex, 1)[0])
+                      
+
+                        this.$forceUpdate();
+                        
                     }
 
                 } else {
 
+                    console.log("private message "+ data.sender.type + " ", data)
+
+
                     if (data.sender.type == "CHAT_SUPPORT") {
-                        //chat support is sending a message
+
+                        //chat support is sending a message to a user 
+                        let userIndex = this.users.findIndex(user => user.userid == data.recipient.userid)
+
+                        //reset other admin unread message count
+                        if (this.users[userIndex]) {
+                            this.users[userIndex].unreadMsg = 0;
+                        }                      
+
                     } else {
 
-                        //the user is online but not on the list since he has no recent messages, 
+                         //the user is online but not on the list since he has no recent messages, 
                         //append the online uses to recent user list and initiazlie unread messages and total messages
 
                         data.sender.unreadMsg    = 1;
                         data.sender.totalMsg     = 1;
                         data.sender.recentMsg    = trimmedString; 
                         data.sender.status      = "online"; 
-
                         this.users.unshift(data.sender);
+             
                     }
                 
                 }
