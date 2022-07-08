@@ -74,16 +74,24 @@
                                     <!-- Chat Log Information Header -->
                                     <div class="card-body">
 
-
                                         <div v-if="isLoading == true" class="loading-container text-center">
-
                                             <div class="btn btn-xs btn-secondary">
                                                 <i class="fas fa-sync fa-spin"></i> 
                                                 Loading...
-                                            </div>                                             
+                                            </div> 
                                         </div>
-
                                         <div id="user-chatlog" class="border rounded" v-else-if="isLoading == false" > 
+
+
+                                            <div class="text-center floating-history-fetcher mt-3" v-show="historyNotifier == true"> 
+                                                <div v-on:click="getChatHistory(current_user, false)" id="floating-history-btn" class="btn btn-xs btn-secondary" 
+                                                    v-show="isFetching == false">
+                                                    Fetch History                        
+                                                </div>   
+                                                <div v-show="isFetching == true"  id="floating-history-btn" class="btn btn-xs btn-primary">
+                                                    <i class="fas fa-sync fa-spin"></i>  Loading
+                                                </div>                                                     
+                                            </div>                                
 
 
                                             <chatlogs-component :chatlogs="chatlogsHistory"></chatlogs-component>
@@ -291,6 +299,8 @@ export default {
             this.chatlogs           = [];
             this.current_user       = currentUser;
             this.activeUserID       = currentUser.userid;
+
+            this.historyNotifier    = true;
             
             this.getUnreadMemberMessages(currentUser);
 
@@ -469,22 +479,38 @@ export default {
                 
             });
         },      
-        scrollToTop: function() {
+        scrollToTop() {
             this.$forceUpdate();
             var container = this.$el.querySelector("#user-chatlog");
             if(container){            
-                container.scrollTop = 0;
+                container.scrollTop = 100;
             }
         },          
-        scrollToEnd: function() {
+        scrollToEnd() {
             this.$nextTick(() => {    
                 this.$forceUpdate();
                 var container = this.$el.querySelector("#user-chatlog");
                 if(container) {
                     container.scrollTop = container.scrollHeight;
-                    console.log( container.scrollHeight);
+                    this.addAutoPaginatedHistory();
                 }
             });
+        },
+        addAutoPaginatedHistory() {
+            let chatScrubber = document.getElementById("user-chatlog");
+            let total = parseInt(chatScrubber.scrollTop);
+            
+            chatScrubber.addEventListener("scroll", (event) => {
+                console.log(chatScrubber.scrollTop);                          
+                var shot = parseInt(total) - parseInt(chatScrubber.scrollTop);
+                var percent = parseInt((shot / total) * 100);
+
+                //REACHED TOP OF SCROLL
+                if (!isNaN(percent) && percent == 100) {
+                    this.getChatHistory(this.current_user, false);
+                } 
+            });
+
         },
         markMessagesRead(user) 
         {
