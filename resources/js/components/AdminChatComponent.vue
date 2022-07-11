@@ -19,9 +19,6 @@
                                     <div id="user-list" v-if="user.userid !== userid" >
 
                                         <div v-if="user.totalMsg > 0" :class="[user.userid == activeUserID ? 'active' : '', 'user-info']">
-                                           
-                                         
-
                                             <div class="profile-photo align-top">
                                                 <img :src="user.user_image"  class="img-fluid rounded">
                                             </div>
@@ -314,12 +311,19 @@ export default {
 
             this.isFetching = true;
 
-            if (this.page == 1) 
-            {
+            if (this.page == 1) {
                 this.chatlogsHistory = [];
+
+            } else if (this.page > 1 ) {         
+
+                if (this.historyNotifier == false) {
+                    // chat history is reached limit
+                    console.log("history page limit reached")
+                    return false;                    
+                }                
             }
-          
-          
+
+
             //user is the sender
             axios.post("/api/getAdminChatHistory?api_token=" + this.api_token, 
             {
@@ -384,9 +388,8 @@ export default {
                     this.$nextTick(() => {                      
                         this.$forceUpdate();                        
                         if (scrollToBottom == true) {
+                            this.addAutoPaginatedHistory();
                             this.scrollToEnd();
-
-                             this.addAutoPaginatedHistory();
                         } else {
                             this.scrollToTop();
                         }
@@ -427,7 +430,8 @@ export default {
                 sender_id         : user.userid,
             }).then(response => {  
 
-                if (response.data.success === true) {
+                if (response.data.success === true) 
+                {
                     response.data.chatItems.forEach(data => {
 
                         let chatboxUsername = null;
@@ -462,20 +466,23 @@ export default {
                     });
                     
 
-                    this.$nextTick(function(){
+                    this.$nextTick(function()
+                    {
                         this.$forceUpdate();
+
                         this.getChatHistory(user, true);
-                        //this.unread_message_count = response.data.unreadMessageCount;
-                         this.isLoading = false;
+                        
+                        this.isLoading = false;
 
                     });
 
                 } else {
-                    this.$nextTick(function() {
+                    this.$nextTick(function() 
+                    {
                         this.$forceUpdate();
                         this.getChatHistory(user, true);
-                        //this.unread_message_count = response.data.unreadMessageCount;
-                         this.isLoading = false;
+                       
+                        this.isLoading = false;
                     });
                 }
                 
@@ -502,12 +509,10 @@ export default {
             let total = parseInt(chatScrubber.scrollTop);
             
             chatScrubber.addEventListener("scroll", (event) => {
-                console.log(chatScrubber.scrollTop ); 
-
                 //REACHED TOP OF SCROLL
-                if (chatScrubber.scrollTop == 0) {
-
-                    this.getChatHistory(this.current_user, false);
+                if (chatScrubber.scrollTop == 0) 
+                {                   
+                    this.getChatHistory(this.current_user, false);                                     
                 } 
             });
 
@@ -995,8 +1000,6 @@ export default {
         {
             if (data.broadcast_recipient.userid == this.userid) 
             {
-             
-
                 this.prepareChatBox(data.broadcast_recipient);
 
                 let sender = {
@@ -1085,8 +1088,6 @@ export default {
         socket.on('PRIVATE_MESSAGE', data => 
         {
 
-            
-
             this.prepareChatBox(data.sender);
 
             let sender = {
@@ -1101,41 +1102,36 @@ export default {
             
 
 
-            if (this.current_user !== null && this.current_user.userid == data.sender.userid) 
-            {
-                
-                console.log("PRIVATE_MESSAGE");
+            if (this.current_user !== null && this.current_user.userid == data.sender.userid) {                
 
-
+                //console.log("PRIVATE_MESSAGE");
                 this.chatlogs.push({
                     time: data.time,
                     sender: sender            
                 });
-
                 this.$forceUpdate();
             }
  
 
 
-            this.$nextTick(function() {
-
+            this.$nextTick(function() 
+            {
                 this.scrollToEnd();
-
 
                 //DETECTION FOR OPENED CHATBOX,
                 //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
                 //THIS WILL BE DISCREGARDED IF WINDOWSTATUS IS BLURRED
                 if (this.windowStatus == "FOCUSED") {
-                    //this.stopBlink();
+                    this.stopBlink();
                    // this.markSeenMessages();                
                 }
                 
                 if (this.windowStatus == "BLURRED") {
 
                     if (data.sender.type !== "CHAT_SUPPORT") {
-                        //this.blink();
+                        this.blink();
                     }                    
-                    //console.log("window status ", this.windowStatus);                
+                    console.log("window status ", this.windowStatus);                
                 }
 
             });             
@@ -1153,13 +1149,18 @@ export default {
 
                 if (this.users[userIndex]) 
                 {
-                    //USER IS ON THE LIST 
-
+                    //USER SENDING A MESSAGE IS FOUND ON THE LIST OF USERS ONLINE
                     if (data.sender.type == "CHAT_SUPPORT") {
-                        //chat support is sending a message
+
+                        //chat support is sending a message to a member
+                        //we don't need to increase the unread message counter since this counter is for unread message from member
+
+                        //this.markSeenMessages() //marked as read relegated to when a chat support reply to messages only
+
                     } else {
 
-                        console.log("Private chat message + indexed for new user")
+                        //Member message is recieved, increase to message counter by 1
+                        //console.log("Private chat message + indexed for new user")
 
                       
                         if (isNaN(this.users[userIndex].unreadMsg)) {
@@ -1175,30 +1176,30 @@ export default {
                         }      
 
                         this.users[userIndex].recentMsg = trimmedString; 
-
-                        console.log(this.users[userIndex])
-
-                       
-                        this.users.unshift(this.users.splice(userIndex, 1)[0])
-                      
-
+                        this.users.unshift(this.users.splice(userIndex, 1)[0]);
                         this.$forceUpdate();
                         
                     }
 
                 } else {
 
-                    console.log("private message "+ data.sender.type + " ", data)
+                    //USER WHO SENT A MESSAGE IS NOT IN THE LIST OF RECENT USERS, 
+                    //WE WILL CREATE A NEW USER ON THE LIST
+
+                    //console.log("private message "+ data.sender.type + " ", data)
 
 
                     if (data.sender.type == "CHAT_SUPPORT") {
 
-                        //chat support is sending a message to a user 
+                        //chat support is sending a message to a user, 
+                        //unread message reset to zero
                         let userIndex = this.users.findIndex(user => user.userid == data.recipient.userid)
 
                         //reset other admin unread message count
                         if (this.users[userIndex]) {
                             this.users[userIndex].unreadMsg = 0;
+
+                            //this.markSeenMessages() //marked as read relegated to when a chat support reply to messages only
                         }                      
 
                     } else {
@@ -1215,12 +1216,6 @@ export default {
                     }
                 
                 }
-
- 
-               // this.markSeenMessages()
-
-            
-
             }); 
 
  
