@@ -496,13 +496,16 @@ export default {
             }
         },          
         scrollToEnd() {
-            this.$nextTick(() => {    
-                this.$forceUpdate();
-                var container = this.$el.querySelector("#user-chatlog");
-                if(container) {
-                    container.scrollTop = container.scrollHeight;
-                }
-            });
+            if (this.historyNotifier == true) 
+            {            
+                this.$nextTick(() => {    
+                    this.$forceUpdate();
+                    var container = this.$el.querySelector("#user-chatlog");
+                    if(container) {
+                        container.scrollTop = container.scrollHeight;
+                    }
+                });
+            }
         },
         addAutoPaginatedHistory() {
             let chatScrubber = document.getElementById("user-chatlog");
