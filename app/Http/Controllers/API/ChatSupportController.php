@@ -170,40 +170,45 @@ class ChatSupportController extends Controller
 
             $user = User::find($recentUser);
 
-            $unread = $chatSupportHistory
-                            ->where('message_type', 'MEMBER')->where('sender_id', $user->id)
-                            ->where('valid', 1)
-                            ->where('is_read', 0)
-                            ->orderby('id', "DESC");
-           
-            $totalMsg = $chatSupportHistory->where('message_type', 'MEMBER')->where('sender_id', $user->id)->where('valid', 1)->orderby('id', "DESC")->count();
+            if ($user) {
+            
+                $unread = $chatSupportHistory
+                                ->where('message_type', 'MEMBER')->where('sender_id', $user->id)
+                                ->where('valid', 1)
+                                ->where('is_read', 0)
+                                ->orderby('id', "DESC");
+            
+                $totalMsg = $chatSupportHistory->where('message_type', 'MEMBER')->where('sender_id', $user->id)->where('valid', 1)->orderby('id', "DESC")->count();
 
-            $unreadMsgCtr = $unread->count(); 
-            $recentMsg = $unread->limit(1)->first();
+                $unreadMsgCtr = $unread->count(); 
+                $recentMsg = $unread->limit(1)->first();
 
-            $userList[$key]['id']           = $user->id;
-            $userList[$key]['userid']       = $user->id;
-            $userList[$key]['username']     = $user->username;
-            $userList[$key]['nickname']     = $user->memberInfo->nickname ?? '-';         
-            $userList[$key]['status']       = 'offline';
-            $userList[$key]['type']         = $user->user_type;
+                $userList[$key]['id']           = $user->id;
+                $userList[$key]['userid']       = $user->id;
+                $userList[$key]['username']     = $user->username;
+                $userList[$key]['nickname']     = $user->memberInfo->nickname ?? '-';         
+                $userList[$key]['status']       = 'offline';
+                $userList[$key]['type']         = $user->user_type;
 
-            $userList[$key]['totalMsg']     = $totalMsg;
-            $userList[$key]['unreadMsg']    = $unreadMsgCtr;
-            //add most recent message
-            $userList[$key]['recentMsg']    = Str::limit($recentMsg->message  ?? null, 30) ;
+                $userList[$key]['totalMsg']     = $totalMsg;
+                $userList[$key]['unreadMsg']    = $unreadMsgCtr;
+                //add most recent message
+                $userList[$key]['recentMsg']    = Str::limit($recentMsg->message  ?? null, 30) ;
 
-            $userPhoto = $userImage->getMemberPhotoByID($user->id);
+                $userPhoto = $userImage->getMemberPhotoByID($user->id);
 
-            if ($userPhoto) {
+                if ($userPhoto) {
 
-                if (file_exists(public_path('storage/'. $userPhoto->original)))
-                    $userList[$key]['user_image']  = asset('storage/'. $userPhoto->original);
-                else
-                   $userList[$key]['user_image']  = asset('images/samplePictureNoImage.jpg');
-            } else {            
-                $userList[$key]['user_image']  = asset('images/samplePictureNoImage.jpg');
-            }            
+                    if (file_exists(public_path('storage/'. $userPhoto->original)))
+                        $userList[$key]['user_image']  = asset('storage/'. $userPhoto->original);
+                    else
+                    $userList[$key]['user_image']  = asset('images/samplePictureNoImage.jpg');
+                } else {            
+                    $userList[$key]['user_image']  = asset('images/samplePictureNoImage.jpg');
+                }              
+
+
+            }
         }
 
         if (count($userList) > 0)  {
