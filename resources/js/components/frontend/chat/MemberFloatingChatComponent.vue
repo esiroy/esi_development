@@ -783,6 +783,7 @@ export default {
     markMessagesRead(userid) {
 
         console.log("marking read")
+        clearInterval(this.interval);
 
         axios.post("/api/markChatMessagesRead?api_token=" + this.api_token, 
         {

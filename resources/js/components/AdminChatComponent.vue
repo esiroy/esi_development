@@ -603,10 +603,11 @@ export default {
         executeScroll() {        
             let  container = this.$el.querySelector("#user-chatlog");
             if(container) {
-                container.scrollTop = container.scrollHeight;                
-                clearInterval(this.scrollInterval);
+                container.scrollTop = container.scrollHeight;  
                 this.isScrollActivated = true;
             }
+
+            clearInterval(this.scrollInterval);
         },
         handleScroll(event) {
 
@@ -1147,7 +1148,11 @@ export default {
                     
                     this.$nextTick(function()
                     {
-                        this.scrollToEnd();
+                       
+
+                        if (this.current_user.userid == data.broadcast_sender.userid) {
+                            this.scrollToEnd();
+                        }                        
                     });
 
                 }
@@ -1161,20 +1166,14 @@ export default {
 
                 if (data.broadcast_sender.type !== 'MEMBER') {
 
-
                     let userIndex = this.users.findIndex(user => user.userid == data.broadcast_sender.userid)
 
                     if (userIndex) {
                         this.users[userIndex].unreadMsg  = 0;  
                     }
+                }                
 
-                }
-
-
-                
-
-                //log and simultainously show to other admin 
-              
+                //log and simultainously show to other admin               
                 if (data.broadcast_sender.userid == this.activeUserID) {
 
                     this.prepareChatBox(data.broadcast_sender);                 
@@ -1198,7 +1197,10 @@ export default {
                     this.$forceUpdate();
                     this.$nextTick(function()
                     {
-                        this.scrollToEnd();
+
+                        if (this.current_user.userid == data.broadcast_sender.userid) {
+                            this.scrollToEnd();
+                        }                        
                     });
 
                 }
@@ -1236,7 +1238,12 @@ export default {
 
             this.$nextTick(function() 
             {
-                this.scrollToEnd();
+                console.log("private message");
+
+                if (this.current_user.userid == data.sender.userid) {
+                    this.scrollToEnd();
+                }
+                
 
                 //DETECTION FOR OPENED CHATBOX,
                 //AND ZERO OUT THE CHAT MESSAGE COUNT IN 1 AND A HALF SECOND SINCE IT WILL BE CONSIDERED READ
