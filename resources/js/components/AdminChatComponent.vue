@@ -1,6 +1,7 @@
 <template>
     <div class="AdminChatWrapper">
 
+
         <div id="AdminChat" class="adminChat">
 
             <div class="container bg-light">
@@ -10,7 +11,18 @@
                     <div class="col-md-4 pr-1">
 
                         <div class="card memberlist-panel mt-2">
-                            <div class="card-header">Users</div>
+                            <div class="card-header">
+                                Users
+
+                                <div class="float-right">
+
+                                     <span class="primary-outline" v-b-modal.createNewMessage>
+                                        <i class="fas fa-comment-medical fa-lg text-white"></i>
+                                     </span>
+                                    
+                                </div>
+                            
+                            </div>
                             
                             <div class="card-body">
 
@@ -223,6 +235,41 @@
         
 
 
+        <div id="create-mesage-container">
+            <!--[start] Modal Create New Message -->
+            <b-modal id="createNewMessage" title="Create New Message" button-size="sm">
+
+
+
+                <div>
+                <label class="typo__label" for="ajax">Async multiselect</label>
+                <multiselect v-model="selectedMembers" id="ajax" label="name" track-by="code" placeholder="Type to search" open-direction="bottom" :options="members" :multiple="true" :searchable="true" :loading="isLoading" 
+                    :internal-search="true" 
+                    :clear-on-select="false" :close-on-select="false" :options-limit="300" :limit="3" 
+                    :limit-text="limitText" :max-height="600" 
+                    :show-no-results="false" 
+                    :hide-selected="true" 
+                    @search-change="asyncMemberFind">
+                <template slot="tag" slot-scope="{ option, remove }"><span class="custom__tag"><span>{{ option.name }}</span><span class="custom__remove" @click="remove(option)">❌</span></span></template>
+                <template slot="clear" slot-scope="props">
+                <div class="multiselect__clear" v-if="selectedMembers.length" @mousedown.prevent.stop="clearAll(props.search)"></div>
+                </template><span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
+                </multiselect>
+                <pre class="language-json"><code>{{ selectedMembers  }}</code></pre>
+                </div>
+
+
+
+    
+
+
+                
+
+
+            </b-modal>
+            <!--[end] Modal Create New Message-->
+        </div>
+
         <div id="enterChat"  class="container bg-light text-center">       
             <button type="button" class="btn btn-success my-5" v-on:click="enterAdminChat()">Enter Administrator Chat</button>
             <div>
@@ -237,13 +284,14 @@
 <script>
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
+import Multiselect from 'vue-multiselect'
 
 var socket = null;
 
 export default {
     name: "chatComponent",
     components: {
-        FileUpload,
+        FileUpload, Multiselect
     },  
     data() {
         return {
@@ -277,6 +325,18 @@ export default {
             //uploader
             files: [],
             page: [],
+
+            //members
+            selectedMembers: [],
+         
+            members: [
+                { name: 'Vue.js', language: 'JavaScript' },
+                { name: 'Adonis', language: 'JavaScript' },
+                { name: 'Rails', language: 'Ruby' },
+                { name: 'Sinatra', language: 'Ruby' },
+                { name: 'Laravel', language: 'PHP' },
+                { name: 'Phoenix', language: 'Elixir' }
+            ]            
         };
     },
     props: {
@@ -288,6 +348,38 @@ export default {
         chatserver_url: String,              
     },
     methods: {
+
+        limitText (count) {
+            return `and ${count} other countries`
+            },
+        clearAll () {
+            this.selectedMembers = []
+        },
+        asyncMemberFind(query) {
+            this.isLoading = true
+
+            axios.post("/api/getAdminUnreadChatMessages?api_token=" + this.api_token, 
+            {
+                method         : "POST",
+                query          : query
+            }).then(response => {  
+
+                this.isLoading = false;
+
+
+                this.members = [
+                    { name: 'roy', language: '1999921' },
+                    { name: '1dd', language: 'JavaScript' },
+                    { name: '2dd', language: 'Ruby' },
+                    { name: '3d', language: 'Ruby' },
+                    { name: 'sdasdf', language: 'PHP' },
+                    { name: 'asdf', language: '8888' }
+                ];
+
+
+                
+            });        
+        },
         openChatBox(currentUser) 
         {
             this.page = 1;
@@ -389,7 +481,11 @@ export default {
                         this.$forceUpdate();                        
                         if (scrollToBottom == true) {
                             this.addAutoPaginatedHistory();
-                            this.scrollToEnd();
+
+                            if (this.historyNotifier == true) 
+                            {  
+                                this.scrollToEnd();
+                            }
                         } else {
                             this.scrollToTop();
                         }
@@ -495,17 +591,14 @@ export default {
                 container.scrollTop = 500;
             }
         },          
-        scrollToEnd() {
-            if (this.historyNotifier == true) 
-            {            
-                this.$nextTick(() => {    
-                    this.$forceUpdate();
-                    var container = this.$el.querySelector("#user-chatlog");
-                    if(container) {
-                        container.scrollTop = container.scrollHeight;
-                    }
-                });
-            }
+        scrollToEnd() {                    
+            this.$nextTick(() => {    
+                this.$forceUpdate();
+                var container = this.$el.querySelector("#user-chatlog");
+                if(container) {
+                    container.scrollTop = container.scrollHeight;
+                }
+            });
         },
         addAutoPaginatedHistory() {
             let chatScrubber = document.getElementById("user-chatlog");
@@ -676,12 +769,24 @@ export default {
             let fileSelectBtn = document.getElementById("file-select-button");
             let sendBtn = document.getElementById("send-button");        
             
-            if (this.message == "" && this.files.length == 0) {            
-                fileSelectBtn.style.display = "block";
-                sendBtn.style.display = "none";                
+            if (this.message == "" && this.files.length == 0) 
+            {   
+                if (fileSelectBtn) {
+                    fileSelectBtn.style.display = "block";
+                }         
+
+                if (sendBtn) {
+                    sendBtn.style.display = "none";                
+                }
+
             } else {
-                fileSelectBtn.style.display = "none";            
-                sendBtn.style.display = "block";
+                if (fileSelectBtn) {
+                    fileSelectBtn.style.display = "none";
+                }         
+
+                if (sendBtn) {
+                    sendBtn.style.display = "block";                
+                }
             }        
         },
         appendRecentUserChatList(onlineUsers) {
@@ -1353,6 +1458,8 @@ Vue.component("chatsupport-info-component", {
 </script>
 
 
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+
 <style>
 .img_preview {
     width: 100px;
@@ -1362,6 +1469,7 @@ Vue.component("chatsupport-info-component", {
 }
 </style>
 
+
 <style >
 .floating-history-fetcher {
     position: absolute;
@@ -1369,7 +1477,7 @@ Vue.component("chatsupport-info-component", {
     display: inline-block;    
     text-align: center;
     width: 100%;
-    z-index: 99999;
+    z-index: 99;
 }
 
 .memberlist-panel .card-header {
