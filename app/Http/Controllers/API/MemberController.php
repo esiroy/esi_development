@@ -1743,6 +1743,11 @@ class MemberController extends Controller
     }
 
 
+    public function searchMemberName(Request $request) {
+
+        $query = $request->query;   
+    
+    }
     
 
 }

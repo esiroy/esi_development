@@ -89,7 +89,7 @@
                                                 Loading...
                                             </div> 
                                         </div>
-                                        <div id="user-chatlog" class="border rounded" v-else-if="isLoading == false" > 
+                                        <div id="user-chatlog" class="border rounded" v-else-if="isLoading == false" @scroll="handleScroll"> 
 
 
                                             <div class="text-center floating-history-fetcher mt-3" v-show="historyNotifier == true"> 
@@ -243,7 +243,10 @@
 
                 <div>
                 <label class="typo__label" for="ajax">Async multiselect</label>
-                <multiselect v-model="selectedMembers" id="ajax" label="name" track-by="code" placeholder="Type to search" open-direction="bottom" :options="members" :multiple="true" :searchable="true" :loading="isLoading" 
+                <multiselect v-model="selectedMembers" id="ajax" label="name" track-by="code" placeholder="Type to search" 
+                    open-direction="bottom" :options="members" 
+                    :multiple="true" :searchable="true" 
+                    :loading="isLoadingMembers" 
                     :internal-search="true" 
                     :clear-on-select="false" :close-on-select="false" :options-limit="300" :limit="3" 
                     :limit-text="limitText" :max-height="600" 
@@ -311,15 +314,16 @@ export default {
 
             // Loaders
             isLoading: false,
-            historyNotifier: true,
-
-            //history is fetching status
-            isFetching: false,
+            isLoadingMembers: false,
+            historyNotifier: true,      //History Button Page notifier
+            isFetching: false,          //history is fetching status
 
             //WINDOW STATUS FOR TAB TITLE BLINKER
             TabTitle: "",
             windowStatus: "FOCUSED",        
             interval: "",
+            scrollInterval: "",
+            isScrollActivated: false,
             tabTitle: "",
 
             //uploader
@@ -356,7 +360,7 @@ export default {
             this.selectedMembers = []
         },
         asyncMemberFind(query) {
-            this.isLoading = true
+            this.isLoadingMembers = true
 
             axios.post("/api/getAdminUnreadChatMessages?api_token=" + this.api_token, 
             {
@@ -364,7 +368,7 @@ export default {
                 query          : query
             }).then(response => {  
 
-                this.isLoading = false;
+                this.isLoadingMembers = false;
 
 
                 this.members = [
@@ -389,12 +393,18 @@ export default {
             this.current_user       = currentUser;
             this.activeUserID       = currentUser.userid;
 
+            this.isScrollActivated  = false;
+
             this.historyNotifier    = true;
             
             this.getUnreadMemberMessages(currentUser);
+            clearInterval(this.scrollInterval);
 
             //currentUser.unreadMsg = 0;
             this.$forceUpdate();
+
+           
+             
         },
         hideChatBox() {
             this.current_user = null;
@@ -479,13 +489,8 @@ export default {
 
                     this.$nextTick(() => {                      
                         this.$forceUpdate();                        
-                        if (scrollToBottom == true) {
-                            this.addAutoPaginatedHistory();
-
-                            if (this.historyNotifier == true) 
-                            {  
-                                this.scrollToEnd();
-                            }
+                        if (scrollToBottom == true) {                            
+                            this.scrollToEnd();
                         } else {
                             this.scrollToTop();
                         }
@@ -497,7 +502,7 @@ export default {
                     this.historyNotifier = false;
                     this.isFetching = false;        
 
-                    
+                   
 
                     this.$nextTick(() => {                        
                         this.$forceUpdate();                        
@@ -591,26 +596,32 @@ export default {
                 container.scrollTop = 500;
             }
         },          
-        scrollToEnd() {                    
-            this.$nextTick(() => {    
-                this.$forceUpdate();
-                var container = this.$el.querySelector("#user-chatlog");
-                if(container) {
-                    container.scrollTop = container.scrollHeight;
-                }
-            });
+        scrollToEnd() {
+            this.scrollInterval = setInterval(this.executeScroll, 1200);      
         },
-        addAutoPaginatedHistory() {
-            let chatScrubber = document.getElementById("user-chatlog");
-            let total = parseInt(chatScrubber.scrollTop);
-            
-            chatScrubber.addEventListener("scroll", (event) => {
-                //REACHED TOP OF SCROLL
-                if (chatScrubber.scrollTop == 0) 
-                {                   
-                    this.getChatHistory(this.current_user, false);                                     
-                } 
-            });
+        executeScroll() {        
+            let  container = this.$el.querySelector("#user-chatlog");
+            if(container) {
+                container.scrollTop = container.scrollHeight;                
+                clearInterval(this.scrollInterval);
+                this.isScrollActivated = true;
+            }
+        },
+        handleScroll(event) {
+
+            // Any code to be executed when the window is scrolled
+           // this.isUserScrolling = (window.scrollY > 0);
+
+            //console.log( this.isScrollActivated)
+            //console.log('calling handleScroll');
+            //console.log(event.target.clientHeight  + " "  + event.target.scrollTop);
+
+            if (this.isScrollActivated == true) 
+            {
+                if (event.target.scrollTop == 0) {
+                    this.getChatHistory(this.current_user, false)
+                }                
+            }
 
         },
         markMessagesRead(user) 
@@ -1338,6 +1349,8 @@ export default {
 
         });
 
+
+       
 
           
     },
