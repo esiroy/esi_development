@@ -598,33 +598,21 @@ export default {
             }
         },          
         scrollToEnd() {
-            this.scrollInterval = setInterval(this.executeScroll, 1200);      
+            setTimeout(() => {  this.executeScroll() }, 100);
         },
-        executeScroll() {        
+        executeScroll() {  
             let  container = this.$el.querySelector("#user-chatlog");
             if(container) {
                 container.scrollTop = container.scrollHeight;  
                 this.isScrollActivated = true;
             }
-
-            clearInterval(this.scrollInterval);
         },
         handleScroll(event) {
-
-            // Any code to be executed when the window is scrolled
-           // this.isUserScrolling = (window.scrollY > 0);
-
-            //console.log( this.isScrollActivated)
-            //console.log('calling handleScroll');
-            //console.log(event.target.clientHeight  + " "  + event.target.scrollTop);
-
-            if (this.isScrollActivated == true) 
-            {
+            if (this.isScrollActivated == true) {
                 if (event.target.scrollTop == 0) {
                     this.getChatHistory(this.current_user, false)
                 }                
             }
-
         },
         markMessagesRead(user) 
         {
@@ -655,6 +643,8 @@ export default {
 
         },
         sendMessage() {
+
+            clearInterval(this.scrollInterval)
 
             //files is empty and message is empty, stop sending message
             if (this.files.length == 0 && (this.message === "" || this.message === undefined)) 
@@ -1100,14 +1090,11 @@ export default {
             this.windowStatus = "FOCUSED";            
             this.stopBlink();            
             //this.markSeenMessages();
-            console.log("got focus")
-
         });
 
 
         window.addEventListener("blur", (e) => {
             this.windowStatus = "BLURRED";
-            //console.log(this.windowStatus);
         });
 
 
@@ -1151,6 +1138,8 @@ export default {
                        
 
                         if (this.current_user.userid == data.broadcast_sender.userid) {
+                            console.log("scroll to end 1")
+                
                             this.scrollToEnd();
                         }                        
                     });
@@ -1199,6 +1188,8 @@ export default {
                     {
 
                         if (this.current_user.userid == data.broadcast_sender.userid) {
+
+                            console.log("scroll to end 2")
                             this.scrollToEnd();
                         }                        
                     });
