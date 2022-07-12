@@ -15,10 +15,11 @@
                                 Users
 
                                 <div class="float-right">
-
+                                <!--
                                      <span class="primary-outline" v-b-modal.createNewMessage>
                                         <i class="fas fa-comment-medical fa-lg text-white"></i>
                                      </span>
+                                -->
                                     
                                 </div>
                             
