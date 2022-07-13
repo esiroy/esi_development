@@ -288,6 +288,7 @@
                     </b-button>
                 </template>
               
+                <!--{{ this.selectedMember }}-->
 
             </b-modal>
             <!--[end] Modal Create New Message-->

@@ -1748,7 +1748,8 @@ class MemberController extends Controller
         $query = $request->get('query');   
 
         $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')                            
-                        ->select("members.user_id as id", 'members.nickname', DB::raw("CONCAT(users.firstname,' ',users.lastname) as name"));     
+                        ->select("members.user_id as id", 
+                        'members.nickname', 'users.username', DB::raw("CONCAT(users.firstname,' ',users.lastname) as name"));     
 
         //search if match the id
         $memberQuery = $memberQuery->where('members.user_id', $query);      
