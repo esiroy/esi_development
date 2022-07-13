@@ -131,7 +131,7 @@ class ChatSupportController extends Controller
 
         $userList =  [];
 
-        /*
+        
         //user that has chatted to chat support
         $recentUsers_sender = $chatSupportHistory
                         ->select('sender_id as userid', 'created_at')
@@ -153,8 +153,10 @@ class ChatSupportController extends Controller
                         ->distinct()
                         ->pluck('userid')
                         ->toArray();
-                        */
+                        
 
+
+        /*
                 $recentUsers = $chatSupportHistory->select('recipient_id as userid', 'created_at')->where(function($query) {
 
                         $query->select('sender_id as userid', 'created_at')
@@ -176,6 +178,7 @@ class ChatSupportController extends Controller
                     })->orderBy('created_at', 'DESC')
                       ->pluck('userid')
                       ->toArray();
+            */
                         
                       
 
@@ -184,7 +187,7 @@ class ChatSupportController extends Controller
                                                                
         
 
-        //$recentUsers = array_merge($recentUsers_sender, $recentUsers_recipient); 
+        $recentUsers = array_merge($recentUsers_sender, $recentUsers_recipient); 
         $uniqueUsers = array_unique($recentUsers);   
 
         foreach ($uniqueUsers as $key => $recentUser) 
