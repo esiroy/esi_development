@@ -133,6 +133,7 @@ class ChatSupportController extends Controller
 
         
         //user that has chatted to chat support
+        /*
         $recentUsers_sender = $chatSupportHistory
                         ->select('sender_id as userid', 'created_at')
                         ->orderBy('created_at', 'DESC')
@@ -154,41 +155,33 @@ class ChatSupportController extends Controller
                         ->pluck('userid')
                         ->toArray();
                         
+      $recentUsers = array_merge($recentUsers_sender, $recentUsers_recipient); 
+        
+        $uniqueUsers = array_unique($recentUsers);   
 
-
-        /*
-                $recentUsers = $chatSupportHistory->select('recipient_id as userid', 'created_at')->where(function($query) {
-
-                        $query->select('sender_id as userid', 'created_at')
-                                ->where('chatsupport_history.message_type', 'MEMBER') 
-                                ->where('chatsupport_history.sender_id', '!=', 1)
-                                ->pluck('userid')
-                                ->toArray();
-                                
-
-                    })->orWhere(function($query) {
-
-
-                        $query->select('recipient_id as userid', 'created_at')
-                                ->where('chatsupport_history.message_type', 'CHAT_SUPPORT') 
-                                ->where('chatsupport_history.recipient_id', '!=', 1)
-                                ->pluck('userid')
-                                ->toArray();                                
-
-                    })->orderBy('created_at', 'DESC')
-                      ->pluck('userid')
-                      ->toArray();
-            */
+        */
                         
                       
+        $recentUsers = $chatSupportHistory->where(function($query) 
+        {
+                $query->where('chatsupport_history.message_type', 'MEMBER') 
+                    ->where('chatsupport_history.sender_id', '!=', 1);
+        })->orWhere(function($query) {
 
-
+            $query->where('chatsupport_history.message_type', 'CHAT_SUPPORT') 
+                ->where('chatsupport_history.recipient_id', '!=', 1);
+        })
+        ->distinct()
+        ->latest()
+        ->get();
     
-                                                               
+        foreach ($recentUsers as $item) {
+            $ids[] = $item->sender_id;
+            $ids[] = $item->recipient_id;
+        }
         
-
-        $recentUsers = array_merge($recentUsers_sender, $recentUsers_recipient); 
-        $uniqueUsers = array_unique($recentUsers);   
+        $uniqueUsers = array_unique($ids); 
+  
 
         foreach ($uniqueUsers as $key => $recentUser) 
         {
