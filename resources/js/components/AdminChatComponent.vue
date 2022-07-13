@@ -13,16 +13,11 @@
                         <div class="card memberlist-panel mt-2">
                             <div class="card-header">
                                 Users
-
-                                <div class="float-right">
-                                <!--
+                                <div class="float-right">                               
                                      <span class="primary-outline" v-b-modal.createNewMessage>
-                                        <i class="fas fa-comment-medical fa-lg text-white"></i>
+                                        <b-icon icon="pencil-square" aria-hidden="true"></b-icon>
                                      </span>
-                                -->
-                                    
-                                </div>
-                            
+                                </div>                            
                             </div>
                             
                             <div class="card-body">
@@ -31,7 +26,7 @@
 
                                     <div id="user-list" v-if="user.userid !== userid" >
 
-                                        <div v-if="user.totalMsg > 0" :class="[user.userid == activeUserID ? 'active' : '', 'user-info']">
+                                        <div v-if="user.totalMsg > 0 || user.supportMsg > 0 " :class="[user.userid == activeUserID ? 'active' : '', 'user-info']">
                                             <div class="profile-photo align-top">
                                                 <img :src="user.user_image"  class="img-fluid rounded">
                                             </div>
@@ -240,35 +235,59 @@
             <!--[start] Modal Create New Message -->
             <b-modal id="createNewMessage" title="Create New Message" button-size="sm">
 
+                <div id="member-select" class="small">
+                    <multiselect                     
+                        v-model="selectedMember" 
+                        @select="onSelect"
+                        id="multiselect-members" 
+                        class="small"
+                        label="name" 
+                        track-by="name" 
+                        placeholder="Type to search" 
+                        open-direction="bottom" 
+                        :options="members" 
+                        :multiple="false" 
+                        :searchable="true" 
+                        :loading="isLoadingMembers" 
+                        :internal-search="false" 
+                        :clear-on-select="true" 
+                        :close-on-select="true" 
+                        :options-limit="300" 
+                        :limit="1" 
+                        :limit-text="limitText" :max-height="600" 
+                        :show-no-results="true" 
+                        :hide-selected="false" 
+                        @search-change="findMember">
+
+                        <template slot="singleLabel" slot-scope="{ option }">                        
+                            <span class="small">{{ option.name }}</span>
+                        </template>
 
 
-                <div>
-                <label class="typo__label" for="ajax">Async multiselect</label>
-                <multiselect v-model="selectedMembers" id="ajax" label="name" track-by="code" placeholder="Type to search" 
-                    open-direction="bottom" :options="members" 
-                    :multiple="true" :searchable="true" 
-                    :loading="isLoadingMembers" 
-                    :internal-search="true" 
-                    :clear-on-select="false" :close-on-select="false" :options-limit="300" :limit="3" 
-                    :limit-text="limitText" :max-height="600" 
-                    :show-no-results="false" 
-                    :hide-selected="true" 
-                    @search-change="asyncMemberFind">
-                <template slot="tag" slot-scope="{ option, remove }"><span class="custom__tag"><span>{{ option.name }}</span><span class="custom__remove" @click="remove(option)">❌</span></span></template>
-                <template slot="clear" slot-scope="props">
-                <div class="multiselect__clear" v-if="selectedMembers.length" @mousedown.prevent.stop="clearAll(props.search)"></div>
-                </template><span slot="noResult">Oops! No elements found. Consider changing the search query.</span>
-                </multiselect>
-                <pre class="language-json"><code>{{ selectedMembers  }}</code></pre>
+                        <template slot="option" slot-scope="props">                        
+                            <span class="option__desc small"><span class="option__title">{{ props.option.id}} {{ props.option.name}}</span></span>
+                        </template>
+
+                        <span slot="noResult">Oops! No Member found.</span>
+
+                        <span slot="noOptions">Please search for a member</span>
+
+                    </multiselect>
+                    
                 </div>
 
 
 
-    
+                <div class="outgoing-message mt-2">
+                    <b-form-textarea id="outgoingMessage" v-model="outgoingMessage" placeholder="Enter Message..." rows="5" max-rows="2"></b-form-textarea>
+                </div>
 
-
-                
-
+                <template #modal-footer>
+                     <b-button size="sm" variant="primary" @click="sendNewMessage()">
+                        <i aria-hidden="true" class="fa fa-paper-plane"></i> Send
+                    </b-button>
+                </template>
+              
 
             </b-modal>
             <!--[end] Modal Create New Message-->
@@ -313,6 +332,9 @@ export default {
 
             message: "",
 
+            typingTimer:"",             //timer for search user on outgong message
+            outgoingMessage:"",     //outgoing message for user
+
             // Loaders
             isLoading: false,
             isLoadingMembers: false,
@@ -332,16 +354,9 @@ export default {
             page: [],
 
             //members
-            selectedMembers: [],
+            selectedMember: [],
          
-            members: [
-                { name: 'Vue.js', language: 'JavaScript' },
-                { name: 'Adonis', language: 'JavaScript' },
-                { name: 'Rails', language: 'Ruby' },
-                { name: 'Sinatra', language: 'Ruby' },
-                { name: 'Laravel', language: 'PHP' },
-                { name: 'Phoenix', language: 'Elixir' }
-            ]            
+            members: []            
         };
     },
     props: {
@@ -354,36 +369,45 @@ export default {
     },
     methods: {
 
-        limitText (count) {
-            return `and ${count} other countries`
-            },
-        clearAll () {
-            this.selectedMembers = []
+
+        prepareChatBox: function(user) 
+        {
+            if (typeof this.chatlogs !== 'undefined' &&  this.chatlogs.length > 0) {
+                //chatlogs has an array, we will not instantiate the array again. 
+            } else {
+                this.chatlogs = [];                            
+            }
+
+            if (isNaN(this.page)) {
+                this.page = 1;                
+            }
         },
-        asyncMemberFind(query) {
-            this.isLoadingMembers = true
+        sendNewMessage() 
+        {        
+            this.message = this.outgoingMessage
 
-            axios.post("/api/getAdminUnreadChatMessages?api_token=" + this.api_token, 
-            {
-                method         : "POST",
-                query          : query
-            }).then(response => {  
+            let previous_user_id= this.current_user;
 
-                this.isLoadingMembers = false;
+            this.current_user = {            
+                id:  this.selectedMember.id,
+                userid: this.selectedMember.id,
+                username: this.selectedMember.username,
+                nickname: this.selectedMember.nickname,
+                type: "Member",
+            }
 
-
-                this.members = [
-                    { name: 'roy', language: '1999921' },
-                    { name: '1dd', language: 'JavaScript' },
-                    { name: '2dd', language: 'Ruby' },
-                    { name: '3d', language: 'Ruby' },
-                    { name: 'sdasdf', language: 'PHP' },
-                    { name: 'asdf', language: '8888' }
-                ];
-
-
-                
-            });        
+            if (this.current_user.userid !== previous_user_id) {
+                 this.openChatBox(this.current_user); 
+                 //no need to send message() since we trigger after 
+            } else {
+                this.sendMessage();
+            }
+           
+           
+        },
+        selectUserChatBox(currentUser) {
+        
+            this.activeUserID  = currentUser.userid;
         },
         openChatBox(currentUser) 
         {
@@ -392,21 +416,195 @@ export default {
             this.chatlogsUnread     = [];
             this.chatlogs           = [];
             this.current_user       = currentUser;
-            this.activeUserID       = currentUser.userid;
+
+
+            this.selectUserChatBox(currentUser) 
+
+            console.log(this.activeUserID );
 
             this.isScrollActivated  = false;
 
             this.historyNotifier    = true;
             
             this.getUnreadMemberMessages(currentUser);
+
             clearInterval(this.scrollInterval);
 
             //currentUser.unreadMsg = 0;
             this.$forceUpdate();
-
-           
-             
         },
+
+        sendMessage() {
+
+            clearInterval(this.scrollInterval)
+
+            //files is empty and message is empty, stop sending message
+            if (this.files.length == 0 && (this.message === "" || this.message === undefined)) 
+            {           
+                return false;
+            }
+
+            document.getElementById("startUpload").click();
+
+            if (this.message === "" || this.message === undefined) {
+
+               //No message just upload
+
+            } else {
+
+                let id = this.current_user.id; 
+
+                var currentTime = new Date();
+                let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+                //get the sender from props (user)
+                let recipient = {
+                    'id': this.current_user.id,
+                    'userid': this.current_user.userid,
+                    'username':  this.current_user.username,
+                };
+
+
+                //get the sender from props  (admin)
+                let sender = {
+                    'msgCtr': 0,
+                    'userid': this.userid,
+                    'nickname': this.nickname,
+                    'username': this.username,          
+                    'message': this.message,
+                    'user_image': this.user_image, //@todo: make this for customer support 
+                    'type': "CHAT_SUPPORT"
+                };
+            
+                /*   
+                this.chatlogs.push({
+                    sender: sender,
+                    message: this.message,
+                    time: time
+                });
+                */
+                
+
+                let userMessage = this.message;
+
+
+                //scroll to end then save to table
+                this.$nextTick(() => {           
+
+                    axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
+                    {
+                        method              : "POST",
+                        sender_id           : this.userid,
+                        recipient_id        : this.current_user.userid,
+                        message             : userMessage,
+                        is_read             : false,
+                        valid               : true,
+                        message_type        : "CHAT_SUPPORT",
+                    }).then(response => {
+                        if (response.data.success === true) {
+
+                            //User replied (marked)
+                            this.markMessagesRead(this.current_user);
+
+                             let userIndex = this.users.findIndex(user => user.userid == this.current_user.userid)
+
+                            if (this.users[userIndex]) {
+                                this.users[userIndex].unreadMsg = 0;
+                            }
+
+                            //if (this.outgoingMessage.length >= 1) {
+                                this.appendRecentUserChatList(this.onlineUsers);
+
+                                //Create New message / Outgoing message reset
+                                this.outgoingMessage = "";
+                                this.message = "";
+                                this.selectedMember = [];
+                                this.$bvModal.hide("createNewMessage")
+                            //}                            
+
+                        } else {
+                            //@todo: (error sending messages)
+                        }
+                    }).catch(function(error) {
+                        console.log("Error " + error);                
+                    });                     
+
+                });      
+
+                //semd
+                socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
+
+
+                //get the sender from props (user)
+                let broadcast_recipient = {
+                    'id': this.id,
+                    'userid': this.userid,
+                    'username':  this.username,
+                };
+
+
+                //get the sender from props  (admin)
+                let broadcast_sender = {
+                    'msgCtr': 0,
+                    'userid': this.current_user.userid,
+                    'nickname': this.current_user.nickname,
+                    'username': this.current_user.username,          
+                    'message': this.message,
+                    'user_image': this.current_user.user_image, //@todo: make this for customer support 
+                    'type': "CHAT_SUPPORT"
+                };
+
+                socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });
+
+                this.$forceUpdate();
+                this.$nextTick(function()
+                {          
+                    //clear (always at bottom)
+                    this.message = "";
+
+                    this.scrollToEnd();
+                    this.prepareButtons();
+                });
+            }         
+            
+
+        },  
+
+        onSelect (option) {
+            console.log (option)
+            
+        },
+
+ 
+        /* search */
+        limitText (count) {
+            return `and ${count}s`
+        },
+        clearAll () {
+            this.selectedMember = []
+        },
+        findMember(query) {
+
+            clearTimeout(this.typingTimer)
+
+            this.typingTimer = setTimeout(() => {
+                
+                if (query.length >= 1) {
+
+                    this.isLoadingMembers = true
+
+                    axios.post("/api/searchMemberName?api_token=" + this.api_token, {
+                        method         : "POST",
+                        query          : query
+                    }).then(response => {  
+                        this.members = response.data.members;
+                        this.isLoadingMembers = false;
+                    });
+                                
+                }
+            }, 1000)
+        },
+
         hideChatBox() {
             this.current_user = null;
         },
@@ -515,7 +713,12 @@ export default {
                         //this.markMessagesRead(user)
                     });           
                 }
-            
+
+
+                if (this.outgoingMessage.length >= 1) {
+                    this.sendMessage();
+                }   
+
             }).catch(function(error) {
                 console.log("Error " + error);                
             });
@@ -629,144 +832,7 @@ export default {
                 } 
             });    
         },  
-        prepareChatBox: function(user) 
-        {
-            if (typeof this.chatlogs !== 'undefined' &&  this.chatlogs.length > 0) {
-                //chatlogs has an array, we will not instantiate the array again. 
-            } else {
-                this.chatlogs = [];                            
-            }
-
-            if (isNaN(this.page)) {
-                this.page = 1;                
-            }
-
-        },
-        sendMessage() {
-
-            clearInterval(this.scrollInterval)
-
-            //files is empty and message is empty, stop sending message
-            if (this.files.length == 0 && (this.message === "" || this.message === undefined)) 
-            {           
-                return false;
-            }
-
-            document.getElementById("startUpload").click();
-
-            if (this.message === "" || this.message === undefined) {
-
-               //No message just upload
-
-            } else {
-
-                let id = this.current_user.id; 
-
-                var currentTime = new Date();
-                let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-
-                //get the sender from props (user)
-                let recipient = {
-                    'id': this.current_user.id,
-                    'userid': this.current_user.userid,
-                    'username':  this.current_user.username,
-                };
-
-
-                //get the sender from props  (admin)
-                let sender = {
-                    'msgCtr': 0,
-                    'userid': this.userid,
-                    'nickname': this.nickname,
-                    'username': this.username,          
-                    'message': this.message,
-                    'user_image': this.user_image, //@todo: make this for customer support 
-                    'type': "CHAT_SUPPORT"
-                };
-            
-                /*   
-                this.chatlogs.push({
-                    sender: sender,
-                    message: this.message,
-                    time: time
-                });
-                */
-                
-
-                let userMessage = this.message;
-
-
-                //scroll to end then save to table
-                this.$nextTick(() => {           
-
-                    axios.post("/api/saveCustomerSupportChat?api_token=" + this.api_token, 
-                    {
-                        method              : "POST",
-                        sender_id           : this.userid,
-                        recipient_id        : this.current_user.userid,
-                        message             : userMessage,
-                        is_read             : false,
-                        valid               : true,
-                        message_type        : "CHAT_SUPPORT",
-                    }).then(response => {
-                        if (response.data.success === true) {
-
-                            //User replied (marked)
-                            this.markMessagesRead(this.current_user);
-
-                             let userIndex = this.users.findIndex(user => user.userid == this.current_user.userid)
-
-                            if (this.users[userIndex]) {
-                                this.users[userIndex].unreadMsg = 0;
-                            }
-
-                        } else {
-                            //@todo: (error sending messages)
-                        }
-                    }).catch(function(error) {
-                        console.log("Error " + error);                
-                    });                     
-
-                });      
-
-                //semd
-                socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });
-
-
-                //get the sender from props (user)
-                let broadcast_recipient = {
-                    'id': this.id,
-                    'userid': this.userid,
-                    'username':  this.username,
-                };
-
-
-                //get the sender from props  (admin)
-                let broadcast_sender = {
-                    'msgCtr': 0,
-                    'userid': this.current_user.userid,
-                    'nickname': this.current_user.nickname,
-                    'username': this.current_user.username,          
-                    'message': this.message,
-                    'user_image': this.current_user.user_image, //@todo: make this for customer support 
-                    'type': "CHAT_SUPPORT"
-                };
-
-                socket.emit("SEND_OWNER_MESSAGE", { id, time, broadcast_recipient, broadcast_sender });
-
-                this.$forceUpdate();
-                this.$nextTick(function()
-                {          
-                    //clear (always at bottom)
-                    this.message = "";
-
-                    this.scrollToEnd();
-                    this.prepareButtons();
-                });
-            }         
-            
-
-        },            
+          
         prepareButtons: function() {
            
             let fileSelectBtn = document.getElementById("file-select-button");
@@ -1639,4 +1705,21 @@ Vue.component("chatsupport-info-component", {
     width: 100%;
 }
 
+
+
+#multiselect-members { 
+    font-size: 14px;
+}
+
+.multiselect__option {
+    font-size: 14px;
+}
+
+
+.multiselect__placeholder {
+    font-size: 14px;
+}
+
+
+ 
 </style>
