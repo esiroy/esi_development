@@ -403,9 +403,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
 
 
         //Route::resource('/minitest', 'Modules\MiniTestController');
-      //  Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
-      
+        //Route::resource('/minitest/categories', 'Modules\MiniTestCategoriesController');
 
+        Route::resource('lesson_slides', 'Modules\LessonSlidesController');     
 
 
         /* Administrator Module Lists */
@@ -423,6 +423,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         });
 
  
+        
         
         
            

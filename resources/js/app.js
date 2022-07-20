@@ -48,10 +48,15 @@ if (url[1] === 'admin') {
                 Vue.component('member-mini-test-viewer-component', require('./components/backend/member/MemberMiniTestViewerComponent.vue').default);
             }
             break;
+
         case 'reportcard':
             Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
 
             break;
+        case 'lesson_slides':
+            Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
+            break;
+
         case 'customerchatsupport':
             Vue.component('admin-chat-component', require('./components/AdminChatComponent.vue').default);
             break;
@@ -70,8 +75,11 @@ if (url[1] === 'admin') {
     Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
     Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);
     Vue.component('member-account-merger-component', require('./components/frontend/member/MemberAccountMergerComponent.vue').default);
-    Vue.component('questions-component', require('./components/frontend/member/QuestionsComponent.vue').default);
+    Vue.component('questions-component', require('./components/frontend/member/QuestionsComponent.vue').default); +
+
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
+
+    Vue.component('member-caller-component', require('./components/frontend/member/MemberCallerComponent.vue').default);
 
     Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
 

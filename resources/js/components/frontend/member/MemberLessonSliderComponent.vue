@@ -1,155 +1,149 @@
 <template>
+
     <div class="container">
+
         <div id="editor" class="row my-2">
 
-            <div class="left-container">
+            <div class="col-7">
 
-                <div class="tool-container">
-
-                    <div class="tool-wrapper">
-                        <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
-                            <i class="fa fa-mouse-pointer" aria-hidden="true" ></i>
-                        </div>
+                <div class="left-container">
 
 
-                        <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
-                            <i class="fa fa-font" aria-hidden="true"></i>
-                        </div>
-            
-                        <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
-                            <i class="fa fa-pen" aria-hidden="true" ></i>
-                        </div>                    
-                        <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
-                            <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
-                        </div>                        
+                    <div class="tool-container" v-show="this.$props.isBroadcaster == true">
+                        <!-- [START] TOOL WRAPPER -->
+                        <div class="tool-wrapper" >
+                            <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
+                                <i class="fa fa-mouse-pointer" aria-hidden="true" ></i>
+                            </div>
+
+                            <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                                <i class="fa fa-font" aria-hidden="true"></i>
+                            </div>
                 
-                        <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
-                            <i class="fa fa-minus" aria-hidden="true"></i>
-                        </div>        
-                                
-                        <div :class="['tool', (isCircle) ? 'active' : '']"  @click="activateCircle">
-                            <b-icon icon="circle" font-scale="1"> </b-icon>
+                            <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
+                                <i class="fa fa-pen" aria-hidden="true" ></i>
+                            </div>                    
+                            <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
+                                <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
+                            </div>                        
+                    
+                            <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
+                                <i class="fa fa-minus" aria-hidden="true"></i>
+                            </div>        
+                                    
+                            <div :class="['tool', (isCircle) ? 'active' : '']"  @click="activateCircle">
+                                <b-icon icon="circle" font-scale="1"> </b-icon>
+                            </div> 
+                        </div>
+                        <!-- [END] TOOL WRAPPER -->
+
+
+                        <!-- ADDITIONAL OPTIONS -->
+                        <div class="tool-wrapper">
+
+                            <div class="tool">
+                                <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
+                            </div>             
+                        
+                            <!-- Strokes-->
+                            <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
+                                <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
+                                <div id="brushStrokes" class="collapse" style="z-index:9999">
+                                    <div class="brushes-container">
+                                        <div class="brushes">
+                                            <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                                            <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                                            <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                                            <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                                            <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>                                   
+
+
+
                         </div> 
                     </div>
 
-                   
+                    <div class="canvas-container">
+                        <div :id="'editor'+slide" v-for="slide in slides" :key="slide" v-show="slide == currentSlide">        
 
+                            <canvas
+                                :ref="'canvas'+slide"
+                                :id="'canvas'+slide"
+                                :width="canvasWidth"
+                                :height="canvasHeight"
+                                style="border:1px solid #ccc;"                        
+                            ></canvas>
+                            
+                        </div>
+                    </div>
 
-                    <!-- ADDITIONAL OPTIONS -->
-                    <div class="tool-wrapper">
+                    <div class="info-container">
 
-                        <div class="tool">
-                            <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
-                        </div>             
-                      
-                        <!-- Strokes-->
-                        <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
-                            <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
-                            <div id="brushStrokes" class="collapse" style="z-index:9999">
-                                <div class="brushes-container">
-                                    <div class="brushes">
-                                        <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
-                                        <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
-                                        <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
-                                        <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
-                                        <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
-                                    </div> 
-                                </div>
+                        <div class="d-flex justify-content-center">
+                            Total Time {{ this.getTime() }} 
+                        </div>
+
+                    </div>
+
+                    <div class="buttons-container mt-3">
+                        <div class="d-flex justify-content-center">
+                            <div id="prev" class="tool" @click="startSlide">
+                                <i class="fa fa-fast-backward" aria-hidden="true"></i>
+                            </div>  
+
+                            <div id="prev" class="tool" @click="prevSlide">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
                             </div>
-                        </div>                                   
 
+                            <div id="prev" class="tool font-weight-strong" style="width:150px">
+                                Slide {{ this.currentSlide }} of {{ this.slides }}
+                            </div>
 
+                            <div id="next" class="tool" @click="nextSlide">
+                                <i class="fa fa-forward" aria-hidden="true"></i>
+                            </div>
 
-                    </div> 
-                </div>
-
-                <div class="canvas-container">
-                    <div :id="'editor'+slide" v-for="slide in slides" :key="slide" v-show="slide == currentSlide">                    
-                        <canvas
-                            :ref="'canvas'+slide"
-                            :id="'canvas'+slide"
-                            :width="canvasWidth"
-                            :height="canvasHeight"
-                            style="border:1px solid #ccc;"                        
-                        ></canvas>
-                    </div>
-                </div>
-
-                <div class="info-container">
-
-                     <div class="d-flex justify-content-center">
-                        Total Time {{ this.getTime() }} 
-                     </div>
-
-                </div>
-
-                <div class="buttons-container mt-3">
-                    <div class="d-flex justify-content-center">
-                        <div id="prev" class="tool" @click="startSlide">
-                            <i class="fa fa-fast-backward" aria-hidden="true"></i>
-                        </div>  
-
-                        <div id="prev" class="tool" @click="prevSlide">
-                            <i class="fa fa-backward" aria-hidden="true"></i>
-                        </div>
-
-                        <div id="prev" class="tool font-weight-strong" style="width:150px">
-                            Slide {{ this.currentSlide }} of {{ this.slides }}
-                        </div>
-
-                        <div id="next" class="tool" @click="nextSlide">
-                            <i class="fa fa-forward" aria-hidden="true"></i>
-                        </div>
-
-                        <div id="next" class="tool" @click="lastSlide">
-                            <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                            <div id="next" class="tool" @click="lastSlide">
+                                <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                            </div>
                         </div>
                     </div>
+
+                    
                 </div>
 
             </div>
 
-            <div class="right-container">
+            <div class="col-5">
 
+                <div class="right-container">
+                    <h2> Teacher's Note </h2>
 
-                <div id="member-mirror">
-                    <h4>Member Data Preview</h4>
-                    <canvas
-                    :ref="'canvasMirror'"
-                    :id="'canvasMirror'"
-                    :width="canvasWidth"
-                    :height="canvasHeight"
-                    style="border:1px solid #ccc;"                        
-                    ></canvas>
+                    <div style="border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
+                        {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
+                        {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
+                        <br>
+
+                        {{ "Text Information here. " }} <br><br>
+
+                        {{ "Text Information here. " }} <br><br><br>
+
+                        {{ "Text Information here. " }} <br><br><br><br>
+
+                        {{ "Text Information here. " }} <br><br><br><br>
+
+                    </div>
+
+                    <button>Next Notes </button>
+                    <button>Previous Notes</button>
                 </div>
-
-
-
-                <h2> Teacher's Note </h2>
-
-                <div style="width:375px; border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
-                    {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                    {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                    <br>
-
-                    {{ "Text Information here. " }} <br><br>
-
-                    {{ "Text Information here. " }} <br><br><br>
-
-                    {{ "Text Information here. " }} <br><br><br><br>
-
-                    {{ "Text Information here. " }} <br><br><br><br>
-
-                </div>
-
-                <button>Next Notes </button>
-                <button>Previous Notes</button>
-
-
-   
-
             </div>  
         </div>
+
+
 
         <b-modal
             id="modalAddInputText"
@@ -167,6 +161,8 @@
 
 
     </div>
+
+
 </template>
 
 <script>
@@ -174,15 +170,29 @@ import { fabric } from "fabric";
 import io from "socket.io-client";
 
 export default {
-    name: "Editor",
+    name: "Member-Lesson-Slider-Component",
     props: {
-        memberInfo: {
-             type: [Object, String],
-              required: true
-        },
+        csrf_token: String,		
+        api_token: String,
+        isBroadcaster: {
+            type: [Boolean],
+            required: true        
+        },   
         canvasServer: {
             type: [String],
             required: true        
+        },    
+        channelid: {            
+            type: [String, Number],
+            required: true
+        },
+        userInfo: {
+            type: [Object, String],
+            required: true
+        },        
+        memberInfo: {
+            type: [Object, String],
+            required: true
         },
         canvasWidth: {
             type: [String, Number],
@@ -200,17 +210,25 @@ export default {
     },
     data() {
         return {
+            socket: null,
+
+            //loader
+            isLoading: false,
+
             canvas: [],
             canvasMirror: null,
 
-            socket: null,
-
+            //slides
             currentSlide: 1,
+
             slides: 5,
+            lesson_slides_materials: [],
 
             //Modes
             isSelector: false,
             isText: false,
+            isTextEditing: false,
+
             isBrush: false, 
             isPencil: false,
             isCircle: false,
@@ -225,15 +243,11 @@ export default {
             Line: null,
             
             history: [],
-
-            currentSlide: 1,
-           
+            currentSlide: 1,          
 
             //brush
             stroke: 5,
             brushColor: '#000000',
-
-
 
             //input text
            
@@ -255,33 +269,36 @@ export default {
             myIntervalTimer: null,
             timerSpeed: 1000,
             timer: 0,
+
+
            
         };
     },
     mounted() {
      
+
         this.socket = io.connect(this.canvasServer);
+
 
         //register as user
         let user = {
             userid: this.memberInfo.user_id ,
-            username: "test",
-            nickname: this.memberInfo.nickname,            
+            nickname: this.memberInfo.nickname,
+            username: this.userInfo.username,            
+            channelid: this.channelid,        
             type: "MEMBER",      
         }    
-        this.socket.emit('REGISTER', user);     
 
+
+        console.log(this.userInfo)
+
+        this.socket.emit('REGISTER', user);     
+        
 
         this.socket.on('update_user_list', users => {
-           console.log("registered ", users);
-        });
 
+           //console.log("registered ", users);
 
-
-
-
-        this.canvasMirror  = new fabric.Canvas('canvasMirror', {
-            backgroundColor : "#fff",
         });
 
 
@@ -292,50 +309,100 @@ export default {
         }
 
         this.customSelectorBounds(fabric);
-        this.mouseClickHandler();
-        this.keyPressHandler();
-       // this.handleBrushColors();
 
-        //default selected      
-        this.activatePencil();
-        this.startTimer();
+       //update drawing if member is 
+        this.canvasMirror  = new fabric.Canvas('canvas'+this.currentSlide, {
+            backgroundColor : "#fff",
+        });
 
 
         this.socket.on('UPDATE_DRAWING', (response) => {
-            console.log("drawing IS UPDATED!  ", response.canvasData);
-            this.updateCanvas(this.canvasMirror, response.canvasData)
+
+            if (this.$props.isBroadcaster == false) {         
+                this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)              
+                this.disableSelect();
+                this.deactivateSelector();
+            } 
         });
+
+
+
+        //ON LOAD WINDOW
+        if (this.$props.isBroadcaster == false) 
+        {
+            //Your are not a broadcaster
+            this.disableSelect();
+            this.deactivateSelector();
+            
+            this.canvas[this.currentSlide].isDrawingMode = false;          
+
+        } else {
+
+            //Your are the viewer              
+            this.mouseClickHandler();
+            this.activatePencil();
+        }
+
+
+        this.keyPressHandler();
+        this.startTimer();
+
+
+        //get slides
+
+        this.getSlides();
 
     },
     methods: {
+        async getSlides() {
+            this.isLoading = true;
 
-        getRecipients() {
-        
+            axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
+            {
+                method          : "POST",
+                lesson_id       : 1,
+                memberID        : this.memberinfo.user_id
+
+            }).then(response => {     
+            
+                if (response.data.success === true) 
+                { 
+   
+
+                } else {
+          
+
+
+                }
+			});
+        },
+        getRecipient() {        
             let recipient = {
                 userid: this.memberInfo.user_id ,
                 username: "test",
                 nickname: this.memberInfo.nickname,            
                 type: "MEMBER",      
-            }  
-
+            }
             return recipient;
         },
         updateCanvas(canvas, data){
             canvas.loadFromJSON(data, canvas.renderAll.bind(canvas));
         },
-        canvasSendJSON(canvas, data) 
+        canvasSendJSON(canvasID, canvasData) 
         {          
-            let recipients = this.getRecipients();
+            let recipient = this.getRecipient();
 
-            let canvasData = {
-                'recipient'    : recipients,
-                'canvasData'   :   data,
+            let memberCanvasData = {
+                'channelid'       : this.channelid,
+                'recipient'    : recipient,
+                'canvasid'     : canvasID,
+                'canvasData'   : canvasData,
+                
             };
-            this.socket.emit('SEND_DRAWING', canvasData);  
-
-            
+            this.socket.emit('SEND_DRAWING', memberCanvasData);  
         },
-        canvasGetJSON() {
+        canvasGetJSON() 
+        {
             return this.canvas[this.currentSlide].toJSON();           
         },        
         drawRealTime(pointer, options) {
@@ -344,12 +411,9 @@ export default {
             }
         },
         sendCavasData() {
-
-            let recipient  = this.getRecipients();
-
+            let recipient  = this.getRecipient();
             socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
-        },       
-
+        },
         getTime() {
             return this.secondsToHms(this.timer);
         },
@@ -385,12 +449,16 @@ export default {
                 this.canvasSendJSON(this.canvasMirror, data);                   
             }        
         },
+        goToSlide(slide) {
+            this.currentSlide = slide;
+            this.autoSelectTool();        
+        },
         lastSlide() {
             this.currentSlide = this.slides;
             this.autoSelectTool();
 
-                let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);               
+            let data = this.canvasGetJSON();
+            this.canvasSendJSON(this.canvasMirror, data);               
         },
         prevSlide() {
             if (this.currentSlide > 1) {
@@ -402,14 +470,11 @@ export default {
             }
         },
         nextSlide() {
-
             if (this.currentSlide < this.slides) {
                 this.currentSlide ++;
                 this.autoSelectTool(); 
-
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvasMirror, data);    
-
             } 
         },
         autoSelectTool() {
@@ -427,7 +492,9 @@ export default {
         },
         keyPressHandler(e) {
             window.onkeydown = (event) => {
+            
                 if (event.key === "Delete") {
+
                     this.deleteObj();
                     return false;
                 } else {
@@ -442,25 +509,32 @@ export default {
         {
             this.canvas[this.currentSlide].on('mouse:down', (options) => {
 
-                if (this.isText == true) 
-                {
+                if (this.isText == true) {
+
                     this.mouseX = options.pointer.x;
                     this.mouseY = options.pointer.y; 
 
                     var selectedObj = this.canvas[this.currentSlide].getActiveObject();
                     
-                    if (!selectedObj) 
-                    {  
-                        this.$bvModal.show('modalAddInputText');
+                    if (!selectedObj) {          
+
+                        if (this.isTextEditing == true) {
+                            this.isTextEditing = false;
+                        } else {
+                            this.$bvModal.show('modalAddInputText');                           
+                        }
+                        
                     } else {
 
-                        this.resetModes();                    
-                        this.isSelector = true;
-                    }
-                    
-                }                
-            }).on('mouse:up', () => {
+                        this.resetModes();     
+                        this.isText             = true;
+                        this.isTextEditing      = true;
+                        //this.isSelector = true;
+                    }                    
 
+                }  
+
+            }).on('mouse:up', () => {
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvasMirror, data);    
 
@@ -470,11 +544,9 @@ export default {
         resetModes()  {
 
             this.canvas[this.currentSlide].isDrawingMode = false;
-
             this.isDrawingLine      = false;
             this.isDrawing          = false;
-            this.isDrawingCircle    = false;
-            
+            this.isDrawingCircle    = false;           
 
             //modes
             this.isSelector     = false
@@ -515,26 +587,24 @@ export default {
                 this.activateBrush(canvasNum);
             }
         },
-
-        activateTextEditor() 
-        {
-            this.removeEvents(); 
-            this.resetModes();
-            this.canvas[this.currentSlide].defaultCursor = 'text';
-            this.isText = true;
-            this.mouseClickHandler();
-        },
-        activateSelector() {
-        
+        activateSelector() {        
             this.removeEvents();
             this.resetModes();
             this.enableSelect();
             this.changeObjectSelection(true);
             this.mouseClickHandler();
-
             this.isSelector = true;           
             this.canvas[this.currentSlide].selection = true;
         },
+        deactivateSelector() {        
+            this.removeEvents();
+            this.resetModes();
+            this.disableSelect();
+            this.changeObjectSelection(false);
+            this.isSelector = false;           
+            this.canvas[this.currentSlide].selection = false;
+            this.canvas[this.currentSlide].defaultCursor = 'not-allowed';
+        },        
         activateBrush() 
         {
             this.removeEvents(); 
@@ -549,22 +619,31 @@ export default {
             this.isPencil = true; 
             this.draw();
         },
-        activateLine() {
-
+        activateLine() 
+        {
             this.resetModes();
             this.removeEvents();   
             this.disableSelect();
             this.isLine = true;
             this.drawLine();
         },
-        activateCircle() {
+        activateCircle() 
+        {
             this.resetModes();
             this.removeEvents();
             this.disableSelect();
             this.isCircle = true;
             this.drawCircle();                  
         },
-
+        activateTextEditor() 
+        {
+            this.removeEvents(); 
+            this.resetModes();     
+            this.disableSelect();
+            this.canvas[this.currentSlide].defaultCursor = 'text';
+            this.isText = true;
+            this.mouseClickHandler();
+        },
         addInputText() 
         {
             let id = (new Date()).getTime().toString().substr(5);
@@ -588,9 +667,7 @@ export default {
                 //"linethrough: false"
                 //deltaY: false
             });
-
             this.canvas[this.currentSlide].add(text);
-
             let data = this.canvasGetJSON();
             this.canvasSendJSON(this.canvasMirror, data);            
         },        
@@ -600,13 +677,10 @@ export default {
 
             canvas.on('mouse:down', (object) => {
 
-                this.isDrawingCircle = true;
-               
-                var pointer = canvas.getPointer(object.e);
-                
+                this.isDrawingCircle = true;               
+                var pointer = canvas.getPointer(object.e);                
                 this.origX = pointer.x;
                 this.origY = pointer.y;
-
                 this.circle = new fabric.Ellipse({
                     left:   this.origX,
                     top:    this.origY,
@@ -655,8 +729,8 @@ export default {
                     activeObj.setCoords();
                     canvas.renderAll(); 
 
-                    let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvasMirror, data);         
+                    //let data = this.canvasGetJSON();
+                    //this.canvasSendJSON(this.canvasMirror, data);         
                 }         
 
             }).on('mouse:up', (object) => {                
@@ -696,8 +770,8 @@ export default {
                     this.line.setCoords();
                     this.canvas[this.currentSlide].renderAll();
 
-                    let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvasMirror, data);         
+                    //let data = this.canvasGetJSON();
+                    //this.canvasSendJSON(this.canvasMirror, data);         
                 }
             }).on('mouse:up', (object) => {
                 this.disableSelect();
@@ -733,22 +807,26 @@ export default {
                     this.isDrawing = false;
                 }
                 
+            }).on('mouse:move', (object) => {
+
+                if (this.isDrawing) {
+
+                    //const pointer = this.canvas[this.currentSlide].getPointer(object);
+
+                    //const options = {pointer, e:{}} // required for Fabric 4.3.1
+                    //this.drawRealTime(pointer, options);
+
+                    console.log("draw drag!")
+                    
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvas[this.currentSlide], data);      
+                }
             }).on('mouse:up', (object) => {
                 this.isDrawing = false;
 
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);
             
-            }).on('mouse:move', (object) => {
-                if (this.isDrawing) {
-                    const pointer = this.canvas[this.currentSlide].getPointer(object);
-                    const options = {pointer, e:{}} // required for Fabric 4.3.1
-                    //this.drawRealTime(pointer, options);
-
-                    console.log("draw!")
-                    let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvasMirror, data);      
-                }
             });            
 
         },
@@ -865,16 +943,12 @@ export default {
 
 .left-container {
     background-color: #ececec;
-    border-radius: 15px;
-    margin-right: 10px;
-    padding: 20px 15px 20px;
+    padding: 10px;
+
 }
 
 .right-container {
     background-color: #ececec;
-    border-radius: 15px;
-    margin-right: 10px;
-    padding: 20px 15px 20px;
 }
 
 /*tool*/

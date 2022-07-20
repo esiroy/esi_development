@@ -6,11 +6,19 @@
     <div class="row">
 
         <div class="col-12">
+
+            Channel ID : {{ app('request')->input('channel_id') }}
+
+
             <lesson-slider-component 
-                canvas-Server="{{ env('CHAT_SERVER') }}"
-                editor-Id="canvas"
+                
+                :is-broadcaster="false"
+
+                canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
+                editor-ID="canvas"
                 canvas-Width="500"
                 canvas-Height="500"
+                :channelid="{{ app('request')->input('channel_id') }}"
                 :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
                 api_token="{{ Auth::user()->api_token }}" 
                 csrf_token="{{ csrf_token() }}"

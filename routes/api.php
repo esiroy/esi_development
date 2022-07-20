@@ -230,3 +230,6 @@ Route::middleware('auth:api')->post('/createAdminMergedAccount', 'API\MergeAccou
 //miniTest Results
 Route::middleware('auth:api')->post('/getMemberMiniTestResult', 'API\MemberMiniTestResultController@get')->name('APIGetMemberMiniTestResults');
 Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\MemberMiniTestResultController@destroy')->name('APIDeleteMemberMiniTestResults');
+
+//lesson slide materials
+Route::middleware('auth:api')->post('/lessonSlideMaterials', 'API\LessonSlideMaterials@get')->name('APIGetLessonSlideMaterials');
