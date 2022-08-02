@@ -75,11 +75,9 @@ if (url[1] === 'admin') {
     Vue.component('member-level-component', require('./components/frontend/member/MemberLevelComponent.vue').default);
     Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);
     Vue.component('member-account-merger-component', require('./components/frontend/member/MemberAccountMergerComponent.vue').default);
-    Vue.component('questions-component', require('./components/frontend/member/QuestionsComponent.vue').default); +
+    Vue.component('questions-component', require('./components/frontend/member/QuestionsComponent.vue').default);
 
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
-
-    Vue.component('member-caller-component', require('./components/frontend/member/MemberCallerComponent.vue').default);
 
     Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
 
@@ -89,10 +87,13 @@ if (url[1] === 'admin') {
             Vue.component('customer-chat-component', require('./components/frontend/chat/CustomerChatComponent.vue').default);
             break;
         default:
-            console.log("default front end")
+            Vue.component('member-floating-chat-component', require('./components/frontend/chat/MemberFloatingChatComponent.vue').default);
+            //console.log("default front end")
     }
 }
 
+
+Vue.component('member-caller-component', require('./components/frontend/member/MemberCallerComponent.vue').default);
 
 
 

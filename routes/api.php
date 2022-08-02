@@ -76,6 +76,7 @@ Route::middleware('auth:api')->post('/getBookScheduledCount', 'API\MemberControl
 Route::middleware('auth:api')->post('/getTotalMemberDailyReserved', 'API\MemberController@getTotalMemberDailyReserved')->name('APIGetTotalMemberDailyReserved');
 Route::middleware('auth:api')->post('/getTotalTutorDailyReserved', 'API\MemberController@getTotalTutorDailyReserved')->name('APIGetTotalTutorDailyReserved');
 Route::middleware('auth:api')->post('/getScheduleDetails', 'API\MemberController@getScheduleDetails')->name('APIGetScheduleDetails');
+Route::middleware('auth:api')->post('/searchMemberName', 'API\MemberController@searchMemberName')->name('APISearchMemberName');
 
 //[start](MEMBER CONTROL PANEL) 
 Route::middleware('auth:api')->post('/sendMemberReply', 'API\MemberController@sendMemberReply')->name('APIsendMemberReply');
@@ -88,7 +89,18 @@ Route::middleware('auth:api')->post('/getMemberInbox', 'API\MemberController@get
 
 //[start](CHAT SUPPORT)
 Route::middleware('auth:api')->post('/getChathistory', 'API\ChatSupportController@getChathistory')->name('APIGetChathistory');
+Route::middleware('auth:api')->post('/getRecentUserChatList', 'API\ChatSupportController@getRecentUserChatList')->name('APIGetRecentUserChatList');
+
+Route::middleware('auth:api')->post('/getUnreadChatMessages', 'API\ChatSupportController@getUnreadChatMessages')->name('APIGetUnreadChatMessages');
+Route::middleware('auth:api')->post('/markChatMessagesRead', 'API\ChatSupportController@markChatMessagesRead')->name('APIMarkChatMessagesRead');
 Route::middleware('auth:api')->post('/saveCustomerSupportChat', 'API\ChatSupportController@saveCustomerSupportChat')->name('APISaveCustomerSupportChat');
+
+Route::middleware('auth:api')->post('/getAdminChatHistory', 'API\ChatSupportController@getAdminChatHistory')->name('APIGetAdminChathistory');
+Route::middleware('auth:api')->post('/getAdminUnreadChatMessages', 'API\ChatSupportController@getAdminUnreadChatMessages')->name('APIGetUnreadAdminChatMessages');
+Route::middleware('auth:api')->post('/markAdminChatMessagesRead', 'API\ChatSupportController@markAdminChatMessagesRead')->name('APIMarkAdminChatMessagesRead');
+
+
+
 
 
 //[start](TUTOR CONTROL PANEL)  memo chat system 

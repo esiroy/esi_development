@@ -13,11 +13,11 @@
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
 
    <!-- Styles -->
-    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_2'  }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_5_2'  }}">
+    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_6'  }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_5_6'  }}">
     
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') .'?id=version_5_2'  }}" defer ></script>
+    <script src="{{ asset('js/app.js') .'?id=version_5_6'  }}" defer ></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -242,6 +242,69 @@
             </div>
         </main>
 
+        <div class="footer-container">
+            <div class="member-floating-chat">
+
+            @php
+                $userImageObj = new \App\Models\UserImage;
+                $memberObj = new \App\Models\Member;
+
+                $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
+
+                if ($userImage == null) {
+                    $memberProfileImage = Storage::url('user_images/noimage.jpg');
+                } else {
+                    $memberProfileImage = Storage::url("$userImage->original");
+                }
+
+                $member =  $memberObj->where('user_id', Auth::user()->id)->first();
+                $nickname = $member->nickname;
+                
+                $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
+            @endphp 
+
+           
+
+            @if (Request::segment(1) == "memberschedule" || Request::segment(1) == "settings")
+
+            <member-floating-chat-component                
+                userid="{{ Auth::user()->id }}" 
+                username="{{ Auth::user()->username }}"
+                user_image="{{ $memberProfileImage }}"        
+                nickname="{{ $nickname }}"        
+                customer_support_image="{{ url('images/cs-profile.png') }}"        
+                chatserver_url="{{ $chatserver_url }}"
+                api_token="{{ Auth::user()->api_token }}"
+                csrf_token="{{ csrf_token() }}"
+                :show_sidebar="false"
+            >
+            </member-floating-chat-component>  
+
+            @endif
+
+            <member-caller-component
+            
+                :is-broadcaster="false"                
+
+                canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
+                editor-ID="canvas"
+                canvas-Width="500"
+                canvas-Height="500"
+
+            
+                :user-Info="{{  json_encode(Auth::user()) }}" 
+                :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
+
+                api_token="{{ Auth::user()->api_token }}" 
+                csrf_token="{{ csrf_token() }}"
+                >
+            </member-caller-component>
+
+                   
+            </div>
+        </div>
+        
+
     </div>
 
     <script type="text/javascript">
@@ -259,6 +322,8 @@
             })
 
         });
+  
+
 
         function newPopup(url) {
             popupWindow = window.open(url,'popUpWindow','height=500,width=700,left=0,top=0,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=yes')

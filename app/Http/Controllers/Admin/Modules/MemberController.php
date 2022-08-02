@@ -26,7 +26,6 @@ use App\Models\MergedAccount;
    
 use App\Models\MemberMiniTestSetting;
 
-
 use Auth, Hash, Storage;
 use Carbon\Carbon;
 use DB;
@@ -749,6 +748,9 @@ class MemberController extends Controller
 
             MergedAccount::where('member_id', $user->id)->delete();
             MergedAccount::where('merged_member_id', $user->id)->delete();
+
+            ChatSupportHistory::where('sender_id', $user->id)->delete();
+            ChatSupportHistory::where('recipient_id', $user->id)->delete();
 
             $member->delete();
             $user->forceDelete();

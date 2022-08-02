@@ -2,6 +2,8 @@
 
   <div id="AdminChat" class="adminChat">
 
+  
+
     <!--
     <div class="memberlist-panel">
         <div class="list-group">

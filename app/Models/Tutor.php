@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Facades\Storage;
+
+
 class Tutor extends Model
 {
     public $table = 'tutors';
@@ -55,4 +58,16 @@ class Tutor extends Model
        ->get();
        return $tutors;
     }
+
+    public function image() 
+    {        
+        $userImage = UserImage::where('user_id', $this->user_id)->where('valid', 1)->first();
+
+        if ($userImage) {
+            return  Storage::url($userImage['original']);
+        } else {
+            return null;
+        }       
+     
+    }    
 }

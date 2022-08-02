@@ -184,6 +184,40 @@
                                         <td style="text-align: center;">
                                             <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">-->
 
+                                            @php 
+                                                /* call the tutor*/
+                                                
+                                                $tutorData = [
+                                                    'userid'    => $tutor->user_id,  
+                                                    'nickname'  => $tutor->nickname,
+                                                    'username'  => $tutor->user->username,                                                     
+                                                    'firstname' => $tutor->user->firstname,
+                                                    'lastname'  => $tutor->user->lastname,
+                                                    'email'     => $tutor->user->email,
+                                                    'image'     => url($tutor->image()),
+                                                    'type'      => $tutor->user->user_type,                                               
+                                                ];
+
+                                                $user = Auth::user();
+
+                                                $memberData = [
+                                                    'userid'    => $user->id,    
+                                                    'nickname'  => $user->memberInfo->nickname,
+                                                    'username'  => $user->username, 
+                                                    'firstname' => $user->firstname,
+                                                    'lastname'  => $user->lastname,   
+                                                    'email'     => $user->email,  
+                                                    'image'     => url($user->image()),
+                                                    'type'      => $user->user_type,
+                                                ];
+
+
+                                               $reserve['lessonTimeRage'] = LessonTimeRange($reserve->lesson_time);                                    
+                                            @endphp
+
+                                            <a href="javascript:void(0)" onClick="window.memberCallerComponent.callTutor('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ $reserve }}')">Call Teacher</a>
+
+
                                             <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
                                                 <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
                                             </a>

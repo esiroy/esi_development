@@ -285,7 +285,8 @@ export default {
             userid: this.memberInfo.user_id ,
             nickname: this.memberInfo.nickname,
             username: this.userInfo.username,            
-            channelid: this.channelid,        
+            channelid: this.channelid,
+            status: "ONLINE",
             type: "MEMBER",      
         }    
 

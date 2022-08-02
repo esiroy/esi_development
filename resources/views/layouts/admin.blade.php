@@ -18,10 +18,10 @@
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin />
-    <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
+    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_4' }}" as="style">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-    <script src="{{ asset('js/admin.js') .'?id=version_5_2'  }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=version_5_4' }}">
+    <script src="{{ asset('js/admin.js') .'?id=version_5_4'  }}" defer></script>
     
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
@@ -186,6 +186,21 @@
         </main>
         
         <footer class="container py-4 px-0 bg-light">
+
+            <member-caller-component
+                :is-broadcaster="false"                
+                canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
+                editor-ID="canvas"
+                canvas-Width="500"
+                canvas-Height="500"
+                
+                :user-Info="{{  json_encode(Auth::user()) }}" 
+                :member-Info="{{  json_encode(Auth::user()->tutorInfo) }}" 
+
+                api_token="{{ Auth::user()->api_token }}" 
+                csrf_token="{{ csrf_token() }}"
+                >
+            </member-caller-component>
 
 
             <div class="container border-top">
@@ -377,7 +392,6 @@
 
             function addMemberReplyBubble(image, data) 
             {
-                console.log(data.message);
 
                 if (data.message) {
                   

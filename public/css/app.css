@@ -30030,6 +30030,11 @@ div.dt-button-collection .dt-button.active {
   color: #fff;
 }
 
+.member-message img.img_preview {
+  width: 100%;
+  max-width: 300px;
+}
+
 /****************** ADMIN PANEL ***************/
 .esi-card {
   border: 2px solid #cbe5ee;

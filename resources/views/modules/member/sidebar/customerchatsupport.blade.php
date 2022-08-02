@@ -3,6 +3,7 @@
         <strong>セブ・マネジャー</strong>
      </div>
 
+    <!--
      <table cellpadding="4" cellspacing="0" class="mt-2">
          <tbody>
              <tr>
@@ -24,7 +25,42 @@
 
          </tbody>
      </table>
+     -->
+
+        @php
+            $userImageObj = new \App\Models\UserImage;
+            $memberObj = new \App\Models\Member;
+
+            $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
+
+            if ($userImage == null) {
+                $memberProfileImage = Storage::url('user_images/noimage.jpg');
+            } else {
+                $memberProfileImage = Storage::url("$userImage->original");
+            }
+
+            $member =  $memberObj->where('user_id', Auth::user()->id)->first();
+            $nickname = $member->nickname;
+            
+            $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
+
+        @endphp   
+
+        <member-floating-chat-component
+            userid="{{ Auth::user()->id }}" 
+            username="{{ Auth::user()->username }}"
+            user_image="{{ $memberProfileImage }}"        
+            nickname="{{ $nickname }}"        
+            customer_support_image="{{ url('images/cs-profile.png') }}"        
+            chatserver_url="{{ $chatserver_url }}"
+            api_token="{{ Auth::user()->api_token }}"
+            csrf_token="{{ csrf_token() }}"    
+            :show_sidebar="true"        
+        >
+        </member-floating-chat-component>  
+
  </div>
+ 
 
 @section('styles')
 @parent

@@ -21,6 +21,19 @@ if (! function_exists('JapaneseDateFormat')) {
     }
 }
 
+
+
+if (! function_exists('LessonTimeRange')) {
+    function LessonTimeRange($lessonTime) {
+        if (date('H', strtotime($lessonTime)) == '00') {
+            return date('Y年 m月 d日 24:i', strtotime($lessonTime ." - 1 day"))  ."-".   date('24:i', strtotime($lessonTime." + 25 minutes "));
+        } else {
+            return date('Y年 m月 d日 H:i', strtotime($lessonTime))  ."-".   date('H:i', strtotime($lessonTime." + 25 minutes "));
+        }
+    }
+}
+  
+
 //japanese date only formatter
 if (! function_exists('ESIDateFormat')) {
     function ESIDateFormat($date) 

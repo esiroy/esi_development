@@ -1,7 +1,6 @@
 @extends('layouts.esi-app')
 @section('content')
 
-
 <div class="container bg-light">
     <div class="esi-box mb-5 pb-4">
 

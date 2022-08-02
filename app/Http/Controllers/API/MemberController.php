@@ -1743,6 +1743,49 @@ class MemberController extends Controller
     }
 
 
+    public function searchMemberName(Request $request) {
+
+        $query = $request->get('query');   
+
+        $memberQuery = Member::join('users', 'users.id', '=', 'members.user_id')                            
+                        ->select("members.user_id as id", 'members.nickname', 'users.username', 'users.email', DB::raw("CONCAT(users.firstname,' ',users.lastname) as name"));     
+
+        //search if match the id
+        $memberQuery = $memberQuery->where('members.user_id', $query);      
+
+        //seach member nickname
+        $memberQuery = $memberQuery->orWhere('members.nickname', 'like', '%'.$query.'%');
+
+        //seach member username
+        $memberQuery = $memberQuery->orWhere('users.username', 'like', '%'.$query.'%');
+
+        //seach member email
+        $memberQuery = $memberQuery->orWhere('users.email', 'like', '%'.$query.'%');        
+
+        //search member username
+        $memberQuery = $memberQuery->orWhereRaw("CONCAT(users.firstname,' ',users.lastname) like '%" . $query . "%'")
+                                    ->orWhereRaw("CONCAT(users.lastname,' ',users.firstname) like '%" . $query . "%'")
+                                    ->orWhereRaw("CONCAT(users.lastname,', ',users.lastname) like '%" . $query . "%'"); 
+
+
+        $memberQuery = $memberQuery->orWhere('users.email', $query);
+
+        $members = $memberQuery->get();
+      
+        if ($members) {
+            return Response()->json([
+                "success" => true,
+                "message" => "Member has been found",
+                "members" => $members
+            ]);
+        } else {
+            return Response()->json([
+                "success" => false,
+                "message" => "Member was not found.",
+            ]);
+        }
+    
+    }
     
 
 }

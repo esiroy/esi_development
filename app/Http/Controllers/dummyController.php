@@ -24,7 +24,7 @@ use App\Models\TimeManager;
 use App\Models\TimeManagerProgress;
 
 use App\Models\MiniTestResult;
-
+use App\Models\ChatSupportHistory;
 
 use App;
 use Gate;
@@ -33,6 +33,7 @@ use Auth;
 use Config;
 use Mail;
 use App\Models\LessonMailer;
+
 use App\Mail\CustomerSupport as CustomerSupportMail;
 use App\Models\PhpSpreadsheetFontStyle as Style;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -48,8 +49,83 @@ class dummyController extends Controller
     {
     }
 
-    public function index(MiniTestResult $miniTestResult) 
+
+   public function index(ChatSupportHistory $chatSupportHistory) 
     {
+
+            $recentUsers = $chatSupportHistory->where(function($query) 
+            {
+                    $query->where('chatsupport_history.message_type', 'MEMBER') 
+                        ->where('chatsupport_history.sender_id', '!=', 1);
+                        
+                            
+
+            })->orWhere(function($query) {
+
+
+                $query->where('chatsupport_history.message_type', 'CHAT_SUPPORT') 
+                    ->where('chatsupport_history.recipient_id', '!=', 1);
+                                                       
+
+            })
+            ->distinct()
+            ->latest()
+            ->get();
+        
+            foreach ($recentUsers as $item) {
+                $ids[] = $item->sender_id;
+                $ids[] = $item->recipient_id;
+            }
+
+
+            $uniqueUsers = array_unique($ids);  
+
+            foreach ($uniqueUsers as $key => $recentUser) 
+            {
+                    echo $recentUser . "<BR>";
+            }
+
+
+    }
+
+
+    public function users_chat(ChatSupportHistory $chatSupportHistory) 
+    {
+    
+
+        $recentUsers_sender = $chatSupportHistory
+                        ->select('sender_id as userid')
+                        ->distinct()
+                        ->where('chatsupport_history.message_type', 'MEMBER')
+                        ->pluck('userid')
+                        ->toArray();
+                        
+
+       $recentUsers_recipient = $chatSupportHistory
+                        ->select('recipient_id as userid')
+                        ->distinct()
+                        ->where('chatsupport_history.message_type', 'CHAT_SUPPORT')
+                        ->pluck('userid')
+                        ->toArray();
+
+        $recentUsers = array_merge($recentUsers_sender, $recentUsers_recipient); 
+        $uniqueUsers = array_unique($recentUsers);
+        
+    
+        $userList =  [];
+                        
+        foreach ($uniqueUsers as $key => $recentUser) 
+        {
+            echo $key;
+            $user = User::find($recentUser);
+
+            $userList[$key]['userid']    = $user->id;
+          
+        }
+    }
+
+    public function mintest() {
+    
 
         $today = date('Y-m-d');     
         $todayDateToUpper = date('Y-m-d 23:59:59');
@@ -77,6 +153,8 @@ class dummyController extends Controller
         //$count = $miniTestResult->countPreviousResults(Auth::user()->id, 7);
 
         //echo $count;
+
+
     }
     public function testMinites(Request $request) {
 
