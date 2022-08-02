@@ -24,7 +24,7 @@ use App\Models\LessonMailer;
 use App\Models\Purpose;
 use App\Models\MemberLevel;
 use App\Models\MemberMiniTestSetting;
-
+use App\Models\MemberSetting;
 
 use Auth, App;
 use DB;
@@ -1718,6 +1718,8 @@ class MemberController extends Controller
                 $memberMiniTestSetting->createOrUpdateLimit($memberID, $minitestData['memberMiniTestLimit']);
                 $memberMiniTestSetting->createOrUpdateDuration($memberID, $minitestData['memberMiniTestDuration']);
 
+                $memberSetting = new MemberSetting();
+                $memberSetting->createOrUpdateSetting($memberID, "hide_member_tabs", $data->hideMemberTabs);
 
                 DB::commit();
 

@@ -149,6 +149,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6 small">
+                                Hide: FAQ/Lesson Fee/Lesson Course : 
+                            </div>
+                            <div class="col-6">
+                                <input type="checkbox"  name="hideMemberTabs" id="hideMemberTabs" v-model="user.hideMemberTabs" >
+                            </div>
+                        </div>
+                    </div>                    
                 </div>
 
                 <div id="nickname-row" class="row pt-2">
@@ -1469,6 +1480,9 @@ export default {
         MemberMiniTestViewerComponent,
     },
     props: {
+        hidemembertabs: {
+            type: Object
+        },
         agentinfo: {
             type: Object
         },
@@ -1912,6 +1926,8 @@ export default {
                 last_name: "",
                 nickname: "",
               
+                //tab settings
+                hideMemberTabs: null,
                 
                 japanese_lastname: "",
                 japanese_firstname: "",
@@ -2026,9 +2042,6 @@ export default {
     mounted: function () 
 	{
 
-        console.log(this.minitest);
-
-
         this.getMergedAccounts();
 
 
@@ -2038,6 +2051,11 @@ export default {
             this.selectedMemberLevel = null;
         }
 
+
+        //console.log(this.user.hideMemberTabs)
+         if (this.$props.hidemembertabs) {
+            this.user.hideMemberTabs = this.$props.hidemembertabs.value;
+         }
 
 
         //console.log(this.memberlatestexamscore, "latest score");

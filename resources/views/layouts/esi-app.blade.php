@@ -221,16 +221,37 @@
             </div>
         </nav>
 
-    
+        @php 
+
+            $memberTabs = App\Models\MemberSetting::where('user_id', Auth::user()->id )
+                        ->where('name', 'hide_member_tabs')
+                        ->where('valid', true)
+                        ->first();
+
+            if ($memberTabs) {
+                $hideMemberTabs = $memberTabs->value;
+            } else {
+                $hideMemberTabs = false;
+            }
+            
+
+        @endphp
         <div class="bg-lightblue">
           <div class="container px-0">
             <nav class="nav nav-pills flex-column flex-sm-row">
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('/home') }}">マイページ </a>
+
+                @if ($hideMemberTabs == false)
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:newPopup('http://www.mytutor-jpn.com/faq.html');">よくあるご質問</a>
+                @endif
+
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('customersupport') }}">カスタマー　サポート</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('lessonmaterials') }}">オリジナル教材</a>
+
+                @if ($hideMemberTabs == false)
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:newPopup('http://www.mytutor-jpn.com/lesson.html');">レッスンコース</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:newPopup('http://www.mytutor-jpn.com/service.html');">レッスン料金</a>
+                @endif
             </nav>
           </div>
         </div>
