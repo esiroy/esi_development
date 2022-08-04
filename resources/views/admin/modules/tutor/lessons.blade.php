@@ -198,7 +198,7 @@
                                                 
                                                 @if ( $lessons[$dateView][$timeSlot['startTime']]['memo'] )
                                                 
-                                                    <div id="memoContainer" class="btn-container2 pt-2">
+                                                    <div id="memoContainer" class="btn-container2 d-inline-block pt-2">
                                                         <!-- open memo -->
                                                         <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
                                                             <div id="memoContent" style="display:none">
@@ -210,7 +210,7 @@
 
                                                 @else
                                                 
-                                                    <div id="memoContainer" class="btn-container2 pt-2" style="display:none" >
+                                                    <div id="memoContainer" class="btn-container2 pt-2 d-inline-block" style="display:none" >
                                                         <!-- open memo -->
                                                         <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
                                                             <div id="memoContent">
@@ -220,6 +220,69 @@
                                                         </a>
                                                     </div>
                                                 @endif
+
+
+                                                @php 
+                                                    /* call the member*/
+                                                   
+
+                                                    $member = \App\Models\Member::where('user_id', $memberID)->first();
+
+                                                    echo $member->user_id;
+
+                                                    if ($member) {
+
+                                                        $memberData = [
+                                                            'userid'    => $member->user_id,  
+                                                            'nickname'  => $member->nickname,
+                                                            'username'  => $member->user->username,                                                     
+                                                            'firstname' => $member->user->firstname,
+                                                            'lastname'  => $member->user->lastname,
+                                                            'email'     => $member->user->email,
+                                                            'image'     => url($member->image()),
+                                                            'type'      => $member->user->user_type,                                               
+                                                        ];
+                                                    }
+
+                                                    $user = Auth::user();
+                                                    
+                                                    $tutorData = [
+                                                        'userid'    => $user->id,    
+                                                        'nickname'  => "",
+                                                        'username'  => $user->username, 
+                                                        'firstname' => $user->firstname,
+                                                        'lastname'  => $user->lastname,   
+                                                        'email'     => $user->email,  
+                                                        'image'     => url($user->image()),
+                                                        'type'      => $user->user_type,
+                                                    ];
+
+
+                                                    $startTime  = $lessons[$dateView][$timeSlot['startTime']]['startTime'];
+                                                    $lessonDate = $lessons[$dateView][$timeSlot['startTime']]['scheduled_at'];
+                                                    $lessonTime = ESILessonTimeENFormat($lessonDate ." " . $startTime );
+                                                    $duration = $lessons[$dateView][$timeSlot['startTime']]['duration'];
+                                                    $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
+
+                                                    $reservationData = [
+                                                        'duration'          => $duration,
+                                                        'lesson_time'       => $lessonTime,
+                                                        'lessonTimeRage'    => LessonTimeRange($lessonTime),
+                                                        'schedule_status'   => $status
+                                                    ];
+                                                @endphp
+
+                                                @if ($member) 
+                                                    <div class="d-inline-block">
+                                                       
+
+                                                        <a href="javascript:void(0)" onClick="window.memberCallerComponent.callMember('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')">Call Member</a>
+                                                    </div>
+                                                @endif
+
+
+
+
                                             </div>
                                             @endif
                                         </div>

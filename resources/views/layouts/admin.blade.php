@@ -188,14 +188,14 @@
         <footer class="container py-4 px-0 bg-light">
 
             <member-caller-component
-                :is-broadcaster="false"                
+                :is-broadcaster="true"    
+                :user-Info="{{  json_encode(Auth::user()) }}" 
+                :member-Info="{{  json_encode(Auth::user()->tutorInfo) }}" 
+
                 canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
                 editor-ID="canvas"
                 canvas-Width="500"
                 canvas-Height="500"
-                
-                :user-Info="{{  json_encode(Auth::user()) }}" 
-                :member-Info="{{  json_encode(Auth::user()->tutorInfo) }}" 
 
                 api_token="{{ Auth::user()->api_token }}" 
                 csrf_token="{{ csrf_token() }}"

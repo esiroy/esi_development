@@ -282,19 +282,16 @@
 
             @endif
 
-            <member-caller-component
-            
-                :is-broadcaster="false"                
+            <member-caller-component            
+                :is-broadcaster="false"     
+                :user-Info="{{  json_encode(Auth::user()) }}" 
+                :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
 
                 canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
                 editor-ID="canvas"
                 canvas-Width="500"
-                canvas-Height="500"
-
-            
-                :user-Info="{{  json_encode(Auth::user()) }}" 
-                :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
-
+                canvas-Height="500"    
+                        
                 api_token="{{ Auth::user()->api_token }}" 
                 csrf_token="{{ csrf_token() }}"
                 >

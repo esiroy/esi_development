@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MemberAttribute;
 use App\Models\ScheduleItem;
 use Auth;
+use Illuminate\Support\Facades\Storage;
 
 class Member extends Model
 {
@@ -194,5 +195,18 @@ class Member extends Model
             return false;
         }
     }
+
+
+    public function image() 
+    {        
+        $userImage = UserImage::where('user_id', $this->user_id)->where('valid', 1)->first();
+
+        if ($userImage) {
+            return  Storage::url($userImage['original']);
+        } else {
+            return null;
+        }       
+     
+    }      
 
 }

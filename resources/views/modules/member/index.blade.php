@@ -161,9 +161,10 @@
                                     <!-- COUNTER FOR PAGINATION -->
                                     @foreach ($reserves as $reserve)
 
+                                
                                     <tr class="row_reserve_{{$reserve->id}} reserved_items">
                                         <td style="text-align: center;">
-
+                                      
                                             @if (date('H', strtotime($reserve->lesson_time)) == '00') 
                                                 {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
                                             @else 
@@ -199,7 +200,6 @@
                                                 ];
 
                                                 $user = Auth::user();
-
                                                 $memberData = [
                                                     'userid'    => $user->id,    
                                                     'nickname'  => $user->memberInfo->nickname,
@@ -212,10 +212,15 @@
                                                 ];
 
 
-                                               $reserve['lessonTimeRage'] = LessonTimeRange($reserve->lesson_time);                                    
+                                                $reservationData = [
+                                                    'duration'          => $reserve->duration,
+                                                    'lesson_time'       => $reserve->lesson_time,
+                                                    'lessonTimeRage'    => LessonTimeRange($reserve->lesson_time),
+                                                    'schedule_status'   => $reserve->schedule_status
+                                                ];
                                             @endphp
 
-                                            <a href="javascript:void(0)" onClick="window.memberCallerComponent.callTutor('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ $reserve }}')">Call Teacher</a>
+                                            <a href="javascript:void(0)" onClick="window.memberCallerComponent.callTutor('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Call Teacher</a>
 
 
                                             <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
