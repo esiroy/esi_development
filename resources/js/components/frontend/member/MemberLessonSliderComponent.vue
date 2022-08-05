@@ -72,8 +72,8 @@
                             <canvas
                                 :ref="'canvas'+slide"
                                 :id="'canvas'+slide"
-                                :width="canvasWidth"
-                                :height="canvasHeight"
+                                :width="canvas_width"
+                                :height="canvas_height"
                                 style="border:1px solid #ccc;"                        
                             ></canvas>
                             
@@ -178,31 +178,31 @@ export default {
             type: [Boolean],
             required: true        
         },   
-        canvasServer: {
+        canvas_server: {
             type: [String],
             required: true        
         },    
-        channelid: {            
+        channel_id: {            
             type: [String, Number],
             required: true
         },
-        userInfo: {
+        user_info: {
             type: [Object, String],
             required: true
         },        
-        memberInfo: {
+        member_info: {
             type: [Object, String],
             required: true
         },
-        canvasWidth: {
+        canvas_width: {
             type: [String, Number],
             required: true
         },
-        canvasHeight: {
+        canvas_height: {
             type: [String, Number],
             required: true
         },
-        editorId: {
+        editor_id: {
             type: String,
             default: "canvas",
             required: false
@@ -276,22 +276,23 @@ export default {
     },
     mounted() {
      
+        console.log(this.$props.canvas_server);
 
-        this.socket = io.connect(this.canvasServer);
+        this.socket = io.connect(this.$props.canvas_server);
 
 
         //register as user
         let user = {
-            userid: this.memberInfo.user_id ,
-            nickname: this.memberInfo.nickname,
-            username: this.userInfo.username,            
+            userid: this.member_info.user_id ,
+            nickname: this.member_info.nickname,
+            username: this.user_info.username,            
             channelid: this.channelid,
             status: "ONLINE",
             type: "MEMBER",      
         }    
 
 
-        console.log(this.userInfo)
+        console.log(this.user_info)
 
         this.socket.emit('REGISTER', user);     
         
@@ -319,11 +320,15 @@ export default {
 
         this.socket.on('UPDATE_DRAWING', (response) => {
 
+            console.log("updating drawing " + this.$props.isBroadcaster )
+
             if (this.$props.isBroadcaster == false) {         
                 this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)              
                 this.disableSelect();
                 this.deactivateSelector();
             } 
+
+           
         });
 
 
@@ -351,7 +356,7 @@ export default {
 
         //get slides
 
-        this.getSlides();
+        //this.getSlides();
 
     },
     methods: {
@@ -362,7 +367,7 @@ export default {
             {
                 method          : "POST",
                 lesson_id       : 1,
-                memberID        : this.memberinfo.user_id
+                memberID        : this.member_info.user_id
 
             }).then(response => {     
             
@@ -379,9 +384,9 @@ export default {
         },
         getRecipient() {        
             let recipient = {
-                userid: this.memberInfo.user_id ,
+                userid: this.member_info.user_id ,
                 username: "test",
-                nickname: this.memberInfo.nickname,            
+                nickname: this.member_info.nickname,            
                 type: "MEMBER",      
             }
             return recipient;

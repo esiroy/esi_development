@@ -51,10 +51,6 @@ if (url[1] === 'admin') {
 
         case 'reportcard':
             Vue.component('member-notes-component', require('./components/backend/member/MemberNotesComponent.vue').default);
-
-            break;
-        case 'lesson_slides':
-            Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
             break;
 
         case 'customerchatsupport':
@@ -92,7 +88,7 @@ if (url[1] === 'admin') {
     }
 }
 
-
+Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
 Vue.component('member-caller-component', require('./components/frontend/member/MemberCallerComponent.vue').default);
 
 

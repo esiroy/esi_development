@@ -273,10 +273,10 @@
                                                 @endphp
 
                                                 @if ($member) 
-                                                    <div class="d-inline-block">
-                                                       
+                                                    <div class="d-inline-block">                                                      
 
-                                                        <a href="javascript:void(0)" onClick="window.memberCallerComponent.callMember('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')">Call Member</a>
+                                                        <a href="javascript:void(0)" 
+                                                            onClick="window.memberCallerComponent.callMember('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')">Call Member</a>
                                                     </div>
                                                 @endif
 

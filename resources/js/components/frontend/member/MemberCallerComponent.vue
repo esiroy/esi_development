@@ -2,13 +2,23 @@
     
     import io from "socket.io-client";    
     import Moment from "moment-timezone";
+    import MemberLessonSliderComponent from "./MemberLessonSliderComponent.vue";
+
 
     export default {
         name: "Member-Caller-Component",
+        components: {    
+            MemberLessonSliderComponent
+        },        
         props: 
         {
             csrf_token: String,		
             api_token: String,
+
+            isBroadcaster: {
+                type: [Boolean],
+                required: true        
+            },
             userInfo: {
                 type: [Object, String],
                 required: true
@@ -48,6 +58,8 @@
 
             //Transfer the object to the window
             window.memberCallerComponent = this;
+
+            console.log(this.memberInfo);
 
             //Register the member Info
             this.user = {
@@ -260,6 +272,8 @@
 </script>
 
 <template>
+
+
     <div class="container">
 
 
@@ -325,11 +339,25 @@
 
 
         <b-modal id="modal-lesson-slider" title="Lesson">
-            {{ "we are in a lesson session" }}            
+
+
+
+             <lesson-slider-component 
+                    :editor_id="'canvas'"
+                    :channel_id="1"
+                    :isBroadcaster="this.isBroadcaster"
+                    :canvas_server="this.canvasServer"                
+                    :canvas_width="500"
+                    :canvas_height="500"
+                    :user_info="this.userInfo"
+                    :member_info="this.memberInfo" 
+                    :api_token="this.api_token" 
+                    :csrf_token="this.csrf_token"
+                    >
+                </lesson-slider-component>  
+
+
         </b-modal>
-
-
-
 
 
 
