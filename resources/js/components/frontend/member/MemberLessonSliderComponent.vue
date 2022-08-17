@@ -68,7 +68,7 @@
 
                     <div class="canvas-container">
                         <div :id="'editor'+slide" v-for="slide in slides" :key="slide" v-show="slide == currentSlide">        
-
+{{ canvas_width }}
                             <canvas
                                 :ref="'canvas'+slide"
                                 :id="'canvas'+slide"

@@ -165,9 +165,12 @@
 
                 console.log(this.lessonStartTime)
                 console.log(this.lessonEndTime);
+                console.log(this.tutor)
 
                 //search member
-                let userIndex = this.users.findIndex(user => user.userid == this.member.userid)
+                let userIndex = this.users.findIndex(user => user.userid == this.member.userid);
+
+
                 this.recipient = this.users[userIndex];
 
                 if (typeof this.recipient == 'undefined') {
@@ -190,7 +193,8 @@
             callTutor(tutor, member, reservation) {
 
                 console.log(reservation);
-
+                console.log(tutor);
+                console.log(member)
                 this.now                = new Moment().tz("Japan");
                 this.currentTime        = Moment(this.now).tz("Japan").format("YYYY-MM-DD HH:mm:ss"); 
 
