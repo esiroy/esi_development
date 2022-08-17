@@ -135,7 +135,9 @@
                     <div class="card mt-4" style="">
                         <div class="card-header esi-card-header text-center">
                             予約表
-                            <small style="font-size:11px; color:#333">予約は最大15コマまでとなります</small>
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html','予約は最大15コマまでとなりま',900,820);">
+                                <small style="font-size:11px; color:#333">予約は最大15コマまでとなります</small>
+                            </a>
                         </div>
 
                         <div class="card-body px-3">
