@@ -187,6 +187,8 @@
         
         <footer class="container py-4 px-0 bg-light">
 
+            @if (Auth::user()->user_type == "TUTOR")
+
             <member-caller-component
                 :is-broadcaster="true"    
                 :user-Info="{{  json_encode(Auth::user()) }}" 
@@ -201,6 +203,8 @@
                 csrf_token="{{ csrf_token() }}"
                 >
             </member-caller-component>
+            
+            @endif
 
 
             <div class="container border-top">

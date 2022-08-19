@@ -1,11 +1,10 @@
 <template>
 
-    <div class="container">
+    <div class="container-fluid">
 
         <div id="editor" class="row my-2">
 
-            <div class="col-7">
-
+            <div class="col-md-8 col-sm-12 col-xs-12">
                 <div class="left-container">
 
 
@@ -66,8 +65,16 @@
                         </div> 
                     </div>
 
-                    <div class="canvas-container">
-                        <div :id="'editor'+slide" v-for="slide in slides" :key="slide" v-show="slide == currentSlide">        
+                    <div class="d-flex justify-content-center">
+                    
+
+                        <div 
+                            :id="'editor'+slide" 
+                            v-show="slide == currentSlide"
+                            v-for="slide in slides" 
+                            :key="slide"
+                            style="overflow:hidden"
+                        >        
 
                             <canvas
                                 :ref="'canvas'+slide"
@@ -117,28 +124,46 @@
 
             </div>
 
-            <div class="col-5">
 
+            <div class="col-md-4 col-sm-12 col-xs-12 mt-1">
                 <div class="right-container">
-                    <h2> Teacher's Note </h2>
 
-                    <div style="border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
-                        {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                        {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                        <br>
+                    <div v-if="this.user_info.user_type =='MEMBER'">
+                        <div class="chat_messages_history">
 
-                        {{ "Text Information here. " }} <br><br>
+                            <b-form-textarea
+                                id="textarea"
+                                v-model="chat_messages_history"
+                                rows="22"
+                                max-rows="22"
+                                disabled
+                                ></b-form-textarea>
+                        </div>
 
-                        {{ "Text Information here. " }} <br><br><br>
-
-                        {{ "Text Information here. " }} <br><br><br><br>
-
-                        {{ "Text Information here. " }} <br><br><br><br>
+                        <div class="chat_message">
+                            <input type="text" v-model="member_chat_message">
+                        </div>
 
                     </div>
 
-                    <button>Next Notes </button>
-                    <button>Previous Notes</button>
+                    <div v-if="this.user_info.user_type =='TUTOR'">
+                        <h5> Teacher's Note </h5>
+
+                        <div style="border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
+                            {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
+                            {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
+                            <br>
+                        </div>
+
+                        <div class="chat_message">
+                            <input type="text" v-model="tutor_chat_message">
+                        </div>
+
+
+                        <button>Next Notes </button>
+                        <button>Previous Notes</button>
+                    </div>
+
                 </div>
             </div>  
         </div>
@@ -210,6 +235,13 @@ export default {
     },
     data() {
         return {
+
+            chat_message: "",
+            tutor_chat_message: "",
+            member_chat_message: "",
+
+            chat_messages_history: "hello world",
+
             socket: null,
 
             //loader
@@ -275,7 +307,7 @@ export default {
         };
     },
     mounted() {
-     
+    
         console.log(this.$props.canvas_server);
 
         this.socket = io.connect(this.$props.canvas_server);
@@ -916,6 +948,7 @@ export default {
 };
 </script>
 <style>
+
 .upper-canvas {
     z-index: 1;
     

@@ -406,7 +406,7 @@ class Folder extends Model
                 'name'                  => $rootFolder->folder_name,
                 'description'           => $rootFolder->folder_description,
                 'permalink'             => Folder::getLink($rootFolder->id),
-                'owner'                 => User::find($rootFolder->user_id),
+                'owner'                 => User::select('id', 'firstname', 'lastname', 'user_type', 'lastname')->find($rootFolder->user_id),
                 'privacy'               => $rootFolder->privacy,
                 'sharedTo'              => Folder::getPermittedUsers($rootFolder->id),
                 'default-expanded'      => true,
@@ -485,7 +485,7 @@ class Folder extends Model
                 'name'                  => $subfolder->folder_name,
                 'description'           => $subfolder->folder_description,
                 'permalink'             => Folder::getLink($subfolder->id),
-                'owner'                 => User::find($subfolder->user_id),
+                'owner'                 => User::select('id', 'firstname', 'lastname', 'user_type', 'lastname')->find($subfolder->user_id),
                 'sharedTo'              => Folder::getPermittedUsers($subfolder->id),
                 'privacy'               => $subfolder->privacy,
                 'created_at'            => date('F d, Y', strtotime($subfolder->created_at)),
@@ -540,5 +540,4 @@ class Folder extends Model
         }
         return $updated;
     }
-
 }

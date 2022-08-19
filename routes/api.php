@@ -245,3 +245,5 @@ Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\Mem
 
 //lesson slide materials
 Route::middleware('auth:api')->post('/lessonSlideMaterials', 'API\LessonSlideMaterials@get')->name('APIGetLessonSlideMaterials');
+Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList');
+

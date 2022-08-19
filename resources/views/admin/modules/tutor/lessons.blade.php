@@ -228,7 +228,7 @@
 
                                                     $member = \App\Models\Member::where('user_id', $memberID)->first();
 
-                                                    echo $member->user_id;
+                                                    echo $lessons[$dateView][$timeSlot['startTime']]['id'];
 
                                                     if ($member) {
 
@@ -258,6 +258,7 @@
                                                     ];
 
 
+                                                    $reservation_id  = $lessons[$dateView][$timeSlot['startTime']]['id'];
                                                     $startTime  = $lessons[$dateView][$timeSlot['startTime']]['startTime'];
                                                     $lessonDate = $lessons[$dateView][$timeSlot['startTime']]['scheduled_at'];
                                                     $lessonTime = ESILessonTimeENFormat($lessonDate ." " . $startTime );
@@ -265,6 +266,7 @@
                                                     $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
 
                                                     $reservationData = [
+                                                        'reservation_id'   => $reservation_id,
                                                         'duration'          => $duration,
                                                         'lesson_time'       => $lessonTime,
                                                         'lessonTimeRage'    => LessonTimeRange($lessonTime),
@@ -275,8 +277,9 @@
                                                 @if ($member) 
                                                     <div class="d-inline-block">                                                      
 
-                                                        <a href="javascript:void(0)" 
-                                                            onClick="window.memberCallerComponent.callMember('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')">Call Member</a>
+                                                        <a href="javascript:void(0)" onClick="window.memberCallerComponent.callMember('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')">Call Member</a> |
+
+                                                        <a href="javascript:void(0)" onClick="window.memberCallerComponent.selectLesson('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')"> Lesson</a>                                                            
                                                     </div>
                                                 @endif
 

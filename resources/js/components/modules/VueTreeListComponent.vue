@@ -907,6 +907,9 @@ export default {
 		},
         onClick(node) 
         {
+
+            console.log(node.owner);
+
             this.getFolderFiles(node.id);
 
            
@@ -916,7 +919,7 @@ export default {
 			this.displayFolderName      = node.name;
 			this.displayFolderDesc      = node.description;
             this.displayFolderLink      = node.permalink;
-            this.displayFolderOwner     = node.owner.first_name + " " + node.owner.last_name;
+            this.displayFolderOwner     = node.owner.firstname + " " + node.owner.lastname;
             this.displayCreatedAt       = node.created_at;
 
 			//reset the uploader and files

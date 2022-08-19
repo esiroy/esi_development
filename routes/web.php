@@ -231,6 +231,7 @@ Route::post('uploader/fileUploader', 'FileUploadController@upload');
 
 Route::post('upload/tutor/file', 'FileUploadController@tutorUpload');
 
+Route::post('uploader/uploadLessonSlideMaterials', 'FileUploadController@uploadLessonSlideMaterials');
 
 /* Download Controller*/
 //Route::resource('download', 'DownloadController');
@@ -327,6 +328,8 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::resource('/', 'Modules\FileManagerController');
         Route::resource('/dashboard', 'Modules\FileManagerController');
         */
+
+        Route::resource('/filemanager', 'Modules\FileManagerController');
 
         Route::resource('/reportcard', 'Modules\ReportCardController');
         Route::get('/reportcardlist/{id}', 'Modules\ReportCardController@reportcardlist');

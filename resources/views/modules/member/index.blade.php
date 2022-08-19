@@ -213,6 +213,7 @@
 
 
                                                 $reservationData = [
+                                                    'reservation_id'   => $reserve->id,
                                                     'duration'          => $reserve->duration,
                                                     'lesson_time'       => $reserve->lesson_time,
                                                     'lessonTimeRage'    => LessonTimeRange($reserve->lesson_time),
@@ -220,12 +221,15 @@
                                                 ];
                                             @endphp
 
-                                            <a href="javascript:void(0)" onClick="window.memberCallerComponent.callTutor('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Call Teacher</a>
+                                            <a href="javascript:void(0)" class="small" onClick="window.memberCallerComponent.callTutor('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Call Teacher</a>
+                                            |
+                                            <a href="javascript:void(0)" class="small" onClick="window.memberCallerComponent.selectLesson('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Select Lesson</a>
 
-
-                                            <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
-                                                <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
-                                            </a>
+                                            <div>
+                                                <a href="javascript:void(0)"  class="small" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
+                                                    <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
+                                                </a>
+                                            </div>
                                         </td>
                                         <td style="text-align: center;">
 

@@ -1,13 +1,20 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div id="sidebar" class="col-2">
-            @include('admin.partials.sidebar')
-        </div>
+<div class="container bg-light px-0">
+    <div class="esi-box">
 
-        <div class="folder-container my-4 col-10">
+       
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb bg-light ">
+                <li class="breadcrumb-item"><a href="{{ url('/admin') }}">Home</a></li>
+                <li class="breadcrumb-item active" aria-current="page">File Manager</li>
+            </ol>
+        </nav>
+      
+
+        <div class="container">  
+                        
             <vue-tree-list-component 
                 ref="treeListComponent"
                 :user="{{ Auth::user() }}"
@@ -23,8 +30,9 @@
                 :folders="{{ json_encode($folders) }}"
                 api_token="{{ Auth::user()->api_token }}"
                 csrf_token="{{ csrf_token() }}"
-            />
+            />       
         </div>
+
     </div>
 </div>
 @endsection
