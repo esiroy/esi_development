@@ -2,11 +2,10 @@
 
     <div class="container-fluid">
 
-        <div id="editor" class="row my-2">
+        <div id="editor_content" class="row my-2">
 
             <div class="col-md-8 col-sm-12 col-xs-12">
                 <div class="left-container">
-
 
                     <div class="tool-container" v-show="this.$props.isBroadcaster == true">
                         <!-- [START] TOOL WRAPPER -->
@@ -65,7 +64,7 @@
                         </div> 
                     </div>
 
-                    <div class="d-flex justify-content-center">
+                    <div class="d-flex justify-content-center" >
                     
 
                         <div 
@@ -74,6 +73,7 @@
                             v-for="slide in slides" 
                             :key="slide"
                             style="overflow:hidden"
+                            
                         >        
 
                             <canvas
@@ -97,25 +97,39 @@
 
                     <div class="buttons-container mt-3">
                         <div class="d-flex justify-content-center">
-                            <div id="prev" class="tool" @click="startSlide">
+
+                            <div id="firstSlide" class="tool" @click="startSlide" v-show="this.$props.isBroadcaster == true">
                                 <i class="fa fa-fast-backward" aria-hidden="true"></i>
                             </div>  
 
-                            <div id="prev" class="tool" @click="prevSlide">
+                            <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
                                 <i class="fa fa-backward" aria-hidden="true"></i>
                             </div>
 
-                            <div id="prev" class="tool font-weight-strong" style="width:150px">
-                                Slide {{ this.currentSlide }} of {{ this.slides }}
+
+
+                            <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
+
+                                <div v-show="this.$props.isBroadcaster == true">
+                                    Slide {{ this.currentSlide }} of {{ this.slides }}
+                                </div>
+
+                                <div v-show="this.$props.isBroadcaster == false">
+                                    Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
+                                </div>
                             </div>
 
-                            <div id="next" class="tool" @click="nextSlide">
+
+
+                            <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
                                 <i class="fa fa-forward" aria-hidden="true"></i>
                             </div>
 
-                            <div id="next" class="tool" @click="lastSlide">
+                            <div id="lastSlide" class="tool" @click="lastSlide" v-show="this.$props.isBroadcaster == true">
                                 <i class="fa fa-fast-forward" aria-hidden="true"></i>
                             </div>
+
+
                         </div>
                     </div>
 
@@ -195,10 +209,11 @@ import { fabric } from "fabric";
 import io from "socket.io-client";
 
 export default {
-    name: "Member-Lesson-Slider-Component",
+    name: "lessonSliderComponent",
     props: {
         csrf_token: String,		
         api_token: String,
+        reservation: Object,        
         isBroadcaster: {
             type: [Boolean],
             required: true        
@@ -252,6 +267,7 @@ export default {
 
             //slides
             currentSlide: 1,
+            viewerCurrentSlide: 1,
 
             slides: 5,
             lesson_slides_materials: [],
@@ -303,15 +319,22 @@ export default {
             timer: 0,
 
 
+            //test
+            testImage: "http://i.imgur.com/yf6d9SX.jpg",
+
+            imageURL: [],
            
         };
     },
-    mounted() {
+    mounted() 
+    {
     
-        console.log(this.$props.canvas_server);
 
+    
         this.socket = io.connect(this.$props.canvas_server);
+        
 
+        //console.log(this.channel_id, this.reservation);
 
         //register as user
         let user = {
@@ -321,49 +344,100 @@ export default {
             channelid: this.channelid,
             status: "ONLINE",
             type: "MEMBER",      
-        }    
+        }
 
-
-        console.log(this.user_info)
-
-        this.socket.emit('REGISTER', user);     
-        
+        this.socket.emit('REGISTER', user); 
 
         this.socket.on('update_user_list', users => {
 
-           //console.log("registered ", users);
+           ////console.log("registered ", users);
 
         });
 
 
-        for (var i = 1; i <= this.slides; i++) {
+
+        this.imageURL = [
+                    "http://i.imgur.com/yf6d9SX.jpg",
+                    "https://i.imgur.com/rQjt0IH.jpeg",
+                    "https://i.imgur.com/v3DN59v.png",
+                    "https://i.imgur.com/rgy0H0t.png",
+                    "https://i.imgur.com/yFoigWV.png",
+                    "https://i.imgur.com/yFoigWV.png"
+                ];
+
+
+        for (var i = 1; i <= this.slides; i++) 
+        {
+
             this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                backgroundColor : "#fff",
+                //backgroundColor : "#fff"
             });
+
+
+
+        
+
+            // set canvas width and height based on image size
+             //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
+
+            
+            this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
+                // Optionally add an opacity lvl to the image
+                //backgroundImageOpacity: 0.5,
+                // should the image be resized to fit the container?
+                //backgroundImageStretch: false,
+            });
+            
+
+            document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';
         }
+
+
+
+
 
         this.customSelectorBounds(fabric);
 
+      
+
+        /*
        //update drawing if member is 
-        this.canvasMirror  = new fabric.Canvas('canvas'+this.currentSlide, {
+        this.canvas[this.currentSlide]  = new fabric.Canvas('canvas'+this.currentSlide, {
             backgroundColor : "#fff",
         });
+        */
+
+
+
+        this.socket.on("GOTO_SLIDE", (num) =>  
+        {   
+            if (this.$props.isBroadcaster == false) 
+            {
+                console.log(" goto slide " + num)
+                this.goToSlide(num);  
+
+                this.viewerCurrentSlide = num
+            }
+
+        });
+
 
 
         this.socket.on('UPDATE_DRAWING', (response) => {
+            //console.log("updating drawing " + this.$props.isBroadcaster )
 
-            console.log("updating drawing " + this.$props.isBroadcaster )
+
 
             if (this.$props.isBroadcaster == false) {         
                 this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)              
-                this.disableSelect();
-                this.deactivateSelector();
+          
+
+
+
             } 
 
-           
+
         });
-
-
 
         //ON LOAD WINDOW
         if (this.$props.isBroadcaster == false) 
@@ -372,11 +446,17 @@ export default {
             this.disableSelect();
             this.deactivateSelector();
             
-            this.canvas[this.currentSlide].isDrawingMode = false;          
+            //console.log("deactivated selector")
+
+            this.canvas[this.currentSlide].isDrawingMode = false;      
+
+         
+    
 
         } else {
 
-            //Your are the viewer              
+            //Your are the viewer        
+                  
             this.mouseClickHandler();
             this.activatePencil();
         }
@@ -384,21 +464,42 @@ export default {
 
         this.keyPressHandler();
         this.startTimer();
-
-
-        //get slides
-
-        //this.getSlides();
-
     },
     methods: {
-        async getSlides() {
+       
+
+        loadImage(id, imageURL) 
+        {
+
+            var canvas = document.getElementById('canvass'+id);                       
+            let ctx = canvas.getContext("2d");
+
+            this.canvas[i].width = 934;
+            this.canvas[i].height = 622;
+
+
+            var background = new Image();
+            background.src = imageURL;
+
+            background.onload = function(){
+                ctx.drawImage(background,0,0);   
+            } 
+
+            background.setAttribute('crossorigin', 'anonymous'); // works for me
+
+        },
+
+        getSlideMaterials(reservation) 
+        {
+
+            //console.log(reservation)
+
             this.isLoading = true;
 
             axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
             {
                 method          : "POST",
-                lesson_id       : 1,
+                lesson_id       : reservation.lesson_id,
                 memberID        : this.member_info.user_id
 
             }).then(response => {     
@@ -423,8 +524,29 @@ export default {
             }
             return recipient;
         },
-        updateCanvas(canvas, data){
-            canvas.loadFromJSON(data, canvas.renderAll.bind(canvas));
+
+        updateCanvas(canvas, data)
+        {
+            canvas.loadFromJSON(data, this.renderCanvas, (o, object) =>{
+                console.log(object);
+            });
+        },
+
+        renderCanvas() {
+            this.canvas[this.currentSlide].selection = false;
+           
+
+            this.canvas[this.currentSlide].forEachObject(function(o) {
+                o.selectable = false;
+                o.defaultCursor = 'not-allowed';
+            });
+            this.canvas[this.currentSlide].discardActiveObject();
+           
+            this.canvas[this.currentSlide].requestRenderAll();
+
+              
+            
+
         },
         canvasSendJSON(canvasID, canvasData) 
         {          
@@ -437,6 +559,7 @@ export default {
                 'canvasData'   : canvasData,
                 
             };
+
             this.socket.emit('SEND_DRAWING', memberCanvasData);  
         },
         canvasGetJSON() 
@@ -445,7 +568,7 @@ export default {
         },        
         drawRealTime(pointer, options) {
             if (this.isDrawing) {
-                 this.canvasMirror.freeDrawingBrush.onMouseMove(pointer, options);               
+                 this.canvas[this.currentSlide].freeDrawingBrush.onMouseMove(pointer, options);               
             }
         },
         sendCavasData() {
@@ -484,35 +607,49 @@ export default {
                 this.autoSelectTool();
 
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);                   
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);                   
             }        
         },
-        goToSlide(slide) {
-            this.currentSlide = slide;
-            this.autoSelectTool();        
+        goToSlide(slide) {          
+            let data = this.canvas[slide].toJSON(); 
+            this.canvasSendJSON(this.canvas[slide], data);                  
         },
         lastSlide() {
             this.currentSlide = this.slides;
             this.autoSelectTool();
 
             let data = this.canvasGetJSON();
-            this.canvasSendJSON(this.canvasMirror, data);               
+            this.canvasSendJSON(this.canvas[this.currentSlide], data);               
         },
-        prevSlide() {
+        prevSlide(delegateToNode) {
+
             if (this.currentSlide > 1) {
+
                 this.currentSlide--;
                 this.autoSelectTool();
-
+                
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);                    
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);     
+
+                //if (delegateToNode == true) {
+                    this.socket.emit('GOTO_SLIDE', this.currentSlide);                    
+                //}
             }
         },
-        nextSlide() {
-            if (this.currentSlide < this.slides) {
-                this.currentSlide ++;
+        nextSlide(delegateToNode) {
+
+            if (this.currentSlide < this.slides) 
+            {
+                this.currentSlide ++;            
                 this.autoSelectTool(); 
+
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);    
+                this.canvasSendJSON(this.canvas[this.currentSlide], data); 
+
+                //if (delegateToNode == true) {
+                    this.socket.emit('GOTO_SLIDE', this.currentSlide);     
+               // }
+                
             } 
         },
         autoSelectTool() {
@@ -532,14 +669,11 @@ export default {
             window.onkeydown = (event) => {
             
                 if (event.key === "Delete") {
-
                     this.deleteObj();
                     return false;
-                } else {
-                
+                } else {                
                     let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvasMirror, data);  
-
+                    this.canvasSendJSON(this.canvas[this.currentSlide], data);  
                 };
             };
         },
@@ -574,7 +708,7 @@ export default {
 
             }).on('mouse:up', () => {
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);    
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);    
 
             });
         },   
@@ -707,7 +841,7 @@ export default {
             });
             this.canvas[this.currentSlide].add(text);
             let data = this.canvasGetJSON();
-            this.canvasSendJSON(this.canvasMirror, data);            
+            this.canvasSendJSON(this.canvas[this.currentSlide], data);            
         },        
         drawCircle() {
             
@@ -730,7 +864,7 @@ export default {
                     selectable: true,
                     transparentCorners: false,
                     hasBorders: false,
-                    hasControls: false
+                    hasControls: true
                 });
 
                canvas.add(this.circle).setActiveObject(this.circle);
@@ -768,7 +902,7 @@ export default {
                     canvas.renderAll(); 
 
                     //let data = this.canvasGetJSON();
-                    //this.canvasSendJSON(this.canvasMirror, data);         
+                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);         
                 }         
 
             }).on('mouse:up', (object) => {                
@@ -776,7 +910,7 @@ export default {
                 this.disableSelect();
 
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);                
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);                
             });
 
         },        
@@ -797,6 +931,7 @@ export default {
                     originX: 'center',
                     originY: 'center',
                     selectable: true,
+                    hoverCursor: "crosshair"
                 });
                 this.canvas[this.currentSlide].add(this.line);
 
@@ -809,13 +944,13 @@ export default {
                     this.canvas[this.currentSlide].renderAll();
 
                     //let data = this.canvasGetJSON();
-                    //this.canvasSendJSON(this.canvasMirror, data);         
+                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);         
                 }
             }).on('mouse:up', (object) => {
                 this.disableSelect();
                 this.isDrawingLine = false;
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvasMirror, data);
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);
 
             });
 
@@ -854,10 +989,10 @@ export default {
                     //const options = {pointer, e:{}} // required for Fabric 4.3.1
                     //this.drawRealTime(pointer, options);
 
-                    console.log("draw drag!")
+                    //console.log("draw drag!")
                     
-                    let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvas[this.currentSlide], data);      
+                   // let data = this.canvasGetJSON();
+                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);      
                 }
             }).on('mouse:up', (object) => {
                 this.isDrawing = false;
@@ -894,6 +1029,7 @@ export default {
                 obj.selectable = true;
                 obj.evented = true;
                 obj.hasControls = true;
+                
             });
             this.canvas[this.currentSlide].renderAll();        
         },
@@ -904,7 +1040,18 @@ export default {
             this.canvas[this.currentSlide].forEachObject(function (obj) {
                 obj.selectable = false;
                 obj.evented = false;
-            });
+                obj.hasControls = false;
+                obj.setControlsVisibility({
+                    tl:false, //top-left
+                    mt:false, // middle-top
+                    tr:false, //top-right
+                    ml:false, //middle-left
+                    mr:false, //middle-right
+                    bl:false, // bottom-left
+                    mb:false, //middle-bottom
+                    br:false //bottom-right
+                });
+             });
 
             this.canvas[this.currentSlide].renderAll();            
         },
@@ -932,13 +1079,13 @@ export default {
                         selectedObj.canvas.remove(obj);
 
                         let data = this.canvasGetJSON();
-                        this.canvasSendJSON(this.canvasMirror, data);                                        
+                        this.canvasSendJSON(this.canvas[this.currentSlide], data);                                        
                     });
                 } else if(selectedObj !== null ) {
                     this.canvas[this.currentSlide].remove(selectedObj);     
 
                     let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvasMirror, data);                
+                    this.canvasSendJSON(this.canvas[this.currentSlide], data);                
                 }                
             }
             this.mouseClickHandler();

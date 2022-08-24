@@ -42,8 +42,8 @@ Route::middleware('auth:api')->post('/share_file', 'API\FolderController@shareFi
 Route::middleware('auth:api')->post('/move_into_parent', 'API\FolderController@moveIntoParent')->name('APIMoveIntoParentFolder');
 Route::middleware('auth:api')->post('/reorder_items', 'API\FolderController@reorderSiblingFolders')->name('APIReorderSiblingFolders');
 Route::middleware('auth:api')->post('/delete_folder', 'API\FolderController@deleteFolder')->name('APIDeleteFolders');
-Route::post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
-Route::post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
+Route::middleware('auth:api')->post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
+Route::middleware('auth:api')->post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
 
 //[start] My Page Scheduler
 Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@getTutors')->name('APIGetTutors');
@@ -246,4 +246,6 @@ Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\Mem
 //lesson slide materials
 Route::middleware('auth:api')->post('/lessonSlideMaterials', 'API\LessonSlideMaterials@get')->name('APIGetLessonSlideMaterials');
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList');
+
+Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
 

@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Auth, DB;
 
 use App\Models\Folder;
+use App\Models\MemberSelectedLessonSlideMaterial;
+
 
 
 class LessonSlideMaterials extends Controller
@@ -20,16 +22,44 @@ class LessonSlideMaterials extends Controller
 
     public function getLessonSlideMaterialList(Request $request) 
     {
-        //$request
-        $folders = (Folder::getPrivateFolders());
-
-    
-
         return Response()->json([
             "success"               => true,
-            "folders"               =>  $folders
-        ]);
-    
+            "folders"               => Folder::getPrivateFolders()
+        ]);    
     }
+
+
+    public function saveSelectedLessonSlideMaterial(Request $request, MemberSelectedLessonSlideMaterial $MemberSelectedLessonSlideMaterial) 
+    {
+        $userID             = Auth::user()->id;
+        $lessonScheduleID   = $request->lessonID;
+        $selectedOption     = $request->selectedOption;
+
+        if ($selectedOption['value'] !== null) 
+        {
+
+            $MemberSelectedLessonSlideMaterial->saveSelectedLesson($userID, $lessonScheduleID, $selectedOption);   
+
+            return Response()->json([
+                "success"       => true,
+                "userID"        => $userID,
+                "folderID"      => $selectedOption['id'],
+                "folderName"    => $selectedOption['name'],
+                "message"       => "Lesson Material has been successfully saved"
+            ]);  
+
+        } else {
+        
+            return Response()->json([
+                "success"       => false,
+                "message"       => "Please select a lesson"
+            ]);           
+        }
+
+
+
+
+    }
+    
 
 }

@@ -6,7 +6,7 @@
 
 
     export default {
-        name: "Member-Caller-Component",
+        name: "memberCallerComponent",
         components: {    
             MemberLessonSliderComponent
         },        
@@ -44,15 +44,23 @@
                 lessonStartTime: null,
                 lessonEndTime: null,
 
-                //lesson Options
-                lessonSelected: 'a',
+                //Selected lesson Options
+                selectedOption: null,
+
+                //Model lesson Value
+                lessonSelected: null,
+
+                //Lesson Options
+                lessonOptions: [],
+
+                /* sample lesson Option structure
                 lessonOptions: [
                     { value: null, text: 'Please select some item' },
                     { value: 'a', text: 'This is First option' },
                     { value: 'b', text: 'Default Selected Option' },
                     { value: 'c', text: 'This is another option' },
                     { value: 'd', text: 'This one is disabled', disabled: true }
-                ],
+                ],*/
 
                 //caller
                 caller: null,
@@ -65,6 +73,8 @@
                 channelid: null,
                 selectedLessonID: null,
 
+                //Member Reservation
+                lessonReservationData: null
 
             }
         },
@@ -105,9 +115,12 @@
                     this.recipient           = data.recipient;
                     this.callReservation     = data.reservationData;
 
+                    console.log("accept call");
                 } 
                 console.log(data)
             });
+
+
 
             this.socket.on("CALL_USER", (data) =>  
             {
@@ -122,24 +135,34 @@
             });
 
 
+
+
             this.socket.on("START_SLIDER", (data) =>  
             {
                 this.sliderLoaded = false;
-                this.channelid = data.reservationData.reservation_id
+
+                this.channelid              = data.reservationData.reservation_id
+                this.lessonReservationData  = data.reservationData;
+
+                console.log(data.reservationData);
 
                 if (this.user.userid == data.caller.userid)
                 {                 
                     //this.caller            = data.memberData;
                     //this.callReservation   = data.reservationData;
                     //this.recipient         = data.tutorData;
+                    
                     this.$bvModal.hide('modal-call-teacher'); 
                     this.$bvModal.hide('modal-call-member'); 
                     this.$bvModal.show('modal-lesson-slider');
 
+
                 } else if (this.user.userid == data.recipient.userid) {
+
                     this.$bvModal.hide('modal-call-teacher'); 
                     this.$bvModal.hide('modal-call-member');
-                    this.$bvModal.show('modal-lesson-slider');                          
+                    this.$bvModal.show('modal-lesson-slider');     
+
                 }
 
                 if (this.isMobile())  {
@@ -149,6 +172,7 @@
                 }
 
                 console.log("start slider...")
+
             }); 
             
 
@@ -162,45 +186,123 @@
             
         },
         methods: {
-
+            test() {
+                alert ("alert me member caller")
+            },
             selectLesson(tutor, member, reservation) 
-            {
-
-              
+            {              
                 this.tutor              = JSON.parse(tutor);
                 this.member             = JSON.parse(member);
-                this.reservation        = JSON.parse(reservation);
+                this.reservation        = JSON.parse(reservation);            
 
-              
+                //IMPORTANT: SELECTED ID IS FROM THE HTML FORM
                 this.selectedLessonID = this.reservation.reservation_id;
 
                 console.log(this.selectedLessonID );
+                this.$bvModal.show('modalSelectLesson');
+            },
+            getOptionSelected(targetID) 
+            {
+                let select = document.getElementById(targetID);
+                let selectedIndex = select.selectedIndex                
+                //let text = select.options[selectedIndex].text;
+
+                this.selectedOption = this.lessonOptions[selectedIndex];
+
+                return this.lessonOptions[selectedIndex]
+            },
+            saveOptionSelected(targetID) {
+            
+                let select = document.getElementById(targetID);
+                let selectedIndex = select.selectedIndex;
+                this.selectedOption = this.lessonOptions[selectedIndex];                
+
+                axios.post("/api/saveSelectedLessonSlideMaterial?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    lessonID        : this.selectedLessonID,
+                    selectedOption  : this.selectedOption
+
+                }).then(response => {
+
+                    if (response.data.success == false) {
+                        alert (response.data.message);
+                    } else {
+                         alert (response.data.message);
+                    }
+                });
+
+            },          
+            getTabbings(hierarchy) {
+                let tab = '';
+                if (hierarchy >= 1) {
+                    for(let i= 1; i<= hierarchy; i++) {
+                        tab += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                    }                        
+                }
+                return tab;
+            },
+            getFolderOptions(FolderName, folders, hierarchy) 
+            {   
+                if (hierarchy == 0) 
+                {
+                    this.lessonOptions = [{
+                        value: null,
+                        html: "Please select lesson",       
+                        label: "Please select lesson",
+                        description:  "Please select lesson"                            
+                    }];                
+                }
+
+                folders.forEach((folder) => {    
+
+                    //let tab = this.getTabbings(hierarchy);   
+
+                    let folderOptionName = null;
+
+                    if (FolderName !== null) {
+                        folderOptionName = FolderName + " ====> " + folder.name;
+                    } else {
+                        folderOptionName = folder.name;                    
+                    }
 
 
-                this.$bvModal.show('modal-select-lesson');
+                    this.lessonOptions.push({                  
+                        id      : folder.id,
+                        name    : folder.name,
+                        label   : folderOptionName,
+                        html    : folderOptionName,
+                        description:  folder.description,                             
+                        value   : folder.id
+                    });    
+                       
+                    if (folder.children.length >= 1) 
+                    {
+                        this.getFolderOptions(folderOptionName, folder.children, hierarchy + 1);
+                    }
+
+                });
             },
             getLessonsList() {
-
-                console.log(this.lessonOptions);           
-
-                axios.post("/api/get_child_folders?api_token=" + this.api_token, 
+                axios.post("/api/get_folders?api_token=" + this.api_token, 
                 {
                     method          : "POST",
                     lessonID         : this.selectedLessonID,
-                    public_folder_id : 6,
+                    //public_folder_id : null,
                 }).then(response => {
 
-                    
+                    if (response.data.success == true) {
+                        
+                        this.getFolderOptions(null, response.data.folders, 0);
+                    }
                 });
-
             },
             revertModal() {
                 this.sliderLoaded = true;
 
                 $(".modal-dialog").css({
                     'max-width': '1140px'
-                });
-               
+                }); 
             },
             expandModal() {
 
@@ -208,6 +310,7 @@
                 $(".modal-dialog").css({
                     'max-width': '90%'
                 });
+
                 
             },
             isMobile() {
@@ -232,14 +335,15 @@
                     recipient       :   this.recipient,
                     reservationData :   this.callReservation
                 }
+                
 
-                console.log(this.callReservation);
-
-                this.channelid = this.callReservation.reservation_id
-                console.log("channel : " + this.channelid);
-
+                this.channelid                  = this.callReservation.reservation_id;
+                this.lessonReservationData     = this.callReservation;       
+               
+                console.log("accept call " , this.callReservation);
 
                 this.$bvModal.hide('modal-call-alert'); 
+
                 this.socket.emit('START_SLIDER', data);
             },
             callMember(tutor, member, reservation) {
@@ -254,9 +358,9 @@
                 this.lessonEndTime      = Moment(this.reservation.lesson_time ).add(this.reservation.duration, 'minutes').format('YYYY-MM-DD HH:mm:ss');
 
 
-                console.log(this.lessonStartTime)
-                console.log(this.lessonEndTime);
-                console.log(this.reservation)
+                //console.log(this.lessonStartTime)
+                //console.log(this.lessonEndTime);
+                //console.log(this.reservation)
 
                 //search member
                 let userIndex = this.users.findIndex(user => user.userid == this.member.userid)
@@ -275,15 +379,20 @@
                         caller          :   this.tutor,     //caller
                         reservationData :   this.reservation
                     }
+
                     this.socket.emit('CALL_USER',  data);  
                 }
             },
             //CALL TUTOR IS INITIATED AT THE FRONT END USING JS (window.memberCallerComponent.callTutor) COMMAND
             callTutor(tutor, member, reservation) {
 
-                console.log(reservation);
-
+              
                 this.channelid = reservation.reservation_id;
+                
+                this.lessonReservationData  = reservation;
+
+                console.log(this.reservation)
+
 
                 this.now                = new Moment().tz("Japan");
                 this.currentTime        = Moment(this.now).tz("Japan").format("YYYY-MM-DD HH:mm:ss"); 
@@ -443,12 +552,14 @@
         </div>
 
         <div id="lesson-slider-container" class="container-fluid">
-            <b-modal id="modal-lesson-slider"  title="Lesson" size="xl">
+            <b-modal id="modal-lesson-slider" ref="modalLessonSlider"  title="Lesson" size="xl">
                 <!--{{ this.sliderLoaded  }} | {{ this.channelid  }}-->
-                <div v-if="this.sliderLoaded === true && this.channelid != null">
+                <div v-if="this.sliderLoaded == true && this.channelid != null">
                     <lesson-slider-component 
+                        ref="lessonSliderComponent"
                         :editor_id="'canvas'"
                         :channel_id="this.channelid"
+                        :reservation="this.lessonReservationData"
                         :isBroadcaster="this.isBroadcaster"
                         :canvas_server="this.canvasServer"                
                         :canvas_width="500"
@@ -471,14 +582,31 @@
         <!-- SELECT LESSON -->
         <div id="select-lesson-container" class="container-fluid">
 
-             <b-modal id="modal-select-lesson"  title="Lesson" size="xl" @show="getLessonsList">
+             <b-modal id="modalSelectLesson"  title="Lesson" size="xl" @show="getLessonsList">
 
                 Select Lesson 
                 
-                <b-form-select v-model="lessonSelected" :options="lessonOptions"></b-form-select>
-                <div class="mt-3">Selected: <strong>{{ lessonSelected }}</strong></div>
+                <b-form-select id="lessonSelector" v-model="lessonSelected" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
+
+                <div class="mt-3" v-if="selectedOption !== null">
+                    
+                    <div class="pt-2">You have selected:</div>                
+                    <div>Lesson Name: <strong>{{ selectedOption.name }} </strong></div>
+                    <div>Lesson Description: {{ selectedOption.description }}</div>
+
+                </div>
+
+
+                <template #modal-footer>
+                    <div class="w-100">
+                        <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>
+                    </div>
+                </template>
+
 
              </b-modal>
+
+
         </div>
 
 
