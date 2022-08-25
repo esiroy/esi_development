@@ -220,7 +220,7 @@ Route::resource('/questionnaire', 'Members\QuestionnaireController');
 //Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
 
 /*File Controller*/
-//Route::resource('file', 'FileController');
+Route::resource('file', 'FileController');
 
 
 /* Folder Manager Controllers */

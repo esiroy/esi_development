@@ -11,15 +11,14 @@
 
 
             <lesson-slider-component 
-                
-                :is-broadcaster="false"
-
+                :is-broadcaster="true"
                 canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
-                editor-ID="canvas"
-                canvas-Width="500"
-                canvas-Height="500"
-                :channelid="{{ app('request')->input('channel_id') }}"
-                :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
+                :editor_id="'canvas'"
+                :canvas_width="500"
+                :canvas_height="500"
+                :channel_id="{{ app('request')->input('channel_id') }}"
+                :user_info="{{  json_encode(Auth::user()->memberInfo) }}"
+                :member_info="{{  json_encode(Auth::user()->memberInfo) }}" 
                 api_token="{{ Auth::user()->api_token }}" 
                 csrf_token="{{ csrf_token() }}"
                 >

@@ -26,12 +26,14 @@
         "sass": "^1.27.0",
         "sass-loader": "^8.0.0",
         "vue": "^2.6.12",
+        "vue-fabric": "^0.1.42",
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
         "bootstrap-vue": "^2.17.3",
         "chart.js": "^2.9.4",
         "datatables.net": "^1.10.22",
+        "fabric": "^5.2.4",
         "font-awesome": "^4.7.0",
         "md5": "^2.3.0",
         "moment-timezone": "^0.5.34",
@@ -39,7 +41,6 @@
         "v-select2-component": "^0.4.3",
         "vue-chartjs": "^3.5.1",
         "vue-clipboard2": "^0.3.3",
-        "vue-fabric": "^0.1.42",
         "vue-image-markup": "^3.2.0",
         "vue-moment": "^4.1.0",
         "vue-multiselect": "^2.1.6",

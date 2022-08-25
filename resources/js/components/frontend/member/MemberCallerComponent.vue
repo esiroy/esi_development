@@ -109,7 +109,7 @@
 
                 if (this.user.userid == data.tutorData.userid ) 
                 {    
-                    this.$bvModal.HIDE('modal-call-alert');   
+                    this.$bvModal.hide('modal-call-alert');   
 
                     this.caller              = data.caller;                        
                     this.recipient           = data.recipient;
@@ -551,9 +551,10 @@
 
         </div>
 
-        <div id="lesson-slider-container" class="container-fluid">
-            <b-modal id="modal-lesson-slider" ref="modalLessonSlider"  title="Lesson" size="xl">
-                <!--{{ this.sliderLoaded  }} | {{ this.channelid  }}-->
+      
+        <div id="lesson-slider-container" class="container-fluid" tabindex="9999999999999">
+
+            <b-modal id="modal-lesson-slider" ref="modalLessonSlider"  title="Lesson" size="xl"  :tabindex="9999999999999">                
                 <div v-if="this.sliderLoaded == true && this.channelid != null">
                     <lesson-slider-component 
                         ref="lessonSliderComponent"
@@ -578,12 +579,16 @@
                 </div>
             </b-modal>
         </div>
+        
+
+
+
+
+
 
         <!-- SELECT LESSON -->
         <div id="select-lesson-container" class="container-fluid">
-
              <b-modal id="modalSelectLesson"  title="Lesson" size="xl" @show="getLessonsList">
-
                 Select Lesson 
                 
                 <b-form-select id="lessonSelector" v-model="lessonSelected" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>

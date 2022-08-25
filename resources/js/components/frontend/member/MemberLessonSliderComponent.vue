@@ -5,7 +5,8 @@
         <div id="editor_content" class="row my-2">
 
             <div class="col-md-8 col-sm-12 col-xs-12">
-                <div class="left-container">
+
+                <div class="left-container mb-2">
 
                     <div class="tool-container" v-show="this.$props.isBroadcaster == true">
                         <!-- [START] TOOL WRAPPER -->
@@ -57,33 +58,18 @@
                                         </div> 
                                     </div>
                                 </div>
-                            </div>                                   
-
-
-
+                            </div>
                         </div> 
                     </div>
 
-                    <div class="d-flex justify-content-center" >
-                    
-
-                        <div 
-                            :id="'editor'+slide" 
-                            v-show="slide == currentSlide"
-                            v-for="slide in slides" 
-                            :key="slide"
-                            style="overflow:hidden"
-                            
-                        >        
-
-                            <canvas
-                                :ref="'canvas'+slide"
+                    <div class="d-flex justify-content-center">
+                        <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">
+                            <canvas :ref="'canvas'+slide"
                                 :id="'canvas'+slide"
                                 :width="canvas_width"
                                 :height="canvas_height"
                                 style="border:1px solid #ccc;"                        
                             ></canvas>
-                            
                         </div>
                     </div>
 
@@ -139,44 +125,54 @@
             </div>
 
 
-            <div class="col-md-4 col-sm-12 col-xs-12 mt-1">
+            <div class="col-md-4 col-sm-12 col-xs-12">
+
                 <div class="right-container">
 
-                    <div v-if="this.user_info.user_type =='MEMBER'">
-                        <div class="chat_messages_history">
-
-                            <b-form-textarea
-                                id="textarea"
-                                v-model="chat_messages_history"
-                                rows="22"
-                                max-rows="22"
-                                disabled
-                                ></b-form-textarea>
-                        </div>
-
-                        <div class="chat_message">
-                            <input type="text" v-model="member_chat_message">
-                        </div>
-
+                    <div class="mb-2" v-if="this.user_info.user_type =='TUTOR'">
+                        <b-card-group>
+                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white" style="height:280px; overflow:auto">
+                                <template #header>
+                                    <div class="font-weight-bold">Notes</div>
+                                </template>
+                               <b-card-text v-html="notes" class="text-dark"></b-card-text>
+                            </b-card>
+                        </b-card-group>
                     </div>
 
-                    <div v-if="this.user_info.user_type =='TUTOR'">
-                        <h5> Teacher's Note </h5>
 
-                        <div style="border:1px solid #ccc; padding: 5px 5px 5px; margin: 0px 5px 0px">
-                            {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                            {{ "Text Information here. " }}  {{ "Text Information here. " }} {{ "Text Information here. " }} {{ "Text Information here. " }}
-                            <br>
+                    <div class="chat-container mb-2">
+                        <b-card-group>
+                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white" style="height:280px; overflow:auto">
+                                <template #header>
+                                    <div class="font-weight-bold">Chat Messages</div>
+                                </template>
+
+                                <b-card-text class="text-dark">
+
+                                  <div class="chatlogs" v-for="(chatlog, chatlogIndex) in chatlogs" :key="'chatlogs_'+ chatlogIndex">
+                                    <span v-html="chatlog.nickname"></span> : <span v-html="chatlog.message"></span>
+                                  </div>                                                             
+                                
+                                </b-card-text>
+
+                            </b-card>
+                        </b-card-group>
+
+                        <div class="chat_message mt-1 row">
+                            <div class="col-10 mr-0 pr-0">
+                                <input type="text" v-model="privateMessage" @keyup="sendPrivateMessage($event)" class="form-control form-control-sm d-inline-block" placeholder="Enter a message" >
+                            </div>
+
+                            <div class="col-2 ml-0 pl-1">
+                                <button type="button"  @click="sendPrivateMessage($event)" class="btn btn-sm btn-primary d-inline-block">
+                                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                                </button>
+                            </div>
                         </div>
-
-                        <div class="chat_message">
-                            <input type="text" v-model="tutor_chat_message">
-                        </div>
+                    </div>                    
 
 
-                        <button>Next Notes </button>
-                        <button>Previous Notes</button>
-                    </div>
 
                 </div>
             </div>  
@@ -251,11 +247,10 @@ export default {
     data() {
         return {
 
-            chat_message: "",
             tutor_chat_message: "",
-            member_chat_message: "",
+            privateMessage: "",
 
-            chat_messages_history: "hello world",
+            chatlogs: [],
 
             socket: null,
 
@@ -323,6 +318,8 @@ export default {
             testImage: "http://i.imgur.com/yf6d9SX.jpg",
 
             imageURL: [],
+
+            notes: "<bold>lorem epusm dollor </bold>",
            
         };
     },
@@ -343,7 +340,7 @@ export default {
             username: this.user_info.username,            
             channelid: this.channelid,
             status: "ONLINE",
-            type: "MEMBER",      
+            type: this.user_info.user_type,      
         }
 
         this.socket.emit('REGISTER', user); 
@@ -373,10 +370,6 @@ export default {
                 //backgroundColor : "#fff"
             });
 
-
-
-        
-
             // set canvas width and height based on image size
              //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
 
@@ -391,9 +384,6 @@ export default {
 
             document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';
         }
-
-
-
 
 
         this.customSelectorBounds(fabric);
@@ -411,32 +401,26 @@ export default {
 
         this.socket.on("GOTO_SLIDE", (num) =>  
         {   
-            if (this.$props.isBroadcaster == false) 
-            {
-                console.log(" goto slide " + num)
-                this.goToSlide(num);  
+
+            if (this.$props.isBroadcaster == true) {
+
+                console.log("send to viewer the canvas");
 
                 this.viewerCurrentSlide = num
+                this.goToSlide(num);
             }
-
         });
 
 
 
         this.socket.on('UPDATE_DRAWING', (response) => {
-            //console.log("updating drawing " + this.$props.isBroadcaster )
-
-
-
+           
             if (this.$props.isBroadcaster == false) {         
-                this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)              
-          
 
+                 console.log("updating drawing " + this.$props.isBroadcaster )
 
-
+                this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)  
             } 
-
-
         });
 
         //ON LOAD WINDOW
@@ -467,7 +451,34 @@ export default {
     },
     methods: {
        
+        sendPrivateMessage(e) {
 
+            if (e.keyCode === 13) {
+
+                let nickname = null;
+
+                if (this.user_info.user_type == "TUTOR") {
+                    nickname = this.user_info.firstname
+                } else {
+                    nickname = this.member_info.nickname
+                }
+
+                let messageData = {
+                    userid: this.member_info.user_id,
+                    nickname: nickname,
+                    username: this.user_info.username,            
+                    channelid: this.channelid,
+                    type: this.user_info.user_type,
+                    message: this.privateMessage
+                }
+
+                this.chatlogs.push(messageData);
+
+                console.log(messageData)
+
+            }
+
+        },
         loadImage(id, imageURL) 
         {
 
@@ -520,7 +531,7 @@ export default {
                 userid: this.member_info.user_id ,
                 username: "test",
                 nickname: this.member_info.nickname,            
-                type: "MEMBER",      
+                type: this.user_info.user_type,      
             }
             return recipient;
         },
@@ -528,33 +539,32 @@ export default {
         updateCanvas(canvas, data)
         {
             canvas.loadFromJSON(data, this.renderCanvas, (o, object) =>{
-                console.log(object);
+                
             });
         },
 
         renderCanvas() {
-            this.canvas[this.currentSlide].selection = false;
            
-
+           
+            /*
+            
             this.canvas[this.currentSlide].forEachObject(function(o) {
                 o.selectable = false;
                 o.defaultCursor = 'not-allowed';
-            });
-            this.canvas[this.currentSlide].discardActiveObject();
-           
-            this.canvas[this.currentSlide].requestRenderAll();
+            });*/
+            //this.canvas[this.currentSlide].discardActiveObject();           
 
-              
-            
+            //this.canvas[this.currentSlide].requestRenderAll();
 
+            this.canvas[this.currentSlide].renderAll();
         },
         canvasSendJSON(canvasID, canvasData) 
         {          
             let recipient = this.getRecipient();
 
             let memberCanvasData = {
-                'channelid'       : this.channelid,
-                'recipient'    : recipient,
+                'channelid'     : this.channelid,
+                'recipient'     : recipient,
                 'canvasid'     : canvasID,
                 'canvasData'   : canvasData,
                 
@@ -600,6 +610,8 @@ export default {
         changeColor() {
             this.setPreviewColor( this.brushColor )
             this.autoSelectTool();
+
+            this.canvas[this.currentSlide].getActiveObject().set({fill: this.brushColor});
         },
         startSlide() {
             if (this.currentSlide > 1) {
@@ -612,7 +624,7 @@ export default {
         },
         goToSlide(slide) {          
             let data = this.canvas[slide].toJSON(); 
-            this.canvasSendJSON(this.canvas[slide], data);                  
+            this.canvasSendJSON(this.canvas[slide], data);   
         },
         lastSlide() {
             this.currentSlide = this.slides;
@@ -628,11 +640,11 @@ export default {
                 this.currentSlide--;
                 this.autoSelectTool();
                 
-                let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);     
+                //let data = this.canvasGetJSON();
+                //this.canvasSendJSON(this.canvas[this.currentSlide], data);     
 
                 //if (delegateToNode == true) {
-                    this.socket.emit('GOTO_SLIDE', this.currentSlide);                    
+                    //this.socket.emit('GOTO_SLIDE', this.currentSlide);                    
                 //}
             }
         },
@@ -643,8 +655,9 @@ export default {
                 this.currentSlide ++;            
                 this.autoSelectTool(); 
 
-                let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data); 
+
+                //let data = this.canvasGetJSON();
+                //this.canvasSendJSON(this.canvas[this.currentSlide], data); 
 
                 //if (delegateToNode == true) {
                     this.socket.emit('GOTO_SLIDE', this.currentSlide);     
@@ -666,14 +679,18 @@ export default {
             fabric.Object.prototype.cornerStyle = 'circle';
         },
         keyPressHandler(e) {
+
+            console.log("keypress handler ");
+
+
             window.onkeydown = (event) => {
             
                 if (event.key === "Delete") {
                     this.deleteObj();
                     return false;
                 } else {                
-                    let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvas[this.currentSlide], data);  
+                  //  let data = this.canvasGetJSON();
+                   // this.canvasSendJSON(this.canvas[this.currentSlide], data);  
                 };
             };
         },
@@ -707,6 +724,9 @@ export default {
                 }  
 
             }).on('mouse:up', () => {
+
+                console.log ("mouseClickHandler");
+
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);    
 
@@ -819,7 +839,8 @@ export default {
         addInputText() 
         {
             let id = (new Date()).getTime().toString().substr(5);
-            let text = new fabric.IText(this.inputText, {
+
+            let fabricText = new fabric.IText(this.inputText, {
                 id: id,
                 objecttype: 'text',
                 left: this.mouseX,
@@ -838,10 +859,29 @@ export default {
                 //"overline: false
                 //"linethrough: false"
                 //deltaY: false
+
+                evented: true,
+                selectable: true,
+                editable: true,
             });
-            this.canvas[this.currentSlide].add(text);
+            this.canvas[this.currentSlide].add(fabricText);
+
+
+            fabricText.on('editing:entered', ()  =>
+            {
+                console.log("editing entered # 1")
+                fabricText.set("fill", this.brushColor);
+                this.canvas[this.currentSlide].renderAll();
+
+                //hack for modal unable to edit iText bug
+                $('#modal-lesson-slider').find('.modal-content').attr("tabindex", 9999999999);
+               
+            });
+
             let data = this.canvasGetJSON();
-            this.canvasSendJSON(this.canvas[this.currentSlide], data);            
+            this.canvasSendJSON(this.canvas[this.currentSlide], data);     
+
+
         },        
         drawCircle() {
             
@@ -873,7 +913,7 @@ export default {
 
                 if (this.isDrawingCircle ) {
 
-                    this.disableSelect();
+                    
 
                     var pointer =canvas.getPointer(object.e);
                     var activeObj = canvas.getActiveObject();
@@ -907,7 +947,7 @@ export default {
 
             }).on('mouse:up', (object) => {                
                 this.isDrawingCircle = false;
-                this.disableSelect();
+                
 
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);                
@@ -918,7 +958,7 @@ export default {
 
             this.canvas[this.currentSlide].on('mouse:down', (object) => {
                 this.isDrawingLine = true;
-                this.disableSelect();
+                
 
                 var pointer = this.canvas[this.currentSlide].getPointer(object.e);
                 var points = [ pointer.x, pointer.y, pointer.x, pointer.y ];
@@ -937,7 +977,7 @@ export default {
 
             }).on('mouse:move', (object) => {
                 if (this.isDrawingLine ) {
-                    this.disableSelect();
+                   
                     var pointer = this.canvas[this.currentSlide].getPointer(object.e);
                     this.line.set({ x2: pointer.x, y2: pointer.y });
                     this.line.setCoords();
@@ -947,7 +987,7 @@ export default {
                     //this.canvasSendJSON(this.canvas[this.currentSlide], data);         
                 }
             }).on('mouse:up', (object) => {
-                this.disableSelect();
+             
                 this.isDrawingLine = false;
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);
@@ -1041,6 +1081,8 @@ export default {
                 obj.selectable = false;
                 obj.evented = false;
                 obj.hasControls = false;
+
+                /*
                 obj.setControlsVisibility({
                     tl:false, //top-left
                     mt:false, // middle-top
@@ -1051,6 +1093,8 @@ export default {
                     mb:false, //middle-bottom
                     br:false //bottom-right
                 });
+                */
+
              });
 
             this.canvas[this.currentSlide].renderAll();            
@@ -1135,6 +1179,7 @@ export default {
 
 .right-container {
     background-color: #ececec;
+    padding: 10px;
 }
 
 /*tool*/

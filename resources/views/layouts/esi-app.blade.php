@@ -265,7 +265,7 @@
 
            
 
-            @if (Request::segment(1) == "memberschedule" || Request::segment(1) == "settings")
+            @if (Request::segment(1) == "memberschedule" || Request::segment(1) == "lesson_slides" || Request::segment(1) == "settings")
 
             <member-floating-chat-component                
                 userid="{{ Auth::user()->id }}" 
