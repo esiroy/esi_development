@@ -228,7 +228,7 @@
 
                                                     $member = \App\Models\Member::where('user_id', $memberID)->first();
 
-                                                    echo $lessons[$dateView][$timeSlot['startTime']]['id'];
+                                                    //echo  $hour .":" . $minute ;
 
                                                     if ($member) {
 
@@ -259,8 +259,13 @@
 
 
                                                     $reservation_id  = $lessons[$dateView][$timeSlot['startTime']]['id'];
-                                                    $startTime  = $lessons[$dateView][$timeSlot['startTime']]['startTime'];
+                                                    //$startTime  = $lessons[$dateView][$timeSlot['startTime']]['startTime'];
+
+                                                    $startTime  =  $hour .":" . $minute;
+                                                   
+
                                                     $lessonDate = $lessons[$dateView][$timeSlot['startTime']]['scheduled_at'];
+
                                                     $lessonTime = ESILessonTimeENFormat($lessonDate ." " . $startTime );
                                                     $duration = $lessons[$dateView][$timeSlot['startTime']]['duration'];
                                                     $status = $lessons[$dateView][$timeSlot['startTime']]['status'];

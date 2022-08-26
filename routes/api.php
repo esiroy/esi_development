@@ -244,8 +244,7 @@ Route::middleware('auth:api')->post('/getMemberMiniTestResult', 'API\MemberMiniT
 Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\MemberMiniTestResultController@destroy')->name('APIDeleteMemberMiniTestResults');
 
 //lesson slide materials
-Route::middleware('auth:api')->post('/lessonSlideMaterials', 'API\LessonSlideMaterials@get')->name('APIGetLessonSlideMaterials');
+Route::middleware('auth:api')->post('/getLessonSlideMaterialsByID', 'API\LessonSlideMaterials@getLessonSlideMaterialsByID')->name('APIGetLessonSlideMaterials');
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList');
-
 Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
 

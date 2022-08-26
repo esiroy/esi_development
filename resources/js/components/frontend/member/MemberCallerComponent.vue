@@ -79,13 +79,12 @@
             }
         },
         mounted() {
-
             this.socket = io.connect(this.canvasServer);
 
             //Transfer the object to the window
             window.memberCallerComponent = this;
 
-            //console.log(this.memberInfo);
+        
 
             //Register the member Info
             this.user = {
@@ -139,55 +138,69 @@
 
             this.socket.on("START_SLIDER", (data) =>  
             {
-                this.sliderLoaded = false;
+                //this.sliderLoaded = false;
 
-                this.channelid              = data.reservationData.reservation_id
+                
+             
                 this.lessonReservationData  = data.reservationData;
 
-                console.log(data.reservationData);
 
-                if (this.user.userid == data.caller.userid)
+                if (this.user.userid == data.caller.userid && this.user.channelid == null)
                 {                 
                     //this.caller            = data.memberData;
                     //this.callReservation   = data.reservationData;
                     //this.recipient         = data.tutorData;
-                    
+   
+
                     this.$bvModal.hide('modal-call-teacher'); 
                     this.$bvModal.hide('modal-call-member'); 
                     this.$bvModal.show('modal-lesson-slider');
 
+       
+                    //make this to mark user is on a channel and busy!
+                    this.user.channelid = data.channelid
+                    this.channelid = data.channelid
+          
 
-                } else if (this.user.userid == data.recipient.userid) {
 
+                } else if (this.user.userid == data.recipient.userid && this.user.channelid == null) {
+
+                    /*
                     this.$bvModal.hide('modal-call-teacher'); 
                     this.$bvModal.hide('modal-call-member');
                     this.$bvModal.show('modal-lesson-slider');     
 
+                    //make this to mark user is on a channel and busy!
+                    this.user.channelid = data.channelid
+                    this.channelid = data.channelid                   
+                    */ 
+
                 }
 
-                if (this.isMobile())  {
-                    setTimeout(this.expandModal, 1000);
-                } else {
-                    setTimeout(this.revertModal, 1000);
-                }
-
-                console.log("start slider...")
-
+                this.autoAdjustModal();
             }); 
             
 
             window.addEventListener('resize', () => {
-                if (this.isMobile()) {
-                    setTimeout(this.revertModal, 1000);              
-                }
-                console.log("resized modal")
+                this.autoAdjustModal();
             });
-
             
         },
         methods: {
-            test() {
-                alert ("alert me member caller")
+            clearLessonChannel() {
+                    
+                
+                //make this to mark user is on a channel is awaiting calls and free
+                this.user.channelid = null
+                this.channelid = null;
+
+            },
+            autoAdjustModal() {
+                if (this.isMobile()) {
+                    setTimeout(this.expandModal, 50);        
+                } else {                
+                    setTimeout(this.revertModal, 50);
+                }       
             },
             selectLesson(tutor, member, reservation) 
             {              
@@ -330,19 +343,26 @@
 
                 ///console.log(this.caller,  this.recipient, this.callReservation );
                              
-                let data = {
-                    caller          :   this.caller,
-                    recipient       :   this.recipient,
-                    reservationData :   this.callReservation
-                }
-                
+                this.sliderLoaded = false;
 
-                this.channelid                  = this.callReservation.reservation_id;
+                this.channelid                 = this.callReservation.reservation_id;
                 this.lessonReservationData     = this.callReservation;       
                
                 console.log("accept call " , this.callReservation);
 
                 this.$bvModal.hide('modal-call-alert'); 
+
+
+                let data = {
+                    channelid       :  this.channelid,
+                    caller          :   this.caller,
+                    recipient       :   this.recipient,
+                    reservationData :   this.callReservation
+                }
+                
+                this.$bvModal.hide('modal-call-teacher'); 
+                this.$bvModal.hide('modal-call-member'); 
+                this.$bvModal.show('modal-lesson-slider');                
 
                 this.socket.emit('START_SLIDER', data);
             },
@@ -371,22 +391,28 @@
                     return false
                 }  else {         
 
-                    this.$bvModal.show('modal-call-member');       
 
-                    //CALL USER (EMIT DATA)
-                    let data = {
-                        recipient       :   this.member,    //recipient 
-                        caller          :   this.tutor,     //caller
-                        reservationData :   this.reservation
+                    let response = this.checkTime();
+
+                    if (response.valid == true) 
+                    {
+
+                        this.$bvModal.show('modal-call-member');       
+
+                        //CALL USER (EMIT DATA)
+                        let data = {
+                            recipient       :   this.member,    //recipient 
+                            caller          :   this.tutor,     //caller
+                            reservationData :   this.reservation
+                        }
+
+                        this.socket.emit('CALL_USER',  data);  
                     }
-
-                    this.socket.emit('CALL_USER',  data);  
                 }
             },
             //CALL TUTOR IS INITIATED AT THE FRONT END USING JS (window.memberCallerComponent.callTutor) COMMAND
             callTutor(tutor, member, reservation) {
 
-              
                 this.channelid = reservation.reservation_id;
                 
                 this.lessonReservationData  = reservation;
@@ -409,21 +435,40 @@
                 let userIndex = this.users.findIndex(user => user.userid == this.tutor.userid);
                 this.recipient = this.users[userIndex];
 
+
+
                 if (typeof this.recipient == 'undefined') {
+
                     alert ("Sorry, teacher is not online at the moment");
                     return false;
+
                 } else {               
 
-                    this.$bvModal.show('modal-call-teacher');
+                    
+                    /** 
+                    **  
+                    **  [CHECK CURRENT TIME TO AVOID DUPLICATE CALLS]    
+                    ** 
+                    */
+                    let response = this.checkTime();
 
-                    //CALL USER (EMIT DATA)
-                    let data = {
-                        caller          :   this.member,
-                        recipient       :   this.tutor,   //recipient tutor 
-                        reservationData :   this.reservation
+                    if (response.valid == true) 
+                    {
+
+                        this.$bvModal.show('modal-call-teacher');
+
+                        //CALL USER (EMIT DATA)
+                        let data = {
+                            caller          :   this.member,
+                            recipient       :   this.tutor,   //recipient tutor 
+                            reservationData :   this.reservation
+                        }
+
+                        this.socket.emit('CALL_USER',  data);  
+
                     }
 
-                    this.socket.emit('CALL_USER',  data);  
+
                 }
             }, 
             cancelCall() 
@@ -452,19 +497,42 @@
                 var duration        = Moment.duration(this.now.diff(this.lessonStartTime));
                 var days            = duration.asDays();
 
+                //*** TEMPORARY VALID ALL TO TRUE */
+                return ({'valid': true});
+
+
                 if (this.currentTime >= this.lessonStartTime && this.currentTime <= this.lessonEndTime) 
                 {
                     this.$bvModal.show('modal-call-teacher');
 
+                    return ({'valid': true})
+
                 } else if (this.currentTime >=  this.lessonEndTime) {
 
-                    alert ("The Lesson has already ended");
+
+
+                    alert ("The Lesson has already ended" +  this.currentTime +">=  " + this.lessonEndTime);
+
+                    return ({'valid': false})
 
                 } else {
 
                     let numberOfDays = parseInt(days);
 
-                    alert ('Lesson will start after '+ Math.abs(numberOfDays) +' days')
+                    if (numberOfDays == 0) {
+                    
+                        alert ("Your lesson will start on " + this.lessonStartTime + " Today");
+
+
+                    } else {
+
+                         alert ('Lesson will start after '+ Math.abs(numberOfDays) +' days ');
+                    }
+
+                   
+
+                    return ({'valid': false})
+
                 }
             
             }
@@ -551,15 +619,40 @@
 
         </div>
 
-      
+
+        <!-- SELECT LESSON -->
+        <div id="select-lesson-container" class="container-fluid">
+             <b-modal id="modalSelectLesson"  title="Lesson" size="xl" @show="getLessonsList" >
+                Select Lesson 
+                <b-form-select id="lessonSelector" v-model="lessonSelected" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
+
+                <div class="mt-3" v-if="selectedOption !== null">
+                    <div class="pt-2">You have selected:</div>                
+                    <div>Lesson Name: <strong>{{ selectedOption.name }} </strong></div>
+                    <div>Lesson Description: {{ selectedOption.description }}</div>
+                </div>
+
+
+                <template #modal-footer>
+                    <div class="w-100">
+                        <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>
+                    </div>
+                </template>
+             </b-modal>
+
+
+        </div>
+
+
+
         <div id="lesson-slider-container" class="container-fluid" tabindex="9999999999999">
 
-            <b-modal id="modal-lesson-slider" ref="modalLessonSlider"  title="Lesson" size="xl"  :tabindex="9999999999999">                
+            <b-modal id="modal-lesson-slider" ref="modalLessonSlider" @hide="clearLessonChannel()" title="Lesson" size="xl"  :tabindex="9999999999999">                
                 <div v-if="this.sliderLoaded == true && this.channelid != null">
                     <lesson-slider-component 
                         ref="lessonSliderComponent"
                         :editor_id="'canvas'"
-                        :channel_id="this.channelid"
+                        :channelid="this.channelid"
                         :reservation="this.lessonReservationData"
                         :isBroadcaster="this.isBroadcaster"
                         :canvas_server="this.canvasServer"                
@@ -579,41 +672,6 @@
                 </div>
             </b-modal>
         </div>
-        
-
-
-
-
-
-
-        <!-- SELECT LESSON -->
-        <div id="select-lesson-container" class="container-fluid">
-             <b-modal id="modalSelectLesson"  title="Lesson" size="xl" @show="getLessonsList">
-                Select Lesson 
-                
-                <b-form-select id="lessonSelector" v-model="lessonSelected" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
-
-                <div class="mt-3" v-if="selectedOption !== null">
-                    
-                    <div class="pt-2">You have selected:</div>                
-                    <div>Lesson Name: <strong>{{ selectedOption.name }} </strong></div>
-                    <div>Lesson Description: {{ selectedOption.description }}</div>
-
-                </div>
-
-
-                <template #modal-footer>
-                    <div class="w-100">
-                        <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>
-                    </div>
-                </template>
-
-
-             </b-modal>
-
-
-        </div>
-
 
 
     </div>

@@ -2,7 +2,11 @@
 
     <div class="container-fluid">
 
+
+        {{ "channel ID: " + channelid }}
         <div id="editor_content" class="row my-2">
+
+
 
             <div class="col-md-8 col-sm-12 col-xs-12">
 
@@ -63,13 +67,23 @@
                     </div>
 
                     <div class="d-flex justify-content-center">
+                   
                         <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">
+
+                        
+                            <!-- 
+                            /********** [START] CANVAS *************/
+                            -->
                             <canvas :ref="'canvas'+slide"
                                 :id="'canvas'+slide"
                                 :width="canvas_width"
                                 :height="canvas_height"
                                 style="border:1px solid #ccc;"                        
                             ></canvas>
+                            <!-- 
+                            /********** [END] CANVAS *************/
+                            -->
+
                         </div>
                     </div>
 
@@ -131,7 +145,7 @@
 
                     <div class="mb-2" v-if="this.user_info.user_type =='TUTOR'">
                         <b-card-group>
-                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white" style="height:280px; overflow:auto">
+                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
                                 <template #header>
                                     <div class="font-weight-bold">Notes</div>
                                 </template>
@@ -143,17 +157,16 @@
 
                     <div class="chat-container mb-2">
                         <b-card-group>
-                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white" style="height:280px; overflow:auto">
+
+                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
                                 <template #header>
                                     <div class="font-weight-bold">Chat Messages</div>
                                 </template>
 
-                                <b-card-text class="text-dark">
-
-                                  <div class="chatlogs" v-for="(chatlog, chatlogIndex) in chatlogs" :key="'chatlogs_'+ chatlogIndex">
-                                    <span v-html="chatlog.nickname"></span> : <span v-html="chatlog.message"></span>
-                                  </div>                                                             
-                                
+                                <b-card-text id="chatlogs" class="chatlogs text-dark" style="height: 280px; overflow: auto;">
+                                    <div :class="'chatlog-'+chatlogIndex" v-for="(chatlog, chatlogIndex) in chatlogs" :key="'chatlogs_'+ chatlogIndex">
+                                        <span v-html="chatlog.nickname"></span> : <span v-html="chatlog.message"></span>
+                                    </div>           
                                 </b-card-text>
 
                             </b-card>
@@ -161,11 +174,11 @@
 
                         <div class="chat_message mt-1 row">
                             <div class="col-10 mr-0 pr-0">
-                                <input type="text" v-model="privateMessage" @keyup="sendPrivateMessage($event)" class="form-control form-control-sm d-inline-block" placeholder="Enter a message" >
+                                <input type="text" v-model="privateMessage" @keyup="isEnter($event)" class="form-control form-control-sm d-inline-block" placeholder="Enter a message" >
                             </div>
 
                             <div class="col-2 ml-0 pl-1">
-                                <button type="button"  @click="sendPrivateMessage($event)" class="btn btn-sm btn-primary d-inline-block">
+                                <button type="button"  @click="sendPrivateMessage(privateMessage)" class="btn btn-sm btn-primary d-inline-block">
                                     <i class="fa fa-paper-plane" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -218,7 +231,7 @@ export default {
             type: [String],
             required: true        
         },    
-        channel_id: {            
+        channelid: {            
             type: [String, Number],
             required: true
         },
@@ -314,9 +327,7 @@ export default {
             timer: 0,
 
 
-            //test
-            testImage: "http://i.imgur.com/yf6d9SX.jpg",
-
+     
             imageURL: [],
 
             notes: "<bold>lorem epusm dollor </bold>",
@@ -325,13 +336,13 @@ export default {
     },
     mounted() 
     {
-    
-
-    
         this.socket = io.connect(this.$props.canvas_server);
+
+        console.log(this.channelid, this.reservation);
         
 
-        //console.log(this.channel_id, this.reservation);
+        //this.getSlideMaterials(this.reservation) 
+
 
         //register as user
         let user = {
@@ -352,15 +363,17 @@ export default {
         });
 
 
+       
+
 
         this.imageURL = [
-                    "http://i.imgur.com/yf6d9SX.jpg",
-                    "https://i.imgur.com/rQjt0IH.jpeg",
-                    "https://i.imgur.com/v3DN59v.png",
-                    "https://i.imgur.com/rgy0H0t.png",
-                    "https://i.imgur.com/yFoigWV.png",
-                    "https://i.imgur.com/yFoigWV.png"
-                ];
+            "http://i.imgur.com/yf6d9SX.jpg",
+            "https://i.imgur.com/rQjt0IH.jpeg",
+            "https://i.imgur.com/v3DN59v.png",
+            "https://i.imgur.com/rgy0H0t.png",
+            "https://i.imgur.com/yFoigWV.png",
+            "https://i.imgur.com/yFoigWV.png"
+        ];
 
 
         for (var i = 1; i <= this.slides; i++) 
@@ -373,19 +386,22 @@ export default {
             // set canvas width and height based on image size
              //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
 
-            
+            /*
             this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
                 // Optionally add an opacity lvl to the image
                 //backgroundImageOpacity: 0.5,
                 // should the image be resized to fit the container?
                 //backgroundImageStretch: false,
-            });
+            });*/
+            
             
 
             document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';
+            
         }
 
 
+        
         this.customSelectorBounds(fabric);
 
       
@@ -399,29 +415,67 @@ export default {
 
 
 
-        this.socket.on("GOTO_SLIDE", (num) =>  
+        this.socket.on("GOTO_SLIDE", (data) =>  
         {   
+            //if (this.$props.isBroadcaster == true) {
 
-            if (this.$props.isBroadcaster == true) {
+                console.log(data)            
+                
+                this.viewerCurrentSlide = data.num
+                 this.currentSlide = data.num
 
-                console.log("send to viewer the canvas");
-
-                this.viewerCurrentSlide = num
-                this.goToSlide(num);
-            }
+                this.goToSlide(data.num);
+            //}
         });
 
 
 
-        this.socket.on('UPDATE_DRAWING', (response) => {
-           
-            if (this.$props.isBroadcaster == false) {         
-
-                 console.log("updating drawing " + this.$props.isBroadcaster )
-
+        this.socket.on('UPDATE_DRAWING', (response) => {           
+            if (this.$props.isBroadcaster == false) {
+                console.log("updating drawing " + this.$props.isBroadcaster )
                 this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)  
             } 
         });
+
+        this.socket.on('SEND_SLIDE_PRIVATE_MESSAGE', (response) => {     
+
+            /* response
+            let messageData = {
+                channelid: this.channelid,
+                userid: this.member_info.user_id,
+                nickname: nickname,
+                username: this.user_info.username,            
+                channelid: this.channelid,
+                type: this.user_info.user_type,
+                message: message,
+                time: time
+            }*/
+
+            if (response.userid !== this.user_info.userid) 
+            {
+                new Promise((resolve, reject) => {
+
+                    this.pushPrivateMessage(response);
+                    resolve('private message resolved');
+                    
+                }).then((result) => {
+
+                    //console.log(result)
+
+                    this.privateMessage = null;
+
+                    this.scrollToBottom();
+                });                
+
+                /*
+                Promise.all([mypromise]).then(arr => {
+                    console.log(arr)
+                    this.scrollToBottom();
+                });*/
+            } 
+
+        });
+
 
         //ON LOAD WINDOW
         if (this.$props.isBroadcaster == false) 
@@ -432,10 +486,7 @@ export default {
             
             //console.log("deactivated selector")
 
-            this.canvas[this.currentSlide].isDrawingMode = false;      
-
-         
-    
+            this.canvas[this.currentSlide].isDrawingMode = false; 
 
         } else {
 
@@ -448,37 +499,95 @@ export default {
 
         this.keyPressHandler();
         this.startTimer();
+
+
+
     },
     methods: {
-       
-        sendPrivateMessage(e) {
+        getSlideMaterials(reservation) 
+        {
 
-            if (e.keyCode === 13) {
+            //console.log(reservation)
 
-                let nickname = null;
+            this.isLoading = true;
 
-                if (this.user_info.user_type == "TUTOR") {
-                    nickname = this.user_info.firstname
+            axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
+            {
+                method          : "POST",
+                lesson_id       : reservation.lesson_id,
+                memberID        : this.member_info.user_id
+
+            }).then(response => {     
+            
+                if (response.data.success === true) 
+                { 
+
+                    console.log(response.data)
+   
+
                 } else {
-                    nickname = this.member_info.nickname
+          
+
+
                 }
+			});
+        },       
 
-                let messageData = {
-                    userid: this.member_info.user_id,
-                    nickname: nickname,
-                    username: this.user_info.username,            
-                    channelid: this.channelid,
-                    type: this.user_info.user_type,
-                    message: this.privateMessage
+        pushPrivateMessage(data) {
+            // does something
+           this.chatlogs.push(data);
+        },
+        scrollToBottom() {
+            console.log("scroll to bottom");
+
+            var textarea = document.getElementById('chatlogs');
+            textarea.scrollTop = textarea.scrollHeight;            
+        },
+        isEnter(e) {
+             if (e.keyCode === 13) {
+
+                if (this.privateMessage !== null) {
+                    this.sendPrivateMessage(this.privateMessage);
+                    this.privateMessage = null;
+                } else {
+                    console.log("please enter a message")
                 }
-
-                this.chatlogs.push(messageData);
-
-                console.log(messageData)
-
+             }
+        },
+        sendPrivateMessage(message) 
+        {
+            if (message == null) {
+                return false;
             }
 
+            let nickname = null;
+
+            if (this.user_info.user_type == "TUTOR") {
+                nickname = this.user_info.firstname
+            } else {
+                nickname = this.member_info.nickname
+            }
+
+            var currentTime = new Date();    
+            let time        = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
+
+            let messageData = {
+                channelid: this.channelid,
+                userid: this.member_info.user_id,
+                nickname: nickname,
+                username: this.user_info.username,            
+                channelid: this.channelid,
+                type: this.user_info.user_type,
+                message: message,
+                time: time
+            }
+
+          
+
+            this.socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", messageData); 
         },
+
+        /*
         loadImage(id, imageURL) 
         {
 
@@ -498,34 +607,9 @@ export default {
 
             background.setAttribute('crossorigin', 'anonymous'); // works for me
 
-        },
-
-        getSlideMaterials(reservation) 
-        {
-
-            //console.log(reservation)
-
-            this.isLoading = true;
-
-            axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
-            {
-                method          : "POST",
-                lesson_id       : reservation.lesson_id,
-                memberID        : this.member_info.user_id
-
-            }).then(response => {     
-            
-                if (response.data.success === true) 
-                { 
-   
-
-                } else {
-          
+        },*/
 
 
-                }
-			});
-        },
         getRecipient() {        
             let recipient = {
                 userid: this.member_info.user_id ,
@@ -543,18 +627,19 @@ export default {
             });
         },
 
-        renderCanvas() {
-           
-           
+        renderCanvas() {            
+
+            console.log(this.currentSlide);
+
             /*
-            
             this.canvas[this.currentSlide].forEachObject(function(o) {
                 o.selectable = false;
                 o.defaultCursor = 'not-allowed';
-            });*/
-            //this.canvas[this.currentSlide].discardActiveObject();           
+            });
+            this.canvas[this.currentSlide].discardActiveObject();           
 
-            //this.canvas[this.currentSlide].requestRenderAll();
+            this.canvas[this.currentSlide].requestRenderAll();
+            */
 
             this.canvas[this.currentSlide].renderAll();
         },
@@ -613,18 +698,44 @@ export default {
 
             this.canvas[this.currentSlide].getActiveObject().set({fill: this.brushColor});
         },
+        
         startSlide() {
-            if (this.currentSlide > 1) {
+
+            if (this.currentSlide > 1) 
+            {
                 this.currentSlide = 1;
                 this.autoSelectTool();
 
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);                   
-            }        
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);                      
+            } 
+
+            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";      
+             
         },
+        
         goToSlide(slide) {          
-            let data = this.canvas[slide].toJSON(); 
-            this.canvasSendJSON(this.canvas[slide], data);   
+
+            //console.log(slide);
+
+            for (var i = 1; i <= this.slides; i++) 
+            {
+                if (i == slide) {    
+
+                    document.getElementById('editor'+ i).style.visibility = "visible";
+                    document.getElementById('editor'+ i).style.display = "block";                                   
+
+                    let data = this.canvas[slide].toJSON(); 
+                    this.canvasSendJSON(this.canvas[slide], data);
+
+                } else {
+
+                    document.getElementById('editor'+ i).style.visibility = "hidden";
+                    document.getElementById('editor'+ i).style.display = "none";        
+
+                }
+            }
+
         },
         lastSlide() {
             this.currentSlide = this.slides;
@@ -643,8 +754,13 @@ export default {
                 //let data = this.canvasGetJSON();
                 //this.canvasSendJSON(this.canvas[this.currentSlide], data);     
 
+                let data = {
+                    'channelid': this.channelid,
+                    'num': this.currentSlide
+                }
+           
                 //if (delegateToNode == true) {
-                    //this.socket.emit('GOTO_SLIDE', this.currentSlide);                    
+                    this.socket.emit('GOTO_SLIDE', data);                    
                 //}
             }
         },
@@ -659,8 +775,16 @@ export default {
                 //let data = this.canvasGetJSON();
                 //this.canvasSendJSON(this.canvas[this.currentSlide], data); 
 
+
+
+                let data = {
+                    'channelid': this.channelid,
+                    'num': this.currentSlide
+                }
+
+
                 //if (delegateToNode == true) {
-                    this.socket.emit('GOTO_SLIDE', this.currentSlide);     
+                    this.socket.emit('GOTO_SLIDE', data);     
                // }
                 
             } 

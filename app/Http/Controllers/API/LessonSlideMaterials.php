@@ -15,11 +15,17 @@ use App\Models\MemberSelectedLessonSlideMaterial;
 class LessonSlideMaterials extends Controller
 {
 
-    public function get(Request $request)
+    public function getLessonSlideMaterialsByID(Request $request)
     {
         $lessonID = $request->lesson_id;
+
+
+        
     }
 
+    /*
+        @description: Get the folder with heirchy for file manager
+    */
     public function getLessonSlideMaterialList(Request $request) 
     {
         return Response()->json([
