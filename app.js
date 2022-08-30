@@ -117,6 +117,9 @@ io.on('connection', function(socket) {
             }
         }*/
 
+        socket.join(user.channelid);
+
+
         users = users.filter(function(element) {
             return element !== undefined;
         });
