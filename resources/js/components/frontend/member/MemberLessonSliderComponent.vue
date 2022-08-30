@@ -341,9 +341,6 @@ export default {
         console.log(this.channelid, this.reservation);
         
 
-        //this.getSlideMaterials(this.reservation) 
-
-
         //register as user
         let user = {
             userid: this.member_info.user_id ,
@@ -356,15 +353,15 @@ export default {
 
         this.socket.emit('REGISTER', user); 
 
-        this.socket.on('update_user_list', users => {
+        this.socket.on('update_user_list', users => 
+        {
+            this.updateUserList(users); 
+        });      
 
-           ////console.log("registered ", users);
-
-        });
+        this.getSlideMaterials(this.reservation) 
 
 
-       
-
+    /*
 
         this.imageURL = [
             "http://i.imgur.com/yf6d9SX.jpg",
@@ -374,7 +371,9 @@ export default {
             "https://i.imgur.com/yFoigWV.png",
             "https://i.imgur.com/yFoigWV.png"
         ];
+*/
 
+        /*
 
         for (var i = 1; i <= this.slides; i++) 
         {
@@ -384,22 +383,23 @@ export default {
             });
 
             // set canvas width and height based on image size
-             //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
+            //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
 
-            /*
+            
+            
             this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
                 // Optionally add an opacity lvl to the image
                 //backgroundImageOpacity: 0.5,
                 // should the image be resized to fit the container?
                 //backgroundImageStretch: false,
-            });*/
+            });
             
             
 
             document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';
             
         }
-
+        */
 
         
         this.customSelectorBounds(fabric);
@@ -431,6 +431,9 @@ export default {
 
 
         this.socket.on('UPDATE_DRAWING', (response) => {           
+
+            console.log(this.users);
+
             if (this.$props.isBroadcaster == false) {
                 console.log("updating drawing " + this.$props.isBroadcaster )
                 this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)  
@@ -504,26 +507,62 @@ export default {
 
     },
     methods: {
+
+        updateUserList: function(users) 
+        {
+            this.users = users;      
+            this.$forceUpdate();
+        },
         getSlideMaterials(reservation) 
         {
 
-            //console.log(reservation)
+            console.log('reservation slide ', reservation)
 
             this.isLoading = true;
 
             axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
             {
-                method          : "POST",
-                lesson_id       : reservation.lesson_id,
-                memberID        : this.member_info.user_id
+                method              : "POST",
+                scheduleID          : reservation.schedule_id,
+                memberID            : reservation.member_id,
+                lesson_time        : reservation.lesson_time
 
             }).then(response => {     
             
                 if (response.data.success === true) 
                 { 
 
-                    console.log(response.data)
+
+                    this.imageURL = response.data.files;
+
+                    this.slides  = (response.data.files).length;
+
+                    for (var i = 1; i <= this.slides; i++) 
+                    {
+
+                        this.canvas[i]  = new fabric.Canvas('canvas'+i, {
+                            //backgroundColor : "#fff"
+                        });
+
+                        // set canvas width and height based on image size
+                        //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
+
+                        
+                        
+                        this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
+                            // Optionally add an opacity lvl to the image
+                            //backgroundImageOpacity: 0.5,
+                            // should the image be resized to fit the container?
+                            //backgroundImageStretch: false,
+                        });
+                        
+                        
+
+                        document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';
+                        
+                    }
    
+                 
 
                 } else {
           

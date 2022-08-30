@@ -213,7 +213,8 @@
 
 
                                                 $reservationData = [
-                                                    'reservation_id'   => $reserve->id,
+                                                    'schedule_id'       => $reserve->id,
+                                                    'member_id'          => $reserve->member_id,
                                                     'duration'          => $reserve->duration,
                                                     'lesson_time'       => $reserve->lesson_time,
                                                     'lessonTimeRage'    => LessonTimeRange($reserve->lesson_time),

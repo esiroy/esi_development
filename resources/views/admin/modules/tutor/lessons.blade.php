@@ -242,6 +242,8 @@
                                                             'image'     => url($member->image()),
                                                             'type'      => $member->user->user_type,                                               
                                                         ];
+
+
                                                     }
 
                                                     $user = Auth::user();
@@ -258,7 +260,7 @@
                                                     ];
 
 
-                                                    $reservation_id  = $lessons[$dateView][$timeSlot['startTime']]['id'];
+                                                    $schedule_id  = $lessons[$dateView][$timeSlot['startTime']]['id'];
                                                     //$startTime  = $lessons[$dateView][$timeSlot['startTime']]['startTime'];
 
                                                     $startTime  =  $hour .":" . $minute;
@@ -271,7 +273,8 @@
                                                     $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
 
                                                     $reservationData = [
-                                                        'reservation_id'   => $reservation_id,
+                                                        'schedule_id'       => $schedule_id,
+                                                         'member_id'        => $memberID,
                                                         'duration'          => $duration,
                                                         'lesson_time'       => $lessonTime,
                                                         'lessonTimeRage'    => LessonTimeRange($lessonTime),

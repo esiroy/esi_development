@@ -209,7 +209,7 @@
                 this.reservation        = JSON.parse(reservation);            
 
                 //IMPORTANT: SELECTED ID IS FROM THE HTML FORM
-                this.selectedLessonID = this.reservation.reservation_id;
+                this.selectedLessonID = this.reservation.schedule_id;
 
                 console.log(this.selectedLessonID );
                 this.$bvModal.show('modalSelectLesson');
@@ -345,7 +345,7 @@
                              
                 this.sliderLoaded = false;
 
-                this.channelid                 = this.callReservation.reservation_id;
+                this.channelid                 = this.callReservation.schedule_id;
                 this.lessonReservationData     = this.callReservation;       
                
                 console.log("accept call " , this.callReservation);
@@ -413,7 +413,7 @@
             //CALL TUTOR IS INITIATED AT THE FRONT END USING JS (window.memberCallerComponent.callTutor) COMMAND
             callTutor(tutor, member, reservation) {
 
-                this.channelid = reservation.reservation_id;
+                this.channelid = reservation.schedule_id;
                 
                 this.lessonReservationData  = reservation;
 

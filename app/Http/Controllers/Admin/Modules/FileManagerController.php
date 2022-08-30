@@ -249,14 +249,30 @@ class FileManagerController extends Controller
         
         if ($folder) {
 
+       
+            $folder->delete();
+
+
+            return Response()->json([
+                "success"              => true,
+                "message"                => "deleted"                
+            ]);  
+
 
             Storage::deleteDirectory("public/uploads/". $folder->id);
 
-            $folder->delete();
+            
 
             return redirect( route('admin.module.filemanager.index') )->with('message', 'Folder has been deleted successfully!');
             
         } else {
+
+
+            return Response()->json([
+                "success"              => false,
+                "message"                => "can't deleted"                
+            ]); 
+
 
             return redirect( route('admin.module.filemanager.index') )->with('error_message', 'Folder cant be found, it may have been deleted already.');
         }
