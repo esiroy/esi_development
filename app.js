@@ -26,8 +26,19 @@ io.on('connection', function(socket) {
     console.log("user connected, with id " + socket.id)
 
 
-    socket.on("SEND_DRAWING", (canvasData) => {
-        io.to('' + canvasData.channelid + '').emit('UPDATE_DRAWING', canvasData);
+
+
+    /*****************************************/
+    /*  CANVAS SERVER
+    /*****************************************/
+
+    socket.on("CALL_USER", (data) => {
+        //io.to('' + data.channelid + '').emit("CALL_USER", data);
+        io.sockets.emit("CALL_USER", data);
+    });
+
+    socket.on("ACCEPT_CALL", (data) => {
+        io.sockets.emit("ACCEPT_CALL", data);
     });
 
 
@@ -37,25 +48,35 @@ io.on('connection', function(socket) {
     });
 
 
-
-    socket.on("CALL_USER", (data) => {
-
-        io.sockets.emit("CALL_USER", data);
-
-    });
-
-
     socket.on("DROP_CALL", (data) => {
         io.sockets.emit("DROP_CALL", data);
     });
 
 
 
-    socket.on("ACCEPT_CALL", (data) => {
-        io.sockets.emit("ACCEPT_CALL", data);
+
+
+
+
+    socket.on("SEND_DRAWING", (data) => {
+        io.to('' + data.channelid + '').emit('UPDATE_DRAWING', data);
+    });
+
+    socket.on("GOTO_SLIDE", (data) => {
+        io.to('' + data.channelid + '').emit("GOTO_SLIDE", data);
     });
 
 
+    socket.on("SEND_SLIDE_PRIVATE_MESSAGE", (data) => {
+        io.to('' + data.channelid + '').emit("SEND_SLIDE_PRIVATE_MESSAGE", data);
+    });
+
+
+
+
+    /*****************************************/
+    /*  ADMIN CHAT SUPPORT MESSENGER 
+    /*****************************************/
 
     socket.on("SEND_USER_MESSAGE", function(data) {
         io.sockets.emit("PRIVATE_MESSAGE", data);
