@@ -481,6 +481,7 @@ export default {
 
 
         //ON LOAD WINDOW
+        /*
         if (this.$props.isBroadcaster == false) 
         {
             //Your are not a broadcaster
@@ -502,6 +503,7 @@ export default {
 
         this.keyPressHandler();
         this.startTimer();
+        */
 
 
 
@@ -512,6 +514,27 @@ export default {
         {
             this.users = users;      
             this.$forceUpdate();
+        },
+        userSlideAccess() {
+
+            if (this.$props.isBroadcaster == false) 
+            {
+                //Your are not a broadcaster
+                this.disableSelect();
+                this.deactivateSelector();
+                this.canvas[this.currentSlide].isDrawingMode = false;
+
+                console.log("deactivated selector")
+
+            } else {
+                //Your are the viewer  
+                this.mouseClickHandler();
+                this.activatePencil();
+            }
+
+
+            this.keyPressHandler();
+            this.startTimer();
         },
         getSlideMaterials(reservation) 
         {
@@ -530,24 +553,18 @@ export default {
             }).then(response => {     
             
                 if (response.data.success === true) 
-                { 
-
-
+                {
                     this.imageURL = response.data.files;
-
                     this.slides  = (response.data.files).length;
 
                     for (var i = 1; i <= this.slides; i++) 
                     {
-
                         this.canvas[i]  = new fabric.Canvas('canvas'+i, {
                             //backgroundColor : "#fff"
                         });
 
                         // set canvas width and height based on image size
-                        //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
-
-                        
+                        //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});                        
                         
                         this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
                             // Optionally add an opacity lvl to the image
@@ -555,14 +572,18 @@ export default {
                             // should the image be resized to fit the container?
                             //backgroundImageStretch: false,
                         });
-                        
-                        
+                        document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';    
 
-                        document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';
+                        if (i ==  this.slides)
+                        {
+                            this.userSlideAccess();
+
+                            console.log("called user slide access")
+                        }
                         
                     }
-   
-                 
+
+                   
 
                 } else {
           
