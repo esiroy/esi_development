@@ -165,14 +165,27 @@ class ScheduleItem extends Model
     */
     public function getTotalMemberReserved($member) 
     {
-        $date = date('Y-m-d H:i:s');
+        $unformattedDateOfReservation = date('Y-m-d H:i:s');
+        $dateOfReservation = ESILessonTimeENFormat($unformattedDateOfReservation);
 
-        $total = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
-                $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+        $nextDay = date("Y-m-d", strtotime($unformattedDateOfReservation . " + 1 day"));
+ 
+               
+                     
+        $total = ScheduleItem::where('member_id', $member->user_id)
+        ->where('valid', 1)
+        ->where(function ($q) use ($member) 
+        {
+            $q
+                ->orWhere('schedule_status', 'CLIENT_RESERVED')
                 ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
-            })->where('lesson_time', ">=", $date)
-            ->orderby('lesson_time', 'ASC')
-            ->count();
+
+        })
+        ->where('lesson_time', ">=", $dateOfReservation)
+        ->count();
+               
+
+
 
         return $total;
     }
@@ -212,16 +225,19 @@ class ScheduleItem extends Model
     */    
     public function getTotalTutorDailyReserved($memberID, $tutorID, $date) 
     {
+
+        $date = ESILessonTimeENFormat($date);
+
         $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
 
-        $reserved = ScheduleItem::whereRaw("(lesson_time > ? AND lesson_time <= ?)", [$date." 00:30:00", $nextDay." 00:30:00"])
+        $reserved = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date." 11:00:00", $nextDay." 00:30:00"])
                         ->where('member_id', $memberID)
                         ->where('tutor_id', $tutorID)  
                         ->where('valid', 1)          
                         ->where('schedule_status', 'CLIENT_RESERVED')
                         ->count();                           
 
-        $reserved_b = ScheduleItem::whereRaw("(lesson_time > ? AND lesson_time <= ?)", [$date." 00:30:00", $nextDay." 00:30:00"])
+        $reserved_b = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date." 11:00:00", $nextDay." 00:30:00"])
                         ->where('member_id', $memberID)
                         ->where('tutor_id', $tutorID)  
                         ->where('valid', 1)          
