@@ -165,12 +165,7 @@ class ScheduleItem extends Model
     */
     public function getTotalMemberReserved($member) 
     {
-        $unformattedDateOfReservation = date('Y-m-d H:i:s');
-        $dateOfReservation = ESILessonTimeENFormat($unformattedDateOfReservation);
-
-        $nextDay = date("Y-m-d", strtotime($unformattedDateOfReservation . " + 1 day"));
- 
-               
+        $dateOfReservation = date('Y-m-d H:i:s');
                      
         $total = ScheduleItem::where('member_id', $member->user_id)
         ->where('valid', 1)
@@ -183,8 +178,6 @@ class ScheduleItem extends Model
         })
         ->where('lesson_time', ">=", $dateOfReservation)
         ->count();
-               
-
 
 
         return $total;
