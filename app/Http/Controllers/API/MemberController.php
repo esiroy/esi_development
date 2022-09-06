@@ -330,7 +330,7 @@ class MemberController extends Controller
         $schedule = $scheduleItem->find($scheduleID);        
 
         //total reservation for a day        
-        $date = date("Y-m-d", strtotime($schedule->lesson_time)); 
+        $lessonDate = date("Y-m-d H:i:s", strtotime($schedule->lesson_time)); 
 
 
 
@@ -515,36 +515,43 @@ class MemberController extends Controller
 
 
         //$totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $dateOfReservation);
-        if (date('H', strtotime($lessonTime)) == '00') 
-        {  
+   
 
-            $adjustedDate =  date('Y-m-d', strtotime($lessonTime ." - 1 day"));
-            $dateMinToInclude = $adjustedDate . " 11:00:00"; 
-            //start date is adjusted to previous date since 00 is still current date
+        $adjustedDate = $scheduleItem->getCurrentTimeDuration($lessonDate);
+        $currentDate  = $scheduleItem->getCurrentTimeDuration();
 
+        //@do: compare this date if the adjusted date is future date, if date is the future 
+        //@do:  start checking the date from 11:00:00 AM if the future date
+        $compare_adjusted = date('Y-m-d', strtotime($adjustedDate));
+        $compare_current = date('Y-m-d', strtotime($currentDate));
+
+        if ($compare_adjusted > $compare_current) 
+        {
+            //date is at future
+            $testDate = date('Y-m-d 11:00:00', strtotime($adjustedDate));
         } else {
-            $dateMinToInclude = $date . " 11:00:00"; //start date to include 
-        }
+            //date is current so we will get the current time
+            $testDate = $currentDate;          
+        }  
 
-           
 
-        
-        $totalDailyTutorReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $dateMinToInclude);
+        $totalDailyTutorReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $testDate);
 
+     
+
+            
         /*
         /* TEST ALL VARIABLES 
-        *  BUG UPDATE (RESERVATION NOT COUNTING PROPERLY)
-        
-      
-      
-         return Response()->json([
+        *  BUG UPDATE (RESERVATION NOT COUNTING PROPERLY)      
+
+    return Response()->json([
                 "success"   => false,
                 "MEMBER_RESERVE_LIMIT_ACTIVE" => $MEMBER_RESERVE_LIMIT_ACTIVE,
                 "tutor" => $tutorID,
                 "member" => $memberID,
-                "message"   => "date : ". $dateMinToInclude  . " | " . $totalDailyTutorReserved,
+                "message"   => $currentDate . " test date : ". $testDate  . " | " . $totalDailyTutorReserved,
                 "totalDailyTutorReserved" => $totalDailyTutorReserved,           
-            ]);
+            ]);   
         */
         
             
