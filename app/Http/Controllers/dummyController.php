@@ -50,7 +50,24 @@ class dummyController extends Controller
     }
 
 
-   public function index(ChatSupportHistory $chatSupportHistory) 
+    public function index(ScheduleItem $scheduleItem)  
+    {
+
+        echo date('Y-m-d H:i:s');
+
+        echo "<BR>";
+
+        echo "duration " . $scheduleItem->getCurrentTimeDuration(date('Y-m-d H:i:s'));
+
+        echo "<BR>duration " . $scheduleItem->getCurrentTimeDuration(date('Y-m-d 22:29:s'));
+
+          echo "<BR>duration " . $scheduleItem->getCurrentTimeDuration();
+    
+    
+    
+    }
+
+   public function chatHistoryTest(ChatSupportHistory $chatSupportHistory) 
     {
 
             $recentUsers = $chatSupportHistory->where(function($query) 
