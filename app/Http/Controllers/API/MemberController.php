@@ -488,8 +488,7 @@ class MemberController extends Controller
         $lessonTime = date("Y-m-d H:i:s", strtotime($schedule->lesson_time));
 
         //check if duplicate schedule if exists
-        $isLessonExists = ScheduleItem::where('id', $schedule->id)
-            //where('lesson_time', $lessonTime)
+        $isLessonExists = ScheduleItem::where('lesson_time', $lessonTime)
             ->where('member_id', Auth::user()->id)
             ->where('schedule_status', "!=", 'TUTOR_CANCELLED')      
             ->where('valid', 1)
