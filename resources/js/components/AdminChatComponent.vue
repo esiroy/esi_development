@@ -1429,13 +1429,27 @@ Vue.component("chatlogs-component", {
     return {};
   },
   methods: {
+    prependHTTPS(url) {
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+            return url;
+        } else {
+
+            return url;
+        }
+    },
     formatMessage(message) 
     {
-        return this.urlify(message);
+       return this.urlify(message);
     },
     urlify(text) {
-        var exp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig; 
-        return text.replace(exp,"<a href='$1' target='_blank' >$1</a>");
+
+        var exp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig;
+        let link = text.replace(exp, (url) => {
+            let link = this.prependHTTPS(url);
+            return "<a href='"+ link +"' target='_blank' >"+ link +"</a>";
+        });
+        return link;
     },
   },
   template:
