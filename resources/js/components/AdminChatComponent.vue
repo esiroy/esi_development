@@ -1429,7 +1429,14 @@ Vue.component("chatlogs-component", {
     return {};
   },
   methods: {
-
+    formatMessage(message) 
+    {
+        return this.urlify(message);
+    },
+    urlify(text) {
+        var exp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig; 
+        return text.replace(exp,"<a href='$1' target='_blank' >$1</a>");
+    },
   },
   template:
     `<div>
@@ -1449,7 +1456,7 @@ Vue.component("chatlogs-component", {
                     </div>
 
                     <div style="float:right">
-                    <div class="chatsupport-message" v-html="chatlog.sender.message"></div>
+                    <div class="chatsupport-message" v-html="formatMessage(chatlog.sender.message)"></div>
                     </div>
                 </div>
             </div>
@@ -1466,7 +1473,7 @@ Vue.component("chatlogs-component", {
                             :time="chatlog.time">
                         </member-info-component>
                     </div>
-                    <div class="member-message" v-html="chatlog.sender.message"></div>
+                    <div class="member-message" v-html="formatMessage(chatlog.sender.message)"></div>
                 </div>
                 <div class="col-md-3">&nbsp;</div>
             </div>
