@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "/js/admin.js": "/js/admin.js?id=5c43ed7bb3ec46d77450",
     "/js/admin.js.map": "/js/admin.js.map?id=a18d8d8717b6bff95a34",
     "/js/app.js": "/js/app.js?id=aa632bdf122a64cd34dd",
@@ -6,6 +7,15 @@
     "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
     "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
     "/js/app.js.map": "/js/app.js.map?id=18f173e9c0efd6a0bc67",
+=======
+    "/js/admin.js": "/js/admin.js?id=d9193675f9b73074fa39",
+    "/js/admin.js.map": "/js/admin.js.map?id=67361ff543acd30c1358",
+    "/js/app.js": "/js/app.js?id=053fa805d3c9308f803d",
+    "/css/app.css": "/css/app.css?id=ac7e07fb953b68d383c4",
+    "/css/admin.css": "/css/admin.css?id=83bea4e32a70acfc64ea",
+    "/css/steps/steps.css": "/css/steps/steps.css?id=9405e8fab316477490db",
+    "/js/app.js.map": "/js/app.js.map?id=de59622199085a9988ea",
+>>>>>>> autolink_chat_feature_sept_7_2022
     "/css/app.css.map": "/css/app.css.map?id=57abbf5c01a332424cc8",
     "/css/admin.css.map": "/css/admin.css.map?id=f83b3d41567037b6f6eb",
     "/css/steps/steps.css.map": "/css/steps/steps.css.map?id=17cb90db0df250d10eeb",

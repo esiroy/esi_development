@@ -94,6 +94,7 @@
 
                                 <div class="chatlog-wrapper">
 
+                                    <!--[START] CHATLOG MESSAGE-->
                                     <div class="chat" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+ chatlogIndex">
 
                                         <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">  
@@ -109,7 +110,7 @@
                                                 <div class="small text-left mt-2" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                           
                                                     {{ chatlog.sender.nickname }}, {{ chatlog.time  }}                             
                                                 </div>
-                                                <div class="chat-support-message" v-html="chatlog.sender.message"></div>
+                                                <div class="chat-support-message" v-html="formatMessage(chatlog.sender.message)"></div>
                                             </div>
                                         </div>
 
@@ -122,7 +123,7 @@
                                                 </div>
 
                                                 <div class="member-message-container">
-                                                    <div class="member-message" v-html="chatlog.sender.message"></div>
+                                                    <div class="member-message" v-html="formatMessage(chatlog.sender.message)"></div>
                                                 </div>
 
                                             </div>
@@ -134,6 +135,8 @@
                                         
                                         </div>
                                     </div>
+                                     <!--[END] CHATLOG MESSAGE-->
+
                                 </div>
 
                             </div>
@@ -293,6 +296,28 @@ export default {
             username: "admin",
             status: 'offline',
         }
+    },
+    prependHTTPS(url) {
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+            return url;
+        } else {
+
+            return url;
+        }
+    },
+    formatMessage(message) 
+    {
+       return this.urlify(message);
+    },
+    urlify(text) {
+
+        var exp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig;
+        let link = text.replace(exp, (url) => {
+            let link = this.prependHTTPS(url);
+            return "<a href='"+ link +"' target='_blank' >"+ link +"</a>";
+        });
+        return link;
     },
     getChatHistory: function(user, scrollToBottom) 
     {        
@@ -807,6 +832,7 @@ export default {
     },
     sendMessage: function(chatbox, index) 
     {
+
      
         //files is empty and message is empty, stop sending message
         if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
@@ -1091,7 +1117,8 @@ export default {
 
     .member-message-container {    
         position: relative;
-        float:right
+        float:right;
+        max-width: inherit;
     }
 
    .member-message {
@@ -1104,6 +1131,7 @@ export default {
         display: block;
         margin-top: 5px;
         padding: 7px 25px 7px;
+        width: min-content;
   }
 
 
