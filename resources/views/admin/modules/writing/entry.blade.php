@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('content')
+
     <div class="container bg-light px-0">
         <div class="row">
             <div class="col-md-12">
