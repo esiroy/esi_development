@@ -71,6 +71,10 @@ class WritingController extends Controller
     */
     public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
+
+
+
+
         $fields = array();        
         $tutor_id = null;
         $userAttachedFile = false;
@@ -113,11 +117,13 @@ class WritingController extends Controller
 
                     if ($display_meta['memberPointChecker'])  
                     {
-                        $wordCount = countWords($value);
+                        $wordCount = countWords(strip_tags_content($value));
+
                         $totalWords = $totalWords +  $wordCount;   
 
                         $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];  
-                        $fields[$key] = $value;                     
+                        $fields[$key] = $value;  
+
                     }
 
                 } else { 

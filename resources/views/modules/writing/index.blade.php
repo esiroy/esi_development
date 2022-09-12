@@ -372,7 +372,10 @@
                 let  words = $(htmlData).text()           
             
                 let wordcount = countWords(words);
-                 var wordlimit = $('#'+fieldID+"_wordLimit").val();
+                var wordlimit = $('#'+fieldID+"_wordLimit").val();
+
+                //Update Textarea ELement 
+                evt.editor.updateElement();
 
 
                 console.log(fieldID + " wordlimit " + wordlimit)
@@ -458,6 +461,9 @@
 
         function encodeData() 
         {
+
+          
+
             let inputs = $('#writing-form').find('.form-control');
             let fieldsArr = new Object;
 
@@ -465,10 +471,15 @@
 
             Array.from(inputs).forEach( (field, index) => 
             {
+                
+
                 itemsProcessed++;
                 let id = $(field).attr('id') 
                 let name = $(field).attr('name');
                 let value = $(field).val();
+
+           
+                
 
                 if ($('#'+id+"_field_row").css( "display" ) == 'none' ) {                        
                     //field is not showed, we will not include it to post

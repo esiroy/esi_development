@@ -398,6 +398,32 @@ if (! function_exists('countWords'))
     }  
 }
 
+if (! function_exists('strip_tags_content')) 
+{
+    function strip_tags_content($string) { 
+
+          // ----- remove HTML TAGs ----- 
+        $string = preg_replace ('/<[^>]*>/', ' ', $string); 
+        $string = strip_tags($string);        
+
+        //remove &nbsp;
+        $string = utf8_decode($string);
+        $string = str_replace("&nbsp;", " ", $string);
+        $string = preg_replace('/\s+/', ' ',$string);
+        $string = trim($string);
+  
+
+        // ----- remove control characters ----- 
+        $string = str_replace("\r", '', $string);
+        $string = str_replace("\n", ' ', $string);
+        $string = str_replace("\t", ' ', $string);
+        // ----- remove multiple spaces ----- 
+        $string = trim(preg_replace('/ {2,}/', ' ', $string));
+        return $string; 
+
+    }
+}
+
 
 if (! function_exists('minutesFormatter')) 
 {
