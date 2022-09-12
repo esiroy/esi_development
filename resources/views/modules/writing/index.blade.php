@@ -82,6 +82,7 @@
     <link rel="stylesheet" href="{{ asset('css/steps/steps.css') }}">
     <style>
 
+        
         .cke_top, .cke_bottom {
             display: none !important;
         }
@@ -362,7 +363,7 @@
         {
 
             CKEDITOR.replace( fieldID , {
-                toolbar: ['removeFormat'],             
+                //toolbar: ['removeFormat'],             
                 removePlugins: 'easyimage, exportpdf, cloudservices',
 
             }).on('change', (evt) => {
