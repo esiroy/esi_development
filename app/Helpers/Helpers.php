@@ -406,16 +406,13 @@ if (! function_exists('strip_tags_content'))
 
         // ----- remove HTML TAGs ----- 
         $string = strip_tags($string);     
-
-        $string = preg_replace ('/<[^>]*>/', ' ', $string); 
-          
+        $string = preg_replace ('/<[^>]*>/', ' ', $string);           
 
         //remove &nbsp;
         $string = utf8_decode($string);
         $string = str_replace("&nbsp;", " ", $string);
         $string = preg_replace('/\s+/', ' ',$string);
-        $string = trim($string);
-  
+        $string = trim($string);  
 
         // ----- remove control characters ----- 
         $string = str_replace("\r", '', $string);
@@ -424,14 +421,8 @@ if (! function_exists('strip_tags_content'))
 
         // ----- remove multiple spaces ----- 
         $string = trim(preg_replace('/ {2,}/', ' ', $string));
-   
-
-
-
-
 
        return $string; 
-
 
     }
 }
