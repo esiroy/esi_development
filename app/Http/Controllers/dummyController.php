@@ -50,10 +50,22 @@ class dummyController extends Controller
     }
 
 
-    public function index(ScheduleItem $scheduleItem)  
+    public function index(Request $request)  
     {
 
-        echo date('Y-m-d H:i:s');
+
+        $string =  " WordCounter? you'll be safe.... here...................";
+
+        $wordCount = countWords(strip_tags_content($string));
+
+         echo $wordCount;
+    
+    }
+
+    public function time(ScheduleItem $scheduleItem) {
+    
+    
+       echo date('Y-m-d H:i:s');
 
         echo "<BR>";
 
@@ -61,10 +73,8 @@ class dummyController extends Controller
 
         echo "<BR>duration " . $scheduleItem->getCurrentTimeDuration(date('Y-m-d 22:29:s'));
 
-          echo "<BR>duration " . $scheduleItem->getCurrentTimeDuration();
-    
-    
-    
+        echo "<BR>duration " . $scheduleItem->getCurrentTimeDuration();
+
     }
 
    public function chatHistoryTest(ChatSupportHistory $chatSupportHistory) 
