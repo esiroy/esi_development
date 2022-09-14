@@ -1429,7 +1429,28 @@ Vue.component("chatlogs-component", {
     return {};
   },
   methods: {
+    prependHTTPS(url) {
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+            return url;
+        } else {
 
+            return url;
+        }
+    },
+    formatMessage(message) 
+    {
+       return this.urlify(message);
+    },
+    urlify(text) {
+
+        var exp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig;
+        let link = text.replace(exp, (url) => {
+            let link = this.prependHTTPS(url);
+            return "<a href='"+ link +"' target='_blank' >"+ link +"</a>";
+        });
+        return link;
+    },
   },
   template:
     `<div>
@@ -1449,7 +1470,7 @@ Vue.component("chatlogs-component", {
                     </div>
 
                     <div style="float:right">
-                    <div class="chatsupport-message" v-html="chatlog.sender.message"></div>
+                    <div class="chatsupport-message" v-html="formatMessage(chatlog.sender.message)"></div>
                     </div>
                 </div>
             </div>
@@ -1466,7 +1487,7 @@ Vue.component("chatlogs-component", {
                             :time="chatlog.time">
                         </member-info-component>
                     </div>
-                    <div class="member-message" v-html="chatlog.sender.message"></div>
+                    <div class="member-message" v-html="formatMessage(chatlog.sender.message)"></div>
                 </div>
                 <div class="col-md-3">&nbsp;</div>
             </div>
