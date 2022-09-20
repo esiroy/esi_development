@@ -1,14 +1,18 @@
 var fs = require('fs');
 var https = require('https');
-
 var express = require('express');
 var app = express();
-
 var options = {
     key: fs.readFileSync('./file.pem'),
     cert: fs.readFileSync('./file.crt')
 };
 var serverPort = 30001;
+
+const { v4: uuidv4 } = require('uuid');
+const { ExpressPeerServer } = require('peer')
+const peer = ExpressPeerServer(server, {
+    debug: true
+});
 
 var server = https.createServer(options, app);
 //var io = require('socket.io')(server);
@@ -16,7 +20,8 @@ var io = require('socket.io')(server, { wsEngine: 'ws' });
 
 app.get('/', function(req, res) {
     //res.sendFile(__dirname + '/public/index.html');
-    res.send('<h1>Chat server</h1>');
+    res.render('index', { RoomId: req.params.room });
+    //res.send('<h1>Chat server</h1>');
 });
 
 server.listen(serverPort, function() {
@@ -29,6 +34,15 @@ var users = [];
 
 io.on('connection', function(socket) {
     //console.log("user connected, with id " + socket.id)
+
+    socket.on('newUser', (id, room) => {
+        socket.join(room);
+        socket.to(room).broadcast.emit('userJoined', id);
+        socket.on('disconnect', () => {
+            socket.to(room).broadcast.emit('userDisconnect', id);
+        })
+    })
+
 
     socket.on("SEND_USER_MESSAGE", function(data) {
 
