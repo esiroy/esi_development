@@ -53,11 +53,6 @@ io.on('connection', function(socket) {
     });
 
 
-
-
-
-
-
     socket.on("SEND_DRAWING", (data) => {
         io.to('' + data.channelid + '').emit('UPDATE_DRAWING', data);
     });
