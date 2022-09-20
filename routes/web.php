@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Route;
 
 
 
+Route::view('webRTC', 'modules/webRTC.index');
+
+
 
 
 Route::get('test', 'dummyController@index');
