@@ -35,7 +35,6 @@ var users = [];
 io.on('connection', function(socket) {
     //console.log("user connected, with id " + socket.id)
 
-<<<<<<< HEAD
     socket.on('newUser', (id, room) => {
         socket.join(room);
         socket.to(room).broadcast.emit('userJoined', id);
@@ -45,56 +44,6 @@ io.on('connection', function(socket) {
     })
 
 
-=======
-
-
-
-    /*****************************************/
-    /*  CANVAS SERVER
-    /*****************************************/
-
-    socket.on("CALL_USER", (data) => {
-        //io.to('' + data.channelid + '').emit("CALL_USER", data);
-        io.sockets.emit("CALL_USER", data);
-    });
-
-    socket.on("ACCEPT_CALL", (data) => {
-        io.sockets.emit("ACCEPT_CALL", data);
-    });
-
-
-
-    socket.on("START_SLIDER", (data) => {
-        io.sockets.emit("START_SLIDER", data);
-    });
-
-
-    socket.on("DROP_CALL", (data) => {
-        io.sockets.emit("DROP_CALL", data);
-    });
-
-
-    socket.on("SEND_DRAWING", (data) => {
-        io.to('' + data.channelid + '').emit('UPDATE_DRAWING', data);
-    });
-
-    socket.on("GOTO_SLIDE", (data) => {
-        io.to('' + data.channelid + '').emit("GOTO_SLIDE", data);
-    });
-
-
-    socket.on("SEND_SLIDE_PRIVATE_MESSAGE", (data) => {
-        io.to('' + data.channelid + '').emit("SEND_SLIDE_PRIVATE_MESSAGE", data);
-    });
-
-
-
-
-    /*****************************************/
-    /*  ADMIN CHAT SUPPORT MESSENGER 
-    /*****************************************/
-
->>>>>>> 51d0d34ec8c4319bfb45453bc999936983f050c0
     socket.on("SEND_USER_MESSAGE", function(data) {
 
         console.log("send user ", data.recipient.username);
