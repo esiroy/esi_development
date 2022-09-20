@@ -48,7 +48,7 @@
       var roomID = "<%= RoomId %>"
     </script>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
-    <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" crossorigin="anonymous" defer></script>
+    <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" defer></script>
     <script src="https://rtcserver.esuccess-inc.com:40002/index.js" charset="utf-8" defer></script>
   </head>
   <body>
