@@ -1,81 +1,90 @@
-var fs = require('fs');
-var https = require('https');
-var express = require('express');
-var app = express();
-var options = {
-    key: fs.readFileSync('./file.pem'),
-    cert: fs.readFileSync('./file.crt')
-};
-var serverPort = 40001;
+var serverPort = 50001;
 
-const { v4: uuidv4 } = require('uuid');
-const { ExpressPeerServer } = require('peer')
-const peer = ExpressPeerServer(server, {
-    debug: true
+
+const express = require('express');
+const app = express();
+
+const server = app.listen(serverPort, function() {
+    console.log('server running on port ' + serverPort);
 });
 
-var server = https.createServer(options, app);
-//var io = require('socket.io')(server);
-var io = require('socket.io')(server, { wsEngine: 'ws' });
+const io = require('socket.io')(server);
 
-app.use('/peerjs', peer);
-app.set('view engine', 'ejs')
-app.use(express.static('public'))
+
 
 app.get('/', function(req, res) {
-    //res.sendFile(__dirname + '/public/index.html');
-    res.render('index', { RoomId: req.params.room });
-    //res.send('<h1>Chat server</h1>');
+
+    res.send('<h1>Chat server</h1>');
 });
-
-server.listen(serverPort, function() {
-    console.log('server up and running at %s port', serverPort);
-});
-
-
 
 var users = [];
 
+
+
 io.on('connection', function(socket) {
-    //console.log("user connected, with id " + socket.id)
 
-    socket.on('newUser', (id, room) => {
-        socket.join(room);
-        socket.to(room).broadcast.emit('userJoined', id);
-        socket.on('disconnect', () => {
-            socket.to(room).broadcast.emit('userDisconnect', id);
-        })
-    })
+    console.log("user connected, with id " + socket.id)
 
+
+
+
+    /*****************************************/
+    /*  CANVAS SERVER
+    /*****************************************/
+
+    socket.on("CALL_USER", (data) => {
+        //io.to('' + data.channelid + '').emit("CALL_USER", data);
+        io.sockets.emit("CALL_USER", data);
+    });
+
+    socket.on("ACCEPT_CALL", (data) => {
+        io.sockets.emit("ACCEPT_CALL", data);
+    });
+
+
+
+    socket.on("START_SLIDER", (data) => {
+        io.sockets.emit("START_SLIDER", data);
+    });
+
+
+    socket.on("DROP_CALL", (data) => {
+        io.sockets.emit("DROP_CALL", data);
+    });
+
+
+    socket.on("SEND_DRAWING", (data) => {
+        io.to('' + data.channelid + '').emit('UPDATE_DRAWING', data);
+    });
+
+    socket.on("GOTO_SLIDE", (data) => {
+        io.to('' + data.channelid + '').emit("GOTO_SLIDE", data);
+    });
+
+
+    socket.on("SEND_SLIDE_PRIVATE_MESSAGE", (data) => {
+        io.to('' + data.channelid + '').emit("SEND_SLIDE_PRIVATE_MESSAGE", data);
+    });
+
+
+
+
+    /*****************************************/
+    /*  ADMIN CHAT SUPPORT MESSENGER 
+    /*****************************************/
 
     socket.on("SEND_USER_MESSAGE", function(data) {
-
-        console.log("send user ", data.recipient.username);
-
-        //io.sockets.connected[data.id].emit("PRIVATE_MESSAGE", data);
-        /*
-        for (var i in users) {
-
-            if (data.recipient.username == users[i].username) 
-            {              
-                io.sockets.connected[users[i].id].emit("PRIVATE_MESSAGE", data);
-                //break;
-            }            
-        }*/
-
         io.sockets.emit("PRIVATE_MESSAGE", data);
-
-        //this.handleUserPrivateMsg(data);
     });
 
     socket.on("SEND_OWNER_MESSAGE", function(data) {
-
         io.emit('OWNER_MESSAGE', data);
         //this.handleUserPrivateMsg(data);
     });
 
     /*Register connected user*/
     socket.on('REGISTER', function(user) {
+
         console.log("user connected, with id " + socket.id + " " + user.username)
 
         //remove if ever there is same userid
@@ -90,12 +99,14 @@ io.on('connection', function(socket) {
         socket.join(user.channelid);
 
 
+
         users = users.filter(function(element) {
             return element !== undefined;
         });
 
         users.push({
             'id': socket.id,
+            'channelid': user.channelid,
             'userid': user.userid,
             'username': user.username,
             'user_image': user.user_image,
