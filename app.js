@@ -18,6 +18,10 @@ var server = https.createServer(options, app);
 //var io = require('socket.io')(server);
 var io = require('socket.io')(server, { wsEngine: 'ws' });
 
+app.use('/peerjs', peer);
+app.set('view engine', 'ejs')
+app.use(express.static('public'))
+
 app.get('/', function(req, res) {
     //res.sendFile(__dirname + '/public/index.html');
     res.render('index', { RoomId: req.params.room });
