@@ -519,9 +519,9 @@ export default {
                 transports: ['websocket']
             })
 
-            const peer = new Peer();
+            const peer = new Peer(1);
             let myVideoStream;
-            let myId;
+            
 
           
             var myvideo = document.createElement('video');
@@ -530,12 +530,12 @@ export default {
             const peerConnections = {}
 
             navigator.mediaDevices.getUserMedia({
-               
                 audio: true,
                 video: { width: 100, height: 100 }  
             }).then((stream) => {
 
                 myVideoStream = stream;
+
                 this.addVideo(myvideo, stream);
 
                 peer.on('call', call => 
@@ -561,7 +561,8 @@ export default {
 
 
             peer.on('open', (id) => {
-                myId = id;
+
+
                 //this.videoSocket.emit("newUser", id, roomID);
 
                 this.videoSocket.emit("newUser", id, this.channelid);
@@ -574,7 +575,7 @@ export default {
             });
 
             this.videoSocket.on('userJoined', id => {
-                console.log("new user joined")
+                console.log("new user joined", myVideoStream)
                 const call = peer.call(id, myVideoStream);
                 const vid = document.createElement('video');
                 call.on('error', (err) => {
