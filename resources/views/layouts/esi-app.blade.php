@@ -304,6 +304,8 @@
 
     </div>
 
+     <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" defer></script>
+
     <script type="text/javascript">
         window.addEventListener('load', function () 
         {            

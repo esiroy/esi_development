@@ -272,15 +272,20 @@ export default {
     data() {
         return {
 
+
             tutor_chat_message: "",
             privateMessage: "",
 
             chatlogs: [],
 
             socket: null,
-            videoSocket: null,
 
-            peer: null,
+
+            videoSocket: null,
+            myVideoStream: null,
+            
+
+            
 
             //loader
             isLoading: false,
@@ -353,7 +358,14 @@ export default {
     {
         this.socket = io.connect(this.$props.canvas_server);
 
+
+
+
+
         this.createPeerConnection();
+
+
+       
 
         //register as user
         let user = {
@@ -515,14 +527,10 @@ export default {
 
         createPeerConnection() {
 
-            this.videoSocket = io("https://rtcserver.esuccess-inc.com:40002", {
-                transports: ['websocket']
-            })
+            this.peer  = new Peer();
 
-            const peer = new Peer(1);
-            let myVideoStream;
-            
-
+            this.videoSocket = io.connect('https://rtcserver.esuccess-inc.com:40002', {});
+           
           
             var myvideo = document.createElement('video');
             myvideo.muted = true;
@@ -534,14 +542,15 @@ export default {
                 video: { width: 100, height: 100 }  
             }).then((stream) => {
 
-                myVideoStream = stream;
+                this.myVideoStream = stream;
 
                 this.addVideo(myvideo, stream);
 
-                peer.on('call', call => 
+                this.peer.on('call', call => 
                 {
                     call.answer(stream);
                     const vid = document.createElement('video');
+
                     call.on('stream', userStream => {
                         this.addVideo(vid, userStream);
                     })
@@ -560,7 +569,7 @@ export default {
             })
 
 
-            peer.on('open', (id) => {
+            this.peer.on('open', (id) => {
 
 
                 //this.videoSocket.emit("newUser", id, roomID);
@@ -570,25 +579,34 @@ export default {
                 
             })
 
-            peer.on('error', (err) => {
+            this.peer.on('error', (err) => {
                 alert(err.type);
             });
 
             this.videoSocket.on('userJoined', id => {
-                console.log("new user joined", myVideoStream)
-                const call = peer.call(id, myVideoStream);
+
+          
+
+                console.log("new user joined", this.myVideoStream)
+
+
+                const call = peer.call(id, this.myVideoStream);
                 const vid = document.createElement('video');
+
                 call.on('error', (err) => {
                     alert(err);
-                })
+                });
+
                 call.on('stream', userStream => {
                     this.addVideo(vid, userStream);
-                })
+                });
+
                 call.on('close', () => {
                     vid.remove();
                     console.log("user disconect")
                 })
                 peerConnections[id] = call;
+
             });
 
             this.videoSocket.on('userDisconnect', id => {
