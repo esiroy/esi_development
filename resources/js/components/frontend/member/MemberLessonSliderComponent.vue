@@ -2,15 +2,24 @@
 
     <div class="container-fluid">
 
-
         {{ "channel ID: " + channelid }}
+
+
+        <div id="videoDiv">
+            :D
+        </div>
+
+
         <div id="editor_content" class="row my-2">
 
-
-
-            <div class="col-md-8 col-sm-12 col-xs-12">
+            <div class="col-md-6 col-sm-12 col-xs-12">
 
                 <div class="left-container mb-2">
+
+                    <div v-show="this.$props.isBroadcaster == true">
+                        {{ "type: broadcaster" }}
+                    </div>
+
 
                     <div class="tool-container" v-show="this.$props.isBroadcaster == true">
                         <!-- [START] TOOL WRAPPER -->
@@ -139,7 +148,7 @@
             </div>
 
 
-            <div class="col-md-4 col-sm-12 col-xs-12">
+            <div class="col-md-6 col-sm-12 col-xs-12">
 
                 <div class="right-container">
 
@@ -214,8 +223,11 @@
 </template>
 
 <script>
+
 import { fabric } from "fabric";
 import io from "socket.io-client";
+
+import { Peer } from "peerjs";
 
 export default {
     name: "lessonSliderComponent",
@@ -266,6 +278,9 @@ export default {
             chatlogs: [],
 
             socket: null,
+            videoSocket: null,
+
+            peer: null,
 
             //loader
             isLoading: false,
@@ -338,8 +353,7 @@ export default {
     {
         this.socket = io.connect(this.$props.canvas_server);
 
-        console.log(this.channelid, this.reservation);
-        
+        this.createPeerConnection();
 
         //register as user
         let user = {
@@ -415,28 +429,17 @@ export default {
 
 
 
-        this.socket.on("GOTO_SLIDE", (data) =>  
-        {   
-            //if (this.$props.isBroadcaster == true) {
-
-                console.log(data)            
-                
-                this.viewerCurrentSlide = data.num
-                 this.currentSlide = data.num
-
-                this.goToSlide(data.num);
-            //}
+        this.socket.on("GOTO_SLIDE", (data) =>  {   
+            this.viewerCurrentSlide = data.num
+            this.currentSlide = data.num
+            this.goToSlide(data.num);
         });
 
-
-
-        this.socket.on('UPDATE_DRAWING', (response) => {           
-
-            console.log(this.users);
-
+        this.socket.on('UPDATE_DRAWING', (response) => {
             if (this.$props.isBroadcaster == false) {
+            
                 console.log("updating drawing " + this.$props.isBroadcaster )
-                this.updateCanvas(this.canvas[this.currentSlide], response.canvasData)  
+                this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);
             } 
         });
 
@@ -510,6 +513,99 @@ export default {
     },
     methods: {
 
+        createPeerConnection() {
+
+            this.videoSocket = io("https://rtcserver.esuccess-inc.com:40002", {
+                transports: ['websocket']
+            })
+
+            const peer = new Peer();
+            let myVideoStream;
+            let myId;
+
+          
+            var myvideo = document.createElement('video');
+            myvideo.muted = true;
+
+            const peerConnections = {}
+
+            navigator.mediaDevices.getUserMedia({
+               
+                audio: true,
+                video: { width: 100, height: 100 }  
+            }).then((stream) => {
+
+                myVideoStream = stream;
+                this.addVideo(myvideo, stream);
+
+                peer.on('call', call => 
+                {
+                    call.answer(stream);
+                    const vid = document.createElement('video');
+                    call.on('stream', userStream => {
+                        this.addVideo(vid, userStream);
+                    })
+                    call.on('error', (err) => {
+                        alert(err)
+                    })
+                    call.on("close", () => {
+                        console.log(vid);
+                        vid.remove();
+                    })
+                    peerConnections[call.peer] = call;
+                })
+                
+            }).catch(err => {
+                alert(err.message)
+            })
+
+
+            peer.on('open', (id) => {
+                myId = id;
+                //this.videoSocket.emit("newUser", id, roomID);
+
+                this.videoSocket.emit("newUser", id, this.channelid);
+
+                
+            })
+
+            peer.on('error', (err) => {
+                alert(err.type);
+            });
+
+            this.videoSocket.on('userJoined', id => {
+                console.log("new user joined")
+                const call = peer.call(id, myVideoStream);
+                const vid = document.createElement('video');
+                call.on('error', (err) => {
+                    alert(err);
+                })
+                call.on('stream', userStream => {
+                    this.addVideo(vid, userStream);
+                })
+                call.on('close', () => {
+                    vid.remove();
+                    console.log("user disconect")
+                })
+                peerConnections[id] = call;
+            });
+
+            this.videoSocket.on('userDisconnect', id => {
+                if (peerConnections[id]) {
+                    peerConnections[id].close();
+                }
+            })
+        },
+        addVideo(video, stream) 
+        {
+            let videoGrid = document.getElementById('videoDiv')
+
+            video.srcObject = stream;
+            video.addEventListener('loadedmetadata', () => {
+                video.play()
+            })
+            videoGrid.append(video);
+        },
         updateUserList: function(users) 
         {
             this.users = users;      
@@ -682,26 +778,22 @@ export default {
 
         updateCanvas(canvas, data)
         {
-            canvas.loadFromJSON(data, this.renderCanvas, (o, object) =>{
-                
+            canvas.loadFromJSON(data, this.disableCanvas, (o, object) =>
+            {
+                this.deactivateSelector()                
             });
         },
 
-        renderCanvas() {            
-
-            console.log(this.currentSlide);
-
-            /*
+        disableCanvas() {
             this.canvas[this.currentSlide].forEachObject(function(o) {
                 o.selectable = false;
                 o.defaultCursor = 'not-allowed';
+                o.hoverCursor = "not-allowed";
             });
-            this.canvas[this.currentSlide].discardActiveObject();           
-
+            this.canvas[this.currentSlide].discardActiveObject();   
             this.canvas[this.currentSlide].requestRenderAll();
-            */
-
-            this.canvas[this.currentSlide].renderAll();
+            
+           //this.canvas[this.currentSlide].renderAll();
         },
         canvasSendJSON(canvasID, canvasData) 
         {          
@@ -756,7 +848,7 @@ export default {
             this.setPreviewColor( this.brushColor )
             this.autoSelectTool();
 
-            this.canvas[this.currentSlide].getActiveObject().set({fill: this.brushColor});
+            //this.canvas[this.currentSlide].getActiveObject().set({fill: this.brushColor});
         },
         
         startSlide() {
@@ -1323,6 +1415,17 @@ export default {
 };
 </script>
 <style>
+
+
+#videoDiv{
+    display: grid;
+    grid-gap: 10px;
+    height:80%;
+    position: relative;
+    grid-template-columns: repeat(auto-fill, 100px);
+    grid-auto-rows: 100px;
+}
+
 
 .upper-canvas {
     z-index: 1;
