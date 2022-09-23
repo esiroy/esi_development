@@ -229,6 +229,8 @@ import io from "socket.io-client";
 
 import { Peer } from "peerjs";
 
+
+
 export default {
     name: "lessonSliderComponent",
     props: {
@@ -281,7 +283,7 @@ export default {
             socket: null,
 
 
-            videoSocket: null,
+            videosocket: null,
             myVideoStream: null,
             
 
@@ -358,14 +360,14 @@ export default {
     {
         this.socket = io.connect(this.$props.canvas_server);
 
+        this.videosocket = io.connect('https://rtcserver.esuccess-inc.com:40002/test', {
+            transports: ['websocket', 'polling'],
+        });
+
+        this.peer = new Peer();
 
 
-
-
-        this.createPeerConnection();
-
-
-       
+        
 
         //register as user
         let user = {
@@ -527,14 +529,40 @@ export default {
 
         createPeerConnection() {
 
-           
-
-            this.videoSocket = io.connect('https://rtcserver.esuccess-inc.com:40002', {
-                transports: ['websocket', 'polling'],
+        
+            this.peer.on('open', (id) => {             
+                this.videosocket.emit("newUser", "room", "1");
             });
 
-            this.peer = new Peer();
-          
+
+             
+
+
+            this.videosocket.on('userJoined', id => {
+
+                console.log("new user joined", this.myVideoStream)
+
+
+                const call = this.peer.call(id, this.myVideoStream);
+                const vid = document.createElement('video');
+
+                call.on('error', (err) => {
+                    alert(err);
+                });
+
+                call.on('stream', userStream => {
+                    this.addVideo(vid, userStream);
+                });
+
+                call.on('close', () => {
+                    vid.remove();
+                    console.log("user disconect")
+                })
+                peerConnections[id] = call;
+
+            });
+
+
             var myvideo = document.createElement('video');
             myvideo.muted = true;
 
@@ -542,15 +570,19 @@ export default {
 
             navigator.mediaDevices.getUserMedia({
                 audio: true,
-                video: { width: 100, height: 100 }  
+                video: { width: 250, height: 250 }  
             }).then((stream) => {
 
                 this.myVideoStream = stream;
 
-                this.addVideo(myvideo, stream);
+                this.addVideo(myvideo, stream);               
+
+
+              
 
                 this.peer.on('call', call => 
                 {
+
                     call.answer(stream);
                     const vid = document.createElement('video');
 
@@ -572,47 +604,15 @@ export default {
             })
 
 
-            this.peer.on('open', (id) => {
 
-
-                //this.videoSocket.emit("newUser", id, roomID);
-
-                this.videoSocket.emit("newUser", id, this.channelid);
-
-                
-            })
 
             this.peer.on('error', (err) => {
                 alert(err.type);
             });
 
-            this.videoSocket.on('userJoined', id => {
+         
 
-          
-
-                console.log("new user joined", this.myVideoStream)
-
-
-                const call = peer.call(id, this.myVideoStream);
-                const vid = document.createElement('video');
-
-                call.on('error', (err) => {
-                    alert(err);
-                });
-
-                call.on('stream', userStream => {
-                    this.addVideo(vid, userStream);
-                });
-
-                call.on('close', () => {
-                    vid.remove();
-                    console.log("user disconect")
-                })
-                peerConnections[id] = call;
-
-            });
-
-            this.videoSocket.on('userDisconnect', id => {
+            this.videosocket.on('userDisconnect', id => {
                 if (peerConnections[id]) {
                     peerConnections[id].close();
                 }
@@ -620,10 +620,16 @@ export default {
         },
         addVideo(video, stream) 
         {
+
+           console.log("adding videoDiv grid ")
+
             let videoGrid = document.getElementById('videoDiv')
 
             video.srcObject = stream;
             video.addEventListener('loadedmetadata', () => {
+
+                console.log("playing video");
+
                 video.play()
             })
             videoGrid.append(video);
@@ -697,6 +703,8 @@ export default {
                             this.userSlideAccess();
 
                             console.log("called user slide access")
+
+                            this.createPeerConnection();
                         }
                         
                     }
