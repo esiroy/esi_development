@@ -533,13 +533,7 @@ export default {
 
           
 
-            this.peer = new Peer({
-                config: {'iceServers': [
-                    { url: 'https://rtcserver.esuccess-inc.com' },
-                ]},
-                port: 40002,
-                path: '/peerjs'
-            });
+            this.peer = new Peer();
 
 
 
