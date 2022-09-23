@@ -165,6 +165,12 @@
 
 
                     <div class="chat-container mb-2">
+
+                            <button type="button"  @click="test()" class="btn btn-sm btn-primary d-inline-block">
+                                test
+                            </button>
+
+
                         <b-card-group>
 
                             <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
@@ -226,6 +232,7 @@
 
 import { fabric } from "fabric";
 import io from "socket.io-client";
+import io2 from "socket.io-client";
 
 import { Peer } from "peerjs";
 
@@ -360,12 +367,36 @@ export default {
     {
         this.socket = io.connect(this.$props.canvas_server);
 
-        this.videosocket = io.connect('https://rtcserver.esuccess-inc.com:40002/test', {
-            transports: ['websocket', 'polling'],
-        });
+        this.videosocket = io2.connect('https://rtcserver.esuccess-inc.com:40002');
 
         this.peer = new Peer();
 
+        this.peer.on('open', (id) => {             
+            this.videosocket.emit("newUser", id, "1");
+        });
+
+        this.videosocket.on('userJoined', id => {
+
+            console.log("new user joined", this.myVideoStream)
+
+            const call = this.peer.call(id, this.myVideoStream);
+            const vid = document.createElement('video');
+
+            call.on('error', (err) => {
+                alert(err);
+            });
+
+            call.on('stream', userStream => {
+                this.addVideo(vid, userStream);
+            });
+
+            call.on('close', () => {
+                vid.remove();
+                console.log("user disconect")
+            })
+            peerConnections[id] = call;
+
+        });
 
         
 
@@ -527,41 +558,12 @@ export default {
     },
     methods: {
 
+        test() {
+            console.log("testing")
+            this.videosocket.emit("newUser", "the-room", "1");
+        },
         createPeerConnection() {
-
-        
-            this.peer.on('open', (id) => {             
-                this.videosocket.emit("newUser", "room", "1");
-            });
-
-
-             
-
-
-            this.videosocket.on('userJoined', id => {
-
-                console.log("new user joined", this.myVideoStream)
-
-
-                const call = this.peer.call(id, this.myVideoStream);
-                const vid = document.createElement('video');
-
-                call.on('error', (err) => {
-                    alert(err);
-                });
-
-                call.on('stream', userStream => {
-                    this.addVideo(vid, userStream);
-                });
-
-                call.on('close', () => {
-                    vid.remove();
-                    console.log("user disconect")
-                })
-                peerConnections[id] = call;
-
-            });
-
+      
 
             var myvideo = document.createElement('video');
             myvideo.muted = true;
@@ -574,11 +576,7 @@ export default {
             }).then((stream) => {
 
                 this.myVideoStream = stream;
-
                 this.addVideo(myvideo, stream);               
-
-
-              
 
                 this.peer.on('call', call => 
                 {
@@ -596,7 +594,7 @@ export default {
                         console.log(vid);
                         vid.remove();
                     })
-                    peerConnections[call.peer] = call;
+                    peerConnections[call.this.peer] = call;
                 })
                 
             }).catch(err => {
