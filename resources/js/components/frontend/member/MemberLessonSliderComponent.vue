@@ -527,10 +527,22 @@ export default {
 
         createPeerConnection() {
 
-            this.peer  = new Peer();
+           
 
             this.videoSocket = io.connect('https://rtcserver.esuccess-inc.com:40002', {});
-           
+
+          
+
+            this.peer = new Peer({
+                config: {'iceServers': [
+                    { url: 'https://rtcserver.esuccess-inc.com' },
+                ]},
+                port: 40002,
+                path: '/peerjs'
+            });
+
+
+
           
             var myvideo = document.createElement('video');
             myvideo.muted = true;
