@@ -529,14 +529,11 @@ export default {
 
            
 
-            this.videoSocket = io.connect('https://rtcserver.esuccess-inc.com:40002', {});
-
-          
+            this.videoSocket = io.connect('https://rtcserver.esuccess-inc.com:40002', {
+                transports: ['websocket', 'polling'],
+            });
 
             this.peer = new Peer();
-
-
-
           
             var myvideo = document.createElement('video');
             myvideo.muted = true;
@@ -571,7 +568,7 @@ export default {
                 })
                 
             }).catch(err => {
-                alert(err.message)
+                alert("stream " + err.message)
             })
 
 
