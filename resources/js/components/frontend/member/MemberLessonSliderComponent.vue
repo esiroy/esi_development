@@ -5,11 +5,6 @@
         {{ "channel ID: " + channelid }}
 
 
-        <div id="videoDiv">
-            :D
-        </div>
-
-
         <div id="editor_content" class="row my-2">
 
             <div class="col-md-6 col-sm-12 col-xs-12">
@@ -166,9 +161,9 @@
 
                     <div class="chat-container mb-2">
 
-                            <button type="button"  @click="test()" class="btn btn-sm btn-primary d-inline-block">
-                                test
-                            </button>
+                        
+                      
+                        
 
 
                         <b-card-group>
@@ -367,38 +362,10 @@ export default {
     {
         this.socket = io.connect(this.$props.canvas_server);
 
-        this.videosocket = io2.connect('https://rtcserver.esuccess-inc.com:40002');
-
-        this.peer = new Peer();
-
-        this.peer.on('open', (id) => {             
-            this.videosocket.emit("newUser", id, "1");
-        });
-
-        this.videosocket.on('userJoined', id => {
-
-            console.log("new user joined", this.myVideoStream)
-
-            const call = this.peer.call(id, this.myVideoStream);
-            const vid = document.createElement('video');
-
-            call.on('error', (err) => {
-                alert(err);
-            });
-
-            call.on('stream', userStream => {
-                this.addVideo(vid, userStream);
-            });
-
-            call.on('close', () => {
-                vid.remove();
-                console.log("user disconect")
-            })
-            peerConnections[id] = call;
-
-        });
 
         
+        //this.createPeerConnection();
+
 
         //register as user
         let user = {
@@ -565,6 +532,45 @@ export default {
         createPeerConnection() {
       
 
+        this.videosocket = io2.connect('https://rtcserver.esuccess-inc.com:40002', {
+            allowEIO3: false,
+            cors: {
+                origin: "*",
+                methods: ["GET", "POST"],
+                allowedHeaders: ["my-custom-header"],
+                credentials: true
+            }
+        });
+
+        this.peer = new Peer();
+
+        this.peer.on('open', (id) => {             
+            this.videosocket.emit("newUser", id, "1");
+        });
+
+        this.videosocket.on('userJoined', id => {
+
+            console.log("new user joined", this.myVideoStream)
+
+            const call = this.peer.call(id, this.myVideoStream);
+            const vid = document.createElement('video');
+
+            call.on('error', (err) => {
+                alert(err);
+            });
+
+            call.on('stream', userStream => {
+                this.addVideo(vid, userStream);
+            });
+
+            call.on('close', () => {
+                vid.remove();
+                console.log("user disconect")
+            })
+            peerConnections[id] = call;
+
+        });
+
             var myvideo = document.createElement('video');
             myvideo.muted = true;
 
@@ -702,7 +708,7 @@ export default {
 
                             console.log("called user slide access")
 
-                            this.createPeerConnection();
+                           
                         }
                         
                     }
