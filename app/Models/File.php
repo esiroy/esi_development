@@ -22,6 +22,7 @@ class File extends Model
         'path',
         'type',
         'privacy',
+        'order_id'
     ];
 
     /**

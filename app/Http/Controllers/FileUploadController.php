@@ -30,7 +30,6 @@ class FileUploadController extends Controller
 
     public function upload(Request $request) 
     {
-
         abort_if(Gate::denies('filemanager_upload'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         if ($files = $request->file('file')) {
@@ -59,6 +58,15 @@ class FileUploadController extends Controller
                 //create public path -> public/storage/uploads/{folder_id}
                 $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
 
+
+                //get the last order-id of the folder
+                $latestAlbum = File::where('folder_id', $request->folder_id)->latest()->first();
+
+                $nextOrderID = ($latestAlbum)? $latestAlbum->order_id + 1 : 1;
+                    
+
+                
+
                 // Save to file
                 $file = File::create([
                     'user_id'       => Auth::user()->id,
@@ -67,6 +75,7 @@ class FileUploadController extends Controller
                     'upload_name'   => $request->file('file')->getFileName(), //generated filename
                     'size'          => $request->file('file')->getSize(),
                     'path'          => $public_file_path,
+                    'order_id'      => $nextOrderID,
                 ]);
 
                 //Output JSON reply
@@ -79,7 +88,7 @@ class FileUploadController extends Controller
                     "upload_name"   => $request->file('file')->getFileName(),  //generated filename
                     'size'          => $request->file('file')->getSize(),
                     "path"          => $path,
-                    "owner"         => Auth::user()
+                    //"owner"         => Auth::user()
                 ]);
 
             } else {

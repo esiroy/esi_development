@@ -4,12 +4,31 @@
 		<!-- CONTTENT -->
 		<div class="col-sm-12 col-md-12">
 
+            <!-- DISPLAY FOLDER DETAILS -->
+            <div class="card mb-4" v-if="!this.data.children && !can_user_upload">
+                <div class="card-body text-center" v-if="this.folderLoading == false"> 
+                   No Shared folders found
+                </div>
+                <div class="card-body text-center py-4" v-else>
+                    <div class="spinner-grow text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-secondary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                    <div class="spinner-grow text-success" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            
             <!--START - FILES -->
 			<div class="container p-0 mb-4">
                 <h5 class="mb-0 pb-0">{{ this.displayFolderName }}</h5>
                 <div class="small mb-2">{{ this.displayFolderDesc }}</div>
 
-                <folder-files-component
+                <folder-files-preview-component
                     ref="folderFilesComponent"
                     :public="this.public"
                     :user="this.user"

@@ -23,6 +23,8 @@ Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
 /*File Controller*/
 Route::resource('file', 'FileController');
 
+/*Thumbnail Prevew */
+Route::resource('preview', 'PreviewController');
 
 /* Folder Manager Controllers */
 Route::resource('uploader', 'FolderCreatorController');

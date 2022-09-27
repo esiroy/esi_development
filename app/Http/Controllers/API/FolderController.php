@@ -119,7 +119,8 @@ class FolderController extends Controller
         //add shared
         foreach ($files as $key => $file) {
             $files[$key]['sharedTo'] = $file->shared; 
-            $files[$key]['owner']    = User::find($file->user_id);
+            //$files[$key]['owner']    = User::find($file->user_id);
+             $files[$key]['url']    = url($file->path);
         }
         
         return Response()->json([
