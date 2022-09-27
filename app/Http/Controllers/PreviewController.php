@@ -8,10 +8,24 @@ use Image;
 
 class PreviewController extends Controller
 {
-    public function show($filePath, Request $request ) 
+    public function show(Request $request ) 
     {   
+    
+        $fileExt =   explode(".", $request->get('url'));
 
-        return Image::make($request->get('url'))->resize(null, 120, function ($constraint) { $constraint->aspectRatio(); })->response('png');
+        if ($fileExt[1] == "pdf" ) 
+        {
+             return Image::make('https://alltopstartups.com/wp-content/uploads/2020/01/What-Is-a-PDF-File-And-What-Are-PDFs-For.png')->resize(null, 120, function ($constraint) { $constraint->aspectRatio(); })->response();  
+
+        } else if ($fileExt[1] == "mp3" ) {
+
+            return Image::make('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-7oY6pvjnbuVD_03aCdjJJtTn7o5PxfOFmHe8cHHf7g')->resize(null, 120, function ($constraint) { $constraint->aspectRatio(); })->response();  
+
+        } else {
+            return Image::make($request->get('url'))->resize(null, 120, function ($constraint) { $constraint->aspectRatio(); })->response();        
+        }
+
+        
     }
 
 }
