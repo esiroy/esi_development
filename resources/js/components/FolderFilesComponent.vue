@@ -91,8 +91,8 @@
                       
                         <th>File Name</th>
                         <th>File Size</th>
-                         <th>Owner</th>
-                        <!--<th>Action</th>-->
+                        <!--<th>Owner</th>
+                        <th>Action</th>-->
                     </tr>
                 </thead>
                 <tbody>
@@ -110,12 +110,14 @@
                         <td>
                             <div class="filesize">{{ file.size | formatSize }}</div>
                         </td>
+
+                        <!--
                         <td>
                             <div class="owner">
                                 {{ file.owner.first_name }} {{ file.owner.last_name }}
                             </div> 
                         </td>
-                        <!--
+                       
                         <td>
                             <div class="dropdown">
                                 <button class="btn btn-secondary btn-sm dropdown-toggle "

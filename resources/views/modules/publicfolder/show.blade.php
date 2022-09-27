@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.public')
 @section('content')
 <div class="container">
     <div class="row">
         <div class="folder-container col-md-12">
-            <vue-tree-list-component 
+            <vue-no-tree-list-component 
                 ref="treeListComponent"
                 :public="{{ $public }}"
                 :public_viewer_id="{{ $public_viewer_id }}"
