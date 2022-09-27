@@ -1442,14 +1442,16 @@ Vue.component("chatlogs-component", {
     {
        return this.urlify(message);
     },
+    linkify(str) {
+       return str.replace(/((http(s)?(\:\/\/))?(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))(?!(.*a>)|(\'|\"))/g, '<a href="$1"  target="_blank" >$1</a>');    
+    },
     urlify(text) {
-
-        var exp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig;
-        let link = text.replace(exp, (url) => {
-            let link = this.prependHTTPS(url);
-            return "<a href='"+ link +"' target='_blank' >"+ link +"</a>";
+        var addHTTPsExp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig;   
+        let newString = text.replace(addHTTPsExp, (url) => {
+           let newLink = this.prependHTTPS(url);
+           return newLink;
         });
-        return link;
+        return  this.linkify(newString);
     },
   },
   template:
