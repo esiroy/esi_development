@@ -158,6 +158,7 @@
                             <img :src="baseURL('/preview/show?url='+file.path)" class="img-responsive">
                         </a>
                     </div>
+                    <div class="filename text-secondary text-center" style="font-size:10px"> {{ file.file_name }}</div>
                     <!--<div class="filesize">{{ file.size | formatSize }}</div>-->
                 </div>
 
