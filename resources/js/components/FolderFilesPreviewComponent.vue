@@ -1,29 +1,8 @@
 <template>
    
-    <div class="container">
-     
-        <div class="card-body text-center py-4" v-show="loading == true">
-            <div class="spinner-grow text-primary" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-secondary" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-            <div class="spinner-grow text-success" role="status">
-                <span class="sr-only">Loading...</span>
-            </div>
-        </div>
-       
+    <div class="files-wrapper">
 
-            
-        <div class="card" v-if="files.length == 0 && loading == false"> 
-            <div class="card-body text-center py-4">
-                No files found on this folder
-            </div>
-        </div>
-
-        <div class="card" v-else-if="files.length >= 1">
-
+        <div class="card"  v-if="this.empty == false">
             <div class="shareFileContainer"> 
                 <b-modal
                     id="shareFile"
@@ -83,70 +62,7 @@
                 </b-modal>
             </div>
 
-
-            <div class="list" v-show="(this.view == 'list' || this.view == 'lists')">
-                <div class="card-header">Files</div>
-
-                <div class="card-body table-responsive">
-                    <table class="table table-borderless table-hover">
-                        <thead >
-                            <tr>
-                            
-                                <th>File Name</th>
-                                <th>File Size</th>
-                                <!--<th>Owner</th>
-                                <th>Action</th>-->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-if="!files.length">
-                                <td colspan="7" align="center">
-                                    <h4>No Files</h4>
-                                </td>
-                            </tr>
-                            <tr :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">
-                                <td>
-                                    <div class="filename">
-                                        <a :href="'/file/'+file.id" target="_blank">{{file.file_name}}</a>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="filesize">{{ file.size | formatSize }}</div>
-                                </td>
-
-                                <!--
-                                <td>
-                                    <div class="owner">
-                                        {{ file.owner.first_name }} {{ file.owner.last_name }}
-                                    </div> 
-                                </td>
-                            
-                                <td>
-                                    <div class="dropdown">
-                                        <button class="btn btn-secondary btn-sm dropdown-toggle "
-                                            type="button"
-                                            id="dropdownMenuButton"
-                                            data-toggle="dropdown"
-                                            aria-haspopup="true"
-                                            aria-expanded="false"
-                                        >Action</button>
-                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                            <a class="dropdown-item small" :href="'/file/'+file.id" target="_blank">View File</a>
-                                            <a class="dropdown-item small" :href="createLink(file)" :download="file.file_name">Download File</a>
-                                            <a class="dropdown-item small" v-on:click="copyFile(index, file)">Copy URL</a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item small" v-on:click="deleteFile(index, file.id)" v-if="(can_user_delete_uploads === true)">Delete</a>
-                                        </div>
-                                    </div>
-                                </td>
-                                -->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-
+            <!--ICON VIEW [DEFAULT PUBLIC VIEW]-->
             <div class="list-icon row px-2 py-2" v-show="(this.view == 'icon' || this.view == 'icons')"> 
                     
                 <div class="col-md-3 " :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">               
@@ -154,7 +70,7 @@
                     <div class="card mb-2 hover-hand" v-on:click="openURL(baseURL('/file/'+file.id))">
                         <div class="filename text-center ">
                             <a :href="'/file/'+file.id" target="_blank">
-                                <img :src="baseURL('/preview/show?url='+file.path)" class="img-responsive">
+                                <img @load="onImgLoad" :src="baseURL('/preview/show?url='+file.path)" class="img-responsive">
                             </a>
                         </div>
                         <div class="filename text-secondary text-center" style="font-size:10px"> {{ file.file_name }}</div>
@@ -162,7 +78,8 @@
                     </div>
 
                 </div>
-
+                
+                
             </div>
 
             <ul class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">
@@ -201,12 +118,13 @@
             </ul>
         </div>
 
+        <div class="card" v-if="this.empty == true">
+            
+            <span class="small p-3"> {{ "No Files Found" }} </span>
+
+        </div>
+
     </div>
-
-
-
-
-
 
 </template>
 
@@ -281,7 +199,9 @@ export default {
                 { name: 'Public', code: 'public' },
                 { name: 'Private', code: 'private' }
             ],
-            loading: true,
+            file_loading: true,
+            loadedImageCounter: 0,
+            empty: false,
             view: 'icon'
 		};
     },
@@ -295,6 +215,19 @@ export default {
         
             window.open(url);
 
+        },
+
+        onImgLoad() {
+        
+            this.loadedImageCounter ++;
+
+            if (this.files.length == 0) {
+                this.empty = true;
+            }
+
+            if (this.loadedImageCounter >= this.files.length ) {            
+                this.file_loading = false;                
+            } 
         },
         baseURL(filePath) {
         
@@ -478,18 +411,14 @@ export default {
 			}
 		}
 	},
+    created() {
+        console.log("created here");
+    },
 	mounted: function() {
 
 		this.$nextTick(function() {
 			this.files = this.folder_files;
-
-            this.loading = false;
-
-            console.log(this.loading)
 		});
-
-
-
 	}
 };
 </script>

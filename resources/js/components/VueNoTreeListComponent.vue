@@ -148,7 +148,7 @@
                                 placeholder="Select one"
                                 :disabled="isSharingDisabled"
                                 :options="sharingOptions" :searchable="false" :allow-empty="false">
-                            <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></strong></template>
+                            <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></template>
                         </multiselect>
                         <br>
                         <span v-if="this.sharingValues.code === 'private'">Share With Specific Users</span>
@@ -768,6 +768,7 @@ export default {
 					this.folderDescription = response.data.folder_description;
                     this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = response.data.files;
                     this.$root.$refs.treeListComponent.$refs.folderFilesComponent.file_loading = false;
+                    this.$root.$refs.treeListComponent.$refs.folderFilesComponent.onImgLoad();
 				})
 				.catch(function(error) {
                     //console.log(error);
