@@ -13,11 +13,13 @@ class PreviewController extends Controller
     
         $fileExt =   explode(".", $request->get('url'));
 
-        if ($fileExt[1] == "pdf" ) 
+        $ctr = count($fileExt) - 1;
+
+        if ($fileExt[$ctr] == "pdf" ) 
         {
              return Image::make('https://alltopstartups.com/wp-content/uploads/2020/01/What-Is-a-PDF-File-And-What-Are-PDFs-For.png')->resize(null, 120, function ($constraint) { $constraint->aspectRatio(); })->response();  
 
-        } else if ($fileExt[1] == "mp3" ) {
+        } else if ($fileExt[$ctr] == "mp3" ) {
 
             return Image::make('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT-7oY6pvjnbuVD_03aCdjJJtTn7o5PxfOFmHe8cHHf7g')->resize(null, 120, function ($constraint) { $constraint->aspectRatio(); })->response();  
 
