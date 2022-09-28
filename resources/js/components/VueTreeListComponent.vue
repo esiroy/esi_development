@@ -89,91 +89,95 @@
 
 		<!-- CONTTENT -->
 		<div class="col-sm-8 col-md-8">
-            <!-- DISPLAY FOLDER DETAILS -->
-            <div class="card mb-4" v-if="!this.data.children && !can_user_upload">
-                <div class="card-body text-center" v-if="this.folderLoading == false"> 
-                   No Shared folders found
+
+            <div class="fixed">
+                <!-- DISPLAY FOLDER DETAILS -->
+                <div class="card mb-4" v-if="!this.data.children && !can_user_upload">
+                    <div class="card-body text-center" v-if="this.folderLoading == false"> 
+                    No Shared folders found
+                    </div>
+                    <div class="card-body text-center py-4" v-else>
+                        <div class="spinner-grow text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="spinner-grow text-secondary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <div class="spinner-grow text-success" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body text-center py-4" v-else>
-                    <div class="spinner-grow text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
+                <div class="card mb-4" v-else-if="this.folderCurrentID !== null">
+                    <div class="card-header">Folder Details</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">Folder ID:</div>
+                            <div class="col-md-9">
+                                <a
+                                    :href="this.displayFolderLink"
+                                    target="_blank"
+                                    v-if="this.displayFolderLink"
+                                >{{ this.displayfolderID }}</a>
+                                <span v-else>{{ this.displayfolderID }}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">Folder Name:</div>
+                            <div class="col-md-9">
+                                <a
+                                    :href="this.displayFolderLink"
+                                    target="_blank"
+                                    v-if="this.displayFolderLink"
+                                >{{ this.displayFolderName }}</a>
+                                <span v-else>{{ this.displayFolderName }}</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">Folder Description</div>
+                            <div class="col-md-9">{{ this.displayFolderDesc }}</div>
+                        </div>
+                        <!--
+                        <div class="row">
+                            <div class="col-md-3">Folder Owner</div>
+                            <div class="col-md-9">{{ this.displayFolderOwner }}</div>
+                        </div>
+                        -->
+                        <div class="row">
+                            <div class="col-md-3">Created On</div>
+                            <div class="col-md-9">{{ this.displayCreatedAt }}</div>
+                        </div>
                     </div>
-                    <div class="spinner-grow text-secondary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                    <div class="spinner-grow text-success" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
+                </div>
+
+                <!--START - UPLOADER -->
+                <div class="container p-0 mb-4" v-if="can_user_upload">
+                    <admin-uploader-component
+                        ref="uploaderComponent"
+                        :users="this.users"
+                        :user_can_delete="'true'"
+                        :folder_id="this.folderCurrentID"
+                        :csrf_token="this.folderCurrentToken"
+                    />
+                </div>
+
+                <!--START - FILES -->
+                <div class="container p-0 mb-4">
+                    <folder-files-component
+                        ref="folderFilesComponent"
+                        :public="this.public"
+                        :user="this.user"
+                        :users="this.users"
+                        :user_type="this.user_type"
+                        :api_token="this.api_token"
+                        :folder_files="this.files"
+                        :can_user_upload="this.can_user_upload"
+                        :can_user_share_uploads="this.can_user_share_uploads"
+                        :can_user_delete_uploads="this.can_user_delete_uploads"
+                    />
                 </div>
             </div>
-			<div class="card mb-4" v-else-if="this.folderCurrentID !== null">
-				<div class="card-header">Folder Details</div>
-				<div class="card-body">
-					<div class="row">
-						<div class="col-md-3">Folder ID:</div>
-						<div class="col-md-9">
-							<a
-								:href="this.displayFolderLink"
-								target="_blank"
-								v-if="this.displayFolderLink"
-							>{{ this.displayfolderID }}</a>
-							<span v-else>{{ this.displayfolderID }}</span>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-3">Folder Name:</div>
-						<div class="col-md-9">
-							<a
-								:href="this.displayFolderLink"
-								target="_blank"
-								v-if="this.displayFolderLink"
-							>{{ this.displayFolderName }}</a>
-							<span v-else>{{ this.displayFolderName }}</span>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-3">Folder Description</div>
-						<div class="col-md-9">{{ this.displayFolderDesc }}</div>
-					</div>
-                    <!--
-					<div class="row">
-						<div class="col-md-3">Folder Owner</div>
-						<div class="col-md-9">{{ this.displayFolderOwner }}</div>
-					</div>
-                    -->
-					<div class="row">
-						<div class="col-md-3">Created On</div>
-						<div class="col-md-9">{{ this.displayCreatedAt }}</div>
-					</div>
-				</div>
-			</div>
 
-            <!--START - UPLOADER -->
-			<div class="container p-0 mb-4" v-if="can_user_upload">
-                <admin-uploader-component
-                    ref="uploaderComponent"
-                    :users="this.users"
-                    :user_can_delete="'true'"
-                    :folder_id="this.folderCurrentID"
-                    :csrf_token="this.folderCurrentToken"
-                />
-			</div>
-
-            <!--START - FILES -->
-			<div class="container p-0 mb-4">
-                <folder-files-component
-                    ref="folderFilesComponent"
-                    :public="this.public"
-                    :user="this.user"
-                    :users="this.users"
-                    :user_type="this.user_type"
-                    :api_token="this.api_token"
-                    :folder_files="this.files"
-                    :can_user_upload="this.can_user_upload"
-                    :can_user_share_uploads="this.can_user_share_uploads"
-                    :can_user_delete_uploads="this.can_user_delete_uploads"
-                />
-            </div>
 		</div>
 
 
@@ -1422,6 +1426,12 @@ export default {
 </script>
 
 <style lang="scss">
+
+.folder-tree-container {
+    height: 600px;
+    overflow: auto;
+}
+
 .vtl {
     .vtl-node {
         cursor: pointer;
