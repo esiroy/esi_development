@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Auth;
 use Gate;
 
+use Illuminate\Support\Facades\DB;
+
+
 class File extends Model
 {
     /**
@@ -14,6 +17,7 @@ class File extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'user_id',
         'folder_id', 
         'file_name', 
@@ -165,5 +169,45 @@ class File extends Model
     public static function getLink($id) {
         return url("file/$id");
     }
+
+
+    public static function reorder($files) {
+    
+
+        DB::beginTransaction();
+
+        try {           
+
+            $loop = 1;
+
+            foreach ($files as $file) {
+                
+                File::where('id', $file['id'])->update(['order_id' => $loop]);
+
+                $loop ++;
+            }
+           
+
+            DB::commit();
+
+
+            return (object) [
+                'response' => true,
+                'message'  => "File order has been updated successfully."
+            ];
+
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return (object) [
+                'response' => false,
+                'message'  => $e->getMessage()
+            ];
+
+        }
+    }
+
 
 }

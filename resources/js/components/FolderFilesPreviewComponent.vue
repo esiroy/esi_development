@@ -67,7 +67,7 @@
 
                     <multiselect v-model="sharingValues" deselect-label="Can't remove this value" track-by="code" label="name" placeholder="Select one" 
                     :options="sharingOptions" :searchable="false" :allow-empty="false">
-                        <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></strong></template>
+                        <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></template>
                     </multiselect>
                     <br>
                     <span v-if="this.sharingValues.code === 'private'">Share With Specific Users</span>

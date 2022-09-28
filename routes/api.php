@@ -42,3 +42,6 @@ Route::middleware('auth:api')->post('/delete_folder', 'API\FolderController@dele
 
 Route::post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
 Route::post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
+
+//File Ordering
+Route::middleware('auth:api')->post('/saveFileOrder', 'API\FileController@saveFileOrder')->name('saveFileOrder');

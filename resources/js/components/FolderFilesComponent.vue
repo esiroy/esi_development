@@ -1,5 +1,6 @@
 <template>
    
+
     <div v-if="!files.length /*&& !this.can_user_upload */">
         <div v-if="currentFolderViewing !== null">
             <div class="card" v-if="file_loading"> 
@@ -22,6 +23,7 @@
             </div>
         </div>
     </div>
+
 	<div class="card" v-else-if="files.length">
 
         <div class="shareFileContainer"> 
@@ -66,7 +68,7 @@
 
                     <multiselect v-model="sharingValues" deselect-label="Can't remove this value" track-by="code" label="name" placeholder="Select one" 
                     :options="sharingOptions" :searchable="false" :allow-empty="false">
-                        <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></strong></template>
+                        <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></template>
                     </multiselect>
                     <br>
                     <span v-if="this.sharingValues.code === 'private'">Share With Specific Users</span>
@@ -85,27 +87,36 @@
 
         <div class="card-header">Files</div>
         <div class="card-body table-responsive">
+
             <table class="table table-borderless table-hover">
-                <thead >
+              <thead>
                     <tr>
-                      
                         <th>File Name</th>
                         <th>File Size</th>
                         <!--<th>Owner</th>
                         <th>Action</th>-->
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-if="!files.length">
+
+                <tbody v-if="!files.length">
+                    <tr >
                         <td colspan="7" align="center">
                             <h4>No Files</h4>
                         </td>
                     </tr>
-                    <tr :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">
+                </tbody>
+
+                <draggable  v-else :list="files"  @end="dragging = false; saveOrder()" :tag="'tbody'" handle=".handle">   
+            
+                    <tr :id="file.id" v-on:click.right="openMenu" v-for="file, in files" :key="file.id">                    
                         <td>
-                            <div class="filename">
+                            <span class="handle">
+                                <b-icon-list font-scale="2"></b-icon-list>
+                            </span>
+
+                            <span class="ml-2 filename">
                                 <a :href="'/file/'+file.id" target="_blank">{{file.file_name}}</a>
-                            </div>
+                            </span>
                         </td>
                         <td>
                             <div class="filesize">{{ file.size | formatSize }}</div>
@@ -117,7 +128,7 @@
                                 {{ file.owner.first_name }} {{ file.owner.last_name }}
                             </div> 
                         </td>
-                       
+                    
                         <td>
                             <div class="dropdown">
                                 <button class="btn btn-secondary btn-sm dropdown-toggle "
@@ -138,8 +149,15 @@
                         </td>
                         -->
                     </tr>
-                </tbody>
+
+                </draggable>
+
+                
             </table>
+
+
+  
+
         </div>
 
         <ul class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">
@@ -176,10 +194,33 @@
                 Delete File
             </li>
         </ul>
+
+
+       
+
 	</div>
+
+    
 </template>
 
-<style>
+<style scope>
+
+    .flip-list-move {
+    transition: transform 0.5s;
+    }
+    .no-move {
+    transition: transform 0s;
+    }
+    .ghost {
+    opacity: 0.5;
+    background: #c8ebfb;
+    }
+
+    .handle {
+        float: left;
+    }
+
+
 </style>
 
 <script>
@@ -223,6 +264,9 @@ export default {
 	},
 	data() {
 		return {
+            //Draggables
+            dragEnabled: true,
+
             files: [],
             //selected file
             file : {},
@@ -255,6 +299,48 @@ export default {
     },
     methods:
     {
+        checkMove: function(e) {
+            //window.console.log("Future index: " + e.draggedContext.futureIndex);
+        },
+        makeToast(message = null, append = false, variant = null) {       
+            this.$bvToast.toast(message, {
+                title: 'BootstrapVue Toast',
+                autoHideDelay: 5000,
+                appendToast: append,
+                variant: variant
+            })
+        },
+        saveOrder() {
+
+           console.log("save order?", this.files)
+
+            axios.post("/api/saveFileOrder?api_token=" + this.api_token, 
+            {
+                method         : "POST",
+                files          : this.files,
+             
+            })
+            .then(response => 
+            {
+                if (response.data.success === false) {
+
+                    this.makeToast (response.data.message, false, 'danger')
+
+                } else {
+                  
+                    this.makeToast (response.data.message, false, 'success')
+
+                   //console.log("done reorder", this.files);
+                }
+
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                console.log(error);
+			});
+
+
+        },
         openMenu: function(event, element) 
         {
             if (this.public == false) 

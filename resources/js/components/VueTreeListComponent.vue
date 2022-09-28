@@ -135,10 +135,12 @@
 						<div class="col-md-3">Folder Description</div>
 						<div class="col-md-9">{{ this.displayFolderDesc }}</div>
 					</div>
+                    <!--
 					<div class="row">
 						<div class="col-md-3">Folder Owner</div>
 						<div class="col-md-9">{{ this.displayFolderOwner }}</div>
 					</div>
+                    -->
 					<div class="row">
 						<div class="col-md-3">Created On</div>
 						<div class="col-md-9">{{ this.displayCreatedAt }}</div>
@@ -279,7 +281,7 @@
                                 placeholder="Select one"
                                 :disabled="isSharingDisabled"
                                 :options="sharingOptions" :searchable="false" :allow-empty="false">
-                            <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></strong></template>
+                            <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></template>
                         </multiselect>
                         <br>
                         <span v-if="this.sharingValues.code === 'private'">Share With Specific Users</span>
