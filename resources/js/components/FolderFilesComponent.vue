@@ -108,7 +108,7 @@
 
                 <draggable  v-else :list="files"  @end="dragging = false; saveOrder()" :tag="'tbody'" handle=".handle">   
             
-                    <tr :id="file.id" v-on:click.right="openMenu" v-for="file, in files" :key="file.id">                    
+                    <tr :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="file.id" class="fileListings">                    
                         <td>
                            
                             <span class="handle handleFileOrder" v-show="user_type == 'admin'">
@@ -354,7 +354,7 @@ export default {
                 this.userOptions        = userOptionsList;
             }
             this.getParentID(event.target);
-            this.file = this.files[this.parentIndexID];
+            this.file           = this.files[this.parentIndexID];
             this.userValues     = this.file.sharedTo;
             this.viewMenu       = true;
             this.setMenu(event)
