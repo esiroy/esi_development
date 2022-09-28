@@ -308,7 +308,7 @@ export default {
         },
         makeToast(message = null, append = false, variant = null) {       
             this.$bvToast.toast(message, {
-                title: 'BootstrapVue Toast',
+                title: 'Message',
                 autoHideDelay: 5000,
                 appendToast: append,
                 variant: variant
