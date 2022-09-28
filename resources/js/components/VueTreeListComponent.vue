@@ -745,6 +745,9 @@ export default {
         },
         contextMenuGetLink()
         {
+
+            $('.right-click-menu').show();
+
             this.getPermalink(this.parentID);
             this.$nextTick(function(){
                 this.textToClipboard(this.contextMenuPermalink);
@@ -757,6 +760,7 @@ export default {
             dummy.select();
             document.execCommand("copy");
             document.body.removeChild(dummy);
+            $('.right-click-menu').hide();
         },
         getParentID(element) {
            if (typeof(element.id) == 'undefined' || typeof(element.id) == null || element.id == 'undefined' || element.id == '' ) 

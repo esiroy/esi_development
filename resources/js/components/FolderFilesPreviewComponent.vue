@@ -2,7 +2,7 @@
    
     <div class="files-wrapper">
 
-        <div class="card"  v-if="this.empty == false">
+        <div class="card"  v-if="this.empty == false" >
             <div class="shareFileContainer"> 
                 <b-modal
                     id="shareFile"
@@ -118,9 +118,11 @@
             </ul>
         </div>
 
-        <div class="card" v-if="this.empty == true">
+        <div v-if="this.empty == true">
             
-            <span class="small p-3"> {{ "No Files Found" }} </span>
+            <div class="card">
+                <span class="small p-3"> {{ "No Files Found" }} </span>
+            </div>
 
         </div>
 
@@ -241,6 +243,8 @@ export default {
                 let userOptionsList     = userLists.filter((u) => { if (u.id !== this.user.id ) { return u } });
                 this.userOptions        = userOptionsList;
             }
+             $('.right-click-menu').show();
+
             this.getParentID(event.target);
             this.file = this.files[this.parentIndexID];
             this.userValues     = this.file.sharedTo;
@@ -261,6 +265,8 @@ export default {
             let win = window.open(url, '_blank');
             win.focus();
 
+            this.closeMenu();
+
         },
         contextmenuShareFile: function(event, element)  
         { 
@@ -270,6 +276,8 @@ export default {
                                         };
             this.contextMenuPermalink = this.createPageLink(this.file);
             this.$bvModal.show("shareFile");
+
+            this.closeMenu();
         },
         contextMenuCreate() {
            //@create
@@ -282,10 +290,14 @@ export default {
         },
         contextMenuGetLink()
         {
+            
+
             //console.log(this.file.id);
             this.$nextTick(function(){
+            
                 console.log(this.createPageLink(this.file));
                 this.textToClipboard(this.createPageLink(this.file));
+               
             });
         },
         //Helpers
@@ -306,6 +318,7 @@ export default {
             dummy.select();
             document.execCommand("copy");
             document.body.removeChild(dummy);
+            $('.right-click-menu').hide();
         },
         addTag (newTag) {
             const tag = {
