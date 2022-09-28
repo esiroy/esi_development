@@ -12,6 +12,7 @@
                 ref="treeListComponent"
                 :user="{{ Auth::user() }}"
                 :users="{{ json_encode($users) }}"
+                :user_type="'admin'"
                 :can_user_share_uploads="{{ $can_user_share_uploads }}"
                 :can_user_share_folder="{{ $can_user_share_folder }}"
                 :can_user_create_folder="{{ $can_user_create_folder }}"

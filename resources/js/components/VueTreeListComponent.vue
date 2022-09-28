@@ -166,6 +166,7 @@
                     :public="this.public"
                     :user="this.user"
                     :users="this.users"
+                    :user_type="this.user_type"
                     :api_token="this.api_token"
                     :folder_files="this.files"
                     :can_user_upload="this.can_user_upload"
@@ -429,9 +430,13 @@ export default {
         user: {
             type: Object
         },
+        user_type: {
+            type: String
+        },
         public_viewer_id: {
             type: Number
         },
+
 		public_folder_id: {
 			type: Number
         },
@@ -477,6 +482,7 @@ export default {
 		folder_id: {
 			type: String
         }
+
 	},
 	data() {
 		return {

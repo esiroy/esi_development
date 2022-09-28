@@ -110,7 +110,8 @@
             
                     <tr :id="file.id" v-on:click.right="openMenu" v-for="file, in files" :key="file.id">                    
                         <td>
-                            <span class="handle">
+                           
+                            <span class="handle handleFileOrder" v-show="user_type == 'admin'">
                                 <b-icon-list font-scale="2"></b-icon-list>
                             </span>
 
@@ -239,7 +240,10 @@ export default {
         },
         user: {
             type: Object
-        },       
+        },   
+        user_type: {
+            type: String
+        },             
         public: {
             type:Boolean
         },
@@ -523,6 +527,8 @@ export default {
 		this.$nextTick(function() {
 			this.files = this.folder_files;
 		});
+
+        console.log(this.user_type)
 	}
 };
 </script>
