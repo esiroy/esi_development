@@ -16,7 +16,7 @@
        
 
             
-        <div class="card" v-if="files.length == 0"> 
+        <div class="card" v-if="files.length == 0 && loading == false"> 
             <div class="card-body text-center py-4">
                 No files found on this folder
             </div>
