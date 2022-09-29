@@ -1448,17 +1448,7 @@ export default {
     }
 };
 </script>
-<style>
-
-
-#videoDiv{
-    display: grid;
-    grid-gap: 10px;
-    height:80%;
-    position: relative;
-    grid-template-columns: repeat(auto-fill, 100px);
-    grid-auto-rows: 100px;
-}
+<style scoped>
 
 
 .upper-canvas {

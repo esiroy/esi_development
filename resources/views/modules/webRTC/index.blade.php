@@ -21,6 +21,14 @@
 @endsection
 
 @section('styles')
-
+<style>
+    #videoGrid {
+    }
+    #videoGrid video {
+        width: 150px;
+        display: inline-block;
+        margin: 5px;
+    }
+</style>
 
 @endsection
