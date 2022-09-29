@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('lesson_slides', 'LessonSlidesController');
 
-
+Route::resource('webRTC', 'WebRTCVideoController');
 
 
 Route::get('test', 'dummyController@index');
