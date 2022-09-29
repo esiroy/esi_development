@@ -4,7 +4,7 @@ let myVideoStream;
 let myId;
 var videoGrid = document.getElementById('videoGrid')
 var myvideo = document.createElement('video');
-myvideo.muted = true;
+myvideo.muted = false;
 
 
 const peerConnections = {}
