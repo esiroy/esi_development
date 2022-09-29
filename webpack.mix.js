@@ -45,6 +45,12 @@ mix.js(
         ],
         "public/js/admin.js"
     )
+    .js(
+        [
+            "resources/js/webRTC.js"
+        ],
+        "public/js/webRTC.js"
+    )
     .copy("resources/js/jquery/*.*", "public/js/jquery/")
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/mp3/*.*", "public/mp3/")
@@ -53,8 +59,8 @@ mix.js(
     .copy("resources/js/steps/*.*", "public/js/steps/")
     .copy("resources/js/validation/*.*", "public/js/validation/")
 
-    .copy("resources/sass/jquery/*.*", "public/css/jquery/")
-    .copy("resources/sass/jquery/images/*.*", "public/css/jquery/images/")    
+.copy("resources/sass/jquery/*.*", "public/css/jquery/")
+    .copy("resources/sass/jquery/images/*.*", "public/css/jquery/images/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
     .copy("resources/sass/dropzone/dropzone.min.css", "public/css/dropzone/dropzone.min.css")

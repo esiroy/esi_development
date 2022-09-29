@@ -6,8 +6,11 @@ use Illuminate\Http\Request;
 
 class WebRTCVideoController extends Controller
 {
-    public function index() 
+    public function index(Request $request) 
     {
-        return view('modules.webRTC.index');
+
+        $roomID = $request->get('roomid');
+
+        return view('modules.webRTC.index', compact('roomID'));
     }
 }
