@@ -3,36 +3,23 @@ const peer = new Peer();
 let myVideoStream;
 let myId;
 var videoGrid = document.getElementById('videoGrid')
+
 var myvideo = document.createElement('video');
+myvideo.setAttribute("id", "myVideo")
+
 myvideo.muted = false;
 
 
 const peerConnections = {}
 
-navigator.mediaDevices.getUserMedia({
-    video: true,
-    audio: true
-}).then((stream) => {
-    myVideoStream = stream;
-    addVideo(myvideo, stream);
-    peer.on('call', call => {
-        call.answer(stream);
-        const vid = document.createElement('video');
-        call.on('stream', userStream => {
-            addVideo(vid, userStream);
-        })
-        call.on('error', (err) => {
-            alert(err)
-        })
-        call.on("close", () => {
-            console.log(vid);
-            vid.remove();
-        })
-        peerConnections[call.peer] = call;
-    })
-}).catch(err => {
-    alert(err.message)
+
+socket.on("connect", () => {
+    console.log(socket.id); // "G5p5..."
+
+    createUserMedia();
 });
+
+
 
 peer.on('open', (id) => {
     myId = id;
@@ -43,9 +30,7 @@ peer.on('error', (err) => {
     alert(err.type);
 });
 
-socket.on("connect", () => {
-    console.log(socket.id); // "G5p5..."
-});
+
 
 
 socket.on('userJoined', id => {
@@ -72,6 +57,40 @@ socket.on('userDisconnect', id => {
 });
 
 
+function createUserMedia() {
+
+    navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+    }).then((stream) => {
+
+        console.log("getting user Media...");
+
+        myVideoStream = stream;
+        addVideo(myvideo, stream);
+
+        peer.on('call', call => {
+            call.answer(stream);
+            const vid = document.createElement('video');
+            vid.setAttribute("id", "callerVideo")
+
+            call.on('stream', userStream => {
+                addVideo(vid, userStream);
+            })
+            call.on('error', (err) => {
+                alert(err)
+            })
+            call.on("close", () => {
+                console.log(vid);
+                vid.remove();
+            })
+            peerConnections[call.peer] = call;
+        })
+    }).catch(err => {
+        alert(err.message)
+    });
+}
+
 
 function addVideo(video, stream) {
     video.srcObject = stream;
@@ -91,16 +110,36 @@ function muteMic() {
 }
 
 
+function shareScreen() {
+    navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: true
+    }).then((stream) => {
+        myVideoStream = stream;
+        addVideo(myvideo, stream);
 
-let testapp = () => {
-    console.log("Executing action");
-};
+        myVideoStream.getVideoTracks()[0].onended = function() {
+            console.log("ended a video share")
+
+            //reconnect userMedia
+            createUserMedia()
+        };
+
+    });
+}
 
 
+
+
+//DOM Execution
 document.getElementById("toggleCamera").addEventListener("click", function() {
     muteCam();
 });
 
 document.getElementById("toggleAudio").addEventListener("click", function() {
     muteMic();
+});
+
+document.getElementById("shareScreen").addEventListener("click", function() {
+    shareScreen();
 });

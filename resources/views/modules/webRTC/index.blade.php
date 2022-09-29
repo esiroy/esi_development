@@ -4,6 +4,7 @@
 
 
 <div class="container">
+
     <div class="row">
         <div id="videoGrid"></div>
     </div>
@@ -11,6 +12,7 @@
     <button type="button" id="toggleCamera">Camera On/Off</button>
     <button type="button" id="toggleAudio">Audio On/Off</button>
 
+    <button type="button" id="shareScreen">shareScreen</button>
 </div>
 
 @endsection 
@@ -24,14 +26,6 @@
 
 <script type="text/javascript">
     var roomID = "{{ $roomID }}";
-    var testID = "THIS IS A TEST ID";
-
-    window.addEventListener('DOMContentLoaded', function() {
-      console.log(testing)
-    });
-
-   
-
 </script>
 @endsection
 
