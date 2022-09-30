@@ -9,10 +9,11 @@
         <div id="videoGrid"></div>
     </div>
 
-    <button type="button" id="toggleCamera">Camera On/Off</button>
+    <button type="button" id="stopCamera">Stop Camera </button>
+    <button type="button" id="toggleCamera">Camera Hide On/Off</button>
     <button type="button" id="toggleAudio">Audio On/Off</button>
-
     <button type="button" id="shareScreen">shareScreen</button>
+    
 </div>
 
 @endsection 
