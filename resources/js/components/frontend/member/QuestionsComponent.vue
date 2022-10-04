@@ -286,8 +286,9 @@
          methods: 
          {
 
-            start() {
-
+            start() 
+            {
+                this.started = true;
                 this.recordStartTime();
             },
             formatter(text) {
@@ -382,10 +383,8 @@
                         
                     } else {
                     
-                    
+                        this.started = false;
                         alert (response.data.message);
-
-
                     }
 
                 }).finally(() => {  
@@ -402,6 +401,9 @@
                 this.myIntervalTimer = setInterval(this.checkMinute, this.timerSpeed);
                 this.started = true;
                 this.loading = false;
+            },
+            stopTimer() {
+                clearInterval(this.myIntervalTimer);
             },
             checkMinute() 
             {
@@ -629,6 +631,9 @@
 
                     if (response.data.success == true)
                      {
+
+                        this.stopTimer();
+
                         this.submitted = true;
                         this.results = response.data.results;
 

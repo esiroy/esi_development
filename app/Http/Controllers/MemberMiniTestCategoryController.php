@@ -12,6 +12,13 @@ use App\Models\MiniTestCategoryType;
 
 class MemberMiniTestCategoryController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+        $this->middleware('redirectAdmin');
+    }
     /**
      * Display a listing of the resource.
      *
