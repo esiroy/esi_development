@@ -1045,7 +1045,7 @@ export default {
 
         resetModes()  {
 
-            this.canvas[this.currentSlide].isDrawingMode = false;
+            //this.canvas[this.currentSlide].isDrawingMode = false;
             this.isDrawingLine      = false;
             this.isDrawing          = false;
             this.isDrawingCircle    = false;           

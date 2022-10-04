@@ -53,15 +53,6 @@
                 //Lesson Options
                 lessonOptions: [],
 
-                /* sample lesson Option structure
-                lessonOptions: [
-                    { value: null, text: 'Please select some item' },
-                    { value: 'a', text: 'This is First option' },
-                    { value: 'b', text: 'Default Selected Option' },
-                    { value: 'c', text: 'This is another option' },
-                    { value: 'd', text: 'This one is disabled', disabled: true }
-                ],*/
-
                 //caller
                 caller: null,
                 recipient: null,
@@ -83,8 +74,6 @@
 
             //Transfer the object to the window
             window.memberCallerComponent = this;
-
-        
 
             //Register the member Info
             this.user = {
@@ -113,13 +102,10 @@
                     this.caller              = data.caller;                        
                     this.recipient           = data.recipient;
                     this.callReservation     = data.reservationData;
-
                     console.log("accept call");
                 } 
                 console.log(data)
             });
-
-
 
             this.socket.on("CALL_USER", (data) =>  
             {
@@ -134,62 +120,26 @@
             });
 
 
-
-
             this.socket.on("START_SLIDER", (data) =>  
             {
-                //this.sliderLoaded = false;
 
-                
-             
                 this.lessonReservationData  = data.reservationData;
-
-
-                if (this.user.userid == data.caller.userid && this.user.channelid == null)
-                {                 
-                    //this.caller            = data.memberData;
-                    //this.callReservation   = data.reservationData;
-                    //this.recipient         = data.tutorData;
-   
-
-                    this.$bvModal.hide('modal-call-teacher'); 
-                    this.$bvModal.hide('modal-call-member'); 
-                    this.$bvModal.show('modal-lesson-slider');
-
-       
-                    //make this to mark user is on a channel and busy!
-                    this.user.channelid = data.channelid
-                    this.channelid = data.channelid
-          
-
-
-                } else if (this.user.userid == data.recipient.userid && this.user.channelid == null) {
-
-                    /*
-                    this.$bvModal.hide('modal-call-teacher'); 
-                    this.$bvModal.hide('modal-call-member');
-                    this.$bvModal.show('modal-lesson-slider');     
-
-                    //make this to mark user is on a channel and busy!
-                    this.user.channelid = data.channelid
-                    this.channelid = data.channelid                   
-                    */ 
-
-                }
-
-                this.autoAdjustModal();
+                this.$bvModal.hide('modal-call-teacher'); 
+                this.$bvModal.hide('modal-call-member');
+                this.openChannelTab(data.channelid);
             }); 
             
 
-            window.addEventListener('resize', () => {
-                this.autoAdjustModal();
-            });
+            
             
         },
         methods: {
+
+            openChannelTab(channelid) {
+                var baseURL = window.location.origin + "/webRTC?roomid="+ channelid
+                window.open(baseURL, '_blank');
+            },
             clearLessonChannel() {
-                    
-                
                 //make this to mark user is on a channel is awaiting calls and free
                 this.user.channelid = null
                 this.channelid = null;
@@ -362,9 +312,12 @@
                 
                 this.$bvModal.hide('modal-call-teacher'); 
                 this.$bvModal.hide('modal-call-member'); 
-                this.$bvModal.show('modal-lesson-slider');                
 
+                //this.$bvModal.show('modal-lesson-slider');                
                 this.socket.emit('START_SLIDER', data);
+
+                
+
             },
             callMember(tutor, member, reservation) {
 
@@ -413,12 +366,11 @@
             //CALL TUTOR IS INITIATED AT THE FRONT END USING JS (window.memberCallerComponent.callTutor) COMMAND
             callTutor(tutor, member, reservation) {
 
+                console.log("call tutor")
+
                 this.channelid = reservation.schedule_id;
                 
                 this.lessonReservationData  = reservation;
-
-                console.log(this.reservation)
-
 
                 this.now                = new Moment().tz("Japan");
                 this.currentTime        = Moment(this.now).tz("Japan").format("YYYY-MM-DD HH:mm:ss"); 
