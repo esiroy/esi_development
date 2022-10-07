@@ -26,6 +26,7 @@ use App\Models\MemberLevel;
 use App\Models\MemberMiniTestSetting;
 use App\Models\MemberSetting;
 
+
 use Auth, App;
 use DB;
 use Illuminate\Http\Request;
@@ -37,6 +38,12 @@ use Validator;
 
 class MemberController extends Controller
 {
+
+    public function getMemberCredit(Request $request, AgentTransaction $agentTransaction) 
+    {
+        $credits = $agentTransaction->getCredits($request->get('memberID'));
+        return $credits;
+    }
 
     public function getAgentName(Request $request)
     {

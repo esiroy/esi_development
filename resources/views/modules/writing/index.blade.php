@@ -58,6 +58,13 @@
                                                 @endif
                                             </section>
                                         @endforeach
+
+                                        <div class="warnings">
+                                            <div class="alert alert-danger mx-4" role="alert">
+                                                You already consumed all your credits
+                                            </div>
+                                        </div>
+
                                         <textarea id="data" name="data" style="display:none" ></textarea>
                                         <input type="submit" style="display:none">
                                     </form>                              
@@ -135,6 +142,9 @@
 
         window.addEventListener('load', function() 
         {
+
+            getMemberCredit();
+
             $('#writing-form').show();
 
             $('.message-container').find('.alert').delay(5000).fadeOut('slow');
@@ -290,6 +300,8 @@
                     onFinished: function(e, currentIndex) {                     
                         // Uncomment the following line to submit the form using the defaultSubmit() method
                         // $('#writing-form').formValidation('defaultSubmit');
+
+                        console.log("finished")
                     }
                 });
 
@@ -358,6 +370,34 @@
         });//[end] loader
 
 
+        function getMemberCredit() 
+        {   
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/getMemberCredit?api_token=') }}" + api_token,
+                data: { 
+                    memberID      :  {{ Auth::user()->id }},         
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },                    
+                success: function(credits) {      
+                    console.log(credits)
+
+                    if (credits >= 1) {
+                        $('#writing-form .actions').show();
+                        $('#writing-form .warnings').hide();
+                    } else {
+                        $('#writing-form .actions').hide();
+                    }
+
+                   
+                },
+                error: function(err) {
+                    //reject(err) // Reject the promise and go to catch()
+                }
+            });
+        }
 
         function addTextFormatter(fieldID) 
         {

@@ -77,6 +77,8 @@ Route::middleware('auth:api')->post('/getTotalMemberDailyReserved', 'API\MemberC
 Route::middleware('auth:api')->post('/getTotalTutorDailyReserved', 'API\MemberController@getTotalTutorDailyReserved')->name('APIGetTotalTutorDailyReserved');
 Route::middleware('auth:api')->post('/getScheduleDetails', 'API\MemberController@getScheduleDetails')->name('APIGetScheduleDetails');
 Route::middleware('auth:api')->post('/searchMemberName', 'API\MemberController@searchMemberName')->name('APISearchMemberName');
+Route::middleware('auth:api')->post('/getMemberCredit', 'API\MemberController@getMemberCredit')->name('APIGetMemberCredit');
+
 
 //[start](MEMBER CONTROL PANEL) 
 Route::middleware('auth:api')->post('/sendMemberReply', 'API\MemberController@sendMemberReply')->name('APIsendMemberReply');
