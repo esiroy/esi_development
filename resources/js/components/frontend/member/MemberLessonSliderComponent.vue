@@ -160,12 +160,6 @@
 
 
                     <div class="chat-container mb-2">
-
-                        
-                      
-                        
-
-
                         <b-card-group>
 
                             <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
@@ -275,8 +269,6 @@ export default {
     },
     data() {
         return {
-
-
             tutor_chat_message: "",
             privateMessage: "",
 
@@ -361,9 +353,6 @@ export default {
     mounted() 
     {
         this.socket = io.connect(this.$props.canvas_server);
-
-
-        
         //this.createPeerConnection();
 
 
@@ -840,6 +829,9 @@ export default {
                 'canvasData'   : canvasData,
                 
             };
+
+
+            console.log(this.channelid)
 
             this.socket.emit('SEND_DRAWING', memberCanvasData);  
         },

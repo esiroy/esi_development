@@ -2,12 +2,35 @@
 
 @section('content')
 
-
 <div class="container">
-
     <div class="row">
-        <div id="videoGrid"></div>
+        <div class="col-md-3">
+            <div id="videoGrid"></div>
+        </div>
+
+   <div class="col-md-12">
+        <lesson-slider-component 
+            ref="lessonSliderComponent"
+            :is-broadcaster="{{ $isBroadcaster }}"
+            :editor_id="'canvas'"
+            :channelid="{{ $roomID }}"
+            :reservation="{{ json_encode($reservationData) }}"            
+            canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
+            canvas_width="500"
+            canvas_height="500"
+            :user_info="{{  json_encode(Auth::user()) }}"
+            :member_info="{{  json_encode($userInfo) }}"
+            api_token="{{ Auth::user()->api_token }}" 
+            csrf_token="{{ csrf_token() }}"
+            >
+        </lesson-slider-component> 
     </div>
+    
+            
+    </div>
+
+ 
+
 
     <button type="button" id="stopCamera">Stop Camera </button>
     <button type="button" id="toggleCamera">Camera Hide On/Off</button>
@@ -32,13 +55,30 @@
 
 @section('styles')
 <style>
-    #videoGrid {
+    #videoGrid {            
+        min-width: 350px;
+        min-height: 250px;
+        display: inline-block;
+        border: 3px solid #ccc;
     }
+
     #videoGrid video {
         width: 350px;
-        display: inline-block;
-        margin: 5px;
+        display:  flex;
+        margin:0px;
+        padding:0px;        
     }
+
+    #videoGrid #myVideo {
+        width: 50px;
+        position: absolute;
+    }
+
+     #videoGrid #callerVideo {
+        min-width: 450px;
+       
+     }
+
 </style>
 
 @endsection

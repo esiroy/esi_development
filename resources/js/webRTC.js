@@ -175,8 +175,6 @@ function shareScreen() {
 
             });
 
-
-
         });
 
         replaceVideo(mySharedVideo, sharedScreen);
@@ -202,7 +200,7 @@ socket.on('userJoined', id => {
     })
     call.on('close', () => {
         vid.remove();
-        console.log("user disconect")
+        console.log("user disconected")
     });
 
     peerConnections[id] = call;
