@@ -123,11 +123,27 @@
             this.socket.on("START_SLIDER", (data) =>  
             {
 
-                this.lessonReservationData  = data.reservationData;
-                this.$bvModal.hide('modal-call-teacher'); 
-                this.$bvModal.hide('modal-call-member');
-                this.openChannelTab(data.channelid);
+                console.log(data);
+
+                if (this.user.userid == data.recipient.userid ) 
+                {
+                    this.lessonReservationData  = data.reservationData;
+                    this.$bvModal.hide('modal-call-teacher'); 
+                    this.$bvModal.hide('modal-call-member');             
+                    this.openChannelTab(data.channelid);       
+
+                } else if (this.user.userid == data.caller.userid ) {
+                 
+                    this.lessonReservationData  = data.reservationData;
+                    this.$bvModal.hide('modal-call-teacher'); 
+                    this.$bvModal.hide('modal-call-member');             
+                    this.openChannelTab(data.channelid);  
+                 
+                 }
+
+
             }); 
+
             
 
             

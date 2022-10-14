@@ -6,13 +6,13 @@ var videoGrid = document.getElementById('videoGrid')
 
 var myvideo = document.createElement('video');
 myvideo.setAttribute("id", "myVideo")
+myvideo.muted = true;
 
 var mySharedVideo = document.createElement('video');
 mySharedVideo.setAttribute("id", "sharedVideo");
-
 let isSharedVideo = false;
 
-myvideo.muted = true;
+
 
 
 const peerConnections = {}
@@ -20,10 +20,101 @@ const peerConnections = {}
 socket.on("connect", () => {
     console.log("socket created " + socket.id);
     createUserMedia();
+});
+
+
+
+
+socket.on('userJoined', id => {
+
+    console.log("new user joined", id);
+
+    const call = peer.call(id, myVideoStream);
+    const vid = document.createElement('video');
+    vid.setAttribute("id", "userVid");
+    myvideo.muted = false;
+
+    call.on('error', (err) => {
+        console.log(err);
+    })
+    call.on('stream', userStream => {
+        addVideo(vid, userStream);
+    })
+    call.on('close', () => {
+        vid.remove();
+        console.log("user disconected")
+    });
+
+    peerConnections[id] = call;
+
 
 });
 
 
+function createUserMedia() {
+
+    console.log("my media created!")
+
+    navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+    }).then((stream) => {
+
+        myVideoStream = stream;
+
+        var vid = document.createElement('video');
+        vid.setAttribute("id", "callerVideo");
+        myvideo.muted = false;
+
+        addVideo(myvideo, myVideoStream);
+
+        peer.on('connection', function(conn) {
+            conn.on('data', function(isSharedScreen) {
+                if (isSharedScreen == true) {
+                    vid = document.createElement('video');
+                    vid.setAttribute("id", "sharedVideo");
+
+                } else {
+                    stopSharing();
+                    return false;
+                }
+                console.log(isSharedScreen);
+            });
+        });
+
+        peer.on('close', function(conn) {
+            console.log("close")
+        });
+
+        peer.on('call', call => {
+
+
+            call.answer(stream);
+
+            call.on('stream', userStream => {
+                addVideo(vid, userStream);
+            });
+
+            call.on('finish', function() {
+                console.log("called finish")
+            });
+
+            call.on('error', (err) => {
+                alert(err)
+            });
+
+            call.on("close", () => {
+                console.log(vid);
+                vid.remove();
+            });
+
+            peerConnections[call.peer] = call;
+        });
+
+    }).catch(err => {
+        alert(err.message)
+    });
+}
 
 peer.on('open', (id) => {
 
@@ -51,73 +142,6 @@ socket.on('userShared', (roomID, stream) => {
 });
 
 
-function createUserMedia() {
-
-    console.log("my media created!")
-
-    navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: false
-    }).then((stream) => {
-
-        myVideoStream = stream;
-
-        var vid = document.createElement('video');
-        vid.setAttribute("id", "callerVideo");
-
-        addVideo(myvideo, myVideoStream);
-
-        peer.on('connection', function(conn) {
-
-            conn.on('data', function(isSharedScreen) {
-
-                if (isSharedScreen == true) {
-                    vid = document.createElement('video');
-                    vid.setAttribute("id", "sharedVideo");
-                } else {
-                    stopSharing();
-                    return false;
-
-                }
-
-                console.log(isSharedScreen);
-            });
-
-        });
-
-        peer.on('close', function(conn) {
-            console.log("close")
-        });
-
-        peer.on('call', call => {
-
-            console.log("called");
-            call.answer(stream);
-
-            call.on('stream', userStream => {
-                addVideo(vid, userStream);
-            });
-
-            call.on('finish', function() {
-                console.log("called finish")
-            });
-
-            call.on('error', (err) => {
-                alert(err)
-            });
-
-            call.on("close", () => {
-                console.log(vid);
-                vid.remove();
-            });
-
-            peerConnections[call.peer] = call;
-        });
-
-    }).catch(err => {
-        alert(err.message)
-    });
-}
 
 //user end stop sharing
 function stopSharing() {
@@ -186,25 +210,7 @@ function shareScreen() {
 
 
 
-socket.on('userJoined', id => {
-    console.log("new user joined", id);
-    const call = peer.call(id, myVideoStream);
-    const vid = document.createElement('video');
-    vid.setAttribute("id", "userVid")
 
-    call.on('error', (err) => {
-        console.log(err);
-    })
-    call.on('stream', userStream => {
-        addVideo(vid, userStream);
-    })
-    call.on('close', () => {
-        vid.remove();
-        console.log("user disconected")
-    });
-
-    peerConnections[id] = call;
-});
 
 
 socket.on('userDisconnect', id => {
