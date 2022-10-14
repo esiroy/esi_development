@@ -32,7 +32,7 @@ socket.on('userJoined', id => {
     const call = peer.call(id, myVideoStream);
     const vid = document.createElement('video');
     vid.setAttribute("id", "userVid");
-    myvideo.muted = false;
+    vid.muted = false;
 
     call.on('error', (err) => {
         console.log(err);
@@ -64,7 +64,7 @@ function createUserMedia() {
 
         var vid = document.createElement('video');
         vid.setAttribute("id", "callerVideo");
-        myvideo.muted = false;
+        vid.muted = false;
 
         addVideo(myvideo, myVideoStream);
 
