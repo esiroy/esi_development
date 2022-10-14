@@ -6,7 +6,7 @@ var videoGrid = document.getElementById('videoGrid')
 
 var myvideo = document.createElement('video');
 myvideo.setAttribute("id", "myVideo")
-myvideo.muted = true;
+myvideo.muted = false;
 
 var mySharedVideo = document.createElement('video');
 mySharedVideo.setAttribute("id", "sharedVideo");
