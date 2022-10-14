@@ -18,10 +18,10 @@
     <link rel="preconnect" href="//fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="//fonts.googleapis.com" crossorigin />
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin />
-    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_9' }}" as="style">
+    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_6' }}" as="style">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=version_5_9' }}">
-    <script src="{{ asset('js/admin.js') .'?id=version_5_9'  }}" defer></script>
+    <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=version_6' }}">
+    <script src="{{ asset('js/admin.js') .'?id=version_6'  }}" defer></script>
     
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
