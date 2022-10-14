@@ -6,7 +6,7 @@ var videoGrid = document.getElementById('videoGrid')
 
 var myvideo = document.createElement('video');
 myvideo.setAttribute("id", "myVideo")
-myvideo.muted = false;
+myvideo.muted = true;
 
 var mySharedVideo = document.createElement('video');
 mySharedVideo.setAttribute("id", "sharedVideo");
@@ -32,7 +32,7 @@ socket.on('userJoined', id => {
     const call = peer.call(id, myVideoStream);
     const vid = document.createElement('video');
     vid.setAttribute("id", "userVid");
-    vid.muted = true;
+    vid.muted = false;
 
     call.on('error', (err) => {
         console.log(err);
@@ -71,7 +71,6 @@ function createUserMedia() {
         peer.on('connection', function(conn) {
             conn.on('data', function(isSharedScreen) {
                 if (isSharedScreen == true) {
-
                     vid = document.createElement('video');
                     vid.setAttribute("id", "sharedVideo");
 
