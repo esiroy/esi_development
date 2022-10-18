@@ -103,10 +103,29 @@ function gotStream(stream) {
     addVideo(myvideo, myVideoStream);
     */
 
-    const call = peer.call(socket.id, myVideoStream);
+
 
 
     connectClientVideo(myVideoStream);
+
+    Object.keys(peerConnections).forEach(function(peerID) {
+        peer.call(peerID, myVideoStream);
+
+        if (call) {
+            call.on('error', (err) => {
+                console.log(err);
+            })
+            call.on('stream', userStream => {
+                // addVideo(vid, userStream);
+            })
+            call.on('close', () => {
+                vid.remove();
+                console.log("user disconected")
+            });
+
+            peerConnections[id] = call;
+        }
+    });
 
 
     return navigator.mediaDevices.enumerateDevices();
@@ -162,12 +181,15 @@ function handleError(error) {
 
 function createUserMedia() {
 
-
+    /*
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
             track.stop();
         });
     }
+    */
+
+
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
 
@@ -327,6 +349,7 @@ function shareScreen() {
         Object.keys(peerConnections).forEach(function(peerID) {
             //connect and send
             var conn = peer.connect(peerID);
+
             conn.on('open', () => {
                 let isSharedScreen = true;
                 conn.send(isSharedScreen);
