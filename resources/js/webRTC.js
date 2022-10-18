@@ -103,9 +103,6 @@ function gotStream(stream) {
     addVideo(myvideo, myVideoStream);
     */
 
-
-
-
     connectClientVideo(myVideoStream);
 
     Object.keys(peerConnections).forEach(function(peerID) {
@@ -122,8 +119,6 @@ function gotStream(stream) {
                 vid.remove();
                 console.log("user disconected")
             });
-
-            peerConnections[id] = call;
         }
     });
 
