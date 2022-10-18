@@ -31,21 +31,25 @@ socket.on('userJoined', id => {
 
     const call = peer.call(id, myVideoStream);
     const vid = document.createElement('video');
+
     vid.setAttribute("id", "userVid");
     vid.muted = false;
 
-    call.on('error', (err) => {
-        console.log(err);
-    })
-    call.on('stream', userStream => {
-        addVideo(vid, userStream);
-    })
-    call.on('close', () => {
-        vid.remove();
-        console.log("user disconected")
-    });
+    if (call) {
+        call.on('error', (err) => {
+            console.log(err);
+        })
+        call.on('stream', userStream => {
+            addVideo(vid, userStream);
+        })
+        call.on('close', () => {
+            vid.remove();
+            console.log("user disconected")
+        });
 
-    peerConnections[id] = call;
+        peerConnections[id] = call;
+    }
+
 
 
 });
@@ -68,53 +72,75 @@ function createUserMedia() {
 
         addVideo(myvideo, myVideoStream);
 
-        peer.on('connection', function(conn) {
-            conn.on('data', function(isSharedScreen) {
-                if (isSharedScreen == true) {
-                    vid = document.createElement('video');
-                    vid.setAttribute("id", "sharedVideo");
-
-                } else {
-                    stopSharing();
-                    return false;
-                }
-                console.log(isSharedScreen);
-            });
-        });
-
-        peer.on('close', function(conn) {
-            console.log("close")
-        });
-
-        peer.on('call', call => {
-
-
-            call.answer(stream);
-
-            call.on('stream', userStream => {
-                addVideo(vid, userStream);
-            });
-
-            call.on('finish', function() {
-                console.log("called finish")
-            });
-
-            call.on('error', (err) => {
-                alert(err)
-            });
-
-            call.on("close", () => {
-                console.log(vid);
-                vid.remove();
-            });
-
-            peerConnections[call.peer] = call;
-        });
+        connectClientVideo(myVideoStream);
 
     }).catch(err => {
-        alert(err.message)
+
+        //alert(err.message);
+
+        connectClientVideo(null);
     });
 }
+
+
+function connectClientVideo(stream) {
+
+
+    var vid = document.createElement('video');
+    vid.setAttribute("id", "callerVideo");
+    vid.muted = false;
+
+    peer.on('connection', function(conn) {
+        conn.on('data', function(isSharedScreen) {
+            if (isSharedScreen == true) {
+                vid = document.createElement('video');
+                vid.setAttribute("id", "sharedVideo");
+
+            } else {
+                stopSharing();
+                return false;
+            }
+            console.log(isSharedScreen);
+        });
+    });
+
+    peer.on('close', function(conn) {
+        console.log("close")
+    });
+
+    peer.on('call', call => {
+
+        if (stream == null) {
+            call.answer();
+        } else {
+            call.answer(stream);
+        }
+
+
+
+        call.on('stream', userStream => {
+            addVideo(vid, userStream);
+        });
+
+        call.on('finish', function() {
+            console.log("called finish")
+        });
+
+        call.on('error', (err) => {
+            alert(err)
+        });
+
+        call.on("close", () => {
+            console.log(vid);
+            vid.remove();
+        });
+
+        peerConnections[call.peer] = call;
+    });
+
+}
+
+
 
 peer.on('open', (id) => {
 

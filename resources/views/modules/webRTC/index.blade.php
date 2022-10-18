@@ -4,38 +4,38 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-3">
-            <div id="videoGrid"></div>
+        <div class="col-md-7">
+            <lesson-slider-component 
+                ref="lessonSliderComponent"
+                :is-broadcaster="{{ $isBroadcaster }}"
+                :editor_id="'canvas'"
+                :channelid="{{ $roomID }}"
+                :reservation="{{ json_encode($reservationData) }}"            
+                canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
+                canvas_width="500"
+                canvas_height="500"
+                :user_info="{{  json_encode(Auth::user()) }}"
+                :member_info="{{  json_encode($userInfo) }}"
+                api_token="{{ Auth::user()->api_token }}" 
+                csrf_token="{{ csrf_token() }}"
+                >
+            </lesson-slider-component> 
         </div>
+        <div class="col-md-3">
 
-   <div class="col-md-12">
-        <lesson-slider-component 
-            ref="lessonSliderComponent"
-            :is-broadcaster="{{ $isBroadcaster }}"
-            :editor_id="'canvas'"
-            :channelid="{{ $roomID }}"
-            :reservation="{{ json_encode($reservationData) }}"            
-            canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
-            canvas_width="500"
-            canvas_height="500"
-            :user_info="{{  json_encode(Auth::user()) }}"
-            :member_info="{{  json_encode($userInfo) }}"
-            api_token="{{ Auth::user()->api_token }}" 
-            csrf_token="{{ csrf_token() }}"
-            >
-        </lesson-slider-component> 
-    </div>
-    
-            
-    </div>
-
- 
-
-
-    <button type="button" id="stopCamera">Stop Camera </button>
+  <button type="button" id="stopCamera">Stop Camera </button>
     <button type="button" id="toggleCamera">Camera Hide On/Off</button>
     <button type="button" id="toggleAudio">Audio On/Off</button>
     <button type="button" id="shareScreen">shareScreen</button>
+    
+            
+            <div id="videoGrid"></div>
+
+  
+
+        </div>            
+    </div>
+
     
 </div>
 
@@ -69,6 +69,8 @@
         padding:0px;        
     }
 
+
+    /*
     #videoGrid #myVideo {
         width: 50px;
         position: absolute;
@@ -78,6 +80,7 @@
         min-width: 450px;
        
      }
+     */
 
 </style>
 

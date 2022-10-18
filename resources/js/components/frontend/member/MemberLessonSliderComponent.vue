@@ -2,19 +2,11 @@
 
     <div class="container-fluid">
 
-        {{ "channel ID: " + channelid }}
+        <div id="editor_content" class="row">
 
-
-        <div id="editor_content" class="row my-2">
-
-            <div class="col-md-6 col-sm-12 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
 
                 <div class="left-container mb-2">
-
-                    <div v-show="this.$props.isBroadcaster == true">
-                        {{ "type: broadcaster" }}
-                    </div>
-
 
                     <div class="tool-container" v-show="this.$props.isBroadcaster == true">
                         <!-- [START] TOOL WRAPPER -->
@@ -143,7 +135,7 @@
             </div>
 
 
-            <div class="col-md-6 col-sm-12 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
 
                 <div class="right-container">
 
