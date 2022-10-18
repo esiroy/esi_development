@@ -4,7 +4,8 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-7">
+
+        <div class="col-9">
             <lesson-slider-component 
                 ref="lessonSliderComponent"
                 :is-broadcaster="{{ $isBroadcaster }}"
@@ -21,19 +22,33 @@
                 >
             </lesson-slider-component> 
         </div>
+
         <div class="col-md-3">
+            <button type="button" id="stopCamera">Stop Camera </button>
+            <button type="button" id="toggleCamera">Camera Hide On/Off</button>
+            <button type="button" id="toggleAudio">Audio On/Off</button>
+            <button type="button" id="shareScreen">shareScreen</button>
 
-  <button type="button" id="stopCamera">Stop Camera </button>
-    <button type="button" id="toggleCamera">Camera Hide On/Off</button>
-    <button type="button" id="toggleAudio">Audio On/Off</button>
-    <button type="button" id="shareScreen">shareScreen</button>
-    
+
+            <div class="select">
+                <label for="audioSource">Audio input source: </label><select id="audioSource"></select>
+            </div>
+
+            <div class="select">
+                <label for="audioOutput">Audio output destination: </label><select id="audioOutput"></select>
+            </div>
+
+            <div class="select">
+                <label for="videoSource">Video source: </label><select id="videoSource"></select>
+            </div>
             
+            <div style="border:1px solid red">
+                <video id="video" playsinline autoplay></video>
+            </div>
+
             <div id="videoGrid"></div>
-
-  
-
         </div>            
+
     </div>
 
     

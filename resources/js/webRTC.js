@@ -14,11 +14,111 @@ let isSharedVideo = false;
 
 
 
+const videoElement = document.querySelector('video');
+videoElement.setAttribute("id", "myVideo")
+videoElement.muted = true;
+
+const audioInputSelect = document.querySelector('select#audioSource');
+const audioOutputSelect = document.querySelector('select#audioOutput');
+const videoSelect = document.querySelector('select#videoSource');
+const selectors = [audioInputSelect, audioOutputSelect, videoSelect];
+
+audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
+
+
+navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+
+function gotDevices(deviceInfos) {
+    // Handles being called several times to update labels. Preserve values.
+    const values = selectors.map(select => select.value);
+    selectors.forEach(select => {
+        while (select.firstChild) {
+            select.removeChild(select.firstChild);
+        }
+    });
+    for (let i = 0; i !== deviceInfos.length; ++i) {
+        const deviceInfo = deviceInfos[i];
+        const option = document.createElement('option');
+        option.value = deviceInfo.deviceId;
+        if (deviceInfo.kind === 'audioinput') {
+            option.text = deviceInfo.label || `microphone ${audioInputSelect.length + 1}`;
+            audioInputSelect.appendChild(option);
+        } else if (deviceInfo.kind === 'audiooutput') {
+            option.text = deviceInfo.label || `speaker ${audioOutputSelect.length + 1}`;
+            audioOutputSelect.appendChild(option);
+        } else if (deviceInfo.kind === 'videoinput') {
+            option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
+            videoSelect.appendChild(option);
+        } else {
+            console.log('Some other kind of source/device: ', deviceInfo);
+        }
+    }
+    selectors.forEach((select, selectorIndex) => {
+        if (Array.prototype.slice.call(select.childNodes).some(n => n.value === values[selectorIndex])) {
+            select.value = values[selectorIndex];
+        }
+    });
+}
+
+
+// Attach audio output device to video element using device/sink ID.
+function attachSinkId(element, sinkId) {
+    if (typeof element.sinkId !== 'undefined') {
+        element.setSinkId(sinkId)
+            .then(() => {
+                console.log(`Success, audio output device attached: ${sinkId}`);
+            })
+            .catch(error => {
+                let errorMessage = error;
+                if (error.name === 'SecurityError') {
+                    errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
+                }
+                console.error(errorMessage);
+                // Jump back to first output device in the list as it's the default.
+                audioOutputSelect.selectedIndex = 0;
+            });
+    } else {
+        console.warn('Browser does not support output device selection.');
+    }
+}
+
+function changeAudioDestination() {
+    const audioDestination = audioOutputSelect.value;
+    attachSinkId(videoElement, audioDestination);
+}
+
+function gotStream(stream) {
+    window.stream = stream; // make stream available to console
+    videoElement.srcObject = stream;
+    // Refresh button list in case labels have become available
+
+    //Register the Video
+    myVideoStream = stream;
+
+    /*
+    var vid = document.createElement('video');
+    vid.setAttribute("id", "callerVideo");
+    vid.muted = false;
+
+    addVideo(myvideo, myVideoStream);
+    */
+
+    connectClientVideo(myVideoStream);
+
+    return navigator.mediaDevices.enumerateDevices();
+}
+
+
+function handleError(error) {
+    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+}
 
 const peerConnections = {}
 
 socket.on("connect", () => {
-    console.log("socket created " + socket.id);
+    audioInputSelect.onchange = createUserMedia;
+    audioOutputSelect.onchange = changeAudioDestination;
+    videoSelect.onchange = createUserMedia;
     createUserMedia();
 });
 
@@ -49,19 +149,41 @@ socket.on('userJoined', id => {
 
         peerConnections[id] = call;
     }
-
-
-
 });
 
 
 function createUserMedia() {
 
+
+    if (window.stream) {
+        window.stream.getTracks().forEach(track => {
+            track.stop();
+        });
+    }
+    const audioSource = audioInputSelect.value;
+    const videoSource = videoSelect.value;
+
+    const constraints = {
+        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+    };
+
+    navigator.mediaDevices.getUserMedia(constraints).
+    then(gotStream).
+    then(gotDevices).
+    catch(handleError);
+
+
+}
+
+function createUserMedia_old(audio, video) {
+
     console.log("my media created!")
 
+    //media device only
     navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
+        video: video,
+        audio: audio
     }).then((stream) => {
 
         myVideoStream = stream;
@@ -80,7 +202,11 @@ function createUserMedia() {
 
         connectClientVideo(null);
     });
+
+
 }
+
+
 
 
 function connectClientVideo(stream) {
@@ -257,15 +383,11 @@ function replaceVideo(video, stream) {
 
 
 function addVideo(video, stream) {
-
-
     video.srcObject = stream;
     video.addEventListener('loadedmetadata', () => {
         video.play()
     })
     videoGrid.append(video);
-
-
 }
 
 
