@@ -103,7 +103,11 @@ function gotStream(stream) {
     addVideo(myvideo, myVideoStream);
     */
 
+    const call = peer.call(socket.id, myVideoStream);
+
+
     connectClientVideo(myVideoStream);
+
 
     return navigator.mediaDevices.enumerateDevices();
 }
@@ -153,10 +157,11 @@ socket.on('userJoined', id => {
 function handleError(error) {
     console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
 
-    createUserAudio();
+    // createUserAudio();
 }
 
 function createUserMedia() {
+
 
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
@@ -182,7 +187,7 @@ function createUserAudio() {
     //media device only
     navigator.mediaDevices.getUserMedia({
         video: false,
-        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+        audio: true,
     }).then((stream) => {
 
         myVideoStream = stream;
