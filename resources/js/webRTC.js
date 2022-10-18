@@ -109,9 +109,7 @@ function gotStream(stream) {
 }
 
 
-function handleError(error) {
-    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
-}
+
 
 const peerConnections = {}
 
@@ -152,8 +150,13 @@ socket.on('userJoined', id => {
 });
 
 
-function createUserMedia() {
+function handleError(error) {
+    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
 
+    createUserAudio();
+}
+
+function createUserMedia() {
 
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
@@ -167,23 +170,19 @@ function createUserMedia() {
         audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
-
     navigator.mediaDevices.getUserMedia(constraints).
     then(gotStream).
     then(gotDevices).
     catch(handleError);
-
-
 }
 
-function createUserMedia_old(audio, video) {
 
-    console.log("my media created!")
+function createUserAudio() {
 
     //media device only
     navigator.mediaDevices.getUserMedia({
-        video: video,
-        audio: audio
+        video: false,
+        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
     }).then((stream) => {
 
         myVideoStream = stream;
@@ -193,17 +192,12 @@ function createUserMedia_old(audio, video) {
         vid.muted = false;
 
         addVideo(myvideo, myVideoStream);
-
         connectClientVideo(myVideoStream);
 
     }).catch(err => {
 
-        //alert(err.message);
-
-        connectClientVideo(null);
+        alert("Can't create audio");
     });
-
-
 }
 
 

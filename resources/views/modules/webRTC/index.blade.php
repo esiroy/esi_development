@@ -77,7 +77,7 @@
         border: 3px solid #ccc;
     }
 
-    #videoGrid video {
+    #videoGrid video , #video {
         width: 350px;
         display:  flex;
         margin:0px;
