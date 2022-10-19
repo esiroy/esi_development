@@ -4,19 +4,23 @@ let myVideoStream;
 let myId;
 var videoGrid = document.getElementById('videoGrid')
 
+//My video is going to be muted for feedback suppression while playing
 var myvideo = document.createElement('video');
 myvideo.setAttribute("id", "myVideo")
 myvideo.muted = true;
 
+
+console.log("user", user);
+
+//My Shared video will be muted for feedback suppression while playing
 var mySharedVideo = document.createElement('video');
 mySharedVideo.setAttribute("id", "sharedVideo");
+mySharedVideo.muted = true;
+
+
+//When loading shared video is always hidden and false
 let isSharedVideo = false;
 
-
-
-const videoElement = document.querySelector('video');
-videoElement.setAttribute("id", "myVideo")
-videoElement.muted = true;
 
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
@@ -26,7 +30,7 @@ const selectors = [audioInputSelect, audioOutputSelect, videoSelect];
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
 
-navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleMediaError);
 
 function gotDevices(deviceInfos) {
     // Handles being called several times to update labels. Preserve values.
@@ -73,7 +77,10 @@ function attachSinkId(element, sinkId) {
                 if (error.name === 'SecurityError') {
                     errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
                 }
-                console.error(errorMessage);
+                //console.error(errorMessage);
+
+                console.log(error.message + " : " + error.name);
+
                 // Jump back to first output device in the list as it's the default.
                 audioOutputSelect.selectedIndex = 0;
             });
@@ -84,41 +91,35 @@ function attachSinkId(element, sinkId) {
 
 function changeAudioDestination() {
     const audioDestination = audioOutputSelect.value;
-    attachSinkId(videoElement, audioDestination);
+    console.log("my audio destination:", audioDestination);
+    attachSinkId(myvideo, audioDestination);
 }
 
 function gotStream(stream) {
-    window.stream = stream; // make stream available to console
-    videoElement.srcObject = stream;
-    // Refresh button list in case labels have become available
-
     //Register the Video
     myVideoStream = stream;
 
-    /*
-    var vid = document.createElement('video');
-    vid.setAttribute("id", "callerVideo");
-    vid.muted = false;
-
     addVideo(myvideo, myVideoStream);
-    */
 
     connectClientVideo(myVideoStream);
 
     Object.keys(peerConnections).forEach(function(peerID) {
-        peer.call(peerID, myVideoStream);
+        if (myId !== peerID) {
 
-        if (call) {
-            call.on('error', (err) => {
-                console.log(err);
-            })
-            call.on('stream', userStream => {
-                // addVideo(vid, userStream);
-            })
-            call.on('close', () => {
-                vid.remove();
-                console.log("user disconected")
-            });
+            peer.call(peerID, myVideoStream);
+
+            if (call) {
+                call.on('error', (err) => {
+                    console.log(err);
+                })
+                call.on('stream', userStream => {
+                    // addVideo(vid, userStream);
+                })
+                call.on('close', () => {
+                    vid.remove();
+                    console.log("user disconected")
+                });
+            }
         }
     });
 
@@ -141,13 +142,17 @@ socket.on("connect", () => {
 
 
 
-socket.on('userJoined', id => {
+socket.on('userJoined', (data) => {
 
-    console.log("new user joined", id);
+    let id = data.id;
+    let roomID = data.roomID;
+    let user = data.user;
+
+    console.log("new user joined", data);
 
     const call = peer.call(id, myVideoStream);
-    const vid = document.createElement('video');
 
+    const vid = document.createElement('video');
     vid.setAttribute("id", "userVid");
     vid.muted = false;
 
@@ -168,26 +173,23 @@ socket.on('userJoined', id => {
 });
 
 
-function handleError(error) {
-    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+function handleMediaError(error) {
+    if (error.name == "NotFoundError") {
+        createUserAudio();
 
-    // createUserAudio();
+    } else {
+        console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+    }
 }
 
 function createUserMedia() {
-
-    /*
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
             track.stop();
         });
     }
-    */
-
-
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
-
     const constraints = {
         audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
@@ -195,11 +197,15 @@ function createUserMedia() {
     navigator.mediaDevices.getUserMedia(constraints).
     then(gotStream).
     then(gotDevices).
-    catch(handleError);
+    catch((err) => {
+        handleMediaError(err)
+    });
 }
 
 
 function createUserAudio() {
+
+    console.log("creating audi only");
 
     //media device only
     navigator.mediaDevices.getUserMedia({
@@ -214,7 +220,8 @@ function createUserAudio() {
         vid.muted = false;
 
         addVideo(myvideo, myVideoStream);
-        connectClientVideo(myVideoStream);
+
+        connectClientAudio(myVideoStream);
 
     }).catch(err => {
 
@@ -223,14 +230,14 @@ function createUserAudio() {
 }
 
 
+function connectClientAudio(stream) {
 
+    console.log("connect client Audio stream");
 
-function connectClientVideo(stream) {
-
-
-    var vid = document.createElement('video');
-    vid.setAttribute("id", "callerVideo");
-    vid.muted = false;
+    var audioElement = document.createElement('audio');
+    audioElement.setAttribute("id", "callerAudio");
+    audioElement.setAttribute("controls", "controls");
+    audioElement.muted = false;
 
     peer.on('connection', function(conn) {
         conn.on('data', function(isSharedScreen) {
@@ -258,7 +265,62 @@ function connectClientVideo(stream) {
             call.answer(stream);
         }
 
+        call.on('stream', userStream => {
+            addAudio(audioElement, userStream);
+        });
 
+        call.on('finish', function() {
+            console.log("called finish")
+        });
+
+        call.on('error', (err) => {
+            alert(err)
+        });
+
+        call.on("close", () => {
+            audioElement.remove();
+        });
+
+        peerConnections[call.peer] = call;
+    });
+
+}
+
+
+function connectClientVideo(stream) {
+
+
+    var vid = document.createElement('video');
+    vid.setAttribute("id", "callerVideo");
+    vid.muted = false;
+
+    peer.on('connection', function(conn) {
+
+        conn.on('data', function(isSharedScreen) {
+
+            if (isSharedScreen == true) {
+                vid = document.createElement('video');
+                vid.setAttribute("id", "sharedVideo");
+
+            } else {
+                stopSharing();
+                return false;
+            }
+            console.log(isSharedScreen);
+        });
+    });
+
+    peer.on('close', function(conn) {
+        console.log("close")
+    });
+
+    peer.on('call', call => {
+
+        if (stream == null) {
+            call.answer();
+        } else {
+            call.answer(stream);
+        }
 
         call.on('stream', userStream => {
             addVideo(vid, userStream);
@@ -285,10 +347,19 @@ function connectClientVideo(stream) {
 
 
 peer.on('open', (id) => {
-
     console.log("my peer id" + id)
+    console.log("my user ", user)
+    console.log("my room id ", roomID)
+
     myId = id;
-    socket.emit("newUser", id, roomID);
+
+    data = {
+        'id': id,
+        'user': user,
+        'roomID': roomID
+    }
+
+    socket.emit("newUser", data);
 });
 
 peer.on('error', (err) => {
@@ -398,6 +469,13 @@ function replaceVideo(video, stream) {
 
 }
 
+function addAudio(audio, stream) {
+    audio.srcObject = stream;
+    audio.addEventListener('loadedmetadata', () => {
+        audio.play()
+    })
+    videoGrid.append(audio);
+}
 
 function addVideo(video, stream) {
     video.srcObject = stream;
@@ -409,10 +487,7 @@ function addVideo(video, stream) {
 
 
 function stopCam() {
-
-    //myVideoStream.getVideoTracks().forEach(track => track.stop());
-
-    myVideoStream.getVideoTracks().forEach(function(track) {
+    myVideoStream.getVideoTracks().forEach((track) => {
         if (track.readyState == 'live') {
             track.stop();
         } else {
@@ -420,7 +495,7 @@ function stopCam() {
         }
     });
 
-    myVideoStream.getTracks().forEach(function(track) {
+    myVideoStream.getTracks().forEach((track) => {
         if (track.readyState == 'live') {
             track.stop();
         } else {

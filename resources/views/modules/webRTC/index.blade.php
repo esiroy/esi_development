@@ -41,10 +41,6 @@
             <div class="select">
                 <label for="videoSource">Video source: </label><select id="videoSource"></select>
             </div>
-            
-            <div style="border:1px solid red">
-                <video id="video" playsinline autoplay></video>
-            </div>
 
             <div id="videoGrid"></div>
         </div>            
@@ -65,6 +61,12 @@
 
 <script type="text/javascript">
     var roomID = "{{ $roomID }}";
+
+    var user = "{{ Auth::user()->id }}";
+
+    var user = { userid: "{{ Auth::user()->id }}", userimage: "testimage" }
+
+
 </script>
 @endsection
 
