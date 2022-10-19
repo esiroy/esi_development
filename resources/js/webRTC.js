@@ -220,10 +220,11 @@ function createUserAudio() {
 
         myAudioStream = stream;
 
+        //Create my audio stream
         var audioElement = document.createElement('audio');
         audioElement.setAttribute("id", "myAudio");
         audioElement.setAttribute("controls", "controls");
-        audioElement.muted = false;
+        audioElement.muted = true;
 
         addAudio(audioElement, myAudioStream);
 
