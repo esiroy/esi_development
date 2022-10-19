@@ -154,7 +154,7 @@ socket.on('userJoined', (data) => {
 
     const vid = document.createElement('video');
     vid.setAttribute("id", "userVid");
-    vid.muted = false;
+    vid.muted = true;
 
     if (call) {
         call.on('error', (err) => {
