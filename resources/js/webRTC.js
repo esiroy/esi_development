@@ -1,6 +1,8 @@
 const socket = io('https://rtcserver.esuccess-inc.com:40002', {});
 const peer = new Peer();
 let myVideoStream;
+let myAudioStream;
+
 let myId;
 var videoGrid = document.getElementById('videoGrid')
 
@@ -8,6 +10,9 @@ var videoGrid = document.getElementById('videoGrid')
 var myvideo = document.createElement('video');
 myvideo.setAttribute("id", "myVideo")
 myvideo.muted = true;
+
+
+
 
 
 console.log("user", user);
@@ -213,15 +218,16 @@ function createUserAudio() {
         audio: true,
     }).then((stream) => {
 
-        myVideoStream = stream;
+        myAudioStream = stream;
 
-        var vid = document.createElement('video');
-        vid.setAttribute("id", "callerVideo");
-        vid.muted = false;
+        var audioElement = document.createElement('audio');
+        audioElement.setAttribute("id", "myAudio");
+        audioElement.setAttribute("controls", "controls");
+        audioElement.muted = false;
 
-        addVideo(myvideo, myVideoStream);
+        addAudio(audioElement, myAudioStream);
 
-        connectClientAudio(myVideoStream);
+        connectClientVideo(myAudioStream);
 
     }).catch(err => {
 
