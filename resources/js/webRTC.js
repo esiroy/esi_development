@@ -1,7 +1,11 @@
 const socket = io('https://rtcserver.esuccess-inc.com:40002', {});
+
 const peer = new Peer();
+
 let myVideoStream;
 let myAudioStream;
+
+let callerStream;
 
 let myId;
 var videoGrid = document.getElementById('videoGrid')
@@ -145,6 +149,11 @@ socket.on("connect", () => {
 });
 
 
+function detectCalls(call) {
+    if (call) {
+
+    }
+}
 
 
 socket.on('userJoined', (data) => {
@@ -155,36 +164,123 @@ socket.on('userJoined', (data) => {
 
     console.log("new user joined", data);
 
-    const call = peer.call(id, myVideoStream);
 
-    const vid = document.createElement('video');
-    vid.setAttribute("id", "userVid");
-    vid.muted = true;
+    //@todo: When user joins the "videostream" or "audio stream" is not known???
+    //@todo: make a script to determine which 
 
-    if (call) {
-        call.on('error', (err) => {
-            console.log(err);
-        })
-        call.on('stream', userStream => {
-            addVideo(vid, userStream);
-        })
-        call.on('close', () => {
-            vid.remove();
-            console.log("user disconected")
-        });
 
-        peerConnections[id] = call;
+    if (myVideoStream) {
+
+        const call = peer.call(id, myVideoStream);
+        if (call) {
+
+            call.on('error', (err) => {
+                console.log(err);
+            });
+
+            call.on('stream', userStream => {
+
+                console.log("on stream while I have a video");
+
+
+
+                if (userStream.getAudioTracks().length && userStream.getVideoTracks().length) {
+
+                    const vid = document.createElement('video');
+                    vid.setAttribute("id", "userVideo");
+                    vid.muted = false;
+                    addVideo(vid, userStream);
+
+                } else {
+
+                    const audioElement = document.createElement('audio');
+                    audioElement.setAttribute("id", "callerAudio");
+                    audioElement.setAttribute("controls", "controls");
+                    audioElement.muted = false;
+                    addAudio(audioElement, userStream);
+                }
+
+            });
+
+            call.on('close', () => {
+
+                if (callerStream.getAudioTracks().length && callerStream.getVideoTracks().length) {
+                    vid.remove();
+                } else {
+                    audioElement.remove();
+                }
+                console.log("user disconected")
+            });
+
+            peerConnections[id] = call;
+        }
+
+    } else {
+
+        const call = peer.call(id, myAudioStream);
+
+        if (call) {
+            call.on('error', (err) => {
+                console.log(err);
+            })
+            call.on('stream', userStream => {
+
+                console.log("on stream while i'm on audio");
+
+                callerStream = userStream;
+
+                if (userStream.getAudioTracks().length && userStream.getVideoTracks().length) {
+
+                    const vid = document.createElement('video');
+                    vid.setAttribute("id", "userVideo");
+                    vid.muted = false;
+                    addVideo(vid, userStream);
+
+                } else {
+
+                    const audioElement = document.createElement('audio');
+                    audioElement.setAttribute("id", "callerAudio");
+                    audioElement.setAttribute("controls", "controls");
+                    audioElement.muted = false;
+                    addAudio(audioElement, userStream);
+                }
+
+
+            })
+            call.on('close', () => {
+
+                if (callerStream.getAudioTracks().length && callerStream.getVideoTracks().length) {
+                    vid.remove();
+                } else {
+                    audioElement.remove();
+                }
+
+
+                console.log("user disconected")
+            });
+
+            peerConnections[id] = call;
+        }
     }
+
+
+
 });
 
 
 function handleMediaError(error) {
+
+    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
+    createUserAudio();
+
+    /*
     if (error.name == "NotFoundError") {
         createUserAudio();
 
     } else {
         console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
     }
+    */
 }
 
 function createUserMedia() {
@@ -228,7 +324,7 @@ function createUserAudio() {
 
         addAudio(audioElement, myAudioStream);
 
-        connectClientVideo(myAudioStream);
+        connectClientAudio(myAudioStream);
 
     }).catch(err => {
 
