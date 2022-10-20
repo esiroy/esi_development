@@ -21,6 +21,10 @@ const peerConnections = {}
 
 //steam
 const videoElement = document.querySelector('video');
+videoElement.setAttribute("id", "myVideo");
+videoElement.muted = true;
+
+
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
 const videoSelect = document.querySelector('select#videoSource');
@@ -103,6 +107,15 @@ function handleError(error) {
     console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
 }
 
+
+function addVideo(video, stream) {
+    video.srcObject = stream;
+    video.addEventListener('loadedmetadata', () => {
+        video.play()
+    })
+    videoGrid.append(video);
+}
+
 function start() {
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
@@ -116,35 +129,36 @@ function start() {
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
     navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
+}
+
+function restart() {
+
+    start();
+
+    data = {
+        'id': myId,
+        'user': user,
+        'roomID': roomID
+    }
+
+    socket.emit("newUser", data);
 
 }
 
-function addVideo(video, stream) {
-    video.srcObject = stream;
-    video.addEventListener('loadedmetadata', () => {
-        video.play()
-    })
-    videoGrid.append(video);
-}
-
-
-audioInputSelect.onchange = start;
+audioInputSelect.onchange = restart;
 audioOutputSelect.onchange = changeAudioDestination;
-videoSelect.onchange = start;
+videoSelect.onchange = restart;
 
 
 start();
 
 peer.on('connection', function(conn) {
-
     conn.on('data', function(data) {
         console.log("peer connected", data)
     });
-
     conn.on('close', () => {
         alert("close")
     });
-
 });
 
 peer.on('open', (id) => {
@@ -164,14 +178,17 @@ peer.on('open', (id) => {
 });
 
 peer.on('call', call => {
-
     let ctr = 0;
-
     call.answer(myVideoStream);
-
-
     call.on('stream', (userStream) => {
         if (ctr == 0) {
+
+            let peerElement = document.getElementById(call.peer);
+            if (peerElement) {
+                peerElement.remove();
+            }
+
+
             callerElement = document.createElement('video');
             //console.log(call.peer); (add for deletion purposes)
             callerElement.setAttribute("id", call.peer);
@@ -184,25 +201,25 @@ peer.on('call', call => {
 });
 
 peer.on('close', (id) => {
-    alert("close!")
+    document.getElementById(id).remove();
 });
 
 
-
-
 socket.on('userJoined', (data) => {
-
     let id = data.id;
     let roomID = data.roomID;
     let user = data.user;
-
     const callback = peer.call(id, myVideoStream);
-
     if (callback) {
-
         let ctr = 0;
         callback.on('stream', (userStream) => {
             if (ctr == 0) {
+
+                let peerElement = document.getElementById(data.id);
+                if (peerElement) {
+                    peerElement.remove();
+                }
+
                 callerElement = document.createElement('video');
                 callerElement.setAttribute("id", data.id);
                 callerElement.setAttribute("class", "callerBackVideo");
@@ -212,7 +229,6 @@ socket.on('userJoined', (data) => {
             ctr++;
         });
 
-
         callback.on('close', () => {
             document.getElementById(id).remove();
         });
@@ -221,7 +237,6 @@ socket.on('userJoined', (data) => {
             console.log(err);
         });
     }
-
 
     peerConnections[id] = callback;
 
