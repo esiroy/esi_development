@@ -87,8 +87,6 @@ function createUserMedia() {
         });
 
         peer.on('call', call => {
-
-
             call.answer(stream);
 
             call.on('stream', userStream => {
@@ -107,8 +105,6 @@ function createUserMedia() {
                 console.log(vid);
                 vid.remove();
             });
-
-            peerConnections[call.peer] = call;
         });
 
     }).catch(err => {
@@ -139,8 +135,6 @@ function createUserMedia() {
                 console.log(vid);
                 vid.remove();
             });
-
-            peerConnections[call.peer] = call;
         });
 
     });

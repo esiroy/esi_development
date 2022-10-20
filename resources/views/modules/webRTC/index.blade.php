@@ -42,7 +42,13 @@
                 <label for="videoSource">Video source: </label><select id="videoSource"></select>
             </div>
 
+
+            <video id="video" playsinline autoplay></video>
+
+            
+
             <div id="videoGrid"></div>
+
         </div>            
 
     </div>

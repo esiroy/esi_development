@@ -1,45 +1,32 @@
+/*
+ *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
+ *
+ *  Use of this source code is governed by a BSD-style license
+ *  that can be found in the LICENSE file in the root of the source
+ *  tree.
+ */
+
 const socket = io('https://rtcserver.esuccess-inc.com:40002', {});
 
-const peer = new Peer();
+const peer = new Peer({
+    initiator: false,
+    trickle: false,
+});
 
+'use strict';
 let myVideoStream;
-let myAudioStream;
-
-let callerStream;
-
-let myId;
-var videoGrid = document.getElementById('videoGrid')
-
-//My video is going to be muted for feedback suppression while playing
-var myvideo = document.createElement('video');
-myvideo.setAttribute("id", "myVideo")
-myvideo.muted = true;
 
 
+const peerConnections = {}
 
-
-
-console.log("user", user);
-
-//My Shared video will be muted for feedback suppression while playing
-var mySharedVideo = document.createElement('video');
-mySharedVideo.setAttribute("id", "sharedVideo");
-mySharedVideo.muted = true;
-
-
-//When loading shared video is always hidden and false
-let isSharedVideo = false;
-
-
+//steam
+const videoElement = document.querySelector('video');
 const audioInputSelect = document.querySelector('select#audioSource');
 const audioOutputSelect = document.querySelector('select#audioOutput');
 const videoSelect = document.querySelector('select#videoSource');
 const selectors = [audioInputSelect, audioOutputSelect, videoSelect];
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
-
-
-navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleMediaError);
 
 function gotDevices(deviceInfos) {
     // Handles being called several times to update labels. Preserve values.
@@ -73,6 +60,7 @@ function gotDevices(deviceInfos) {
     });
 }
 
+navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 
 // Attach audio output device to video element using device/sink ID.
 function attachSinkId(element, sinkId) {
@@ -86,10 +74,7 @@ function attachSinkId(element, sinkId) {
                 if (error.name === 'SecurityError') {
                     errorMessage = `You need to use HTTPS for selecting audio output device: ${error}`;
                 }
-                //console.error(errorMessage);
-
-                console.log(error.message + " : " + error.name);
-
+                console.error(errorMessage);
                 // Jump back to first output device in the list as it's the default.
                 audioOutputSelect.selectedIndex = 0;
             });
@@ -100,190 +85,25 @@ function attachSinkId(element, sinkId) {
 
 function changeAudioDestination() {
     const audioDestination = audioOutputSelect.value;
-    console.log("my audio destination:", audioDestination);
-    attachSinkId(myvideo, audioDestination);
+    attachSinkId(videoElement, audioDestination);
 }
 
 function gotStream(stream) {
-    //Register the Video
+    window.stream = stream; // make stream available to console
+    videoElement.srcObject = stream;
+
+    //Register the video stream to my Stream
     myVideoStream = stream;
 
-    addVideo(myvideo, myVideoStream);
-
-    connectClientVideo(myVideoStream);
-
-    Object.keys(peerConnections).forEach(function(peerID) {
-        if (myId !== peerID) {
-
-            peer.call(peerID, myVideoStream);
-
-            if (call) {
-                call.on('error', (err) => {
-                    console.log(err);
-                })
-                call.on('stream', userStream => {
-                    // addVideo(vid, userStream);
-                })
-                call.on('close', () => {
-                    vid.remove();
-                    console.log("user disconected")
-                });
-            }
-        }
-    });
-
-
+    // Refresh button list in case labels have become available
     return navigator.mediaDevices.enumerateDevices();
 }
 
-
-
-
-const peerConnections = {}
-
-socket.on("connect", () => {
-    audioInputSelect.onchange = createUserMedia;
-    audioOutputSelect.onchange = changeAudioDestination;
-    videoSelect.onchange = createUserMedia;
-    createUserMedia();
-});
-
-
-function detectCalls(call) {
-    if (call) {
-
-    }
-}
-
-
-socket.on('userJoined', (data) => {
-
-    let id = data.id;
-    let roomID = data.roomID;
-    let user = data.user;
-
-    console.log("new user joined", data);
-
-
-    //@todo: When user joins the "videostream" or "audio stream" is not known???
-    //@todo: make a script to determine which 
-
-
-    if (myVideoStream) {
-
-        const call = peer.call(id, myVideoStream);
-        if (call) {
-
-            call.on('error', (err) => {
-                console.log(err);
-            });
-
-            call.on('stream', userStream => {
-
-                console.log("on stream while I have a video");
-
-
-
-                if (userStream.getAudioTracks().length && userStream.getVideoTracks().length) {
-
-                    const vid = document.createElement('video');
-                    vid.setAttribute("id", "userVideo");
-                    vid.muted = false;
-                    addVideo(vid, userStream);
-
-                } else {
-
-                    const audioElement = document.createElement('audio');
-                    audioElement.setAttribute("id", "callerAudio");
-                    audioElement.setAttribute("controls", "controls");
-                    audioElement.muted = false;
-                    addAudio(audioElement, userStream);
-                }
-
-            });
-
-            call.on('close', () => {
-
-                if (callerStream.getAudioTracks().length && callerStream.getVideoTracks().length) {
-                    vid.remove();
-                } else {
-                    audioElement.remove();
-                }
-                console.log("user disconected")
-            });
-
-            peerConnections[id] = call;
-        }
-
-    } else {
-
-        const call = peer.call(id, myAudioStream);
-
-        if (call) {
-            call.on('error', (err) => {
-                console.log(err);
-            })
-            call.on('stream', userStream => {
-
-                console.log("on stream while i'm on audio");
-
-                callerStream = userStream;
-
-                if (userStream.getAudioTracks().length && userStream.getVideoTracks().length) {
-
-                    const vid = document.createElement('video');
-                    vid.setAttribute("id", "userVideo");
-                    vid.muted = false;
-                    addVideo(vid, userStream);
-
-                } else {
-
-                    const audioElement = document.createElement('audio');
-                    audioElement.setAttribute("id", "callerAudio");
-                    audioElement.setAttribute("controls", "controls");
-                    audioElement.muted = false;
-                    addAudio(audioElement, userStream);
-                }
-
-
-            })
-            call.on('close', () => {
-
-                if (callerStream.getAudioTracks().length && callerStream.getVideoTracks().length) {
-                    vid.remove();
-                } else {
-                    audioElement.remove();
-                }
-
-
-                console.log("user disconected")
-            });
-
-            peerConnections[id] = call;
-        }
-    }
-
-
-
-});
-
-
-function handleMediaError(error) {
-
+function handleError(error) {
     console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
-    createUserAudio();
-
-    /*
-    if (error.name == "NotFoundError") {
-        createUserAudio();
-
-    } else {
-        console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
-    }
-    */
 }
 
-function createUserMedia() {
+function start() {
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
             track.stop();
@@ -295,159 +115,37 @@ function createUserMedia() {
         audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
-    navigator.mediaDevices.getUserMedia(constraints).
-    then(gotStream).
-    then(gotDevices).
-    catch((err) => {
-        handleMediaError(err)
-    });
-}
-
-
-function createUserAudio() {
-
-    console.log("creating audi only");
-
-    //media device only
-    navigator.mediaDevices.getUserMedia({
-        video: false,
-        audio: true,
-    }).then((stream) => {
-
-        myAudioStream = stream;
-
-        //Create my audio stream
-        var audioElement = document.createElement('audio');
-        audioElement.setAttribute("id", "myAudio");
-        audioElement.setAttribute("controls", "controls");
-        audioElement.muted = true;
-
-        addAudio(audioElement, myAudioStream);
-
-        connectClientAudio(myAudioStream);
-
-    }).catch(err => {
-
-        alert("Can't create audio");
-    });
-}
-
-
-function connectClientAudio(stream) {
-
-    console.log("connect client Audio stream");
-
-    var audioElement = document.createElement('audio');
-    audioElement.setAttribute("id", "callerAudio");
-    audioElement.setAttribute("controls", "controls");
-    audioElement.muted = false;
-
-    peer.on('connection', function(conn) {
-        conn.on('data', function(isSharedScreen) {
-            if (isSharedScreen == true) {
-                vid = document.createElement('video');
-                vid.setAttribute("id", "sharedVideo");
-
-            } else {
-                stopSharing();
-                return false;
-            }
-            console.log(isSharedScreen);
-        });
-    });
-
-    peer.on('close', function(conn) {
-        console.log("close")
-    });
-
-    peer.on('call', call => {
-
-        if (stream == null) {
-            call.answer();
-        } else {
-            call.answer(stream);
-        }
-
-        call.on('stream', userStream => {
-            addAudio(audioElement, userStream);
-        });
-
-        call.on('finish', function() {
-            console.log("called finish")
-        });
-
-        call.on('error', (err) => {
-            alert(err)
-        });
-
-        call.on("close", () => {
-            audioElement.remove();
-        });
-
-        peerConnections[call.peer] = call;
-    });
+    navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
 
 }
 
-
-function connectClientVideo(stream) {
-
-
-    var vid = document.createElement('video');
-    vid.setAttribute("id", "callerVideo");
-    vid.muted = false;
-
-    peer.on('connection', function(conn) {
-
-        conn.on('data', function(isSharedScreen) {
-
-            if (isSharedScreen == true) {
-                vid = document.createElement('video');
-                vid.setAttribute("id", "sharedVideo");
-
-            } else {
-                stopSharing();
-                return false;
-            }
-            console.log(isSharedScreen);
-        });
-    });
-
-    peer.on('close', function(conn) {
-        console.log("close")
-    });
-
-    peer.on('call', call => {
-
-        if (stream == null) {
-            call.answer();
-        } else {
-            call.answer(stream);
-        }
-
-        call.on('stream', userStream => {
-            addVideo(vid, userStream);
-        });
-
-        call.on('finish', function() {
-            console.log("called finish")
-        });
-
-        call.on('error', (err) => {
-            alert(err)
-        });
-
-        call.on("close", () => {
-            console.log(vid);
-            vid.remove();
-        });
-
-        peerConnections[call.peer] = call;
-    });
-
+function addVideo(video, stream) {
+    video.srcObject = stream;
+    video.addEventListener('loadedmetadata', () => {
+        video.play()
+    })
+    videoGrid.append(video);
 }
 
 
+audioInputSelect.onchange = start;
+audioOutputSelect.onchange = changeAudioDestination;
+videoSelect.onchange = start;
+
+
+start();
+
+peer.on('connection', function(conn) {
+
+    conn.on('data', function(data) {
+        console.log("peer connected", data)
+    });
+
+    conn.on('close', () => {
+        alert("close")
+    });
+
+});
 
 peer.on('open', (id) => {
     console.log("my peer id" + id)
@@ -465,190 +163,71 @@ peer.on('open', (id) => {
     socket.emit("newUser", data);
 });
 
-peer.on('error', (err) => {
-    console.log(err + " : " + err.type)
+peer.on('call', call => {
+
+    let ctr = 0;
+    call.answer(stream);
+
+
+    call.on('stream', (userStream) => {
+        if (ctr == 0) {
+            callerElement = document.createElement('video');
+            //console.log(call.peer); (add for deletion purposes)
+            callerElement.setAttribute("id", call.peer);
+            callerElement.setAttribute("class", "callerVideo");
+            callerElement.muted = false;
+            addVideo(callerElement, userStream);
+        }
+        ctr++
+    });
+});
+
+peer.on('close', (id) => {
+    alert("close!")
 });
 
 
-socket.on('userShared', (roomID, stream) => {
 
-    /*
-    console.log("user shared :" + myId);
-    const call = peer.call(myId, stream);
 
-    call.on("stream", (remoteStream) => {
-        // Show stream in some <video> element.
+socket.on('userJoined', (data) => {
+
+    let id = data.id;
+    let roomID = data.roomID;
+    let user = data.user;
+
+    const callback = peer.call(id, myVideoStream);
+
+    let ctr = 0;
+
+
+    callback.on('stream', (userStream) => {
+        if (ctr == 0) {
+            callerElement = document.createElement('video');
+            callerElement.setAttribute("id", data.id);
+            callerElement.setAttribute("class", "callerBackVideo");
+            callerElement.muted = false;
+            addVideo(callerElement, userStream);
+        }
+        ctr++;
     });
-    */
+
+
+    callback.on('close', () => {
+        alert("test close")
+    });
+
+    callback.on('error', (err) => {
+        console.log(err);
+    });
+
+    peerConnections[id] = callback;
 
 });
-
-
-
-//user end stop sharing
-function stopSharing() {
-    document.getElementById("sharedVideo").remove();
-}
-
-
-function shareScreen() {
-
-    navigator.mediaDevices.getDisplayMedia({
-        video: true,
-        audio: true
-    }).then((stream) => {
-
-        sharedScreen = stream;
-
-        //The screen record is stopped by myself
-        sharedScreen.getVideoTracks()[0].onended = function() {
-            document.getElementById("sharedVideo").remove();
-
-            //send this shared screen false to stop peer
-            Object.keys(peerConnections).forEach(function(peerID) {
-                var conn = peer.connect(peerID);
-                conn.on('open', () => {
-                    let isSharedScreen = false;
-                    conn.send(isSharedScreen);
-                });
-            })
-        };
-
-        //Connect to peers
-        Object.keys(peerConnections).forEach(function(peerID) {
-            //connect and send
-            var conn = peer.connect(peerID);
-
-            conn.on('open', () => {
-                let isSharedScreen = true;
-                conn.send(isSharedScreen);
-                const vid = document.createElement('video');
-                vid.setAttribute("id", "vid");
-
-                const newcall = peer.call(peerID, sharedScreen);
-
-                newcall.on('error', (err) => {
-                    console.log(err)
-                });
-
-                newcall.on('stream', userStream => {
-                    // addVideo(vid, userStream);
-                });
-
-                newcall.on('close', () => {
-                    vid.remove();
-                    console.log("user disconect")
-                });
-
-            });
-
-        });
-
-        replaceVideo(mySharedVideo, sharedScreen);
-
-        //socket.emit("userShare", roomID, sharedScreen);
-
-    });
-}
-
-
-
-
 
 
 socket.on('userDisconnect', id => {
     if (peerConnections[id]) {
         peerConnections[id].close();
+        document.getElementById(id).remove();
     }
-});
-
-
-function replaceVideo(video, stream) {
-    video.srcObject = stream;
-    video.addEventListener('loadedmetadata', () => {
-        video.play()
-    })
-    videoGrid.append(video);
-
-}
-
-function addAudio(audio, stream) {
-    audio.srcObject = stream;
-    audio.addEventListener('loadedmetadata', () => {
-        audio.play()
-    })
-    videoGrid.append(audio);
-}
-
-function addVideo(video, stream) {
-    video.srcObject = stream;
-    video.addEventListener('loadedmetadata', () => {
-        video.play()
-    })
-    videoGrid.append(video);
-}
-
-
-function stopCam() {
-    myVideoStream.getVideoTracks().forEach((track) => {
-        if (track.readyState == 'live') {
-            track.stop();
-        } else {
-            console.log("video broadcasting live");
-        }
-    });
-
-    myVideoStream.getTracks().forEach((track) => {
-        if (track.readyState == 'live') {
-            track.stop();
-        } else {
-            console.log("audio not broadcasting live");
-        }
-    });
-}
-
-// stop only camera
-function stopVideoOnly(stream) {
-    stream.getTracks().forEach(function(track) {
-        if (track.readyState == 'live' && track.kind === 'video') {
-            track.stop();
-        }
-    });
-}
-
-// stop only mic
-function stopAudioOnly(stream) {
-    stream.getTracks().forEach(function(track) {
-        if (track.readyState == 'live' && track.kind === 'audio') {
-            track.stop();
-        }
-    });
-}
-
-function muteCam() {
-    myVideoStream.getVideoTracks().forEach((track) => {
-        track.enabled = !track.enabled
-        console.log(track)
-    });
-}
-
-function muteMic() {
-    myVideoStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-}
-
-//DOM Execution
-document.getElementById("stopCamera").addEventListener("click", function() {
-    stopCam();
-});
-
-document.getElementById("toggleCamera").addEventListener("click", function() {
-    muteCam();
-});
-
-document.getElementById("toggleAudio").addEventListener("click", function() {
-    muteMic();
-});
-
-document.getElementById("shareScreen").addEventListener("click", function() {
-    shareScreen();
 });
