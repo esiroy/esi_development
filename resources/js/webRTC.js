@@ -214,14 +214,12 @@ socket.on('userJoined', (data) => {
 
 
         callback.on('close', () => {
-            alert("test close")
+            document.getElementById(id).remove();
         });
 
         callback.on('error', (err) => {
             console.log(err);
         });
-
-
     }
 
 
