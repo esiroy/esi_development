@@ -166,7 +166,8 @@ peer.on('open', (id) => {
 peer.on('call', call => {
 
     let ctr = 0;
-    call.answer(stream);
+
+    call.answer(myVideoStream);
 
 
     call.on('stream', (userStream) => {
@@ -197,28 +198,32 @@ socket.on('userJoined', (data) => {
 
     const callback = peer.call(id, myVideoStream);
 
-    let ctr = 0;
+    if (callback) {
+
+        let ctr = 0;
+        callback.on('stream', (userStream) => {
+            if (ctr == 0) {
+                callerElement = document.createElement('video');
+                callerElement.setAttribute("id", data.id);
+                callerElement.setAttribute("class", "callerBackVideo");
+                callerElement.muted = false;
+                addVideo(callerElement, userStream);
+            }
+            ctr++;
+        });
 
 
-    callback.on('stream', (userStream) => {
-        if (ctr == 0) {
-            callerElement = document.createElement('video');
-            callerElement.setAttribute("id", data.id);
-            callerElement.setAttribute("class", "callerBackVideo");
-            callerElement.muted = false;
-            addVideo(callerElement, userStream);
-        }
-        ctr++;
-    });
+        callback.on('close', () => {
+            alert("test close")
+        });
+
+        callback.on('error', (err) => {
+            console.log(err);
+        });
 
 
-    callback.on('close', () => {
-        alert("test close")
-    });
+    }
 
-    callback.on('error', (err) => {
-        console.log(err);
-    });
 
     peerConnections[id] = callback;
 
