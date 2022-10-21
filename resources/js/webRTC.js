@@ -345,17 +345,48 @@ peer.on('call', call => {
 
     call.on('stream', (userStream) => {
 
-        console.log("?????????????")
 
         //if (ctr == 1) {
+        /*
         removeElementByID(call.peer);
         callerElement = document.createElement('video');
         callerElement.setAttribute("id", call.peer);
         callerElement.setAttribute("class", "callerVideo");
         callerElement.muted = false;
         addVideo(callerElement, userStream);
+        */
         //}
         //ctr++
+
+
+        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+            console.log("callback is a video")
+
+            callerElement = document.createElement('video');
+            callerElement.setAttribute("id", data.id);
+            callerElement.setAttribute("class", "callerBackVideo");
+            callerElement.muted = false;
+
+            addVideo(callerElement, userStream);
+
+
+        } else {
+
+            console.log("callback AUDIO")
+
+            callerElement = document.createElement('audio');
+            callerElement.setAttribute("id", data.id);
+            callerElement.setAttribute("class", "callbackAudio");
+            callerElement.setAttribute("controls", "controls");
+            callerElement.muted = false;
+
+            addAudio(callerElement, userStream);
+        }
+
+
+
+
     });
 
     call.on('close', () => {
@@ -454,9 +485,6 @@ socket.on('mediaChanged', (data) => {
                 callerElement.muted = true;
 
                 addAudio(callerElement, userStream);
-
-
-
             }
 
 
