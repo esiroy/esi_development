@@ -185,7 +185,7 @@ function connectMedia(video, audio, constraints) {
 
             videoElement = document.createElement('video');
             videoElement.setAttribute("id", "myVideo");
-            videoElement.muted = false;
+            videoElement.muted = true;
 
             addMyVideo(videoElement, stream);
 
@@ -196,7 +196,7 @@ function connectMedia(video, audio, constraints) {
             audio = document.createElement('audio');
             audio.setAttribute("class", "myAudio");
             audio.setAttribute("controls", "controls");
-            audio.muted = false;
+            audio.muted = true;
 
             addMyAudio(audio, stream);
 
@@ -470,7 +470,8 @@ socket.on('mediaChanged', (data) => {
                 callerElement = document.createElement('video');
                 callerElement.setAttribute("id", data.id);
                 callerElement.setAttribute("class", "callerBackVideo");
-                callerElement.muted = true;
+                callerElement.muted = false;
+
                 addVideo(callerElement, userStream);
 
 
@@ -482,7 +483,7 @@ socket.on('mediaChanged', (data) => {
                 callerElement.setAttribute("id", data.id);
                 callerElement.setAttribute("class", "callbackAudio");
                 callerElement.setAttribute("controls", "controls");
-                callerElement.muted = true;
+                callerElement.muted = false;
 
                 addAudio(callerElement, userStream);
             }
