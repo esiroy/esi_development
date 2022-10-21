@@ -190,6 +190,8 @@ function connectMedia(video, audio, constraints) {
             videoElement.muted = true;
             addMyVideo(videoElement, stream);
 
+            socket.emit("changeMedia", data);
+
         } else {
 
 
@@ -208,9 +210,11 @@ function connectMedia(video, audio, constraints) {
 
             addMyAudio(audio, stream);
 
+            socket.emit("changeMedia", data);
+
         }
 
-        socket.emit("changeMedia", data);
+
 
         return navigator.mediaDevices.enumerateDevices();
 
@@ -348,24 +352,9 @@ peer.on('call', call => {
 
     console.log("call");
 
-
     call.answer(myVideoStream);
 
     call.on('stream', (userStream) => {
-
-
-        //if (ctr == 1) {
-        /*
-        removeElementByID(call.peer);
-        callerElement = document.createElement('video');
-        callerElement.setAttribute("id", call.peer);
-        callerElement.setAttribute("class", "callerVideo");
-        callerElement.muted = false;
-        addVideo(callerElement, userStream);
-        */
-        //}
-        //ctr++
-        //if (ctr == 0) {
 
         if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
@@ -458,11 +447,16 @@ socket.on('userJoined', (data) => {
 
 socket.on('mediaChanged', (data) => {
 
+    restart()
+
+    /*
     let id = data.id;
     let roomID = data.roomID;
     let user = data.user;
 
     let callback = null;
+
+
 
     if (myVideoStream !== null) {
         callback = peer.call(id, myVideoStream);
@@ -533,6 +527,7 @@ socket.on('mediaChanged', (data) => {
 
         peerConnections[data.id] = callback;
     }
+    */
 });
 
 
