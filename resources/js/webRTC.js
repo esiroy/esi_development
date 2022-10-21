@@ -357,37 +357,37 @@ peer.on('call', call => {
         */
         //}
         //ctr++
-        if (ctr == 0) {
+        //if (ctr == 0) {
 
-            if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                console.log("callback is a video")
+            console.log("callback is a video")
 
-                removeElementByID(data.id);
+            removeElementByID(data.id);
 
-                callerElement = document.createElement('video');
-                callerElement.setAttribute("id", data.id);
-                callerElement.setAttribute("class", "callerBackVideo");
-                callerElement.muted = false;
+            callerElement = document.createElement('video');
+            callerElement.setAttribute("id", data.id);
+            callerElement.setAttribute("class", "callerBackVideo");
+            callerElement.muted = false;
 
-                addVideo(callerElement, userStream);
+            addVideo(callerElement, userStream);
 
 
-            } else {
+        } else {
 
-                console.log("callback AUDIO")
+            console.log("callback AUDIO")
 
-                removeElementByID(data.id);
+            removeElementByID(data.id);
 
-                callerElement = document.createElement('audio');
-                callerElement.setAttribute("id", data.id);
-                callerElement.setAttribute("class", "callbackAudio");
-                callerElement.setAttribute("controls", "controls");
-                callerElement.muted = false;
+            callerElement = document.createElement('audio');
+            callerElement.setAttribute("id", data.id);
+            callerElement.setAttribute("class", "callbackAudio");
+            callerElement.setAttribute("controls", "controls");
+            callerElement.muted = false;
 
-                addAudio(callerElement, userStream);
-            }
+            addAudio(callerElement, userStream);
         }
+        // }
 
         ctr++
 
