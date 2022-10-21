@@ -482,11 +482,10 @@ socket.on('mediaChanged', (data) => {
 
                         console.log("user sent a video")
 
-                        removeElementByID(data.id);
-
+                        removeElementByID(allback.peer);
 
                         callerElement = document.createElement('video');
-                        callerElement.setAttribute("id", data.id);
+                        callerElement.setAttribute("id", callback.peer);
                         callerElement.setAttribute("class", "callerBackVideo");
                         callerElement.muted = false;
 
@@ -529,6 +528,7 @@ socket.on('mediaChanged', (data) => {
 
     }).catch((error) => {
 
+        alert("")
         console.log(error)
     });
 
