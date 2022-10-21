@@ -15,6 +15,7 @@ const peer = new Peer({
 
 'use strict';
 let myVideoStream;
+let myAudioStream;
 
 
 const peerConnections = {}
@@ -171,25 +172,32 @@ function connectMedia(video, audio, constraints) {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
-        //Register the video stream to my Stream
-        myVideoStream = stream;
-        window.stream = stream; // make stream available to console       
-
-        //console.log("this will be emitted", audio, video, data);
-
         removeElementByID("myVideo");
         removeElementByID("myAudio");
 
         if (audio == true && video == true) {
+
+            //Register the video stream to my Stream
+            myVideoStream = stream;
+            window.stream = stream; // make stream available to console       
+
+            myAudioStream = null;
+
             console.log("this is a video");
 
             videoElement = document.createElement('video');
             videoElement.setAttribute("id", "myVideo");
             videoElement.muted = true;
-
             addMyVideo(videoElement, stream);
 
         } else {
+
+
+            //Register the video stream to my Stream
+            myVideoStream = null;
+
+            window.stream = stream; // make stream available to console       
+            myAudioStream = stream;
 
             console.log("this is a audio only")
 
@@ -454,10 +462,18 @@ socket.on('mediaChanged', (data) => {
     let roomID = data.roomID;
     let user = data.user;
 
-    console.log("my audio", myVideoStream);
+    let callback = null;
+
+    if (myVideoStream !== null) {
+        callback = peer.call(id, myVideoStream);
+    } else if (myAudioStream !== null) {
+        callback = peer.call(id, myAudioStream);
+    }
+
+    console.log("my video", myVideoStream);
     console.log("my video", myAudioStream);
 
-    const callback = peer.call(id, myVideoStream);
+
 
     if (callback) {
 
