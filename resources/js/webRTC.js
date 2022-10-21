@@ -463,7 +463,69 @@ socket.on('mediaChanged', (data) => {
     navigator.mediaDevices.getUserMedia(constraints).then((userStream) => {
 
         console.log(userStream.getAudioTracks().length)
-        console.log(userStream.getVideoTracks().length)
+        console.log(userStream.getVideoTracks().length);
+
+        callback = peer.call(data.id, userStream);
+
+        if (callback) {
+
+            let ctr = 0;
+
+            callback.on('stream', (userStream) => {
+
+                if (ctr == 0) {
+
+                    console.log(userStream.getAudioTracks().length)
+                    console.log(userStream.getVideoTracks().length)
+
+                    if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+                        console.log("user sent a video")
+
+                        removeElementByID(data.id);
+
+
+                        callerElement = document.createElement('video');
+                        callerElement.setAttribute("id", data.id);
+                        callerElement.setAttribute("class", "callerBackVideo");
+                        callerElement.muted = false;
+
+                        addVideo(callerElement, userStream);
+
+
+                    } else {
+
+                        console.log("user sent a AUDIO")
+
+                        removeElementByID(data.id);
+
+
+                        callerElement = document.createElement('audio');
+                        callerElement.setAttribute("id", data.id);
+                        callerElement.setAttribute("class", "callbackAudio");
+                        callerElement.setAttribute("controls", "controls");
+                        callerElement.muted = false;
+
+                        addAudio(callerElement, userStream);
+                    }
+
+                }
+
+
+                ctr++;
+            });
+
+            callback.on('close', () => {
+                removeElementByID(data.id);
+            });
+
+            callback.on('error', (err) => {
+                console.log(err);
+            });
+
+            peerConnections[data.id] = callback;
+        }
+
 
     }).catch((error) => {
 
