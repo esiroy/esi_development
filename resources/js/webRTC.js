@@ -286,6 +286,7 @@ function restart() {
 
         console.log("restart")
 
+
         window.stream = stream; // make stream available to console
         videoElement.srcObject = stream;
 
@@ -300,6 +301,8 @@ function restart() {
         }
 
         socket.emit("changeMedia", data);
+
+        removeElementByID(myId);
 
 
     }).catch(handleError);
@@ -459,9 +462,8 @@ socket.on('mediaChanged', (data) => {
         audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
-    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
-        console.log("restart")
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
         window.stream = stream; // make stream available to console
         videoElement.srcObject = stream;
@@ -470,7 +472,28 @@ socket.on('mediaChanged', (data) => {
         myVideoStream = stream;
 
 
-    }).catch(handleError);
+        callerElement = document.createElement('video');
+        callerElement.setAttribute("id", data.id);
+        callerElement.setAttribute("class", "callerTestVideo");
+        callerElement.muted = false;
+        addVideo(callerElement, userStream);
+
+        callback = peer.call(id, myVideoStream);
+
+        if (callback) {
+
+            callback.on('stream', (userStream) => {
+                alert(userStream);
+            });
+
+        }
+
+    }).catch((error) => {
+
+        alert("media change is going to be an audio?")
+    });
+
+
 
     /*
     let id = data.id;
