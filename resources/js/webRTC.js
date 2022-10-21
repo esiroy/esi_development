@@ -447,7 +447,30 @@ socket.on('userJoined', (data) => {
 
 socket.on('mediaChanged', (data) => {
 
-    restart()
+    if (window.stream) {
+        window.stream.getTracks().forEach(track => {
+            track.stop();
+        });
+    }
+
+    const audioSource = audioInputSelect.value;
+    const videoSource = videoSelect.value;
+    const constraints = {
+        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+    };
+    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+
+        console.log("restart")
+
+        window.stream = stream; // make stream available to console
+        videoElement.srcObject = stream;
+
+        //Register the video stream to my Stream
+        myVideoStream = stream;
+
+
+    }).catch(handleError);
 
     /*
     let id = data.id;
