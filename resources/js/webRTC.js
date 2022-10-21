@@ -190,6 +190,8 @@ function connectMedia(video, audio, constraints) {
             videoElement.muted = true;
             addMyVideo(videoElement, stream);
 
+            console.log("calling change media, so we can get contact video");
+
             socket.emit("changeMedia", data);
 
         } else {
