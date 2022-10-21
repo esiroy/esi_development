@@ -78,6 +78,10 @@
 
 @section('styles')
 <style>
+    #myVideo {
+        width: 350px;
+    }
+
     #videoGrid {            
         min-width: 350px;
         min-height: 250px;
@@ -91,6 +95,8 @@
         margin:0px;
         padding:0px;        
     }
+
+    
 
 
     /*

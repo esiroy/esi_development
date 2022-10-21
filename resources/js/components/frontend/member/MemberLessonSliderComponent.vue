@@ -507,7 +507,7 @@ export default {
     methods: {
 
         test() {
-            console.log("testing")
+           // console.log("testing")
             this.videosocket.emit("newUser", "the-room", "1");
         },
         createPeerConnection() {
@@ -633,7 +633,7 @@ export default {
                 this.deactivateSelector();
                 this.canvas[this.currentSlide].isDrawingMode = false;
 
-                console.log("deactivated selector")
+                //console.log("deactivated selector")
 
             } else {
                 //Your are the viewer  
@@ -648,7 +648,7 @@ export default {
         getSlideMaterials(reservation) 
         {
 
-            console.log('reservation slide ', reservation)
+            //console.log('reservation slide ', reservation)
 
             this.isLoading = true;
 
@@ -686,10 +686,7 @@ export default {
                         if (i ==  this.slides)
                         {
                             this.userSlideAccess();
-
-                            console.log("called user slide access")
-
-                           
+                            //console.log("called user slide access")                           
                         }
                         
                     }
@@ -973,10 +970,7 @@ export default {
             fabric.Object.prototype.cornerStyle = 'circle';
         },
         keyPressHandler(e) {
-
-            console.log("keypress handler ");
-
-
+            //console.log("keypress handler ");
             window.onkeydown = (event) => {
             
                 if (event.key === "Delete") {
