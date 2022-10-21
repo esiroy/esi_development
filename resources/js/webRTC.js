@@ -338,9 +338,14 @@ peer.on('call', call => {
 
     let ctr = 0;
 
+    console.log("call");
+
+
     call.answer(myVideoStream);
 
     call.on('stream', (userStream) => {
+
+        console.log("?????????????")
 
         if (ctr == 1) {
             removeElementByID(call.peer);
@@ -449,6 +454,8 @@ socket.on('mediaChanged', (data) => {
                 callerElement.muted = false;
 
                 addAudio(callerElement, userStream);
+
+
 
             }
 
