@@ -463,7 +463,7 @@ socket.on('mediaChanged', (data) => {
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
 
-    navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+    navigator.mediaDevices.getUserMedia(constraints).then((userStream) => {
 
         console.log(userStream.getAudioTracks().length)
         console.log(userStream.getVideoTracks().length)
