@@ -450,11 +450,6 @@ socket.on('userJoined', (data) => {
 
 socket.on('mediaChanged', (data) => {
 
-    if (window.stream) {
-        window.stream.getTracks().forEach(track => {
-            track.stop();
-        });
-    }
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
