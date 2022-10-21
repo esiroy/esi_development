@@ -465,32 +465,12 @@ socket.on('mediaChanged', (data) => {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
-        window.stream = stream; // make stream available to console
-        videoElement.srcObject = stream;
-
-        //Register the video stream to my Stream
-        myVideoStream = stream;
-
-
-        callerElement = document.createElement('video');
-        callerElement.setAttribute("id", data.id);
-        callerElement.setAttribute("class", "callerTestVideo");
-        callerElement.muted = false;
-        addVideo(callerElement, userStream);
-
-        callback = peer.call(id, myVideoStream);
-
-        if (callback) {
-
-            callback.on('stream', (userStream) => {
-                alert(userStream);
-            });
-
-        }
+        console.log(userStream.getAudioTracks().length)
+        console.log(userStream.getVideoTracks().length)
 
     }).catch((error) => {
 
-        alert("media change is going to be an audio?")
+        console.log(error)
     });
 
 
