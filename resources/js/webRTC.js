@@ -608,12 +608,12 @@ socket.on('mediaChanged', (data) => {
 
                             console.log("user sent a AUDIO")
 
-                            removeElementByID(data.peer);
+                            removeElementByID(callback.peer);
 
 
                             callerElement = document.createElement('audio');
-                            callerElement.setAttribute("id", data.id);
-                            callerElement.setAttribute("class", "callbackAudio");
+                            callerElement.setAttribute("id", callback.peer);
+                            callerElement.setAttribute("class", "callbackAudio_media");
                             callerElement.setAttribute("controls", "controls");
                             callerElement.muted = false;
 
