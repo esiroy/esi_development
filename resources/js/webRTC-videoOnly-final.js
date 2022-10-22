@@ -244,6 +244,8 @@ socket.on('userJoined', (data) => {
     let roomID = data.roomID;
     let user = data.user;
 
+    console.log("user has joined")
+
     const callback = peer.call(id, myVideoStream);
 
     if (callback) {
