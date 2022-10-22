@@ -401,7 +401,7 @@ peer.on('call', call => {
 
     }).catch((error) => {
 
-        console.log("recieve video from initiator");
+        console.log("recieve audio from initiator");
 
         const audioSource = audioInputSelect.value;
         const constraints = {
@@ -416,10 +416,11 @@ peer.on('call', call => {
 
                 console.log("recieve audio from initiator")
                 if (ctr == 0) {
+
                     removeElementByID(call.peer);
                     callerElement = document.createElement('audio');
                     callerElement.setAttribute("id", call.peer);
-                    callerElement.setAttribute("class", "callbackAudio");
+                    callerElement.setAttribute("class", "callbackAudio"); //call peer
                     callerElement.setAttribute("controls", "controls");
                     callerElement.muted = false;
 
@@ -593,7 +594,7 @@ socket.on('mediaChanged', (data) => {
 
                             console.log("user sent a video")
 
-                            removeElementByID(data.peer);
+                            removeElementByID(callback.peer);
 
                             callerElement = document.createElement('video');
                             callerElement.setAttribute("id", callback.peer);
