@@ -383,13 +383,30 @@ peer.on('call', call => {
 
             if (ctr == 0) {
 
-                removeElementByID(call.peer);
-                callerElement = document.createElement('video');
-                callerElement.setAttribute("id", call.peer);
-                callerElement.setAttribute("class", "peerCallBackVideo");
-                callerElement.muted = false;
+                if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                addVideo(callerElement, userStream);
+                    removeElementByID(call.peer);
+                    callerElement = document.createElement('video');
+                    callerElement.setAttribute("id", call.peer);
+                    callerElement.setAttribute("class", "peerCallBackVideo");
+                    callerElement.muted = false;
+
+                    addVideo(callerElement, userStream);
+                } else {
+
+
+                    console.log("recipient had a AUDIO stream")
+
+                    removeElementByID(call.peer);
+                    callerElement = document.createElement('audio');
+                    callerElement.setAttribute("id", call.peer);
+                    callerElement.setAttribute("class", "peerCallBackAudio"); //call peer
+                    callerElement.setAttribute("controls", "controls");
+                    callerElement.muted = false;
+
+                    addAudio(callerElement, userStream);
+
+                }
             }
             ctr++
         });
