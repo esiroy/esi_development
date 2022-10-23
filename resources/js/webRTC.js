@@ -186,7 +186,10 @@ function connectMedia(video, audio, constraints) {
 
             console.log("calling change media, so we can get contact video");
 
-            socket.emit("changeMedia", data);
+            //ocket.emit("changeMedia", data);
+
+            restart();
+
 
         } else {
 
@@ -209,7 +212,9 @@ function connectMedia(video, audio, constraints) {
             console.log("calling change media, so we can get contact video");
 
 
-            socket.emit("changeMedia", data);
+            //socket.emit("changeMedia", data);
+
+            restart();
 
         }
 
@@ -274,7 +279,20 @@ function start(video, audio, data) {
 
 function restart() {
 
+
+    data = {
+        'id': myId,
+        'user': user,
+        'roomID': roomID,
+        'videoStream': myVideoStream
+    }
+
+
     start(true, true, data);
+
+
+    socket.emit("changeMedia", data);
+
 
     /*
 
