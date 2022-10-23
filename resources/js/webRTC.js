@@ -650,6 +650,8 @@ socket.on('userJoined', (data) => {
 socket.on('mediaChanged', (data) => {
 
 
+    console.log("media has been changed");
+
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
     const constraints = {
