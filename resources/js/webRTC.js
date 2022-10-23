@@ -598,36 +598,21 @@ socket.on('userJoined', (data) => {
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaCallStream) => {
 
-            console.log("test this videostream", myAudioStream);
-
-
-            /*
-            callerElement = document.createElement('audio');
-            callerElement.setAttribute("id", data.id);
-            callerElement.setAttribute("class", "TEST_PEER_CALLBACK");
-            callerElement.setAttribute("controls", "controls");
-            callerElement.muted = false;
-            addAudio(callerElement, myVideoStream);
-            */
-
-            if (mediaCallStream.getAudioTracks().length == 1 && mediaCallStream.getVideoTracks().length == 1) {
-
-                alert("viceo");
-
-            } else {
-
-                alert("audio");
-            }
-
             if (myVideoStream) {
 
-                console.log("test this videostream #1 :: ", myVideoStream);
+
                 callback = peer.call(data.id, mediaCallStream);
 
             } else {
 
-                console.log("test this AUDIO!!! stream #1 :: ", myAudioStream);
-                callback = peer.call(data.id, myAudioStream);
+                data = {
+                    'id': myId,
+                    'user': user,
+                    'roomID': roomID,
+                    'videoStream': mediaCallStream
+                }
+
+                socket.emit("changeMedia", data);
             }
 
 
@@ -735,7 +720,7 @@ socket.on('userJoined', (data) => {
 socket.on('mediaChanged', (data) => {
 
 
-    console.log("media has been changed");
+    alert("media change");
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
