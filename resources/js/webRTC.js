@@ -499,11 +499,11 @@ socket.on('userJoined', (data) => {
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
 
-    navigator.mediaDevices.getUserMedia(constraints).then((userStream) => {
+    navigator.mediaDevices.getUserMedia(constraints).then((myMediaStream) => {
 
         console.log("user joined ::: calling initiator with just audio and video", data.id);
 
-        callback = peer.call(data.id, userStream);
+        callback = peer.call(data.id, myMediaStream);
 
         if (callback) {
 
@@ -569,11 +569,11 @@ socket.on('userJoined', (data) => {
             video: false,
         };
 
-        navigator.mediaDevices.getUserMedia(audioConstraints).then((userStream) => {
+        navigator.mediaDevices.getUserMedia(audioConstraints).then((myMediaStream) => {
 
             console.log("user joined ::: (2) calling initiator with just  AUDIO")
 
-            callback = peer.call(data.id, userStream);
+            callback = peer.call(data.id, myMediaStream);
 
             if (callback) {
 
