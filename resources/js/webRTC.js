@@ -399,7 +399,7 @@ peer.on('call', call => {
 
                 if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                    alert("reciever from sender is a video 5" + call.peer)
+                    alert("reciever from sender is a video 5 :: (peer)" + call.peer)
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('video');
@@ -411,7 +411,7 @@ peer.on('call', call => {
                 } else {
 
 
-                    alert("reciever from sender is a audio 6" + call.peer)
+                    alert("reciever from sender is a audio 6 :: (peer)" + call.peer)
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('audio');
@@ -463,7 +463,7 @@ peer.on('call', call => {
 
                     if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                        alert("reciever from sender is a video 7" + call.peer)
+                        alert("reciever from sender is a video 7  :: (peer) " + call.peer)
 
                         removeElementByID(call.peer);
                         callerElement = document.createElement('video');
@@ -474,7 +474,7 @@ peer.on('call', call => {
                         addVideo(callerElement, userStream);
                     } else {
 
-                        alert("reciever from sender is a audio 8" + call.peer)
+                        alert("reciever from sender is a audio 8 :: (peer)" + call.peer)
 
                         removeElementByID(call.peer);
                         callerElement = document.createElement('audio');
