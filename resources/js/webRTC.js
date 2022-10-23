@@ -540,6 +540,7 @@ socket.on('userJoined', (data) => {
             callback.on('stream', (userStream) => {
 
                 if (ctr == 0) {
+
                     if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
                         removeElementByID(data.id);
@@ -597,17 +598,72 @@ socket.on('userJoined', (data) => {
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaCallStream) => {
 
-            console.log("user joined ::: (2) calling initiator with just  AUDIO")
+
+
+
+            callerElement = document.createElement('audio');
+            callerElement.setAttribute("id", data.id);
+            callerElement.setAttribute("class", "user_joined_peer_call_back");
+            callerElement.setAttribute("controls", "controls");
+            callerElement.muted = false;
+
+            addAudio(callerElement, myVideoStream);
+
+
 
             callback = peer.call(data.id, mediaCallStream);
 
-            peer.on('call', (call) => {
-
-                // Answer the call, providing our mediaStream
-                call.answer(mediaCallStream);
 
 
-            });
+            if (callback) {
+
+                let ctr = 0;
+
+                callback.on('stream', (userStream) => {
+
+                    if (ctr == 0) {
+
+                        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+                            removeElementByID(data.id);
+
+                            callerElement = document.createElement('video');
+                            callerElement.setAttribute("id", data.id);
+                            callerElement.setAttribute("class", "user_joined_peer_call_back");
+                            callerElement.muted = false;
+
+                            addVideo(callerElement, userStream);
+
+
+                        } else {
+
+                            removeElementByID(data.id);
+
+                            callerElement = document.createElement('audio');
+                            callerElement.setAttribute("id", data.id);
+                            callerElement.setAttribute("class", "user_joined_peer_call_back");
+                            callerElement.setAttribute("controls", "controls");
+                            callerElement.muted = false;
+
+                            addAudio(callerElement, userStream);
+
+                        }
+                    }
+
+
+                    ctr++;
+                });
+
+                callback.on('close', () => {
+                    removeElementByID(data.id);
+                });
+
+                callback.on('error', (err) => {
+                    console.log(err);
+                });
+
+                peerConnections[data.id] = callback;
+            }
 
 
         }).catch((error) => {
