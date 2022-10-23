@@ -161,7 +161,7 @@ function removeElementByID(id) {
     }
 }
 
-function connectMedia(video, audio, constraints) {
+function createUserMedia(video, audio, constraints) {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
@@ -184,13 +184,6 @@ function connectMedia(video, audio, constraints) {
             videoElement.muted = true;
             addMyVideo(videoElement, stream);
 
-            console.log("calling change media, so we can get contact video");
-
-            socket.emit("changeMedia", data);
-
-
-
-
         } else {
 
 
@@ -208,15 +201,7 @@ function connectMedia(video, audio, constraints) {
             audio.muted = true;
 
             addMyAudio(audio, stream);
-
-            console.log("calling change media, so we can get contact video");
-
-
-            socket.emit("changeMedia", data);
-
         }
-
-
 
         return navigator.mediaDevices.enumerateDevices();
 
@@ -256,7 +241,7 @@ function start(video, audio, data) {
 
         console.log("connect video : start")
 
-        connectMedia(video, audio, constraints)
+        createUserMedia(video, audio, constraints)
 
     } else if (video == false && audio == true) {
 
@@ -266,7 +251,7 @@ function start(video, audio, data) {
         };
 
         console.log("connect audio : start")
-        connectMedia(video, audio, constraints)
+        createUserMedia(video, audio, constraints)
 
     } else {
 
@@ -277,14 +262,15 @@ function start(video, audio, data) {
 
 function restart() {
 
+    /*
+       data = {
+           'id': myId,
+           'user': user,
+           'roomID': roomID,
+           'videoStream': myVideoStream
+       }
 
-    data = {
-        'id': myId,
-        'user': user,
-        'roomID': roomID,
-        'videoStream': myVideoStream
-    }
-
+    */
 
     start(true, true, data);
 
@@ -292,7 +278,7 @@ function restart() {
     socket.emit("changeMedia", data);
 
 
-    /*
+
 
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
@@ -332,7 +318,7 @@ function restart() {
 
 
     }).catch(handleError);
-    */
+
 }
 
 audioInputSelect.onchange = restart;
@@ -396,13 +382,15 @@ peer.on('call', call => {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
+
+
         if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
 
-            alert("stream from sender is a video")
+            const callback = peer.call(call.peer, stream);
 
         } else {
 
-            alert("stream from sender is a audio")
+            const callback = peer.call(call.peer, stream);
 
         }
 
@@ -462,11 +450,11 @@ peer.on('call', call => {
 
             if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
 
-                alert("stream from sender is a video")
+                const callback = peer.call(call.peer, stream);
 
             } else {
 
-                alert("stream from sender is a audio")
+                const callback = peer.call(call.peer, stream);
 
             }
 
@@ -623,27 +611,7 @@ socket.on('userJoined', (data) => {
                 call.answer(mediaCallStream);
 
 
-                if (call) {
-                    //restart();
-                    call.on('stream', (userStream) => {
-
-                        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
-
-                            alert("video");
-
-                        } else {
-                            alert("audio");
-
-                        }
-
-                    });
-
-                    peerConnections[data.id] = callback;
-                }
-
             });
-
-
 
 
         }).catch((error) => {
