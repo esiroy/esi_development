@@ -281,16 +281,6 @@ function start(video, audio, data) {
 
 function restart() {
 
-    data = {
-        'id': myId,
-        'user': user,
-        'roomID': roomID,
-        'videoStream': myVideoStream
-    }
-
-    socket.emit("changeMedia", data);
-
-
     start(true, true, data);
 
     /*
@@ -649,9 +639,6 @@ socket.on('userJoined', (data) => {
 
 
 socket.on('mediaChanged', (data) => {
-
-    alert("media changed! from peer" + data.id, );
-
 
 
     const audioSource = audioInputSelect.value;
