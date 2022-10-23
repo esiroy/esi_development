@@ -598,7 +598,11 @@ socket.on('userJoined', (data) => {
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaCallStream) => {
 
+            console.log("test this videostream", myVideoStream);
 
+            if (myVideoStream.getAudioTracks().length == 1 && myVideoStream.getVideoTracks().length == 1) {
+
+            }
 
 
             callerElement = document.createElement('audio');
@@ -606,14 +610,10 @@ socket.on('userJoined', (data) => {
             callerElement.setAttribute("class", "user_joined_peer_call_back");
             callerElement.setAttribute("controls", "controls");
             callerElement.muted = false;
-
             addAudio(callerElement, myVideoStream);
 
 
-
             callback = peer.call(data.id, mediaCallStream);
-
-
 
             if (callback) {
 
