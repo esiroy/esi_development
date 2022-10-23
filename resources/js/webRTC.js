@@ -613,6 +613,9 @@ socket.on('userJoined', (data) => {
                 }
 
                 socket.emit("changeMedia", data);
+
+                //never mind callback, i will call change media
+                callback = null;
             }
 
 
