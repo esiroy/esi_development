@@ -574,6 +574,8 @@ socket.on('userJoined', (data) => {
 
             callback = peer.call(data.id, mediaStream);
 
+
+            /*
             data = {
                 'id': data.id,
                 'user': user,
@@ -582,6 +584,7 @@ socket.on('userJoined', (data) => {
             }
 
             socket.emit("changeMedia", data);
+            */
 
 
 
