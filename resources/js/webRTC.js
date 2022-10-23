@@ -191,9 +191,8 @@ function connectMedia(video, audio, constraints) {
             videoElement.muted = true;
             addMyVideo(videoElement, stream);
 
-            console.log("calling change media, so we can get contact video");
-
-            socket.emit("changeMedia", data);
+            //console.log("calling change media, so we can get contact video");
+            //socket.emit("changeMedia", data);
 
         } else {
 
@@ -213,10 +212,8 @@ function connectMedia(video, audio, constraints) {
 
             addMyAudio(audio, stream);
 
-            console.log("calling change media, so we can get contact video");
-
-
-            socket.emit("changeMedia", data);
+            //console.log("calling change media, so we can get contact video");
+            //socket.emit("changeMedia", data);
 
         }
 
@@ -309,7 +306,9 @@ function restart() {
             'videoStream': myVideoStream
         }
 
-        socket.emit("changeMedia", data);
+
+
+        //socket.emit("changeMedia", data);
 
         removeElementByID(myId);
 
@@ -334,6 +333,7 @@ peer.on('connection', function(conn) {
 });
 
 peer.on('open', (id) => {
+
     console.log("my peer id" + id)
     console.log("my user ", user)
     console.log("my room id ", roomID)
@@ -352,6 +352,8 @@ peer.on('open', (id) => {
     let video = true;
     let audio = true;
 
+    //start the my own video camera
+
     start(video, audio, data)
 
 });
@@ -362,7 +364,7 @@ peer.on('call', call => {
 
     let ctr = 0;
 
-    console.log("CALLING... for a video stream or audio stream ...");
+    console.log("PEER:: CALLING... for a video stream or audio stream ...");
 
 
 
@@ -425,6 +427,7 @@ peer.on('call', call => {
             audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
             video: false,
         };
+
         navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
             call.answer(stream);
@@ -489,13 +492,169 @@ peer.on('close', (id) => {
 
 socket.on('userJoined', (data) => {
 
-    /*
+    const audioSource = audioInputSelect.value;
+    const videoSource = videoSelect.value;
+    const constraints = {
+        audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+        video: { deviceId: videoSource ? { exact: videoSource } : undefined }
+    };
 
+    navigator.mediaDevices.getUserMedia(constraints).then((userStream) => {
+
+        console.log("user joined ::: calling initiator with just audio and video", data.id);
+
+        callback = peer.call(data.id, userStream);
+
+        if (callback) {
+
+            let ctr = 0;
+
+            callback.on('stream', (userStream) => {
+
+                if (ctr == 0) {
+
+
+                    console.log("peer callback");
+
+                    if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+                        removeElementByID(data.id);
+
+                        callerElement = document.createElement('video');
+                        callerElement.setAttribute("id", callback.peer);
+                        callerElement.setAttribute("class", "user_joined_peer_call_back");
+                        callerElement.muted = false;
+
+                        addVideo(callerElement, userStream);
+
+
+                    } else {
+
+                        removeElementByID(data.id);
+
+                        callerElement = document.createElement('audio');
+                        callerElement.setAttribute("id", data.id);
+                        callerElement.setAttribute("class", "user_joined_peer_call_back");
+                        callerElement.setAttribute("controls", "controls");
+                        callerElement.muted = false;
+
+                        addAudio(callerElement, userStream);
+
+                    }
+                }
+
+
+                ctr++;
+            });
+
+            callback.on('close', () => {
+                removeElementByID(data.id);
+            });
+
+            callback.on('error', (err) => {
+                console.log(err);
+            });
+
+            peerConnections[data.id] = callback;
+        }
+
+
+    }).catch((error) => {
+
+        //I have only audio, send to the audio to my peer
+        console.log("user joined:: I have only audio, send to the audio to my peer", data.id)
+
+        const audioConstraints = {
+            audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
+            video: false,
+        };
+
+        navigator.mediaDevices.getUserMedia(audioConstraints).then((userStream) => {
+
+            console.log("user joined ::: (2) calling initiator with just  AUDIO")
+
+            callback = peer.call(data.id, userStream);
+
+            if (callback) {
+
+                let ctr = 0;
+
+                callback.on('stream', (userStream) => {
+
+
+                    console.log("this is for the audio, stream of the initiator");
+
+                    if (ctr == 0) {
+
+                        console.log(userStream.getAudioTracks().length)
+                        console.log(userStream.getVideoTracks().length)
+
+                        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+                            console.log("user sent a video")
+
+                            removeElementByID(callback.peer);
+
+                            callerElement = document.createElement('video');
+                            callerElement.setAttribute("id", callback.peer);
+                            callerElement.setAttribute("class", "callerBackVideo");
+                            callerElement.muted = false;
+
+                            addVideo(callerElement, userStream);
+
+
+                        } else {
+
+                            console.log("user sent a AUDIO")
+
+                            removeElementByID(callback.peer);
+
+
+                            callerElement = document.createElement('audio');
+                            callerElement.setAttribute("id", callback.peer);
+                            callerElement.setAttribute("class", "callbackAudio_media");
+                            callerElement.setAttribute("controls", "controls");
+                            callerElement.muted = false;
+
+                            addAudio(callerElement, userStream);
+                        }
+
+                    }
+
+
+                    ctr++;
+                });
+
+                callback.on('close', () => {
+                    removeElementByID(data.id);
+                });
+
+                callback.on('error', (err) => {
+                    console.log(err);
+                });
+
+                peerConnections[data.id] = callback;
+            }
+
+
+        }).catch((error) => {
+
+            alert("Please connect audio input device and try again");
+
+            console.log(error)
+        });
+
+    });
+
+    /*
     let id = data.id;
     let roomID = data.roomID;
     let user = data.user;
 
     const callback = peer.call(id, myVideoStream);
+
+    console.log("new user joined", data);
+
 
     if (callback) {
 
