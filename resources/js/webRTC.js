@@ -597,7 +597,7 @@ socket.on('userJoined', (data) => {
 
             console.log(data.id, callback.peer)
 
-            restart();
+            //restart();
 
 
         }).catch((error) => {
