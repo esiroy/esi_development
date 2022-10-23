@@ -610,6 +610,14 @@ socket.on('userJoined', (data) => {
             addAudio(callerElement, myVideoStream);
             */
 
+            if (mediaCallStream.getAudioTracks().length == 1 && mediaCallStream.getVideoTracks().length == 1) {
+
+                alert("viceo");
+
+            } else {
+
+                alert("audio");
+            }
 
             if (myVideoStream) {
 
