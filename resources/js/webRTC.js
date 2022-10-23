@@ -521,11 +521,11 @@ socket.on('userJoined', (data) => {
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
 
-    navigator.mediaDevices.getUserMedia(constraints).then((userStream) => {
+    navigator.mediaDevices.getUserMedia(constraints).then((mediaStream) => {
 
         console.log("user joined ::: calling initiator with just audio and video", data.id);
 
-        callback = peer.call(data.id, userStream);
+        callback = peer.call(data.id, mediaStream);
 
         if (callback) {
 
@@ -580,13 +580,13 @@ socket.on('userJoined', (data) => {
     }).catch((error) => {
 
         //I have only audio, send to the audio to my peer
-        console.log("user joined:: I have only audio, send to the audio to my peer", data.id)
+        console.log("user joined:: I have only audio, send to the audio to my peer", data.id);
 
 
 
         const audioConstraints = {
             audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
-            video: { deviceId: undefined }
+            video: false,
         };
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaStream) => {
@@ -595,9 +595,17 @@ socket.on('userJoined', (data) => {
 
             callback = peer.call(data.id, mediaStream);
 
-            console.log(data.id, callback.peer)
+            if (callback) {
 
-            //restart();
+                //restart();
+                callback.on('stream', (userStream) => {
+
+                    console.log("what is this stream?", userStream);
+
+                });
+
+                peerConnections[data.id] = callback;
+            }
 
 
         }).catch((error) => {
