@@ -619,6 +619,7 @@ socket.on('userJoined', (data) => {
             } else {
 
                 console.log("test this AUDIO!!! stream #1 :: ", myAudioStream);
+                callback = peer.call(data.id, myAudioStream);
             }
 
 
