@@ -401,7 +401,6 @@ peer.on('call', call => {
 
                     alert("reciever from sender is a video 5" + call.peer)
 
-
                     removeElementByID(call.peer);
                     callerElement = document.createElement('video');
                     callerElement.setAttribute("id", call.peer);
