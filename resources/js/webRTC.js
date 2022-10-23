@@ -568,12 +568,13 @@ socket.on('userJoined', (data) => {
             video: false,
         };
 
-        navigator.mediaDevices.getUserMedia(audioConstraints).then((userStream) => {
+        navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaStream) => {
 
             console.log("user joined ::: (2) calling initiator with just  AUDIO")
 
-            callback = peer.call(data.id, userStream);
+            callback = peer.call(data.id, mediaStream);
 
+            alert("test 1")
 
 
             if (callback) {
