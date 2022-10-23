@@ -281,6 +281,20 @@ function start(video, audio, data) {
 
 function restart() {
 
+    data = {
+        'id': myId,
+        'user': user,
+        'roomID': roomID,
+        'videoStream': myVideoStream
+    }
+
+    socket.emit("changeMedia", data);
+
+
+    start(true, true, data);
+
+    /*
+
     if (window.stream) {
         window.stream.getTracks().forEach(track => {
             track.stop();
@@ -319,6 +333,7 @@ function restart() {
 
 
     }).catch(handleError);
+    */
 }
 
 audioInputSelect.onchange = restart;
