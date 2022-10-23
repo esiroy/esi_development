@@ -580,24 +580,12 @@ socket.on('userJoined', (data) => {
 
             console.log(data.id, callback.peer)
 
-            data = {
-                'id': data.id,
-                'user': user,
-                'roomID': roomID,
-                'videoStream': mediaStream
-            }
-
-            socket.emit("changeMedia", data);
-
-
+            restart();
 
 
         }).catch((error) => {
 
             alert("Please connect audioinput device and try again");
-
-
-
             console.log(error)
         });
 
@@ -647,7 +635,8 @@ socket.on('userJoined', (data) => {
 
 socket.on('mediaChanged', (data) => {
 
-    alert("media changed!");
+    alert("media changed! from peer" + data.id, );
+
 
 
     const audioSource = audioInputSelect.value;
