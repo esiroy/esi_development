@@ -598,13 +598,10 @@ socket.on('userJoined', (data) => {
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaCallStream) => {
 
-            console.log("test this videostream", mediaCallStream);
+            console.log("test this videostream", myVideoStream);
+            console.log("test this videostream", myAudioStream);
 
 
-
-            if (myVideoStream.getAudioTracks().length == 1 && myVideoStream.getVideoTracks().length == 1) {
-
-            }
 
 
             callerElement = document.createElement('audio');
