@@ -512,6 +512,7 @@ peer.on('close', (id) => {
 socket.on('userJoined', (data) => {
 
 
+    console.log("user joined ::: calling initiator with just audio and video", data.id);
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
@@ -583,7 +584,7 @@ socket.on('userJoined', (data) => {
 
         const audioConstraints = {
             audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
-            video: false,
+            video: { deviceId: undefined }
         };
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaStream) => {
