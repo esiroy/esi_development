@@ -228,7 +228,9 @@ function connectMedia(video, audio, constraints) {
     }).then(gotDevices).catch((err) => {
 
         if (video == true && audio == true) {
+
             handleError(err);
+
         } else {
 
             alert("no media detected, please connect and try again")
@@ -495,6 +497,8 @@ peer.on('close', (id) => {
 
 socket.on('userJoined', (data) => {
 
+
+
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
     const constraints = {
@@ -520,7 +524,7 @@ socket.on('userJoined', (data) => {
                         removeElementByID(data.id);
 
                         callerElement = document.createElement('video');
-                        callerElement.setAttribute("id", callback.peer);
+                        callerElement.setAttribute("id", data.id);
                         callerElement.setAttribute("class", "user_joined_peer_call_back");
                         callerElement.muted = false;
 
@@ -574,10 +578,10 @@ socket.on('userJoined', (data) => {
 
             callback = peer.call(data.id, mediaStream);
 
-
+            console.log(data.id, callback.peer)
 
             data = {
-                'id': myID,
+                'id': data.id,
                 'user': user,
                 'roomID': roomID,
                 'videoStream': mediaStream
