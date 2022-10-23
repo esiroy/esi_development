@@ -598,7 +598,9 @@ socket.on('userJoined', (data) => {
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaCallStream) => {
 
-            console.log("test this videostream", myVideoStream);
+            console.log("test this videostream", mediaCallStream);
+
+
 
             if (myVideoStream.getAudioTracks().length == 1 && myVideoStream.getVideoTracks().length == 1) {
 
@@ -625,7 +627,7 @@ socket.on('userJoined', (data) => {
 
                         if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                            removeElementByID(data.id);
+                            //removeElementByID(data.id);
 
                             callerElement = document.createElement('video');
                             callerElement.setAttribute("id", data.id);
