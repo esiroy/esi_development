@@ -24,10 +24,13 @@
         </div>
 
         <div class="col-md-3">
+
+            <!---
             <button type="button" id="stopCamera">Stop Camera </button>
             <button type="button" id="toggleCamera">Camera Hide On/Off</button>
             <button type="button" id="toggleAudio">Audio On/Off</button>
             <button type="button" id="shareScreen">shareScreen</button>
+            -->
 
 
             <div class="select">

@@ -214,7 +214,7 @@ function createUserMedia(video, audio, constraints) {
 
         } else {
 
-            alert("no media detected, please connect and try again")
+            //alert("no media detected, please connect and try again")
         }
     });
 
@@ -255,7 +255,7 @@ function start(video, audio, data) {
 
     } else {
 
-        alert("no media detected, please connect and try again")
+        //alert("no media detected, please connect and try again")
     }
 
 }
@@ -333,7 +333,7 @@ peer.on('connection', function(conn) {
         console.log("peer connected", data)
     });
     conn.on('close', () => {
-        alert("close")
+        //alert("close")
     });
 });
 
@@ -383,9 +383,9 @@ peer.on('call', call => {
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
         if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
-            alert("stream from sender is a video 1")
+            //alert("stream from sender is a video 1")
         } else {
-            alert("stream from sender is a audio 2")
+            //alert("stream from sender is a audio 2")
         }
 
 
@@ -399,7 +399,7 @@ peer.on('call', call => {
 
                 if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                    alert("reciever from sender is a video 5 :: (peer)" + call.peer)
+                    //alert("reciever from sender is a video 5 :: (peer)" + call.peer)
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('video');
@@ -411,7 +411,7 @@ peer.on('call', call => {
                 } else {
 
 
-                    alert("reciever from sender is a audio 6 :: (peer)" + call.peer)
+                    //alert("reciever from sender is a audio 6 :: (peer)" + call.peer)
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('audio');
@@ -446,11 +446,11 @@ peer.on('call', call => {
 
             if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
 
-                alert("stream from sender is a video 3")
+                //alert("stream from sender is a video 3")
 
             } else {
 
-                alert("stream from sender is a audio 4")
+                //alert("stream from sender is a audio 4")
 
             }
 
@@ -463,7 +463,7 @@ peer.on('call', call => {
 
                     if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                        alert("reciever from sender is a video 7  :: (peer) " + call.peer)
+                        //alert("reciever from sender is a video 7  :: (peer) " + call.peer)
 
                         removeElementByID(call.peer);
                         callerElement = document.createElement('video');
@@ -474,7 +474,7 @@ peer.on('call', call => {
                         addVideo(callerElement, userStream);
                     } else {
 
-                        alert("reciever from sender is a audio 8 :: (peer)" + call.peer)
+                        //alert("reciever from sender is a audio 8 :: (peer)" + call.peer)
 
                         removeElementByID(call.peer);
                         callerElement = document.createElement('audio');
@@ -499,7 +499,7 @@ peer.on('call', call => {
             });
 
         }).catch((error) => {
-            alert("I can't send any video r audio to your contact, please check media")
+            //alert("I can't send any video r audio to your contact, please check media")
         });
 
 
@@ -672,7 +672,7 @@ socket.on('userJoined', (data) => {
 
         }).catch((error) => {
 
-            alert("Please connect audioinput device and try again");
+            //alert("Please connect audioinput device and try again");
             console.log(error)
         });
 
@@ -723,7 +723,7 @@ socket.on('userJoined', (data) => {
 socket.on('mediaChanged', (data) => {
 
 
-    alert("media change");
+    //alert("media change");
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
@@ -869,7 +869,7 @@ socket.on('mediaChanged', (data) => {
 
         }).catch((error) => {
 
-            alert("audio only");
+            //alert("audio only");
 
 
 
