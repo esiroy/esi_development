@@ -589,23 +589,39 @@ socket.on('userJoined', (data) => {
             video: false,
         };
 
-        navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaStream) => {
+        navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaCallStream) => {
 
             console.log("user joined ::: (2) calling initiator with just  AUDIO")
 
-            callback = peer.call(data.id, mediaStream);
+            callback = peer.call(data.id, mediaCallStream);
 
-            if (callback) {
+            peer.on('call', (call) => {
 
-                //restart();
-                callback.on('stream', (userStream) => {
+                // Answer the call, providing our mediaStream
+                call.answer(mediaCallStream);
 
-                    console.log("what is this stream?", userStream);
 
-                });
+                if (call) {
+                    //restart();
+                    call.on('stream', (userStream) => {
 
-                peerConnections[data.id] = callback;
-            }
+                        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+                            alert("video");
+
+                        } else {
+                            alert("audio");
+
+                        }
+
+                    });
+
+                    peerConnections[data.id] = callback;
+                }
+
+            });
+
+
 
 
         }).catch((error) => {
