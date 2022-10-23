@@ -382,19 +382,6 @@ peer.on('call', call => {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
-
-
-        if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
-
-            const callback = peer.call(call.peer, stream);
-
-        } else {
-
-            const callback = peer.call(call.peer, stream);
-
-        }
-
-
         call.answer(stream);
 
         call.on('stream', (userStream) => {
@@ -403,7 +390,7 @@ peer.on('call', call => {
 
             if (ctr == 0) {
 
-                if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+                if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('video');
@@ -412,6 +399,7 @@ peer.on('call', call => {
                     callerElement.muted = false;
 
                     addVideo(callerElement, userStream);
+
                 } else {
 
 
@@ -448,15 +436,6 @@ peer.on('call', call => {
 
         navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
-            if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
-
-                const callback = peer.call(call.peer, stream);
-
-            } else {
-
-                const callback = peer.call(call.peer, stream);
-
-            }
 
 
             call.answer(stream);
@@ -465,7 +444,7 @@ peer.on('call', call => {
 
                 if (ctr == 0) {
 
-                    if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+                    if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
 
                         console.log("recipient had a video stream")
 
