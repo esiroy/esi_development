@@ -191,8 +191,9 @@ function connectMedia(video, audio, constraints) {
             videoElement.muted = true;
             addMyVideo(videoElement, stream);
 
-            //console.log("calling change media, so we can get contact video");
-            //socket.emit("changeMedia", data);
+            console.log("calling change media, so we can get contact video");
+
+            socket.emit("changeMedia", data);
 
         } else {
 
@@ -212,8 +213,10 @@ function connectMedia(video, audio, constraints) {
 
             addMyAudio(audio, stream);
 
-            //console.log("calling change media, so we can get contact video");
-            //socket.emit("changeMedia", data);
+            console.log("calling change media, so we can get contact video");
+
+
+            socket.emit("changeMedia", data);
 
         }
 
@@ -499,11 +502,11 @@ socket.on('userJoined', (data) => {
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
 
-    navigator.mediaDevices.getUserMedia(constraints).then((myMediaStream) => {
+    navigator.mediaDevices.getUserMedia(constraints).then((userStream) => {
 
         console.log("user joined ::: calling initiator with just audio and video", data.id);
 
-        callback = peer.call(data.id, myMediaStream);
+        callback = peer.call(data.id, userStream);
 
         if (callback) {
 
@@ -512,10 +515,6 @@ socket.on('userJoined', (data) => {
             callback.on('stream', (userStream) => {
 
                 if (ctr == 0) {
-
-
-                    console.log("peer callback");
-
                     if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
                         removeElementByID(data.id);
@@ -569,22 +568,13 @@ socket.on('userJoined', (data) => {
             video: false,
         };
 
-        navigator.mediaDevices.getUserMedia(audioConstraints).then((myMediaStream) => {
+        navigator.mediaDevices.getUserMedia(audioConstraints).then((userStream) => {
 
             console.log("user joined ::: (2) calling initiator with just  AUDIO")
 
-            callback = peer.call(data.id, myMediaStream);
+            callback = peer.call(data.id, userStream);
 
-            let peerData = {
-                'id': callback.peer,
-                'user': user,
-                'roomID': roomID,
-                'videoStream': userStream
-            }
 
-            console.log("experimental", peerData);
-
-            socket.emit("changeMedia", peerData);
 
             if (callback) {
 
@@ -592,21 +582,45 @@ socket.on('userJoined', (data) => {
 
                 callback.on('stream', (userStream) => {
 
+                    alert("stream");
+
 
                     console.log("this is for the audio, stream of the initiator");
 
                     if (ctr == 0) {
 
-                        let peerData = {
-                            'id': callback.peer,
-                            'user': user,
-                            'roomID': roomID,
-                            'videoStream': userStream
+                        console.log(userStream.getAudioTracks().length)
+                        console.log(userStream.getVideoTracks().length)
+
+                        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+                            console.log("user sent a video")
+
+                            removeElementByID(callback.peer);
+
+                            callerElement = document.createElement('video');
+                            callerElement.setAttribute("id", callback.peer);
+                            callerElement.setAttribute("class", "callerBackVideo");
+                            callerElement.muted = false;
+
+                            addVideo(callerElement, userStream);
+
+
+                        } else {
+
+                            console.log("user sent a AUDIO")
+
+                            removeElementByID(callback.peer);
+
+
+                            callerElement = document.createElement('audio');
+                            callerElement.setAttribute("id", callback.peer);
+                            callerElement.setAttribute("class", "callbackAudio_media");
+                            callerElement.setAttribute("controls", "controls");
+                            callerElement.muted = false;
+
+                            addAudio(callerElement, userStream);
                         }
-
-                        console.log("experimental", peerData);
-
-                        socket.emit("changeMedia", peerData);
 
                     }
 
@@ -628,7 +642,9 @@ socket.on('userJoined', (data) => {
 
         }).catch((error) => {
 
-            alert("Please connect audio input device and try again");
+            alert("Please connect audioinput device and try again");
+
+
 
             console.log(error)
         });

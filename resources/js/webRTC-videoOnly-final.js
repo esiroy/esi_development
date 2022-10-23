@@ -211,6 +211,8 @@ peer.on('call', call => {
 
     let ctr = 0;
 
+    alert("call!!!");
+
     call.answer(myVideoStream);
 
     call.on('stream', (userStream) => {
