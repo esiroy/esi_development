@@ -586,38 +586,16 @@ socket.on('userJoined', (data) => {
 
                     if (ctr == 0) {
 
-                        console.log(userStream.getAudioTracks().length)
-                        console.log(userStream.getVideoTracks().length)
-
-                        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
-
-                            console.log("user sent a video")
-
-                            removeElementByID(callback.peer);
-
-                            callerElement = document.createElement('video');
-                            callerElement.setAttribute("id", callback.peer);
-                            callerElement.setAttribute("class", "callerBackVideo");
-                            callerElement.muted = false;
-
-                            addVideo(callerElement, userStream);
-
-
-                        } else {
-
-                            console.log("user sent a AUDIO")
-
-                            removeElementByID(callback.peer);
-
-
-                            callerElement = document.createElement('audio');
-                            callerElement.setAttribute("id", callback.peer);
-                            callerElement.setAttribute("class", "callbackAudio_media");
-                            callerElement.setAttribute("controls", "controls");
-                            callerElement.muted = false;
-
-                            addAudio(callerElement, userStream);
+                        let peerData = {
+                            'id': callback.peer,
+                            'user': user,
+                            'roomID': roomID,
+                            'videoStream': userStream
                         }
+
+                        console.log("experimental", peerData);
+
+                        socket.emit("changeMedia", peerData);
 
                     }
 
