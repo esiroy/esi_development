@@ -105,24 +105,17 @@ function gotStream(stream) {
 }
 
 function handleError(error) {
+    //start a video with audio connection width data of user
+    let video = false;
+    let audio = true;
 
-    console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
 
-
+    //start audio
     data = {
         'id': myId,
         'user': user,
         'roomID': roomID
     }
-
-    socket.emit("newUser", data);
-
-    //start a video with audio connection width data of user
-    let video = false;
-    let audio = true;
-
-    console.log(data);
-
     start(video, audio, data);
 }
 
