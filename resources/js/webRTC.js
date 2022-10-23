@@ -582,6 +582,8 @@ socket.on('userJoined', (data) => {
         //I have only audio, send to the audio to my peer
         console.log("user joined:: I have only audio, send to the audio to my peer", data.id)
 
+        const callback = peer.call(id, myAudioStream);
+
         const audioConstraints = {
             audio: { deviceId: audioSource ? { exact: audioSource } : undefined },
             video: { deviceId: undefined }
