@@ -577,7 +577,7 @@ socket.on('userJoined', (data) => {
 
 
             data = {
-                'id': data.id,
+                'id': myID,
                 'user': user,
                 'roomID': roomID,
                 'videoStream': mediaStream
