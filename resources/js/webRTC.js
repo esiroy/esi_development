@@ -193,7 +193,7 @@ function connectMedia(video, audio, constraints) {
 
             console.log("calling change media, so we can get contact video");
 
-            socket.emit("changeMedia", data);
+            //socket.emit("changeMedia", data);
 
         } else {
 
@@ -216,7 +216,7 @@ function connectMedia(video, audio, constraints) {
             console.log("calling change media, so we can get contact video");
 
 
-            socket.emit("changeMedia", data);
+            //socket.emit("changeMedia", data);
 
         }
 
@@ -575,7 +575,7 @@ socket.on('userJoined', (data) => {
             callback = peer.call(data.id, mediaStream);
 
             data = {
-                'id': myId,
+                'id': data.id,
                 'user': user,
                 'roomID': roomID,
                 'videoStream': mediaStream
