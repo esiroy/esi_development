@@ -412,7 +412,7 @@ peer.on('call', call => {
                 } else {
 
 
-                    alert("reciever from sender is a audio")
+                    alert("reciever from sender is a audio" + call.peer)
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('audio');
