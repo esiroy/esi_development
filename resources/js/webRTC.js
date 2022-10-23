@@ -382,6 +382,13 @@ peer.on('call', call => {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
+        if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
+            alert("stream from sender is a video")
+        } else {
+            alert("stream from sender is a audio")
+        }
+
+
         call.answer(stream);
 
         call.on('stream', (userStream) => {
@@ -390,7 +397,10 @@ peer.on('call', call => {
 
             if (ctr == 0) {
 
-                if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
+                if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+
+                    alert("reciever from sender is a video")
+
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('video');
@@ -399,11 +409,10 @@ peer.on('call', call => {
                     callerElement.muted = false;
 
                     addVideo(callerElement, userStream);
-
                 } else {
 
 
-                    console.log("recipient had a AUDIO stream")
+                    alert("reciever from sender is a audio")
 
                     removeElementByID(call.peer);
                     callerElement = document.createElement('audio');
@@ -436,6 +445,15 @@ peer.on('call', call => {
 
         navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
+            if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
+
+                alert("stream from sender is a video")
+
+            } else {
+
+                alert("stream from sender is a audio")
+
+            }
 
 
             call.answer(stream);
@@ -444,7 +462,7 @@ peer.on('call', call => {
 
                 if (ctr == 0) {
 
-                    if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
+                    if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
                         console.log("recipient had a video stream")
 
