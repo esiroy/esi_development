@@ -313,7 +313,7 @@ function restart() {
 
 
 
-        //socket.emit("changeMedia", data);
+        socket.emit("changeMedia", data);
 
         removeElementByID(myId);
 
