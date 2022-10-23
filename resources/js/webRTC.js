@@ -399,7 +399,7 @@ peer.on('call', call => {
 
                 if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
-                    alert("reciever from sender is a video")
+                    alert("reciever from sender is a video" + call.peer)
 
 
                     removeElementByID(call.peer);
