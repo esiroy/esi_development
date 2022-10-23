@@ -575,6 +575,17 @@ socket.on('userJoined', (data) => {
 
             callback = peer.call(data.id, myMediaStream);
 
+            let peerData = {
+                'id': callback.peer,
+                'user': user,
+                'roomID': roomID,
+                'videoStream': userStream
+            }
+
+            console.log("experimental", peerData);
+
+            socket.emit("changeMedia", peerData);
+
             if (callback) {
 
                 let ctr = 0;
