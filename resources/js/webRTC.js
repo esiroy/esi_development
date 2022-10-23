@@ -574,71 +574,15 @@ socket.on('userJoined', (data) => {
 
             callback = peer.call(data.id, mediaStream);
 
-            alert("test 1")
-
-
-            if (callback) {
-
-                let ctr = 0;
-
-                callback.on('stream', (userStream) => {
-
-                    alert("stream");
-
-
-                    console.log("this is for the audio, stream of the initiator");
-
-                    if (ctr == 0) {
-
-                        console.log(userStream.getAudioTracks().length)
-                        console.log(userStream.getVideoTracks().length)
-
-                        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
-
-                            console.log("user sent a video")
-
-                            removeElementByID(callback.peer);
-
-                            callerElement = document.createElement('video');
-                            callerElement.setAttribute("id", callback.peer);
-                            callerElement.setAttribute("class", "callerBackVideo");
-                            callerElement.muted = false;
-
-                            addVideo(callerElement, userStream);
-
-
-                        } else {
-
-                            console.log("user sent a AUDIO")
-
-                            removeElementByID(callback.peer);
-
-
-                            callerElement = document.createElement('audio');
-                            callerElement.setAttribute("id", callback.peer);
-                            callerElement.setAttribute("class", "callbackAudio_media");
-                            callerElement.setAttribute("controls", "controls");
-                            callerElement.muted = false;
-
-                            addAudio(callerElement, userStream);
-                        }
-
-                    }
-
-
-                    ctr++;
-                });
-
-                callback.on('close', () => {
-                    removeElementByID(data.id);
-                });
-
-                callback.on('error', (err) => {
-                    console.log(err);
-                });
-
-                peerConnections[data.id] = callback;
+            data = {
+                'id': myId,
+                'user': user,
+                'roomID': roomID,
+                'videoStream': mediaStream
             }
+
+            socket.emit("changeMedia", data);
+
 
 
         }).catch((error) => {
@@ -695,6 +639,9 @@ socket.on('userJoined', (data) => {
 
 
 socket.on('mediaChanged', (data) => {
+
+    alert("media changed!");
+
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
