@@ -396,7 +396,7 @@ peer.on('call', call => {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
-        if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
+        if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
 
             alert("stream from sender is a video")
 
@@ -459,6 +459,17 @@ peer.on('call', call => {
         };
 
         navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+
+            if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
+
+                alert("stream from sender is a video")
+
+            } else {
+
+                alert("stream from sender is a audio")
+
+            }
+
 
             call.answer(stream);
 
