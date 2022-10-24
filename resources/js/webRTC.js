@@ -17,11 +17,13 @@ const peer = new Peer({
 let myVideoStream;
 let myAudioStream;
 
+let videoElement;
+let audioElement;
 
 const peerConnections = {}
-
-
 let mediaContainer = document.getElementById('myMediaContainer');
+
+
 
 
 let videoGrid = document.getElementById('videoGrid');
@@ -90,7 +92,13 @@ function attachSinkId(element, sinkId) {
 
 function changeAudioDestination() {
     const audioDestination = audioOutputSelect.value;
-    attachSinkId(videoElement, audioDestination);
+
+
+    if (myVideoStream) {
+        attachSinkId(videoElement, audioDestination);
+    } else {
+        attachSinkId(audioElement, audioDestination);
+    }
 }
 
 function gotStream(stream) {
@@ -169,7 +177,6 @@ function createUserMedia(video, audio, constraints) {
         removeElementByID("myAudio");
 
         if (audio == true && video == true) {
-
             myAudioStream = null;
 
             //Register the video stream to my Stream
@@ -179,9 +186,14 @@ function createUserMedia(video, audio, constraints) {
 
             console.log("this is a video");
 
+            /*******
+                (NOTE: THIS SHOULD BE MUTED = TRUE) 
+            *******/
+
             videoElement = document.createElement('video');
             videoElement.setAttribute("id", "myVideo");
-            videoElement.muted = true;
+            videoElement.muted = false;
+            //videoElement.muted = true;
             addMyVideo(videoElement, stream);
 
         } else {
@@ -189,18 +201,22 @@ function createUserMedia(video, audio, constraints) {
 
             //Register the video stream to my Stream
             myVideoStream = null;
-
             window.stream = stream; // make stream available to console       
+
             myAudioStream = stream;
 
             console.log("this is a audio only")
 
-            audio = document.createElement('audio');
-            audio.setAttribute("id", "myAudio");
-            audio.setAttribute("controls", "controls");
-            audio.muted = true;
+            /*******
+                (NOTE: THIS SHOULD BE MUTED = TRUE) 
+            *******/
+            audioElement = document.createElement('audio');
+            audioElement.setAttribute("id", "myAudio");
+            audioElement.setAttribute("controls", "controls");
+            audioElement.muted = false;
+            //audioElement.muted = true;
 
-            addMyAudio(audio, stream);
+            addMyAudio(audioElement, stream);
         }
 
         return navigator.mediaDevices.enumerateDevices();
@@ -224,7 +240,6 @@ function createUserMedia(video, audio, constraints) {
 function start(video, audio, data) {
 
     if (window.stream) {
-
         window.stream.getTracks().forEach(track => {
             track.stop();
         });
@@ -270,12 +285,13 @@ function restart() {
            'videoStream': myVideoStream
        }
 
-    */
+   
 
     start(true, true, data);
 
 
     socket.emit("changeMedia", data);
+     */
 
 
 
