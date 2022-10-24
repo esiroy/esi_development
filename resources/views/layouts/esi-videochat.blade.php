@@ -18,6 +18,8 @@
     <!-- Styles -->
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>

@@ -6,7 +6,8 @@
 
             <div class="col-md-12 col-sm-12 col-xs-12">
 
-                <div class="left-container mb-2">
+                
+                <div id="lessonSlide" class="left-container mb-2">
 
                     <div class="tool-container" v-show="this.$props.isBroadcaster == true">
                         <!-- [START] TOOL WRAPPER -->
@@ -128,9 +129,10 @@
 
                         </div>
                     </div>
-
                     
                 </div>
+
+                <div id="lessonSharedContainer"></div>
 
             </div>
 
