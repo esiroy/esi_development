@@ -350,7 +350,9 @@ function connectClientAudio(stream) {
     audioElement.muted = false;
 
     peer.on('connection', function(conn) {
+
         conn.on('data', function(isSharedScreen) {
+
             if (isSharedScreen == true) {
                 vid = document.createElement('video');
                 vid.setAttribute("id", "sharedVideo");
@@ -509,11 +511,14 @@ function shareScreen() {
 
         //The screen record is stopped by myself
         sharedScreen.getVideoTracks()[0].onended = function() {
+
             document.getElementById("sharedVideo").remove();
 
             //send this shared screen false to stop peer
             Object.keys(peerConnections).forEach(function(peerID) {
+
                 var conn = peer.connect(peerID);
+
                 conn.on('open', () => {
                     let isSharedScreen = false;
                     conn.send(isSharedScreen);
@@ -564,9 +569,18 @@ function shareScreen() {
 
 
 socket.on('userDisconnect', id => {
-    if (peerConnections[id]) {
-        peerConnections[id].close();
-    }
+
+    try {
+
+        if (peerConnections[id]) {
+            peerConnections[id].close();
+        }
+
+    } catch ((error) => {
+        console.log("User Disconnect error ", error)
+    })
+
+
 });
 
 

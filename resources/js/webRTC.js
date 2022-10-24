@@ -233,9 +233,8 @@ function createUserMedia(video, audio, constraints) {
             //videoElement.muted = true;
             addMyVideo(videoElement, stream);
 
-            detectDesktopShared(stream);
 
-
+            // detectDesktopShared(stream)
         } else {
 
 
@@ -259,7 +258,9 @@ function createUserMedia(video, audio, constraints) {
 
             addMyAudio(audioElement, stream);
 
-            detectDesktopShared(stream)
+            // detectDesktopShared(stream)
+
+
 
         }
 
@@ -386,6 +387,7 @@ function stopSharing() {
 function detectDesktopShared(stream) {
 
 
+
     peer.on('connection', function(conn) {
 
         conn.on('data', function(data) {
@@ -402,6 +404,9 @@ function detectDesktopShared(stream) {
                 sharedScreen = false;
 
                 return false;
+            } else {
+
+                alert("the stream data")
             }
 
         });
@@ -419,11 +424,39 @@ function detectDesktopShared(stream) {
 
             console.log("answer the stream without any stream", call)
             call.answer();
+
         } else {
 
             console.log("answer the stream", stream)
 
             call.answer(stream);
+
+            if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
+
+                alert("reciever from sender is a video 11-25 :: (peer)" + call.peer)
+
+                removeElementByID(call.peer);
+                callerElement = document.createElement('video');
+                callerElement.setAttribute("id", call.peer);
+                callerElement.setAttribute("class", "peerCallBackVideo");
+                callerElement.muted = false;
+
+                addVideo(callerElement, stream);
+            } else {
+
+
+                alert("reciever from sender is a audio 22-25 :: (peer)" + call.peer)
+
+                removeElementByID(call.peer);
+                callerElement = document.createElement('audio');
+                callerElement.setAttribute("id", call.peer);
+                callerElement.setAttribute("class", "peerCallBackAudio"); //call peer
+                callerElement.setAttribute("controls", "controls");
+                callerElement.muted = false;
+
+                addAudio(callerElement, stream);
+
+            }
         }
 
         call.on('stream', userStream => {
@@ -437,8 +470,20 @@ function detectDesktopShared(stream) {
                 addVideoContent('lessonSharedContainer', sharedVid, userStream);
 
                 //hide lesson Slide
-                hideByElementId("lessonSlide")
+                hideByElementId("lessonSlide");
+            } else {
 
+                //the user did not
+                alert("user video ")
+
+                data = {
+                    'id': myId,
+                    'user': user,
+                    'roomID': roomID,
+                    'videoStream': mediaCallStream
+                }
+
+                socket.emit("changeMedia", data);
             }
 
         });
@@ -485,6 +530,8 @@ function shareScreen() {
         hideByElementId("lessonSlide")
 
         console.log(peerConnections)
+
+
 
         //Connect to peers
         Object.keys(peerConnections).forEach(function(peerID) {
@@ -559,12 +606,32 @@ videoSelect.onchange = restart;
 
 
 peer.on('connection', function(conn) {
+
     conn.on('data', function(data) {
         console.log("peer connected", data)
+
+        if (data.sharedScreen == true) {
+
+            sharedScreen = true;
+
+        } else if (data.sharedScreen == false) {
+
+            stopSharing();
+
+            sharedScreen = false;
+
+            return false;
+        } else {
+
+            alert("the stream data")
+        }
+
     });
-    conn.on('close', () => {
-        //alert("close")
+
+    conn.on('close', (conn) => {
+        console.log("connection of peer has been closed", conn)
     });
+
 });
 
 peer.on('open', (id) => {
@@ -601,12 +668,6 @@ peer.on('call', call => {
 
     console.log("PEER:: CALLING... for a video stream or audio stream ...");
 
-    if (window.stream) {
-        window.stream.getTracks().forEach(track => {
-            track.stop();
-        });
-    }
-
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
     const constraints = {
@@ -627,9 +688,27 @@ peer.on('call', call => {
 
         call.on('stream', (userStream) => {
 
-            console.log("recieve video from initiator");
+
+
+            peerConnections[call.peer] = call;
+
+            console.log("recieve video from initiator ", call);
 
             if (ctr == 0) {
+
+                if (sharedScreen == true) {
+                    sharedVid = document.createElement('video');
+                    sharedVid.setAttribute("id", "sharedVideo");
+
+
+                    //the lesson shared container must be on the member lesson slider component
+                    addVideoContent('lessonSharedContainer', sharedVid, userStream);
+
+                    //hide lesson Slide
+                    hideByElementId("lessonSlide");
+
+                    return false;
+                }
 
                 if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
@@ -668,7 +747,9 @@ peer.on('call', call => {
 
     }).catch((error) => {
 
-        console.log("recieve audio from initiator");
+        console.log("recieve audio from initiator", call);
+
+
 
         const audioSource = audioInputSelect.value;
         const constraints = {
@@ -693,7 +774,24 @@ peer.on('call', call => {
 
             call.on('stream', (userStream) => {
 
+                peerConnections[call.peer] = call;
+
                 if (ctr == 0) {
+
+
+                    if (sharedScreen == true) {
+                        sharedVid = document.createElement('video');
+                        sharedVid.setAttribute("id", "sharedVideo");
+
+
+                        //the lesson shared container must be on the member lesson slider component
+                        addVideoContent('lessonSharedContainer', sharedVid, userStream);
+
+                        //hide lesson Slide
+                        hideByElementId("lessonSlide");
+
+                        return false;
+                    }
 
                     if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
@@ -751,8 +849,8 @@ peer.on('close', (id) => {
 
 socket.on('userJoined', (data) => {
 
-    peerConnections[data.id] = data;
 
+    peerConnections[data.id] = data;
 
     console.log("user joined ::: calling initiator with just audio and video", data.id);
 
@@ -770,6 +868,8 @@ socket.on('userJoined', (data) => {
         callback = peer.call(data.id, mediaStream);
 
         if (callback) {
+
+            peerConnections[callback.peer] = callback;
 
             let ctr = 0;
 
@@ -855,7 +955,11 @@ socket.on('userJoined', (data) => {
             }
 
 
+
             if (callback) {
+
+                peerConnections[callback.peer] = callback;
+
 
                 let ctr = 0;
 
@@ -901,6 +1005,8 @@ socket.on('userJoined', (data) => {
                 callback.on('error', (err) => {
                     console.log(err);
                 });
+
+                peerConnections[data.id] = callback;
 
 
             }
@@ -1204,9 +1310,14 @@ socket.on('userDisconnect', id => {
 
     removeElementByID(id);
 
-    if (peerConnections[id]) {
+    try {
         peerConnections[id].close();
+
+    } catch (err) {
+
+        console.log("error disconnect : ", err)
     }
+
 });
 
 
