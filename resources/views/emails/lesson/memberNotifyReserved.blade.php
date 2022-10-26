@@ -55,6 +55,6 @@
 
     <div style="margin-top:20px; font-size: 14px">
         <div>マイチューター カスタマーサポート</div>
-        <div style="margin-top:12px; font-size: 14px">お問い合せ 　support@mytutor.co.jp</div>
+        <div style="margin-top:12px; font-size: 14px">お問い合せ 　{{ Config::get('mail.from.address') }}</div>
     </div>
 </div>

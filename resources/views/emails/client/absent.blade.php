@@ -34,7 +34,7 @@
 
     <div style="margin-top:20px; font-size: 14px">
         <div>マイチューター カスタマーサポート</div>
-        <div>お問い合せ 　support@mytutor.co.jp</div>
+        <div>お問い合せ 　{{ Config::get('mail.from.address') }}</div>
     </div>
 </div>
 
