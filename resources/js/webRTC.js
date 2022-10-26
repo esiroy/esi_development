@@ -139,6 +139,8 @@ function handleError(error) {
 
 function addMyAudio(audio, stream) {
     audio.srcObject = stream;
+    audio.muted = true;
+
     audio.addEventListener('loadedmetadata', () => {
         audio.play()
     })
@@ -148,6 +150,8 @@ function addMyAudio(audio, stream) {
 
 function addMyVideo(video, stream) {
     video.srcObject = stream;
+    video.muted = true;
+
     video.addEventListener('loadedmetadata', () => {
         video.play()
     })
