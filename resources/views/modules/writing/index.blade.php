@@ -13,6 +13,9 @@
 
         <div class="container pb-5">
             <div class="row">
+            
+                <!--{{ "mail address" . Config::get('mail.from.address') }}-->
+
                 <!--[start sidebar]-->
                 @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->           

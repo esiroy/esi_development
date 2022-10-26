@@ -10,7 +10,7 @@
 
 マイチューター カスタマーサポート <br/>
 
-お問い合せ 　support@mytutor.co.jp <br/>
+お問い合せ 　{{ Config::get('mail.from.address') }} <br/>
 
 <br/>
 
