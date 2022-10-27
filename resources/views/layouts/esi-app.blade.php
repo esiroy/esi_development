@@ -289,7 +289,7 @@
 
                 canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
                 editor-ID="canvas"
-                canvas-Width="500"
+                canvas-Width="680"
                 canvas-Height="500"    
                         
                 api_token="{{ Auth::user()->api_token }}" 

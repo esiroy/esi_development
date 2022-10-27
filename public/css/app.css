@@ -28668,6 +28668,10 @@ div.dt-button-collection .dt-button.active {
   max-width: 300px;
 }
 
+.logo-sm {
+  width: 150px;
+}
+
 /****************** ADMIN PANEL ***************/
 .esi-card {
   border: 2px solid #cbe5ee;

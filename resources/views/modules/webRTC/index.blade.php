@@ -14,7 +14,7 @@
                 :channelid="{{ $roomID }}"
                 :reservation="{{ json_encode($reservationData) }}"            
                 canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
-                canvas_width="500"
+                canvas_width="680"
                 canvas_height="500"
                 :user_info="{{  json_encode(Auth::user()) }}"
                 :member_info="{{  json_encode($userInfo) }}"

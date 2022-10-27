@@ -64,6 +64,8 @@
                         </div>
                     </div>
 
+                    <!--
+
                     <multiselect v-model="sharingValues" deselect-label="Can't remove this value" track-by="code" label="name" placeholder="Select one" 
                     :options="sharingOptions" :searchable="false" :allow-empty="false">
                         <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></strong></template>
@@ -79,6 +81,9 @@
                         :taggable="true" 
                         @tag="addTag">
                     </multiselect>
+                    -->
+
+
                 </form>
             </b-modal>
         </div>
@@ -91,13 +96,15 @@
                       
                         <th>File Name</th>
                         <th>File Size</th>
-                         <th>Owner</th>
-                        <!--<th>Action</th>-->
+                        <!--
+                        <th>Owner</th>
+                        <th>Action</th>
+                        -->
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-if="!files.length">
-                        <td colspan="7" align="center">
+                        <td colspan="8" align="center">
                             <h4>No Files</h4>
                         </td>
                     </tr>
@@ -107,14 +114,10 @@
                                 <a :href="'/file/'+file.id" target="_blank">{{file.file_name}}</a>
                             </div>
                         </td>
-                        <td>
+                        <td style="width:125px">
                             <div class="filesize">{{ file.size | formatSize }}</div>
                         </td>
-                        <td>
-                            <div class="owner">
-                                {{ file.owner.first_name }} {{ file.owner.last_name }}
-                            </div> 
-                        </td>
+                        
                         <!--
                         <td>
                             <div class="dropdown">

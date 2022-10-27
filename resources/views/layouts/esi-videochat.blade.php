@@ -32,7 +32,11 @@
             <div class="container">
 
                 <a class="navbar-brand" href="{{ url('/') }}">
-                   <img src="{{ url("images/title_full.png") }}" alt="{{ config('app.name', 'My Tutor') }}" alt="{{ config('app.name', 'My Tutor') }} administratrion panel">
+                   <img src="{{ url('images/title_full.png') }}" 
+                    alt="{{ config('app.name', 'My Tutor') }}" 
+                    alt="{{ config('app.name', 'My Tutor') }} administratrion panel"                    
+                    class="logo-sm"
+                    >
                 </a>
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse"

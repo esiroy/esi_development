@@ -265,17 +265,10 @@ export default {
         return {
             tutor_chat_message: "",
             privateMessage: "",
-
             chatlogs: [],
-
             socket: null,
-
-
             videosocket: null,
-            myVideoStream: null,
-            
-
-            
+            myVideoStream: null,           
 
             //loader
             isLoading: false,

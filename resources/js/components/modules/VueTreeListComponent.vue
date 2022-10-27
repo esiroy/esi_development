@@ -110,34 +110,39 @@
 				<div class="card-body">
 					<div class="row">
 						<div class="col-md-3">Folder ID:</div>
-						<div class="col-md-9">
+						<div class="col-md-9">{{ this.displayfolderID }}
+                            <!--
 							<a
 								:href="this.displayFolderLink"
 								target="_blank"
 								v-if="this.displayFolderLink"
 							>{{ this.displayfolderID }}</a>
-							<span v-else>{{ this.displayfolderID }}</span>
+							<span v-else>{{ this.displayfolderID }}</span>-->
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-3">Folder Name:</div>
-						<div class="col-md-9">
+						<div class="col-md-9"> {{ this.displayFolderName }}
+                            <!--
 							<a
 								:href="this.displayFolderLink"
 								target="_blank"
 								v-if="this.displayFolderLink"
 							>{{ this.displayFolderName }}</a>
 							<span v-else>{{ this.displayFolderName }}</span>
+                        -->
 						</div>
 					</div>
 					<div class="row">
 						<div class="col-md-3">Folder Description</div>
 						<div class="col-md-9">{{ this.displayFolderDesc }}</div>
 					</div>
+                    <!--
 					<div class="row">
 						<div class="col-md-3">Folder Owner</div>
 						<div class="col-md-9">{{ this.displayFolderOwner }}</div>
 					</div>
+                    -->
 					<div class="row">
 						<div class="col-md-3">Created On</div>
 						<div class="col-md-9">{{ this.displayCreatedAt }}</div>
@@ -175,6 +180,7 @@
 
         <!-- CONTEXT MENU -->
         <ul :id="this.parentID" class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">
+            
             <li @click="contextmenuShare" v-if="can_user_share_folder">
                 <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-share mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path fill-rule="evenodd" d="M11.724 3.947l-7 3.5-.448-.894 7-3.5.448.894zm-.448 9l-7-3.5.448-.894 7 3.5-.448.894z"/>
@@ -182,6 +188,9 @@
                 </svg>
                  Share Folder
             </li>
+           
+
+            <!--
             <li @click="contextmenuViewFolder" v-if="can_user_share_uploads">
                     <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-eye" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.134 13.134 0 0 0 1.66 2.043C4.12 11.332 5.88 12.5 8 12.5c2.12 0 3.879-1.168 5.168-2.457A13.134 13.134 0 0 0 14.828 8a13.133 13.133 0 0 0-1.66-2.043C11.879 4.668 10.119 3.5 8 3.5c-2.12 0-3.879 1.168-5.168 2.457A13.133 13.133 0 0 0 1.172 8z"/>
@@ -189,6 +198,7 @@
                     </svg>
                     View Folder
             </li>
+            -->
 
             <li @click="contextMenuCreate" v-if="can_user_create_folder">
                 <svg class="bi bi-folder mr-2" width="1.2em" height="1.2em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -270,6 +280,7 @@
 
                         </div>
 
+                       
                         <multiselect 
                                 v-model="sharingValues" 
                                 deselect-label="Can't remove this value" 
@@ -280,8 +291,12 @@
                                 :options="sharingOptions" :searchable="false" :allow-empty="false">
                             <template slot="singleLabel" slot-scope="{ option }"><strong>{{ option.name }}</strong></strong></template>
                         </multiselect>
+                        
+
                         <br>
                         <span v-if="this.sharingValues.code === 'private'">Share With Specific Users</span>
+
+                        <!--
                         <multiselect v-if="this.sharingValues.code === 'private'"
                             v-model="userValues" tag-placeholder="Add this as new user" 
                             placeholder="Search or add a user" label="name" 
@@ -292,6 +307,7 @@
                             :disabled="isSharingDisabled"
                             @tag="addTag">
                         </multiselect>
+                        -->
 
                     </form>
                 </b-modal>
