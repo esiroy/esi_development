@@ -5,7 +5,7 @@
 <div class="container">
     <div class="row">
 
-        <div id="lesson-slider-container" class="col-8">
+        <div id="lesson-slider-container" class="col-9">
 
             <lesson-slider-component 
                 ref="lessonSliderComponent"
@@ -14,8 +14,8 @@
                 :channelid="{{ $roomID }}"
                 :reservation="{{ json_encode($reservationData) }}"            
                 canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
-                canvas_width="680"
-                canvas_height="500"
+                canvas_width="770"
+                canvas_height="480"
                 :user_info="{{  json_encode(Auth::user()) }}"
                 :member_info="{{  json_encode($userInfo) }}"
                 api_token="{{ Auth::user()->api_token }}" 
@@ -24,7 +24,7 @@
             </lesson-slider-component> 
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-3">
 
             <!---
             <button type="button" id="stopCamera">Stop Camera </button>
@@ -33,7 +33,7 @@
             <button type="button" id="shareScreen">shareScreen</button>
             -->
 
-            <div class="modal fade" id="mySettingsModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="mySettingsModal" tabindex="-1" role="dialog" aria-hidden="true">
 
 
                 <div class="modal-dialog" role="document">
@@ -46,16 +46,19 @@
                     </div>
                     <div class="modal-body">
                         
-                        <div class="select">
-                            <label for="audioSource">Audio input source: </label><select id="audioSource"></select>
+                        <div class="select mb-2">
+                            <label for="audioSource" class="font-weight-bold my-0">Audio input source: </label>
+                            <select id="audioSource" class="form-control form-control-sm py-0" ></select>
                         </div>
 
-                        <div class="select">
-                            <label for="audioOutput">Audio output destination: </label><select id="audioOutput"></select>
+                        <div class="select mb-2">
+                            <label for="audioOutput" class="font-weight-bold my-0">Audio output destination: </label>
+                            <select id="audioOutput" class="form-control form-control-sm py-0"></select>
                         </div>
 
-                        <div class="select">
-                            <label for="videoSource">Video source: </label><select id="videoSource"></select>
+                        <div class="select mb-2">
+                            <label for="videoSource"  class="font-weight-bold my-0">Video source: </label>
+                            <select id="videoSource" class="form-control form-control-sm py-0"></select>
                         </div>
 
                     </div>

@@ -4,65 +4,87 @@
 
         <div id="editor_content" class="row">
 
-            <div class="col-md-12 col-sm-12 col-xs-12">
 
-                
-                <div id="lessonSlide" class="left-container mb-2">
+            <div class="col-md-1 col-sm-1 col-xs-1">
+                <div class="tool-container" v-show="this.$props.isBroadcaster == true">
+                    <!-- [START] TOOL WRAPPER -->
+                    <div class="tool-wrapper" >
 
-                    <div class="tool-container" v-show="this.$props.isBroadcaster == true">
-                        <!-- [START] TOOL WRAPPER -->
-                        <div class="tool-wrapper" >
-                            <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
-                                <i class="fa fa-mouse-pointer" aria-hidden="true" ></i>
-                            </div>
+                        <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
+                            <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
+                        </div>     
 
-                            <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
-                                <i class="fa fa-font" aria-hidden="true"></i>
-                            </div>
-                
-                            <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
-                                <i class="fa fa-pen" aria-hidden="true" ></i>
-                            </div>                    
-                            <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
-                                <i class="fa fa-paint-brush" aria-hidden="true" ></i>  
-                            </div>                        
-                    
-                            <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
-                                <i class="fa fa-minus" aria-hidden="true"></i>
-                            </div>        
-                                    
-                            <div :class="['tool', (isCircle) ? 'active' : '']"  @click="activateCircle">
-                                <b-icon icon="circle" font-scale="1"> </b-icon>
-                            </div> 
+                        <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
+                            <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
+                        </div>     
+
+
+                        <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
+                            <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
                         </div>
-                        <!-- [END] TOOL WRAPPER -->
-
-
-                        <!-- ADDITIONAL OPTIONS -->
-                        <div class="tool-wrapper">
-
-                            <div class="tool">
-                                <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
-                            </div>             
                         
-                            <!-- Strokes-->
-                            <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
-                                <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
-                                <div id="brushStrokes" class="collapse" style="z-index:9999">
-                                    <div class="brushes-container">
-                                        <div class="brushes">
-                                            <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
-                                            <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
-                                            <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
-                                            <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
-                                            <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
-                                        </div> 
-                                    </div>
+                        <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                            <i class="fa fa-font text-white" aria-hidden="true"></i>
+                        </div>
+
+
+                        <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
+                            <i class="fa fa-hand-paper text-white"></i>
+                        </div>
+
+
+                        <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
+                            <i class="fa fa-pen text-white" aria-hidden="true" ></i>
+                        </div>                    
+                        <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
+                            <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
+                        </div>                        
+                
+                        <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
+                            <i class="fa fa-minus text-white" aria-hidden="true"></i>
+                        </div>        
+
+                        <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
+                            <b-icon icon="circle " font-scale="1"> </b-icon>
+                        </div> 
+                         
+                                
+
+
+                    </div>
+                    <!-- [END] TOOL WRAPPER -->
+
+
+                    <!-- ADDITIONAL OPTIONS -->
+                    <div class="tool-wrapper">
+
+                        <div class="tool">
+                            <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
+                        </div>             
+                    
+                        <!-- Strokes-->
+                        <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
+                            <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
+                            <div id="brushStrokes" class="collapse" style="z-index:9999">
+                                <div class="brushes-container">
+                                    <div class="brushes">
+                                        <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                                        <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                                        <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                                        <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                                        <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
+                                    </div> 
                                 </div>
                             </div>
-                        </div> 
-                    </div>
+                        </div>
+                    </div> 
+                </div>
 
+            </div>
+
+            <div class="col-md-11 col-sm-11 col-xs-11">
+
+                <div id="lessonSlide" class="left-container mb-2">  
                     <div class="d-flex justify-content-center">
                    
                         <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">
@@ -134,14 +156,7 @@
 
                 <div id="lessonSharedContainer"></div>
 
-            </div>
-
-
-            <div class="col-md-12 col-sm-12 col-xs-12">
-
-                <div class="right-container">
-
-                    <div class="mb-2" v-if="this.user_info.user_type =='TUTOR'">
+                <div id="teacherNotesContainer" class="mb-2" v-if="this.user_info.user_type =='TUTOR'">
                         <b-card-group>
                             <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
                                 <template #header>
@@ -150,9 +165,18 @@
                                <b-card-text v-html="notes" class="text-dark"></b-card-text>
                             </b-card>
                         </b-card-group>
-                    </div>
+                </div>
+
+            </div>
 
 
+            <div class="col-md-12 col-sm-12 col-xs-12">
+
+                <div class="right-container">
+
+                    
+
+                    <!--
                     <div class="chat-container mb-2">
                         <b-card-group>
 
@@ -183,6 +207,8 @@
                         </div>
                     </div>                    
 
+                    -->
+
 
 
                 </div>
@@ -212,12 +238,8 @@
 </template>
 
 <script>
-
-import { fabric } from "fabric";
+import {fabric} from "fabric";
 import io from "socket.io-client";
-import io2 from "socket.io-client";
-
-import { Peer } from "peerjs";
 
 
 
@@ -263,6 +285,19 @@ export default {
     },
     data() {
         return {
+
+            panning: false,
+
+
+            isDraggerMouseDown: false,
+            offsetX: 0,
+            offsetY: 0,
+            startX: 0,
+            startY: 0,
+            netPanningX: 0,
+            netPanningY: 0,
+
+            //chat 
             tutor_chat_message: "",
             privateMessage: "",
             chatlogs: [],
@@ -272,6 +307,7 @@ export default {
 
             //loader
             isLoading: false,
+
 
             canvas: [],
             canvasMirror: null,
@@ -285,12 +321,15 @@ export default {
 
             //Modes
             isSelector: false,
+            isDragger: false,
             isText: false,
             isTextEditing: false,
 
             isBrush: false, 
             isPencil: false,
             isCircle: false,
+            isZoomIn: false,
+            isZoomOut: false,
 
             //Action
             isDrawing: false,
@@ -340,8 +379,6 @@ export default {
     mounted() 
     {
         this.socket = io.connect(this.$props.canvas_server);
-        //this.createPeerConnection();
-
 
         //register as user
         let user = {
@@ -360,67 +397,16 @@ export default {
             this.updateUserList(users); 
         });      
 
-        this.getSlideMaterials(this.reservation) 
-
-
-    /*
-
-        this.imageURL = [
-            "http://i.imgur.com/yf6d9SX.jpg",
-            "https://i.imgur.com/rQjt0IH.jpeg",
-            "https://i.imgur.com/v3DN59v.png",
-            "https://i.imgur.com/rgy0H0t.png",
-            "https://i.imgur.com/yFoigWV.png",
-            "https://i.imgur.com/yFoigWV.png"
-        ];
-*/
-
-        /*
-
-        for (var i = 1; i <= this.slides; i++) 
-        {
-
-            this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                //backgroundColor : "#fff"
-            });
-
-            // set canvas width and height based on image size
-            //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});
-
-            
-            
-            this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
-                // Optionally add an opacity lvl to the image
-                //backgroundImageOpacity: 0.5,
-                // should the image be resized to fit the container?
-                //backgroundImageStretch: false,
-            });
-            
-            
-
-            document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';
-            
-        }
-        */
-
+        this.getSlideMaterials(this.reservation);
         
         this.customSelectorBounds(fabric);
-
-      
-
-        /*
-       //update drawing if member is 
-        this.canvas[this.currentSlide]  = new fabric.Canvas('canvas'+this.currentSlide, {
-            backgroundColor : "#fff",
-        });
-        */
-
-
 
         this.socket.on("GOTO_SLIDE", (data) =>  {   
             this.viewerCurrentSlide = data.num
             this.currentSlide = data.num
             this.goToSlide(data.num);
+            this.rescale(1);
+
         });
 
         this.socket.on('UPDATE_DRAWING', (response) => {
@@ -454,23 +440,15 @@ export default {
                     
                 }).then((result) => {
 
-                    //console.log(result)
-
                     this.privateMessage = null;
-
                     this.scrollToBottom();
                 });                
 
-                /*
-                Promise.all([mypromise]).then(arr => {
-                    console.log(arr)
-                    this.scrollToBottom();
-                });*/
             } 
 
         });
 
-
+       
         //ON LOAD WINDOW
         /*
         if (this.$props.isBroadcaster == false) 
@@ -497,128 +475,44 @@ export default {
         */
 
 
+        window.addEventListener('scroll', this.reOffset);
+        window.addEventListener('resize', this.reOffset);
+
 
     },
     methods: {
-
-        test() {
-           // console.log("testing")
-            this.videosocket.emit("newUser", "the-room", "1");
-        },
-        createPeerConnection() {
-      
-
-        this.videosocket = io2.connect('https://rtcserver.esuccess-inc.com:40002', {
-            allowEIO3: false,
-            cors: {
-                origin: "*",
-                methods: ["GET", "POST"],
-                allowedHeaders: ["my-custom-header"],
-                credentials: true
-            }
-        });
-
-        this.peer = new Peer();
-
-        this.peer.on('open', (id) => {             
-            this.videosocket.emit("newUser", id, "1");
-        });
-
-        this.videosocket.on('userJoined', id => {
-
-            console.log("new user joined", this.myVideoStream)
-
-            const call = this.peer.call(id, this.myVideoStream);
-            const vid = document.createElement('video');
-
-            call.on('error', (err) => {
-                alert(err);
-            });
-
-            call.on('stream', userStream => {
-                this.addVideo(vid, userStream);
-            });
-
-            call.on('close', () => {
-                vid.remove();
-                console.log("user disconect")
-            })
-            peerConnections[id] = call;
-
-        });
-
-            var myvideo = document.createElement('video');
-            myvideo.muted = true;
-
-            const peerConnections = {}
-
-            navigator.mediaDevices.getUserMedia({
-                audio: true,
-                video: { width: 250, height: 250 }  
-            }).then((stream) => {
-
-                this.myVideoStream = stream;
-                this.addVideo(myvideo, stream);               
-
-                this.peer.on('call', call => 
-                {
-
-                    call.answer(stream);
-                    const vid = document.createElement('video');
-
-                    call.on('stream', userStream => {
-                        this.addVideo(vid, userStream);
-                    })
-                    call.on('error', (err) => {
-                        alert(err)
-                    })
-                    call.on("close", () => {
-                        console.log(vid);
-                        vid.remove();
-                    })
-                    peerConnections[call.this.peer] = call;
-                })
-                
-            }).catch(err => {
-                alert("stream " + err.message)
-            })
-
-
-
-
-            this.peer.on('error', (err) => {
-                alert(err.type);
-            });
-
-         
-
-            this.videosocket.on('userDisconnect', id => {
-                if (peerConnections[id]) {
-                    peerConnections[id].close();
-                }
-            })
-        },
-        addVideo(video, stream) 
-        {
-
-           console.log("adding videoDiv grid ")
-
-            let videoGrid = document.getElementById('videoDiv')
-
-            video.srcObject = stream;
-            video.addEventListener('loadedmetadata', () => {
-
-                console.log("playing video");
-
-                video.play()
-            })
-            videoGrid.append(video);
-        },
         updateUserList: function(users) 
         {
             this.users = users;      
             this.$forceUpdate();
         },
+        reOffset(e){
+
+            var canvas = document.getElementById("canvas"+ this.currentSlide);
+            let clientRect = canvas.getBoundingClientRect();
+            this.offsetX = clientRect.left;
+            this.offsetY = clientRect.top;   
+            console.log("offsets!  >>>> " , this.offsetX, this.offsetY);
+
+
+        },
+        // draw everything in pixels coords
+        rescale(scale) {
+            console.log (scale);
+        
+            this.canvas[this.currentSlide].setZoom(scale);
+            this.canvas[this.currentSlide].requestRenderAll();
+
+            this.canvas[this.currentSlide]['scale'] = scale;
+            
+            let zoomedIn = setInterval(() => {
+                this.isZoomOut = false;
+                this.isZoomIn = false;
+                clearInterval(zoomedIn); 
+            }, 50); 
+            
+        },
+
         userSlideAccess() {
 
             if (this.$props.isBroadcaster == false) 
@@ -628,12 +522,15 @@ export default {
                 this.deactivateSelector();
                 this.canvas[this.currentSlide].isDrawingMode = false;
 
-                //console.log("deactivated selector")
+                 this.reOffset();
+
 
             } else {
                 //Your are the viewer  
                 this.mouseClickHandler();
                 this.activatePencil();
+
+                 this.reOffset();
             }
 
 
@@ -659,30 +556,49 @@ export default {
                 if (response.data.success === true) 
                 {
                     this.imageURL = response.data.files;
+
                     this.slides  = (response.data.files).length;
 
                     for (var i = 1; i <= this.slides; i++) 
                     {
                         this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                            //backgroundColor : "#fff"
-                        });
+                            backgroundColor : "#fff"
+                        });                      
 
                         // set canvas width and height based on image size
                         //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});                        
+                        console.log(this.imageURL[i-1]);
                         
+                        var center = this.canvas[i].getCenter();
+
                         this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
                             // Optionally add an opacity lvl to the image
                             //backgroundImageOpacity: 0.5,
                             // should the image be resized to fit the container?
-                            //backgroundImageStretch: false,
+                            scaleX:1,
+                            scaleY:1,
+                            top: 0,
+                            left: 0,
+                            originX: 'left',
+                            originY: 'top',
+                                                        
+                            backgroundImageStretch: true,
                         });
-                        document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';    
+
+                        this.canvas[i]['scale'] = 1;
+                        
+                        this.rescale(1);
+
+                        /** [start] fix flicker (old version) */
+                        //document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';    
 
                         if (i ==  this.slides)
                         {
                             this.userSlideAccess();
                             //console.log("called user slide access")                           
                         }
+
+
                         
                     }
 
@@ -813,10 +729,7 @@ export default {
                 'canvasData'   : canvasData,
                 
             };
-
-
-            console.log(this.channelid)
-
+       
             this.socket.emit('SEND_DRAWING', memberCanvasData);  
         },
         canvasGetJSON() 
@@ -908,6 +821,7 @@ export default {
         },
         prevSlide(delegateToNode) {
 
+
             if (this.currentSlide > 1) {
 
                 this.currentSlide--;
@@ -927,6 +841,8 @@ export default {
             }
         },
         nextSlide(delegateToNode) {
+
+            this.rescale(1);
 
             if (this.currentSlide < this.slides) 
             {
@@ -977,14 +893,28 @@ export default {
                 };
             };
         },
-        mouseClickHandler() 
+        mouseClickHandler(e) 
         {
-            this.canvas[this.currentSlide].on('mouse:down', (options) => {
 
-                if (this.isText == true) {
+            this.canvas[this.currentSlide].on('mouse:down', (options) => 
+            {
 
-                    this.mouseX = options.pointer.x;
-                    this.mouseY = options.pointer.y; 
+                const x = options.e.clientX - this.offsetX
+                const y = options.clientY - this.offsetY
+
+                console.log("x: " + x + " y: " + y)
+
+
+                console.log (options.e.clientX);
+
+                if (this.isText == true)
+                {
+
+
+                    this.canvas[this.currentSlide].defaultCursor = 'text';  
+
+                    this.mouseX = options.e.clientX;
+                    this.mouseY = options.e.clientY; 
 
                     var selectedObj = this.canvas[this.currentSlide].getActiveObject();
                     
@@ -1004,16 +934,95 @@ export default {
                         //this.isSelector = true;
                     }                    
 
-                }  
+                } else if (this.isSelector) {
 
-            }).on('mouse:up', () => {
+                    this.canvas[this.currentSlide].defaultCursor = 'default';   
 
-                console.log ("mouseClickHandler");
+                } else if (this.isDragger) {
 
+                    this.panning = true;
+                    
+                    this.canvas[this.currentSlide].defaultCursor = 'grabbing';   
+                    document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
+                        element.style.cursor = 'grabbing';
+                    });              
+
+                }  else {
+                
+                    this.canvas[this.currentSlide].defaultCursor = 'move';   
+                    this.$forceUpdate();
+
+                }
+
+
+            }).on('mouse:move', (options) => {
+
+                if (this.isDragger) {
+                    if (this.panning)                     {
+                        console.log("movement points: ", options.e.movementX, options.e.movementY)
+
+                        var delta = new fabric.Point(options.e.movementX, options.e.movementY);
+
+                        this.canvas[this.currentSlide].relativePan(delta);
+                    }
+                }
+
+            }).on('mouse:up', (options) => {
+
+                //reset to default cursor of the current
+
+                if (this.isText == true) {
+                    this.canvas[this.currentSlide].defaultCursor = 'text';  
+
+                } else if (this.isSelector) {
+
+                     this.canvas[this.currentSlide].defaultCursor = 'default';   
+
+                } else  if (this.isDragger) {
+
+                    this.canvas[this.currentSlide].defaultCursor = 'grab';
+
+                    document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
+                        element.style.cursor = 'grab';
+                    });              
+                    this.panning  = false;
+
+                } else {
+                    this.canvas[this.currentSlide].defaultCursor = 'default';   
+                }
+
+                //tool and send canvas json to viewer
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);    
 
+            }).on('mouse:out', (options) => {
+
+                //dragger out 
+
+                    if (this.isDragger == true) {
+
+                        console.log ("the dragger is out!!", this.isDragger)
+                    
+                        this.canvas[this.currentSlide].defaultCursor = 'grab';
+
+                        document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
+                            element.style.cursor = 'grab';
+                        });
+
+
+                        this.canvas[this.currentSlide].renderAll();
+
+                        // Put your mousedown stuff here
+                        this.isDraggerMouseDown = false;
+
+                    } else {
+                    
+                        console.log ("the dragger is out!!", this.isDragger)
+                    }
+
             });
+
+           
         },   
 
         resetModes()  {
@@ -1024,12 +1033,16 @@ export default {
             this.isDrawingCircle    = false;           
 
             //modes
-            this.isSelector     = false
+            this.isSelector     = false;
+            this.isDragger      = false;
             this.isText         = false;
             this.isBrush        = false;
             this.isPencil       = false;
             this.isLine         = false;
             this.isCircle       = false;
+
+            this.isZoomIn       = false;
+            this.isZoomOut      = false;
         },
         handleBrushColors() {                
             let colors = document.getElementsByClassName("colors")[0];
@@ -1069,7 +1082,53 @@ export default {
             this.changeObjectSelection(true);
             this.mouseClickHandler();
             this.isSelector = true;           
+
+            this.canvas[this.currentSlide].defaultCursor = 'default';   
             this.canvas[this.currentSlide].selection = true;
+
+        },
+        activateDragger() {    
+
+            console.log("dragger is activated")    
+
+            this.removeEvents();
+            this.resetModes();
+            this.disableSelect();
+            this.changeObjectSelection(true);
+            this.mouseClickHandler();
+
+            this.isDragger = true;
+            this.drag();          
+        },
+        setCursosType(type) {
+            this.canvas[this.currentSlide].defaultCursor = type;
+            document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
+                element.style.cursor = type;
+            });
+        },
+        drag() {    
+            let isGrabbing = false;
+            let canvas = this.canvas[this.currentSlide];
+
+            this.setCursosType('grab');                 
+
+            canvas.on('mouse:down', (object) => {
+
+                isGrabbing = true;
+                this.setCursosType('grabbing');
+
+            }).on('mouse:move', (object) => {
+
+                if (this.isDragger == true && isGrabbing == true && object && object.e) {
+                     this.setCursosType('grabbing');
+                }
+
+            }).on('mouse:up', (object) => {               
+            
+                isGrabbing = false;
+                this.setCursosType('grab');
+            });
+
         },
         deactivateSelector() {        
             this.removeEvents();
@@ -1080,6 +1139,32 @@ export default {
             this.canvas[this.currentSlide].selection = false;
             this.canvas[this.currentSlide].defaultCursor = 'not-allowed';
         },        
+        activateZoomIn() 
+        {            
+            this.isZoomIn = true;
+            this.isZoomOut = false;    
+
+            let newScale = this.canvas[this.currentSlide]['scale'] + 0.10;
+            if (newScale < 0.01) {
+                this.rescale(0.10);
+            } else {
+                this.rescale(newScale);
+            }  
+        },
+        activateZoomOut() {
+ 
+            this.isZoomOut = true;
+            this.isZoomIn = false;
+
+            let newScale = this.canvas[this.currentSlide]['scale'] - 0.10
+
+            if (newScale < 0.01) {
+                this.rescale(0.10);          
+            } else {
+                this.rescale(newScale);
+            }          
+        },        
+
         activateBrush() 
         {
             this.removeEvents(); 
@@ -1096,9 +1181,11 @@ export default {
         },
         activateLine() 
         {
-            this.resetModes();
+
             this.removeEvents();   
+            this.resetModes();            
             this.disableSelect();
+
             this.isLine = true;
             this.drawLine();
         },
@@ -1187,7 +1274,7 @@ export default {
                     selectable: true,
                     transparentCorners: false,
                     hasBorders: false,
-                    hasControls: true
+                    hasControls: false
                 });
 
                canvas.add(this.circle).setActiveObject(this.circle);
@@ -1196,6 +1283,7 @@ export default {
 
                 if (this.isDrawingCircle ) {
 
+                     this.disableSelect();
                     
 
                     var pointer =canvas.getPointer(object.e);
@@ -1237,11 +1325,11 @@ export default {
             });
 
         },        
-        drawLine() {           
-
+        drawLine() {   
+      
             this.canvas[this.currentSlide].on('mouse:down', (object) => {
-                this.isDrawingLine = true;
-                
+
+                this.isDrawingLine = true;                
 
                 var pointer = this.canvas[this.currentSlide].getPointer(object.e);
                 var points = [ pointer.x, pointer.y, pointer.x, pointer.y ];
@@ -1261,6 +1349,9 @@ export default {
             }).on('mouse:move', (object) => {
                 if (this.isDrawingLine ) {
                    
+                   this.disableSelect();
+
+
                     var pointer = this.canvas[this.currentSlide].getPointer(object.e);
                     this.line.set({ x2: pointer.x, y2: pointer.y });
                     this.line.setCoords();
@@ -1269,6 +1360,7 @@ export default {
                     //let data = this.canvasGetJSON();
                     //this.canvasSendJSON(this.canvas[this.currentSlide], data);         
                 }
+
             }).on('mouse:up', (object) => {
              
                 this.isDrawingLine = false;
@@ -1358,7 +1450,32 @@ export default {
         },
         disableSelect() 
         {
-            this.canvas[this.currentSlide].defaultCursor = 'crosshair';
+
+            if (this.isText == true) {
+
+                this.canvas[this.currentSlide].defaultCursor = 'text';  
+
+                console.log("disable select")
+
+            } else if (this.isSelector) {
+                    
+                this.canvas[this.currentSlide].defaultCursor = 'default';   
+
+            } else  if (this.isDragger) {
+
+                this.canvas[this.currentSlide].defaultCursor = 'grab';  
+                
+                console.log("disable select:: grab")
+
+            } else  if (this.isBrush || this.isPencil || this.isLine || this.isCircle) { 
+
+                 this.canvas[this.currentSlide].defaultCursor = 'crosshair';
+
+            } else {
+            
+                this.canvas[this.currentSlide].defaultCursor = 'default';   
+            }
+           
             
             this.canvas[this.currentSlide].forEachObject(function (obj) {
                 obj.selectable = false;
@@ -1429,25 +1546,26 @@ export default {
     
 }
 
-.tools {
-    display: flex;
-    height: 200px; 
-    width: 50px;    
+.left-container {
+    background-color: #ececec;
 }
 
-.tool {
-    width:50%; 
-    border:1px solid #000;
-    text-align:center;
-    margin: 0;
-    padding-right: 4px;
-    width: 25px;
-    height: 25px;
-    border: 0;
-    border-right: 1px solid black;
-    border-bottom: 1px solid black;
-    background: transparent;
-    outline: 0;
+.right-container {
+    background-color: #ececec;
+}
+
+
+/*tool*/
+.tool-container {
+    width: 50px;
+    display: inline-block;
+    margin: 4px 0px 0px 0px;
+    /* height: 100%; */
+    /* border: 1px solid red; */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 0px 10px 10px 0px;
+    background-color: #808080;    
 }
 
 .tool-wrapper {
@@ -1455,36 +1573,22 @@ export default {
     width: 100%;
 }
 
-.left-container {
-    background-color: #ececec;
-    padding: 10px;
-
+.tools {
+    display: flex;
+    height: 200px; 
+    width: 50px;    
 }
-
-.right-container {
-    background-color: #ececec;
-    padding: 10px;
-}
-
-/*tool*/
-.tool-container {
-    width: 100%;
-    display: inline-block;
-    margin: 0px ;}
 
 .tool {
     float: left;
-    width: 47px;
-    height: 25px;
-    
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    border-top: 1px solid white;
-    border-left: 1px solid white;
-    border-right: 1px solid #7b7b7b;
-    border-bottom: 1px solid #7b7b7b;    
+    width: 50px;
+    height: 32px;
+    text-align: center;
+    /* border-top: 1px solid #ccc; */
+    /* border-left: 1px solid #ccc; */
+    /* border-right: 1px solid #ccc; */
+    border-bottom: 1px solid #878787;
+    line-height: 32px; 
 }
 
 .tool.active {
