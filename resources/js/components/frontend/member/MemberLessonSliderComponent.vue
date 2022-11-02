@@ -6,9 +6,21 @@
 
 
             <div class="col-md-1 col-sm-1 col-xs-1">
-                <div class="tool-container" v-show="this.$props.isBroadcaster == true">
+
+                <!--<div class="tool-container" v-show="this.$props.isBroadcaster == true">-->
+
+                <div class="tool-container">
+
                     <!-- [START] TOOL WRAPPER -->
                     <div class="tool-wrapper" >
+
+                        <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
+                            <i class="fas fa-undo-alt" ></i>                                
+                        </div> 
+
+                        <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
+                            <i class="fas fa-redo-alt" ></i>                                
+                        </div> 
 
                         <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
                             <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
@@ -48,7 +60,12 @@
                             <b-icon icon="circle " font-scale="1"> </b-icon>
                         </div> 
                          
-                                
+
+
+
+
+
+                       
 
 
                     </div>
@@ -156,6 +173,7 @@
 
                 <div id="lessonSharedContainer"></div>
 
+                <!--
                 <div id="teacherNotesContainer" class="mb-2" v-if="this.user_info.user_type =='TUTOR'">
                         <b-card-group>
                             <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
@@ -165,7 +183,7 @@
                                <b-card-text v-html="notes" class="text-dark"></b-card-text>
                             </b-card>
                         </b-card-group>
-                </div>
+                </div>-->
 
             </div>
 
@@ -286,16 +304,19 @@ export default {
     data() {
         return {
 
+            //history
+            historyCounter: 0,
+
+            //panning
             panning: false,
-
-
-            isDraggerMouseDown: false,
+            isDraggerMouseDown: false,            
             offsetX: 0,
             offsetY: 0,
             startX: 0,
             startY: 0,
             netPanningX: 0,
             netPanningY: 0,
+            delta: null,
 
             //chat 
             tutor_chat_message: "",
@@ -320,6 +341,9 @@ export default {
             lesson_slides_materials: [],
 
             //Modes
+            isUndo: false,
+            isRedo: false,
+
             isSelector: false,
             isDragger: false,
             isText: false,
@@ -395,6 +419,8 @@ export default {
         this.socket.on('update_user_list', users => 
         {
             this.updateUserList(users); 
+            this.goToSlide(this.currentSlide);
+            this.alignCanvas();
         });      
 
         this.getSlideMaterials(this.reservation);
@@ -411,9 +437,34 @@ export default {
 
         this.socket.on('UPDATE_DRAWING', (response) => {
             if (this.$props.isBroadcaster == false) {
-            
-                console.log("updating drawing " + this.$props.isBroadcaster )
-                this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);
+
+                try {
+                    if (response.canvasDelta !== null) {
+                        this.canvas[this.currentSlide].relativePan(response.canvasDelta);
+                    }
+                    
+                } catch (error) {
+                    console.error("canvas delta errror", error);
+                }
+             
+                try {
+                    this.canvas[this.currentSlide].setZoom(response.canvasZoom);   
+                    this.canvas[this.currentSlide].requestRenderAll(); 
+                    
+                } catch (error) {
+                   console.error("canvas setZoom errror", error);
+                }
+
+
+                if (response.canvasData.objects.length >= 1) 
+                {
+                    
+                    this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);          
+                } else 
+                {
+                    console.log("there is no drawing detected")
+                }
+
             } 
         });
 
@@ -486,6 +537,12 @@ export default {
             this.users = users;      
             this.$forceUpdate();
         },
+
+        alignCanvas() {
+            var delta = new fabric.Point(0, 0);        
+            this.canvas[this.currentSlide].absolutePan(delta); 
+            this.rescale(1);   
+        },
         reOffset(e){
 
             var canvas = document.getElementById("canvas"+ this.currentSlide);
@@ -502,8 +559,13 @@ export default {
         
             this.canvas[this.currentSlide].setZoom(scale);
             this.canvas[this.currentSlide].requestRenderAll();
-
             this.canvas[this.currentSlide]['scale'] = scale;
+            
+
+            //tool and send canvas json to viewer
+            let data = this.canvasGetJSON();
+            this.canvasSendJSON(this.canvas[this.currentSlide], data);    
+
             
             let zoomedIn = setInterval(() => {
                 this.isZoomOut = false;
@@ -567,9 +629,11 @@ export default {
 
                         // set canvas width and height based on image size
                         //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});                        
-                        console.log(this.imageURL[i-1]);
+                      
                         
                         var center = this.canvas[i].getCenter();
+
+                        console.log(center);
 
                         this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
                             // Optionally add an opacity lvl to the image
@@ -580,8 +644,7 @@ export default {
                             top: 0,
                             left: 0,
                             originX: 'left',
-                            originY: 'top',
-                                                        
+                            originY: 'top',                                                        
                             backgroundImageStretch: true,
                         });
 
@@ -701,13 +764,16 @@ export default {
 
         updateCanvas(canvas, data)
         {
-            canvas.loadFromJSON(data, this.disableCanvas, (o, object) =>
-            {
+
+            canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {
+
                 this.deactivateSelector()                
             });
+            
         },
 
         disableCanvas() {
+
             this.canvas[this.currentSlide].forEachObject(function(o) {
                 o.selectable = false;
                 o.defaultCursor = 'not-allowed';
@@ -715,8 +781,8 @@ export default {
             });
             this.canvas[this.currentSlide].discardActiveObject();   
             this.canvas[this.currentSlide].requestRenderAll();
-            
-           //this.canvas[this.currentSlide].renderAll();
+
+            //this.canvas[this.currentSlide].renderAll();
         },
         canvasSendJSON(canvasID, canvasData) 
         {          
@@ -725,13 +791,15 @@ export default {
             let memberCanvasData = {
                 'channelid'     : this.channelid,
                 'recipient'     : recipient,
-                'canvasid'     : canvasID,
-                'canvasData'   : canvasData,
-                
+                'canvasid'      : canvasID,
+                'canvasData'    : canvasData,
+                'canvasZoom'    : this.canvas[this.currentSlide].getZoom(),
+                'canvasDelta'   : this.delta,                
             };
        
             this.socket.emit('SEND_DRAWING', memberCanvasData);  
         },
+        
         canvasGetJSON() 
         {
             return this.canvas[this.currentSlide].toJSON();           
@@ -899,22 +967,14 @@ export default {
             this.canvas[this.currentSlide].on('mouse:down', (options) => 
             {
 
-                const x = options.e.clientX - this.offsetX
-                const y = options.clientY - this.offsetY
-
-                console.log("x: " + x + " y: " + y)
-
-
-                console.log (options.e.clientX);
+                var pointer = this.canvas[this.currentSlide].getPointer(options.e);
 
                 if (this.isText == true)
                 {
-
-
                     this.canvas[this.currentSlide].defaultCursor = 'text';  
 
-                    this.mouseX = options.e.clientX;
-                    this.mouseY = options.e.clientY; 
+                    this.mouseX = pointer.x ;
+                    this.mouseY = pointer.y; 
 
                     var selectedObj = this.canvas[this.currentSlide].getActiveObject();
                     
@@ -958,34 +1018,49 @@ export default {
             }).on('mouse:move', (options) => {
 
                 if (this.isDragger) {
-                    if (this.panning)                     {
-                        console.log("movement points: ", options.e.movementX, options.e.movementY)
+                    if (this.panning) {
 
-                        var delta = new fabric.Point(options.e.movementX, options.e.movementY);
+                        this.delta = new fabric.Point(options.e.movementX, options.e.movementY);
 
-                        this.canvas[this.currentSlide].relativePan(delta);
+                        this.canvas[this.currentSlide].relativePan(this.delta);
+
+                        console.log("Delta pos: ",   this.delta );
+
+                   
+
+                        //tool and send canvas json to viewer
+                        let data = this.canvasGetJSON();
+                        this.canvasSendJSON(this.canvas[this.currentSlide], data);    
+
+
                     }
                 }
 
-            }).on('mouse:up', (options) => {
+            }).on('mouse:up', () => {
 
-                //reset to default cursor of the current
-
+               
                 if (this.isText == true) {
+
                     this.canvas[this.currentSlide].defaultCursor = 'text';  
 
+            
                 } else if (this.isSelector) {
 
                      this.canvas[this.currentSlide].defaultCursor = 'default';   
 
                 } else  if (this.isDragger) {
 
+                        //reset to default cursor of the current
                     this.canvas[this.currentSlide].defaultCursor = 'grab';
 
                     document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
                         element.style.cursor = 'grab';
-                    });              
+                    });      
+
                     this.panning  = false;
+                    this.delta    = null;
+
+
 
                 } else {
                     this.canvas[this.currentSlide].defaultCursor = 'default';   
@@ -1138,13 +1213,21 @@ export default {
             this.isSelector = false;           
             this.canvas[this.currentSlide].selection = false;
             this.canvas[this.currentSlide].defaultCursor = 'not-allowed';
-        },        
+        },      
+
+        activateRedo() {
+        
+        },
+        activateUndo() {
+        
+        },
         activateZoomIn() 
         {            
             this.isZoomIn = true;
             this.isZoomOut = false;    
 
             let newScale = this.canvas[this.currentSlide]['scale'] + 0.10;
+
             if (newScale < 0.01) {
                 this.rescale(0.10);
             } else {
@@ -1540,6 +1623,10 @@ export default {
 </script>
 <style scoped>
 
+#lessonSlide {
+
+    background-color: #fff;
+}
 
 .upper-canvas {
     z-index: 1;
