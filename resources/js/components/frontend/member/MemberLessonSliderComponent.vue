@@ -305,6 +305,8 @@ export default {
         return {
 
             //history
+            undoCtr: 0,
+            redoCtr: 0,
             historyCounter: 0,
 
             //panning
@@ -649,9 +651,14 @@ export default {
                         });
 
                         this.canvas[i]['scale'] = 1;
-                        
                         this.rescale(1);
 
+                        
+                       
+
+                
+
+          
                         /** [start] fix flicker (old version) */
                         //document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';    
 
@@ -660,16 +667,11 @@ export default {
                             this.userSlideAccess();
                             //console.log("called user slide access")                           
                         }
-
-
-                        
                     }
-
-                   
 
                 } else {
           
-
+                    //@todo: no slide images found(???)
 
                 }
 			});
@@ -860,7 +862,6 @@ export default {
         goToSlide(slide) {          
 
             //console.log(slide);
-
             for (var i = 1; i <= this.slides; i++) 
             {
                 if (i == slide) {    
@@ -870,6 +871,11 @@ export default {
 
                     let data = this.canvas[slide].toJSON(); 
                     this.canvasSendJSON(this.canvas[slide], data);
+
+                    //HISTORY CREATION
+                    this.history[slide] = [{
+                        'data': this.canvasGetJSON()
+                    }];
 
                 } else {
 
@@ -1216,10 +1222,30 @@ export default {
         },      
 
         activateRedo() {
+
+            console.log(this.history[this.currentSlide].length +" " + this.historyCounter)
+
+            let currentSlideLength = (this.history[this.currentSlide].length - 1);
+
+            if (this.historyCounter < currentSlideLength) 
+            {
+                this.historyCounter++;                
+                let prevData = this.history[this.currentSlide][this.historyCounter];
+                this.updateCanvas(this.canvas[this.currentSlide], prevData.data); 
+            } else {
+
+                console.log("no more things to redo")
+            
+            }
         
         },
         activateUndo() {
-        
+            if (this.historyCounter > 0) 
+            {
+                this.historyCounter--;                
+                let prevData = this.history[this.currentSlide][this.historyCounter];
+                this.updateCanvas(this.canvas[this.currentSlide], prevData.data); 
+            } 
         },
         activateZoomIn() 
         {            
@@ -1246,8 +1272,7 @@ export default {
             } else {
                 this.rescale(newScale);
             }          
-        },        
-
+        },
         activateBrush() 
         {
             this.removeEvents(); 
@@ -1399,12 +1424,19 @@ export default {
                     //this.canvasSendJSON(this.canvas[this.currentSlide], data);         
                 }         
 
-            }).on('mouse:up', (object) => {                
+            }).on('mouse:up', (object) => {
+
                 this.isDrawingCircle = false;
-                
 
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);                
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);   
+
+                //[ADD TO HISTORY]                
+                this.historyCounter++;
+                this.history[this.currentSlide].push({                   
+                        'data': this.canvasGetJSON()                
+                });
+
             });
 
         },        
