@@ -442,7 +442,9 @@ export default {
 
                 try {
                     if (response.canvasDelta !== null) {
-                        //this.canvas[this.currentSlide].relativePan(response.canvasDelta);
+
+                        this.canvas[this.currentSlide].relativePan(response.canvasDelta);
+
                     }
                     
                 } catch (error) {
@@ -541,9 +543,14 @@ export default {
         },
 
         alignCanvas() {
-            var delta = new fabric.Point(0, 0);        
-            //this.canvas[this.currentSlide].relativePan(delta); 
-            this.rescale(1);   
+            try {
+                var delta = new fabric.Point(0, 0);        
+                this.canvas[this.currentSlide].relativePan(delta); 
+                this.rescale(1);   
+            } catch (error) {
+                console.error("canvas alignCanvas error", error);
+            }
+
         },
         reOffset(e){
 
@@ -559,10 +566,13 @@ export default {
         rescale(scale) {
             console.log (scale);
         
-            this.canvas[this.currentSlide].setZoom(scale);
-            this.canvas[this.currentSlide].requestRenderAll();
-            this.canvas[this.currentSlide]['scale'] = scale;
-            
+            try {
+                this.canvas[this.currentSlide].setZoom(scale);
+                this.canvas[this.currentSlide].requestRenderAll();
+                this.canvas[this.currentSlide]['scale'] = scale;
+            } catch (error) {
+                console.error("canvas setZoom errror", error);
+            }
 
             //tool and send canvas json to viewer
             let data = this.canvasGetJSON();
