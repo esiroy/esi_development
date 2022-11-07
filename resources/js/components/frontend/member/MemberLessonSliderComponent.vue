@@ -869,8 +869,8 @@ export default {
                     document.getElementById('editor'+ i).style.visibility = "visible";
                     document.getElementById('editor'+ i).style.display = "block";                                   
 
-                    let data = this.canvas[slide].toJSON(); 
-                    this.canvasSendJSON(this.canvas[slide], data);
+                    //let data = this.canvas[slide].toJSON(); 
+                    //this.canvasSendJSON(this.canvas[slide], data);
 
                     //HISTORY CREATION
                     this.history[slide] = [{
@@ -1237,6 +1237,7 @@ export default {
                 console.log("no more things to redo")
             
             }
+
         
         },
         activateUndo() {
