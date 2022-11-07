@@ -542,7 +542,7 @@ export default {
 
         alignCanvas() {
             var delta = new fabric.Point(0, 0);        
-            this.canvas[this.currentSlide].absolutePan(delta); 
+            this.canvas[this.currentSlide].relativePan(delta); 
             this.rescale(1);   
         },
         reOffset(e){
