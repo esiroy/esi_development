@@ -442,7 +442,7 @@ export default {
 
                 try {
                     if (response.canvasDelta !== null) {
-                        this.canvas[this.currentSlide].relativePan(response.canvasDelta);
+                        //this.canvas[this.currentSlide].relativePan(response.canvasDelta);
                     }
                     
                 } catch (error) {
@@ -542,7 +542,7 @@ export default {
 
         alignCanvas() {
             var delta = new fabric.Point(0, 0);        
-            this.canvas[this.currentSlide].relativePan(delta); 
+            //this.canvas[this.currentSlide].relativePan(delta); 
             this.rescale(1);   
         },
         reOffset(e){
