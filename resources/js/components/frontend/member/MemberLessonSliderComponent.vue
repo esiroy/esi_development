@@ -873,9 +873,12 @@ export default {
                     //this.canvasSendJSON(this.canvas[slide], data);
 
                     //HISTORY CREATION
+                    /*
                     this.history[slide] = [{
                         'data': this.canvasGetJSON()
                     }];
+
+                    */
 
                 } else {
 
