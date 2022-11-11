@@ -1011,7 +1011,7 @@ export default {
         position: fixed;
         bottom: 0px;
         right: 75px;
-        z-index: 9999;
+        z-index: 999;
     }
     #floating-history-btn {
         font-size: 11px;
