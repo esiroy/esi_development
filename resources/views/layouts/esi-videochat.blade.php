@@ -18,8 +18,6 @@
     <!-- Styles -->
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-
-
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>
@@ -28,27 +26,70 @@
 <body>
     <div id="app">
 
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
-            <div class="container">
+        <nav class="navbar navbar-expand-md navbar-light shadow-sm bg-darkblue">
 
-                <a class="navbar-brand" href="{{ url('/') }}">
-                   <img src="{{ url('images/title_full.png') }}" 
-                    alt="{{ config('app.name', 'My Tutor') }}" 
-                    alt="{{ config('app.name', 'My Tutor') }} administratrion panel"                    
-                    class="logo-sm"
-                    >
-                </a>
+            <div class="container-fluid">
 
-                <button class="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="{{ __('Toggle navigation') }}">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                <ul class="navbar-nav mr-auto">
 
-            
+                    <li class="pr-4">
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            <i class="fas fa-home fa-2x text-white"></i>
+                        </a>
+                    </li>
+
+                    <li class="pr-4">
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            <i class="fas fa-book-open fa-2x text-white"></i>
+                        </a>
+                    </li>
+
+
+                    <li class="pr-4">
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            <i class="far fa-list-alt  fa-2x text-white"></i>
+                        </a>
+                    </li>
+
+
+                    <li class="pr-4">              
+                        <a class="navbar-brand" href="{{ url('/') }}">         
+                            <i class="fas fa-atlas fa-2x text-white"></i>        
+                        </a>
+                    </li>
+
+                    <li class="pr-4">
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            <i class="fas fa-cloud-upload-alt  fa-2x text-white"></i>
+                        </a>
+                    </li>
+                </ul>              
+
+             
+                <!--[start]right navigation -->
+                <ul class="navbar-nav">
+                    <li class="pr-4">
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            <i class="fas fa-headset  fa-2x text-white"></i>
+                        </a>
+                    </li>
+
+                    <li class="pr-4 pt-2">
+                        <span class="text-white font-weight-bold h2 mt-3">00:00:30</span>                       
+                    </li>
+
+
+                    <li class="pr-4 pt-2">
+                       <i class="fas fa-signal fa-2x text-success"></i>          
+                    </li>
+                </ul>
+                <!--[end] right navigation-->
+
+
+               
+
             </div>
         </nav>
-
 
         <main class="py-0">
             @yield('content')

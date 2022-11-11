@@ -1,0 +1,25 @@
+#camera-button-container {
+  display: inline-block;
+  position: absolute;
+  top: 15%;
+  right: 0px;
+}
+
+#chatroom-button-container {
+  display: inline-block;
+  position: absolute;
+  top: 30%;
+  right: 0px;
+}
+
+.tool-container {
+  margin-left: 10px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#editor_content {
+  width: 90%;
+  display: inline-block;
+  vertical-align: top;
+}

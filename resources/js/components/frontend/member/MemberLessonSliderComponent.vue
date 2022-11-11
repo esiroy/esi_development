@@ -1,236 +1,184 @@
 <template>
 
-    <div class="container-fluid">
-
-        <div id="editor_content" class="row">
 
 
-            <div class="col-md-1 col-sm-1 col-xs-1">
+    <div id="component-container">     
 
-                <!--<div class="tool-container" v-show="this.$props.isBroadcaster == true">-->
+ 
 
-                <div class="tool-container">
+        <div class="tool-container" v-show="this.$props.isBroadcaster == true">
 
-                    <!-- [START] TOOL WRAPPER -->
-                    <div class="tool-wrapper" >
+            <!-- [START] TOOL WRAPPER -->
+            <div class="tool-wrapper" >
 
-                        <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
-                            <i class="fas fa-undo-alt" ></i>                                
-                        </div> 
+                <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
+                    <i class="fas fa-undo-alt" ></i>                                
+                </div> 
 
-                        <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
-                            <i class="fas fa-redo-alt" ></i>                                
-                        </div> 
+                <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
+                    <i class="fas fa-redo-alt" ></i>                                
+                </div> 
 
-                        <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
-                            <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
-                        </div>     
+                <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
+                    <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
+                </div>     
 
-                        <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
-                            <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
-                        </div>     
-
-
-                        <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
-                            <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
-                        </div>
-                        
-                        <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
-                            <i class="fa fa-font text-white" aria-hidden="true"></i>
-                        </div>
+                <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
+                    <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
+                </div>     
 
 
-                        <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
-                            <i class="fa fa-hand-paper text-white"></i>
-                        </div>
-
-
-                        <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
-                            <i class="fa fa-pen text-white" aria-hidden="true" ></i>
-                        </div>                    
-                        <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
-                            <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
-                        </div>                        
+                <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
+                    <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
+                </div>
                 
-                        <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
-                            <i class="fa fa-minus text-white" aria-hidden="true"></i>
-                        </div>        
-
-                        <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
-                            <b-icon icon="circle " font-scale="1"> </b-icon>
-                        </div> 
-                         
-
-
-
-
-
-                       
-
-
-                    </div>
-                    <!-- [END] TOOL WRAPPER -->
-
-
-                    <!-- ADDITIONAL OPTIONS -->
-                    <div class="tool-wrapper">
-
-                        <div class="tool">
-                            <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
-                        </div>             
-                    
-                        <!-- Strokes-->
-                        <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
-                            <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
-                            <div id="brushStrokes" class="collapse" style="z-index:9999">
-                                <div class="brushes-container">
-                                    <div class="brushes">
-                                        <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
-                                        <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
-                                        <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
-                                        <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
-                                        <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
-                                    </div> 
-                                </div>
-                            </div>
-                        </div>
-                    </div> 
+                <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                    <i class="fa fa-font text-white" aria-hidden="true"></i>
                 </div>
 
-            </div>
 
-            <div class="col-md-11 col-sm-11 col-xs-11">
-
-                <div id="lessonSlide" class="left-container mb-2">  
-                    <div class="d-flex justify-content-center">
-                   
-                        <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">
-
-                        
-                            <!-- 
-                            /********** [START] CANVAS *************/
-                            -->
-                            <canvas :ref="'canvas'+slide"
-                                :id="'canvas'+slide"
-                                :width="canvas_width"
-                                :height="canvas_height"
-                                style="border:1px solid #ccc;"                        
-                            ></canvas>
-                            <!-- 
-                            /********** [END] CANVAS *************/
-                            -->
-
-                        </div>
-                    </div>
-
-                    <div class="info-container">
-
-                        <div class="d-flex justify-content-center">
-                            Total Time {{ this.getTime() }} 
-                        </div>
-
-                    </div>
-
-                    <div class="buttons-container mt-3">
-                        <div class="d-flex justify-content-center">
-
-                            <div id="firstSlide" class="tool" @click="startSlide" v-show="this.$props.isBroadcaster == true">
-                                <i class="fa fa-fast-backward" aria-hidden="true"></i>
-                            </div>  
-
-                            <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
-                                <i class="fa fa-backward" aria-hidden="true"></i>
-                            </div>
-
-
-
-                            <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
-
-                                <div v-show="this.$props.isBroadcaster == true">
-                                    Slide {{ this.currentSlide }} of {{ this.slides }}
-                                </div>
-
-                                <div v-show="this.$props.isBroadcaster == false">
-                                    Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
-                                </div>
-                            </div>
-
-
-
-                            <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
-                                <i class="fa fa-forward" aria-hidden="true"></i>
-                            </div>
-
-                            <div id="lastSlide" class="tool" @click="lastSlide" v-show="this.$props.isBroadcaster == true">
-                                <i class="fa fa-fast-forward" aria-hidden="true"></i>
-                            </div>
-
-
-                        </div>
-                    </div>
-                    
+                <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
+                    <i class="fa fa-hand-paper text-white"></i>
                 </div>
 
-                <div id="lessonSharedContainer"></div>
 
-                <!--
-                <div id="teacherNotesContainer" class="mb-2" v-if="this.user_info.user_type =='TUTOR'">
-                        <b-card-group>
-                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
-                                <template #header>
-                                    <div class="font-weight-bold">Notes</div>
-                                </template>
-                               <b-card-text v-html="notes" class="text-dark"></b-card-text>
-                            </b-card>
-                        </b-card-group>
-                </div>-->
+                <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
+                    <i class="fa fa-pen text-white" aria-hidden="true" ></i>
+                </div>                    
+                <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
+                    <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
+                </div>                        
+        
+                <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
+                    <i class="fa fa-minus text-white" aria-hidden="true"></i>
+                </div>        
 
-            </div>
-
-
-            <div class="col-md-12 col-sm-12 col-xs-12">
-
-                <div class="right-container">
-
+                <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
+                    <b-icon icon="circle " font-scale="1"> </b-icon>
+                </div> 
                     
 
-                    <!--
-                    <div class="chat-container mb-2">
-                        <b-card-group>
 
-                            <b-card bg-variant="light" header-bg-variant="primary" text-variant="white">
-                                <template #header>
-                                    <div class="font-weight-bold">Chat Messages</div>
-                                </template>
 
-                                <b-card-text id="chatlogs" class="chatlogs text-dark" style="height: 280px; overflow: auto;">
-                                    <div :class="'chatlog-'+chatlogIndex" v-for="(chatlog, chatlogIndex) in chatlogs" :key="'chatlogs_'+ chatlogIndex">
-                                        <span v-html="chatlog.nickname"></span> : <span v-html="chatlog.message"></span>
-                                    </div>           
-                                </b-card-text>
 
-                            </b-card>
-                        </b-card-group>
 
-                        <div class="chat_message mt-1 row">
-                            <div class="col-10 mr-0 pr-0">
-                                <input type="text" v-model="privateMessage" @keyup="isEnter($event)" class="form-control form-control-sm d-inline-block" placeholder="Enter a message" >
-                            </div>
+                
 
-                            <div class="col-2 ml-0 pl-1">
-                                <button type="button"  @click="sendPrivateMessage(privateMessage)" class="btn btn-sm btn-primary d-inline-block">
-                                    <i class="fa fa-paper-plane" aria-hidden="true"></i>
-                                </button>
-                            </div>
+
+            </div>
+            <!-- [END] TOOL WRAPPER -->
+
+
+            <!-- ADDITIONAL OPTIONS -->
+            <div class="tool-wrapper">
+
+                <div class="tool">
+                    <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
+                </div>             
+            
+                <!-- Strokes-->
+                <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
+                    <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
+                    <div id="brushStrokes" class="collapse" style="z-index:9999">
+                        <div class="brushes-container">
+                            <div class="brushes">
+                                <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                                <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                                <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                                <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                                <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
+                            </div> 
                         </div>
-                    </div>                    
+                    </div>
+                </div>
+            </div> 
+        </div>
 
+        <div id="editor_content">
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white p-0 m-0">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Library</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Data</li>
+                </ol>
+            </nav> 
+
+
+            <div id="lessonSlide" class="left-container mb-2">               
+                
+                <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">
+                    <!-- 
+                    /********** [START] CANVAS *************/
+                    -->
+                    <canvas :ref="'canvas'+slide"
+                        :id="'canvas'+slide"
+                        :width="canvas_width"
+                        :height="canvas_height"
+                        style="border:2px solid #0076be;"  
+                    ></canvas>
+                    <!-- 
+                    /********** [END] CANVAS *************/
                     -->
 
+                </div>
+             
 
+                <div class="info-container">
+
+                    <div class="d-flex justify-content-center">
+                        Total Time {{ this.getTime() }} 
+                    </div>
 
                 </div>
-            </div>  
+
+                <div class="buttons-container mt-3">
+                    <div class="d-flex justify-content-center">
+
+                        <div id="firstSlide" class="tool" @click="startSlide" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-fast-backward" aria-hidden="true"></i>
+                        </div>  
+
+                        <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-backward" aria-hidden="true"></i>
+                        </div>
+
+
+
+                        <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
+
+                            <div v-show="this.$props.isBroadcaster == true">
+                                Slide {{ this.currentSlide }} of {{ this.slides }}
+                            </div>
+
+                            <div v-show="this.$props.isBroadcaster == false">
+                                Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
+                            </div>
+                        </div>
+
+
+
+                        <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-forward" aria-hidden="true"></i>
+                        </div>
+
+                        <div id="lastSlide" class="tool" @click="lastSlide" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                        </div>
+
+
+                    </div>
+                </div>
+                
+            </div>
+
+            <div id="lessonSharedContainer"></div>
+
+               
+           
+
+
         </div>
 
 
@@ -448,7 +396,7 @@ export default {
                     }
                     
                 } catch (error) {
-                    console.error("canvas delta errror", error);
+                    console.log("canvas delta errror", error);
                 }
              
                 try {
@@ -456,7 +404,7 @@ export default {
                     this.canvas[this.currentSlide].requestRenderAll(); 
                     
                 } catch (error) {
-                   console.error("canvas setZoom errror", error);
+                   console.log("canvas setZoom errror", error);
                 }
 
 
@@ -548,7 +496,7 @@ export default {
                 this.canvas[this.currentSlide].relativePan(delta); 
                 this.rescale(1);   
             } catch (error) {
-                console.error("canvas alignCanvas error", error);
+                console.log("canvas alignCanvas error", error);
             }
 
         },
@@ -571,7 +519,7 @@ export default {
                 this.canvas[this.currentSlide].requestRenderAll();
                 this.canvas[this.currentSlide]['scale'] = scale;
             } catch (error) {
-                console.error("canvas setZoom errror", error);
+                console.log("canvas setZoom errror", error);
             }
 
             //tool and send canvas json to viewer

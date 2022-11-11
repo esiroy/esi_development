@@ -80,7 +80,7 @@ if (url[1] === 'admin') {
 
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
 
-    Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
+    //Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
 
     //front end 
     switch (url[1]) {
@@ -94,6 +94,8 @@ if (url[1] === 'admin') {
 }
 
 Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
+Vue.component('lesson-slider-chatroom-component', require('./components/frontend/member/MemberLessonSliderChatroomComponent.vue').default);
+
 Vue.component('member-caller-component', require('./components/frontend/member/MemberCallerComponent.vue').default);
 
 

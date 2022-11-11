@@ -58,8 +58,7 @@ mix.js(
     .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
     .copy("resources/js/steps/*.*", "public/js/steps/")
     .copy("resources/js/validation/*.*", "public/js/validation/")
-
-.copy("resources/sass/jquery/*.*", "public/css/jquery/")
+    .copy("resources/sass/jquery/*.*", "public/css/jquery/")
     .copy("resources/sass/jquery/images/*.*", "public/css/jquery/images/")
     .copy("resources/sass/croppie/croppie.css", "public/css/croppie.css")
     .copy('node_modules/@fortawesome/fontawesome-free/webfonts', 'public/webfonts')
@@ -67,6 +66,7 @@ mix.js(
     .sass("resources/sass/app.scss", "public/css/app.css")
     .sass("resources/sass/admin.scss", "public/css/admin.css")
     .sass("resources/sass/steps/steps.scss", "public/css/steps/steps.css")
+    .sass("resources/sass/lessonslider.scss", "public/css/lessonslider.css")
     .version()
     .options({
         processCssUrls: false
