@@ -222,11 +222,7 @@ function createUserMedia(video, audio, constraints) {
 
             //Register the video stream to my Stream
             myVideoStream = stream;
-            window.stream = stream; // make stream available to console       
-
-
-            console.log("this is a video");
-
+            window.stream = stream; // make stream available to console     
             /*******
                 (NOTE: THIS SHOULD BE MUTED = TRUE) 
             *******/
@@ -1328,4 +1324,18 @@ socket.on('userDisconnect', id => {
 
 document.getElementById("btnShareScreen").addEventListener("click", function() {
     shareScreen();
+});
+
+
+/*** TOGGLE MEDIA CABINETS EFFECTS */
+$(".toggleCamera").click(function() {
+    $('#right-video-sidebar').animate({ width: 'toggle' }, 25, () => {
+        // Animation complete.
+    })
+});
+
+$(".toggleLiveChat").click(function() {
+    $('#right-chat-sidebar').animate({ width: 'toggle' }, 25, () => {
+        // Animation complete.
+    })
 });

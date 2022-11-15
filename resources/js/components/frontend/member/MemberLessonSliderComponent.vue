@@ -1,10 +1,6 @@
 <template>
 
-
-
     <div id="component-container">     
-
- 
 
         <div class="tool-container" v-show="this.$props.isBroadcaster == true">
 
@@ -270,8 +266,8 @@ export default {
 
             //chat 
             tutor_chat_message: "",
-            privateMessage: "",
-            chatlogs: [],
+            
+          
             socket: null,
             videosocket: null,
             myVideoStream: null,           
@@ -419,37 +415,7 @@ export default {
 
             } 
         });
-
-        this.socket.on('SEND_SLIDE_PRIVATE_MESSAGE', (response) => {     
-
-            /* response
-            let messageData = {
-                channelid: this.channelid,
-                userid: this.member_info.user_id,
-                nickname: nickname,
-                username: this.user_info.username,            
-                channelid: this.channelid,
-                type: this.user_info.user_type,
-                message: message,
-                time: time
-            }*/
-
-            if (response.userid !== this.user_info.userid) 
-            {
-                new Promise((resolve, reject) => {
-
-                    this.pushPrivateMessage(response);
-                    resolve('private message resolved');
-                    
-                }).then((result) => {
-
-                    this.privateMessage = null;
-                    this.scrollToBottom();
-                });                
-
-            } 
-
-        });
+        
 
        
         //ON LOAD WINDOW
@@ -505,10 +471,7 @@ export default {
             var canvas = document.getElementById("canvas"+ this.currentSlide);
             let clientRect = canvas.getBoundingClientRect();
             this.offsetX = clientRect.left;
-            this.offsetY = clientRect.top;   
-            console.log("offsets!  >>>> " , this.offsetX, this.offsetY);
-
-
+            this.offsetY = clientRect.top; 
         },
         // draw everything in pixels coords
         rescale(scale) {
@@ -635,60 +598,7 @@ export default {
 			});
         },       
 
-        pushPrivateMessage(data) {
-            // does something
-           this.chatlogs.push(data);
-        },
-        scrollToBottom() {
-            console.log("scroll to bottom");
-
-            var textarea = document.getElementById('chatlogs');
-            textarea.scrollTop = textarea.scrollHeight;            
-        },
-        isEnter(e) {
-             if (e.keyCode === 13) {
-
-                if (this.privateMessage !== null) {
-                    this.sendPrivateMessage(this.privateMessage);
-                    this.privateMessage = null;
-                } else {
-                    console.log("please enter a message")
-                }
-             }
-        },
-        sendPrivateMessage(message) 
-        {
-            if (message == null) {
-                return false;
-            }
-
-            let nickname = null;
-
-            if (this.user_info.user_type == "TUTOR") {
-                nickname = this.user_info.firstname
-            } else {
-                nickname = this.member_info.nickname
-            }
-
-            var currentTime = new Date();    
-            let time        = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-
-            let messageData = {
-                channelid: this.channelid,
-                userid: this.member_info.user_id,
-                nickname: nickname,
-                username: this.user_info.username,            
-                channelid: this.channelid,
-                type: this.user_info.user_type,
-                message: message,
-                time: time
-            }
-
-          
-
-            this.socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", messageData); 
-        },
-
+      
         /*
         loadImage(id, imageURL) 
         {
