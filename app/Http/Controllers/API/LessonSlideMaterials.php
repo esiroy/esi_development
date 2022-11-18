@@ -35,11 +35,11 @@ class LessonSlideMaterials extends Controller
         if ($material) {
 
             //@done: get the folder materials
-            $folderID = $material->folder_id;
+            $folderID       = $material->folder_id;
+            $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
+            $folderURLArray = Folder::getURLArray( $material->folder_id);
+            $files          = File::where('folder_id', $folderID)->get();
 
-
-          
-            $files = File::where('folder_id', $folderID)->get();
             if ($files) {
 
                 $slides = [];
@@ -57,7 +57,9 @@ class LessonSlideMaterials extends Controller
             
             return Response()->json([
                 "success"              => true,
-                "files"                => $slides                
+                "files"                => $slides,
+                "folderSegments"       =>  $folderSegments,
+                "folderURLArray"       => $folderURLArray
             ]);  
 
         

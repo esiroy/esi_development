@@ -4,7 +4,8 @@
 
         <h6 class="font-weight-bold text-center text-white m-0 p-2" :style="'background-color:#ccc'" >Chat Messages</h6>
 
-        <b-card style="max-width: 20rem;" class="mb-2 p-0">       
+        <b-card class="mb-2 p-2">   
+
             <b-card-text id="chatlogs" class="chatlogs text-dark" style="height: 280px; overflow: auto;">
                 <div :class="'chatlog-'+chatlogIndex" v-for="(chatlog, chatlogIndex) in chatlogs" :key="'chatlogs_'+ chatlogIndex">
                     <span v-html="chatlog.nickname"></span> : <span v-html="chatlog.message"></span>
@@ -15,11 +16,12 @@
     
 
         <div class="chat_message mt-1 row">
-            <div class="col-10 mr-0 pr-0">
+        
+            <div class="col-9 mr-0 pr-0 pl-4">
                 <input type="text" v-model="privateMessage" @keyup="isEnter($event)" class="form-control form-control-sm d-inline-block" placeholder="Enter a message" >
             </div>
 
-            <div class="col-2 ml-0 pl-1">
+            <div class="col-3 ml-0 pl-2">
                 <button type="button"  @click="sendPrivateMessage(privateMessage)" class="btn btn-sm btn-primary d-inline-block">
                     <i class="fa fa-paper-plane" aria-hidden="true"></i>
                 </button>
@@ -74,6 +76,8 @@
                 privateMessage: "",
                 chatlogs: [],
             }
+
+
         },
 
         mounted() {
@@ -106,7 +110,8 @@
             this.socket.on('SEND_SLIDE_PRIVATE_MESSAGE', (response) => {     
 
                 console.log("response ##", response)
-                /* response
+
+                /* response data 
                 let messageData = {
                     channelid: this.channelid,
                     userid: this.member_info.user_id,
@@ -139,7 +144,6 @@
         },
         methods: {
             pushPrivateMessage(data) {
-                // does something
                 this.chatlogs.push(data);
             },
             scrollToBottom() {
@@ -159,9 +163,7 @@
                     }
                 }
             },
-            sendPrivateMessage(message) 
-            {
-              
+            sendPrivateMessage(message) {             
 
                 if (message == null) {
                     return false;
@@ -175,8 +177,6 @@
                     nickname = this.member_info.nickname
                 }
 
-                
-
                 var currentTime = new Date();    
                 let time        = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
 
@@ -184,8 +184,7 @@
                     channelid: this.channelid,
                     userid: this.member_info.user_id,
                     nickname: nickname,
-                    username: this.user_info.username,            
-                  
+                    username: this.user_info.username,
                     type: this.user_info.user_type,
                     message: message,
                     time: time
@@ -194,10 +193,9 @@
             
                 console.log("messageData " , data);
 
-
                 this.socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", data); 
 
-                 this.privateMessage = null;
+                this.privateMessage = null;
             }
         
         }

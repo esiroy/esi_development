@@ -46,10 +46,6 @@ class WebRTCVideoController extends Controller
               
 
             }
-
-
-           
-
         }
 
 

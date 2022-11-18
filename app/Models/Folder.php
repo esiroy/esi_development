@@ -14,6 +14,8 @@ class Folder extends Model
 
     public static $url_segment = Array();
 
+    public static $folder_name = Array();
+
     public static $ids = Array();
 
     /**
@@ -296,7 +298,7 @@ class Folder extends Model
         return $response;
     }
 
-    public static function getURLSegments($id) 
+    public static function getURLSegments($id, $separator = "/") 
     {
         $folder = Folder::where('id', $id)->first();
 
@@ -312,8 +314,36 @@ class Folder extends Model
             }
         }
 
-        $segments = implode("/", array_reverse(Folder::$url_segment));
+        $segments = implode($separator , array_reverse(Folder::$url_segment));
         return $segments;
+    }
+
+
+    public static function getURLTitles($id, $separator = "/") 
+    {
+        $folder = Folder::where('id', $id)->first();
+
+        if (isset($folder)) {
+            if ($folder->parent_id !== null || $folder->parent_id !== 0) {
+                //Sub Folder
+                Folder::$folder_name[] = $folder->folder_name;
+
+                Folder::getURLTitles($folder->parent_id);
+            } else {
+                //Root Folder
+                Folder::$folder_name[] = $folder->folder_name;
+            }
+        }
+
+        $segments = implode($separator , array_reverse(Folder::$folder_name));
+        return $segments;
+    }
+
+    public static function getURLArray($id) 
+    {
+        Folder::$url_segment = array();
+        $segments = Folder::getURLTitles($id);
+        return array_reverse(Folder::$folder_name);
     }
 
     public static function getPermalink($id) 

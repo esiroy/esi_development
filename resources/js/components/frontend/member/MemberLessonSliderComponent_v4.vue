@@ -1,121 +1,183 @@
 <template>
 
-    <div id="component-container">
-        <div id="toolbox" v-show="this.$props.isBroadcaster == true">
-            <div class="tool-container">
+    <div id="component-container">     
 
-                <!-- [START] TOOL WRAPPER -->
-                <div class="tool-wrapper" >
+        <div class="tool-container" v-show="this.$props.isBroadcaster == true">
 
-                    <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
-                        <i class="fas fa-undo-alt" ></i>                                
-                    </div> 
+            <!-- [START] TOOL WRAPPER -->
+            <div class="tool-wrapper" >
 
-                    <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
-                        <i class="fas fa-redo-alt" ></i>                                
-                    </div> 
-
-                    <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
-                        <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
-                    </div>     
-
-                    <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
-                        <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
-                    </div>     
-
-
-                    <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
-                        <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
-                    </div>
-                    
-                    <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
-                        <i class="fa fa-font text-white" aria-hidden="true"></i>
-                    </div>
-
-
-                    <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
-                        <i class="fa fa-hand-paper text-white"></i>
-                    </div>
-
-
-                    <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
-                        <i class="fa fa-pen text-white" aria-hidden="true" ></i>
-                    </div>                    
-                    <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
-                        <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
-                    </div>                        
-            
-                    <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
-                        <i class="fa fa-minus text-white" aria-hidden="true"></i>
-                    </div>        
-
-                    <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
-                        <b-icon icon="circle " font-scale="1"> </b-icon>
-                    </div> 
-                        
-
-
-
-
-
-                    
-
-
-                </div>
-                <!-- [END] TOOL WRAPPER -->
-
-                <!-- ADDITIONAL OPTIONS -->
-                <div class="tool-wrapper">
-
-                    <div class="tool">
-                        <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
-                    </div>             
-                
-                    <!-- Strokes-->
-                    <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
-                        <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
-                        <div id="brushStrokes" class="collapse" style="z-index:9999">
-                            <div class="brushes-container">
-                                <div class="brushes">
-                                    <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
-                                    <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
-                                    <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
-                                    <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
-                                    <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
-                                </div> 
-                            </div>
-                        </div>
-                    </div>
+                <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
+                    <i class="fas fa-undo-alt" ></i>                                
                 </div> 
 
+                <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
+                    <i class="fas fa-redo-alt" ></i>                                
+                </div> 
+
+                <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
+                    <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
+                </div>     
+
+                <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
+                    <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
+                </div>     
+
+
+                <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
+                    <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
+                </div>
+                
+                <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                    <i class="fa fa-font text-white" aria-hidden="true"></i>
+                </div>
+
+
+                <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
+                    <i class="fa fa-hand-paper text-white"></i>
+                </div>
+
+
+                <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
+                    <i class="fa fa-pen text-white" aria-hidden="true" ></i>
+                </div>                    
+                <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
+                    <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
+                </div>                        
+        
+                <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
+                    <i class="fa fa-minus text-white" aria-hidden="true"></i>
+                </div>        
+
+                <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
+                    <b-icon icon="circle " font-scale="1"> </b-icon>
+                </div> 
+                    
+
+
+
+
+
+                
+
+
             </div>
-        </div>
+            <!-- [END] TOOL WRAPPER -->
 
 
-        <!-- ********** [START] Lesson Slides *************-->
-        <div id="lessonSlide" class="left-container mb-2"> 
-            <nav aria-label="breadcrumb">
-                <ol class="breadcrumb bg-transparent my-2 p-0">
-                    <li class="breadcrumb-item" aria-current="page">Home</li>
-                    <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
-                       {{ segment }}
-                    </li>
-                  
-                </ol>
-            </nav>
+            <!-- ADDITIONAL OPTIONS -->
+            <div class="tool-wrapper">
 
+                <div class="tool">
+                    <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
+                </div>             
             
-            <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">              
-                <canvas :ref="'canvas'+slide"
-                    :id="'canvas'+slide"
-                    :width="canvas_width"
-                    :height="canvas_height"
-                    style="border:7px solid #0076be;height:100%"  
-                ></canvas>
+                <!-- Strokes-->
+                <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
+                    <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
+                    <div id="brushStrokes" class="collapse" style="z-index:9999">
+                        <div class="brushes-container">
+                            <div class="brushes">
+                                <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                                <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                                <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                                <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                                <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
+                            </div> 
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+
+        <div id="editor_content">
+
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb bg-white p-0 m-0">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">Library</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Data</li>
+                </ol>
+            </nav> 
+
+
+            <div id="lessonSlide" class="left-container mb-2">               
+                
+                <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">
+                    <!-- 
+                    /********** [START] CANVAS *************/
+                    -->
+                    <canvas :ref="'canvas'+slide"
+                        :id="'canvas'+slide"
+                        :width="canvas_width"
+                        :height="canvas_height"
+                        style="border:2px solid #0076be;"  
+                    ></canvas>
+                    <!-- 
+                    /********** [END] CANVAS *************/
+                    -->
+
+                </div>
+             
+
+                <div class="info-container">
+
+                    <div class="d-flex justify-content-center">
+                        Total Time {{ this.getTime() }} 
+                    </div>
+
+                </div>
+
+                <div class="buttons-container mt-3">
+                    <div class="d-flex justify-content-center">
+
+                        <div id="firstSlide" class="tool" @click="startSlide" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-fast-backward" aria-hidden="true"></i>
+                        </div>  
+
+                        <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-backward" aria-hidden="true"></i>
+                        </div>
+
+
+
+                        <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
+
+                            <div v-show="this.$props.isBroadcaster == true">
+                                Slide {{ this.currentSlide }} of {{ this.slides }}
+                            </div>
+
+                            <div v-show="this.$props.isBroadcaster == false">
+                                Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
+                            </div>
+                        </div>
+
+
+
+                        <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-forward" aria-hidden="true"></i>
+                        </div>
+
+                        <div id="lastSlide" class="tool" @click="lastSlide" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                        </div>
+
+
+                    </div>
+                </div>
+                
             </div>
 
+            <div id="lessonSharedContainer"></div>
+
+               
+           
+
+
         </div>
-        <!--********** [END] Lesson Slides *************-->
+
+
 
         <b-modal
             id="modalAddInputText"
@@ -129,12 +191,13 @@
                     <b-form-input id="textInput" v-model="inputText" required></b-form-input>
                 </b-form-group>
             </form>
-        </b-modal>        
+        </b-modal>
 
-    </div>        
+
+    </div>
+
 
 </template>
-
 
 <script>
 import {fabric} from "fabric";
@@ -184,14 +247,6 @@ export default {
     },
     data() {
         return {
-            //socket
-            socket: null,
-
-            //loader
-            isLoading: false,
-
-            //uri segments
-            segments:  "",
 
             //history
             undoCtr: 0,
@@ -209,11 +264,23 @@ export default {
             netPanningY: 0,
             delta: null,
 
+            //chat 
+            tutor_chat_message: "",
+            
+          
+            socket: null,
+            videosocket: null,
+            myVideoStream: null,           
+
+            //loader
+            isLoading: false,
+
+
             canvas: [],
             canvasMirror: null,
 
             //slides
-            currentSlide: null,
+            currentSlide: 1,
             viewerCurrentSlide: 1,
 
             slides: 5,
@@ -283,8 +350,6 @@ export default {
     {
         this.socket = io.connect(this.$props.canvas_server);
 
-        this.canvas_height;
-
         //register as user
         let user = {
             userid: this.member_info.user_id ,
@@ -301,7 +366,7 @@ export default {
         {
             this.updateUserList(users); 
             this.goToSlide(this.currentSlide);
-            //this.alignCanvas();
+            this.alignCanvas();
         });      
 
         this.getSlideMaterials(this.reservation);
@@ -312,57 +377,72 @@ export default {
             this.viewerCurrentSlide = data.num
             this.currentSlide = data.num
             this.goToSlide(data.num);
-            //this.rescale(11);
+            this.rescale(1);
 
         });
 
         this.socket.on('UPDATE_DRAWING', (response) => {
-
-            /*@todo: this should update user all except me */
-            console.log(response)
-
-            //if (this.$props.isBroadcaster == false) {
-            console.log("compare", response.sender.userid , this.user_info.id )
-
-
-        //WE WILL UPDATE
-
-            try {
-                this.canvas[this.currentSlide].setZoom(response.canvasZoom);   
-                this.canvas[this.currentSlide].requestRenderAll(); 
-                
-            } catch (error) {
-                console.log("canvas setZoom errror", error);
-            }
-
-
-
-            if (response.sender.userid !== this.user_info.id ) {
+            if (this.$props.isBroadcaster == false) {
 
                 try {
                     if (response.canvasDelta !== null) {
+
                         this.canvas[this.currentSlide].relativePan(response.canvasDelta);
-                    }
 
-
-                    if (response.canvasData.objects.length >= 1) {                    
-
-                        this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);          
-                        
-                    } else {
-
-                        console.log("there is no drawing detected")
                     }
                     
                 } catch (error) {
                     console.log("canvas delta errror", error);
                 }
              
+                try {
+                    this.canvas[this.currentSlide].setZoom(response.canvasZoom);   
+                    this.canvas[this.currentSlide].requestRenderAll(); 
+                    
+                } catch (error) {
+                   console.log("canvas setZoom errror", error);
+                }
 
+
+                if (response.canvasData.objects.length >= 1) 
+                {
+                    
+                    this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);          
+                } else 
+                {
+                    console.log("there is no drawing detected")
+                }
 
             } 
         });
         
+
+       
+        //ON LOAD WINDOW
+        /*
+        if (this.$props.isBroadcaster == false) 
+        {
+            //Your are not a broadcaster
+            this.disableSelect();
+            this.deactivateSelector();
+            
+            //console.log("deactivated selector")
+
+            this.canvas[this.currentSlide].isDrawingMode = false; 
+
+        } else {
+
+            //Your are the viewer        
+                  
+            this.mouseClickHandler();
+            this.activatePencil();
+        }
+
+
+        this.keyPressHandler();
+        this.startTimer();
+        */
+
 
         window.addEventListener('scroll', this.reOffset);
         window.addEventListener('resize', this.reOffset);
@@ -393,33 +473,7 @@ export default {
             this.offsetX = clientRect.left;
             this.offsetY = clientRect.top; 
         },
-        // draw everything in pixels coords
-        rescale(scale) {
 
-            try {
-
-                this.canvas[this.currentSlide].setZoom(scale);
-                this.canvas[this.currentSlide].requestRenderAll();
-
-                this.canvas[this.currentSlide]['scale'] = scale;
-
-
-                //tool and send canvas json to viewer
-                let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);    
-
-                
-                let zoomedIn = setInterval(() => {
-                    this.isZoomOut = false;
-                    this.isZoomIn = false;
-                    clearInterval(zoomedIn); 
-                }, 50); 
-
-
-            } catch (error) {
-                console.log("canvas setZoom errror", error);
-            }
-        },
 
         userSlideAccess() {
 
@@ -429,8 +483,7 @@ export default {
                 this.disableSelect();
                 this.deactivateSelector();
                 this.canvas[this.currentSlide].isDrawingMode = false;
-
-                 this.reOffset();
+                this.reOffset();
 
 
             } else {
@@ -445,9 +498,11 @@ export default {
             this.keyPressHandler();
             this.startTimer();
         },
-        
         getSlideMaterials(reservation) 
         {
+
+            //console.log('reservation slide ', reservation)
+
             this.isLoading = true;
 
             axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
@@ -455,17 +510,12 @@ export default {
                 method              : "POST",
                 scheduleID          : reservation.schedule_id,
                 memberID            : reservation.member_id,
-                lesson_time         : reservation.lesson_time
+                lesson_time        : reservation.lesson_time
 
             }).then(response => {     
             
                 if (response.data.success === true) 
                 {
-
-                    //Breadcrumbs
-                    this.segments = response.data.folderURLArray;
-
-                    //Array of images
                     this.imageURL = response.data.files;
 
                     this.slides  = (response.data.files).length;
@@ -474,14 +524,45 @@ export default {
                     {
                         this.canvas[i]  = new fabric.Canvas('canvas'+i, {
                             backgroundColor : "#fff"
-                        });  
-                  
-                        this.setBackgroundImage(i, this.imageURL[i-1]);
+                        });                      
+
+                        // set canvas width and height based on image size
+                        //this.canvas[i].setDimensions({ width: this.canvas_width, height: this.canvas_height});                        
+                      
+                        
+                        var center = this.canvas[i].getCenter();
+
+                        console.log(center);
+
+                        this.canvas[i].setBackgroundImage(this.imageURL[i-1], this.canvas[i].renderAll.bind(this.canvas[i]), {
+                            // Optionally add an opacity lvl to the image
+                            //backgroundImageOpacity: 0.5,
+                            // should the image be resized to fit the container?
+                            scaleX:1,
+                            scaleY:1,
+                            top: 0,
+                            left: 0,
+                            originX: 'left',
+                            originY: 'top',                                                        
+                            backgroundImageStretch: true,
+                        });
+
+                        this.canvas[i]['scale'] = 1;
+                        this.rescale(1);
+
+                        
+                       
+
+                
+
+          
+                        /** [start] fix flicker (old version) */
+                        //document.getElementById('editor'+i).style.backgroundImage = 'url('+ this.imageURL[i-1] +')';    
 
                         if (i ==  this.slides)
                         {
                             this.userSlideAccess();
-                                                
+                            //console.log("called user slide access")                           
                         }
                     }
 
@@ -489,51 +570,32 @@ export default {
           
                     //@todo: no slide images found(???)
 
-                    this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                        backgroundColor : "#fff"
-                    });  
-
-
                 }
 			});
         },       
-        setBackgroundImage(index, imageURL) {
 
-            
-            this.canvas[index].setBackgroundImage(imageURL, this.canvas[index].renderAll.bind(this.canvas[index]), {
-                // Optionally add an opacity lvl to the image
-                //backgroundImageOpacity: 0.5,
-                // should the image be resized to fit the container?
-                scaleX:1,
-                scaleY:1,
-                top: 0,
-                left: 0,
-                originX: 'left',
-                originY: 'top',                                                        
-                backgroundImageStretch: true,
-            });
-        
-            //New Image On the Background we will set the scale to default = 1
-            this.canvas[index]['scale'] = 1;
-        },            
-        loadImage(index, imageURL) 
-        {                           
-            let ctx =  this.canvas[index].getContext("2d");
+      
+        /*
+        loadImage(id, imageURL) 
+        {
 
-            this.canvas[index].width = this.canvas_width;
-            this.canvas[index].height = this.canvas_height;
+            var canvas = document.getElementById('canvass'+id);                       
+            let ctx = canvas.getContext("2d");
+
+            this.canvas[i].width = 934;
+            this.canvas[i].height = 622;
 
 
             var background = new Image();
             background.src = imageURL;
 
-            background.onload = (bg) => {
-                ctx.drawImage(background,0,0, this.canvas_width, this.canvas_height);   
+            background.onload = function(){
+                ctx.drawImage(background,0,0);   
             } 
 
             background.setAttribute('crossorigin', 'anonymous'); // works for me
 
-        },
+        },*/
 
 
         getRecipient() {        
@@ -550,12 +612,8 @@ export default {
         {
 
             canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {
-            
-                if(this.$props.isBroadcaster == false) {
-                    this.deactivateSelector()                
-                }
 
-                
+                this.deactivateSelector()                
             });
             
         },
@@ -574,22 +632,15 @@ export default {
         },
         canvasSendJSON(canvasID, canvasData) 
         {          
-        
             let recipient = this.getRecipient();
-
-            console.log("scale", this.canvas[this.currentSlide]['scale'])
 
             let memberCanvasData = {
                 'channelid'     : this.channelid,
-                'sender'        : {
-                                    userid: this.user_info.id,
-                                    username: this.user_info.username
-                                  },
                 'recipient'     : recipient,
                 'canvasid'      : canvasID,
                 'canvasData'    : canvasData,
-                'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
-                'canvasDelta'   : this.delta,
+                'canvasZoom'    : this.canvas[this.currentSlide].getZoom(),
+                'canvasDelta'   : this.delta,                
             };
        
             this.socket.emit('SEND_DRAWING', memberCanvasData);  
@@ -820,14 +871,21 @@ export default {
             }).on('mouse:move', (options) => {
 
                 if (this.isDragger) {
+                    if (this.panning) {
 
-                    if (this.panning) 
-                    {
                         this.delta = new fabric.Point(options.e.movementX, options.e.movementY);
+
                         this.canvas[this.currentSlide].relativePan(this.delta);
-                     
+
+                        console.log("Delta pos: ",   this.delta );
+
+                   
+
+                        //tool and send canvas json to viewer
                         let data = this.canvasGetJSON();
-                        this.canvasSendJSON(this.canvas[this.currentSlide], data);   
+                        this.canvasSendJSON(this.canvas[this.currentSlide], data);    
+
+
                     }
                 }
 
@@ -1037,6 +1095,35 @@ export default {
                 this.updateCanvas(this.canvas[this.currentSlide], prevData.data); 
             } 
         },
+
+                // draw everything in pixels coords
+        rescale(scale) {
+
+            try {
+
+                console.log(scale);
+
+                this.canvas[this.currentSlide].setZoom(scale);
+                this.canvas[this.currentSlide]['scale'] = scale;
+                this.canvas[this.currentSlide].requestRenderAll();
+
+
+                //tool and send canvas json to viewer
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);    
+
+            
+                let zoomedIn = setInterval(() => {
+                    this.isZoomOut = false;
+                    this.isZoomIn = false;
+                    clearInterval(zoomedIn); 
+                }, 50); 
+
+            } catch (error) {
+                console.log("canvas setZoom errror", error);
+            }
+            
+        },
         activateZoomIn() 
         {            
             this.isZoomIn = true;
@@ -1221,13 +1308,11 @@ export default {
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);   
 
-                //[ADD TO HISTORY]    
-                /*            
+                //[ADD TO HISTORY]                
                 this.historyCounter++;
                 this.history[this.currentSlide].push({                   
                         'data': this.canvasGetJSON()                
                 });
-                */
 
             });
 
@@ -1387,7 +1472,22 @@ export default {
             this.canvas[this.currentSlide].forEachObject(function (obj) {
                 obj.selectable = false;
                 obj.evented = false;
-                obj.hasControls = false;             });
+                obj.hasControls = false;
+
+                /*
+                obj.setControlsVisibility({
+                    tl:false, //top-left
+                    mt:false, // middle-top
+                    tr:false, //top-right
+                    ml:false, //middle-left
+                    mr:false, //middle-right
+                    bl:false, // bottom-left
+                    mb:false, //middle-bottom
+                    br:false //bottom-right
+                });
+                */
+
+             });
 
             this.canvas[this.currentSlide].renderAll();            
         },
@@ -1430,3 +1530,257 @@ export default {
     }
 };
 </script>
+<style scoped>
+
+#lessonSlide {
+
+    background-color: #fff;
+}
+
+.upper-canvas {
+    z-index: 1;
+    
+}
+
+.left-container {
+    background-color: #ececec;
+}
+
+.right-container {
+    background-color: #ececec;
+}
+
+
+/*tool*/
+.tool-container {
+    width: 50px;
+    display: inline-block;
+    margin: 0px 0px 0px 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 0px 10px 10px 0px;
+    background-color: transparent;   
+}
+
+.tool-wrapper {
+    display: flow-root;
+    width: 100%;
+}
+
+.tools {
+    display: flex;
+    height: 200px; 
+    width: 50px;    
+}
+
+.tool {
+    float: left;
+    width: 50px;
+    height: 32px;
+    text-align: center;
+    /* border-top: 1px solid #ccc; */
+    /* border-left: 1px solid #ccc; */
+    /* border-right: 1px solid #ccc; */
+    border-bottom: 1px solid #878787;
+    line-height: 32px; 
+}
+
+.tool.active {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border-top: 1px solid #7b7b7b;
+    border-left: 1px solid #7b7b7b;
+    border-right: 1px solid #bdbdbd;
+    border-bottom: 1px solid #bdbdbd;   
+}
+
+
+
+.colors-container {   
+    background-color: #c0c0c0;
+    margin:0px 5px 0px;
+    width: 100%;
+}
+
+.colors-wrapper {
+    display: inline-block;
+}
+
+.color-button {
+
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0px !important;
+    margin: 0px;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+    margin: auto;
+}
+
+.color-selected {    
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
+    border:1px solid #ccc;
+    width: 45px;
+    height: 45px;
+    display: inline-block;
+    vertical-align: text-bottom;
+    margin: 0px 0px 0px 5px;
+}
+
+.color-shadow {
+    border-top: 1px solid #7B7B7B;
+    border-left: 1px solid #7B7B7B;
+    border-right: 1px solid #BBBBBB;
+    border-bottom: 1px solid #BBBBBB;
+    box-shadow: 1px 1px 0px black inset;
+}
+
+.colors {
+    display: inline-block;
+    text-align: center;
+    width: 370px;    
+}
+
+.color-preview {
+    width: 15px;
+    height: 15px;    
+    text-align: center;
+    margin: 13px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    border-top: 2px solid #fff;
+    border-left: 2px solid #fff;
+    border-right: 2px solid #7B7B7B;
+    border-bottom: 2px solid #7B7B7B;    
+}
+
+
+
+.colors button {
+    display: inline-block;
+    border: 1px solid #00000026;
+    border-radius: 0;
+    outline: none;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+    margin-bottom: 5px;
+}
+
+.tool .collapsing {
+     -webkit-transition: none;
+     transition: none;
+}
+
+.brushes-container {
+
+    background-color: #ececec;
+    
+    width: 235px;
+    float: left;
+    /* width: 47px; */
+    height: 36px;
+    /* top: 0px; */
+    /* left: 0px; */
+    /* right: 0px; */
+    /* bottom: 0px; */
+    border-top: 1px solid white;
+    border-left: 1px solid white;
+    border-right: 1px solid #7b7b7b;
+    border-bottom: 1px solid #7b7b7b;    
+
+    position: relative;
+    z-index: 99999;
+
+}
+
+.brushes {
+    padding-top: 2px;
+}
+
+.brushes button {
+    display: inline-block;
+    width: 20%;
+    border: 0;
+    border-radius: 0;
+    background-color: #ece8e8;
+    margin-bottom: 5px;
+    padding: 5px;
+    height: 30px;
+    outline: none;
+    position: relative;
+    cursor: pointer;
+    vertical-align: top;
+}
+
+.brushes button:after {
+    height: 1px;
+    display: block;
+    background: #808080;
+    content: "";
+}
+
+.brushes button:nth-of-type(1):after {
+    height: 3px;
+}
+
+.brushes button:nth-of-type(2):after {
+    height: 5px;
+}
+
+.brushes button:nth-of-type(3):after {
+    height: 10px;
+}
+
+.brushes button:nth-of-type(4):after {
+    height: 15px;
+}
+
+.brushes button:nth-of-type(5):after {
+    height: 20px;
+}
+
+
+
+.buttons {
+    height: 80px;
+    padding-top: 10px;
+}
+
+.buttons button {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0;
+    background-color: #ece8e8;
+    margin-bottom: 5px;
+    padding: 5px;
+    height: 30px;
+    outline: none;
+    position: relative;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+
+button.brush.active {
+    background-color: #04127b;
+}
+
+
+.right-block {
+    width: 640px;
+}
+
+#paint-canvas {
+    cursor: crosshair;
+}
+
+
+
+
+</style>

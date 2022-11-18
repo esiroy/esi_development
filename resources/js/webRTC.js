@@ -1305,37 +1305,17 @@ socket.on('mediaChanged', (data) => {
 
 
 socket.on('userDisconnect', id => {
-
     console.log("userDisconnected", id);
-
     removeElementByID(id);
-
     try {
         peerConnections[id].close();
-
     } catch (err) {
-
         console.log("error disconnect : ", err)
     }
-
 });
 
 
 
 document.getElementById("btnShareScreen").addEventListener("click", function() {
     shareScreen();
-});
-
-
-/*** TOGGLE MEDIA CABINETS EFFECTS */
-$(".toggleCamera").click(function() {
-    $('#right-video-sidebar').animate({ width: 'toggle' }, 25, () => {
-        // Animation complete.
-    })
-});
-
-$(".toggleLiveChat").click(function() {
-    $('#right-chat-sidebar').animate({ width: 'toggle' }, 25, () => {
-        // Animation complete.
-    })
 });
