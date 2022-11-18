@@ -1,6 +1,8 @@
 <template>
 
     <div id="component-container">
+
+        <!--[start] toolbox -->
         <div id="toolbox" v-show="this.$props.isBroadcaster == true">
             <div class="tool-container">
 
@@ -90,11 +92,14 @@
 
             </div>
         </div>
-
+        <!--[end] toolbox -->
 
         <!-- ********** [START] Lesson Slides *************-->
         <div id="lessonSlide" class="left-container mb-2"> 
-            <nav aria-label="breadcrumb">
+
+
+            <nav aria-label="breadcrumb" class="d-inline-block">
+
                 <ol class="breadcrumb bg-transparent my-2 p-0">
                     <li class="breadcrumb-item" aria-current="page">Home</li>
                     <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
@@ -104,15 +109,87 @@
                 </ol>
             </nav>
 
-            
-            <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden">              
-                <canvas :ref="'canvas'+slide"
-                    :id="'canvas'+slide"
-                    :width="canvas_width"
-                    :height="canvas_height"
-                    style="border:7px solid #0076be;height:100%"  
-                ></canvas>
+            <div class="slide-controls d-inline-block">
+                  
+                <div class="buttons-container">
+
+                    <div class="d-flex justify-content-center">
+
+                        <div id="firstSlide" class="tool" @click="startSlide" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-fast-backward" aria-hidden="true"></i>
+                        </div>  
+
+                        <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-backward" aria-hidden="true"></i>
+                        </div>
+
+
+
+                        <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
+
+                            <div v-show="this.$props.isBroadcaster == true">
+                                Slide {{ this.currentSlide }} of {{ this.slides }}
+                            </div>
+
+                            <div v-show="this.$props.isBroadcaster == false">
+                                Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
+                            </div>
+                        </div>
+
+
+
+                        <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-forward" aria-hidden="true"></i>
+                        </div>
+
+                        <div id="lastSlide" class="tool" @click="lastSlide" v-show="this.$props.isBroadcaster == true">
+                            <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                        </div>
+
+
+                    </div>
+                </div>
+
             </div>
+
+
+            <div id="audio-container" class="d-inline-block bg-darkblue">            
+                <div id="prevAudio" class="d-inline-block px-2">
+                    <i class="fa fa-fast-backward" aria-hidden="true"></i>
+                </div>  
+
+                <div id="prevAudio" class="d-inline-block px-2">
+                    <i class="fa fa-play" aria-hidden="true"></i>
+                </div>     
+
+                <div id="nextAudio" class="d-inline-block px-2">
+                    <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                </div>
+
+                <div id="audio-player" class="text-white p-1 d-inline-block">
+                    <audio controls>
+                        <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/ogg">
+                        <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+
+
+
+                <!--
+                    <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden; clear:both">              
+                        
+                        <canvas :ref="'canvas'+slide"
+                            :id="'canvas'+slide"
+                            :width="canvas_width"
+                            :height="canvas_height"
+                            style="border:7px solid #0076be;height:100%"  
+                        ></canvas>
+                    </div>
+                -->
+            
+            <div id="slide-container"></div>
 
         </div>
         <!--********** [END] Lesson Slides *************-->
@@ -213,10 +290,10 @@ export default {
             canvasMirror: null,
 
             //slides
-            currentSlide: null,
+            currentSlide: 1,
             viewerCurrentSlide: 1,
 
-            slides: 5,
+            slides: 0,
             lesson_slides_materials: [],
 
             //Modes
@@ -279,8 +356,16 @@ export default {
            
         };
     },
+    created() {
+
+        this.getSlideMaterials(this.reservation);
+    
+    },
     mounted() 
     {
+
+       console.log(this.slides)
+
         this.socket = io.connect(this.$props.canvas_server);
 
         this.canvas_height;
@@ -304,7 +389,7 @@ export default {
             //this.alignCanvas();
         });      
 
-        this.getSlideMaterials(this.reservation);
+        
         
         this.customSelectorBounds(fabric);
 
@@ -318,15 +403,6 @@ export default {
 
         this.socket.on('UPDATE_DRAWING', (response) => {
 
-            /*@todo: this should update user all except me */
-            console.log(response)
-
-            //if (this.$props.isBroadcaster == false) {
-            console.log("compare", response.sender.userid , this.user_info.id )
-
-
-        //WE WILL UPDATE
-
             try {
                 this.canvas[this.currentSlide].setZoom(response.canvasZoom);   
                 this.canvas[this.currentSlide].requestRenderAll(); 
@@ -335,10 +411,8 @@ export default {
                 console.log("canvas setZoom errror", error);
             }
 
-
-
-            if (response.sender.userid !== this.user_info.id ) {
-
+            if (response.sender.userid !== this.user_info.id ) 
+            {
                 try {
                     if (response.canvasDelta !== null) {
                         this.canvas[this.currentSlide].relativePan(response.canvasDelta);
@@ -357,11 +431,8 @@ export default {
                 } catch (error) {
                     console.log("canvas delta errror", error);
                 }
-             
-
-
             } 
-        });
+        });        
         
 
         window.addEventListener('scroll', this.reOffset);
@@ -370,11 +441,94 @@ export default {
 
     },
     methods: {
+
+
         updateUserList: function(users) 
         {
             this.users = users;      
             this.$forceUpdate();
         },
+        createCanvas(index) {
+
+            //Editor Container Element
+            let editorElement = document.createElement("div");
+            editorElement.setAttribute("id",    "editor" + index);
+            editorElement.setAttribute("style",    "overflow: hidden; clear: both; visibility: hidden; display: none;");
+            let slideContainer = document.getElementById('slide-container');
+            slideContainer.append(editorElement);            
+
+            //Add canvas to the editor
+            let canvasElement = document.createElement("canvas");
+            canvasElement = document.createElement('canvas');
+            canvasElement.setAttribute("id",    "canvas" + index);
+            canvasElement.setAttribute("width", this.canvas_width);
+            canvasElement.setAttribute("height", this.canvas_height);
+            canvasElement.setAttribute("style", "border: 7px solid rgb(0, 118, 190); height: 100%;");
+
+            let mediaContainer = document.getElementById('editor'+ index);
+            mediaContainer.append(canvasElement);            
+        },        
+        getSlideMaterials(reservation) 
+        {
+            this.isLoading = true;
+
+            axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
+            {
+                method              : "POST",
+                scheduleID          : reservation.schedule_id,
+                memberID            : reservation.member_id,
+                lesson_time         : reservation.lesson_time
+
+            }).then(response => {     
+            
+                if (response.data.success === true) 
+                {
+
+                    this.isLoading = false;
+
+                    //Breadcrumbs
+                    this.segments = response.data.folderURLArray;
+
+                    //Array of images
+                    this.imageURL = response.data.files;
+
+                    this.slides  = (response.data.files).length;
+                   
+
+                    for (var i = 1; i <= this.slides; i++) 
+                    {
+
+                        this.createCanvas(i);
+
+                        this.canvas[i]  = new fabric.Canvas('canvas'+i, {
+                            backgroundColor : "#fff"
+                        });  
+                  
+                        this.setBackgroundImage(i, this.imageURL[i-1]);
+
+                        this.$forceUpdate();
+
+                        if (i ==  this.slides)
+                        {
+                            this.userSlideAccess();
+
+                             this.slides = (response.data.files).length;
+
+                        }
+                    }
+
+                } else {
+          
+                    //@todo: no slide images found(???)
+
+                    this.canvas[i]  = new fabric.Canvas('canvas'+i, {
+                        backgroundColor : "#fff"
+                    });  
+
+
+                }
+			});
+        }, 
 
         alignCanvas() {
             try {
@@ -430,7 +584,7 @@ export default {
                 this.deactivateSelector();
                 this.canvas[this.currentSlide].isDrawingMode = false;
 
-                 this.reOffset();
+                //this.reOffset();
 
 
             } else {
@@ -438,65 +592,14 @@ export default {
                 this.mouseClickHandler();
                 this.activatePencil();
 
-                 this.reOffset();
+                //this.reOffset();
             }
 
 
             this.keyPressHandler();
             this.startTimer();
         },
-        
-        getSlideMaterials(reservation) 
-        {
-            this.isLoading = true;
-
-            axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
-            {
-                method              : "POST",
-                scheduleID          : reservation.schedule_id,
-                memberID            : reservation.member_id,
-                lesson_time         : reservation.lesson_time
-
-            }).then(response => {     
-            
-                if (response.data.success === true) 
-                {
-
-                    //Breadcrumbs
-                    this.segments = response.data.folderURLArray;
-
-                    //Array of images
-                    this.imageURL = response.data.files;
-
-                    this.slides  = (response.data.files).length;
-
-                    for (var i = 1; i <= this.slides; i++) 
-                    {
-                        this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                            backgroundColor : "#fff"
-                        });  
-                  
-                        this.setBackgroundImage(i, this.imageURL[i-1]);
-
-                        if (i ==  this.slides)
-                        {
-                            this.userSlideAccess();
-                                                
-                        }
-                    }
-
-                } else {
-          
-                    //@todo: no slide images found(???)
-
-                    this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                        backgroundColor : "#fff"
-                    });  
-
-
-                }
-			});
-        },       
+      
         setBackgroundImage(index, imageURL) {
 
             
@@ -548,18 +651,12 @@ export default {
 
         updateCanvas(canvas, data)
         {
-
-            canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {
-            
+            canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {            
                 if(this.$props.isBroadcaster == false) {
                     this.deactivateSelector()                
-                }
-
-                
-            });
-            
+                }                
+            });            
         },
-
         disableCanvas() {
 
             this.canvas[this.currentSlide].forEachObject(function(o) {

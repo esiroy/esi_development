@@ -3,6 +3,33 @@
 @section('content')
 
 
+<!--
+<div id="audio-container" class="bg-darkblue">
+    <div id="audio-controls" class="text-white p-1 d-inline-block">
+        <div id="prevAudio" class="d-inline-block px-2">
+            <i class="fa fa-fast-backward" aria-hidden="true"></i>
+        </div>  
+
+        <div id="prevAudio" class="d-inline-block px-2">
+            <i class="fa fa-play" aria-hidden="true"></i>
+        </div>     
+
+        <div id="nextAudio" class="d-inline-block px-2">
+            <i class="fa fa-fast-forward" aria-hidden="true"></i>
+        </div>
+    </div>
+
+    <div id="audio-player" class="bg-darkblue text-white p-1 d-inline-block">
+        <audio controls>
+            <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/ogg">
+            <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+</div>            
+-->
+
+
 <div id="slide-component">
     <lesson-slider-component 
         ref="lessonSliderComponent"
@@ -288,6 +315,11 @@
 
         .canvas-container {
             width: 100% !important;         
+        }
+
+        /* Slide Controls*/
+        .slide-controls {
+          
         }
 
     </style>
