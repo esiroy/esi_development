@@ -60,6 +60,7 @@ if (url[1] === 'admin') {
         case 'filemanager':
             Vue.component('vue-tree-list-component', require('./components/modules/VueTreeListComponent.vue').default);
             Vue.component('admin-uploader-component', require('./components/modules/AdminUploaderComponent.vue').default);
+            Vue.component('audio-uploader-component', require('./components/modules/AudioUploaderComponent.vue').default);
             Vue.component('folder-files-component', require('./components/modules/FolderFilesComponent.vue').default);
             break;
 

@@ -88,6 +88,29 @@
             </b-modal>
         </div>
 
+        <div class="uploadAudioFileContainer">
+
+            <b-modal id="uploadAudioFile"
+                ref="modalUploadAudioFile"
+                :title="'Upload Audo File'"
+                @show="resetUploadAudioFileModal"
+                @hidden="resetUploadAudioFileModal"
+                @ok="handleUploadAudioOk">
+
+                    <audio-uploader-component
+                        ref="audioUploaderComponent"
+                        :users="this.users"
+                        :user_can_delete="'true'"
+                        :folder_id="this.folder_id"
+                        :csrf_token="this.csrf_token"
+                    />
+            </b-modal>
+
+
+     
+
+        </div>
+
         <div class="card-header">Files</div>
         <div class="card-body table-responsive">
             <table class="table table-borderless table-hover">
@@ -143,14 +166,11 @@
             </table>
         </div>
 
-        <ul class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">
-            
-            <li @click="contextmenuShareFile" v-if="can_user_share_uploads">
-                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-share mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path fill-rule="evenodd" d="M11.724 3.947l-7 3.5-.448-.894 7-3.5.448.894zm-.448 9l-7-3.5.448-.894 7 3.5-.448.894z"/>
-                <path fill-rule="evenodd" d="M13.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-11-6.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
-                </svg>
-                    Share File
+        <ul class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">           
+
+
+            <li @click="contextMenuAddAudio">
+               <i class="fas fa-music mr-2"></i> Add Audio            
             </li>
 
             <li @click="contextmenuViewFile" v-if="can_user_share_uploads">
@@ -169,6 +189,9 @@
                 Copy File Link
             </li>
 
+
+
+
             <li @click="contextMenuDelete"  v-if="can_user_delete_uploads">
                 <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-trash mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
@@ -176,6 +199,22 @@
                 </svg>
                 Delete File
             </li>
+
+
+            <!--
+            <li @click="contextmenuShareFile" v-if="can_user_share_uploads">
+                <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-share mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path fill-rule="evenodd" d="M11.724 3.947l-7 3.5-.448-.894 7-3.5.448.894zm-.448 9l-7-3.5.448-.894 7 3.5-.448.894z"/>
+                <path fill-rule="evenodd" d="M13.5 4a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm0 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5zm-11-6.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm0 1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                </svg>
+                    Share File
+            </li>
+            -->
+
+
+
+
+
         </ul>
 	</div>
 </template>
@@ -194,6 +233,7 @@ export default {
         Multiselect
 	},
 	props: {
+
         users: {
             type: Array
         },
@@ -208,22 +248,26 @@ export default {
         },
         can_user_share_uploads: {
 			type: Boolean
-        },
+        },	    
 		folder_id: {
-			type: String
-		},
+			type: Number
+		},    
 		folder_files: {
 			type: Array
 		},
 		can_user_delete_uploads: {
 			type: Boolean
         },
+		csrf_token: {
+			type: String
+		},        
 		api_token: {
 			type: String
 		},
 	},
 	data() {
 		return {
+        
             files: [],
             //selected file
             file : {},
@@ -278,6 +322,15 @@ export default {
 		setMenu: function(event) {
             this.left = (event.clientX) + "px";
             this.top = (event.clientY) + "px";
+        },
+
+        resetUploadAudioFileModal () {
+        
+        
+        },
+        contextMenuAddAudio() {
+            
+            this.$bvModal.show("uploadAudioFile");
         },
         contextmenuViewFile()  {
             let url = this.createPageLink(this.file);
@@ -339,6 +392,12 @@ export default {
             this.value.push(tag)
         },
         //Modal
+        handleUploadAudioOk (bvModalEvt) {
+			// Prevent modal from closing
+			bvModalEvt.preventDefault();
+			// Trigger submit handler
+			this.handleSubmit();
+        },
 		handleOk(bvModalEvt) {
 			// Prevent modal from closing
 			bvModalEvt.preventDefault();

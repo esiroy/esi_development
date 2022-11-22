@@ -165,10 +165,12 @@
 			<div class="container p-0 mb-4">
                 <folder-files-component
                     ref="folderFilesComponent"
+                    :folder_id="this.folderID"
                     :public="this.public"
                     :user="this.user"
                     :users="this.users"
                     :api_token="this.api_token"
+                    :csrf_token="this.folderCurrentToken"
                     :folder_files="this.files"
                     :can_user_upload="this.can_user_upload"
                     :can_user_share_uploads="this.can_user_share_uploads"
@@ -528,7 +530,7 @@ export default {
             displayCreatedAt        : "",
 
 			//Modals Inputs
-			folderID                : "",
+			folderID                : null,
 			folderName              : "",
 			folderDescription       : "",
 

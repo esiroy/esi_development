@@ -1,4 +1,5 @@
 <template>
+
   <div class="container-fluid p-0" v-if="this.folder_id == null">
     <div class="card">
         <div class="card-body">
@@ -25,7 +26,7 @@
                 <tr v-if="!files.length">
                 <td colspan="7" align="center">
                     <h4> Drop files anywhere to upload<br />or</h4>
-                    <label for="file" class="btn btn-lg btn-primary">Select Files</label>
+                    <label for="audio-file" class="btn btn-lg btn-primary">Select Files</label>
                 </td>
                 </tr>
                 <tr v-for="(file, index) in files" :key="file.id">
@@ -69,7 +70,7 @@
                 <div class="btn">
                     <file-upload
                         name="file"
-                        input-id="file"
+                        input-id="audio-file"
                         class="btn btn-primary"
                         extensions="jpeg,jpg,gif,pdf,mp3,wav,png,webp,mp4,mpeg4"
                         accept="image/png,application/pdf,image/gif, audio/mpeg,audio/mpeg3,audio/x-mpeg-3,video/mpeg4,video/mp4,image/jpeg, image/webp"
@@ -149,7 +150,7 @@ export default {
       type: String
     },
     folder_id: {
-      type: String
+      type: Number
     }
   },
   data() {
