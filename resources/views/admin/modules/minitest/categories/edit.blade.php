@@ -124,6 +124,9 @@
                         </div>
 
 
+
+                        <textarea id="content"  name="content"  class="form-control form-control-sm">{{ $item->content ?? '' }}</textarea>
+
                         <div class="row pt-2">
                             <div class="col-6">
                                 <div class="row">
@@ -191,10 +194,38 @@
 
 @section('scripts')
 @parent
+<script src="{{ url('js/ckeditor/ckeditor.js')  }}"></script>
+
 <script type="text/javascript">
-    window.addEventListener('load', function() {
-      
+
+    window.addEventListener('load', function() 
+    {
+        addTextFormatter("content");      
     });
 
+    function addTextFormatter(id) {
+        CKEDITOR.replace( id , {
+            toolbarGroups: [
+                    { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                    { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                    { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                    { name: 'forms', groups: [ 'forms' ] },
+                    
+                    { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                    { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                    { name: 'links', groups: [ 'links' ] },
+                    { name: 'insert', groups: [ 'insert' ] },
+                    
+                    { name: 'styles', groups: [ 'styles' ] },
+                    { name: 'colors', groups: [ 'colors' ] },
+                    { name: 'tools', groups: [ 'tools' ] },
+                    { name: 'others', groups: [ 'others' ] },
+                    
+                ],
+            removePlugins: 'easyimage, exportpdf, cloudservices',
+            extraPlugins: 'html5audio',                        
+            removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
+        });   
+    } 
 </script>
 @endsection

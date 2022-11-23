@@ -62,7 +62,8 @@ class MiniTestCategoriesController extends Controller
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
-        $showMultiple = $request->show_multiple;        
+        $showMultiple = $request->show_multiple;    
+        $content = $request->content;    
 
         //disallow duplicate name
         $validator = Validator::make($request->all(), 
@@ -86,6 +87,7 @@ class MiniTestCategoriesController extends Controller
             'slug'  => str_replace(' ', '_', $name),
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
+            'content'   => $content,
             'show_multiple' => (isset($showMultiple)) ? true : false,
             'valid' => true,
         ]);
@@ -150,8 +152,9 @@ class MiniTestCategoriesController extends Controller
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
         $showMultiple = $request->show_multiple;        
+        $content = $request->content;       
 
-
+       
         //disallow duplicate name
         $validator = Validator::make($request->all(), 
         [
@@ -179,6 +182,7 @@ class MiniTestCategoriesController extends Controller
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
             'show_multiple' => (isset($showMultiple)) ? true : false,
+            'content'   => $content,
             'valid' => true,
         ]);        
 

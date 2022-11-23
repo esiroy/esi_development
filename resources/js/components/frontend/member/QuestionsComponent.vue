@@ -21,9 +21,17 @@
                 <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
 
                 <!-- ADD A MEMBER POINT INFORMATION -->
-                <div id="point-information" class="border p-4 mb-4" v-show="this.started == false">
-                    <span class="font-weight-bold">
-                    
+
+                <div v-show="this.started == false">           
+                    <div v-show="this.category.content !== ''">
+                        <p class="text-primary border border-primary rounded p-2" v-html="this.category.content"></p>
+                    </div>
+                </div>
+
+
+                <div id="point-information" class="border rounded p-4 mb-4" v-show="this.started == false">
+                
+                    <span class="font-weight-bold">                    
                         <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left</span>
                         <span class="text-danger" v-else>  
                             <div v-if="memberinfo['membership'] == 'Monthly'">
