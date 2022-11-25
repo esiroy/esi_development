@@ -11,7 +11,9 @@
   <div class="admin-uploader" v-else>
 
     <div class="card">
+
         <div class="card-header">Upload Files</div>
+
         <div class="card-body table-responsive ">
             <table class="table table-borderless table-hover">
             <thead v-if="files.length">
@@ -68,14 +70,15 @@
                 </div>
 
                 <div class="btn">
+
                     <file-upload
                         name="file"
                         input-id="audio-file"
                         class="btn btn-primary"
-                        extensions="jpeg,jpg,gif,pdf,mp3,wav,png,webp,mp4,mpeg4"
-                        accept="image/png,application/pdf,image/gif, audio/mpeg,audio/mpeg3,audio/x-mpeg-3,video/mpeg4,video/mp4,image/jpeg, image/webp"
+                        extensions="mp3, wav"
+                        accept="audio/mpeg3,audio/x-mpeg-3"
                         v-model="files"
-                        post-action="/uploader/uploadLessonSlideMaterials"
+                        post-action="/uploader/uploadAudio"
                         :headers="{'X-CSRF-TOKEN': this.csrf_token }"
                         :multiple="true"
                         :drop="true"
@@ -83,7 +86,10 @@
                         @input="updatetValue"
                         @input-file="inputFile"
                         @input-filter="inputFilter"
-                        :data="{folder_id: this.folder_id}"
+                        :data="{
+                          file_id: this.file_id,
+                          folder_id: this.folder_id
+                        }"
                         ref="upload">
                         <i class="fa fa-plus"></i>
                         Select files
@@ -149,6 +155,9 @@ export default {
     csrf_token: {
       type: String
     },
+    file_id: {
+      type: Number
+    },
     folder_id: {
       type: Number
     }
@@ -190,12 +199,13 @@ export default {
                 let file = [{
                                 'id'        : newFile.response.id,
                                 'file_name' : newFile.response.file,
+                                'path'      : newFile.response.path,
                                 'size'      : newFile.response.size,
                                 'owner'     : newFile.response.owner,
                             }]
 
                 //let files = this.$root.$refs.folderComponent.files.push(...file);
-                let files = this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files.push(...file);
+                let files = this.$root.$refs.treeListComponent.$refs.folderFilesComponent.audioFiles.push(...file);
 
                 //remove the files
                 this.files.splice(this.files.findIndex(function(i){
@@ -219,7 +229,8 @@ export default {
     inputFilter: function(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         // Filter non-image file
-        if (!/\.(jpeg|jpe|jpg|gif|png|webp|pdf|mp3|mp4|mpeg4|doc|docx)$/i.test(newFile.name)) {
+        if (!/\.(mp3)$/i.test(newFile.name)) {
+          alert ("Please upload only audio files here with (.mp3 extension) ")
           return prevent();
         }
       }

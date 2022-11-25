@@ -248,3 +248,13 @@ Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlide
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList');
 Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
 
+//File Manager
+Route::middleware('auth:api')->post('saveFileNotes', 'API\FileManagerController@saveFileNotes');
+
+//File Upload
+Route::middleware('auth:api')->delete('deleteAudio', 'FileUploadController@deleteAudio');
+
+
+
+
+

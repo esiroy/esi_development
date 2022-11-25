@@ -90,9 +90,11 @@
 
         <div class="uploadAudioFileContainer">
 
-            <b-modal id="uploadAudioFile"
+            <b-modal 
+                id="uploadAudioFile"
                 ref="modalUploadAudioFile"
-                :title="'Upload Audo File'"
+                :title="'Upload Audio File'"
+                size="lg"
                 @show="resetUploadAudioFileModal"
                 @hidden="resetUploadAudioFileModal"
                 @ok="handleUploadAudioOk">
@@ -101,24 +103,115 @@
                         ref="audioUploaderComponent"
                         :users="this.users"
                         :user_can_delete="'true'"
+                        :file_id="this.file.id"
                         :folder_id="this.folder_id"
                         :csrf_token="this.csrf_token"
                     />
+
+
+                    <!--[START] LIST OF AUDIO FILES -->
+                    <div class="card mt-2">
+                        <div class="card-header">Audio Files</div>
+                        <div class="card-body p-0">
+
+
+                            <div v-if="audioFiles.length >= 1">
+ 
+                                <table class="table table-striped table-hover">
+                                   
+                                    <thead >
+                                        <tr>
+                                            <th class="border-0">
+                                                <span class="small font-weight-bold">Filename</span>
+                                            </th>
+                                            <th class="border-0 text-center">
+                                                <span class="small font-weight-bold">Preview</span>
+                                            </th>
+                                            <th class="border-0 text-center">
+                                                <span class="small font-weight-bold">Delete</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        <tr v-for="(audioFile, audioIndex) in audioFiles" :key="audioIndex">
+                                            <td>
+                                                {{ audioFile.file_name }}
+                                            </td>
+                                            <td class="text-center">
+                                                <audio controls>
+                                                    <source :src="'/'+audioFile.path" type="audio/ogg">
+                                                    <source :src="'/'+audioFile.path" type="audio/mpeg">
+                                                    Your browser does not support the audio element.
+                                                </audio>
+                                            </td>
+                                            <td class="text-center">
+                                                <a href="#" @click.prevent="deleteAudioFile(audioIndex, audioFile.id)">
+                                                     <i class="fas fa-trash-alt text-damger"></i>
+                                                </a>
+                                            </td>
+                                        </tr>                                
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div v-else>
+
+                                <div class="text-center p-4">
+                                    No Audio Files Found
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--[end] AUDIO FILES-->
+                                                        
+                  
+                    <template #modal-footer>
+                        <b-button variant="primary" @click="$bvModal.hide('uploadAudioFile')">Close</b-button>                                                      
+                    </template>
+
             </b-modal>
-
-
-     
-
         </div>
+
+        <div class="addNotesContainer">
+
+            <b-modal 
+                id="addNotes"
+                ref="modaladdNotes"
+                :title="'Notes'"               
+                size="lg">
+
+        
+                    <!--[START] LIST OF AUDIO FILES -->
+                    <div class="card mt-2">
+                        <div class="card-header">Notes</div>
+                        <div class="card-body">
+                            <textarea name="notes" id="notes" v-model="this.notes"></textarea>
+                        </div>
+                    </div>
+                    <!--[end] AUDIO FILES-->
+                                    
+                  
+                    <template #modal-footer>
+                        <b-button variant="danger" @click="$bvModal.hide('addNotes')">Cancel</b-button>                    
+                        <b-button variant="success" @click="saveNotes()">Save</b-button>                    
+                    </template>
+
+            </b-modal>
+        </div>
+
+
 
         <div class="card-header">Files</div>
         <div class="card-body table-responsive">
             <table class="table table-borderless table-hover">
-                <thead >
+                <thead>
                     <tr>
                       
-                        <th>File Name</th>
-                        <th>File Size</th>
+                        <th class="small font-weight-bold">File Name</th>
+                        <th class="small font-weight-bold">Audio</th>
+                        <th class="text-center small font-weight-bold">Notes</th>
                         <!--
                         <th>Owner</th>
                         <th>Action</th>
@@ -133,14 +226,42 @@
                     </tr>
                     <tr :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">
                         <td>
-                            <div class="filename">
+                            <div class="filename">                               
                                 <a :href="'/file/'+file.id" target="_blank">{{file.file_name}}</a>
+                                <div class="small text-secondary"> filesize: {{ file.size | formatSize }}</div>
                             </div>
                         </td>
-                        <td style="width:125px">
-                            <div class="filesize">{{ file.size | formatSize }}</div>
+
+                        <td style="width:75px" class="text-center">
+                        
+                            <div class="audiofile small">
+                                <div v-if="file.audioFiles.length >= 1">
+                                    <a href="#" class="text-primary" @click.prevent="viewAudioFiles(index)">
+                                        <i class="fas fa-music"></i>
+                                        ({{ file.audioFiles.length }})
+                                    </a>                                    
+                                </div>
+                                <div v-else>
+                                    <i class="fas fa-music text-muted"></i>             
+                                    ({{ file.audioFiles.length }})
+                                </div>
+                               
+                            </div>
                         </td>
                         
+
+                        <td style="width:75px" class="text-center">   
+                            <div v-if="file.notes.length >= 1">
+                                <a href="#" class="text-primary" @click.prevent="viewNotes(index)">
+                                    <i class="far fa-sticky-note "></i> 
+                                </a> 
+                            </div>
+                            <div v-else>
+                                <i class="far fa-sticky-note text-muted"></i>   
+                            </div>
+                             
+                        </td>
+
                         <!--
                         <td>
                             <div class="dropdown">
@@ -162,9 +283,12 @@
                         </td>
                         -->
                     </tr>
+
+
                 </tbody>
             </table>
         </div>
+
 
         <ul class="right-click-menu" tabindex="-1" v-if="viewMenu" v-bind:style="{ top: this.top, left: this.left }">           
 
@@ -172,6 +296,10 @@
             <li @click="contextMenuAddAudio">
                <i class="fas fa-music mr-2"></i> Add Audio            
             </li>
+
+            <li @click="contextMenuAddNote">
+                <i class="far fa-sticky-note mr-2"></i> Add Note            
+            </li>            
 
             <li @click="contextmenuViewFile" v-if="can_user_share_uploads">
                     <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-eye" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -269,6 +397,12 @@ export default {
 		return {
         
             files: [],
+            notes: [],
+
+            
+            audioFiles: [],
+          
+
             //selected file
             file : {},
             //ID of the selected element
@@ -309,7 +443,7 @@ export default {
                 this.userOptions        = userOptionsList;
             }
             this.getParentID(event.target);
-            this.file = this.files[this.parentIndexID];
+            this.file           = this.files[this.parentIndexID]; 
             this.userValues     = this.file.sharedTo;
             this.viewMenu       = true;
             this.setMenu(event)
@@ -328,9 +462,30 @@ export default {
         
         
         },
-        contextMenuAddAudio() {
-            
+        //BUTTONS
+        viewNotes(index) {        
+            this.notes     = this.files[index]['notes'];
+            this.$bvModal.show("addNotes");
+            this.$nextTick(() => {
+                window.addTextFormatter("notes");
+            });
+        },
+        viewAudioFiles(index) {
+            this.audioFiles     = this.files[index]['audioFiles'];
             this.$bvModal.show("uploadAudioFile");
+        },
+
+        //[START - CONTEXT MENUS]
+        contextMenuAddAudio() {
+            this.audioFiles     = this.files[this.parentIndexID]['audioFiles'];
+            this.$bvModal.show("uploadAudioFile");
+        },
+        contextMenuAddNote() {
+            this.notes  = this.files[this.parentIndexID]['notes'];
+            this.$bvModal.show("addNotes");
+            this.$nextTick(() => {
+                window.addTextFormatter("notes");
+            });
         },
         contextmenuViewFile()  {
             let url = this.createPageLink(this.file);
@@ -474,24 +629,63 @@ export default {
                 console.log(error);
 			});
         },
+        saveNotes() {
+
+            this.notes = window.CKEDITOR.instances['notes'].getData();
+           
+            axios.post("/api/saveFileNotes?api_token=" + this.api_token,  {
+                method: "POST",
+                id: this.file.id,
+                notes: this.notes,
+            }).then(response => {
+
+                this.files[this.parentIndexID]['notes'] = this.notes;
+               this.$bvModal.hide('addNotes')
+                
+            })
+            .catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                console.log(error);
+            });        
+        },
 		deleteFile(index, id) {
             if (confirm("This file will be deleted permanently, are you sure that you want to continue?")) 
             {
 				axios.post("/admin/filemanager/" + id, {
-						_method: "delete",
-						id: id
-					})
-					.then(response => {
-						//console.log(response.data);
-						this.files.splice(index, 1);
-					})
-					.catch(function(error) {
-						// handle error
-						("Error " + error);alert
-						console.log(error);
-					});
+                    _method: "delete",
+                    id: id
+                })
+                .then(response => {
+                    //console.log(response.data);
+                    this.files.splice(index, 1);
+                })
+                .catch(function(error) {
+                    // handle error
+                    alert("Error " + error);
+                    console.log(error);
+                });
 			}
-		}
+		},
+        deleteAudioFile(index, id) {
+            if (confirm("This audio file will be deleted permanently, are you sure that you want to continue?")) 
+            {
+
+               axios.post("/api/deleteAudio?api_token=" + this.api_token,  {
+                    _method: "delete",
+                    id: id
+                })
+                .then(response => {
+                    //console.log(response.data);
+                    this.audioFiles.splice(index, 1);
+                })
+                .catch(function(error) {
+                    // handle error
+                    alert("Error " + error);
+                    console.log(error);
+                });
+			}
+        }
 	},
 	mounted: function() {
 		this.$nextTick(function() {

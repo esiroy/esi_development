@@ -258,13 +258,13 @@ class FileManagerController extends Controller
             try {
 
 
-               
-               $isDeleted = FileManager::delete('storage/uploads/lesson_slide_materials/'.$file->folder_id ."/". basename($file->path));
+               $isDeleted = $file->delete();
 
 
-                if ($isDeleted ) {
+                if ($isDeleted) {
 
-                    $file->delete();
+                   
+                    FileManager::delete('storage/uploads/lesson_slide_materials/'.$file->folder_id ."/". basename($file->path));
 
                     return Response()->json([
                         'success'   => true,

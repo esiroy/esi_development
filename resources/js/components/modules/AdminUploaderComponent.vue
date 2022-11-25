@@ -71,8 +71,8 @@
                         name="file"
                         input-id="file"
                         class="btn btn-primary"
-                        extensions="jpeg,jpg,gif,pdf,mp3,wav,png,webp,mp4,mpeg4"
-                        accept="image/png,application/pdf,image/gif, audio/mpeg,audio/mpeg3,audio/x-mpeg-3,video/mpeg4,video/mp4,image/jpeg, image/webp"
+                        extensions="jpeg,jpg,gif,png"
+                        accept="image/png,image/gif,image/jpeg"
                         v-model="files"
                         post-action="/uploader/uploadLessonSlideMaterials"
                         :headers="{'X-CSRF-TOKEN': this.csrf_token }"
@@ -187,10 +187,12 @@ export default {
 
                 //Add to the $ref='folderComponent' - uploader/show.blade.php
                 let file = [{
-                                'id'        : newFile.response.id,
-                                'file_name' : newFile.response.file,
-                                'size'      : newFile.response.size,
-                                'owner'     : newFile.response.owner,
+                                'id'          : newFile.response.id,
+                                'file_name'   : newFile.response.file,
+                                'size'        : newFile.response.size,
+                                'owner'       : newFile.response.owner,
+                                'notes'       : newFile.response.notes,
+                                'audioFiles'  : newFile.response.audioFiles,
                             }]
 
                 //let files = this.$root.$refs.folderComponent.files.push(...file);

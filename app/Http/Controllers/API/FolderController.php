@@ -17,7 +17,9 @@ use Auth;
 use App\Models\User;
 use App\Models\Folder;
 use App\Models\File;
+use App\Models\FileAudio;
 use App\Models\Permalink;
+
 
 class FolderController extends Controller
 {
@@ -120,6 +122,7 @@ class FolderController extends Controller
         foreach ($files as $key => $file) {
             $files[$key]['sharedTo'] = $file->shared; 
             $files[$key]['owner']    = User::find($file->user_id);
+               $files[$key]['audioFiles'] = FileAudio::where('file_id', $file->id)->get();
         }
         
         return Response()->json([
@@ -144,6 +147,8 @@ class FolderController extends Controller
         foreach ($files as $key => $file) {
             $files[$key]['sharedTo'] = $file->shared; 
             $files[$key]['owner']    = User::find($file->user_id);
+            //NEW
+            $files[$key]['audioFiles']  = FileAudio::where('file_id', $file->id)->get();
         }
 
         return Response()->json([

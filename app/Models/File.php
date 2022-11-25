@@ -8,21 +8,8 @@ use Gate;
 
 class File extends Model
 {
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'user_id',
-        'folder_id', 
-        'file_name', 
-        'upload_name', 
-        'size', 
-        'path',
-        'type',
-        'privacy',
-    ];
+    
+    protected $guarded = array('created_at', 'updated_at');
 
     /**
      * The attributes that should be hidden for arrays.

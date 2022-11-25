@@ -233,6 +233,10 @@ Route::post('upload/tutor/file', 'FileUploadController@tutorUpload');
 
 Route::post('uploader/uploadLessonSlideMaterials', 'FileUploadController@uploadLessonSlideMaterials');
 
+Route::post('uploader/uploadAudio', 'FileUploadController@uploadAudio');
+
+
+
 /* Download Controller*/
 //Route::resource('download', 'DownloadController');
 Route::get('download/{path}', 'DownloadController@downloadLessonMaterial');
