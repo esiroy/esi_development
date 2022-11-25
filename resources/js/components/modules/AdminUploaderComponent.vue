@@ -220,7 +220,8 @@ export default {
     inputFilter: function(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         // Filter non-image file
-        if (!/\.(jpeg|jpe|jpg|gif|png|webp|pdf|mp3|mp4|mpeg4|doc|docx)$/i.test(newFile.name)) {
+        if (!/\.(jpeg|jpg|gif|png)$/i.test(newFile.name)) {
+          alert ("Please upload only images here")
           return prevent();
         }
       }

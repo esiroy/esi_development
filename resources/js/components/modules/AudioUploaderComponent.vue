@@ -50,12 +50,12 @@
                             Action
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a :class="{'dropdown-item small': true, disabled: !file.active}" href="#" @click.prevent="file.active ? $refs.upload.update(file, {error: 'cancel'}) : false">Cancel</a>
-                            <a class="dropdown-item small" href="#" v-if="file.active" @click.prevent="$refs.upload.update(file, {active: false})">Abort</a>
-                            <a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing' && $refs.upload.features.html5" @click.prevent="$refs.upload.update(file, {active: true, error: '', progress: '0.00'})">Retry upload</a>
-                            <a :class="{'dropdown-item small': true, disabled: file.success || file.error === 'compressing'}" href="#" v-else @click.prevent="file.success || file.error === 'compressing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
+                            <a :class="{'dropdown-item small': true, disabled: !file.active}" href="#" @click.prevent="file.active ? $refs.audioUploader.update(file, {error: 'cancel'}) : false">Cancel</a>
+                            <a class="dropdown-item small" href="#" v-if="file.active" @click.prevent="$refs.audioUploader.update(file, {active: false})">Abort</a>
+                            <a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing' && $refs.audioUploader.features.html5" @click.prevent="$refs.audioUploader.update(file, {active: true, error: '', progress: '0.00'})">Retry upload</a>
+                            <a :class="{'dropdown-item small': true, disabled: file.success || file.error === 'compressing'}" href="#" v-else @click.prevent="file.success || file.error === 'compressing' ? false : $refs.audioUploader.update(file, {active: true})">Upload</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item small" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
+                            <a class="dropdown-item small" href="#" @click.prevent="$refs.audioUploader.remove(file)">Remove</a>
                         </div>
                     </div>
 
@@ -65,12 +65,12 @@
             </table>
 
             <div class="upload">
-                <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
+                <div v-show="$refs.audioUploader && $refs.audioUploader.dropActive" class="drop-active">
                     <h3>Drop files to upload</h3>
                 </div>
 
                 <div class="btn">
-
+                   
                     <file-upload
                         name="file"
                         input-id="audio-file"
@@ -90,16 +90,17 @@
                           file_id: this.file_id,
                           folder_id: this.folder_id
                         }"
-                        ref="upload">
+                        ref="audioUploader">
+                        
                         <i class="fa fa-plus"></i>
                         Select files
                     </file-upload>
 
-                    <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                    <button type="button" class="btn btn-success" v-if="!$refs.audioUploader || !$refs.audioUploader.active" @click.prevent="$refs.audioUploader.active = true">
                     <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
                     </button>
 
-                    <button type="button" class="btn btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                    <button type="button" class="btn btn-danger" v-else @click.prevent="$refs.audioUploader.active = false">
                     <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
                     </button>
             
