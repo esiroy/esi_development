@@ -26,7 +26,7 @@ class AddNotesToFilesTable extends Migration
     public function down()
     {
         Schema::table('files', function (Blueprint $table) {
-            $table->longText('notes');
+            $table->dropColumn('notes');
         });
     }
 }

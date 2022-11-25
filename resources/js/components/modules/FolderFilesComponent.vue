@@ -209,6 +209,7 @@
                 <thead>
                     <tr>
                       
+                        <th class="small font-weight-bold"> </th>
                         <th class="small font-weight-bold">File Name</th>
                         <th class="small font-weight-bold">Audio</th>
                         <th class="text-center small font-weight-bold">Notes</th>
@@ -218,13 +219,22 @@
                         -->
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-if="!files.length">
-                        <td colspan="8" align="center">
+
+                <tbody v-if="!files.length">
+                    <tr>
+                        <td colspan="3" align="center">
                             <h4>No Files</h4>
                         </td>
                     </tr>
+                </tbody>
+
+                <draggable v-else :list="files" @end="dragging = false; saveOrder()" :tag="'tbody'" handle=".handle">
+                   
                     <tr :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">
+                        <span class="handle">
+                            <b-icon-list font-scale="2"></b-icon-list>
+                        </span>
+
                         <td>
                             <div class="filename">                               
                                 <a :href="'/file/'+file.id" target="_blank">{{file.file_name}}</a>
@@ -262,30 +272,10 @@
                              
                         </td>
 
-                        <!--
-                        <td>
-                            <div class="dropdown">
-                                <button class="btn btn-secondary btn-sm dropdown-toggle "
-                                    type="button"
-                                    id="dropdownMenuButton"
-                                    data-toggle="dropdown"
-                                    aria-haspopup="true"
-                                    aria-expanded="false"
-                                >Action</button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <a class="dropdown-item small" :href="'/file/'+file.id" target="_blank">View File</a>
-                                    <a class="dropdown-item small" :href="createLink(file)" :download="file.file_name">Download File</a>
-                                    <a class="dropdown-item small" v-on:click="copyFile(index, file)">Copy URL</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item small" v-on:click="deleteFile(index, file.id)" v-if="(can_user_delete_uploads === true)">Delete</a>
-                                </div>
-                            </div>
-                        </td>
-                        -->
                     </tr>
+                </draggable>
 
 
-                </tbody>
             </table>
         </div>
 
@@ -347,14 +337,30 @@
 	</div>
 </template>
 
-<style>
+<style scope>
+    .flip-list-move {
+        transition: transform 0.5s;
+    }
+    .no-move {
+        transition: transform 0s;
+    }
+    .ghost {
+        opacity: 0.5;
+        background: #c8ebfb;
+    }
+    .handle {
+        float: left;
+    }
 </style>
 
 <script>
 import Multiselect from 'vue-multiselect'
 import VueClipboard from 'vue-clipboard2'
+import draggable from 'vuedraggable'
+
 VueClipboard.config.autoSetContainer = true
 Vue.use(VueClipboard)
+Vue.use(draggable)
 
 export default {
 	components: {
@@ -457,11 +463,44 @@ export default {
             this.left = (event.clientX) + "px";
             this.top = (event.clientY) + "px";
         },
+        makeToast(message = null, append = false, variant = null) {       
+            this.$bvToast.toast(message, {
+                title: 'Message',
+                autoHideDelay: 5000,
+                appendToast: append,
+                variant: variant
+            })
+        },
+        saveOrder() {
+           console.log("save order?", this.files)
+            axios.post("/api/saveFileOrder?api_token=" + this.api_token, 
+            {
+                method         : "POST",
+                files          : this.files,
+             
+            })
+            .then(response => 
+            {
+                if (response.data.success === false) {
+                    this.makeToast (response.data.message, false, 'danger')
+                } else {
+                  
+                    this.makeToast (response.data.message, false, 'success')
+                   //console.log("done reorder", this.files);
+                }
+			}).catch(function(error) {
+                // handle error
+                alert("Error " + error);
+                console.log(error);
+			});
+        },
 
         resetUploadAudioFileModal () {
         
         
         },
+
+
         //BUTTONS
         viewNotes(index) {        
             this.notes     = this.files[index]['notes'];

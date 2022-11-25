@@ -254,7 +254,8 @@ Route::middleware('auth:api')->post('saveFileNotes', 'API\FileManagerController@
 //File Upload
 Route::middleware('auth:api')->delete('deleteAudio', 'FileUploadController@deleteAudio');
 
-
+//File Ordering
+Route::middleware('auth:api')->post('/saveFileOrder', 'API\FileController@saveFileOrder')->name('saveFileOrder');
 
 
 

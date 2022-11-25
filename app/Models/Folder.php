@@ -61,8 +61,8 @@ class Folder extends Model
      * @return  files of the folder.
      */
     public function files()
-    {
-        return $this->hasMany('App\Models\File');
+    {        
+        return $this->hasMany('App\Models\File')->orderBy('order_id', 'ASC');
     }
 
 

@@ -116,13 +116,14 @@ class FolderController extends Controller
     {
         $folderID   = $request['folder_id'];
         $folder     = Folder::find($folderID);
+        
         $files      = $folder->files;
 
         //add shared
         foreach ($files as $key => $file) {
             $files[$key]['sharedTo'] = $file->shared; 
             $files[$key]['owner']    = User::find($file->user_id);
-               $files[$key]['audioFiles'] = FileAudio::where('file_id', $file->id)->get();
+            $files[$key]['audioFiles'] = FileAudio::where('file_id', $file->id)->get();
         }
         
         return Response()->json([
