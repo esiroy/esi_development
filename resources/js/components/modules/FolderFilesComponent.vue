@@ -204,15 +204,15 @@
 
 
         <div class="card-header">Files</div>
-        <div class="card-body table-responsive">
-            <table class="table table-borderless table-hover">
+        <div class="card-body p-0 table-responsive">
+            <table class="table table-hover">
                 <thead>
                     <tr>
                       
-                        <th class="small font-weight-bold"> </th>
-                        <th class="small font-weight-bold">File Name</th>
-                        <th class="small font-weight-bold">Audio</th>
-                        <th class="text-center small font-weight-bold">Notes</th>
+                        <th class="small font-weight-bold border-0"> </th>
+                        <th class="small font-weight-bold border-0">File Name</th>
+                        <th class="small font-weight-bold border-0">Audio</th>
+                        <th class="text-center  font-weight-bold border-0">Notes</th>
                         <!--
                         <th>Owner</th>
                         <th>Action</th>
@@ -222,7 +222,7 @@
 
                 <tbody v-if="!files.length">
                     <tr>
-                        <td colspan="3" align="center">
+                        <td colspan="4" align="center">
                             <h4>No Files</h4>
                         </td>
                     </tr>
@@ -231,9 +231,12 @@
                 <draggable v-else :list="files" @end="dragging = false; saveOrder()" :tag="'tbody'" handle=".handle">
                    
                     <tr :id="index" v-on:click.right="openMenu" v-for="(file, index) in files" :key="index">
-                        <span class="handle">
-                            <b-icon-list font-scale="2"></b-icon-list>
-                        </span>
+
+                        <td>
+                            <span class="handle">
+                                <b-icon-list font-scale="2"></b-icon-list>
+                            </span>
+                        </td>
 
                         <td>
                             <div class="filename">                               
@@ -349,7 +352,8 @@
         background: #c8ebfb;
     }
     .handle {
-        float: left;
+        vertical-align: middle;
+        display: table-cell;
     }
 </style>
 

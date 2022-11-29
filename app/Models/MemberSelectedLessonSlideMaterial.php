@@ -23,8 +23,8 @@ class MemberSelectedLessonSlideMaterial extends Model
     public function saveSelectedLesson($userID, $lessonScheduleID, $selectedOption)
     {
         $item = MemberSelectedLessonSlideMaterial::where('user_id', $userID )
-                                            ->where('schedule_id', $lessonScheduleID)                                            
-                                            ->first(); 
+                                                    ->where('schedule_id', $lessonScheduleID)                                            
+                                                    ->first(); 
         if ($item) {
         
             $item->update([

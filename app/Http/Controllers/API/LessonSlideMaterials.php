@@ -78,16 +78,16 @@ class LessonSlideMaterials extends Controller
     }
 
 
-    public function saveSelectedLessonSlideMaterial(Request $request, MemberSelectedLessonSlideMaterial $MemberSelectedLessonSlideMaterial) 
+    public function saveSelectedLessonSlideMaterial(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) 
     {
-        $userID             = Auth::user()->id;
+        $userID             = $request->userID;
         $lessonScheduleID   = $request->lessonID;
         $selectedOption     = $request->selectedOption;
 
         if ($selectedOption['value'] !== null) 
         {
 
-            $MemberSelectedLessonSlideMaterial->saveSelectedLesson($userID, $lessonScheduleID, $selectedOption);   
+            $memberSelectedLessonSlideMaterial->saveSelectedLesson($userID, $lessonScheduleID, $selectedOption);   
 
             return Response()->json([
                 "success"       => true,

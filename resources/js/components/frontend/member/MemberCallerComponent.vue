@@ -170,6 +170,8 @@
             },
             selectLesson(tutor, member, reservation) 
             {              
+
+            
                 this.tutor              = JSON.parse(tutor);
                 this.member             = JSON.parse(member);
                 this.reservation        = JSON.parse(reservation);            
@@ -177,8 +179,14 @@
                 //IMPORTANT: SELECTED ID IS FROM THE HTML FORM
                 this.selectedLessonID = this.reservation.schedule_id;
 
-                console.log(this.selectedLessonID );
+                //console.log(this.selectedLessonID );
+
+                console.log(this.member)
+
+
                 this.$bvModal.show('modalSelectLesson');
+
+                
             },
             getOptionSelected(targetID) 
             {
@@ -192,6 +200,8 @@
             },
             saveOptionSelected(targetID) {
             
+
+               
                 let select = document.getElementById(targetID);
                 let selectedIndex = select.selectedIndex;
                 this.selectedOption = this.lessonOptions[selectedIndex];                
@@ -199,6 +209,7 @@
                 axios.post("/api/saveSelectedLessonSlideMaterial?api_token=" + this.api_token, 
                 {
                     method          : "POST",
+                    userID          : this.member.userid,
                     lessonID        : this.selectedLessonID,
                     selectedOption  : this.selectedOption
 
@@ -590,7 +601,7 @@
 
         <!-- SELECT LESSON -->
         <div id="select-lesson-container" class="container-fluid">
-             <b-modal id="modalSelectLesson"  title="Lesson" size="xl" @show="getLessonsList" >
+             <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList" >
                 Select Lesson 
                 <b-form-select id="lessonSelector" v-model="lessonSelected" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
 
