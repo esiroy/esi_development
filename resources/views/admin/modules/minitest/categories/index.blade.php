@@ -234,7 +234,21 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                       
+                        </div>           
+
+                        <div class="row pt-2">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-4 small pr-0">
+                                        <label for="time_limit" class="px-0 col-md-12 col-form-label">                                        
+                                        Randomized Questions? <div class="float-right">:</div></label>
+                                    </div>
+                                    <div class="col-2 pt-2 mr-0">                                       
+                                        <input type="checkbox" name="randomized_questions" value="true">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                
                         
 
                         
