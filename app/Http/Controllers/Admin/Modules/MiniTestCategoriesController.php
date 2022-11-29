@@ -10,7 +10,7 @@ use App\Models\MiniTestCategoryType;
 use Auth, Gate, Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Str;
 
 class MiniTestCategoriesController extends Controller
 {
@@ -178,7 +178,7 @@ class MiniTestCategoriesController extends Controller
         $updated = $category->update([
             'question_category_type_id' => $request->parent_id,
             'name'  => $name,
-            //'slug'  => str_replace(' ', '-', $name),
+            'slug'  => Str::of($name)->slug('-'),
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
             'show_multiple' => (isset($showMultiple)) ? true : false,
