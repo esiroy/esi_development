@@ -138,7 +138,7 @@
 
                 <div class="py-4">
                     <button class="btn btn-primary" v-on:click="getPrevQuestion()" v-show="(count - 1) >= 1"> Previous {{ count - 1 }} </button>     
-                    <button class="btn btn-primary" v-on:click="getNextQuestion()" v-show="count < this.questionsLength"> Next {{ count }} </button>
+                    <button class="btn btn-primary" v-on:click="getNextQuestion()" v-show="count < this.questionsLength"> Next {{ count + 1}} </button>
                     <button class="btn btn-success" v-on:click="checkSubmittedAnswers()" v-show="count >= this.questionsLength"> Submit Answers </button>   
                 </div>          
                 
