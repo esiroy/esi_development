@@ -178,7 +178,7 @@ class MiniTestCategoriesController extends Controller
         $updated = $category->update([
             'question_category_type_id' => $request->parent_id,
             'name'  => $name,
-            'slug'  => str_replace(' ', '_', $name),
+            //'slug'  => str_replace(' ', '-', $name),
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
             'show_multiple' => (isset($showMultiple)) ? true : false,
