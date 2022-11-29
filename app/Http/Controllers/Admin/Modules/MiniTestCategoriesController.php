@@ -63,6 +63,7 @@ class MiniTestCategoriesController extends Controller
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
         $showMultiple = $request->show_multiple;    
+        $randomizedQuestions = $request->randomized_questions;    
         $content = $request->content;    
 
         //disallow duplicate name
@@ -89,6 +90,7 @@ class MiniTestCategoriesController extends Controller
             'time_limit' => $timeLimit,
             'content'   => $content,
             'show_multiple' => (isset($showMultiple)) ? true : false,
+            'randomized_questions' => (isset($randomizedQuestions)) ? true : false,
             'valid' => true,
         ]);
 
@@ -151,7 +153,8 @@ class MiniTestCategoriesController extends Controller
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
-        $showMultiple = $request->show_multiple;        
+        $showMultiple = $request->show_multiple;       
+        $randomizedQuestions = $request->randomized_questions;         
         $content = $request->content;       
 
        
@@ -182,6 +185,7 @@ class MiniTestCategoriesController extends Controller
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
             'show_multiple' => (isset($showMultiple)) ? true : false,
+            'randomized_questions' => (isset($randomizedQuestions)) ? true : false,
             'content'   => $content,
             'valid' => true,
         ]);        

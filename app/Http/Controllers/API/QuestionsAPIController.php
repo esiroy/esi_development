@@ -4,12 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
+use App\Models\MiniTestCategory;
 use App\Models\MiniTestQuestion;
 use App\Models\MiniTestChoice;
 use App\Models\MiniTestResult;
 use App\Models\MiniTestSetting;
 use App\Models\MemberMiniTestSetting;
+
+
 use Auth;
 
 class QuestionsAPIController extends Controller
@@ -27,10 +29,17 @@ class QuestionsAPIController extends Controller
 
         $category_id = $request->category_id;
 
+        $category = MiniTestCategory::find($category_id);
 
-        $questions = MiniTestQuestion::where('category_id', $category_id)
-                            //->where('valid', true)->get();
-                            ->where('valid', true)->inRandomOrder()->get();
+        if ($category->randomized_questions == true) 
+        {
+            $questions = MiniTestQuestion::where('category_id', $category_id)->where('valid', true)->inRandomOrder()->get();
+        } else {
+            $questions = MiniTestQuestion::where('category_id', $category_id)->where('valid', true)->orderBy('id', 'ASC')->get();        
+        }
+
+
+
 
 
         //@get how many results submitted for past seven days
