@@ -153,7 +153,8 @@
             </div>
 
 
-            <div id="audio-container" class="d-inline-block bg-darkblue">            
+            <div id="audio-container" class="d-inline-block bg-darkblue">
+                      
                 <div id="prevAudio" class="d-inline-block px-2">
                     <i class="fa fa-fast-backward" aria-hidden="true"></i>
                 </div>  
@@ -166,6 +167,8 @@
                     <i class="fa fa-fast-forward" aria-hidden="true"></i>
                 </div>
 
+
+    
                 <div id="audio-player" class="text-white p-1 d-inline-block">
                     <audio controls>
                         <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/ogg">
@@ -174,20 +177,6 @@
                     </audio>
                 </div>
             </div>
-
-
-
-                <!--
-                    <div :id="'editor'+slide"  v-show="slide == currentSlide" v-for="slide in slides" :key="slide" style="overflow:hidden; clear:both">              
-                        
-                        <canvas :ref="'canvas'+slide"
-                            :id="'canvas'+slide"
-                            :width="canvas_width"
-                            :height="canvas_height"
-                            style="border:7px solid #0076be;height:100%"  
-                        ></canvas>
-                    </div>
-                -->
             
             <div id="slide-container"></div>
 
