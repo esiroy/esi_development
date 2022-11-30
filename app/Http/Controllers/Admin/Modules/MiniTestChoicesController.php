@@ -141,7 +141,11 @@ class MiniTestChoicesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update($category_id, $question_id, $choice_id, MiniTestChoice $miniTestChoice, Request $request)
-    {
+    {    
+
+            
+
+      
 
         abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -161,23 +165,44 @@ class MiniTestChoicesController extends Controller
 
                     $answerKey = MiniTestAnswerKey::where('question_id', $question_id)->first();
 
-                    if ($answerKey) {
+                    if ($answerKey) 
+                    {
+                        //@todo: find if it has multi correct
+                        $category = MiniTestCategory::find($category_id);
 
+                        if ($category->multiple_correct_answers == true) {
                         
 
-                        $answerKey->update([
-                            'choice_id' => $choice->id,
-                        ]);
+                            if ($request->correct == true) 
+                            {                                                        
+                                MiniTestAnswerKey::create([
+                                    'question_id' => $question_id,
+                                    'choice_id' => $choice->id,
+                                ]);
+                            }                                                    
+                        } else {
+                            $answerKey->update([
+                                'choice_id' => $choice->id,
+                            ]);
 
+                        }
                     } else {
+
                         MiniTestAnswerKey::create([
                             'question_id' => $question_id,
                             'choice_id' => $choice->id,
                         ]);
                     }
 
-                }
+                } else {
+                
+                    $category = MiniTestCategory::find($category_id);
 
+                    if ($category->multiple_correct_answers == true) {
+                        MiniTestAnswerKey::where('question_id', $question_id)->where('choice_id', $choice->id)->delete();
+                    }
+
+                }
                 return redirect()->route('admin.minitest.choices.index', ['category_id' => $category_id, 'question_id' => $question_id, 'updated_choice_id' => $choice->id])->with('message', 'Choice updated successfully!');
 
             } else {

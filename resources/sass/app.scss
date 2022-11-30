@@ -1,74 +1,51 @@
 // Fonts
 //@import url('https://fonts.googleapis.com/css?family=Nunito');
-
 //Custom Colors
 @import "colors";
-
-
 // Variables
 @import "variables";
-
-
 // Bootstrap
 @import "~bootstrap/scss/bootstrap";
 @import "~@fortawesome/fontawesome-free/scss/fontawesome";
 @import "~@fortawesome/fontawesome-free/scss/regular";
 @import "~@fortawesome/fontawesome-free/scss/solid";
 @import "~@fortawesome/fontawesome-free/scss/brands";
-
-
-
 // Datatables
 @import "datatables/dataTables.bootstrap4.css";
 @import "datatables/buttons.bootstrap4.css";
 @import "datatables/fixedColumns.dataTables.css";
 @import "datatables/select.dataTables.css";
 @import "select2/select2.css";
-
-
 @import 'node_modules/bootstrap/scss/bootstrap';
 @import 'node_modules/bootstrap-vue/src/index.scss';
-
-
 // Custom Styles for Bootstrap Elements (Overrides)
 @import "custom";
-
-
 //E-Success Boostrap Styles
 @import "esi/styles";
-
 // User Login Styles
 @import "esi/login";
-
-
 // Media Queries
 @import "mediaquery/esi.scss";
-
 // Media Queries
 //@import "mediaquery/generic.scss";
-
 // Media Queries
 //@import "mediaquery/iphone.scss";
-
-
-
 //validations
-
 .input {
     background-color: #f7f7f7;
     border: 1px solid rgb(199, 199, 199);
     padding: 0.3rem 0.5rem;
     border-radius: 2px;
     .hasError & {
-      border-color: red;
+        border-color: red;
     }
-  }
-  
-  .hasError label {
+}
+
+.hasError label {
     color: red;
-  }
-  
-  .button {
+}
+
+.button {
     background: #3ab409;
     padding: 0.5rem 1rem;
     color: white;
@@ -79,8 +56,7 @@
     border-bottom: 2px solid #2e9106;
     transition: 0.3s;
     &:hover {
-      background: #2e9107;
-      border-bottom: 2px solid #226906;
+        background: #2e9107;
+        border-bottom: 2px solid #226906;
     }
-  }
-  
+}

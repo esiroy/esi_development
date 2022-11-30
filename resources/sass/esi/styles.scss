@@ -500,3 +500,9 @@ a.red:hover {
         opacity: 1;
     }
 }
+
+.breadcrumb-item.active a p,
+.breadcrumb-item.active p {
+    margin-top: 0 !important;
+    display: inline-table !important;
+}
