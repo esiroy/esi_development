@@ -143,9 +143,6 @@ class MiniTestChoicesController extends Controller
     public function update($category_id, $question_id, $choice_id, MiniTestChoice $miniTestChoice, Request $request)
     {    
 
-            
-
-      
 
         abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -163,31 +160,16 @@ class MiniTestChoicesController extends Controller
                 
                 if (isset($request->correct)) {
 
-                    $answerKey = MiniTestAnswerKey::where('question_id', $question_id)->first();
+                    $answerKey = MiniTestAnswerKey::where('question_id', $question_id)
+                                                    ->where('choice_id', $choice->id)
+                                                    ->first();
 
                     if ($answerKey) 
                     {
-                        //@todo: find if it has multi correct
-                        $category = MiniTestCategory::find($category_id);
-
-                        if ($category->multiple_correct_answers == true) {
-                        
-
-                            if ($request->correct == true) 
-                            {                                                        
-                                MiniTestAnswerKey::create([
-                                    'question_id' => $question_id,
-                                    'choice_id' => $choice->id,
-                                ]);
-                            }                                                    
-                        } else {
-                            $answerKey->update([
-                                'choice_id' => $choice->id,
-                            ]);
-
-                        }
+                        $answerKey->update([
+                            'choice_id' => $choice->id,
+                        ]);
                     } else {
-
                         MiniTestAnswerKey::create([
                             'question_id' => $question_id,
                             'choice_id' => $choice->id,

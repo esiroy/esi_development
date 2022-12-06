@@ -34,6 +34,10 @@ use Config;
 use Mail;
 use App\Models\LessonMailer;
 
+use App\Models\MiniTestAnswerKey;
+
+
+
 use App\Mail\CustomerSupport as CustomerSupportMail;
 use App\Models\PhpSpreadsheetFontStyle as Style;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -50,15 +54,24 @@ class dummyController extends Controller
     }
 
 
-    public function index(Request $request)  
+    public function index(MiniTestAnswerKey $miniTestAnswerKey, Request $request)  
     {
 
 
-        $string =  " WordCounter? you'll be safe.... here...................";
+        $questions = $miniTestAnswerKey->getQuestionsByCategory($request->catID);
 
-        $wordCount = countWords(strip_tags_content($string));
+        foreach($questions as $question) 
+        {
 
-         echo $wordCount;
+            echo  "<BR><BR><BR>Q.". $question->id ."". $question->question ."<BR>";
+
+            $choices = $miniTestAnswerKey->getCorrectChoicesIDs($question->id);
+
+           echo $choices;
+        }
+
+
+        
     
     }
 

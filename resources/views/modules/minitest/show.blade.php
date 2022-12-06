@@ -42,8 +42,13 @@
                         <div class="card-body">
 
 
+                        <?php 
+                            /*is multiple correct answer allowed? {{  ($category->multiple_correct_answers == true) ? 'true': 'false' }}*/
+                        ?>
+
                         <questions-component 
                             :multiple="{{ ($category->show_multiple == true) ? 'true': 'false' }}"
+                            :multiple_correct_answer="{{ ($category->multiple_correct_answers == true) ? 'true': 'false' }}"
                             :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
                             :category="{{ $category }}"
                             api_token="{{ Auth::user()->api_token }}" 
