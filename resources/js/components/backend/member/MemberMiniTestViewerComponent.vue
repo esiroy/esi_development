@@ -116,7 +116,13 @@
 
 										<div class="font-weight-bold">
 											Correct Answer: 
-											<span class="text-orange">{{ row.correct_answer }}</span>
+											<span class="text-orange" v-if="Array.isArray(row.correct_answer)">
+												{{ row.correct_answer.join(", ")}}
+											</span>
+											<span v-else class="text-orange">
+												{{ row.correct_answer }}
+											</span>
+
 										</div>
 										
 
@@ -128,9 +134,14 @@
 										<div v-else class="pt-2">
 											<div class="font-weight-bold">
 												Submitted Answer: 
-												<span class="text-primary">
-													{{ row.your_answer }} 
+
+												<span class="text-primary" v-if="Array.isArray(row.your_answer)">
+													{{ row.your_answer.join(", ")}}
 												</span>
+												<span v-else class="text-primary">
+													{{ row.your_answer }}
+												</span>
+
 											</div>                                       
 											<div v-if="row.is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
 											<div v-else-if="row.is_correct == false" class="text-danger font-weight-bold"> <i class="fa fa-times" aria-hidden="true"></i> Incorrect </div>

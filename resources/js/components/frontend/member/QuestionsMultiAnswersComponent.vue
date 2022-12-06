@@ -173,11 +173,7 @@
 
                     <div v-for="(result, resultKey) in results" :key="'result_'+resultKey" class="mb-3">
 
-                        <!--
-                        <div class="font-weight-bold">
-                           {{ resultKey + 1 }}{{"."}} {{ result.question }} 
-                        </div>
-                        -->
+                      
 
                         <span class="font-weight-bold float-left pr-1 small">{{ (resultKey + 1)  +"." }} </span>
                         <span class="question font-weight-bold d-inline-block" v-html="formatter(result.question)"></span>
@@ -185,10 +181,19 @@
                         <div class="answer-container ml-3 mt-2">
 
                             <div class="font-weight-bold">
-                                Correct Answer: 
+
+                                Correct Answer:
+
                                 <span class="text-orange">
-                                    {{ result.correct_answer }}
+                                 {{ result.correct_answer.join(", ")}}
                                 </span>
+
+                                <!--
+                                <span class="text-orange" v-for="(correct_answer, correctAnswerKey ) in result.correct_answer" :key="'correct_answer_'+correctAnswerKey">                                    
+                                    {{ correct_answer }}
+                                </span>
+                                -->
+
                             </div>
 
                             
@@ -197,12 +202,19 @@
                             </div>
 
                             <div v-else class="pt-2">
+
                                 <div class="font-weight-bold">
-                                    Your Answer: 
+                                    Your Answer:
                                     <span class="text-primary">
-                                        {{ result.your_answer }} 
+                                         {{ result.your_answer.join(", ")}}
                                     </span>
-                                </div>                                       
+                                    <!--
+                                    <span class="text-primary" v-for="(your_answer, yourAnswerKey ) in result.your_answer" :key="'correct_answer_'+yourAnswerKey">
+                                        {{ your_answer }} 
+                                    </span>
+                                    -->
+                                </div>        
+                                                               
                                 <div v-if="result.is_correct == true" class="text-success font-weight-bold"> <i class="fa fa-check" aria-hidden="true"></i> Correct </div>
                                 <div v-else-if="result.is_correct == false" class="text-danger font-weight-bold"> <i class="fa fa-times" aria-hidden="true"></i> Incorrect </div>
                             </div>

@@ -60,6 +60,9 @@ class MiniTestChoicesController extends Controller
     public function store($category_id, $question_id, Request $request)
     {
 
+       
+        
+
         abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $created = MiniTestChoice::create([
@@ -68,11 +71,14 @@ class MiniTestChoicesController extends Controller
             'valid' => true,
         ]);
 
+     
+
         if ($created) {
             
             if (isset($request->correct)) {
 
-                $answerKey = MiniTestAnswerKey::where('question_id', $question_id)->first();
+                $answerKey = MiniTestAnswerKey::where('question_id', $question_id)
+                                                ->where('choice_id', $created->id)->first();
 
                 if ($answerKey) {
 

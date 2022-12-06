@@ -280,28 +280,48 @@ class AnswersMultiAPIController extends Controller
             $selected_choices       =  $answer['selected_choices_id'];
 
             //Loop through answer and counter check from answer key
+            $correctAnswerArray = [];
+
             $hasCorrrectAnswer = false;
             
             $correctAnswers = $miniTestAnswerKey->getQuestionAnswersKeys($answer_question_id);
-
-
             $correctAnswersTextArray = $miniTestAnswerKey->getCorrectChoicesText($answer_question_id);
 
-            foreach ($selected_choices as $selected_choice) 
+            foreach ($selected_choices as $selectedIndex => $selected_choice) 
             {            
+                $correctAnswerArray[$selectedIndex] = false;
+
                 foreach ($correctAnswers as $correctAnswer) 
                 { 
-                    if ($selected_choice == $correctAnswer->choice_id) {                    
-                        $hasCorrrectAnswer = true;                    
-                    }
+                    if ($selected_choice == $correctAnswer->choice_id) {                                            
+                        $correctAnswerArray[$selectedIndex] = true;
+                    } 
                 }               
             }
+
+            //@do: the correct answers count should be the same as selected count
+            //@note: if not it is not correct automatically is incorrect
+        
+            if ( count($selected_choices) == count($correctAnswers)) {
             
+                //@note: user can't mix correct answers with wrong answers
+                //@do: check if correct answers in array is all true else return false,
+                if (in_array(false, $correctAnswerArray)) {
+                    $hasCorrrectAnswer = false;  
+                } else {
+                    $hasCorrrectAnswer = true;                  
+                }
+
+            } else {
+            
+                 $hasCorrrectAnswer = false;  
+            }
+
+
+
             if ($hasCorrrectAnswer == true) 
             {
                 $correctAnswerCount++;
-            
-            
                 $results[] = [
                     'question'              => $question,
                     "question_id"           => $answer['question_id'],
@@ -319,27 +339,23 @@ class AnswersMultiAPIController extends Controller
                     'question'              => $question,
                     "question_id"           => $answer['question_id'],                        
                     'choices'               => $choices,
-                    'correct_answer'        => $correctAnswers,
+                    'correct_answer'        => $correctAnswersTextArray,
                     
                     'selected_choices'      => $selected_choices,
                     'your_answer'           => $selected_choices_text,
-                    'is_correct'            => false,
+                    'is_correct'            => false
                 ];             
             
             } else {
             
                 $results[] = [
-                
                     'question'              => $question,
                     "question_id"           => $answer['question_id'],
-
                     'choices'               => $choices,
-                    'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],
-
-                    
+                    'correct_answer'        => $correctAnswers[$answer_question_id]['answer'],                    
                     'answer_choice_id'      => null,
                     'your_answer'           => null,
-                    'is_correct'            => null,
+                    'is_correct'            => null
                 ];            
             
             }
