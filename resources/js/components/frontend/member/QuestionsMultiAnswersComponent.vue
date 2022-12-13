@@ -95,6 +95,10 @@
 
                         <span class="font-weight-bold float-left pr-1 small">{{ (qIndex + 1)  +"." }} </span>
                         <span class="question font-weight-bold d-inline-block" v-html="formatter(question.question)"></span>
+
+                      
+
+
                         <div v-if="multiple_correct_answer == true">
                             <b-form-group class="questionChoicesContainer">
                                 <b-form-checkbox  
@@ -130,18 +134,24 @@
                     <div class="question container col-12" v-show="qIndex == questionIndex">
 
                         <span class="font-weight-bold float-left pr-1 small">{{ (qIndex + 1)  +"." }} </span>
-
                         <span class="question font-weight-bold d-inline-block" v-html="formatter(question.question)"></span>
 
-                        <b-form-group class="questionChoicesContainer">
-                            <b-form-radio :name="'question_'+ question.id +''" v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
-                            v-bind:value="choice.id"
-                            class="ml-3 pt-2"> {{ choice.choice }} </b-form-radio>
-
-                            <div class="pb-3 mb-0 small lh-sm border-bottom w-100"></div>         
-
-                        </b-form-group>
-
+                        <div v-if="multiple_correct_answer == true">
+                            <b-form-group class="questionChoicesContainer">
+                                <b-form-checkbox  
+                                    :name="'question_'+ question.id +''"
+                                    v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex" 
+                                    v-bind:value="choice.id"> {{ choice.choice }}</b-form-checkbox>
+                            </b-form-group>
+                        </div>
+                        <div v-else>
+                            <b-form-group class="questionChoicesContainer">
+                                <b-form-radio :name="'question_'+ question.id +''" v-for="(choice, choiceIndex) in question.choices" :key="choiceIndex"
+                                v-bind:value="choice.id"
+                                class="ml-3 pt-2"> {{ choice.choice }} </b-form-radio>
+                                <div class="pb-3 mb-0 small lh-sm border-bottom w-100"></div>         
+                            </b-form-group>
+                        </div>
 
                     </div>
 

@@ -41,7 +41,6 @@
 
                         <div class="card-body">
                             @if ($category->multiple_correct_answers == true)
-
                                 <questions-multi-answers-component 
                                     :multiple="{{ ($category->show_multiple == true) ? 'true': 'false' }}"
                                     :multiple_correct_answer="{{ ($category->multiple_correct_answers == true) ? 'true': 'false' }}"
