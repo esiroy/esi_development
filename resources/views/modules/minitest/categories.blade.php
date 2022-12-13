@@ -50,7 +50,7 @@
                                     @foreach($categories as $category)
                                         <div class="pb-3 mb-2" style="border-bottom:1px dashed #d4d4d4">
                                             <a href="{{ url('minitest/'. $category->slug) }}" class="small">
-                                                <strong>{{ $category->name }} b </strong>
+                                                <strong>{{ $category->name }}</strong>
                                             </a> 
                                             <div class="small text-muted">{{ $category->instructions }}</div>
                                             <div class="small text-muted"> Time Limit : {{ $category->time_limit }} Minutes </div>
