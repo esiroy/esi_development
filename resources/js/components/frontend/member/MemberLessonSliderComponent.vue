@@ -500,8 +500,14 @@ export default {
                         this.$forceUpdate();
 
                         if (i ==  this.slides){
+
                             this.userSlideAccess();
                             this.slides = (response.data.files).length;
+
+                            //start slide (force)
+                            console.log("called startSlie()")
+                            this.startSlide();
+
                         }
                     }
 
@@ -542,9 +548,7 @@ export default {
 
                 this.canvas[this.currentSlide].setZoom(scale);
                 this.canvas[this.currentSlide].requestRenderAll();
-
                 this.canvas[this.currentSlide]['scale'] = scale;
-
 
                 //tool and send canvas json to viewer
                 let data = this.canvasGetJSON();
@@ -723,20 +727,12 @@ export default {
         },
         
         startSlide() {
-
-            if (this.currentSlide > 1) 
-            {
-                this.currentSlide = 1;
-                this.autoSelectTool();
-
-                let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);                      
-            } 
-
-            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";      
-             
+            this.currentSlide = 1;
+            this.autoSelectTool();
+            let data = this.canvasGetJSON();
+            this.canvasSendJSON(this.canvas[this.currentSlide], data); 
+            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";     
         },
-        
         goToSlide(slide) {          
 
             //console.log(slide);
