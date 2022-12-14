@@ -283,7 +283,7 @@
             @endif
 
             @php
-                $canvas_url = env('APP_CANVAS_SERVER_URL', 'https://test');    
+                $canvas_url = env('APP_CANVAS_SERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");    
 
                 echo $canvas_url;
 
@@ -296,12 +296,10 @@
                 :is-broadcaster="false"     
                 :user-Info="{{  json_encode(Auth::user()) }}" 
                 :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
-
-                canvas-Server="{{ $canvas_url  }}"
+                canvas-Server="{{$canvas_url}}"
                 editor-ID="canvas"
                 canvas-Width="680"
-                canvas-Height="500"    
-                        
+                canvas-Height="500"
                 api_token="{{ Auth::user()->api_token }}" 
                 csrf_token="{{ csrf_token() }}"
                 >
