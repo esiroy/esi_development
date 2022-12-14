@@ -440,15 +440,18 @@ export default {
         createCanvas(index) {
 
             //added to make canvas visible if the index is the first one
-            let visibility = 'visible';
+            let visibility = 'hidden';
+            let display = 'none';
+
             if (index == 1) {
-                visibility = 'show';
+                visibility = 'visible';
+                display = 'block';
             } 
 
             //Editor Container Element
             let editorElement = document.createElement("div");
             editorElement.setAttribute("id",    "editor" + index);
-            editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display: none;");
+            editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display:"+ +";");
 
             let slideContainer = document.getElementById('slide-container');
             slideContainer.append(editorElement);            
