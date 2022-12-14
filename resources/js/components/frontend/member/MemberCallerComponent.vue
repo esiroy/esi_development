@@ -70,6 +70,9 @@
             }
         },
         mounted() {
+
+            console.log(this.canvasServer);
+
             this.socket = io.connect(this.canvasServer);
 
             //Transfer the object to the window

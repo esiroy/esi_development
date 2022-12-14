@@ -282,12 +282,16 @@
 
             @endif
 
+
+            $canvas_url = env('APP_CANVAS_SERVER_URL', 'https://stagingchatserver.esuccess-inc.com:40001');
+
+
             <member-caller-component            
                 :is-broadcaster="false"     
                 :user-Info="{{  json_encode(Auth::user()) }}" 
                 :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
 
-                canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
+                canvas-Server="{{ $canvas_url  }}"
                 editor-ID="canvas"
                 canvas-Width="680"
                 canvas-Height="500"    
