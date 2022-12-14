@@ -439,10 +439,17 @@ export default {
         },
         createCanvas(index) {
 
+            //added to make canvas visible if the index is the first one
+            let visibility = 'visible';
+            if (index == 1) {
+                visibility = 'show';
+            } 
+
             //Editor Container Element
             let editorElement = document.createElement("div");
             editorElement.setAttribute("id",    "editor" + index);
-            editorElement.setAttribute("style",    "overflow: hidden; clear: both; visibility: hidden; display: none;");
+            editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display: none;");
+
             let slideContainer = document.getElementById('slide-container');
             slideContainer.append(editorElement);            
 
@@ -470,22 +477,17 @@ export default {
 
             }).then(response => {     
             
-                if (response.data.success === true) 
-                {
-
+                if (response.data.success === true) {
                     this.isLoading = false;
-
                     //Breadcrumbs
                     this.segments = response.data.folderURLArray;
-
                     //Array of images
                     this.imageURL = response.data.files;
 
                     this.slides  = (response.data.files).length;
                    
 
-                    for (var i = 1; i <= this.slides; i++) 
-                    {
+                    for (var i = 1; i <= this.slides; i++) {
 
                         this.createCanvas(i);
 
@@ -497,12 +499,9 @@ export default {
 
                         this.$forceUpdate();
 
-                        if (i ==  this.slides)
-                        {
+                        if (i ==  this.slides){
                             this.userSlideAccess();
-
-                             this.slides = (response.data.files).length;
-
+                            this.slides = (response.data.files).length;
                         }
                     }
 
