@@ -5,7 +5,7 @@
         <!-- Start custom Audio player-->
         <div class="audio-player">
 
-            <audio id="audio" controls="control" preload="auto"  ref="myMusic" @timeupdate="onTimeUpdateListener">
+            <audio id="audio" ref="myMusic" @timeupdate="onTimeUpdateListener">
                 <source src="" type="audio/mp3">
             </audio>
 
