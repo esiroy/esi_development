@@ -10,6 +10,7 @@ use Auth, DB;
 use App\Models\Folder;
 use App\Models\MemberSelectedLessonSlideMaterial;
 use App\Models\File;
+use App\Models\FileAudio;
 
 
 class LessonSlideMaterials extends Controller
@@ -27,10 +28,7 @@ class LessonSlideMaterials extends Controller
             @todo: get the selected member (lesson_id)
                  : if the member has not selected return false
         */
-
-        $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)
-                                                        ->where('user_id', $memberID)
-                                                        ->first();
+        $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
 
         if ($material) {
 
@@ -38,16 +36,19 @@ class LessonSlideMaterials extends Controller
             $folderID       = $material->folder_id;
             $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
             $folderURLArray = Folder::getURLArray( $material->folder_id);
-            $files          = File::where('folder_id', $folderID)->get();
 
-            if ($files) {
+            $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
 
+            if ($files) 
+            {
                 $slides = [];
-            
-                foreach ($files as $file) {
+
+                foreach ($files as $index => $file) {
 
                     array_push($slides, url($file->path));
 
+                    //make the index same as the slide number
+                    $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
                 }
             }
 
@@ -58,7 +59,8 @@ class LessonSlideMaterials extends Controller
             return Response()->json([
                 "success"              => true,
                 "files"                => $slides,
-                "folderSegments"       =>  $folderSegments,
+                "audioFiles"                => $audioFiles,
+                "folderSegments"       => $folderSegments,
                 "folderURLArray"       => $folderURLArray
             ]);  
 

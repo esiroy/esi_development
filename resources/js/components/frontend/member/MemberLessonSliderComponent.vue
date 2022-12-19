@@ -153,32 +153,12 @@
             </div>
 
 
-            <div id="audio-container" class="d-inline-block bg-darkblue">
-                      
-                <div id="prevAudio" class="d-inline-block px-2">
-                    <i class="fa fa-fast-backward" aria-hidden="true"></i>
-                </div>  
-
-                <div id="prevAudio" class="d-inline-block px-2">
-                    <i class="fa fa-play" aria-hidden="true"></i>
-                </div>     
-
-                <div id="nextAudio" class="d-inline-block px-2">
-                    <i class="fa fa-fast-forward" aria-hidden="true"></i>
-                </div>
-
-
-    
-                <div id="audio-player" class="text-white p-1 d-inline-block">
-                    <audio controls>
-                        <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/ogg">
-                        <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/mpeg">
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
+            <div id="audio-container" class="d-inline-block">
+                <AudioPlayerComponent ref="audioPlayer"></AudioPlayerComponent>
             </div>
             
             <div id="slide-container"></div>
+
 
         </div>
         <!--********** [END] Lesson Slides *************-->
@@ -199,17 +179,20 @@
 
     </div>        
 
+
 </template>
 
 
 <script>
+
+import AudioPlayerComponent from './AudioPlayerComponent.vue'
+
 import {fabric} from "fabric";
 import io from "socket.io-client";
 
-
-
 export default {
     name: "lessonSliderComponent",
+    components: { AudioPlayerComponent },
     props: {
         csrf_token: String,		
         api_token: String,
@@ -258,6 +241,11 @@ export default {
 
             //uri segments
             segments:  "",
+
+
+            //Audio
+
+            audoFiles: [],            
 
             //history
             undoCtr: 0,
@@ -424,8 +412,8 @@ export default {
         });        
         
 
-        window.addEventListener('scroll', this.reOffset);
-        window.addEventListener('resize', this.reOffset);
+        //window.addEventListener('scroll', this.reOffset);
+        //window.addEventListener('resize', this.reOffset);
 
 
     },
@@ -451,7 +439,7 @@ export default {
             //Editor Container Element
             let editorElement = document.createElement("div");
             editorElement.setAttribute("id",    "editor" + index);
-            editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display:"+ +";");
+            editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display:"+ display +";");
 
             let slideContainer = document.getElementById('slide-container');
             slideContainer.append(editorElement);            
@@ -481,17 +469,27 @@ export default {
             }).then(response => {     
             
                 if (response.data.success === true) {
+
                     this.isLoading = false;
+
                     //Breadcrumbs
                     this.segments = response.data.folderURLArray;
+
                     //Array of images
                     this.imageURL = response.data.files;
 
+                    this.audioFiles = response.data.audioFiles;
+
+                    console.log(this.audioFiles);
+
+
+                    //this.$refs['audioPlayer'].test(this.audioFiles);
+
+                    //Slide Count 
                     this.slides  = (response.data.files).length;
-                   
 
-                    for (var i = 1; i <= this.slides; i++) {
-
+                    for (var i = 1; i <= this.slides; i++) 
+                    {
                         this.createCanvas(i);
 
                         this.canvas[i]  = new fabric.Canvas('canvas'+i, {
@@ -502,13 +500,13 @@ export default {
 
                         this.$forceUpdate();
 
-                        if (i ==  this.slides){
-
+                        if (i ==  this.slides)
+                        {
                             this.userSlideAccess();
                             this.slides = (response.data.files).length;
 
                             //start slide (force)
-                            console.log("called startSlie()")
+                            console.log("called startSlie()");
                             this.startSlide();
 
                         }
@@ -523,8 +521,10 @@ export default {
                     });  
 
 
+
                 }
 			});
+
         }, 
 
         alignCanvas() {
@@ -735,10 +735,21 @@ export default {
             let data = this.canvasGetJSON();
             this.canvasSendJSON(this.canvas[this.currentSlide], data); 
             document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";     
+
+
+            //Load List of Audio Array
+            this.loadAudio()
+
+        },
+        loadAudio() {
+            this.$refs['audioPlayer'].loadAudioList(this.audioFiles, this.currentSlide);
         },
         goToSlide(slide) {          
 
-            //console.log(slide);
+            this.loadAudio(slide);
+
+            console.log("goToSlide() slide #" + slide);
+
             for (var i = 1; i <= this.slides; i++) 
             {
                 if (i == slide) {    

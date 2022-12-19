@@ -66,7 +66,7 @@
 
             <div class="upload">
                 <div v-show="$refs.audioUploader && $refs.audioUploader.dropActive" class="drop-active">
-                    <h3>Drop files to upload</h3>
+                    <h3>Drop MP3 files to upload</h3>
                 </div>
 
                 <div class="btn">
@@ -88,6 +88,7 @@
                         @input-filter="inputFilter"
                         :data="{
                           file_id: this.file_id,
+
                           folder_id: this.folder_id
                         }"
                         ref="audioUploader">
