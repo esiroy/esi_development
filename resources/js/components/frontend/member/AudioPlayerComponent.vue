@@ -10,26 +10,24 @@
             </audio>
 
             <div class="player-controls">
+
                 <b-dropdown id="dropdown-1" class="m-md-2" no-caret>
                     <template #button-content>
-                        <b-icon-list></b-icon-list>
+                        <b-icon-list class="toggle"></b-icon-list>
                     </template>
-
-
                     <b-dropdown-item v-for="audio in audioFiles" :key="audio.id" @click="loadAudio(audio)">
                         {{audio.id }} - {{ audio.file_name }}
                     </b-dropdown-item>    
-
                 </b-dropdown>
 
 
-                <button id="prevAudio" class="d-inline-block px-2">
+                <button id="prevAudio" class="button-transparent d-inline-block px-2">
                     <i class="fa fa-fast-backward" aria-hidden="true"></i>
                 </button>
 
-                <button id="playAudio" @click="togglePlay()"></button>
+                <button id="playAudio" @click="togglePlay()" class="button-transparent"></button>
 
-                <button id="nextAudio" class="d-inline-block px-2">
+                <button id="nextAudio" class="button-transparent d-inline-block px-2">
                     <i class="fa fa-fast-forward" aria-hidden="true"></i>
                 </button>
 
@@ -54,18 +52,33 @@
         writing-mode: bt-lr; /* IE */
         -webkit-appearance: slider-vertical; /* Chromium */
         width: 8px;
-        height: 50px;
+        height: 20px;
         padding: 0px;
     }
 
 
 
     .audio-player {
-        width: 470px;
-        padding: 35px 20px;
-        margin: auto;
-        background-color: white;
+        width: 460px;
+        padding: 10px;
+        margin: 10px;
+        background-color: #0074bc;
         border: 1px solid black;
+
+        .dropdown-toggle {
+            background: transparent;
+            border: none;
+        }
+        
+        .button-transparent {    
+            outline: none;
+            cursor: pointer;
+            border: none;
+            width: 30px;
+            height: 30px;
+            color: #fff;
+            background: transparent;            
+        }
 
         .player-controls {
             position: relative;
@@ -90,10 +103,9 @@
             height: 30px;
             background: url('https://img.icons8.com/play') no-repeat center;
             background-size: contain;
-
             &.pause {
-            background: url('https://img.icons8.com/pause') no-repeat center;
-            background-size: contain;
+                background: url('https://img.icons8.com/pause') no-repeat center;
+                background-size: contain;
             }
         }
 
@@ -138,13 +150,16 @@
     name: "AudioPlayerComponent",
     data() {
         return {
+            ui: null,
             audioFiles: [],
             media: null,
         }
     },
     mounted() {
-       
-       audioFiles
+    
+    
+      
+
     },
     methods: {
         loadAudioList(audioFiles, num) {           
@@ -155,20 +170,32 @@
             this.loadAudio(this.audioFiles[0]);
         },
         loadAudio(audio) {
+
             var newAudio = document.getElementById('audio');
-            newAudio.src = window.location.origin +"/"+audio.path;
-            newAudio.load();      
-            this.togglePlay();      
+
+            if (audio) {
+                newAudio.src = window.location.origin +"/"+ audio.path;
+                newAudio.load();     
+
+            } else {
+            
+                console.log("no audio for this slide")
+            }
+
+            //this.togglePlay();      
         },
         
         togglePlay() {
-            let audioPlayer = $('#audio').get(0);
-            if (audioPlayer.paused === false) {
-                audioPlayer.pause();
-                //$(ui.play).classList.remove('pause');
+        
+            let media = document.getElementById('audio');
+            let playAudio = document.getElementById('playAudio');
+
+            if (media.paused === false) {
+                media.pause();
+                 playAudio.classList.toggle('pause');             
             } else {
-                audioPlayer.play();
-                //$(ui.play).classList.add('pause');
+                media.play();
+                playAudio.classList.toggle('pause');
             }
         }
     }
