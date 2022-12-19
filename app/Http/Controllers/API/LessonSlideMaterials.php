@@ -21,6 +21,8 @@ class LessonSlideMaterials extends Controller
     
     public function getLessonMaterialSlides(Request $request)
     {
+
+    
         $scheduleID = $request->scheduleID;
         $memberID     = $request->memberID;
 
@@ -55,14 +57,19 @@ class LessonSlideMaterials extends Controller
           
 
             //seach for files in folder as images
-            
-            return Response()->json([
-                "success"              => true,
-                "files"                => $slides,
-                "audioFiles"                => $audioFiles,
-                "folderSegments"       => $folderSegments,
-                "folderURLArray"       => $folderURLArray
-            ]);  
+ 
+       
+            return Response([
+                    "success"              => true,
+                
+                    "files"                => $slides,
+                    "audioFiles"                => $audioFiles,
+                    "folderSegments"       => $folderSegments,
+                    "folderURLArray"       => $folderURLArray
+            ])
+                ->withHeaders([                  
+                    'Accept-Ranges' => 'bytes',                    
+                ]);  
 
         
         }

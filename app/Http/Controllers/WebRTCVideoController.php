@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ScheduleItem;
-use Auth;
+use Auth, Response;
 
 class WebRTCVideoController extends Controller
 {
     public function index(Request $request) 
     {
+      
+
+        
 
         $roomID = $request->get('roomid');
 
@@ -48,7 +51,10 @@ class WebRTCVideoController extends Controller
             }
         }
 
+        
 
-        return view('modules.webRTC.index', compact('roomID', 'userInfo', 'reservationData', 'isBroadcaster'));
+        return Response::view('modules.webRTC.index', compact('roomID', 'userInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
+
+        //return view('modules.webRTC.index', compact('roomID', 'userInfo', 'reservationData', 'isBroadcaster'));
     }
 }
