@@ -522,8 +522,13 @@ export default {
                 }
 			}).then(() => {     
 
-                this.loadAudio()
-                
+                this.$nextTick(() => {
+
+                    this.loadAudio();
+
+                });
+
+
             });
 
         }, 
