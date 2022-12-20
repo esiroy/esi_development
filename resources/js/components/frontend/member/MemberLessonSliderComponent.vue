@@ -507,7 +507,7 @@ export default {
                             { 
                                 console.log(this.audioFiles);
                                 this.loadAudio()                            
-                            }
+                            });
 
                         }
                     }
