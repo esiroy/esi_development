@@ -319,7 +319,7 @@ export default {
 
             myIntervalTimer: null,
             timerSpeed: 1000,
-            timer: 1500, //25 minutes = 1500
+            timer: 60, //25 minutes = 1500
 
      
             imageURL: [],
@@ -700,7 +700,18 @@ export default {
             elem.innerHTML = this.getTime();           
         },
         getTime() {
-            return  this.secondsToHms(this.timer)      
+
+            if (this.timer >= 0) {
+                return this.secondsToHms(this.timer)    
+            } else {
+
+                //Add "warning class" countDownTimer
+                var element = document.getElementById("countDownTimer");
+                element.classList.add("text-danger");
+
+                return this.secondsToHms(Math.abs(this.timer))
+            }
+               
         },
         updateTimer() {           
             this.setTimer();
@@ -713,13 +724,23 @@ export default {
             clearInterval(this.myIntervalTimer); 
         },
         secondsToHms(d) {
+            var date = new Date(0);
+            date.setSeconds(d); // specify value for SECONDS here
+            var timeString = date.toISOString().substring(11, 19);
+            if (this.timer >= 0) {
+                return timeString;
+            } else {
+                return "-"+timeString;
+            }            
+        },
+        secondsToHms_PositiveOnly(d) {
             d = Number(d);
             var h = Math.floor(d / 3600);
             var m = Math.floor(d % 3600 / 60);
             var s = Math.floor(d % 3600 % 60);
-            var hDisplay = h > 9 ? h+":" : "0"+h+":";
-            var mDisplay = m > 9 ? m+":" : "0"+m+":";
-            var sDisplay = s > 9 ? s : "0"+s;
+            var hDisplay = h > 9 ? Math.abs(h) +":" : "0"+ Math.abs(h) +":";
+            var mDisplay = m > 9 ? Math.abs(m) +":" : "0"+ Math.abs(m) +":";
+            var sDisplay = s > 9 ? Math.abs(s)  : "0"+ Math.abs(s);
             return hDisplay + mDisplay + sDisplay; 
         },        
 

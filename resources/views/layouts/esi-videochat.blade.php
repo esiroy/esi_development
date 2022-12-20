@@ -75,7 +75,7 @@
                     </li>
 
                     <li class="pr-4 pt-2">
-                        <span class="text-white font-weight-bold h2 mt-3" id="countDownTimer">00:25:00</span>                       
+                        <span class="text-white font-weight-bold h2 mt-3" id="countDownTimer"></span>                       
                     </li>
 
 
