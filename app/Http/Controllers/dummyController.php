@@ -50,7 +50,13 @@ class dummyController extends Controller
     }
 
 
-   public function index(ChatSupportHistory $chatSupportHistory) 
+    public function index() 
+    {
+        phpinfo();
+    }
+
+
+    public function testchat(ChatSupportHistory $chatSupportHistory) 
     {
 
             $recentUsers = $chatSupportHistory->where(function($query) 

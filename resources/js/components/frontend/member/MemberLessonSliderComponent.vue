@@ -786,7 +786,8 @@ export default {
         },
         prevSlide(delegateToNode) {
 
-
+            this.$refs['audioPlayer'].stopAudio();
+            
             if (this.currentSlide > 1) {
 
                 this.currentSlide--;
@@ -806,6 +807,10 @@ export default {
             }
         },
         nextSlide(delegateToNode) {
+
+        
+
+            this.$refs['audioPlayer'].stopAudio();
 
             this.rescale(1);
 

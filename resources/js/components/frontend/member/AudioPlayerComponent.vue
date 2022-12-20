@@ -3,8 +3,13 @@
     <div class="audioPlayerContainer">
 
         <!-- Start custom Audio player-->
-        <div class="audio-player">
+        <div class="audio-player text-center text-light" v-show="this.audioFiles.length <= 0" >
+            <div class="my-2">
+                Slide has no audio
+            </div>
+        </div>
 
+        <div class="audio-player" v-show="this.audioFiles.length >= 1">
             <audio id="audio" ref="myMusic" @timeupdate="onTimeUpdateListener">
                 <source src="" type="audio/mp3">
             </audio>
@@ -22,18 +27,18 @@
 
 
 
-                <button id="prevAudio" class="button-transparent d-inline-block px-2">
+                <button id="prevAudio" class="button-transparent d-inline-block">
                     <i class="fa fa-fast-backward" aria-hidden="true"></i>
                 </button>
 
                 <!--<button id="playAudio" @click="togglePlay()" class="button-transparent"></button>-->
 
                 <button class="button-transparent"  @click="togglePlay()">                    
-                   <b-icon-play font-scale="3" v-show="playBtn == true"></b-icon-play>
-                   <b-icon-pause font-scale="3" v-show="playBtn == false"></b-icon-pause>
+                   <b-icon-play font-scale="2" v-show="playBtn == true"></b-icon-play>
+                   <b-icon-pause font-scale="2" v-show="playBtn == false"></b-icon-pause>
                 </button>
 
-                <button id="nextAudio" class="button-transparent d-inline-block px-2">
+                <button id="nextAudio" class="button-transparent d-inline-block">
                     <i class="fa fa-fast-forward" aria-hidden="true"></i>
                 </button>
 
@@ -42,12 +47,18 @@
                         <div id="percentage"></div>
                     </div>
                 </div>
-                <p style="width:100px;">
-                    <small id="currentTime">00:00</small>
-                </p>
+               
+                <div id="currentTime" class="small">00:00</div>
+
+                <div class="volumeBar">
+                    <div class="volumebkg"></div>
+                    <div id="volume" class="volume"></div>
+                </div>
+
 
             </div>
         </div>
+       
 
 
     </div>
@@ -66,14 +77,53 @@
     }
 
 
-
     .audio-player {
         width: 460px;
-        padding: 10px;
+        padding: 0px 10px 0px;
         margin: 10px;
         background-color: #0074bc;
         border: 1px solid black;
 
+
+        .volumeBar {
+            display:block;
+            height:50px;
+            position:relative;
+            top: 7px;
+            right:0;
+            background-color:none;
+            z-index:100;
+            width: 50px;
+            cursor:pointer;
+        }
+
+
+        .volume {
+            /*background-color:#888;*/
+            position: absolute;
+            clip: rect(0px, 45px, 40px, 0px);
+            width: 50px;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 25px 50px;
+            border-color: transparent transparent #ffffff transparent;
+            line-height: 0px;
+            _border-color: #000000 #000000 #007bff #000000;
+            _filter: progid:DXImageTransform.Microsoft.Chroma(color='#000000');
+        }
+
+        .volumebkg {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 25px 50px;
+            border-color: transparent transparent #999 transparent;
+            line-height: 0px;
+
+            _border-color: #000000 #000000 #999 #000000;
+            _filter: progid:DXImageTransform.Microsoft.Chroma(color='#000000');
+        }
         .dropdown-toggle {
             background: transparent;
             border: none;
@@ -110,7 +160,7 @@
 
         #seekObjContainer {
             position: relative;
-            width: 300px;
+            width: 100px;
             margin: 0 5px;
             height: 5px;
 
@@ -139,19 +189,60 @@
     name: "AudioPlayerComponent",
     data() {
         return {
-            ui: null,
+           
             audioFiles: [],
             media: null,
             playBtn: true,
-            newAudio: null,
+            audio: null,
             currentTime: null,
+            //volume
+            isVolumeDragged: false,
         }
     },
     mounted() { 
        
+        $('.volume,.volumeBar').on('mousedown',  (e) => { //onTouchStart
+            this.isVolumeDragged = true;
+            this.audio.muted = false;
+            $('.sound').removeClass('muted');
+            this.updateVolume(e.pageX);
+        });
 
+        $(document).on('mouseup',  (e) => { //touchend
+            if (this.isVolumeDragged) {
+                this.isVolumeDragged = false;
+                this.updateVolume(e.pageX);
+            }
+        });
+
+        $(document).on('mousemove',  (e) => { //touchmove
+            if (this.isVolumeDragged) {
+                this.updateVolume(e.pageX);
+            }
+        });
     },
-    methods: {
+    methods: {      
+        updateVolume(x) {
+            var volume = $('.volume');
+            let volumeWidth = document.getElementById("volume").offsetWidth
+            
+            var position = x - volume.offset().left;
+            let percentage = 100 * position / volumeWidth;        
+
+            if (percentage > 100) {
+                percentage = 100;
+            }
+
+            if (percentage < 0) {
+                percentage = 0;
+            }
+
+            //set the volume
+            let newVolume = percentage / 100; 
+            this.audio.volume = newVolume; 
+
+            $('.volume').css('clip', 'rect(0px, '+(percentage / 2)+'px, 50px, 0px)');
+        },
         loadAudioList(audioFiles, num) {
             this.audioFiles = audioFiles[num];
             //load the first on the list
@@ -162,16 +253,14 @@
             this.togglePlay();      
         },
         loadAudio(audio) {
-            this.newAudio = document.getElementById('audio');
+            this.audio = document.getElementById('audio');
 
             if (audio) {
-                this.newAudio.src = window.location.origin +"/"+ audio.path;
-                this.newAudio.load();
-
-                this.newAudio.onloadedmetadata = () => {
+                this.audio.src = window.location.origin +"/"+ audio.path;
+                this.audio.load();
+                this.audio.onloadedmetadata = () => {
                     this.onTimeUpdateListener();
                 };
-
             } else {            
                 console.log("no audio for this slide")
             }
@@ -185,6 +274,9 @@
             console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
             seekAudio.currentTime = percent * seekAudio.duration;
             seekAudio.play();
+
+            //@todo: send current time to student
+            //seekAudio.currentTime 
            
         },        
         getDuration() {
@@ -211,14 +303,12 @@
             currentSeconds < 10 ? `0${currentSeconds}` : currentSeconds}`;            
             return currentTimeFormatted;
         },
-
-
-
-        togglePlay() {
-        
+        stopAudio() {
+            this.playBtn = true;
+            this.audio.pause();
+        },
+        togglePlay() {        
             this.media = document.getElementById('audio');
-           
-
             if (this.media.paused === false) {
                 this.media.pause();   
                 this.playBtn = true;
