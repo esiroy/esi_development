@@ -245,7 +245,9 @@
             $('.volume').css('clip', 'rect(0px, '+(percentage / 2)+'px, 50px, 0px)');
         },
         loadAudioList(audioFiles, num) {
-        
+          
+            console.log("audio files", audioFiles);
+            
             this.audioFiles = audioFiles[num];
 
             //load the first on the list           
