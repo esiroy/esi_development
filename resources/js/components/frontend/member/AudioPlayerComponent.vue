@@ -45,6 +45,7 @@
                 <p style="width:100px;">
                     <small id="currentTime">00:00</small>
                 </p>
+
             </div>
         </div>
 
@@ -175,14 +176,15 @@
                 console.log("no audio for this slide")
             }
         },
-        seekAudio(e) {
+        seekAudio(e) {          
 
             let seekAudio = document.getElementById('audio');
+            let offsetWidth = document.getElementById("seekObj").offsetWidth;
 
-            seekAudio.currentTime = 20;
+            const percent = e.offsetX / offsetWidth;
+            console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
+            seekAudio.currentTime = percent * seekAudio.duration;
             seekAudio.play();
-
-
            
         },        
         getDuration() {
