@@ -54,15 +54,6 @@
                     <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
                         <b-icon icon="circle " font-scale="1"> </b-icon>
                     </div> 
-                        
-
-
-
-
-
-                    
-
-
                 </div>
                 <!-- [END] TOOL WRAPPER -->
 
@@ -115,9 +106,11 @@
 
                     <div class="d-flex justify-content-center">
 
+                        <!--
                         <div id="firstSlide" class="tool" @click="startSlide" v-show="this.$props.isBroadcaster == true">
                             <i class="fa fa-fast-backward" aria-hidden="true"></i>
                         </div>  
+                        -->
 
                         <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
                             <i class="fa fa-backward" aria-hidden="true"></i>
@@ -142,9 +135,12 @@
                             <i class="fa fa-forward" aria-hidden="true"></i>
                         </div>
 
+
+                        <!--
                         <div id="lastSlide" class="tool" @click="lastSlide" v-show="this.$props.isBroadcaster == true">
                             <i class="fa fa-fast-forward" aria-hidden="true"></i>
                         </div>
+                        -->
 
 
                     </div>
@@ -323,8 +319,7 @@ export default {
 
             myIntervalTimer: null,
             timerSpeed: 1000,
-            timer: 0,
-
+            timer: 1500, //25 minutes = 1500
 
      
             imageURL: [],
@@ -700,9 +695,17 @@ export default {
             let recipient  = this.getRecipient();
             socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
         },
-        getTime() {
-            return this.secondsToHms(this.timer);
+        setTimer() {
+            var elem = document.querySelector('#countDownTimer');
+            elem.innerHTML = this.getTime();           
         },
+        getTime() {
+            return  this.secondsToHms(this.timer)      
+        },
+        updateTimer() {           
+            this.setTimer();
+            this.timer--;
+        },                
         startTimer() {
             this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);
         },
@@ -719,9 +722,7 @@ export default {
             var sDisplay = s > 9 ? s : "0"+s;
             return hDisplay + mDisplay + sDisplay; 
         },        
-        updateTimer() {
-            this.timer++;
-        },
+
         changeColor() {
             this.setPreviewColor( this.brushColor )
             this.autoSelectTool();
@@ -787,7 +788,7 @@ export default {
         prevSlide(delegateToNode) {
 
             this.$refs['audioPlayer'].stopAudio();
-            
+
             if (this.currentSlide > 1) {
 
                 this.currentSlide--;

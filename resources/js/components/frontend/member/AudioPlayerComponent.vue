@@ -27,7 +27,7 @@
 
 
 
-                <button id="prevAudio" class="button-transparent d-inline-block">
+                <button id="prevAudio" @click="prevAudio" class="button-transparent d-inline-block">
                     <i class="fa fa-fast-backward" aria-hidden="true"></i>
                 </button>
 
@@ -38,7 +38,7 @@
                    <b-icon-pause font-scale="2" v-show="playBtn == false"></b-icon-pause>
                 </button>
 
-                <button id="nextAudio" class="button-transparent d-inline-block">
+                <button id="nextAudio" @click="nextAudio" class="button-transparent d-inline-block">
                     <i class="fa fa-fast-forward" aria-hidden="true"></i>
                 </button>
 
@@ -191,6 +191,7 @@
         return {
            
             audioFiles: [],
+            audioIndex: 0,
             media: null,
             playBtn: true,
             audio: null,
@@ -245,14 +246,33 @@
         },
         loadAudioList(audioFiles, num) {
             this.audioFiles = audioFiles[num];
-            //load the first on the list
-            this.loadAudio(this.audioFiles[0]);         
+
+            //load the first on the list           
+            this.loadAudio(this.audioFiles[this.audioIndex]);            
+        },
+        nextAudio() {
+            if (this.audioIndex <  this.audioFiles.length -1 ) {
+                this.audioIndex = this.audioIndex + 1;
+                this.loadAudio(this.audioFiles[this.audioIndex]);     
+                this.togglePlay();            
+            }            
+        },
+        prevAudio() {            
+            
+            if (this.audioIndex >= 1 ) {
+                this.audioIndex = this.audioIndex - 1;
+                this.loadAudio(this.audioFiles[this.audioIndex]);  
+                 this.togglePlay();   
+            }      
         },
         loadAndPlay(audio) {
             this.loadAudio(audio);
             this.togglePlay();      
         },
         loadAudio(audio) {
+
+            console.log(audio);
+
             this.audio = document.getElementById('audio');
 
             if (audio) {
