@@ -246,12 +246,19 @@
         },
         loadAudioList(audioFiles, num) {
           
-            console.log("audio files", audioFiles);
+            if (audioFiles) {
             
-            this.audioFiles = audioFiles[num];
+                console.log("audio files", audioFiles);
 
-            //load the first on the list           
-            this.loadAudio(this.audioFiles[this.audioIndex]);            
+                this.audioFiles = audioFiles[num];
+
+                //load the first on the list           
+                this.loadAudio(this.audioFiles[this.audioIndex]); 
+
+            } else {
+                console.log("undefined?", audioFiles)
+            }
+           
         },
         nextAudio() {
             if (this.audioIndex <  this.audioFiles.length -1 ) {
