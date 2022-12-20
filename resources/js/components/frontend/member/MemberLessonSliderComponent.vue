@@ -504,6 +504,8 @@ export default {
                             console.log("called startSlie()");
                             this.startSlide();
 
+                            
+
                         }
                     }
 
@@ -518,7 +520,11 @@ export default {
 
 
                 }
-			});
+			}).then(() => {     
+
+                this.loadAudio()
+                
+            });
 
         }, 
 
@@ -760,7 +766,7 @@ export default {
 
 
             //Load List of Audio Array
-            this.loadAudio()
+            //this.loadAudio()
 
         },
         loadAudio() {
