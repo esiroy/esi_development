@@ -475,7 +475,6 @@ export default {
 
                     this.audioFiles = response.data.audioFiles;
 
-                    console.log(this.audioFiles);
 
 
                     //this.$refs['audioPlayer'].test(this.audioFiles);
@@ -504,7 +503,11 @@ export default {
                             console.log("called startSlie()");
                             this.startSlide();
 
-                            
+                            this.$nextTick(function()
+                            { 
+                                console.log(this.audioFiles);
+                                this.loadAudio()                            
+                            }
 
                         }
                     }
@@ -520,16 +523,7 @@ export default {
 
 
                 }
-			}).then(() => {     
-
-                this.$nextTick(() => {
-
-                    this.loadAudio();
-
-                });
-
-
-            });
+			});
 
         }, 
 
