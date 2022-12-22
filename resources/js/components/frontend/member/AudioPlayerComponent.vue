@@ -10,13 +10,23 @@
         </div>
 
         <div class="audio-player" v-show="this.audioFiles.length >= 1">
+
+            <div id="audio-info" class="text-center small text-light">
+                <div class="text-center" v-if="this.audioFiles[this.audioIndex]">
+                    <span id="track_heading">Now Playing</span>
+                    <span id="track_index">({{ ( this.audioIndex + 1 ) + "/" + this.audioFiles.length }})</span>
+                    <span id="track_sep"> : </span>                    
+                    <span id="trackname font-style-bold">{{ this.audioFiles[this.audioIndex].file_name }}</span>
+                </div>
+            </div>
+
             <audio id="audio" ref="myMusic" @timeupdate="onTimeUpdateListener">
                 <source src="" type="audio/mp3">
             </audio>
 
             <div class="player-controls">
 
-                <b-dropdown id="dropdown-1" class="m-md-2" no-caret>
+                <b-dropdown id="dropdown-audio-list" class="m-md-2" no-caret>
                     <template #button-content>
                         <b-icon-list class="toggle"></b-icon-list>
                     </template>
@@ -31,7 +41,7 @@
                     <i class="fa fa-fast-backward" aria-hidden="true"></i>
                 </button>
 
-                <!--<button id="playAudio" @click="togglePlay()" class="button-transparent"></button>-->
+            
 
                 <button class="button-transparent"  @click="play()">                    
                    <b-icon-play font-scale="2" v-show="playBtn == true"></b-icon-play>
@@ -146,6 +156,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            height: 30px;
+            top: -4px;
         }
    
 
@@ -264,7 +276,7 @@
                 this.$root.$emit('playAudio', this.audioIndex)
             }          
         },
-        play() {        
+        play() {
             this.togglePlay();         
         },
         togglePlay() {        
@@ -310,8 +322,8 @@
             //we will send this through server and let client get the next audio
             this.$root.$emit('playAudio', this.audioIndex)                   
         },
-        loadAudio(audio, settings) {
-            console.log(audio);
+        loadAudio(audio, settings) 
+        {          
             this.audio = document.getElementById('audio');
             if (audio) {
                 this.audio.src = window.location.origin +"/"+ audio.path;              
@@ -319,9 +331,10 @@
                 this.audio.onloadedmetadata = () => {
                     this.onTimeUpdateListener();
                     if (settings.autoPlay === true) {
-                         this.togglePlay();   
-                    }
+                        this.togglePlay();   
+                    }               
                 };
+               
             } else {            
                 console.log("no audio for this slide")
             }
@@ -353,7 +366,7 @@
                 percentageBar.style.width = `${percentage}%`;
                 //update current time on display
                 var currentTimeInfo = document.getElementById('currentTime');
-                currentTimeInfo.innerHTML = this.calculateCurrentValue(currentTime) + "/ " + this.calculateCurrentValue(duration);
+                currentTimeInfo.innerHTML = this.calculateCurrentValue(currentTime) + " / " + this.calculateCurrentValue(duration);
             }     
         },
         calculateCurrentValue(currentTime) {

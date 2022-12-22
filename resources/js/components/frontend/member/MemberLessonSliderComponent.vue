@@ -874,7 +874,6 @@ export default {
         },
         goToSlide(slide) {          
 
-
             this.$refs['audioPlayer'].stopAudio();
             this.loadAudio(slide);
 
