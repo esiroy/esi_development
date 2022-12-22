@@ -31,7 +31,7 @@
                         <b-icon-list class="toggle"></b-icon-list>
                     </template>
                     <b-dropdown-item v-for="(audio, audioIndex) in audioFiles" :key="audioIndex" @click="goToAudio(audioIndex)">
-                        {{ audioIndex }} | {{audio.id }} - {{ audio.file_name }}
+                        {{ (audioIndex + 1) }}  - {{ audio.file_name }}
                     </b-dropdown-item>    
                 </b-dropdown>
 
@@ -88,21 +88,20 @@
 
 
     .audio-player {
-        width: 460px;
-        padding: 0px 10px 0px;
-        margin: 10px;
+        width: 400px;
+        padding: 0px 4px 0px;
+        margin: 10px 0px 10px;
         background-color: #0074bc;
-        border: 1px solid black;
-
+        //border: 1px solid black;
+        border-radius: 5px;
+        z-index: 0;
 
         .volumeBar {
             display:block;
             height:50px;
             position:relative;
-            top: 7px;
+            top: 4px;
             right:0;
-            background-color:none;
-            z-index:100;
             width: 50px;
             cursor:pointer;
         }
@@ -141,6 +140,7 @@
 
         #currentTime {
             color: #fff;
+            font-size: 9.5px;
         }
         
         .button-transparent {    
@@ -158,6 +158,7 @@
             align-items: center;
             height: 30px;
             top: -4px;
+            right: 7px;
         }
    
 
@@ -180,8 +181,9 @@
                 position:relative;
                 width: 100%;
                 height: 100%;
-                background-color: #e3e3e3;
-                border: 1px solid black;
+                background-color: #999;
+                border: 1px solid #999;
+                border-radius: 10px;
 
                 #percentage {
                     position: absolute;
@@ -189,6 +191,7 @@
                     top: 0;
                     height: 100%;
                     background-color: coral;
+                    border-radius: 10px;
                 }
             }
         }
@@ -235,6 +238,9 @@
         });
     },
     methods: {      
+        resetAudioIndex() {
+            this.audioIndex = 0;
+        },
         updateVolume(x) {
             var volume = $('.volume');
             let volumeWidth = document.getElementById("volume").offsetWidth

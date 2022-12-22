@@ -918,6 +918,9 @@ export default {
         },
         prevSlide(delegateToNode) {
 
+            //the audio index needs to be reset since it is global
+            this.$refs['audioPlayer'].resetAudioIndex();
+            
             this.$refs['audioPlayer'].stopAudio();
 
             if (this.currentSlide > 1) {
@@ -940,7 +943,8 @@ export default {
         },
         nextSlide(delegateToNode) {
 
-        
+            //the audio index needs to be reset since it is global
+            this.$refs['audioPlayer'].resetAudioIndex();
 
             this.$refs['audioPlayer'].stopAudio();
 
