@@ -31,6 +31,39 @@ io.on('connection', function(socket) {
     //console.log("user connected, with id " + socket.id)
 
 
+    /*****************************************/
+    /*  CANVAS AUDIO PLAYER CONTROL SERVER
+    /*****************************************/
+
+    socket.on("PLAY_AUDIO", (data) => {
+        console.log("|| PLAY_AUDIO", data);
+        io.to(data.channelid).emit("PLAY_AUDIO", data);
+        //io.sockets.emit("PAUSE_AUDIO", data);
+    });
+
+    socket.on("PAUSE_AUDIO", (data) => {
+        console.log("|| PAUSE_AUDIO", data);
+        io.to(data.channelid).emit("PAUSE_AUDIO", data);
+        //io.sockets.emit("PAUSE_AUDIO", data);
+    });
+
+    socket.on("NEXT_AUDIO", (data) => {
+        console.log(">> next audio file", data);
+        io.to(data.channelid).emit("NEXT_AUDIO", data);
+        //io.sockets.emit("NEXT_AUDIO", data);
+    });
+
+    socket.on("PREV_AUDIO", (data) => {
+        console.log("<< previous audio file", data)
+        io.to(data.channelid).emit("PREV_AUDIO", data);
+        //io.sockets.emit("PREV_AUDIO_FILE", data);
+    });
+
+    socket.on("SEEK", (data) => {
+        console.log("<< SEEK", data)
+        io.to(data.channelid).emit("SEEK", data);
+        //io.sockets.emit("PREV_AUDIO_FILE", data);
+    });
 
 
     /*****************************************/
