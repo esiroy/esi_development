@@ -37,9 +37,13 @@
         :editor_id="'canvas'"
         :channelid="{{ $roomID }}"
         :reservation="{{ json_encode($reservationData) }}"            
+        
+        webrtc_server="{{  env('APP_WEBRTC_SERVER_URL') }}"
+
         canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
         canvas_width="1920"
         canvas_height="1080"
+
         :user_info="{{  json_encode(Auth::user()) }}"
         :member_info="{{  json_encode($userInfo) }}"
         api_token="{{ Auth::user()->api_token }}" 

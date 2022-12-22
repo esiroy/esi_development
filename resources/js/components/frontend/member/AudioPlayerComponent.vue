@@ -20,8 +20,8 @@
                     <template #button-content>
                         <b-icon-list class="toggle"></b-icon-list>
                     </template>
-                    <b-dropdown-item v-for="audio in audioFiles" :key="audio.id" @click="loadAndPlay(audio)">
-                        {{audio.id }} - {{ audio.file_name }}
+                    <b-dropdown-item v-for="(audio, audioIndex) in audioFiles" :key="audioIndex" @click="goToAudio(audioIndex)">
+                        {{ audioIndex }} | {{audio.id }} - {{ audio.file_name }}
                     </b-dropdown-item>    
                 </b-dropdown>
 
@@ -33,7 +33,7 @@
 
                 <!--<button id="playAudio" @click="togglePlay()" class="button-transparent"></button>-->
 
-                <button class="button-transparent"  @click="togglePlay()">                    
+                <button class="button-transparent"  @click="play()">                    
                    <b-icon-play font-scale="2" v-show="playBtn == true"></b-icon-play>
                    <b-icon-pause font-scale="2" v-show="playBtn == false"></b-icon-pause>
                 </button>
@@ -244,52 +244,83 @@
 
             $('.volume').css('clip', 'rect(0px, '+(percentage / 2)+'px, 50px, 0px)');
         },
-        loadAudioList(audioFiles, num) {
-          
-            if (audioFiles) {
-            
+        loadAudioList(audioFiles, num) {          
+            if (audioFiles) {            
                 console.log("audio files", audioFiles);
-
                 this.audioFiles = audioFiles[num];
-
                 //load the first on the list           
-                this.loadAudio(this.audioFiles[this.audioIndex]); 
+                this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': false }); 
 
             } else {
                 console.log("undefined?", audioFiles)
-            }
-           
+            }           
         },
+        goToAudio(index) {
+            this.audioIndex = index;
+            if (this.audioFiles[index]) {
+                this.loadAudio(this.audioFiles[index], {'autoPlay': true });
+               
+                //we will send this through server and let client play audio
+                this.$root.$emit('playAudio', this.audioIndex)
+            }          
+        },
+        play() {        
+            this.togglePlay();         
+        },
+        togglePlay() {        
+            this.media = document.getElementById('audio');
+            if (this.media.paused === false) {
+                this.media.pause();   
+                this.playBtn = true;
+                //we will send this through server and let client play audio
+                this.$root.$emit('pauseAudio', this.audioIndex); 
+            } else {                
+                this.media.play();
+                this.playBtn = false;  
+                //we will send this through server and let client play audio
+                this.$root.$emit('playAudio', this.audioIndex);
+            }
+        },        
+        stopAudio() {
+            this.playBtn = true;
+            this.audio.pause();
+        },        
         nextAudio() {
             if (this.audioIndex <  this.audioFiles.length -1 ) {
                 this.audioIndex = this.audioIndex + 1;
-                this.loadAudio(this.audioFiles[this.audioIndex]);     
-                this.togglePlay();            
+                this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': true });
+
+                //we will send this through server and let client get the next audio
+                this.$root.$emit('nextAudio', this.audioIndex)                    
             }            
         },
-        prevAudio() {            
-            
+        prevAudio() {
             if (this.audioIndex >= 1 ) {
                 this.audioIndex = this.audioIndex - 1;
-                this.loadAudio(this.audioFiles[this.audioIndex]);  
-                 this.togglePlay();   
+                this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': true }); 
+
+                //we will send this through server and let client get the prev audio
+                this.$root.$emit('prevAudio', this.audioIndex)                 
             }      
         },
         loadAndPlay(audio) {
             this.loadAudio(audio);
-            this.togglePlay();      
+            this.togglePlay();  
+
+            //we will send this through server and let client get the next audio
+            this.$root.$emit('playAudio', this.audioIndex)                   
         },
-        loadAudio(audio) {
-
+        loadAudio(audio, settings) {
             console.log(audio);
-
             this.audio = document.getElementById('audio');
-
             if (audio) {
-                this.audio.src = window.location.origin +"/"+ audio.path;
+                this.audio.src = window.location.origin +"/"+ audio.path;              
                 this.audio.load();
                 this.audio.onloadedmetadata = () => {
                     this.onTimeUpdateListener();
+                    if (settings.autoPlay === true) {
+                         this.togglePlay();   
+                    }
                 };
             } else {            
                 console.log("no audio for this slide")
@@ -332,20 +363,6 @@
             const currentTimeFormatted = `${currentMinute < 10 ? `0${currentMinute}` : currentMinute}:${
             currentSeconds < 10 ? `0${currentSeconds}` : currentSeconds}`;            
             return currentTimeFormatted;
-        },
-        stopAudio() {
-            this.playBtn = true;
-            this.audio.pause();
-        },
-        togglePlay() {        
-            this.media = document.getElementById('audio');
-            if (this.media.paused === false) {
-                this.media.pause();   
-                this.playBtn = true;
-            } else {                
-                this.media.play();
-                this.playBtn = false;
-            }
         }
     }
  }

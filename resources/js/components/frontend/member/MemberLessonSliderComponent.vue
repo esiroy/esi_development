@@ -185,6 +185,7 @@ import AudioPlayerComponent from './AudioPlayerComponent.vue'
 
 import {fabric} from "fabric";
 import io from "socket.io-client";
+import io2 from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
@@ -197,6 +198,10 @@ export default {
             type: [Boolean],
             required: true        
         },   
+        webrtc_server: {
+            type: [String],
+            required: true         
+        },
         canvas_server: {
             type: [String],
             required: true        
@@ -231,6 +236,9 @@ export default {
         return {
             //socket
             socket: null,
+
+            //webrtc:
+            webrtc_socket: null,
 
             //loader
             isLoading: false,
@@ -333,35 +341,46 @@ export default {
         this.getSlideMaterials(this.reservation);
     
     },
-    mounted() 
-    {
+    mounted() {
+        //********* START WEBRTC ********* */
 
-       console.log(this.slides)
+        //console.log("web RTC", this.$props.webrtc_server);
 
+        /* this.webrtc_socket = io2.connect(this.$props.webrtc_server, {});
+
+        this.webrtc_socket.on('userJoined', (data) => {
+            console.log("webRTC user joined", data);
+        });
+        */
+
+
+        //********* START CANVAS ********* */
         this.socket = io.connect(this.$props.canvas_server);
 
-        this.canvas_height;
+        console.log(this.$props.canvas_server);
 
-        //register as user
+        //register as currently active users can see ONLINE  status
         let user = {
             userid: this.member_info.user_id ,
-            nickname: this.member_info.nickname,
+            nickname: this.member_info.nickname,            
             username: this.user_info.username,            
             channelid: this.channelid,
             status: "ONLINE",
             type: this.user_info.user_type,      
         }
-
         this.socket.emit('REGISTER', user); 
 
+        //general chat update users online
         this.socket.on('update_user_list', users => 
         {
             this.updateUserList(users); 
-            this.goToSlide(this.currentSlide);
+
+            //this.goToSlide(this.currentSlide);
+
             //this.alignCanvas();
         });      
 
-        
+
         
         this.customSelectorBounds(fabric);
 
@@ -407,6 +426,72 @@ export default {
         });        
         
 
+        /****************AUDIO ACTIONS CONTROLLER (Broadcaster) **************** */
+        this.$root.$on('playAudio', (index) => {
+            if (this.$props.isBroadcaster == true) {
+                this.socket.emit('PLAY_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                });
+            } 
+        });
+                
+
+        this.$root.$on('pauseAudio', (index) => {
+            if (this.$props.isBroadcaster == true) {
+                this.socket.emit('PAUSE_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                });
+            } 
+        });
+                        
+        this.$root.$on('nextAudio', (index) => {
+            if (this.$props.isBroadcaster) {
+                this.socket.emit('NEXT_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                }); 
+            }
+        });
+
+        this.$root.$on('prevAudio', (index) => {
+            if (this.$props.isBroadcaster) {
+                this.socket.emit('PREV_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                }); 
+            }
+        });
+
+
+        /*************** AUDIO SOCKET CONTROLLER (Reciever Only) ****************/
+        this.socket.on('PLAY_AUDIO', (response) => {
+            if (this.$props.isBroadcaster == false) {
+                this.$refs['audioPlayer'].goToAudio(response.index);       
+            }
+        });
+
+
+        this.socket.on('PAUSE_AUDIO', (response) => {
+            if (this.$props.isBroadcaster == false) {
+                this.$refs['audioPlayer'].stopAudio();       
+            }
+        });
+
+        this.socket.on('NEXT_AUDIO', (response) => {
+            if (this.$props.isBroadcaster == false) {
+                 this.$refs['audioPlayer'].goToAudio(response.index);       
+            }
+        });
+
+        this.socket.on('PREV_AUDIO', (response) => {           
+            if (this.$props.isBroadcaster == false) {
+                 this.$refs['audioPlayer'].goToAudio(response.index);
+            }
+        });
+
+
         //window.addEventListener('scroll', this.reOffset);
         //window.addEventListener('resize', this.reOffset);
 
@@ -419,7 +504,16 @@ export default {
         {
             this.users = users;      
             this.$forceUpdate();
+
+            console.log("member lesson slider")
+          
         },
+
+
+        testslider(value) {
+            alert ("test slider!", value)
+        },
+
         createCanvas(index) {
 
             //added to make canvas visible if the index is the first one
@@ -475,9 +569,7 @@ export default {
 
                     this.audioFiles = response.data.audioFiles;
 
-
-
-                    //this.$refs['audioPlayer'].test(this.audioFiles);
+             
 
                     //Slide Count 
                     this.slides  = (response.data.files).length;
@@ -767,12 +859,23 @@ export default {
             //Load List of Audio Array
             //this.loadAudio()
 
+            //@todo: if tutor then broadcast current slide
+            if (this.$props.isBroadcaster == true) {            
+                let data = {
+                    'channelid': this.channelid,
+                    'num': this.currentSlide
+                }
+                this.socket.emit('GOTO_SLIDE', data);                  
+            }
+
         },
         loadAudio() {
             this.$refs['audioPlayer'].loadAudioList(this.audioFiles, this.currentSlide);
         },
         goToSlide(slide) {          
 
+
+            this.$refs['audioPlayer'].stopAudio();
             this.loadAudio(slide);
 
             console.log("goToSlide() slide #" + slide);
@@ -784,8 +887,11 @@ export default {
                     document.getElementById('editor'+ i).style.visibility = "visible";
                     document.getElementById('editor'+ i).style.display = "block";                                   
 
-                    //let data = this.canvas[slide].toJSON(); 
-                    //this.canvasSendJSON(this.canvas[slide], data);
+                    //@todo: if tutor then broadcast get the drawn canvas
+                    if (this.$props.isBroadcaster == true) {      
+                        let data = this.canvas[slide].toJSON(); 
+                        this.canvasSendJSON(this.canvas[slide], data);
+                    }
 
                     //HISTORY CREATION
                     /*
