@@ -366,8 +366,7 @@
         },   
         updateAudioTrackTime(trackTime) {
             let seekAudio = document.getElementById('audio');
-            seekAudio.currentTime = trackTime;
-            seekAudio.play();
+            seekAudio.currentTime = trackTime;            
         },
         getDuration() {
            return this.$refs.myMusic.duration;
