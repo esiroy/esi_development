@@ -358,7 +358,7 @@
             let trackTime = percent * seekAudio.duration
 
             console.log("track time", trackTime)
-            seekAudio.play();
+           // seekAudio.play();
 
             //we will send this through server and let client get the prev audio
             this.$root.$emit('seekAudio', {'index': this.audioIndex, 'trackTime': trackTime});
@@ -371,7 +371,7 @@
             if (this.media.paused === true) {
                 this.media.pause();                              
             } else {
-                this.media.true();   
+                this.media.play();   
             }
         },
         getDuration() {
