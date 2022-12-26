@@ -435,7 +435,16 @@ export default {
                 });
             } 
         });
-                
+
+        this.$root.$on('goToAudio', (index) => {
+            if (this.$props.isBroadcaster == true) {
+                this.socket.emit('GOTO_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                });
+            } 
+        });
+
 
         this.$root.$on('pauseAudio', (index) => {
             if (this.$props.isBroadcaster == true) {
@@ -478,7 +487,7 @@ export default {
         });
 
 
-        /*************** AUDIO SOCKET CONTROLLER (Reciever Only) ****************/
+        /*************** AUDIO SOCKET CONTROLLER (RECEIVER ONLY) ****************/
         this.socket.on('PLAY_AUDIO', (response) => {
             if (this.$props.isBroadcaster == false) {
                // this.$refs['audioPlayer'].goToAudio(response.index);    
@@ -487,6 +496,11 @@ export default {
             }
         });
 
+        this.socket.on('GOTO_AUDIO', (response) => {
+            if (this.$props.isBroadcaster == false) {
+               this.$refs['audioPlayer'].goToAudio(response.index);    
+            }
+        });
 
         this.socket.on('PAUSE_AUDIO', (response) => {
             if (this.$props.isBroadcaster == false) {

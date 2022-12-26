@@ -279,7 +279,7 @@
                 this.loadAudio(this.audioFiles[index], {'autoPlay': true });
                
                 //we will send this through server and let client play audio
-                this.$root.$emit('playAudio', this.audioIndex)
+                this.$root.$emit('goToAudio', this.audioIndex)
             }          
         },
         play() {
@@ -333,7 +333,7 @@
         loadAudio(audio, settings) 
         {          
             this.audio = document.getElementById('audio');
-            
+
             if (audio) {
                 this.audio.src = window.location.origin +"/"+ audio.path;              
                 this.audio.load();
