@@ -351,12 +351,17 @@
             let offsetWidth = document.getElementById("seekObj").offsetWidth;
 
             const percent = e.offsetX / offsetWidth;
-            console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
             seekAudio.currentTime = percent * seekAudio.duration;
+
+            console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
+
+            let trackTime = percent * seekAudio.duration
+
+            console.log("track time", trackTime)
             seekAudio.play();
 
-            //@todo: send current time to student
-            //seekAudio.currentTime 
+            //we will send this through server and let client get the prev audio
+            this.$root.$emit('seekAudio', {'index': this.audioIndex, 'trackTime': trackTime});
            
         },        
         getDuration() {

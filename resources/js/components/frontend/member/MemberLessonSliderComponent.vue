@@ -464,6 +464,19 @@ export default {
             }
         });
 
+        this.$root.$on('seekAudio', (data) => {
+            if (this.$props.isBroadcaster) {
+
+                console.log(data);
+
+                this.socket.emit('SEEK_AUDIO', {
+                    'channelid': this.channelid,
+                    'trackTime': data.trackTime,
+                    'index': data.index
+                }); 
+            }
+        });
+
 
         /*************** AUDIO SOCKET CONTROLLER (Reciever Only) ****************/
         this.socket.on('PLAY_AUDIO', (response) => {
@@ -491,6 +504,12 @@ export default {
             }
         });
 
+        this.socket.on('SEEK_AUDIO', (response) => {           
+            if (this.$props.isBroadcaster == false) {
+                console.log(response);
+            }
+        });        
+
 
         //window.addEventListener('scroll', this.reOffset);
         //window.addEventListener('resize', this.reOffset);
@@ -499,21 +518,16 @@ export default {
     },
     methods: {
 
+        testslider(value) {
+            alert ("test slider!", value)
+        },
 
         updateUserList: function(users) 
         {
             this.users = users;      
             this.$forceUpdate();
-
-            console.log("member lesson slider")
-          
+            console.log("member lesson slider");          
         },
-
-
-        testslider(value) {
-            alert ("test slider!", value)
-        },
-
         createCanvas(index) {
 
             //added to make canvas visible if the index is the first one
