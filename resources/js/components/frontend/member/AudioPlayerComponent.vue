@@ -213,6 +213,8 @@
             currentTime: null,
             //volume
             isVolumeDragged: false,
+
+            currentTrack: null,
         }
     },
     mounted() { 
@@ -275,11 +277,26 @@
         },
         loadAudio(audio, settings) 
         {             
+
             this.audio = document.getElementById('audio');
+
             if (audio) {
-                this.audio.src = window.location.origin +"/"+ audio.path;                              
-                this.audio.load();
-                console.log(audio.path);
+
+                if (this.currentTrack == null) {                
+                    this.currentTrack = this.audioFiles[this.audioIndex];
+                    this.audio.src = window.location.origin +"/"+ audio.path;                              
+                    this.audio.load();                    
+                } else {
+
+                    if (this.currentTrack == this.audioFiles[this.audioIndex]) {
+                        console.log("same track")                    
+                    } else {
+                        this.audio.src = window.location.origin +"/"+ audio.path;                              
+                        this.audio.load();                         
+                    }
+                    this.currentTrack = this.audioFiles[this.audioIndex];                   
+                }
+
                 this.audio.onloadedmetadata = () => {
                     this.onTimeUpdateListener();
                     if (settings.autoPlay === true) {
@@ -292,9 +309,7 @@
                 console.log("no audio for this slide")
             }
         },        
-        gotoAndPlayClientAudio(index) {
-
-        
+        gotoAndPlayClientAudio(index) {        
             if (this.audioFiles[index]) {  
 
                 console.log("gotoAndPlayClientAudio")
