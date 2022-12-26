@@ -363,7 +363,12 @@
             //we will send this through server and let client get the prev audio
             this.$root.$emit('seekAudio', {'index': this.audioIndex, 'trackTime': trackTime});
            
-        },        
+        },   
+        updateAudioTrackTime(trackTime) {
+            let seekAudio = document.getElementById('audio');
+            seekAudio.currentTime = trackTime;
+            seekAudio.play();
+        },
         getDuration() {
            return this.$refs.myMusic.duration;
         },

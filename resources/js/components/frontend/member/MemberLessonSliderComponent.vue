@@ -506,7 +506,7 @@ export default {
 
         this.socket.on('SEEK_AUDIO', (response) => {           
             if (this.$props.isBroadcaster == false) {
-                console.log(response);
+               this.$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
             }
         });        
 
