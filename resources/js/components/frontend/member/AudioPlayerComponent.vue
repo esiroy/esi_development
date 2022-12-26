@@ -366,7 +366,13 @@
         },   
         updateAudioTrackTime(trackTime) {
             let seekAudio = document.getElementById('audio');
-            seekAudio.currentTime = trackTime;            
+            seekAudio.currentTime = trackTime;
+
+            if (this.media.paused === true) {
+                this.media.pause();                              
+            } else {
+                this.media.true();   
+            }
         },
         getDuration() {
            return this.$refs.myMusic.duration;
