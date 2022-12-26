@@ -282,20 +282,9 @@
 
             if (audio) {
 
-                if (this.currentTrack == null) {                
-                    this.currentTrack = this.audioFiles[this.audioIndex];
-                    this.audio.src = window.location.origin +"/"+ audio.path;                              
-                    this.audio.load();                    
-                } else {
-
-                    if (this.currentTrack == this.audioFiles[this.audioIndex]) {
-                        console.log("same track")                    
-                    } else {
-                        this.audio.src = window.location.origin +"/"+ audio.path;                              
-                        this.audio.load();                         
-                    }
-                    this.currentTrack = this.audioFiles[this.audioIndex];                   
-                }
+                this.currentTrack = this.audioFiles[this.audioIndex];
+                this.audio.src = window.location.origin +"/"+ audio.path;                              
+                this.audio.load();  
 
                 this.audio.onloadedmetadata = () => {
                     this.onTimeUpdateListener();
@@ -304,7 +293,9 @@
                     } else if (settings.alwaysPlay === true) {
                         this.audio.play();
                     }      
-                };               
+                };
+
+
             } else {            
                 console.log("no audio for this slide")
             }
