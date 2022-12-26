@@ -207,7 +207,7 @@
            
             audioFiles: [],
             audioIndex: 0,
-            media: null,
+        
             playBtn: true,
             audio: null,
             currentTime: null,
@@ -286,14 +286,16 @@
             this.togglePlay();         
         },
         togglePlay() {        
-            this.media = document.getElementById('audio');
-            if (this.media.paused === false) {
-                this.media.pause();   
+
+            this.audio = document.getElementById('audio');
+
+            if (this.audio.paused === false) {
+                this.audio.pause();   
                 this.playBtn = true;
                 //we will send this through server and let client play audio
                 this.$root.$emit('pauseAudio', this.audioIndex); 
             } else {                
-                this.media.play();
+                this.audio.play();
                 this.playBtn = false;  
                 //we will send this through server and let client play audio
                 this.$root.$emit('playAudio', this.audioIndex);
@@ -331,6 +333,7 @@
         loadAudio(audio, settings) 
         {          
             this.audio = document.getElementById('audio');
+            
             if (audio) {
                 this.audio.src = window.location.origin +"/"+ audio.path;              
                 this.audio.load();
@@ -365,13 +368,14 @@
            
         },   
         updateAudioTrackTime(trackTime) {
+
             let seekAudio = document.getElementById('audio');
             seekAudio.currentTime = trackTime;
 
-            if (this.media.paused === true) {
-                this.media.pause();                              
+            if (this.audio.paused === true) {
+                this.audio.pause();                              
             } else {
-                this.media.play();   
+                this.audio.play();   
             }
         },
         getDuration() {
