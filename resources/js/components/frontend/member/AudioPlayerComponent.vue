@@ -273,13 +273,47 @@
                 console.log("undefined?", audioFiles)
             }           
         },
-        goToAudio(index) {
-            this.audioIndex = index;
-            if (this.audioFiles[index]) {
-                this.loadAudio(this.audioFiles[index], {'autoPlay': true });
+        loadAudio(audio, settings) 
+        {             
+            this.audio = document.getElementById('audio');
+            if (audio) {
+                this.audio.src = window.location.origin +"/"+ audio.path;                              
+                this.audio.load();
+                console.log(audio.path);
+                this.audio.onloadedmetadata = () => {
+                    this.onTimeUpdateListener();
+                    if (settings.autoPlay === true) {
+
+                        console.log("toggle play()")
+                        this.togglePlay();   
+                    } else {
+                    
+                        console.log("no auto play")
+                    }      
+                };
                
-                //we will send this through server and let client play audio
-                this.$root.$emit('goToAudio', this.audioIndex)
+            } else {            
+                console.log("no audio for this slide")
+            }
+        },        
+        gotoAndPlayClientAudio(index) {
+            if (this.audioFiles[index]) {  
+                this.audioIndex = index;
+                this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': true });                                  
+            }          
+        },
+        goToAudio(index) {
+            //Goto Audio for Broadcaster
+            this.audioIndex = index;
+
+            if (this.audioFiles[index]) {
+
+                console.log("goto audio fired");  
+
+                this.loadAudio(this.audioFiles[index], {'autoPlay': false });               
+
+                //we will send this and let client play audio
+                this.$root.$emit('goToAudio', this.audioIndex)                
             }          
         },
         play() {
@@ -289,12 +323,17 @@
 
             this.audio = document.getElementById('audio');
 
+            console.log(this.audio.paused);
+
             if (this.audio.paused === false) {
+
+                
                 this.audio.pause();   
                 this.playBtn = true;
                 //we will send this through server and let client play audio
                 this.$root.$emit('pauseAudio', this.audioIndex); 
             } else {                
+            
                 this.audio.play();
                 this.playBtn = false;  
                 //we will send this through server and let client play audio
@@ -329,25 +368,8 @@
 
             //we will send this through server and let client get the next audio
             this.$root.$emit('playAudio', this.audioIndex)                   
-        },
-        loadAudio(audio, settings) 
-        {          
-            this.audio = document.getElementById('audio');
+        },   
 
-            if (audio) {
-                this.audio.src = window.location.origin +"/"+ audio.path;              
-                this.audio.load();
-                this.audio.onloadedmetadata = () => {
-                    this.onTimeUpdateListener();
-                    if (settings.autoPlay === true) {
-                        this.togglePlay();   
-                    }               
-                };
-               
-            } else {            
-                console.log("no audio for this slide")
-            }
-        },
         seekAudio(e) {          
 
             let seekAudio = document.getElementById('audio');

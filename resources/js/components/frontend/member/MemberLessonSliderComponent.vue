@@ -438,6 +438,9 @@ export default {
 
         this.$root.$on('goToAudio', (index) => {
             if (this.$props.isBroadcaster == true) {
+
+                console.log("action goto Audio");
+
                 this.socket.emit('GOTO_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
@@ -490,15 +493,15 @@ export default {
         /*************** AUDIO SOCKET CONTROLLER (RECEIVER ONLY) ****************/
         this.socket.on('PLAY_AUDIO', (response) => {
             if (this.$props.isBroadcaster == false) {
-               // this.$refs['audioPlayer'].goToAudio(response.index);    
+               this.$refs['audioPlayer'].goToAudio(response.index);    
 
-               this.$refs['audioPlayer'].play();       
+               //this.$refs['audioPlayer'].play();       
             }
         });
 
         this.socket.on('GOTO_AUDIO', (response) => {
-            if (this.$props.isBroadcaster == false) {
-               this.$refs['audioPlayer'].goToAudio(response.index);    
+            if (this.$props.isBroadcaster == false) {                
+                this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index); 
             }
         });
 
