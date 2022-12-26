@@ -481,7 +481,9 @@ export default {
         /*************** AUDIO SOCKET CONTROLLER (Reciever Only) ****************/
         this.socket.on('PLAY_AUDIO', (response) => {
             if (this.$props.isBroadcaster == false) {
-                this.$refs['audioPlayer'].goToAudio(response.index);       
+               // this.$refs['audioPlayer'].goToAudio(response.index);    
+
+               this.$refs['audioPlayer'].play();       
             }
         });
 
@@ -506,6 +508,7 @@ export default {
 
         this.socket.on('SEEK_AUDIO', (response) => {           
             if (this.$props.isBroadcaster == false) {
+               console.log(response.trackTime);
                this.$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
             }
         });        
