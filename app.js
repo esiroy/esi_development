@@ -36,7 +36,7 @@ io.on('connection', function(socket) {
     /*****************************************/
 
     socket.on("PLAY_AUDIO", (data) => {
-        console.log("|| PLAY_AUDIO", data);
+        console.log("> PLAY_AUDIO", data);
         io.to(data.channelid).emit("PLAY_AUDIO", data);
         //io.sockets.emit("PAUSE_AUDIO", data);
     });
@@ -59,9 +59,9 @@ io.on('connection', function(socket) {
         //io.sockets.emit("PREV_AUDIO_FILE", data);
     });
 
-    socket.on("SEEK", (data) => {
-        console.log("<< SEEK", data)
-        io.to(data.channelid).emit("SEEK", data);
+    socket.on("SEEK_AUDIO", (data) => {
+        console.log("<<Time>> SEEK", data)
+        io.to(data.channelid).emit("SEEK_AUDIO", data);
         //io.sockets.emit("PREV_AUDIO_FILE", data);
     });
 
