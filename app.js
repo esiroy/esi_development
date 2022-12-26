@@ -41,6 +41,12 @@ io.on('connection', function(socket) {
         //io.sockets.emit("PAUSE_AUDIO", data);
     });
 
+    socket.on("GOTO_AUDIO", (data) => {
+        console.log(">>| GOTO_AUDIO", data);
+        io.to(data.channelid).emit("GOTO_AUDIO", data);
+        //io.sockets.emit("PAUSE_AUDIO", data);
+    });
+
     socket.on("PAUSE_AUDIO", (data) => {
         console.log("|| PAUSE_AUDIO", data);
         io.to(data.channelid).emit("PAUSE_AUDIO", data);
