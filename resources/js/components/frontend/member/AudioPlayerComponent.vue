@@ -214,7 +214,7 @@
             //volume
             isVolumeDragged: false,
 
-            currentTrack: null,
+            
         }
     },
     mounted() { 
@@ -275,14 +275,14 @@
                 console.log("undefined?", audioFiles)
             }           
         },
-        loadAudio(audio, settings) 
-        {             
+        loadAudio(audio, settings) {  
 
+            
             this.audio = document.getElementById('audio');
 
             if (audio) {
 
-                this.currentTrack = this.audioFiles[this.audioIndex];
+               
                 this.audio.src = window.location.origin +"/"+ audio.path;                              
                 this.audio.load();  
 
@@ -300,20 +300,35 @@
                 console.log("no audio for this slide")
             }
         },        
-        gotoAndPlayClientAudio(index) {        
+        gotoAndPlayClientAudio(index) 
+        {
             if (this.audioFiles[index]) {  
-
-                console.log("gotoAndPlayClientAudio")
-
-                this.audioIndex = index;
-                this.loadAudio(this.audioFiles[this.audioIndex], {'alwaysPlay': true });                                  
+                if (this.audioFiles[index].path == this.audioFiles[this.audioIndex].path) 
+                {                    
+                    this.playBtn = false;  
+                    this.audio.play();
+                } else {
+                    this.audioIndex = index;                
+                    this.loadAudio(this.audioFiles[this.audioIndex], {'alwaysPlay': true });             
+                }                                
             }          
         },
-        goToAudio(index) {
-            //Goto Audio for Broadcaster
-            this.audioIndex = index;
-            if (this.audioFiles[index]) {              
-                this.loadAudio(this.audioFiles[index], {'autoPlay': true });               
+        goToAudio(index) 
+        {
+            //BROADCASTER ONLY
+
+            if (this.audioFiles[index]) 
+            {    
+                if (this.audioFiles[index].path == this.audioFiles[this.audioIndex].path) 
+                { 
+
+                    this.playBtn = false;  
+                    this.audio.play();
+                } else {                
+                    this.audioIndex = index;
+                    this.loadAudio(this.audioFiles[index], {'autoPlay': true });                    
+                }
+
                 //we will send this and let client play audio
                 this.$root.$emit('goToAudio', this.audioIndex)                
             }          
@@ -324,18 +339,12 @@
         togglePlay() {        
 
             this.audio = document.getElementById('audio');
-
-            console.log(this.audio.paused);
-
             if (this.audio.paused === false) {
-
-                
                 this.audio.pause();   
                 this.playBtn = true;
                 //we will send this through server and let client play audio
                 this.$root.$emit('pauseAudio', this.audioIndex); 
-            } else {                
-            
+            } else {
                 this.audio.play();
                 this.playBtn = false;  
                 //we will send this through server and let client play audio

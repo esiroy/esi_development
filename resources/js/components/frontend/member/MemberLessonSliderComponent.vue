@@ -491,9 +491,7 @@ export default {
         /*************** AUDIO SOCKET CONTROLLER (RECEIVER ONLY) ****************/
         this.socket.on('PLAY_AUDIO', (response) => {
             if (this.$props.isBroadcaster == false) {
-               this.$refs['audioPlayer'].goToAudio(response.index);    
-
-               //this.$refs['audioPlayer'].play();       
+               this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index);  
             }
         });
 
