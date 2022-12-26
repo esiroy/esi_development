@@ -284,28 +284,30 @@
                     this.onTimeUpdateListener();
                     if (settings.autoPlay === true) {
                         this.togglePlay();   
-                    
-                        console.log("no auto play")
+                    } else if (settings.alwaysPlay === true) {
+                        this.audio.play();
                     }      
-                };
-               
+                };               
             } else {            
                 console.log("no audio for this slide")
             }
         },        
         gotoAndPlayClientAudio(index) {
+
+        
             if (this.audioFiles[index]) {  
+
+                console.log("gotoAndPlayClientAudio")
+
                 this.audioIndex = index;
-                this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': true });                                  
+                this.loadAudio(this.audioFiles[this.audioIndex], {'alwaysPlay': true });                                  
             }          
         },
         goToAudio(index) {
             //Goto Audio for Broadcaster
             this.audioIndex = index;
-
-            if (this.audioFiles[index]) {
+            if (this.audioFiles[index]) {              
                 this.loadAudio(this.audioFiles[index], {'autoPlay': true });               
-
                 //we will send this and let client play audio
                 this.$root.$emit('goToAudio', this.audioIndex)                
             }          

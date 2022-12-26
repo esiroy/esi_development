@@ -438,9 +438,7 @@ export default {
 
         this.$root.$on('goToAudio', (index) => {
             if (this.$props.isBroadcaster == true) {
-
-                console.log("action goto Audio");
-
+                console.log("broadcaster action goto Audio");
                 this.socket.emit('GOTO_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
