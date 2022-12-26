@@ -283,10 +283,7 @@
                 this.audio.onloadedmetadata = () => {
                     this.onTimeUpdateListener();
                     if (settings.autoPlay === true) {
-
-                        console.log("toggle play()")
                         this.togglePlay();   
-                    } else {
                     
                         console.log("no auto play")
                     }      
@@ -307,10 +304,7 @@
             this.audioIndex = index;
 
             if (this.audioFiles[index]) {
-
-                console.log("goto audio fired");  
-
-                this.loadAudio(this.audioFiles[index], {'autoPlay': false });               
+                this.loadAudio(this.audioFiles[index], {'autoPlay': true });               
 
                 //we will send this and let client play audio
                 this.$root.$emit('goToAudio', this.audioIndex)                
