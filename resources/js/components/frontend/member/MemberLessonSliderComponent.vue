@@ -150,7 +150,12 @@
 
 
             <div id="audio-container" class="d-inline-block">
-                <AudioPlayerComponent ref="audioPlayer"></AudioPlayerComponent>
+                <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.isBroadcaster"></AudioPlayerComponent>
+                
+                <div id="createNewSlide" class="tool d-inline-block" @click="createNewSlide" >
+                    <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
+                </div>
+                     
             </div>
             
             <div id="slide-container"></div>
@@ -180,12 +185,9 @@
 
 
 <script>
-
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
-
 import {fabric} from "fabric";
 import io from "socket.io-client";
-import io2 from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
@@ -342,17 +344,6 @@ export default {
     
     },
     mounted() {
-        //********* START WEBRTC ********* */
-
-        //console.log("web RTC", this.$props.webrtc_server);
-
-        /* this.webrtc_socket = io2.connect(this.$props.webrtc_server, {});
-
-        this.webrtc_socket.on('userJoined', (data) => {
-            console.log("webRTC user joined", data);
-        });
-        */
-
 
         //********* START CANVAS ********* */
         this.socket = io.connect(this.$props.canvas_server);
@@ -374,9 +365,7 @@ export default {
         this.socket.on('update_user_list', users => 
         {
             this.updateUserList(users); 
-
             //this.goToSlide(this.currentSlide);
-
             //this.alignCanvas();
         });      
 
@@ -385,6 +374,9 @@ export default {
         this.customSelectorBounds(fabric);
 
         this.socket.on("GOTO_SLIDE", (data) =>  {   
+
+            this.$refs['audioPlayer'].resetAudioIndex();
+
             this.viewerCurrentSlide = data.num
             this.currentSlide = data.num
             this.goToSlide(data.num);
@@ -393,7 +385,6 @@ export default {
         });
 
         this.socket.on('UPDATE_DRAWING', (response) => {
-
             try {
                 this.canvas[this.currentSlide].setZoom(response.canvasZoom);   
                 this.canvas[this.currentSlide].requestRenderAll(); 
@@ -405,6 +396,8 @@ export default {
             if (response.sender.userid !== this.user_info.id ) 
             {
                 try {
+
+
                     if (response.canvasDelta !== null) {
                         this.canvas[this.currentSlide].relativePan(response.canvasDelta);
                     }
@@ -438,7 +431,6 @@ export default {
 
         this.$root.$on('goToAudio', (index) => {
             if (this.$props.isBroadcaster == true) {
-                console.log("broadcaster action goto Audio");
                 this.socket.emit('GOTO_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
@@ -476,9 +468,6 @@ export default {
 
         this.$root.$on('seekAudio', (data) => {
             if (this.$props.isBroadcaster) {
-
-                console.log(data);
-
                 this.socket.emit('SEEK_AUDIO', {
                     'channelid': this.channelid,
                     'trackTime': data.trackTime,
@@ -521,7 +510,6 @@ export default {
 
         this.socket.on('SEEK_AUDIO', (response) => {           
             if (this.$props.isBroadcaster == false) {
-               console.log(response.trackTime);
                this.$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
             }
         });        
@@ -538,6 +526,47 @@ export default {
             alert ("test slider!", value)
         },
 
+        createNewSlide() {
+          
+            this.slides = this.slides + 1;
+            let index = this.slides;
+
+            alert("create new slide: " + index)
+
+            this.createCanvas(index);
+
+            this.canvas[index]  = new fabric.Canvas('canvas'+index, {
+                backgroundColor : "#fff"
+            });        
+
+            //New Image On the Background we will set the scale to default = 1
+            this.canvas[index]['scale'] = 1;
+            this.audioFiles[index] = [];
+
+            this.goToSlide(index);
+
+         
+
+            let memberCanvasData = {
+                'currentslide'  : this.currentSlide,
+                'channelid'     : this.channelid,
+                'sender'        : {
+                                    userid: this.user_info.id,
+                                    username: this.user_info.username
+                                  },
+                'recipient'     : this.getRecipient(),
+                'canvasid'      : this.canvas[this.currentSlide],
+                'canvasData'    : this.canvasGetJSON(),
+                'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
+                'canvasDelta'   : this.delta,
+            };
+
+
+            console.log(memberCanvasData.sender, memberCanvasData.recipient);
+
+            this.socket.emit('CREATE_NEW_SLIDE', memberCanvasData);  
+
+        },
         updateUserList: function(users) 
         {
             this.users = users;      
@@ -596,10 +625,7 @@ export default {
 
                     //Array of images
                     this.imageURL = response.data.files;
-
-                    this.audioFiles = response.data.audioFiles;
-
-             
+                    this.audioFiles = response.data.audioFiles;             
 
                     //Slide Count 
                     this.slides  = (response.data.files).length;
@@ -635,15 +661,9 @@ export default {
                     }
 
                 } else {
-          
-                    //@todo: no slide images found(???)
-
                     this.canvas[i]  = new fabric.Canvas('canvas'+i, {
                         backgroundColor : "#fff"
-                    });  
-
-
-
+                    });
                 }
 			});
 
@@ -754,12 +774,11 @@ export default {
             background.setAttribute('crossorigin', 'anonymous'); // works for me
 
         },
-
-
         getRecipient() {        
+          
             let recipient = {
                 userid: this.member_info.user_id ,
-                username: "test",
+                username: this.user_info.username,
                 nickname: this.member_info.nickname,            
                 type: this.user_info.user_type,      
             }
@@ -791,9 +810,10 @@ export default {
         
             let recipient = this.getRecipient();
 
-            console.log("scale", this.canvas[this.currentSlide]['scale'])
+            console.log("scale", this.canvas[this.currentSlide]['scale']);
 
             let memberCanvasData = {
+                'currentslide'  : this.currentSlide,
                 'channelid'     : this.channelid,
                 'sender'        : {
                                     userid: this.user_info.id,
@@ -820,6 +840,10 @@ export default {
         },
         sendCavasData() {
             let recipient  = this.getRecipient();
+
+            console.log("sendCavasData");
+
+            
             socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
         },
         setTimer() {
@@ -907,7 +931,7 @@ export default {
             this.$refs['audioPlayer'].stopAudio();
             this.loadAudio(slide);
 
-            console.log("goToSlide() slide #" + slide);
+            this.currentSlide = slide;
 
             for (var i = 1; i <= this.slides; i++) 
             {
@@ -1696,3 +1720,10 @@ export default {
     }
 };
 </script>
+
+
+<style lang="scss">
+    #createNewSlide {
+        font-size: 45px
+    }
+</style>

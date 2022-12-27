@@ -20,13 +20,13 @@
                 </div>
             </div>
 
-            <audio id="audio" ref="myMusic" @timeupdate="onTimeUpdateListener">
+            <audio id="audio1" ref="myMusic" @timeupdate="onTimeUpdateListener" >
                 <source src="" type="audio/mp3">
             </audio>
 
-            <div class="player-controls">
+            <div class="player-controls" >
 
-                <b-dropdown id="dropdown-audio-list" class="m-md-2" no-caret>
+                <b-dropdown id="dropdown-audio-list" class="m-md-2" no-caret v-show="this.$props.isBroadcaster == true">
                     <template #button-content>
                         <b-icon-list class="toggle"></b-icon-list>
                     </template>
@@ -37,19 +37,19 @@
 
 
 
-                <button id="prevAudio" @click="prevAudio" class="button-transparent d-inline-block">
-                    <i class="fa fa-fast-backward" aria-hidden="true"></i>
+                <button id="prevAudio" @click="prevAudio" class="button-transparent d-inline-block" >
+                    <i class="fa fa-fast-backward" aria-hidden="true" v-show="this.$props.isBroadcaster == true"></i>
                 </button>
 
             
 
-                <button class="button-transparent"  @click="play()">                    
+                <button class="button-transparent"  @click="play()" v-show="this.$props.isBroadcaster == true">                    
                    <b-icon-play font-scale="2" v-show="playBtn == true"></b-icon-play>
                    <b-icon-pause font-scale="2" v-show="playBtn == false"></b-icon-pause>
                 </button>
 
                 <button id="nextAudio" @click="nextAudio" class="button-transparent d-inline-block">
-                    <i class="fa fa-fast-forward" aria-hidden="true"></i>
+                    <i class="fa fa-fast-forward" aria-hidden="true" v-show="this.$props.isBroadcaster == true"></i>
                 </button>
 
                 <div id="seekObjContainer">
@@ -65,8 +65,9 @@
                     <div id="volume" class="volume"></div>
                 </div>
 
-
             </div>
+
+
         </div>
        
 
@@ -86,6 +87,9 @@
         padding: 0px;
     }
 
+    .audioPlayerContainer {
+        display: inline-block;
+    }
 
     .audio-player {
         width: 400px;
@@ -202,9 +206,14 @@
 <script>
  export default {
     name: "AudioPlayerComponent",
+    props: {
+        isBroadcaster: {
+            type: [Boolean],
+            required: true        
+        },       
+    },
     data() {
-        return {
-           
+        return {           
             audioFiles: [],
             audioIndex: 0,
         
@@ -213,11 +222,11 @@
             currentTime: null,
             //volume
             isVolumeDragged: false,
-
-            
         }
     },
     mounted() { 
+
+      
        
         $('.volume,.volumeBar').on('mousedown',  (e) => { //onTouchStart
             this.isVolumeDragged = true;
@@ -265,37 +274,37 @@
             $('.volume').css('clip', 'rect(0px, '+(percentage / 2)+'px, 50px, 0px)');
         },
         loadAudioList(audioFiles, num) {          
-            if (audioFiles) {            
-                console.log("audio files", audioFiles);
-                this.audioFiles = audioFiles[num];
-                //load the first on the list           
-                this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': false }); 
+
+            if (audioFiles) 
+            { 
+                this.audioFiles = audioFiles[num];               
+
+                if (this.audioFiles.length >= 1) {
+                    //load the first on the list           
+                    this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': false }); 
+                } else {
+                
+                    console.log("can't load audio listings for this slide")
+                }
 
             } else {
                 console.log("undefined?", audioFiles)
             }           
         },
-        loadAudio(audio, settings) {  
-
-            
+        loadAudio(audio, settings) 
+        {              
             this.audio = document.getElementById('audio');
-
-            if (audio) {
-
-               
+            if (audio) {               
                 this.audio.src = window.location.origin +"/"+ audio.path;                              
                 this.audio.load();  
-
                 this.audio.onloadedmetadata = () => {
                     this.onTimeUpdateListener();
                     if (settings.autoPlay === true) {
                         this.togglePlay();   
                     } else if (settings.alwaysPlay === true) {
                         this.audio.play();
-                    }      
+                    }
                 };
-
-
             } else {            
                 console.log("no audio for this slide")
             }
@@ -316,12 +325,10 @@
         goToAudio(index) 
         {
             //BROADCASTER ONLY
-
             if (this.audioFiles[index]) 
             {    
                 if (this.audioFiles[index].path == this.audioFiles[this.audioIndex].path) 
-                { 
-
+                {
                     this.playBtn = false;  
                     this.audio.play();
                 } else {                
@@ -383,22 +390,25 @@
 
         seekAudio(e) {          
 
-            let seekAudio = document.getElementById('audio');
-            let offsetWidth = document.getElementById("seekObj").offsetWidth;
+            if (this.$props.isBroadcaster == true) {
 
-            const percent = e.offsetX / offsetWidth;
-            seekAudio.currentTime = percent * seekAudio.duration;
+                let seekAudio = document.getElementById('audio');
+                let offsetWidth = document.getElementById("seekObj").offsetWidth;
 
-            console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
+                const percent = e.offsetX / offsetWidth;
+                seekAudio.currentTime = percent * seekAudio.duration;
 
-            let trackTime = percent * seekAudio.duration
+                console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
 
-            console.log("track time", trackTime)
-           // seekAudio.play();
+                let trackTime = percent * seekAudio.duration
 
-            //we will send this through server and let client get the prev audio
-            this.$root.$emit('seekAudio', {'index': this.audioIndex, 'trackTime': trackTime});
-           
+                console.log("track time", trackTime)
+                // seekAudio.play();
+
+                //we will send this through server and let client get the prev audio
+                this.$root.$emit('seekAudio', {'index': this.audioIndex, 'trackTime': trackTime});
+
+            }
         },   
         updateAudioTrackTime(trackTime) {
 

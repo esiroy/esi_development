@@ -30,6 +30,8 @@
 -->
 
 
+{{ $recipient }}
+
 <div id="slide-component">
     <lesson-slider-component 
         ref="lessonSliderComponent"
@@ -46,6 +48,9 @@
 
         :user_info="{{  json_encode(Auth::user()) }}"
         :member_info="{{  json_encode($userInfo) }}"
+
+
+
         api_token="{{ Auth::user()->api_token }}" 
         csrf_token="{{ csrf_token() }}"
         >
