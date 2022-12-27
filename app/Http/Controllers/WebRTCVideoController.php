@@ -44,30 +44,23 @@ class WebRTCVideoController extends Controller
                 $user = User::find($reserve->member_id);
 
                 if ($user) {
-                    
-                    $recipient = [
+
+                    $recipientInfo = [
                         'userid'=> $user->id,
                         'username'=> $user->username,
-                        'nickname'=> $user->user_id,            
-                        'type'=> 'TUTOR', 
+                        'nickname'=> $user->memberInfo->nickname,            
+                        'type'=> $user->user_type, 
                         'broadcaster'=>  $isBroadcaster
                     ];
 
-                }
-
-
-
-                /*
-                if ($recipient){
-                    echo "Member recipient found";
                 } else {
-                    echo "Member recipient not found :" .$reserve->member_id ;
-                }*/
+                
+                
+                }
 
             } else if ($userInfo->user_type == "MEMBER") {      
 
                 $userInfo = (Auth::user()->memberInfo);
-
                 
                 $isBroadcaster = 'false';
 
@@ -76,24 +69,25 @@ class WebRTCVideoController extends Controller
 
                 if ($tutor) {
 
-                    $recipient = json_encode([
+                    $recipientInfo = [
                                     'userid'=> $tutor->user_id,
-                                    'username'=> $tutor->username,
-                                    'nickname'=> $tutor->user,            
-                                    'type'=> 'TUTOR', 
+                                    'username'=> $tutor->user->username,
+                                    'nickname'=> $tutor->user->firstname,            
+                                    'type'=> $tutor->user->user_type, 
                                     'broadcaster'=>  $isBroadcaster
-                                ]);
+                                ];
 
                 } else {
-                    //show error
+
+                    return view('errors.500',[
+                        'title'     => 'Recipient not found',
+                        'message'   => 'Recipient not found',
+                        'code'      => '500'
+                    ]);
                 }
-               
             }
 
-
-
-             return Response::view('modules.webRTC.index', compact('roomID', 'userInfo', 'recipient', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
-
+            return Response::view('modules.webRTC.index', compact('roomID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
 
         } else {
             return view('errors.500',[

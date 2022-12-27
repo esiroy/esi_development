@@ -152,10 +152,12 @@
             <div id="audio-container" class="d-inline-block">
                 <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.isBroadcaster"></AudioPlayerComponent>
                 
-                <div id="createNewSlide" class="tool d-inline-block" @click="createNewSlide" >
+                <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
                     <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
                 </div>
                      
+
+                <slideUploaderComponent ref="slideUploader" :is-broadcaster="this.$props.isBroadcaster"></slideUploaderComponent>
             </div>
             
             <div id="slide-container"></div>
@@ -186,12 +188,13 @@
 
 <script>
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
+import SlideUploaderComponent from './SlideUploaderComponent.vue'
 import {fabric} from "fabric";
 import io from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
-    components: { AudioPlayerComponent },
+    components: { AudioPlayerComponent, SlideUploaderComponent},
     props: {
         csrf_token: String,		
         api_token: String,
@@ -220,6 +223,10 @@ export default {
             type: [Object, String],
             required: true
         },
+        recipient_info: {
+            type: [Object, String],
+            required: true
+        },        
         canvas_width: {
             type: [String, Number],
             required: true
@@ -373,16 +380,22 @@ export default {
         
         this.customSelectorBounds(fabric);
 
-        this.socket.on("GOTO_SLIDE", (data) =>  {   
-
+        this.socket.on("GOTO_SLIDE", (data) =>  {
             this.$refs['audioPlayer'].resetAudioIndex();
-
             this.viewerCurrentSlide = data.num
             this.currentSlide = data.num
-            this.goToSlide(data.num);
-            //this.rescale(11);
-
+            this.goToSlide(data.num);            
         });
+
+        
+        this.socket.on("CREATE_NEW_SLIDE", (data) => {
+
+            if (this.$props.isBroadcaster == false) 
+            {        
+                this.createNewSlide();
+            }
+        });
+
 
         this.socket.on('UPDATE_DRAWING', (response) => {
             try {
@@ -396,8 +409,6 @@ export default {
             if (response.sender.userid !== this.user_info.id ) 
             {
                 try {
-
-
                     if (response.canvasDelta !== null) {
                         this.canvas[this.currentSlide].relativePan(response.canvasDelta);
                     }
@@ -526,26 +537,31 @@ export default {
             alert ("test slider!", value)
         },
 
-        createNewSlide() {
+        prepareNewSlide() {
+
+            this.$refs['slideUploader'].prepareSlider();
+        },
+        createNewSlide() 
+        {
+           
+
           
             this.slides = this.slides + 1;
             let index = this.slides;
-
-            alert("create new slide: " + index)
 
             this.createCanvas(index);
 
             this.canvas[index]  = new fabric.Canvas('canvas'+index, {
                 backgroundColor : "#fff"
             });        
-
             //New Image On the Background we will set the scale to default = 1
             this.canvas[index]['scale'] = 1;
             this.audioFiles[index] = [];
 
-            this.goToSlide(index);
+           
 
-         
+            this.currentSlide = index;
+             this.goToSlide(index);     
 
             let memberCanvasData = {
                 'currentslide'  : this.currentSlide,
@@ -564,7 +580,14 @@ export default {
 
             console.log(memberCanvasData.sender, memberCanvasData.recipient);
 
-            this.socket.emit('CREATE_NEW_SLIDE', memberCanvasData);  
+            if (this.$props.isBroadcaster == true) 
+            {
+                console.log("sending to server");                
+                this.socket.emit('CREATE_NEW_SLIDE', memberCanvasData);  
+            } else {
+            
+                this.viewerCurrentSlide = this.currentSlide;
+            }
 
         },
         updateUserList: function(users) 
@@ -774,15 +797,8 @@ export default {
             background.setAttribute('crossorigin', 'anonymous'); // works for me
 
         },
-        getRecipient() {        
-          
-            let recipient = {
-                userid: this.member_info.user_id ,
-                username: this.user_info.username,
-                nickname: this.member_info.nickname,            
-                type: this.user_info.user_type,      
-            }
-            return recipient;
+        getRecipient() { 
+            return this.$props.recipient_info;
         },
 
         updateCanvas(canvas, data)
@@ -840,10 +856,7 @@ export default {
         },
         sendCavasData() {
             let recipient  = this.getRecipient();
-
-            console.log("sendCavasData");
-
-            
+            console.log("sendCavasData");            
             socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
         },
         setTimer() {
@@ -932,6 +945,7 @@ export default {
             this.loadAudio(slide);
 
             this.currentSlide = slide;
+            this.viewerCurrentSlide = slide;
 
             for (var i = 1; i <= this.slides; i++) 
             {
@@ -973,8 +987,7 @@ export default {
         prevSlide(delegateToNode) {
 
             //the audio index needs to be reset since it is global
-            this.$refs['audioPlayer'].resetAudioIndex();
-            
+            this.$refs['audioPlayer'].resetAudioIndex();            
             this.$refs['audioPlayer'].stopAudio();
 
             if (this.currentSlide > 1) {
@@ -1723,7 +1736,19 @@ export default {
 
 
 <style lang="scss">
-    #createNewSlide {
-        font-size: 45px
+
+    #audio-container {
+        display: inline-block;
+        vertical-align: middle;
+        height: 70px;
     }
+    
+    #newSlideButton {
+        font-size: 45px;
+        display: inline-block;
+        vertical-align: top;
+        margin: 10px 0px 10px;
+    }
+
+
 </style>

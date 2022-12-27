@@ -3,9 +3,9 @@
     <div class="audioPlayerContainer">
 
         <!-- Start custom Audio player-->
-        <div class="audio-player text-center text-light" v-show="this.audioFiles.length <= 0" >
-            <div class="my-2">
-                Slide has no audio
+        <div class="audio-player" v-show="this.audioFiles.length <= 0" >
+            <div class="nomedia small text-center text-light">
+                <div class="nomedia-information">Slide has no audio</div>
             </div>
         </div>
 
@@ -20,7 +20,7 @@
                 </div>
             </div>
 
-            <audio id="audio1" ref="myMusic" @timeupdate="onTimeUpdateListener" >
+            <audio id="audio" ref="myMusic" @timeupdate="onTimeUpdateListener" >
                 <source src="" type="audio/mp3">
             </audio>
 
@@ -76,7 +76,7 @@
 </template>
 
 
-<style lang="scss">
+<style lang="scss" >
 
     input.verticalRangeScrubber
     {
@@ -89,6 +89,22 @@
 
     .audioPlayerContainer {
         display: inline-block;
+        vertical-align: text-bottom;
+    }
+
+    .nomedia {
+        height: 100%;
+        vertical-align: middle;
+        position: relative;
+        display: table;
+        width: 100%;
+    }
+
+    .nomedia-information {
+        height: 50px;
+        vertical-align: middle;
+        vertical-align: middle;
+        display: table-cell;                
     }
 
     .audio-player {
@@ -137,8 +153,9 @@
             _border-color: #000000 #000000 #999 #000000;
             _filter: progid:DXImageTransform.Microsoft.Chroma(color='#000000');
         }
-        .dropdown-toggle {
-            background: transparent;
+
+        .dropdown-toggle, #dropdown-audio-list {
+            background: transparent !important;
             border: none;
         }
 
