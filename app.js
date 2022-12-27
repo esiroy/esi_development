@@ -101,6 +101,11 @@ io.on('connection', function(socket) {
         io.to('' + data.channelid + '').emit('UPDATE_DRAWING', data);
     });
 
+    socket.on("CREATE_NEW_SLIDE", (data) => {
+        io.to('' + data.channelid + '').emit("CREATE_NEW_SLIDE", data);
+    });
+
+
     socket.on("GOTO_SLIDE", (data) => {
         io.to('' + data.channelid + '').emit("GOTO_SLIDE", data);
     });
