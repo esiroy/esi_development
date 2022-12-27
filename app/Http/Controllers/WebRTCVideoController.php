@@ -72,7 +72,7 @@ class WebRTCVideoController extends Controller
                 $isBroadcaster = 'false';
 
                 //get the recipient based on the reservation
-                $tutor = Tutor::find($reserve->tutor_id);
+                $tutor = Tutor::where('user_id', $reserve->tutor_id)->first();
 
                 if ($tutor) {
 
