@@ -74,8 +74,6 @@ class WebRTCVideoController extends Controller
                 //get the recipient based on the reservation
                 $tutor = Tutor::find($reserve->tutor_id);
 
-                echo $tutor->id;
-
                 if ($tutor) {
 
                     $recipient = json_encode([
