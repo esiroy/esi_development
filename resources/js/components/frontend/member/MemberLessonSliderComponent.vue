@@ -155,9 +155,16 @@
                 <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
                     <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
                 </div>
-                     
+               
 
-                <slideUploaderComponent ref="slideUploader" :is-broadcaster="this.$props.isBroadcaster"></slideUploaderComponent>
+                <SlideUploaderComponent ref="slideUploader" 
+                    :folder_id="this.$props.folder_id"
+                    :is-broadcaster="this.$props.isBroadcaster"
+                    :api_token="this.api_token" 
+                    :csrf_token="this.csrf_token"
+                >
+                </SlideUploaderComponent>
+
             </div>
             
             <div id="slide-container"></div>
@@ -203,6 +210,15 @@ export default {
             type: [Boolean],
             required: true        
         },   
+        folder_id: {
+            type: [String, Number],
+            required: true        
+        },    
+        editor_id: {
+            type: String,
+            default: "canvas",
+            required: false
+        },           
         webrtc_server: {
             type: [String],
             required: true         
@@ -234,11 +250,6 @@ export default {
         canvas_height: {
             type: [String, Number],
             required: true
-        },
-        editor_id: {
-            type: String,
-            default: "canvas",
-            required: false
         }
     },
     data() {
@@ -342,6 +353,9 @@ export default {
             imageURL: [],
 
             notes: "<bold>lorem epusm dollor </bold>",
+
+            //background image
+            newBackgroundImage: null,
            
         };
     },
@@ -389,22 +403,30 @@ export default {
 
         
         this.socket.on("CREATE_NEW_SLIDE", (data) => {
-
             if (this.$props.isBroadcaster == false) 
-            {        
+            {
                 this.createNewSlide();
+                this.setBackgroundImage(this.currentSlide, data.backgroundURL);
+                this.$forceUpdate();     
             }
         });
 
 
         this.socket.on('UPDATE_DRAWING', (response) => {
+
+            console.log("update", response)
+            
+            if (this.currentSlide !== response.currentSlide) {
+                this.viewerCurrentSlide = response.currentSlide;
+            }
+
             try {
                 this.canvas[this.currentSlide].setZoom(response.canvasZoom);   
-                this.canvas[this.currentSlide].requestRenderAll(); 
-                
+                this.canvas[this.currentSlide].requestRenderAll();                 
             } catch (error) {
                 console.log("canvas setZoom errror", error);
             }
+
 
             if (response.sender.userid !== this.user_info.id ) 
             {
@@ -536,17 +558,22 @@ export default {
         testslider(value) {
             alert ("test slider!", value)
         },
-
         prepareNewSlide() {
+            this.$refs['slideUploader'].prepareSlider(this.$props.reservation, this.slides + 1);
+        },
+        userUploadedImage(file) 
+        {
+            this.newBackgroundImage = file.fullpath;
 
-            this.$refs['slideUploader'].prepareSlider();
+            this.createNewSlide();
+            this.setBackgroundImage(this.currentSlide, file.fullpath);
+            this.$forceUpdate();
+            
         },
         createNewSlide() 
         {
-           
-
-          
             this.slides = this.slides + 1;
+            
             let index = this.slides;
 
             this.createCanvas(index);
@@ -556,12 +583,10 @@ export default {
             });        
             //New Image On the Background we will set the scale to default = 1
             this.canvas[index]['scale'] = 1;
-            this.audioFiles[index] = [];
-
-           
+            this.audioFiles[index] = [];           
 
             this.currentSlide = index;
-             this.goToSlide(index);     
+            this.goToSlide(index);     
 
             let memberCanvasData = {
                 'currentslide'  : this.currentSlide,
@@ -575,6 +600,8 @@ export default {
                 'canvasData'    : this.canvasGetJSON(),
                 'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
                 'canvasDelta'   : this.delta,
+
+                'backgroundURL': this.newBackgroundImage 
             };
 
 
@@ -588,6 +615,10 @@ export default {
             
                 this.viewerCurrentSlide = this.currentSlide;
             }
+
+
+            this.autoSelectTool()
+
 
         },
         updateUserList: function(users) 
@@ -641,6 +672,8 @@ export default {
             
                 if (response.data.success === true) {
 
+                    console.log(response.data);
+
                     this.isLoading = false;
 
                     //Breadcrumbs
@@ -671,7 +704,7 @@ export default {
                             this.slides = (response.data.files).length;
 
                             //start slide (force)
-                            console.log("called startSlie()");
+                            console.log("called startSlide()");
                             this.startSlide();
 
                             this.$nextTick(function()
@@ -684,9 +717,12 @@ export default {
                     }
 
                 } else {
+
                     this.canvas[i]  = new fabric.Canvas('canvas'+i, {
                         backgroundColor : "#fff"
                     });
+
+                    //get custom slides(
                 }
 			});
 
@@ -735,34 +771,27 @@ export default {
             }
         },
 
-        userSlideAccess() {
-
+        userSlideAccess() 
+        {
             if (this.$props.isBroadcaster == false) 
             {
                 //Your are not a broadcaster
                 this.disableSelect();
                 this.deactivateSelector();
                 this.canvas[this.currentSlide].isDrawingMode = false;
-
                 //this.reOffset();
-
-
             } else {
                 //Your are the viewer  
                 this.mouseClickHandler();
                 this.activatePencil();
-
                 //this.reOffset();
             }
 
-
             this.keyPressHandler();
             this.startTimer();
-        },
-      
-        setBackgroundImage(index, imageURL) {
-
-            
+        },      
+        setBackgroundImage(index, imageURL) 
+        {            
             this.canvas[index].setBackgroundImage(imageURL, this.canvas[index].renderAll.bind(this.canvas[index]), {
                 // Optionally add an opacity lvl to the image
                 //backgroundImageOpacity: 0.5,
@@ -780,37 +809,35 @@ export default {
             this.canvas[index]['scale'] = 1;
         },            
         loadImage(index, imageURL) 
-        {                           
+        {          
+                             
             let ctx =  this.canvas[index].getContext("2d");
-
             this.canvas[index].width = this.canvas_width;
             this.canvas[index].height = this.canvas_height;
 
-
             var background = new Image();
             background.src = imageURL;
-
             background.onload = (bg) => {
                 ctx.drawImage(background,0,0, this.canvas_width, this.canvas_height);   
             } 
-
             background.setAttribute('crossorigin', 'anonymous'); // works for me
-
         },
         getRecipient() { 
             return this.$props.recipient_info;
         },
-
         updateCanvas(canvas, data)
         {
+
+            console.log(canvas, data);
+
             canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {            
                 if(this.$props.isBroadcaster == false) {
                     this.deactivateSelector()                
                 }                
             });            
         },
-        disableCanvas() {
-
+        disableCanvas() 
+        {
             this.canvas[this.currentSlide].forEachObject(function(o) {
                 o.selectable = false;
                 o.defaultCursor = 'not-allowed';
@@ -818,18 +845,19 @@ export default {
             });
             this.canvas[this.currentSlide].discardActiveObject();   
             this.canvas[this.currentSlide].requestRenderAll();
-
             //this.canvas[this.currentSlide].renderAll();
         },
         canvasSendJSON(canvasID, canvasData) 
-        {          
-        
-            let recipient = this.getRecipient();
+        {        
 
+            console.log("id", canvasID, canvasData);
+
+
+            let recipient = this.getRecipient();
             console.log("scale", this.canvas[this.currentSlide]['scale']);
 
             let memberCanvasData = {
-                'currentslide'  : this.currentSlide,
+                'currentSlide'  : this.currentSlide,
                 'channelid'     : this.channelid,
                 'sender'        : {
                                     userid: this.user_info.id,
@@ -840,11 +868,9 @@ export default {
                 'canvasData'    : canvasData,
                 'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
                 'canvasDelta'   : this.delta,
-            };
-       
+            };       
             this.socket.emit('SEND_DRAWING', memberCanvasData);  
-        },
-        
+        },       
         canvasGetJSON() 
         {
             return this.canvas[this.currentSlide].toJSON();           
@@ -918,7 +944,9 @@ export default {
         startSlide() {
             this.currentSlide = 1;
             this.autoSelectTool();
+            
             let data = this.canvasGetJSON();
+
             this.canvasSendJSON(this.canvas[this.currentSlide], data); 
             document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";     
 
@@ -1325,11 +1353,8 @@ export default {
                 let prevData = this.history[this.currentSlide][this.historyCounter];
                 this.updateCanvas(this.canvas[this.currentSlide], prevData.data); 
             } else {
-
-                console.log("no more things to redo")
-            
+                console.log("no more things to redo")            
             }
-
         
         },
         activateUndo() {

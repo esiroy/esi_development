@@ -38,7 +38,6 @@ class LessonSlideMaterials extends Controller
             $folderID       = $material->folder_id;
             $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
             $folderURLArray = Folder::getURLArray( $material->folder_id);
-
             $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
 
             if ($files) 
@@ -46,32 +45,29 @@ class LessonSlideMaterials extends Controller
                 $slides = [];
 
                 foreach ($files as $index => $file) {
-
                     array_push($slides, url($file->path));
-
                     //make the index same as the slide number
                     $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
                 }
             }
 
-          
-
             //seach for files in folder as images
- 
-       
             return Response([
                     "success"              => true,
-                
+                    'folderID'             => $folderID, 
                     "files"                => $slides,
-                    "audioFiles"                => $audioFiles,
+                    "audioFiles"           => $audioFiles,
                     "folderSegments"       => $folderSegments,
                     "folderURLArray"       => $folderURLArray
-            ])
-                ->withHeaders([                  
-                    'Accept-Ranges' => 'bytes',                    
-                ]);  
+            ])->withHeaders([                  
+                'Accept-Ranges' => 'bytes',                    
+            ]);  
 
-        
+        } else {
+            return Response([
+                "success"   => false,
+                "message"   => "No slides for this lesson"
+            ]);         
         }
     }
 

@@ -9,7 +9,9 @@ use App\Models\User;
 use App\Models\Tutor;
 use App\Models\Member;
 use App\Models\ScheduleItem;
-
+use App\Models\Folder;
+use App\Models\File;
+use App\Models\MemberSelectedLessonSlideMaterial;
 
 class WebRTCVideoController extends Controller
 {
@@ -32,9 +34,25 @@ class WebRTCVideoController extends Controller
 
             $userInfo =  Auth::user();
 
+            //get the selected material chosen by users
+            $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $reserve->id)->where('user_id', $reserve->member_id)->first();
+
+            if (!$material) 
+            {
+                //@todo: message no selected material
+                //@todo: get previous if current lesson is finished?
+
+            } else {            
+                //@desc: get the folder materials
+                $folderID       = $material->folder_id;
+                $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
+                $folderURLArray = Folder::getURLArray( $material->folder_id);
+                $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();  
+            }
+
+
 
             //get the tutor info if the logged in user is tutor
-
             if ($userInfo->user_type == "TUTOR") {       
 
                 $userInfo = (Auth::user()->tutorInfo);                
@@ -55,6 +73,11 @@ class WebRTCVideoController extends Controller
 
                 } else {
                 
+                    return view('errors.500',[
+                        'title'     => 'Recipient not found',
+                        'message'   => 'Recipient not found',
+                        'code'      => '500'
+                    ]);                
                 
                 }
 
@@ -87,7 +110,7 @@ class WebRTCVideoController extends Controller
                 }
             }
 
-            return Response::view('modules.webRTC.index', compact('roomID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
+            return Response::view('modules.webRTC.index', compact('roomID', 'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
 
         } else {
             return view('errors.500',[

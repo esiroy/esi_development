@@ -33,16 +33,19 @@
 
 
 <div id="slide-component">
+
     <lesson-slider-component 
         ref="lessonSliderComponent"
         :is-broadcaster="{{ $isBroadcaster }}"
         :editor_id="'canvas'"
         :channelid="{{ $roomID }}"
-        :reservation="{{ json_encode($reservationData) }}"            
-        
-        webrtc_server="{{  env('APP_WEBRTC_SERVER_URL') }}"
+        :folder_id="{{ $folderID }}"
 
+        :reservation="{{ json_encode($reservationData) }}"            
+
+        webrtc_server="{{  env('APP_WEBRTC_SERVER_URL') }}"
         canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
+
         canvas_width="1920"
         canvas_height="1080"
 
@@ -50,8 +53,6 @@
         :member_info="{{  json_encode($userInfo) }}"
 
         :recipient_info="{{ json_encode($recipientInfo) }}"
-
-
         api_token="{{ Auth::user()->api_token }}" 
         csrf_token="{{ csrf_token() }}"
         >

@@ -228,12 +228,13 @@ Route::resource('file', 'FileController');
 
 /*Upload Controller, Customer Support Upload Controller   */
 Route::post('uploader/fileUploader', 'FileUploadController@upload');
-
 Route::post('upload/tutor/file', 'FileUploadController@tutorUpload');
-
 Route::post('uploader/uploadLessonSlideMaterials', 'FileUploadController@uploadLessonSlideMaterials');
-
 Route::post('uploader/uploadAudio', 'FileUploadController@uploadAudio');
+
+//Tutor Upload Custom Slides
+Route::post('uploader/uploadTutorLessonSlides', 'FileUploadController@uploadTutorLessonSlides');
+
 
 
 

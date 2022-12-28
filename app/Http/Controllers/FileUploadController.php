@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File as AudioFileManager;
 
 use Auth;
 use Validator;
@@ -17,9 +18,7 @@ use App\Models\ChatSupportHistory;
 //use App\Models\Folder;
 use App\Models\File;
 use App\Models\FileAudio;
-
-use Illuminate\Support\Facades\File as AudioFileManager;
-
+use App\Models\CustomTutorLessonMaterials;
 
 class FileUploadController extends Controller
 {
@@ -330,5 +329,83 @@ class FileUploadController extends Controller
         }
     }    
 
+
+
+    //upload custom slides for tutors/teachers
+    public function uploadTutorLessonSlides(Request $request) {
+
+
+        //@todo: add gate in tutor
+        //abort_if(Gate::denies('tutor_upload_custom_slides'), Response::HTTP_FORBIDDEN, '403 Forbidden');
+
+        if ($files = $request->file('file')) {
+
+
+            //file path
+            $originalPath = 'storage/uploads/custom_tutor_lesson_slide_materials/';
+
+            $newFilename = time()."_". preg_replace('/\s+/', '_', $files->getClientOriginalName());
+
+            $newFilename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $newFilename);
+            
+            // Remove any runs of periods (thanks falstro!)
+            $newFilename = mb_ereg_replace("([\.]{2,})", '', $newFilename);
+
+            //check if the filesize is not 0 / or cancelled
+            if ($request->file('file')->getSize() > 0) {
+
+                // for save original image name
+                //$path = $request->file('file')->store('public/uploads');
+
+                //save in storage -> storage/public/uploads/
+                $path = $request->file('file')->storeAs(
+                    'public/uploads/custom_tutor_lesson_slide_materials/'.$request->folder_id , $newFilename
+                );
+
+                //create public path -> public/storage/uploads/{folder_id}
+                $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
+
+                // Save to file
+                $file = CustomTutorLessonMaterials::create([
+                    'user_id'       => Auth::user()->id,
+                    'folder_id'     => $request->folder_id,
+                    'file_name'     => $request->file('file')->getClientOriginalName(), //original filename
+                    'upload_name'   => $request->file('file')->getFileName(), //generated filename
+                    'size'          => $request->file('file')->getSize(),
+                    'path'          => $public_file_path                    
+                ]);
+
+                //Output JSON reply
+                return Response()->json([
+                    "success"       => true,                    
+                    'id'            => $file->id,
+                    'user_id'       => Auth::user()->id,
+                    'folder_id'     => $request->folder_id,
+                    "notes"         => "",
+                    "audioFiles"    => [], //newly uploaded new array
+                    "file"          => $request->file('file')->getClientOriginalName(), //original filename
+                    "upload_name"   => $request->file('file')->getFileName(),  //generated filename
+                    'size'          => $request->file('file')->getSize(),
+                    "path"          => $path,
+                    'fullpath'      => url($public_file_path),
+                    //"owner"         => Auth::user()
+                ]);
+
+            } else {
+
+                return Response()->json([
+                    "success"   => false,
+                    "message"   => "File Aborted or cancelled"
+                ]);
+
+            }
+
+        } else {
+            return Response()->json([
+                "success" => false
+            ]);
+
+        }
+    }
 
 }
