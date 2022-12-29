@@ -2,6 +2,18 @@
 
     <div id="component-container">
 
+        <div id="satisfactionSurveyContainer">
+            <SatisfactionSurveyComponent 
+                ref="satisfactionSurvey" 
+                :folder_id="this.$props.folder_id"
+                :is-broadcaster="this.$props.isBroadcaster"
+                :api_token="this.api_token" 
+                :csrf_token="this.csrf_token"
+            >
+            </SatisfactionSurveyComponent>
+        </div>
+
+
         <!--[start] toolbox -->
         <div id="toolbox" v-show="this.$props.isBroadcaster == true">
             <div class="tool-container">
@@ -149,25 +161,29 @@
             </div>
 
 
+
+
+
             <div id="audio-container" class="d-inline-block">
                 <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.isBroadcaster"></AudioPlayerComponent>
                 
                 <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
                     <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
                 </div>
-               
-
-                <SlideUploaderComponent ref="slideUploader" 
+                <SlideUploaderComponent 
+                    ref="slideUploader" 
                     :folder_id="this.$props.folder_id"
                     :is-broadcaster="this.$props.isBroadcaster"
                     :api_token="this.api_token" 
                     :csrf_token="this.csrf_token"
                 >
                 </SlideUploaderComponent>
-
             </div>
             
             <div id="slide-container"></div>
+
+
+   
 
 
         </div>
@@ -194,6 +210,7 @@
 
 
 <script>
+import SatisfactionSurveyComponent from './SatisfactionSurveyComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
 import SlideUploaderComponent from './SlideUploaderComponent.vue'
 import {fabric} from "fabric";
@@ -201,7 +218,7 @@ import io from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
-    components: { AudioPlayerComponent, SlideUploaderComponent},
+    components: { AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent},
     props: {
         csrf_token: String,		
         api_token: String,
@@ -365,6 +382,9 @@ export default {
     
     },
     mounted() {
+
+        //Transfer the object to the window
+        window.lessonSliderComponent = this;
 
         //********* START CANVAS ********* */
         this.socket = io.connect(this.$props.canvas_server);
@@ -555,8 +575,8 @@ export default {
     },
     methods: {
 
-        testslider(value) {
-            alert ("test slider!", value)
+        endCall() {
+            this.$refs['satisfactionSurvey'].showRatingAndFeedback();
         },
         prepareNewSlide() {
             this.$refs['slideUploader'].prepareSlider(this.$props.reservation, this.slides + 1);

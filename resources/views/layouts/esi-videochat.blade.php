@@ -82,6 +82,11 @@
                     <li class="pr-4 pt-2">
                        <i class="fas fa-signal fa-2x text-success"></i>          
                     </li>
+
+
+                    <li class="pr-4 pt-2">
+                       <i class="fas fa-sign-in-alt fa-2x text-white" onClick="window.lessonSliderComponent.endCall()"></i>    
+                    </li>                    
                 </ul>
                 <!--[end] right navigation-->
 

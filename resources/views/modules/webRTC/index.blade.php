@@ -333,5 +333,10 @@
           
         }
 
+
+        .tab-content > .active {
+            display: grid;
+        }
+
     </style>
 @endsection

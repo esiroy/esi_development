@@ -283,15 +283,9 @@
             @endif
 
             @php
-                $canvas_url = env('APP_CANVAS_SERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");    
-
-                echo $canvas_url;
-
+                $canvas_url = env('APP_CANVAS_SERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");  
             @endphp
             
-
-
-
             <member-caller-component            
                 :is-broadcaster="false"     
                 :user-Info="{{  json_encode(Auth::user()) }}" 
