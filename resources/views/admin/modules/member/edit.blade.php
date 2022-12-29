@@ -191,9 +191,10 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />
 
 
+<script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script>
+
 
 <script>
-
     function getMemberExamScorePage(page, memberID)
     {
         $.ajax({
@@ -366,8 +367,18 @@
                 });
 
 
+                CKEDITOR.on('instanceReady', function(){
+                    $.each( CKEDITOR.instances, function(instance) {
+                        CKEDITOR.instances[instance].on("change", function(e) {
+                            for ( instance in CKEDITOR.instances )
+                            CKEDITOR.instances[instance].updateElement();
+                        });
+                    });
+                });
 
-            
+
+                   
+
             }); //[end] $(document)
 
     })(jQuery);
