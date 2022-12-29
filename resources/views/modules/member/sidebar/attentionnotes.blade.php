@@ -12,12 +12,10 @@
          <div class="col-md-12">
 
              <div class="text-dark small px-2" style="height:100px; overflow-y:auto">
+             
                 @php 
-                    $lessonGoals = App\Models\LessonGoals::where('member_id', Auth::user()->id)
-                                    ->where('purpose', 'OTHERS')->first();
+                    $lessonGoals = App\Models\LessonGoals::where('member_id', Auth::user()->id)->where('purpose', 'OTHERS')->first();
                 @endphp
-                
-              
 
                 @if (isset($lessonGoals))
                     @if (str_replace('<p>&nbsp;</p>', '', $lessonGoals->extra_detail) == '')                      
