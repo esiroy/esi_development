@@ -11,6 +11,7 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <!-- Fonts -->
+
     <link rel="icon" href="{{ url('images/favicon.ico') }}"/>        
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
     <link rel="preconnect" href="//fonts.gstatic.com"  crossorigin />
@@ -85,8 +86,12 @@
 
 
                     <li class="pr-4 pt-2">
-                       <i class="fas fa-sign-in-alt fa-2x text-white" onClick="window.lessonSliderComponent.endCall()"></i>    
-                    </li>                    
+                        <button class="btn btn-sm">
+                            <i class="fas fa-sign-in-alt fa-2x text-white" onClick="window.lessonSliderComponent.endCall()"></i>    
+                        </button>
+                    </li>        
+                    
+                                
                 </ul>
                 <!--[end] right navigation-->
 

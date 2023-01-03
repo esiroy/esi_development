@@ -233,8 +233,10 @@
 
 @endsection 
 
+
 @section('scripts')
-@parent
+
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}"></script>
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
     <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" defer></script>
     <script src="{{ url('js/webRTC.js') }}" charset="utf-8" defer></script>
@@ -340,3 +342,4 @@
 
     </style>
 @endsection
+

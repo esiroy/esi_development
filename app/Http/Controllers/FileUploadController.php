@@ -367,12 +367,14 @@ class FileUploadController extends Controller
 
                 // Save to file
                 $file = CustomTutorLessonMaterials::create([
-                    'user_id'       => Auth::user()->id,
-                    'folder_id'     => $request->folder_id,
-                    'file_name'     => $request->file('file')->getClientOriginalName(), //original filename
-                    'upload_name'   => $request->file('file')->getFileName(), //generated filename
-                    'size'          => $request->file('file')->getSize(),
-                    'path'          => $public_file_path                    
+                    'user_id'               => Auth::user()->id,
+                    'lesson_schedule_id'    => $request->lesson_schedule_id,
+                    'folder_id'             => $request->folder_id,
+                    'file_name'             => $request->file('file')->getClientOriginalName(), //original filename
+                    'upload_name'           => $request->file('file')->getFileName(), //generated filename
+                    'size'                  => $request->file('file')->getSize(),
+                    'path'                  => $public_file_path,               
+                    'order_id'              => $request->order_id
                 ]);
 
                 //Output JSON reply

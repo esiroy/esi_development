@@ -85,6 +85,8 @@
                                                 @input-file="this.inputFile"
                                                 @input-filter="this.inputFilter"
                                                 :data="{
+                                                    order_id: this.slide_index,
+                                                    lesson_schedule_id: this.reservation.schedule_id,
                                                     folder_id: this.folder_id
                                                 }"
                                                 ref="slideUploader">
@@ -138,14 +140,13 @@
 
 import FileUpload from 'vue-upload-component'
 
+
 export default {
   components: {
-    FileUpload,
+    FileUpload
   },
   props: {
-    csrf_token: {
-      type: String
-    },
+    reservation: Object, 
     file_id: {
       type: Number
     },
@@ -153,11 +154,15 @@ export default {
         type: [String, Number],
         required: true        
     },
+    csrf_token: {
+      type: String
+    }     
   },
   data() {
     return {
       files: [],
       lesson_schedule_id: null,
+      slide_index: null,
     };
   },
   methods: {
@@ -240,9 +245,11 @@ export default {
         this.$parent.createNewSlide();
         this.$refs['modalCreateNewSlide'].hide();
     },
-    prepareSlider(reservation, slide_index) {
+    prepareSlider(reservation, slide_index) 
+    {
         this.lesson_schedule_id = reservation.schedule_id;
         this.slide_index = slide_index;        
+
         this.$refs['modalCreateNewSlide'].show();
     }    
   }

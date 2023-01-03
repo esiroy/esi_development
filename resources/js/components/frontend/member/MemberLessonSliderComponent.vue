@@ -172,6 +172,7 @@
                 </div>
                 <SlideUploaderComponent 
                     ref="slideUploader" 
+                    :reservation="this.$props.reservation"
                     :folder_id="this.$props.folder_id"
                     :is-broadcaster="this.$props.isBroadcaster"
                     :api_token="this.api_token" 
@@ -383,6 +384,8 @@ export default {
     },
     mounted() {
 
+        console.log("reservation", this.$props.reservation)
+
         //Transfer the object to the window
         window.lessonSliderComponent = this;
 
@@ -576,7 +579,7 @@ export default {
     methods: {
 
         endCall() {
-            this.$refs['satisfactionSurvey'].showRatingAndFeedback();
+            this.$refs['satisfactionSurvey'].showRatingAndFeedbackModal();
         },
         prepareNewSlide() {
             this.$refs['slideUploader'].prepareSlider(this.$props.reservation, this.slides + 1);
