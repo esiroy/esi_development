@@ -21,6 +21,7 @@
                 <!-- [START] TOOL WRAPPER -->
                 <div class="tool-wrapper" >
 
+                    <!--
                     <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
                         <i class="fas fa-undo-alt" ></i>                                
                     </div> 
@@ -28,6 +29,7 @@
                     <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
                         <i class="fas fa-redo-alt" ></i>                                
                     </div> 
+                    -->
 
                     <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
                         <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
