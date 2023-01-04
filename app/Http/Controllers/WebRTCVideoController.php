@@ -41,6 +41,8 @@ class WebRTCVideoController extends Controller
             {
                 //@todo: message no selected material
                 //@todo: get previous if current lesson is finished?
+                echo "User has not selected a folder";
+                exit();
 
             } else {            
                 //@desc: get the folder materials

@@ -252,7 +252,8 @@
         let isChatboxActive = false;
 
 
-        window.addEventListener('load', function () {
+        window.addEventListener('load', function () 
+        {
 
 
             /*** TOGGLE MEDIA CABINETS EFFECTS */
