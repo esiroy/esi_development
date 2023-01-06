@@ -1,218 +1,226 @@
 <template>
 
-    <div id="component-container">
 
-        <div id="satisfactionSurveyContainer">
-            <SatisfactionSurveyComponent 
-                ref="satisfactionSurvey" 
-                :folder_id="this.$props.folder_id"
-                :is-broadcaster="this.$props.isBroadcaster"
-                :api_token="this.api_token" 
-                :csrf_token="this.csrf_token"
-            >
-            </SatisfactionSurveyComponent>
-        </div>
+    <div class="main-component-holder">
+        <div id="component-container" v-show="sessionActive">
 
-
-        <!--[start] toolbox -->
-        <div id="toolbox" v-show="this.$props.isBroadcaster == true">
-            <div class="tool-container">
-
-                <!-- [START] TOOL WRAPPER -->
-                <div class="tool-wrapper" >
-
-                    <!--
-                    <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
-                        <i class="fas fa-undo-alt" ></i>                                
-                    </div> 
-
-                    <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
-                        <i class="fas fa-redo-alt" ></i>                                
-                    </div> 
-                    -->
-
-                    <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
-                        <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
-                    </div>     
-
-                    <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
-                        <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
-                    </div>     
-
-
-                    <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
-                        <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
-                    </div>
-                    
-                    <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
-                        <i class="fa fa-font text-white" aria-hidden="true"></i>
-                    </div>
-
-
-                    <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
-                        <i class="fa fa-hand-paper text-white"></i>
-                    </div>
-
-
-                    <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
-                        <i class="fa fa-pen text-white" aria-hidden="true" ></i>
-                    </div>                    
-                    <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
-                        <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
-                    </div>                        
-            
-                    <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
-                        <i class="fa fa-minus text-white" aria-hidden="true"></i>
-                    </div>        
-
-                    <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
-                        <b-icon icon="circle " font-scale="1"> </b-icon>
-                    </div> 
-                </div>
-                <!-- [END] TOOL WRAPPER -->
-
-                <!-- ADDITIONAL OPTIONS -->
-                <div class="tool-wrapper">
-
-                    <div class="tool">
-                        <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
-                    </div>             
-                
-                    <!-- Strokes-->
-                    <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
-                        <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
-                        <div id="brushStrokes" class="collapse" style="z-index:9999">
-                            <div class="brushes-container">
-                                <div class="brushes">
-                                    <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
-                                    <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
-                                    <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
-                                    <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
-                                    <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
-                                </div> 
-                            </div>
-                        </div>
-                    </div>
-                </div> 
-
-            </div>
-        </div>
-        <!--[end] toolbox -->
-
-        <!-- ********** [START] Lesson Slides *************-->
-        <div id="lessonSlide" class="left-container mb-2"> 
-
-
-            <nav aria-label="breadcrumb" class="d-inline-block">
-
-                <ol class="breadcrumb bg-transparent my-2 p-0">
-                    <li class="breadcrumb-item" aria-current="page">Home</li>
-                    <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
-                       {{ segment }}
-                    </li>
-                  
-                </ol>
-            </nav>
-
-            <div class="slide-controls d-inline-block">
-                  
-                <div class="buttons-container">
-
-                    <div class="d-flex justify-content-center">
-
-                        <!--
-                        <div id="firstSlide" class="tool" @click="startSlide" v-show="this.$props.isBroadcaster == true">
-                            <i class="fa fa-fast-backward" aria-hidden="true"></i>
-                        </div>  
-                        -->
-
-                        <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
-                            <i class="fa fa-backward" aria-hidden="true"></i>
-                        </div>
-
-
-
-                        <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
-
-                            <div v-show="this.$props.isBroadcaster == true">
-                                Slide {{ this.currentSlide }} of {{ this.slides }}
-                            </div>
-
-                            <div v-show="this.$props.isBroadcaster == false">
-                                Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
-                            </div>
-                        </div>
-
-
-
-                        <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
-                            <i class="fa fa-forward" aria-hidden="true"></i>
-                        </div>
-
-
-                        <!--
-                        <div id="lastSlide" class="tool" @click="lastSlide" v-show="this.$props.isBroadcaster == true">
-                            <i class="fa fa-fast-forward" aria-hidden="true"></i>
-                        </div>
-                        -->
-
-
-                    </div>
-                </div>
-
-            </div>
-
-
-
-
-
-            <div id="audio-container" class="d-inline-block">
-                <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.isBroadcaster"></AudioPlayerComponent>
-                
-                <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
-                    <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
-                </div>
-                <SlideUploaderComponent 
-                    ref="slideUploader" 
-                    :reservation="this.$props.reservation"
+            <div id="satisfactionSurveyContainer">
+                <SatisfactionSurveyComponent 
+                    ref="satisfactionSurvey" 
                     :folder_id="this.$props.folder_id"
                     :is-broadcaster="this.$props.isBroadcaster"
                     :api_token="this.api_token" 
                     :csrf_token="this.csrf_token"
                 >
-                </SlideUploaderComponent>
+                </SatisfactionSurveyComponent>
             </div>
+
+
+            <div id="satisfactionSurveyContainer">
+                <MemberFeebackComponent 
+                    ref="memberFeedback" 
+                    :folder_id="this.$props.folder_id"
+                    :is-broadcaster="this.$props.isBroadcaster"
+                    :api_token="this.api_token" 
+                    :csrf_token="this.csrf_token"
+                >
+                </MemberFeebackComponent>
+            </div>
+
+            <!--[start] toolbox -->
+            <div id="toolbox" v-show="this.$props.isBroadcaster == true">
+                <div class="tool-container">
+
+                    <!-- [START] TOOL WRAPPER -->
+                    <div class="tool-wrapper" >
+
+                        <!--
+                        <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
+                            <i class="fas fa-undo-alt" ></i>                                
+                        </div> 
+
+                        <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
+                            <i class="fas fa-redo-alt" ></i>                                
+                        </div> 
+                        -->
+
+                        <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
+                            <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
+                        </div>     
+
+                        <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
+                            <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
+                        </div>     
+
+
+                        <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
+                            <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
+                        </div>
+                        
+                        <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                            <i class="fa fa-font text-white" aria-hidden="true"></i>
+                        </div>
+
+
+                        <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
+                            <i class="fa fa-hand-paper text-white"></i>
+                        </div>
+
+
+                        <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
+                            <i class="fa fa-pen text-white" aria-hidden="true" ></i>
+                        </div>                    
+                        <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
+                            <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
+                        </div>                        
+                
+                        <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
+                            <i class="fa fa-minus text-white" aria-hidden="true"></i>
+                        </div>        
+
+                        <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
+                            <b-icon icon="circle " font-scale="1"> </b-icon>
+                        </div> 
+                    </div>
+                    <!-- [END] TOOL WRAPPER -->
+
+                    <!-- ADDITIONAL OPTIONS -->
+                    <div class="tool-wrapper">
+
+                        <div class="tool">
+                            <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
+                        </div>             
+                    
+                        <!-- Strokes-->
+                        <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
+                            <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
+                            <div id="brushStrokes" class="collapse" style="z-index:9999">
+                                <div class="brushes-container">
+                                    <div class="brushes">
+                                        <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                                        <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                                        <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                                        <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                                        <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+                </div>
+            </div>
+            <!--[end] toolbox -->
+
+            <!-- ********** [START] Lesson Slides *************-->
+
+            <div id="lessonSharedContainer"></div>
+
+            <div id="lessonSlide" class="left-container mb-2"> 
+
+
+                <nav aria-label="breadcrumb" class="d-inline-block">
+
+                    <ol class="breadcrumb bg-transparent my-2 p-0">
+                        <li class="breadcrumb-item" aria-current="page">Home</li>
+                        <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
+                        {{ segment }}
+                        </li>
+                    
+                    </ol>
+                </nav>
+
+                <div class="slide-controls d-inline-block">                  
+                    <div class="buttons-container">
+                        <div class="d-flex justify-content-center">
+                            <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                            </div>
+                            <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
+                                <div v-show="this.$props.isBroadcaster == true">
+                                    Slide {{ this.currentSlide }} of {{ this.slides }}
+                                </div>
+                                <div v-show="this.$props.isBroadcaster == false">
+                                    Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
+                                </div>
+                            </div>
+                            <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
+                                <i class="fa fa-forward" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="audio-container" class="d-inline-block">
+                    <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.isBroadcaster"></AudioPlayerComponent>
+                    
+                    <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
+                        <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
+                    </div>
+                    <SlideUploaderComponent 
+                        ref="slideUploader" 
+                        :reservation="this.$props.reservation"
+                        :folder_id="this.$props.folder_id"
+                        :is-broadcaster="this.$props.isBroadcaster"
+                        :api_token="this.api_token" 
+                        :csrf_token="this.csrf_token"
+                    >
+                    </SlideUploaderComponent>
+                </div>
+                
+                <div id="slide-container"></div>
             
-            <div id="slide-container"></div>
 
+            </div>
+            <!--********** [END] Lesson Slides *************-->
 
-   
+            <b-modal
+                id="modalAddInputText"
+                ref="modalAddInputText"
+                title="Add Text"
+                @show="resetInputTextModal" 
+                @hidden="resetInputTextModal"
+                @ok="addInputText">
+                <form ref="form" @submit.stop.prevent="handleSubmit"> 
+                    <b-form-group label="Text" label-for="textInput" invalid-feedback="Text is required">
+                        <b-form-input id="textInput" v-model="inputText" required></b-form-input>
+                    </b-form-group>
+                </form>
+            </b-modal>        
 
+        </div>        
 
+        <div v-show="!sessionActive">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12"> 
+
+                        <div class="mt-4">
+
+                            <b-card header="Lesson Information">   
+                                <b-card-text class="text-danger text-center">Session has ended</b-card-text>
+                            </b-card>
+
+                        </div>
+
+                        
+                    </div>
+                </div>
+            </div>
         </div>
-        <!--********** [END] Lesson Slides *************-->
 
-        <b-modal
-            id="modalAddInputText"
-            ref="modalAddInputText"
-            title="Add Text"
-            @show="resetInputTextModal"
-            @hidden="resetInputTextModal"
-            @ok="addInputText">
-            <form ref="form" @submit.stop.prevent="handleSubmit"> 
-                <b-form-group label="Text" label-for="textInput" invalid-feedback="Text is required">
-                    <b-form-input id="textInput" v-model="inputText" required></b-form-input>
-                </b-form-group>
-            </form>
-        </b-modal>        
 
-    </div>        
+    </div>
 
 
 </template>
 
 
 <script>
+
+
+import MemberFeebackComponent from './MemberFeebackComponent.vue'
 import SatisfactionSurveyComponent from './SatisfactionSurveyComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
 import SlideUploaderComponent from './SlideUploaderComponent.vue'
@@ -221,11 +229,14 @@ import io from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
-    components: { AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent},
+    components: { AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
     props: {
         csrf_token: String,		
         api_token: String,
-        reservation: Object,        
+        reservation: Object,       
+
+        lesson_history: Object,    
+
         isBroadcaster: {
             type: [Boolean],
             required: true        
@@ -272,8 +283,13 @@ export default {
             required: true
         }
     },
-    data() {
+    data() 
+    {
         return {
+
+            sessionActive: true,
+
+
             //socket
             socket: null,
 
@@ -367,7 +383,7 @@ export default {
 
             myIntervalTimer: null,
             timerSpeed: 1000,
-            timer: 60, //25 minutes = 1500
+            timer: 1800, //30 minutes = 1800
 
      
             imageURL: [],
@@ -376,6 +392,9 @@ export default {
 
             //background image
             newBackgroundImage: null,
+
+
+            test: null,
            
         };
     },
@@ -573,15 +592,204 @@ export default {
         });        
 
 
+        /*************** SESSION HANDLERS ****************/
+
+         this.socket.on('JOIN_SESSION', (response) => {
+
+            if (this.$props.isBroadcaster == false) {
+
+                console.log("USER JOINED A SESSION")
+            }
+        });  
+
+
+        this.socket.on('START_SESSION', (response) => {
+
+            if (this.$props.isBroadcaster == false) {
+
+                if (response.channelid == this.channelid) {
+                
+                    if (response.recipient.userid == this.user_info.id)
+                    {                    
+                        console.log("TEACHER STARTED A SESSION", response);
+                    } else {                    
+                        //end a session for all 
+                        console.log("TEACHER STARTED A SESSION FOR ALL USERS", response);
+                    }                
+                   
+                    this.startTimer();                  
+                } else {
+                
+                }
+
+            } else if (this.$props.isBroadcaster == true) {
+            
+                //console.log("TEACHER ENDED OWN SESSION", response);
+            }
+
+        }); 
+
+        this.socket.on('END_SESSION', (response) => {
+
+            if (this.$props.isBroadcaster == false) {
+
+                if (response.channelid == this.channelid) {
+                
+                    if (response.recipient.userid == this.user_info.id)
+                    {                    
+                        console.log("TEACHER ENDED A SESSION", response);
+                    } else {                    
+                        //end a session for all 
+                        console.log("TEACHER ENDED A SESSION FOR ALL USERS", response);
+                    }                
+                    this.showRatingModal();
+                    this.stopTimer();                  
+                } else {
+                
+                }
+
+            } else if (this.$props.isBroadcaster == true) {
+            
+                //console.log("TEACHER ENDED OWN SESSION", response);
+            }
+
+        });                  
+
+         
+
         //window.addEventListener('scroll', this.reOffset);
         //window.addEventListener('resize', this.reOffset);
 
 
     },
     methods: {
+        disableSession(){
+            //@todo: hide all  and end all stream
+            this.sessionActive = false;
+        },
+        startSession() {
+            this.postLessonStartHistory(this.reservation);
+        },
+        endSession() {
+            this.confirmEndLesson();  
+        },      
+        confirmEndLesson() {
 
-        endCall() {
-            this.$refs['satisfactionSurvey'].showRatingAndFeedbackModal();
+            this.$bvModal.msgBoxConfirm('Please confirm that you want to end lesson.', {                
+                title: 'Please Confirm',
+                buttonSize: 'sm',
+                okVariant: 'primary',
+                okTitle: 'YES',
+
+                cancelTitle: 'NO',
+                cancelVariant: 'danger',
+                footerClass: 'p-2',
+                hideHeaderClose: false,
+                centered: true,
+            }).then(isConfirmed => {
+
+                if (isConfirmed == true)  {                    
+
+                    this.postLessonEndSessionHistory(this.reservation);
+                    
+                    //@todo: create a modal for teacher to rate students
+                } 
+
+            }).catch(err => {
+                // An error occurred
+                alert (err)                
+            }); 
+        },
+        async getCanvasSlideData(slideIndex) {
+            return this.canvas[slideIndex].toJSON();       
+        },
+        async getAllSlideData() {
+
+            let slidesDataArray = new Array();
+
+            for (var i = 1; i <= this.slides; i++) 
+            {
+                let canvasData  = await this.getCanvasSlideData(i);
+                let data = {
+                    'slideIndex': i,
+                    'canvasData': canvasData,                    
+                };                    
+                slidesDataArray.push(data);
+            }
+
+            return slidesDataArray;
+        },
+        async postLessonStartHistory(reservationData) {
+        
+            let slidesData = await this.getAllSlideData();
+
+            axios.post("/api/postLessonHistory?api_token=" + this.api_token,
+            {
+                'method'          : "POST",
+                'folder_id'       : this.$props.folder_id,
+                'totalSlides'     : this.slides,
+                'currentSlide'    : this.currentSlide,
+                'reservation'     : reservationData,                
+                'slidesData'      : slidesData        
+            }).then(response => {
+
+                this.startTimer();                
+               this.socket.emit('START_SESSION', this.getSessionData()); 
+            });
+
+        },
+        async postLessonEndSessionHistory(reservationData) 
+        {
+            let slidesData = await this.getAllSlideData();
+
+            if (this.$props.isBroadcaster == false) {                       
+                alert ("Member is not allowed to end a session");
+                return false
+            }    
+
+            //@note: save session history
+            axios.post("/api/postLessonHistory?api_token=" + this.api_token,
+            {
+                'method'          : "POST",
+                'folder_id'       : this.$props.folder_id,
+                'totalSlides'     : this.slides,
+                'currentSlide'    : this.currentSlide,
+                'reservation'     : reservationData,                
+                'slidesData'      : slidesData                
+            }).then(response => {
+       
+                if (this.$props.isBroadcaster == true) 
+                {   
+                    console.log("session end was broadcasted");
+
+                    this.stopTimer();  
+                    this.showMemberFeedbackModal();
+                    this.socket.emit('END_SESSION', this.getSessionData());  
+                }             
+
+            });
+           
+        },
+        getSessionData() {
+            //@note: session data will be the send to socket server
+            let sessionData = {
+                'currentslide'  : this.currentSlide,
+                'channelid'     : this.channelid,
+                'sender'        : {
+                                    userid: this.user_info.id,
+                                    username: this.user_info.username
+                                },
+                'recipient'     : this.getRecipient()
+            };  
+            return sessionData
+        
+        },
+        showMemberFeedbackModal(){
+       
+            this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation);
+        },
+        showRatingModal() {
+            this.$refs['satisfactionSurvey'].showRatingAndFeedbackModal(this.reservation);
         },
         prepareNewSlide() {
             this.$refs['slideUploader'].prepareSlider(this.$props.reservation, this.slides + 1);
@@ -589,11 +797,9 @@ export default {
         userUploadedImage(file) 
         {
             this.newBackgroundImage = file.fullpath;
-
             this.createNewSlide();
             this.setBackgroundImage(this.currentSlide, file.fullpath);
-            this.$forceUpdate();
-            
+            this.$forceUpdate();            
         },
         createNewSlide() 
         {
@@ -726,11 +932,11 @@ export default {
                         if (i ==  this.slides)
                         {
                             this.userSlideAccess();
-                            this.slides = (response.data.files).length;
-
-                            //start slide (force)
-                            console.log("called startSlide()");
+                            this.slides = (response.data.files).length;                           
+                        
+                            //START SLIDE
                             this.startSlide();
+                            
 
                             this.$nextTick(function()
                             { 
@@ -813,8 +1019,60 @@ export default {
             }
 
             this.keyPressHandler();
-            this.startTimer();
+            this.isSessionActive()
+            
         },      
+
+        hideTimer() {
+          const elemCountdown = document.getElementById('startSessionContainer');
+                if (elemCountdown) {
+                    elemCountdown.style.display = 'none';            
+                }        
+        },
+        isSessionActive() {
+        
+            console.log("LESSON HISTORY", this.$props.lesson_history)
+
+            if (this.$props.lesson_history) 
+            {
+                if (this.$props.lesson_history.time_ended  == "0000-00-00 00:00:00") {
+
+                    //@note: this will start session automatically since the session was started before
+                    this.startTimer();
+                    this.updateMinutes();   
+
+                } else {
+                    
+                    console.log("lesson ended on : ", this.$props.lesson_history.time_ended)
+
+                    if (this.$props.isBroadcaster == true) {   
+
+                        this.hideTimer();
+                        this.showMemberFeedbackModal();
+                    } else {
+                        this.showRatingModal();
+                    }
+                    this.stopTimer();
+
+                } 
+
+            } else {
+
+                //hide countdown timer since 
+
+                const elemCountdown = document.getElementById('countDownTimerContainer');
+                if (elemCountdown) {
+                    elemCountdown.style.display = 'none';            
+                }
+
+                const endSession = document.getElementById('endSessionContainer');
+                if (endSession) {
+                    endSession.style.display = 'none';                    
+                }
+                
+            }
+
+        },
         setBackgroundImage(index, imageURL) 
         {            
             this.canvas[index].setBackgroundImage(imageURL, this.canvas[index].renderAll.bind(this.canvas[index]), {
@@ -853,8 +1111,6 @@ export default {
         updateCanvas(canvas, data)
         {
 
-            console.log(canvas, data);
-
             canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {            
                 if(this.$props.isBroadcaster == false) {
                     this.deactivateSelector()                
@@ -873,11 +1129,7 @@ export default {
             //this.canvas[this.currentSlide].renderAll();
         },
         canvasSendJSON(canvasID, canvasData) 
-        {        
-
-            console.log("id", canvasID, canvasData);
-
-
+        { 
             let recipient = this.getRecipient();
             console.log("scale", this.canvas[this.currentSlide]['scale']);
 
@@ -928,12 +1180,67 @@ export default {
             }
                
         },
-        updateTimer() {           
+
+        updateMinutes() {
+        
+            let now = new Date().toLocaleString("en-GB", {timeZone: "Asia/Tokyo"});
+            let started = new Date(this.$props.lesson_history.time_started).toLocaleString("en-GB")
+            let diff = this.diff(now, started);
+          
+            if (diff.minutes >= 1) {           
+
+                let newTimerMinutes = this.timer - (diff.minutes * 60)     
+                let newTimer = newTimerMinutes - diff.seconds //add the difference for the seconds     
+                this.timer = newTimer;
+                console.log("newTimer ", newTimer);
+
+            } else {
+                this.timer = this.timer - diff.seconds;
+                console.log("we have seconds update", diff.seconds)
+            }           
+
+        },
+        diff(now, started) 
+        {           
+            let d = (new Date(now)) - (new Date(started));
+            let weekdays     = Math.floor(d/1000/60/60/24/7);
+            let days         = Math.floor(d/1000/60/60/24 - weekdays*7);
+            let hours        = Math.floor(d/1000/60/60    - weekdays*7*24            - days*24);
+            let minutes      = Math.floor(d/1000/60       - weekdays*7*24*60         - days*24*60         - hours*60);
+            let seconds      = Math.floor(d/1000          - weekdays*7*24*60*60      - days*24*60*60      - hours*60*60      - minutes*60);
+            let milliseconds = Math.floor(d               - weekdays*7*24*60*60*1000 - days*24*60*60*1000 - hours*60*60*1000 - minutes*60*1000 - seconds*1000);
+            let t = {};
+            
+            ['weekdays', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'].forEach(q=>{ if (eval(q)>0) { t[q] = eval(q); } });
+
+            return t;         
+        },        
+        
+        updateTimer() {            
             this.setTimer();
             this.timer--;
         },                
         startTimer() {
+
+            const elemCountdown = document.getElementById('countDownTimerContainer');
+            if (elemCountdown) {
+                elemCountdown.style.display = 'block';            
+            }           
+
+            const endSession = document.getElementById('endSessionContainer');
+            if (endSession) {
+                endSession.style.display = 'block';    
+            }
+
+            const startSession = document.getElementById('startSessionContainer');
+            if (startSession) {
+                startSession.style.display = 'none';    
+            }
+            
+           
             this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);
+
+
         },
         stopTimer() {
             clearInterval(this.myIntervalTimer); 

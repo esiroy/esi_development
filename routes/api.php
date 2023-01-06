@@ -257,5 +257,9 @@ Route::middleware('auth:api')->delete('deleteAudio', 'FileUploadController@delet
 //File Ordering
 Route::middleware('auth:api')->post('/saveFileOrder', 'API\FileController@saveFileOrder')->name('saveFileOrder');
 
+//Lesson History Controller
+Route::middleware('auth:api')->post('/postLessonHistory', 'API\LessonHistoryController@postLessonHistory')->name('APIPostLessonHistory');
 
-
+//Member Satisfaction Survey
+Route::middleware('auth:api')->post('/postSatisfactionSurvey', 'API\MemberSatisfactionSurveyController@postSatisfactionSurvey')->name('APIPostSatisfactionSurvey');
+Route::middleware('auth:api')->post('/postMemberFeedback', 'API\MemberFeedbackController@postMemberFeedback')->name('APIMemberFeedback');

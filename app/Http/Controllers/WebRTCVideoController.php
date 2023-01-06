@@ -12,6 +12,11 @@ use App\Models\ScheduleItem;
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\MemberSelectedLessonSlideMaterial;
+use App\Models\lessonHistory;
+
+use App\Models\SatisfactionSurvey;
+use App\Models\MemberFeedback;
+
 
 class WebRTCVideoController extends Controller
 {
@@ -19,6 +24,7 @@ class WebRTCVideoController extends Controller
     {
         $roomID = $request->get('roomid');
         $reserve = ScheduleItem::where('id', $roomID)->first();
+
         
         if ($reserve) 
         {
@@ -44,14 +50,47 @@ class WebRTCVideoController extends Controller
                 echo "User has not selected a folder";
                 exit();
 
-            } else {            
+            } else {         
+
+
                 //@desc: get the folder materials
                 $folderID       = $material->folder_id;
                 $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
                 $folderURLArray = Folder::getURLArray( $material->folder_id);
-                $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();  
+                $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();            
+
             }
 
+
+            $lessonHistory = lessonHistory::where('schedule_id', $reserve->id)->first();
+
+                    
+            //check if it has a survey
+            if ($lessonHistory) {
+
+
+                if ($userInfo->user_type == "MEMBER") {       
+
+                    //@todo: check if the member is done with the satisfaction survey
+                    $lessonSurvey = SatisfactionSurvey::where('schedule_id', $reserve->id)->first();
+                    
+                    if ($lessonSurvey) {
+                        return Response::view('modules.webRTC.lessonFinished');                
+                    } 
+
+                } else if ($userInfo->user_type == "TUTOR") {       
+
+                    //@todo: check if the tutor filled up the member feedback form
+                    $memberFeedback = MemberFeedback::where('schedule_id', $reserve->id)->first();
+
+                    if ($memberFeedback) {
+                        return Response::view('modules.webRTC.lessonFinished');                
+                    } 
+
+
+                }
+            }
+            
 
 
             //get the tutor info if the logged in user is tutor
@@ -112,9 +151,10 @@ class WebRTCVideoController extends Controller
                 }
             }
 
-            return Response::view('modules.webRTC.index', compact('roomID', 'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
+            return Response::view('modules.webRTC.index', compact('lessonHistory', 'roomID', 'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
 
         } else {
+
             return view('errors.500',[
                 'title'     => 'Schedule not found',
                 'message'   => 'Schedule not found',

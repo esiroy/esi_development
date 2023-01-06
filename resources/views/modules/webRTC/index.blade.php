@@ -41,6 +41,7 @@
         :channelid="{{ $roomID }}"
         :folder_id="{{ $folderID }}"
 
+        :lesson_history="{{ json_encode($lessonHistory) }}"
         :reservation="{{ json_encode($reservationData) }}"            
 
         webrtc_server="{{  env('APP_WEBRTC_SERVER_URL') }}"
@@ -127,19 +128,21 @@
                                     <!--<span class="small">Settings</span>-->
                                 </button>                
 
-
+                                <!--
                                 <button type="button" id="stopCamera" class="btn btn-sm">
                                     <i class="fas fa-video text-white"></i>
                                     <i class="fas fa-video-slash text-white"></i>
                                 </button>
+                                -->
 
+                                <!--<button type="button" id="toggleCamera">Camera Hide On/Off</button>
 
-                                <!--<button type="button" id="toggleCamera">Camera Hide On/Off</button>-->
-
-                                <button type="button" id="toggleAudio"  class="btn btn-sm">
+                                <button id="toggleAudio" type="button" class="btn btn-sm">
                                     <i class="fas fa-volume-up text-white"></i>
                                     <i class="fas fa-volume-mute text-white"></i>
                                 </button>
+                                -->
+
 
                             </div>
                         </div>
@@ -234,9 +237,8 @@
 @endsection 
 
 
-@section('scripts')
-
-    <script src="{{ url('js/ckeditor/ckeditor.js')  }}"></script>
+@section('scripts')    
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script> 
     <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
     <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" defer></script>
     <script src="{{ url('js/webRTC.js') }}" charset="utf-8" defer></script>
@@ -315,6 +317,8 @@
 
 
     </script>
+
+       
 @endsection
 
 
@@ -340,6 +344,25 @@
         .tab-content > .active {
             display: grid;
         }
+
+        .media {                   
+            background-image: url('{{ url("images/audio.png") }}');
+            background-size: contain;
+            background-repeat: no-repeat;
+            min-height: 125px;
+            background-position-x: center;
+            background-color: #fff            
+        }
+
+     
+        #myMediaContainer audio, #videoGrid audio {
+            min-height: 125px;
+            width: 100%;
+            margin: 10px;
+            opacity: 0;
+        }
+
+
 
     </style>
 @endsection

@@ -13,6 +13,7 @@ class CreateMemberLessonSlideMaterialHistory extends Migration
      */
     public function up()
     {
+        /*
         Schema::create('member_lesson_slide_material_history', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->index('user_id');
@@ -25,6 +26,7 @@ class CreateMemberLessonSlideMaterialHistory extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');   
             $table->foreign('schedule_id')->references('id')->on('schedule_item')->onDelete('cascade');     
         });
+        */
     }
 
     /**
@@ -34,6 +36,6 @@ class CreateMemberLessonSlideMaterialHistory extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('member_selected_lesson_slide_material_history');
+       // Schema::dropIfExists('member_selected_lesson_slide_material_history');
     }
 }

@@ -34,11 +34,20 @@
                 <ul class="navbar-nav mr-auto">
 
                     <li class="pr-4">
-                        <a class="navbar-brand" href="{{ url('/') }}">
-                            <i class="fas fa-home fa-2x text-white"></i>
-                        </a>
+
+                        @if(Auth::user()->user_type == 'TUTOR')
+                            <a class="navbar-brand" href="{{ url('/admin') }}">
+                                <i class="fas fa-home fa-2x text-white"></i>
+                            </a>
+                        @else 
+                            <a class="navbar-brand" href="{{ url('/') }}">
+                                <i class="fas fa-home fa-2x text-white"></i>
+                            </a>
+                        @endif
                     </li>
 
+
+                    <!--
                     <li class="pr-4">
                         <a class="navbar-brand" href="{{ url('/') }}">
                             <i class="fas fa-book-open fa-2x text-white"></i>
@@ -64,32 +73,47 @@
                             <i class="fas fa-cloud-upload-alt  fa-2x text-white"></i>
                         </a>
                     </li>
+                     -->
                 </ul>              
-
+               
              
                 <!--[start]right navigation -->
                 <ul class="navbar-nav">
-                    <li class="pr-4">
-                        <a class="navbar-brand" href="{{ url('/') }}">
+
+                    <li class="pr-2">
+                        <a class="navbar-brand" href="#" onClick="javascript:return false">
                             <i class="fas fa-headset  fa-2x text-white"></i>
                         </a>
                     </li>
 
-                    <li class="pr-4 pt-2">
+
+
+                    <li class="pr-4 pt-2" id="countDownTimerContainer" style="display:none">
                         <span class="text-white font-weight-bold h2 mt-3" id="countDownTimer"></span>                       
                     </li>
 
-
-                    <li class="pr-4 pt-2">
-                       <i class="fas fa-signal fa-2x text-success"></i>          
-                    </li>
+  
 
 
-                    <li class="pr-4 pt-2">
-                        <button class="btn btn-sm">
-                            <i class="fas fa-sign-in-alt fa-2x text-white" onClick="window.lessonSliderComponent.endCall()"></i>    
-                        </button>
-                    </li>        
+                    @if(Auth::user()->user_type == 'TUTOR')
+                        @php 
+                            $scheduleID = app('request')->get('roomid');
+                            $lessonHistory = App\models\lessonHistory::where('schedule_id', $scheduleID)->first();
+                        @endphp
+
+                        @if (!$lessonHistory)
+                        <li class="pr-4 pt-2" id="startSessionContainer">
+                            <button id="startSessionC" class="btn btn-md btn-success" onClick="window.lessonSliderComponent.startSession()">Start Timer</button>                       
+                        </li>
+                        @endif
+                       
+
+                        <li class="pr-4 pt-2" id="endSessionContainer" style="display:none">
+                            <button class="btn btn-sm">
+                                <i class="fas fa-sign-in-alt fa-2x text-white" onClick="window.lessonSliderComponent.endSession()"></i>    
+                            </button>
+                        </li>        
+                    @endif
                     
                                 
                 </ul>

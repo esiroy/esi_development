@@ -14,8 +14,8 @@ const peer = new Peer({
 });
 
 'use strict';
-let myVideoStream;
-let myAudioStream;
+let myVideoStream = null;
+let myAudioStream = null;
 
 let videoElement;
 let audioElement;
@@ -505,7 +505,6 @@ function detectDesktopShared(stream) {
 
     });
 };
-
 
 
 
@@ -1314,8 +1313,28 @@ socket.on('userDisconnect', id => {
     }
 });
 
+function muteMic() {
+
+    console.log("audio mute mic")
+
+    if (myVideoStream != null) {
+        console.log("muting video")
+        myVideoStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+    }
+
+    if (myAudioStream != null) {
+        console.log("muting myAudioStream")
+        myAudioStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
+    }
+
+}
+
 
 
 document.getElementById("btnShareScreen").addEventListener("click", function() {
     shareScreen();
+});
+
+document.getElementById("toggleAudio").addEventListener("click", function() {
+    muteMic();
 });

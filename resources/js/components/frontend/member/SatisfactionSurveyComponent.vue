@@ -1,7 +1,7 @@
 <template>
 
 
-    <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer>
+    <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-backdrop  no-close-on-esc  hide-header-close>
 
 
         <template #modal-header>
@@ -37,7 +37,7 @@
                             </div>
                         </div>
                         <div class="col-5"> 
-                            <star-rating v-model="teacherPerformaceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>  
+                            <star-rating v-model="teacherPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>  
                         </div>                
                     </div>
 
@@ -48,7 +48,7 @@
                             </div>
                         </div>
                         <div class="col-5">   
-                            <star-rating v-model="studentSelfPerformanceRation" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>
+                            <star-rating v-model="studentSelfPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>
                         </div>
                     </div>
 
@@ -141,6 +141,10 @@ import VueCkeditor from 'vue-ckeditor2';
 export default {
     name: "satisfactionSurveyComponent",
     components: { StarRating, VueCkeditor},
+    props: {
+        csrf_token: String,		
+        api_token: String 
+    },    
     data() {
         return {
             //forms
@@ -150,8 +154,8 @@ export default {
 
             //Stars Container Ratings
             generalCourseRating: null,
-            teacherPerformaceRating: null,
-            studentSelfPerformanceRation: null,
+            teacherPerformanceRating: null,
+            studentSelfPerformanceRating: null,
 
             //Contents
             feeback: null,
@@ -164,13 +168,16 @@ export default {
                     
                 ],
                 height: 300
-            }                 
+            },
+            //reservationData
+            reservationData: null,            
         }
     },    
     methods: {
  
-        showRatingAndFeedbackModal() {   
-            this.showRatingsForm();        
+        showRatingAndFeedbackModal(reservationData) {
+            this.reservationData = reservationData;
+            this.showRatingsForm();
             this.$refs['ratingAndFeedBack'].show();
         },
         showRatingsForm() {
@@ -201,21 +208,43 @@ export default {
         {
             return this.isArrayValid([
                                     this.generalCourseRating, 
-                                    this.generalCourseRating, 
-                                    this.studentSelfPerformanceRation]
+                                    this.teacherPerformanceRating, 
+                                    this.studentSelfPerformanceRating]
                                 )
         },
         submitSurvey() {           
            let isLessonRated = this.checkLessonRated();     
 
            if (isLessonRated == true) {
-
-                alert("rated")
-
+                this.postSurvey();
            } else {
-
-                alert ("NOOO NOT RATED")
+                alert ("You have not rated your teacher, please click the stars to rate")
            }
+        },
+        postSurvey() {
+        
+            axios.post("/api/postSatisfactionSurvey?api_token=" + this.api_token,
+            {
+                method                          : "POST",
+                reservation                     : this.reservationData,
+                feeback                         : this.feeback,
+                message                         : this.message,   
+                //Ratings
+                generalCourseRating             : this.generalCourseRating, 
+                teacherPerformanceRating        : this.teacherPerformanceRating, 
+                studentSelfPerformanceRating    : this.studentSelfPerformanceRating
+
+            }).then(response => {
+            
+                if (response.data.success == true) {
+                    this.$refs['ratingAndFeedBack'].hide();
+                    this.$parent.disableSession();
+                } else {
+                    this.$refs['ratingAndFeedBack'].hide();  
+                    this.$parent.disableSession();              
+                }
+
+            });
         }
     }    
 }
