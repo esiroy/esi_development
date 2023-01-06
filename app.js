@@ -116,6 +116,26 @@ io.on('connection', function(socket) {
     });
 
 
+    /*****************************************/
+    /*  LESSON SESSION ACTIONS
+    /*****************************************/
+
+    socket.on("JOIN_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
+    });
+
+    socket.on("LEAVE_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("LEAVE_SESSION", data);
+    });
+
+
+    socket.on("START_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("START_SESSION", data);
+    });
+
+    socket.on("END_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("END_SESSION", data);
+    });
 
 
     /*****************************************/
