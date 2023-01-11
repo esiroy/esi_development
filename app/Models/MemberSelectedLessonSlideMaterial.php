@@ -2,11 +2,9 @@
 /*
     @description: Selected Lesson for Lesson slide 
 */ 
-
-
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
+
 
 class MemberSelectedLessonSlideMaterial extends Model
 {
@@ -15,10 +13,30 @@ class MemberSelectedLessonSlideMaterial extends Model
     protected $guarded = array('created_at', 'updated_at');
 
 
+      /**     
+     * @desc  determine if the user pre-selected a lesson
+     * @param  $userID, $lessonScheduleID
+     */
+    
+    public function selectedLesson($userID, $lessonScheduleID) 
+    {      
+        $memberSelectedLesson = MemberSelectedLessonSlideMaterial::where('user_id', $userID)->where('schedule_id', $lessonScheduleID)->first();        
+
+        if ($memberSelectedLesson) {
+
+           return $memberSelectedLesson;
+
+        } else {
+
+            return null;
+        }
+    }
+
+
     /**
-     * API - create a new registered member .
+     * API - create a new selected lesson slides
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  $userID, $lessonScheduleID,$selectedOption
      */
     public function saveSelectedLesson($userID, $lessonScheduleID, $selectedOption)
     {

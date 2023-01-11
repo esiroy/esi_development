@@ -1,3 +1,146 @@
+<template>
+
+    <div id="caller-wrapper">
+
+        <div class="container">
+
+            <b-modal id="modal-call-member" title="Requesting Lesson...">
+                <div v-if="this.reservation !== null" class="text-center">
+                    <!--
+                    <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
+                    <div>Current Time {{ this.currentTime }}</div>
+                    -->
+
+                    <div class="text-primary font-weight-bold">Member {{ this.member.firstname }}  {{ this.member.lastname }}</div>
+                    <div class="textsecondary">{{ this.reservation.lessonTimeRage }}</div>
+
+                    <img :src="this.member.image" class="rounded-circle">    
+
+                </div>
+                <template #modal-footer>
+                    <div class="container text-center">
+                        <b-button variant="danger" @click="cancelCall">Cancel Lesson Request</b-button>
+                    </div>
+                </template>
+            </b-modal>
+
+
+            <b-modal id="modal-call-teacher" title="Requesting Lesson...">
+                <div v-if="this.reservation !== null" class="text-center">
+                    <!--
+                    <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
+                    <div>Current Time {{ this.currentTime }}</div>
+                    -->
+
+                    <div class="text-primary font-weight-bold">Teacher {{ this.tutor.firstname }}  {{ this.tutor.lastname }}</div>
+                    <div class="textsecondary">{{ this.reservation.lessonTimeRage }}</div>
+
+                    <img :src="this.tutor.image" class="rounded-circle">    
+
+                </div>
+                <template #modal-footer>
+                    <div class="container text-center">
+                        <b-button variant="danger" @click="cancelCall">Cancel Lesson Request</b-button>
+                    </div>
+                </template>
+            </b-modal>
+
+
+            <b-modal id="modal-call-alert" title="Calling...">
+                <div v-if="this.callReservation !== null" class="text-center">   
+                    <div class="h5 mb-0 pb-0">
+                        <span class="fullname">{{ this.caller.firstname + " " + this.caller.lastname }}</span>
+                        <span v-show="this.caller.nickname">({{ this.caller.nickname }})</span>
+                    </div>
+                    <div>{{ this.caller.email }}</div>
+                    <img :src="this.caller.image" class="rounded-circle">   
+                </div>
+
+                <template #modal-footer>
+                    <div class="container text-center">
+                        <b-button variant="success" @click="acceptCall">Accept Lesson Request</b-button>
+                    </div>
+                </template>
+            </b-modal>
+
+        </div>
+
+
+        <!-- SELECT LESSON -->
+        <div id="select-lesson-container" class="container-fluid">
+
+             <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList" >
+                Select Lesson 
+                <b-form-select id="lessonSelector" v-model="lessonSelectedFolderID" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
+
+                <div class="mt-3" v-if="selectedOption !== null">
+                    <div class="pt-2">You have selected:</div>                
+                    <div>Lesson Name: <strong>{{ selectedOption.name }} </strong></div>
+                    <div>Lesson Description: {{ selectedOption.description }}</div>
+                </div>
+
+
+                <template #modal-footer>
+                    <div class="w-100">
+                        <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>
+                    </div>
+                </template>
+
+                <!--[START] - (NEW! 2023) PREVIEW: Lesson Image gallery for the selected lesson-->
+                <div class="container" v-if="files != null">
+                    <div class="row">
+                        <div class="col-2" v-for="file in files">                            
+                            <img :src="getBaseURL(file.path)" width="100px"/>                            
+                        </div>
+                    </div>
+                </div>
+                <div v-else class="text-center">
+                    <span class="text-danger">No Files Found</span>
+                </div>
+                <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->
+
+
+             </b-modal>
+
+
+        </div>
+
+
+
+        <div id="lesson-slider-container" class="container-fluid" tabindex="9999999999999">
+
+            <b-modal id="modal-lesson-slider" ref="modalLessonSlider" @hide="clearLessonChannel()" title="Lesson" size="xl"  :tabindex="9999999999999">                
+                <div v-if="this.sliderLoaded == true && this.channelid != null">
+                    <lesson-slider-component 
+                        ref="lessonSliderComponent"
+                        :editor_id="'canvas'"
+                        :channelid="this.channelid"
+                        :reservation="this.lessonReservationData"
+                        :isBroadcaster="this.isBroadcaster"
+                        :canvas_server="this.canvasServer"                
+                        :canvas_width="500"
+                        :canvas_height="500"
+                        :user_info="this.userInfo"
+                        :member_info="this.memberInfo" 
+                        :api_token="this.api_token" 
+                        :csrf_token="this.csrf_token"
+                        >
+                    </lesson-slider-component> 
+                </div>
+                <div v-else>
+                    <div class="d-flex justify-content-center mb-3">
+                        <b-spinner label="Loading..."></b-spinner>
+                    </div>                    
+                </div>
+            </b-modal>
+        </div>
+
+
+    </div>
+
+
+</template>
+
 <script>
     
     import io from "socket.io-client";    
@@ -49,6 +192,7 @@
 
                 //Model lesson Value
                 lessonSelected: null,
+                lessonSelectedFolderID: null,
 
                 //Lesson Options
                 lessonOptions: [],
@@ -65,18 +209,21 @@
                 selectedLessonID: null,
 
                 //Member Reservation
-                lessonReservationData: null
+                lessonReservationData: null,
+
+                //files
+                files: null
 
             }
         },
         mounted() {
 
-            console.log(this.canvasServer);
+            //Transfer the object to the window
+            window.memberCallerComponent = this;
 
             this.socket = io.connect(this.canvasServer);
 
-            //Transfer the object to the window
-            window.memberCallerComponent = this;
+
 
             //Register the member Info
             this.user = {
@@ -144,19 +291,51 @@
                  
                  }
 
-
             }); 
-
-            
-
-            
-            
         },
         methods: {
+            selectLesson(tutor, member, reservation) 
+            {           
+                this.tutor              = JSON.parse(tutor);
+                this.member             = JSON.parse(member);
+                this.reservation        = JSON.parse(reservation); 
 
+                //IMPORTANT: SELECTED ID IS FROM THE HTML FORM
+                this.selectedLessonID = this.reservation.schedule_id;
+                this.getMemberSelectedLesson()             
+                
+            },
+            getMemberSelectedLesson() 
+            {            
+
+                axios.post("/api/getMemberLessonSelected?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    userID          : this.member.userid,
+                    lessonID        : this.selectedLessonID
+                }).then(response => {
+
+                    if (response.data.success == true) {                                                
+
+                        this.lessonSelectedFolderID =  response.data.memberSelectedLesson.folder_id;
+
+                        this.getLessonSelectedPreviewByID(this.lessonSelectedFolderID)
+
+                        this.$bvModal.show('modalSelectLesson');                        
+
+                       
+                       
+                    } else {
+                        alert (response.data.message);
+                    }
+                });
+            },              
             openChannelTab(channelid) {
                 var baseURL = window.location.origin + "/webRTC?roomid="+ channelid
                 window.open(baseURL, '_blank');
+            },
+            getBaseURL(path) {
+               return window.location.origin + "/" +path
             },
             clearLessonChannel() {
                 //make this to mark user is on a channel is awaiting calls and free
@@ -171,40 +350,38 @@
                     setTimeout(this.revertModal, 50);
                 }       
             },
-            selectLesson(tutor, member, reservation) 
-            {              
 
-            
-                this.tutor              = JSON.parse(tutor);
-                this.member             = JSON.parse(member);
-                this.reservation        = JSON.parse(reservation);            
-
-                //IMPORTANT: SELECTED ID IS FROM THE HTML FORM
-                this.selectedLessonID = this.reservation.schedule_id;
-
-                //console.log(this.selectedLessonID );
-
-                console.log(this.member)
-
-
-                this.$bvModal.show('modalSelectLesson');
-
-                
-            },
             getOptionSelected(targetID) 
             {
-                let select = document.getElementById(targetID);
-                let selectedIndex = select.selectedIndex                
-                //let text = select.options[selectedIndex].text;
-
-                this.selectedOption = this.lessonOptions[selectedIndex];
-
-                return this.lessonOptions[selectedIndex]
+                let selectedID = document.getElementById(targetID).value;
+                this.getLessonSelectedPreviewByID(selectedID)
             },
-            saveOptionSelected(targetID) {
-            
+            getLessonSelectedPreviewByID(lessonSelectedFolderID) {
 
-               
+                console.log("selectedOption", lessonSelectedFolderID);
+
+
+                axios.post("/api/getLessonSelectedPreview?api_token=" + this.api_token, 
+                {
+                    method                  : "POST",
+                    userID                  : this.member.userid,
+                    lessonID                : this.selectedLessonID,
+                    lessonSelectedFolderID  : lessonSelectedFolderID
+
+                }).then(response => {
+
+                    if (response.data.success == true) 
+                    {
+                        this.files = response.data.files;
+                    } else {
+                        // alert (response.data.message);
+                        this.files = null;
+                    }
+                });
+
+            },
+            saveOptionSelected(targetID) 
+            {
                 let select = document.getElementById(targetID);
                 let selectedIndex = select.selectedIndex;
                 this.selectedOption = this.lessonOptions[selectedIndex];                
@@ -247,9 +424,7 @@
                     }];                
                 }
 
-                folders.forEach((folder) => {    
-
-                    //let tab = this.getTabbings(hierarchy);   
+                folders.forEach((folder) => { 
 
                     let folderOptionName = null;
 
@@ -261,12 +436,12 @@
 
 
                     this.lessonOptions.push({                  
-                        id      : folder.id,
-                        name    : folder.name,
-                        label   : folderOptionName,
-                        html    : folderOptionName,
-                        description:  folder.description,                             
-                        value   : folder.id
+                        id              : folder.id,
+                        name            : folder.name,
+                        label           : folderOptionName,
+                        html            : folderOptionName,
+                        description     : folder.description,                             
+                        value           : folder.id
                     });    
                        
                     if (folder.children.length >= 1) 
@@ -534,129 +709,3 @@
 
 </style>
 
-<template>
-
-    <div id="caller-wrapper">
-        <div class="container">
-
-
-            <b-modal id="modal-call-member" title="Requesting Lesson...">
-                <div v-if="this.reservation !== null" class="text-center">
-                    <!--
-                    <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
-                    <div>Current Time {{ this.currentTime }}</div>
-                    -->
-
-                    <div class="text-primary font-weight-bold">Member {{ this.member.firstname }}  {{ this.member.lastname }}</div>
-                    <div class="textsecondary">{{ this.reservation.lessonTimeRage }}</div>
-
-                    <img :src="this.member.image" class="rounded-circle">    
-
-                </div>
-                <template #modal-footer>
-                    <div class="container text-center">
-                        <b-button variant="danger" @click="cancelCall">Cancel Lesson Request</b-button>
-                    </div>
-                </template>
-            </b-modal>
-
-
-            <b-modal id="modal-call-teacher" title="Requesting Lesson...">
-                <div v-if="this.reservation !== null" class="text-center">
-                    <!--
-                    <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
-                    <div>Current Time {{ this.currentTime }}</div>
-                    -->
-
-                    <div class="text-primary font-weight-bold">Teacher {{ this.tutor.firstname }}  {{ this.tutor.lastname }}</div>
-                    <div class="textsecondary">{{ this.reservation.lessonTimeRage }}</div>
-
-                    <img :src="this.tutor.image" class="rounded-circle">    
-
-                </div>
-                <template #modal-footer>
-                    <div class="container text-center">
-                        <b-button variant="danger" @click="cancelCall">Cancel Lesson Request</b-button>
-                    </div>
-                </template>
-            </b-modal>
-
-
-            <b-modal id="modal-call-alert" title="Calling...">
-                <div v-if="this.callReservation !== null" class="text-center">   
-                    <div class="h5 mb-0 pb-0">
-                        <span class="fullname">{{ this.caller.firstname + " " + this.caller.lastname }}</span>
-                        <span v-show="this.caller.nickname">({{ this.caller.nickname }})</span>
-                    </div>
-                    <div>{{ this.caller.email }}</div>
-                    <img :src="this.caller.image" class="rounded-circle">   
-                </div>
-
-                <template #modal-footer>
-                    <div class="container text-center">
-                        <b-button variant="success" @click="acceptCall">Accept Lesson Request</b-button>
-                    </div>
-                </template>
-            </b-modal>
-
-        </div>
-
-
-        <!-- SELECT LESSON -->
-        <div id="select-lesson-container" class="container-fluid">
-             <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList" >
-                Select Lesson 
-                <b-form-select id="lessonSelector" v-model="lessonSelected" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
-
-                <div class="mt-3" v-if="selectedOption !== null">
-                    <div class="pt-2">You have selected:</div>                
-                    <div>Lesson Name: <strong>{{ selectedOption.name }} </strong></div>
-                    <div>Lesson Description: {{ selectedOption.description }}</div>
-                </div>
-
-
-                <template #modal-footer>
-                    <div class="w-100">
-                        <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>
-                    </div>
-                </template>
-             </b-modal>
-
-
-        </div>
-
-
-
-        <div id="lesson-slider-container" class="container-fluid" tabindex="9999999999999">
-
-            <b-modal id="modal-lesson-slider" ref="modalLessonSlider" @hide="clearLessonChannel()" title="Lesson" size="xl"  :tabindex="9999999999999">                
-                <div v-if="this.sliderLoaded == true && this.channelid != null">
-                    <lesson-slider-component 
-                        ref="lessonSliderComponent"
-                        :editor_id="'canvas'"
-                        :channelid="this.channelid"
-                        :reservation="this.lessonReservationData"
-                        :isBroadcaster="this.isBroadcaster"
-                        :canvas_server="this.canvasServer"                
-                        :canvas_width="500"
-                        :canvas_height="500"
-                        :user_info="this.userInfo"
-                        :member_info="this.memberInfo" 
-                        :api_token="this.api_token" 
-                        :csrf_token="this.csrf_token"
-                        >
-                    </lesson-slider-component> 
-                </div>
-                <div v-else>
-                    <div class="d-flex justify-content-center mb-3">
-                        <b-spinner label="Loading..."></b-spinner>
-                    </div>                    
-                </div>
-            </b-modal>
-        </div>
-
-
-    </div>
-
-
-</template>

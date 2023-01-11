@@ -16,9 +16,35 @@ use App\Models\FileAudio;
 class LessonSlideMaterials extends Controller
 {
 
-    /*@description: get the lesson slides of the folder */
-
     
+    //@description: determine if the user pre-selected a lesson
+    public function getMemberLessonSelected(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) {
+
+        $userID             = $request->userID;
+        $lessonScheduleID   = $request->lessonID;
+      
+        $memberSelectedLesson = $memberSelectedLessonSlideMaterial->selectedLesson($userID, $lessonScheduleID);
+        
+        if ($memberSelectedLesson) {
+
+            return Response()->json([
+                "success"                => true,
+                "memberSelectedLesson"   => $memberSelectedLesson,
+                "message"                => "Member selected Lesson Material has been successfully fetched"
+            ]); 
+
+        } else {
+
+            return Response()->json([
+                "success"                => false,
+                "memberSelectedLesson"   => $memberSelectedLesson, 
+                "message"                => "Member Selected Lesson Material not found"
+            ]); 
+
+        }
+    }
+
+    /*@description: get the lesson slides of the folder */
     public function getLessonMaterialSlides(Request $request)
     {
 
@@ -110,10 +136,40 @@ class LessonSlideMaterials extends Controller
             ]);           
         }
 
-
-
-
     }
     
+    public function getLessonSelectedPreview(Request $request) 
+    {
 
+
+        if (isset($request->lessonSelectedFolderID)) {
+
+            //selected option id
+            $files = File::where('folder_id', $request->lessonSelectedFolderID)->get();
+
+
+            if ($files) {
+                return Response()->json([
+                    "success"       => true,     
+                    "files"         =>   $files,
+                    "message"       => "Lesson Material has fetched successfully"
+                ]);  
+            } else {
+
+                return Response()->json([
+                    "success"       => false,
+                    "message"       => "Files for this folder was not found"
+                ]);   
+            }
+            
+        } else {
+
+            return Response()->json([
+                "success"       => false,
+                "message"       => "Please select a lesson"
+            ]); 
+
+        }
+    
+    }
 }

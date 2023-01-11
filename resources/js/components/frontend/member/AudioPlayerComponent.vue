@@ -376,8 +376,19 @@
             }
         },        
         stopAudio() {
+
             this.playBtn = true;
-            this.audio.pause();
+
+            //@done: reduce error when pausing slide without audio.
+            if (this.audio !== null) {
+                try {
+                    this.audio.pause();
+                } catch (error) {              
+                    //console.log(error);          
+                }
+            }
+
+            
         },        
         nextAudio() {
             if (this.audioIndex <  this.audioFiles.length -1 ) {

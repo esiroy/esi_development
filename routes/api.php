@@ -243,10 +243,17 @@ Route::middleware('auth:api')->post('/createAdminMergedAccount', 'API\MergeAccou
 Route::middleware('auth:api')->post('/getMemberMiniTestResult', 'API\MemberMiniTestResultController@get')->name('APIGetMemberMiniTestResults');
 Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\MemberMiniTestResultController@destroy')->name('APIDeleteMemberMiniTestResults');
 
+//Lesson Slide Pre-selected
+
+Route::middleware('auth:api')->post('/getMemberLessonSelected', 'API\LessonSlideMaterials@getMemberLessonSelected')->name('APIGetLessonMaterialSelected');
+
 //lesson slide materials
 Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlides')->name('APIGetLessonMaterialSlides');
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList');
 Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
+
+//lesson slide preview (NEW)
+Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlideMaterials@getLessonSelectedPreview')->name('APIGetLessonSelectedPreview');
 
 //File Manager
 Route::middleware('auth:api')->post('saveFileNotes', 'API\FileManagerController@saveFileNotes');
