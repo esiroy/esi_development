@@ -72,13 +72,28 @@
              <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList" >
                 Select Lesson 
                 <b-form-select id="lessonSelector" v-model="lessonSelectedFolderID" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
-
-                <div class="mt-3" v-if="selectedOption !== null">
+             
+                <!--[START] - (NEW! 2023) PREVIEW: Lesson Image gallery for the selected lesson-->
+                <div class="mt-3" v-if="folder !== null">
                     <div class="pt-2">You have selected:</div>                
-                    <div>Lesson Name: <strong>{{ selectedOption.name }} </strong></div>
-                    <div>Lesson Description: {{ selectedOption.description }}</div>
-                </div>
+                    <div>Lesson Name: <strong>{{ folder.folder_name }} </strong></div>
+                    <div>Lesson Description: {{ folder.folder_description }}</div>                 
+                    <div class="container pt-4" v-if="files != null">
+                        <div class="row">
+                            <div class="col-2" v-for="file in files">                            
+                                <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" @click="imageViewer(getBaseURL(file.path))"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="text-center">
+                        <span class="text-danger">No Images found for this slides</span>
+                    </div>
 
+                </div>
+                <div v-else class="mt-3 text-center">
+                    <div class="text-danger">Please select a folder</div>
+                </div>
+                <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->  
 
                 <template #modal-footer>
                     <div class="w-100">
@@ -86,25 +101,19 @@
                     </div>
                 </template>
 
-                <!--[START] - (NEW! 2023) PREVIEW: Lesson Image gallery for the selected lesson-->
-                <div class="container" v-if="files != null">
-                    <div class="row">
-                        <div class="col-2" v-for="file in files">                            
-                            <img :src="getBaseURL(file.path)" width="100px"/>                            
-                        </div>
-                    </div>
-                </div>
-                <div v-else class="text-center">
-                    <span class="text-danger">No Files Found</span>
-                </div>
-                <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->
+
 
 
              </b-modal>
-
-
         </div>
 
+        <div id="image-viewer-container" class="container-fluid">
+            <b-modal id="modalImageViewer"  title="Image Preview" ok-only>
+                <div v-if="imageURL !== null">
+                    <img :src="imageURL" class="img-fluid">
+                </div>
+            </b-modal>
+        </div>
 
 
         <div id="lesson-slider-container" class="container-fluid" tabindex="9999999999999">
@@ -212,7 +221,10 @@
                 lessonReservationData: null,
 
                 //files
-                files: null
+                files: null,
+                folder: null,
+
+                imageURL: null
 
             }
         },
@@ -315,18 +327,14 @@
                     lessonID        : this.selectedLessonID
                 }).then(response => {
 
-                    if (response.data.success == true) {                                                
-
+                    if (response.data.success == true) {
                         this.lessonSelectedFolderID =  response.data.memberSelectedLesson.folder_id;
-
                         this.getLessonSelectedPreviewByID(this.lessonSelectedFolderID)
-
-                        this.$bvModal.show('modalSelectLesson');                        
-
-                       
-                       
-                    } else {
-                        alert (response.data.message);
+                        this.$bvModal.show('modalSelectLesson');
+                    } else {                       
+                        //Member Selected Lesson Material not found
+                        //alert (response.data.message);
+                        this.$bvModal.show('modalSelectLesson');     
                     }
                 });
             },              
@@ -336,6 +344,12 @@
             },
             getBaseURL(path) {
                return window.location.origin + "/" +path
+            },
+            imageViewer(imageURL) {
+
+                this.imageURL = imageURL;
+
+                this.$bvModal.show('modalImageViewer');
             },
             clearLessonChannel() {
                 //make this to mark user is on a channel is awaiting calls and free
@@ -354,13 +368,15 @@
             getOptionSelected(targetID) 
             {
                 let selectedID = document.getElementById(targetID).value;
-                this.getLessonSelectedPreviewByID(selectedID)
+                this.getLessonSelectedPreviewByID(selectedID);
+
+                let select = document.getElementById(targetID);
+                let selectedIndex = select.selectedIndex;
+                this.selectedOption = this.lessonOptions[selectedIndex];  
+
+                return this.selectedOption;
             },
             getLessonSelectedPreviewByID(lessonSelectedFolderID) {
-
-                console.log("selectedOption", lessonSelectedFolderID);
-
-
                 axios.post("/api/getLessonSelectedPreview?api_token=" + this.api_token, 
                 {
                     method                  : "POST",
@@ -371,11 +387,23 @@
                 }).then(response => {
 
                     if (response.data.success == true) 
-                    {
-                        this.files = response.data.files;
+                    {        
+                        this.folder = response.data.folder;           
+                    
+                        //determine the file
+                        if (response.data.files.length == 0) {
+                            this.files = null;
+                            this.$forceUpdate();
+                        } else {
+                            this.files = response.data.files;
+                            this.$forceUpdate();
+                        }
+
                     } else {
-                        // alert (response.data.message);
+                        //@note:  nullify files to null to make the notication appear
                         this.files = null;
+                        this.folder = null;   
+                        this.$forceUpdate();  
                     }
                 });
 
@@ -450,6 +478,7 @@
                     }
 
                 });
+                
             },
             getLessonsList() {
                 axios.post("/api/get_folders?api_token=" + this.api_token, 
@@ -706,6 +735,10 @@
         margin: 1.75rem 1rem;
     }
 */
+
+ .cursor-pointer {
+    cursor: pointer;
+ }
 
 </style>
 

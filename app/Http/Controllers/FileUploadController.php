@@ -170,14 +170,17 @@ class FileUploadController extends Controller
                 //create public path -> public/storage/uploads/{folder_id}
                 $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
 
+                $orderID = File::where('user_id', Auth::user()->id)->where('folder_id', $request->folder_id)->count();
+
                 // Save to file
                 $file = File::create([
                     'user_id'       => Auth::user()->id,
                     'folder_id'     => $request->folder_id,
                     'file_name'     => $request->file('file')->getClientOriginalName(), //original filename
                     'upload_name'   => $request->file('file')->getFileName(), //generated filename
-                    'size'          => $request->file('file')->getSize(),
+                    'size'          => $request->file('file')->getSize(),                    
                     'path'          => $public_file_path,
+                    'order_id'      =>  $orderID + 1,
                 ]);
 
                 //Output JSON reply

@@ -14,8 +14,7 @@ class AddOrderIdToFilesTable extends Migration
     public function up()
     {
         Schema::table('files', function (Blueprint $table) {
-             $table->bigInteger('order_id')->after('user_id');
-
+            $table->bigInteger('order_id')->after('user_id');
         });
     }
 

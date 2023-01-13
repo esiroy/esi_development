@@ -82,7 +82,7 @@ class LessonSlideMaterials extends Controller
                     "success"              => true,
                     'folderID'             => $folderID, 
                     "files"                => $slides,
-                    "audioFiles"           => $audioFiles,
+                    "audioFiles"           => $audioFiles ?? null,
                     "folderSegments"       => $folderSegments,
                     "folderURLArray"       => $folderURLArray
             ])->withHeaders([                  
@@ -145,15 +145,22 @@ class LessonSlideMaterials extends Controller
         if (isset($request->lessonSelectedFolderID)) {
 
             //selected option id
-            $files = File::where('folder_id', $request->lessonSelectedFolderID)->get();
+            $file = File::where('folder_id', $request->lessonSelectedFolderID)
+                            ->orderBy('order_id', 'ASC')
+                            ->get();
 
+            if ($file) {
 
-            if ($files) {
+                $folder = Folder::where('id', $request->lessonSelectedFolderID)->first();
+
                 return Response()->json([
                     "success"       => true,     
-                    "files"         =>   $files,
+                    "files"         => $file,
+                    "folder"        => $folder,
                     "message"       => "Lesson Material has fetched successfully"
                 ]);  
+
+
             } else {
 
                 return Response()->json([

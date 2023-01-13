@@ -16,7 +16,7 @@
             </div>
 
 
-            <div id="satisfactionSurveyContainer">
+            <div id="memberFeebackComponentContainer">
                 <MemberFeebackComponent 
                     ref="memberFeedback" 
                     :folder_id="this.$props.folder_id"
@@ -25,6 +25,19 @@
                     :csrf_token="this.csrf_token"
                 >
                 </MemberFeebackComponent>
+            </div>
+
+
+            <div id="slideSelectorContainer">
+                <SlideSelectorComponent
+                    ref="slideSelector" 
+                    :reservation="this.reservation"
+                    :folder_id="this.$props.folder_id"
+                    :is-broadcaster="this.$props.isBroadcaster"
+                    :api_token="this.api_token" 
+                    :csrf_token="this.csrf_token"
+                >
+                </SlideSelectorComponent>
             </div>
 
             <!--[start] toolbox -->
@@ -118,15 +131,19 @@
 
             <div id="lessonSlide" class="left-container mb-2"> 
 
-
                 <nav aria-label="breadcrumb" class="d-inline-block">
+                    <!--
+                        @todo: [new] Add a button to select another slides folder
+                    -->                    
+                    <button type="button" @click="selectSlides">
+                        <b-icon icon="images" aria-hidden="true"></b-icon>
+                    </button>
 
                     <ol class="breadcrumb bg-transparent my-2 p-0">
                         <li class="breadcrumb-item" aria-current="page">Home</li>
                         <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
                         {{ segment }}
-                        </li>
-                    
+                        </li>                    
                     </ol>
                 </nav>
 
@@ -195,41 +212,35 @@
             <div class="container">
                 <div class="row">
                     <div class="col-12"> 
-
                         <div class="mt-4">
-
                             <b-card header="Lesson Information">   
                                 <b-card-text class="text-danger text-center">Session has ended</b-card-text>
                             </b-card>
-
-                        </div>
-
-                        
+                        </div>                        
                     </div>
                 </div>
             </div>
         </div>
 
-
     </div>
-
-
 </template>
 
 
 <script>
-
-
+import SlideSelectorComponent from './SlideSelectorComponent.vue'
+import AudioPlayerComponent from './AudioPlayerComponent.vue'
+//Uploader
+import SlideUploaderComponent from './SlideUploaderComponent.vue'
+//Feedback
 import MemberFeebackComponent from './MemberFeebackComponent.vue'
 import SatisfactionSurveyComponent from './SatisfactionSurveyComponent.vue'
-import AudioPlayerComponent from './AudioPlayerComponent.vue'
-import SlideUploaderComponent from './SlideUploaderComponent.vue'
+
 import {fabric} from "fabric";
 import io from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
-    components: { AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
+    components: { SlideSelectorComponent, AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
     props: {
         csrf_token: String,		
         api_token: String,
@@ -245,6 +256,7 @@ export default {
             type: [String, Number],
             required: true        
         },    
+
         editor_id: {
             type: String,
             default: "canvas",
@@ -390,11 +402,13 @@ export default {
 
             notes: "<bold>lorem epusm dollor </bold>",
 
-            //background image
+            //if user select new folder and or background image
+            newFolderID: null,
             newBackgroundImage: null,
 
-
+            //test variable for testing 
             test: null,
+            
            
         };
     },
@@ -663,6 +677,24 @@ export default {
 
     },
     methods: {
+        selectSlides() {
+
+            this.$refs['slideSelector'].openSlideSelector();
+
+            
+            let slidesData = {
+                'currentSlide'  : this.currentSlide,
+                'channelid'     : this.channelid,
+                'sender'        : {
+                                    userid: this.user_info.id,
+                                    username: this.user_info.username
+                                  },
+                'slide_folder_id': this.newFolderID,
+                'recipient'     : this.getRecipient()
+            };            
+
+            this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);
+        },
         disableSession(){
             //@todo: hide all  and end all stream
             this.sessionActive = false;

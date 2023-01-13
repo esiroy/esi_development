@@ -1335,6 +1335,8 @@ document.getElementById("btnShareScreen").addEventListener("click", function() {
     shareScreen();
 });
 
+/*
 document.getElementById("toggleAudio").addEventListener("click", function() {
     muteMic();
 });
+*/

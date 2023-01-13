@@ -27,7 +27,8 @@ class UpdateFilesTable extends Migration
     public function down()
     {
         Schema::table('files', function (Blueprint $table) {
-            Schema::dropIfExists('file_user');
+            Schema::dropColumn('user_id');
+            Schema::dropColumn('privacy');
         });
     }
 }
