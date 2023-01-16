@@ -2,6 +2,7 @@
 
 
     <div class="main-component-holder">
+
         <div id="component-container" v-show="sessionActive">
 
             <div id="satisfactionSurveyContainer">
@@ -131,14 +132,16 @@
 
             <div id="lessonSlide" class="left-container mb-2"> 
 
-                <nav aria-label="breadcrumb" class="d-inline-block">
-                    <!--
-                        @todo: [new] Add a button to select another slides folder
-                    -->                    
-                    <button type="button" @click="selectSlides">
+                <!--[start] slide selector for broadcaster -->
+                <div id="slideSelectorContainer" class="d-inline-block">
+                    <button type="button" @click="selectSlides" v-show="this.$props.isBroadcaster == true">
                         <b-icon icon="images" aria-hidden="true"></b-icon>
                     </button>
+                </div>
+                <!--[end] slide selector for broadcaster -->
 
+                <!--[start] breadcrumb -->
+                <nav aria-label="breadcrumb" class="d-inline-block">
                     <ol class="breadcrumb bg-transparent my-2 p-0">
                         <li class="breadcrumb-item" aria-current="page">Home</li>
                         <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
@@ -146,7 +149,10 @@
                         </li>                    
                     </ol>
                 </nav>
+                <!--[end] breadcrumb -->
 
+
+                <!--[start] slide controls -->
                 <div class="slide-controls d-inline-block">                  
                     <div class="buttons-container">
                         <div class="d-flex justify-content-center">
@@ -167,6 +173,7 @@
                         </div>
                     </div>
                 </div>
+                <!--[end] slide controls -->
 
 
                 <div id="audio-container" class="d-inline-block">
@@ -766,7 +773,7 @@ export default {
             }).then(response => {
 
                 this.startTimer();                
-               this.socket.emit('START_SESSION', this.getSessionData()); 
+                this.socket.emit('START_SESSION', this.getSessionData()); 
             });
 
         },
@@ -1069,6 +1076,7 @@ export default {
             {
                 if (this.$props.lesson_history.time_ended  == "0000-00-00 00:00:00") {
 
+
                     //@note: this will start session automatically since the session was started before
                     this.startTimer();
                     this.updateMinutes();   
@@ -1195,10 +1203,11 @@ export default {
             socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
         },
         setTimer() {
+        
             var elem = document.querySelector('#countDownTimer');
             elem.innerHTML = this.getTime();           
         },
-        getTime() {
+        secondsToHms() {
 
             if (this.timer >= 0) {
                 return this.secondsToHms(this.timer)    
