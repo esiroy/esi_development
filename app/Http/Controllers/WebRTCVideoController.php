@@ -50,8 +50,7 @@ class WebRTCVideoController extends Controller
                 echo "User has not selected a folder";
                 exit();
 
-            } else {         
-
+            } else {  
 
                 //@desc: get the folder materials
                 $folderID       = $material->folder_id;

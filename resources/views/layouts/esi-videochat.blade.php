@@ -86,14 +86,9 @@
                         </a>
                     </li>
 
-
-
-                    <li class="pr-4 pt-2" id="countDownTimerContainer" style="display:none">
+                    <li class="pr-4 pt-2" id="countDownTimerContainer">
                         <span class="text-white font-weight-bold h2 mt-3" id="countDownTimer"></span>                       
                     </li>
-
-  
-
 
                     @if(Auth::user()->user_type == 'TUTOR')
                         @php 

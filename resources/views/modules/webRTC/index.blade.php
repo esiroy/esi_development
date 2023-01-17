@@ -1,41 +1,8 @@
 @extends('layouts.esi-videochat')
 
 @section('content')
-
-
-<!--
-<div id="audio-container" class="bg-darkblue">
-    <div id="audio-controls" class="text-white p-1 d-inline-block">
-        <div id="prevAudio" class="d-inline-block px-2">
-            <i class="fa fa-fast-backward" aria-hidden="true"></i>
-        </div>  
-
-        <div id="prevAudio" class="d-inline-block px-2">
-            <i class="fa fa-play" aria-hidden="true"></i>
-        </div>     
-
-        <div id="nextAudio" class="d-inline-block px-2">
-            <i class="fa fa-fast-forward" aria-hidden="true"></i>
-        </div>
-    </div>
-
-    <div id="audio-player" class="bg-darkblue text-white p-1 d-inline-block">
-        <audio controls>
-            <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/ogg">
-            <source src="https://samplelib.com/lib/preview/mp3/sample-3s.mp3" type="audio/mpeg">
-            Your browser does not support the audio element.
-        </audio>
-    </div>
-</div>            
--->
-
-
-
-
 <div id="slide-component">
-
-    <lesson-slider-component 
-        ref="lessonSliderComponent"
+    <lesson-slider-component  ref="lessonSliderComponent"
         :is-broadcaster="{{ $isBroadcaster }}"
         :editor_id="'canvas'"
         :channelid="{{ $roomID }}"
@@ -52,26 +19,11 @@
 
         :user_info="{{  json_encode(Auth::user()) }}"
         :member_info="{{  json_encode($userInfo) }}"
-
         :recipient_info="{{ json_encode($recipientInfo) }}"
+
         api_token="{{ Auth::user()->api_token }}" 
-        csrf_token="{{ csrf_token() }}"
-        >
-    </lesson-slider-component> 
+        csrf_token="{{ csrf_token() }}"></lesson-slider-component> 
 </div>
-
-<!--
-<div id="right-sidebar">
-   
-    <div id="camera-button-container">
-        <div class="bg-lightblue float-right mt-3 pr-1 pl-2 rounded-left">
-            <i class="fas fa-camera text-white"></i>
-        </div>
-    </div>
-   
-
-</div>
--->
 
 <div class="right-fixed">
 

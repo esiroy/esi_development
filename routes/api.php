@@ -244,8 +244,8 @@ Route::middleware('auth:api')->post('/getMemberMiniTestResult', 'API\MemberMiniT
 Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\MemberMiniTestResultController@destroy')->name('APIDeleteMemberMiniTestResults');
 
 //Lesson Slide Pre-selected
-
 Route::middleware('auth:api')->post('/getMemberLessonSelected', 'API\LessonSlideMaterials@getMemberLessonSelected')->name('APIGetLessonMaterialSelected');
+Route::middleware('auth:api')->post('/updateSelectedLesson', 'API\LessonSlideMaterials@updateSelectedLesson')->name('APIUpdateSelectedSlidesFolder');
 
 //lesson slide materials
 Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlides')->name('APIGetLessonMaterialSlides');
@@ -254,6 +254,8 @@ Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\Les
 
 //lesson slide preview (NEW)
 Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlideMaterials@getLessonSelectedPreview')->name('APIGetLessonSelectedPreview');
+
+
 
 //File Manager
 Route::middleware('auth:api')->post('saveFileNotes', 'API\FileManagerController@saveFileNotes');
@@ -270,3 +272,5 @@ Route::middleware('auth:api')->post('/postLessonHistory', 'API\LessonHistoryCont
 //Member Satisfaction Survey
 Route::middleware('auth:api')->post('/postSatisfactionSurvey', 'API\MemberSatisfactionSurveyController@postSatisfactionSurvey')->name('APIPostSatisfactionSurvey');
 Route::middleware('auth:api')->post('/postMemberFeedback', 'API\MemberFeedbackController@postMemberFeedback')->name('APIMemberFeedback');
+
+

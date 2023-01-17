@@ -307,14 +307,10 @@ export default {
         return {
 
             sessionActive: true,
-
-
             //socket
             socket: null,
 
-            //webrtc:
-            webrtc_socket: null,
-
+      
             //loader
             isLoading: false,
 
@@ -424,17 +420,11 @@ export default {
         this.getSlideMaterials(this.reservation);
     
     },
-    mounted() {
-
-        console.log("reservation", this.$props.reservation)
-
-        //Transfer the object to the window
-        window.lessonSliderComponent = this;
-
-        //********* START CANVAS ********* */
+    mounted() 
+    {
+       
         this.socket = io.connect(this.$props.canvas_server);
-
-        console.log(this.$props.canvas_server);
+        window.lessonSliderComponent = this;
 
         //register as currently active users can see ONLINE  status
         let user = {
@@ -447,17 +437,15 @@ export default {
         }
         this.socket.emit('REGISTER', user); 
 
-        //general chat update users online
-        this.socket.on('update_user_list', users => 
-        {
+       
+        this.socket.on('update_user_list', users => {
             this.updateUserList(users); 
             //this.goToSlide(this.currentSlide);
             //this.alignCanvas();
-        });      
-
-
+        });   
         
         this.customSelectorBounds(fabric);
+
 
         this.socket.on("GOTO_SLIDE", (data) =>  {
             this.$refs['audioPlayer'].resetAudioIndex();
@@ -479,7 +467,7 @@ export default {
 
         this.socket.on('UPDATE_DRAWING', (response) => {
 
-            console.log("update", response)
+           //console.log("update", response)
             
             if (this.currentSlide !== response.currentSlide) {
                 this.viewerCurrentSlide = response.currentSlide;
@@ -684,11 +672,12 @@ export default {
 
     },
     methods: {
+
         selectSlides() {
 
-            this.$refs['slideSelector'].openSlideSelector();
+            this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
 
-            
+            //@todo (jan-17,2022): add node server select new slide
             let slidesData = {
                 'currentSlide'  : this.currentSlide,
                 'channelid'     : this.channelid,
@@ -701,6 +690,22 @@ export default {
             };            
 
             this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);
+        },
+        openNewSlideMaterials() {
+         
+            //@remove old slides();
+            for (var i = 1; i <= this.slides; i++) 
+            {
+
+                this.canvas[i].dispose();
+
+                if (i ==  this.slides) {
+                    this.getSlideMaterials(this.reservation);
+                }
+            }
+
+            
+        
         },
         disableSession(){
             //@todo: hide all  and end all stream
@@ -727,11 +732,8 @@ export default {
                 centered: true,
             }).then(isConfirmed => {
 
-                if (isConfirmed == true)  {                    
-
+                if (isConfirmed == true)  {      
                     this.postLessonEndSessionHistory(this.reservation);
-                    
-                    //@todo: create a modal for teacher to rate students
                 } 
 
             }).catch(err => {
@@ -842,10 +844,10 @@ export default {
         },
         createNewSlide() 
         {
-            this.slides = this.slides + 1;
-            
-            let index = this.slides;
+            this.slides     = this.slides + 1;            
+            let index       = this.slides;
 
+            //create a canvas based on the current index
             this.createCanvas(index);
 
             this.canvas[index]  = new fabric.Canvas('canvas'+index, {
@@ -853,9 +855,8 @@ export default {
             });        
             //New Image On the Background we will set the scale to default = 1
             this.canvas[index]['scale'] = 1;
-            this.audioFiles[index] = [];           
-
-            this.currentSlide = index;
+            this.audioFiles[index]      = [];
+            this.currentSlide           = index;
             this.goToSlide(index);     
 
             let memberCanvasData = {
@@ -870,26 +871,17 @@ export default {
                 'canvasData'    : this.canvasGetJSON(),
                 'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
                 'canvasDelta'   : this.delta,
-
                 'backgroundURL': this.newBackgroundImage 
             };
 
+            //console.log(memberCanvasData.sender, memberCanvasData.recipient);
 
-            console.log(memberCanvasData.sender, memberCanvasData.recipient);
-
-            if (this.$props.isBroadcaster == true) 
-            {
-                console.log("sending to server");                
+            if (this.$props.isBroadcaster == true) {                
                 this.socket.emit('CREATE_NEW_SLIDE', memberCanvasData);  
-            } else {
-            
+            } else {            
                 this.viewerCurrentSlide = this.currentSlide;
             }
-
-
-            this.autoSelectTool()
-
-
+            this.autoSelectTool();
         },
         updateUserList: function(users) 
         {
@@ -942,8 +934,6 @@ export default {
             
                 if (response.data.success === true) {
 
-                    console.log(response.data);
-
                     this.isLoading = false;
 
                     //Breadcrumbs
@@ -979,7 +969,7 @@ export default {
 
                             this.$nextTick(function()
                             { 
-                                console.log(this.audioFiles);
+                                //console.log(this.audioFiles);
                                 this.loadAudio()                            
                             });
 
@@ -1070,10 +1060,12 @@ export default {
         },
         isSessionActive() {
         
-            console.log("LESSON HISTORY", this.$props.lesson_history)
+            //console.log("LESSON HISTORY", this.$props.lesson_history)
 
             if (this.$props.lesson_history) 
             {
+                //@note:  user has lesson history, we will update the minutes and start the timer immediately
+
                 if (this.$props.lesson_history.time_ended  == "0000-00-00 00:00:00") {
 
 
@@ -1098,8 +1090,10 @@ export default {
 
             } else {
 
-                //hide countdown timer since 
 
+                //hide countdown timer  
+                console.log("no lesson history, hide countdown timer");
+                
                 const elemCountdown = document.getElementById('countDownTimerContainer');
                 if (elemCountdown) {
                     elemCountdown.style.display = 'none';            
@@ -1202,40 +1196,81 @@ export default {
             console.log("sendCavasData");            
             socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
         },
-        setTimer() {
-        
-            var elem = document.querySelector('#countDownTimer');
-            elem.innerHTML = this.getTime();           
+        convertTZ(date, tzString) {
+            return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
         },
-        secondsToHms() {
+        updateMinutes() 
+        {        
+        
+            var now = new Date();
+            var nowJTZ= this.convertTZ(now, "Asia/Tokyo");
 
-            if (this.timer >= 0) {
-                return this.secondsToHms(this.timer)    
-            } else {
+            //Force the database time to be a tokyo time
+            var started = new Date(this.$props.lesson_history.time_started);
+            var startedJTZ= this.convertTZ(started, "Asia/Tokyo");
+            
+            var diff = this.diff(nowJTZ, started);
 
-                //Add "warning class" countDownTimer
-                var element = document.getElementById("countDownTimer");
-                element.classList.add("text-danger");
+            console.log("started: ", started)
+            console.log("now: ", nowJTZ)
+            console.log(diff)
+         
+            if (diff.days >= 1) {
 
-                return this.secondsToHms(Math.abs(this.timer))
-            }
+                var daysInSeconds           = (diff.days * 24) * 60;                
+                var hoursInSeconds          = ((diff.hours * 60) * 60);
+                var minsInSeconds           = diff.minutes * 60;                 
+                var seconds                 =  diff.seconds;           
+
+                //get the total seconds to dedecut
+                var totalSecondsToDeduct    = hoursInSeconds + minsInSeconds + seconds //add the difference for the seconds  
+
+                this.timer =  totalSecondsToDeduct;
+
+                console.log("newTimer with days ", daysInSeconds, diff);
+            
+             } else if  (diff.days == null && diff.hours >= 1) {
+
                
-        },
+                var hoursInSeconds          = ((diff.hours * 60) * 60);
+                var minsInSeconds           = diff.minutes * 60; 
+                var seconds                 = diff.seconds; 
 
-        updateMinutes() {
-        
-            let now = new Date().toLocaleString("en-GB", {timeZone: "Asia/Tokyo"});
-            let started = new Date(this.$props.lesson_history.time_started).toLocaleString("en-GB")
-            let diff = this.diff(now, started);
-          
-            if (diff.minutes >= 1) {           
+                //get the total seconds to dedecut
+                var totalSecondsToDeduct    = hoursInSeconds + minsInSeconds + seconds //add the difference for the seconds  
 
-                let newTimerMinutes = this.timer - (diff.minutes * 60)     
-                let newTimer = newTimerMinutes - diff.seconds //add the difference for the seconds     
+                //@note: the hours is more than 30 minutes, so we negate the value
+                this.timer                  =  this.timer - (totalSecondsToDeduct);
+
+                console.log("newTimer with hours ", totalSecondsToDeduct);
+
+            } else if (diff.hours == null && diff.minutes >= 1 ) {           
+
+                //timer with minutes and seconds only
+                var newTimerMinutes = this.timer - (diff.minutes * 60)     
+                var newTimer        = newTimerMinutes - diff.seconds //add the difference for the seconds     
+                this.timer          = newTimer;
+
+                console.log("newTimer with only minutes ", newTimer);
+
+            } else if (diff.hours >= 1 && diff.minutes >= 1) {
+
+                //timer with hours and minutes and seconds
+                if (diff.hours >= 1) {
+                    var hoursInSeconds      = ((diff.hours * 60) * 60);
+                } else {
+                    var hoursInSeconds      = 0;
+                }
+
+                var newTimerMinutes     = this.timer - ((diff.minutes * 60) +  hoursInSeconds);
+                var newTimer             = newTimerMinutes - diff.seconds //add the difference for the seconds  
+
                 this.timer = newTimer;
-                console.log("newTimer ", newTimer);
+                console.log("newTimer with hours ", newTimer, diff);
 
             } else {
+
+                //timer with seconds only
                 this.timer = this.timer - diff.seconds;
                 console.log("we have seconds update", diff.seconds)
             }           
@@ -1243,7 +1278,7 @@ export default {
         },
         diff(now, started) 
         {           
-            let d = (new Date(now)) - (new Date(started));
+            let d            = (new Date(now)) - (new Date(started));
             let weekdays     = Math.floor(d/1000/60/60/24/7);
             let days         = Math.floor(d/1000/60/60/24 - weekdays*7);
             let hours        = Math.floor(d/1000/60/60    - weekdays*7*24            - days*24);
@@ -1256,35 +1291,16 @@ export default {
 
             return t;         
         },        
-        
-        updateTimer() {            
-            this.setTimer();
-            this.timer--;
-        },                
-        startTimer() {
-
-            const elemCountdown = document.getElementById('countDownTimerContainer');
-            if (elemCountdown) {
-                elemCountdown.style.display = 'block';            
-            }           
-
-            const endSession = document.getElementById('endSessionContainer');
-            if (endSession) {
-                endSession.style.display = 'block';    
+       getTime() {
+            if (this.timer >= 0) {
+                return this.secondsToHms(this.timer)    
+            } else {
+                //Add "warning class" countDownTimer
+                var element = document.getElementById("countDownTimer");
+                element.classList.add("text-danger");
+                return this.secondsToHms(Math.abs(this.timer))
             }
-
-            const startSession = document.getElementById('startSessionContainer');
-            if (startSession) {
-                startSession.style.display = 'none';    
-            }
-            
-           
-            this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);
-
-
-        },
-        stopTimer() {
-            clearInterval(this.myIntervalTimer); 
+               
         },
         secondsToHms(d) {
             var date = new Date(0);
@@ -1305,15 +1321,44 @@ export default {
             var mDisplay = m > 9 ? Math.abs(m) +":" : "0"+ Math.abs(m) +":";
             var sDisplay = s > 9 ? Math.abs(s)  : "0"+ Math.abs(s);
             return hDisplay + mDisplay + sDisplay; 
+        },         
+        startTimer() {
+            this.showSessionControls();
+            this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);
         },        
+        updateTimer() {            
+            this.setTimer();
+            this.timer--;
+        },           
+        setTimer() {        
+            var elem = document.querySelector('#countDownTimer');
+            elem.innerHTML = this.getTime();           
+        },
+        stopTimer() {
+            clearInterval(this.myIntervalTimer); 
+        },
+        showSessionControls() 
+        {       
+            const elemCountdown = document.getElementById('countDownTimerContainer');
+            if (elemCountdown) {
+                elemCountdown.style.display = 'block';            
+            }         
 
+            const endSession = document.getElementById('endSessionContainer');
+            if (endSession) {
+                endSession.style.display = 'block';    
+            }
+
+            const startSession = document.getElementById('startSessionContainer');
+            if (startSession) {
+                startSession.style.display = 'none';    
+            }
+       },
         changeColor() {
             this.setPreviewColor( this.brushColor )
             this.autoSelectTool();
-
             //this.canvas[this.currentSlide].getActiveObject().set({fill: this.brushColor});
-        },
-        
+        },        
         startSlide() {
             this.currentSlide = 1;
             this.autoSelectTool();
@@ -1321,8 +1366,7 @@ export default {
             let data = this.canvasGetJSON();
 
             this.canvasSendJSON(this.canvas[this.currentSlide], data); 
-            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";     
-
+            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";
 
             //Load List of Audio Array
             //this.loadAudio()
@@ -1570,29 +1614,21 @@ export default {
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);    
 
             }).on('mouse:out', (options) => {
-
-                //dragger out 
-
-                    if (this.isDragger == true) {
-
-                        console.log ("the dragger is out!!", this.isDragger)
-                    
-                        this.canvas[this.currentSlide].defaultCursor = 'grab';
-
-                        document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
-                            element.style.cursor = 'grab';
-                        });
+                if (this.isDragger == true) 
+                {
+                    this.canvas[this.currentSlide].defaultCursor = 'grab';
+                    document.querySelectorAll('.upper-canvas ').forEach((element) => { element.style.cursor = 'grab'; });
 
 
-                        this.canvas[this.currentSlide].renderAll();
+                    this.canvas[this.currentSlide].renderAll();
 
-                        // Put your mousedown stuff here
-                        this.isDraggerMouseDown = false;
+                    // Put your mousedown stuff here
+                    this.isDraggerMouseDown = false;
 
-                    } else {
-                    
-                        console.log ("the dragger is out!!", this.isDragger)
-                    }
+                } else {
+                
+                    //console.log ("the dragger is out!!", this.isDragger)
+                }
 
             });
 

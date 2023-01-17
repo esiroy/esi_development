@@ -2,12 +2,14 @@
     <div class="slideSelectorContainer">
 
         <div class="slideSelectorWrapper">
-            <b-modal ref="slideSelectorModal"  @show="getLessonsList" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-esc  hide-header-close>
+            <b-modal ref="slideSelectorModal"  @show="getLessonsList" title="Please preview a lesson for your student" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-esc>
+                <!--
                 <template #modal-header>
                     <div class="mx-auto">
                         <h4 class="text-center text-white">Please preview a lesson for your student</h4>
-                    </div>           
+                    </div>    
                 </template>
+                -->
 
                 <div id="slideSelection">
                     <h5 class="text-maroon">Please preview and select a Lesson </h5>
@@ -40,7 +42,7 @@
                     <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->                      
                
                     <div class="my-5 text-center">
-                        <button class="btn btn-success" @click="saveOptionSelected('lessonSelector')">
+                        <button class="btn btn-success" @click="startNewSlide()">
                             Choose Slide and Start Lesson
                         </button>
                     </div>            
@@ -83,6 +85,10 @@
     data() {
         return {
 
+            //client ID
+            lessonID: null,
+            userID : null,
+
             //Lesson Options
             lessonOptions: [],
 
@@ -104,8 +110,44 @@
         
     },
     methods: {      
-        openSlideSelector() {
+        openSlideSelector(lessonID, userID) {
+        
+            //MEMBER INFO
+            this.lessonID = lessonID;
+            this.userID     = userID;
+
             this.$refs['slideSelectorModal'].show();
+        },
+        async updateSlideFolder() {
+
+            //@todo: update the selected folder from
+
+            axios.post("/api/updateSelectedLesson?api_token=" + this.api_token,
+            {
+                'method'        : "POST",
+                'lessonID'      : this.lessonID,
+                'userID'        : this.userID,
+                'folderID'      : this.lessonSelectedFolderID
+
+            }).then(response => {
+
+                    if (response.data.success == true) {
+                    
+                        this.$parent.openNewSlideMaterials();
+
+                    } else {                   
+
+                        alert (response.data.message);
+                        
+                    }
+                
+            });           
+
+        },
+        async startNewSlide() {
+
+            this.updateSlideFolder();
+            
         },
         getBaseURL(path) {
             return window.location.origin + "/" +path

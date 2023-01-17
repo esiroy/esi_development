@@ -44,7 +44,53 @@ class LessonSlideMaterials extends Controller
         }
     }
 
-    /*@description: get the lesson slides of the folder */
+
+    /*
+        @description :   update the selected lesson so it can be the basis the "new slide"
+        @param: @request->userID 
+        @param: @request->userID 
+    */
+    public function updateSelectedLesson(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) {
+
+        $userID             = $request->userID;
+        $lessonScheduleID   = $request->lessonID;
+        $folderID           = $request->folderID;
+
+        $lessonSelected = $memberSelectedLessonSlideMaterial->where('user_id', $userID)->where('schedule_id', $lessonScheduleID)->first();
+
+        if ($lessonSelected) {
+        
+            $updated = $lessonSelected->update([
+                'folder_id' => $folderID
+            ]);
+
+            if ($updated) {
+            
+                return Response()->json([
+                    "success"           => true,
+                    "updated"           => $updated,
+                    "message"           => "Member selected Lesson Material has been successfully updated"
+                ]); 
+
+            } else {
+            
+                return Response()->json([
+                    "success"                => false,                
+                    "message"                => "Member Selected Lesson Material was not updated due to an error"     
+                ]); 
+            }
+        
+        }
+
+
+
+
+    }
+
+
+    /** 
+        @description: get the lesson material slides of the folder 
+    */    
     public function getLessonMaterialSlides(Request $request)
     {
 
@@ -98,7 +144,7 @@ class LessonSlideMaterials extends Controller
     }
 
     /*
-        @description: Get the folder with heirchy for file manager
+        @description: Get the folder with heirarchy for file manager
     */
     public function getLessonSlideMaterialList(Request $request) 
     {
