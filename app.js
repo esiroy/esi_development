@@ -116,6 +116,10 @@ io.on('connection', function(socket) {
     });
 
 
+    socket.on("TUTOR_SELECTED_NEW_SLIDES", (data) => {
+        io.to('' + data.channelid + '').emit("TUTOR_SELECTED_NEW_SLIDES", data);
+    });
+
     /*****************************************/
     /*  LESSON SESSION ACTIONS
     /*****************************************/
