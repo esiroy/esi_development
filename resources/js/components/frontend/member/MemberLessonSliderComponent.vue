@@ -399,6 +399,8 @@ export default {
             myIntervalTimer: null,
             timerSpeed: 1000,
             timer: 1800, //30 minutes = 1800
+            resetTimerValue: 1800, //Same as timer (this will be not used as a countdown, this will be use to reset value)
+            isTimerStarted: false, // determine if the timer started to avoid multipe start of timer
 
      
             imageURL: [],
@@ -672,7 +674,20 @@ export default {
 
     },
     methods: {
-
+        updateUserList: function(users) {
+            this.users = users;      
+            this.$forceUpdate();                 
+        },
+        getSessionData() {
+            //@note: sessionData is the data to be sent to the socket server
+            let sessionData = {
+                'currentslide'  : this.currentSlide,
+                'channelid'     : this.channelid,
+                'sender'        : { userid: this.user_info.id, username: this.user_info.username},
+                'recipient'     : this.getRecipient()
+            };  
+            return sessionData;  
+        },        
         selectSlides() {
 
             this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
@@ -691,22 +706,27 @@ export default {
 
             this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);
         },
-        openNewSlideMaterials() {
-         
-            //@remove old slides();
-            for (var i = 1; i <= this.slides; i++) 
-            {
+        openNewSlideMaterials() {  
+
+            //call remove slides and open slides
+            this.removeOldSlidesAndOpenNewSlides();
+
+        },
+        removeOldSlidesAndOpenNewSlides() {
+
+            document.getElementById('slide-container').innerHTML = '';            
+
+            for (var i = 1; i <= this.slides; i++) {
 
                 this.canvas[i].dispose();
 
+                //re-open with new slides
                 if (i ==  this.slides) {
                     this.getSlideMaterials(this.reservation);
                 }
-            }
-
-            
-        
+            }        
         },
+
         disableSession(){
             //@todo: hide all  and end all stream
             this.sessionActive = false;
@@ -811,20 +831,7 @@ export default {
             });
            
         },
-        getSessionData() {
-            //@note: session data will be the send to socket server
-            let sessionData = {
-                'currentslide'  : this.currentSlide,
-                'channelid'     : this.channelid,
-                'sender'        : {
-                                    userid: this.user_info.id,
-                                    username: this.user_info.username
-                                },
-                'recipient'     : this.getRecipient()
-            };  
-            return sessionData
-        
-        },
+
         showMemberFeedbackModal(){
        
             this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation);
@@ -852,7 +859,8 @@ export default {
 
             this.canvas[index]  = new fabric.Canvas('canvas'+index, {
                 backgroundColor : "#fff"
-            });        
+            });    
+
             //New Image On the Background we will set the scale to default = 1
             this.canvas[index]['scale'] = 1;
             this.audioFiles[index]      = [];
@@ -883,12 +891,7 @@ export default {
             }
             this.autoSelectTool();
         },
-        updateUserList: function(users) 
-        {
-            this.users = users;      
-            this.$forceUpdate();
-            console.log("member lesson slider");          
-        },
+
         createCanvas(index) {
 
             //added to make canvas visible if the index is the first one
@@ -960,16 +963,18 @@ export default {
 
                         if (i ==  this.slides)
                         {
-                            this.userSlideAccess();
-                            this.slides = (response.data.files).length;                           
-                        
-                            //START SLIDE
-                            this.startSlide();
-                            
+
+                            this.slides = (response.data.files).length;
 
                             this.$nextTick(function()
                             { 
-                                //console.log(this.audioFiles);
+                                //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
+                                this.userSlideAccess();
+
+                                //START SLIDE
+                                this.startSlide();
+
+                                //LOAD AUDIO
                                 this.loadAudio()                            
                             });
 
@@ -1058,10 +1063,13 @@ export default {
                     elemCountdown.style.display = 'none';            
                 }        
         },
-        isSessionActive() {
-        
-            //console.log("LESSON HISTORY", this.$props.lesson_history)
+        isSessionActive() 
+        {
 
+            //@note(1): determine if a session is active when page is refreshed
+            //@note(2): if session is active calculate the remaining or running time (negative value)
+           
+          
             if (this.$props.lesson_history) 
             {
                 //@note:  user has lesson history, we will update the minutes and start the timer immediately
@@ -1071,7 +1079,13 @@ export default {
 
                     //@note: this will start session automatically since the session was started before
                     this.startTimer();
-                    this.updateMinutes();   
+
+                    //if timer is not started we will update the minutes
+                    if (this.isTimerStarted == true) {
+                        this.timer = this.resetTimerValue // reset to orginal value 
+                        this.updateMinutes();
+                    }
+                    
 
                 } else {
                     
@@ -1219,12 +1233,11 @@ export default {
 
                 var daysInSeconds           = (diff.days * 24) * 60;                
                 var hoursInSeconds          = ((diff.hours * 60) * 60);
-                var minsInSeconds           = diff.minutes * 60;                 
+                var minsInSeconds           =  diff.minutes * 60;                 
                 var seconds                 =  diff.seconds;           
 
                 //get the total seconds to dedecut
                 var totalSecondsToDeduct    = hoursInSeconds + minsInSeconds + seconds //add the difference for the seconds  
-
                 this.timer =  totalSecondsToDeduct;
 
                 console.log("newTimer with days ", daysInSeconds, diff);
@@ -1323,8 +1336,14 @@ export default {
             return hDisplay + mDisplay + sDisplay; 
         },         
         startTimer() {
-            this.showSessionControls();
-            this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);
+        
+            if (this.isTimerStarted == false) {
+                this.showSessionControls();
+                this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);        
+
+                //turn on the timer
+                this.isTimerStarted = true    
+            }
         },        
         updateTimer() {            
             this.setTimer();
@@ -1337,8 +1356,10 @@ export default {
         stopTimer() {
             clearInterval(this.myIntervalTimer); 
         },
-        showSessionControls() 
-        {       
+        showSessionControls() {       
+
+            //@note: Session Controls will Show OR Hide (Start Session  / End Session / Countdown timer)
+
             const elemCountdown = document.getElementById('countDownTimerContainer');
             if (elemCountdown) {
                 elemCountdown.style.display = 'block';            
