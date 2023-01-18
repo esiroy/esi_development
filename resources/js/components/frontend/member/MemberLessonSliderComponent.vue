@@ -460,8 +460,17 @@ export default {
         this.socket.on("CREATE_NEW_SLIDE", (data) => {
             if (this.$props.isBroadcaster == false) 
             {
+
+                console.log("socket create new slide!", data.slidesCount);
+
+                this.slides = data.slidesCount;
+
                 this.createNewSlide();
-                this.setBackgroundImage(this.currentSlide, data.backgroundURL);
+
+                if (data.backgroundURL) {
+                    this.setSlideBackgroundImage(this.currentSlide, data.backgroundURL);
+                }
+                
                 this.$forceUpdate();     
             }
         });
@@ -498,6 +507,7 @@ export default {
                     } else {
 
                         console.log("there is no drawing detected")
+                        
                     }
                     
                 } catch (error) {
@@ -506,6 +516,25 @@ export default {
             } 
         });        
         
+
+        /* TUTOR NEW SLIDE ACTINS */
+        this.socket.on('TUTOR_SELECTED_NEW_SLIDES', (response) => {
+
+            try {
+
+                if (this.$props.isBroadcaster == false) {   
+
+                    console.log("member new slide materials");
+
+                    this.openNewSlideMaterials();
+                }
+
+            } catch (error) {
+
+                console.log("Error, tutor can't select new slide ", error);
+            }
+        });
+
 
         /****************AUDIO ACTIONS CONTROLLER (Broadcaster) **************** */
         this.$root.$on('playAudio', (index) => {
@@ -692,41 +721,50 @@ export default {
 
             this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
 
-            //@todo (jan-17,2022): add node server select new slide
-            let slidesData = {
-                'currentSlide'  : this.currentSlide,
-                'channelid'     : this.channelid,
-                'sender'        : {
-                                    userid: this.user_info.id,
-                                    username: this.user_info.username
-                                  },
-                'slide_folder_id': this.newFolderID,
-                'recipient'     : this.getRecipient()
-            };            
-
-            this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);
         },
         openNewSlideMaterials() {  
 
-            //call remove slides and open slides
-            this.removeOldSlidesAndOpenNewSlides();
+
+
+            //Slide Selector already update the slide selector folder, 
+            //So lets refresh the member slides!
+            if (this.$props.isBroadcaster == true) {   
+
+                //call remove slides and open new slides
+                this.removeOldSlidesAndOpenNewSlides();
+
+                this.refreshMemberSlides();
+
+            } else {
+            
+                //opening slide for member
+                this.removeOldSlidesAndOpenNewSlides();
+
+            }
 
         },
         removeOldSlidesAndOpenNewSlides() {
 
-            document.getElementById('slide-container').innerHTML = '';            
-
-            for (var i = 1; i <= this.slides; i++) {
-
-                this.canvas[i].dispose();
+         
+            for (var i = 1; i <= this.slides; i++) 
+            {
+                //this.canvas[i].dispose();
 
                 //re-open with new slides
                 if (i ==  this.slides) {
+
+                    //@note: remove the other stuff generated under the slide container
+                    document.getElementById('slide-container').innerHTML = '';            
+
+
                     this.getSlideMaterials(this.reservation);
                 }
             }        
         },
-
+        enableSession(){
+            //@todo: show
+            this.sessionActive = true;
+        },
         disableSession(){
             //@todo: hide all  and end all stream
             this.sessionActive = false;
@@ -846,11 +884,14 @@ export default {
         {
             this.newBackgroundImage = file.fullpath;
             this.createNewSlide();
-            this.setBackgroundImage(this.currentSlide, file.fullpath);
+            this.setSlideBackgroundImage(this.currentSlide, file.fullpath);
             this.$forceUpdate();            
         },
         createNewSlide() 
         {
+
+            let currentSlideCount = this.slides;
+
             this.slides     = this.slides + 1;            
             let index       = this.slides;
 
@@ -863,28 +904,30 @@ export default {
 
             //New Image On the Background we will set the scale to default = 1
             this.canvas[index]['scale'] = 1;
-            this.audioFiles[index]      = [];
+            this.audioFiles      = null;
+            
             this.currentSlide           = index;
             this.goToSlide(index);     
 
-            let memberCanvasData = {
-                'currentslide'  : this.currentSlide,
-                'channelid'     : this.channelid,
-                'sender'        : {
-                                    userid: this.user_info.id,
-                                    username: this.user_info.username
-                                  },
-                'recipient'     : this.getRecipient(),
-                'canvasid'      : this.canvas[this.currentSlide],
-                'canvasData'    : this.canvasGetJSON(),
-                'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
-                'canvasDelta'   : this.delta,
-                'backgroundURL': this.newBackgroundImage 
-            };
+            if (this.$props.isBroadcaster == true) {  
 
-            //console.log(memberCanvasData.sender, memberCanvasData.recipient);
+                let memberCanvasData = {
+                    'slidesCount'   : currentSlideCount,
+                    'currentslide'  : this.currentSlide,
+                    'channelid'     : this.channelid,
+                    'sender'        : {
+                                        userid: this.user_info.id,
+                                        username: this.user_info.username
+                                    },
+                    'recipient'     : this.getRecipient(),
+                    'canvasid'      : this.canvas[this.currentSlide],
+                    'canvasData'    : this.canvasGetJSON(),
+                    'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
+                    'canvasDelta'   : this.delta,
+                    'backgroundURL': this.newBackgroundImage 
+                };
+                
 
-            if (this.$props.isBroadcaster == true) {                
                 this.socket.emit('CREATE_NEW_SLIDE', memberCanvasData);  
             } else {            
                 this.viewerCurrentSlide = this.currentSlide;
@@ -942,44 +985,74 @@ export default {
                     //Breadcrumbs
                     this.segments = response.data.folderURLArray;
 
-                    //Array of images
-                    this.imageURL = response.data.files;
-                    this.audioFiles = response.data.audioFiles;             
-
                     //Slide Count 
                     this.slides  = (response.data.files).length;
 
-                    for (var i = 1; i <= this.slides; i++) 
-                    {
-                        this.createCanvas(i);
-
-                        this.canvas[i]  = new fabric.Canvas('canvas'+i, {
-                            backgroundColor : "#fff"
-                        });  
+                    if (this.slides == 0) {
+                       
+                        this.slides = 0;
                   
-                        this.setBackgroundImage(i, this.imageURL[i-1]);
+                        this.createNewSlide();
 
-                        this.$forceUpdate();
+                
+                        this.$nextTick(function(){ 
 
-                        if (i ==  this.slides)
+                            //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
+                            this.userSlideAccess();
+                            //START SLIDE
+                            this.startSlide();
+                            //LOAD AUDIO
+                            this.loadAudio();
+                            this.$refs['slideSelector'].closeSlideSelector();                        
+                        });
+                        
+                    } else {
+                    
+
+                        //Array of images
+                        this.imageURL = response.data.files;
+                        this.audioFiles = response.data.audioFiles;   
+
+
+                        for (var i = 1; i <= this.slides; i++) 
                         {
+                            this.createCanvas(i);
 
-                            this.slides = (response.data.files).length;
+                            this.canvas[i]  = new fabric.Canvas('canvas'+i, {
+                                backgroundColor : "#fff"
+                            });  
+                    
+                            this.setSlideBackgroundImage(i, this.imageURL[i-1]);
 
-                            this.$nextTick(function()
-                            { 
-                                //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
-                                this.userSlideAccess();
+                            this.$forceUpdate();
 
-                                //START SLIDE
-                                this.startSlide();
+                            if (i ==  this.slides)
+                            {
 
-                                //LOAD AUDIO
-                                this.loadAudio()                            
-                            });
+                                
+                                this.$nextTick(function()
+                                { 
+                                    //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
+                                    this.userSlideAccess();
+                                    //this.slides = (response.data.files).length;
 
-                        }
+
+                                    //START SLIDE
+                                    this.startSlide();
+
+                                    //LOAD AUDIO
+                                    this.loadAudio()    
+
+
+                                    this.$refs['slideSelector'].closeSlideSelector();
+                                });
+
+                            }
+                        }                    
+                    
                     }
+
+              
 
                 } else {
 
@@ -987,7 +1060,7 @@ export default {
                         backgroundColor : "#fff"
                     });
 
-                    //get custom slides(
+                    //@todo: get custom slides when restared
                 }
 			});
 
@@ -1063,6 +1136,25 @@ export default {
                     elemCountdown.style.display = 'none';            
                 }        
         },
+        refreshMemberSlides() {
+
+            if (this.$props.isBroadcaster == true) {   
+        
+                let slidesData = {
+                    'currentSlide'  : this.currentSlide,
+                    'channelid'     : this.channelid,
+                    'sender'        : {
+                                        userid: this.user_info.id,
+                                        username: this.user_info.username
+                                    },
+                    'slide_folder_id': this.newFolderID,
+                    'recipient'     : this.getRecipient()
+                };            
+
+                this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);  
+            }
+            
+        },
         isSessionActive() 
         {
 
@@ -1074,30 +1166,36 @@ export default {
             {
                 //@note:  user has lesson history, we will update the minutes and start the timer immediately
 
-                if (this.$props.lesson_history.time_ended  == "0000-00-00 00:00:00") {
-
-
-                    //@note: this will start session automatically since the session was started before
+                if (this.$props.lesson_history.time_ended  == "0000-00-00 00:00:00") 
+                {
+                    //@note: this will start session timer automatically since the session was started before
                     this.startTimer();
 
-                    //if timer is not started we will update the minutes
                     if (this.isTimerStarted == true) {
+                        //note(1): change of slides detected
+                        //@note (2): if timer is started we will reset countdown.
+
                         this.timer = this.resetTimerValue // reset to orginal value 
                         this.updateMinutes();
+
+                    } else {
+
+                        //update dates minutes
+                        this.updateMinutes();
                     }
-                    
 
                 } else {
                     
                     console.log("lesson ended on : ", this.$props.lesson_history.time_ended)
 
-                    if (this.$props.isBroadcaster == true) {   
-
+                    if (this.$props.isBroadcaster == true) 
+                    {   
                         this.hideTimer();
                         this.showMemberFeedbackModal();
                     } else {
                         this.showRatingModal();
                     }
+
                     this.stopTimer();
 
                 } 
@@ -1121,20 +1219,26 @@ export default {
             }
 
         },
-        setBackgroundImage(index, imageURL) 
+        setSlideBackgroundImage(index, imageURL) 
         {            
-            this.canvas[index].setBackgroundImage(imageURL, this.canvas[index].renderAll.bind(this.canvas[index]), {
-                // Optionally add an opacity lvl to the image
-                //backgroundImageOpacity: 0.5,
-                // should the image be resized to fit the container?
-                scaleX:1,
-                scaleY:1,
-                top: 0,
-                left: 0,
-                originX: 'left',
-                originY: 'top',                                                        
-                backgroundImageStretch: true,
-            });
+            try {
+                this.canvas[index].setBackgroundImage(imageURL, this.canvas[index].renderAll.bind(this.canvas[index]), {
+                    // Optionally add an opacity lvl to the image
+                    //backgroundImageOpacity: 0.5,
+                    // should the image be resized to fit the container?
+                    scaleX:1,
+                    scaleY:1,
+                    top: 0,
+                    left: 0,
+                    originX: 'left',
+                    originY: 'top',                                                        
+                    backgroundImageStretch: true,
+                });
+
+            } catch (error) {
+                console.log("no image background...");
+            }
+
         
             //New Image On the Background we will set the scale to default = 1
             this.canvas[index]['scale'] = 1;
@@ -1230,6 +1334,8 @@ export default {
             console.log(diff)
          
             if (diff.days >= 1) {
+
+                alert ("this lesson has more than one day lapse, please consult admin")
 
                 var daysInSeconds           = (diff.days * 24) * 60;                
                 var hoursInSeconds          = ((diff.hours * 60) * 60);
@@ -1407,18 +1513,26 @@ export default {
         },
         goToSlide(slide) {          
 
+            //AUDIO
             this.$refs['audioPlayer'].stopAudio();
             this.loadAudio(slide);
 
             this.currentSlide = slide;
             this.viewerCurrentSlide = slide;
 
+           
+
             for (var i = 1; i <= this.slides; i++) 
             {
-                if (i == slide) {    
+                if (i == slide) {   
 
-                    document.getElementById('editor'+ i).style.visibility = "visible";
-                    document.getElementById('editor'+ i).style.display = "block";                                   
+                    let editorElement = document.getElementById('editor'+ i);
+
+                    if (editorElement) {
+                        editorElement.style.visibility = "visible";
+                        editorElement.style.display = "block";                                              
+                    }
+                                 
 
                     //@todo: if tutor then broadcast get the drawn canvas
                     if (this.$props.isBroadcaster == true) {      
@@ -1426,18 +1540,16 @@ export default {
                         this.canvasSendJSON(this.canvas[slide], data);
                     }
 
-                    //HISTORY CREATION
-                    /*
-                    this.history[slide] = [{
-                        'data': this.canvasGetJSON()
-                    }];
-
-                    */
+                    //@TODO:  GET HISTORY FROM DATABASE                
 
                 } else {
 
-                    document.getElementById('editor'+ i).style.visibility = "hidden";
-                    document.getElementById('editor'+ i).style.display = "none";        
+                    let editorElement = document.getElementById('editor'+ i);
+
+                    if (editorElement) {
+                        editorElement.style.visibility = "hidden";
+                        editorElement.style.display = "none";        
+                    }
 
                 }
             }

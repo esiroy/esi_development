@@ -16,7 +16,7 @@ class CreateCustomTutorLessonMaterials extends Migration
         Schema::create('custom_tutor_lesson_materials', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('lesson_schedule_id');
-            $table->integer('folder_id');
+            $table->unsignedBigInteger('folder_id');
             $table->string('file_name');
             $table->string('upload_name');
             $table->string('path');
@@ -27,8 +27,15 @@ class CreateCustomTutorLessonMaterials extends Migration
            
             $table->index('lesson_schedule_id');
             $table->index('folder_id');
-            $table->index('order_id');            
+            $table->index('order_id');    
         });
+        
+        //foreign key references
+        Schema::table('custom_tutor_lesson_materials', function($table) {
+            $table->foreign('folder_id')->references('id')->on('folders')->onDelete('cascade');
+            $table->foreign('lesson_schedule_id')->references('id')->on('schedule_item')->onDelete('cascade');                       
+        });
+       
     }
 
     /**

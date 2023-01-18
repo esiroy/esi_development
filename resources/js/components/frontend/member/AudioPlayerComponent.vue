@@ -305,7 +305,7 @@
                 }
 
             } else {
-                console.log("undefined?", audioFiles)
+                console.log("no audio file added")
             }           
         },
         loadAudio(audio, settings) 

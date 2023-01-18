@@ -76,11 +76,16 @@
     props: {
         csrf_token: String,		
         api_token: String,  
-        reservation: Object,      
         isBroadcaster: {
             type: [Boolean],
             required: true        
-        }            
+        },           
+
+        reservation: Object,
+        folder_id: {
+            type: [String, Number],
+            required: true        
+        },        
     },
     data() {
         return {
@@ -107,6 +112,14 @@
         }
     },
     mounted() { 
+
+        if (this.lessonSelectedFolderID == null) {
+        
+            this.lessonSelectedFolderID = this.$props.folder_id;
+
+            this.getLessonSelectedPreviewByID(this.lessonSelectedFolderID )
+
+        }
         
     },
     methods: {      
@@ -117,6 +130,9 @@
             this.userID     = userID;
 
             this.$refs['slideSelectorModal'].show();
+        },
+        closeSlideSelector() {
+            this.$refs['slideSelectorModal'].hide();
         },
         async updateSlideFolder() {
 
