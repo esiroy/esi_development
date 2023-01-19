@@ -18,9 +18,13 @@ class CreateLessonHistory extends Migration
             $table->unsignedBigInteger('schedule_id')->unique()->index('schedule_id');            
             $table->unsignedBigInteger('member_id')->index('member_id');
             $table->unsignedBigInteger('tutor_id')->index('tutor_id');
-            $table->unsignedBigInteger('folder_id')->index('folder_id');
+            $table->unsignedBigInteger('folder_id')->nullable()->index('folder_id');
             $table->unsignedInteger('total_slides'); 
             $table->unsignedInteger('current_slide'); 
+
+            
+            $table->string('status', '12');  //active, skipped, finished, cancelled
+            $table->string('additional_notes', '32');  //acti
 
             //member lesson started
             $table->dateTime('time_started');

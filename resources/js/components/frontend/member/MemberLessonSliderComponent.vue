@@ -706,7 +706,11 @@ export default {
 
          //the user has not selected anything then we create new slide
         if (this.$props.folder_id == '' || this.$props.folder_id == null || this.$props.folder_id == 'null' ) {
-            this.createNewSlide();        
+            this.createNewSlide();  
+
+            this.keyPressHandler();
+            this.isSessionActive()
+            this.userSlideAccess();       
         }
 
 
@@ -738,7 +742,7 @@ export default {
 
         },
         openNewSlideMaterials() {
-        
+
             //Slide Selector already update the slide selector folder, 
             //So lets refresh the member slides!
             if (this.$props.isBroadcaster == true) { 
@@ -830,6 +834,12 @@ export default {
         async postLessonStartHistory(reservationData) {
         
             let slidesData = await this.getAllSlideData();
+
+            /** 
+                @todo: add the status (new, done, skipped)
+                @todo: add note, if created a empty slide
+            **/
+                
 
             axios.post("/api/postLessonHistory?api_token=" + this.api_token,
             {
@@ -1174,7 +1184,8 @@ export default {
             //@note(1): determine if a session is active when page is refreshed
             //@note(2): if session is active calculate the remaining or running time (negative value)
            
-          
+           console.log("lesson history ", this.$props.lesson_history)
+
             if (this.$props.lesson_history) 
             {
                 //@note:  user has lesson history, we will update the minutes and start the timer immediately
