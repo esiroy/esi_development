@@ -45,7 +45,7 @@ class LessonSlideMaterials extends Controller
     }
 
 
-    /*
+    /**
         @description :   update the selected lesson so it can be the basis the "new slide"
         @param: @request->userID 
         @param: @request->userID 
@@ -58,7 +58,24 @@ class LessonSlideMaterials extends Controller
 
         $lessonSelected = $memberSelectedLessonSlideMaterial->where('user_id', $userID)->where('schedule_id', $lessonScheduleID)->first();
 
-        if ($lessonSelected) {
+        if (!$lessonSelected) {
+
+            $created = ['test'=> "this is a test"];
+
+            $memberSelectedLessonSlideMaterial->create([
+                    'user_id'       => $userID,
+                    'schedule_id'   => $lessonScheduleID,
+                    'folder_id'     => $folderID,            
+            ]);
+            
+            return Response()->json([
+                "success"           => true,
+                "updated"           => $created,
+                "message"           => "Member selected Lesson Material has been successfully created"
+            ]); 
+ 
+
+        } else if ($lessonSelected) {
         
             $updated = $lessonSelected->update([
                 'folder_id' => $folderID
@@ -80,9 +97,13 @@ class LessonSlideMaterials extends Controller
                 ]); 
             }
         
+        } else {
+        
+            return Response()->json([
+                "success"                => false,                
+                "message"                => "Member Lesson Material Selection encountered an error, please try again later"     
+            ]);         
         }
-
-
 
 
     }

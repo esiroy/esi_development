@@ -6,7 +6,7 @@
         :is-broadcaster="{{ $isBroadcaster }}"
         :editor_id="'canvas'"
         :channelid="{{ $roomID }}"
-        :folder_id="{{ $folderID }}"
+        folder_id="{{ $folderID ?? null }}"
 
         :lesson_history="{{ json_encode($lessonHistory) }}"
         :reservation="{{ json_encode($reservationData) }}"            
@@ -22,7 +22,8 @@
         :recipient_info="{{ json_encode($recipientInfo) }}"
 
         api_token="{{ Auth::user()->api_token }}" 
-        csrf_token="{{ csrf_token() }}"></lesson-slider-component> 
+        csrf_token="{{ csrf_token() }}"
+        ></lesson-slider-component> 
 </div>
 
 <div class="right-fixed">

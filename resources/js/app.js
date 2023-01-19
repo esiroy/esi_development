@@ -94,6 +94,8 @@ if (url[1] === 'admin') {
     }
 }
 
+//Vue.component('new-lesson-slide-selector-component', require('./components/frontend/member/NewLessonSlideSelectorComponent.vue').default);
+
 Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);
 Vue.component('lesson-slider-chatroom-component', require('./components/frontend/member/MemberLessonSliderChatroomComponent.vue').default);
 

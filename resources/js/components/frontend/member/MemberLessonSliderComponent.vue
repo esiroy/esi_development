@@ -3,6 +3,8 @@
 
     <div class="main-component-holder">
 
+     
+
         <div id="component-container" v-show="sessionActive">
 
             <div id="satisfactionSurveyContainer">
@@ -407,6 +409,11 @@ export default {
 
             notes: "<bold>lorem epusm dollor </bold>",
 
+
+            //currentID 
+            currentFolderID: null,
+
+
             //if user select new folder and or background image
             newFolderID: null,
             newBackgroundImage: null,
@@ -423,8 +430,8 @@ export default {
     
     },
     mounted() 
-    {
-       
+    {  
+
         this.socket = io.connect(this.$props.canvas_server);
         window.lessonSliderComponent = this;
 
@@ -697,6 +704,14 @@ export default {
 
          
 
+         //the user has not selected anything then we create new slide
+        if (this.$props.folder_id == '' || this.$props.folder_id == null || this.$props.folder_id == 'null' ) {
+            this.createNewSlide();        
+        }
+
+
+
+
         //window.addEventListener('scroll', this.reOffset);
         //window.addEventListener('resize', this.reOffset);
 
@@ -722,24 +737,17 @@ export default {
             this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
 
         },
-        openNewSlideMaterials() {  
-
-
-
+        openNewSlideMaterials() {
+        
             //Slide Selector already update the slide selector folder, 
             //So lets refresh the member slides!
-            if (this.$props.isBroadcaster == true) {   
-
+            if (this.$props.isBroadcaster == true) { 
                 //call remove slides and open new slides
                 this.removeOldSlidesAndOpenNewSlides();
-
                 this.refreshMemberSlides();
-
-            } else {
-            
+            } else {             
                 //opening slide for member
                 this.removeOldSlidesAndOpenNewSlides();
-
             }
 
         },
@@ -754,7 +762,8 @@ export default {
                 if (i ==  this.slides) {
 
                     //@note: remove the other stuff generated under the slide container
-                    document.getElementById('slide-container').innerHTML = '';            
+                    let slideElement = document.getElementById('slide-container')                    
+                    slideElement.innerHTML = '';            
 
 
                     this.getSlideMaterials(this.reservation);
@@ -967,6 +976,10 @@ export default {
         },        
         getSlideMaterials(reservation) 
         {
+
+            console.log("hello", reservation);
+
+
             this.isLoading = true;
 
             axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
@@ -1335,9 +1348,14 @@ export default {
          
             if (diff.days >= 1) {
 
-                alert ("this lesson has more than one day lapse, please consult admin")
+                alert ("this lesson has lapsed for more than one day, please consult admin");
 
-                var daysInSeconds           = (diff.days * 24) * 60;                
+                //@todo: alert admin and end session
+                
+                this.disableSession();
+
+
+                var daysInSeconds           = (((diff.days * 24) * 60) * 60);                
                 var hoursInSeconds          = ((diff.hours * 60) * 60);
                 var minsInSeconds           =  diff.minutes * 60;                 
                 var seconds                 =  diff.seconds;           
@@ -1350,9 +1368,18 @@ export default {
             
              } else if  (diff.days == null && diff.hours >= 1) {
 
-               
-                var hoursInSeconds          = ((diff.hours * 60) * 60);
-                var minsInSeconds           = diff.minutes * 60; 
+                if (diff.hours >=1) {
+                    var hoursInSeconds          = ((diff.hours * 60) * 60);
+                } else {
+                    var hoursInSeconds = 0;
+                }
+
+                if (diff.minutes >= 1) {
+                    var minsInSeconds           = diff.minutes * 60; 
+                } else {
+                    var minsInSeconds           = 0; 
+                }
+                
                 var seconds                 = diff.seconds; 
 
                 //get the total seconds to dedecut
@@ -1385,7 +1412,7 @@ export default {
                 var newTimer             = newTimerMinutes - diff.seconds //add the difference for the seconds  
 
                 this.timer = newTimer;
-                console.log("newTimer with hours ", newTimer, diff);
+                console.log("newTimer with hours and minutes", newTimer, diff);
 
             } else {
 

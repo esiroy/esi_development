@@ -113,12 +113,19 @@
     },
     mounted() { 
 
-        if (this.lessonSelectedFolderID == null) {
-        
+        if (this.$props.folder_id == '' || this.$props.folder_id == 'null' || this.$props.folder_id == null) {                
+            this.lessonSelectedFolderID = "null";
+
+            /** 
+                AUTO SHOW SELECTOR MODAL (OPTIONAL/EXPERIMENTAL)
+             */
+            //this.$refs['slideSelectorModal'].show();        
+        }
+
+
+        if (this.lessonSelectedFolderID == null) {        
             this.lessonSelectedFolderID = this.$props.folder_id;
-
-            this.getLessonSelectedPreviewByID(this.lessonSelectedFolderID )
-
+            this.getLessonSelectedPreviewByID(this.lessonSelectedFolderID)
         }
         
     },
@@ -147,22 +154,33 @@
 
             }).then(response => {
 
-                    if (response.data.success == true) {
+                if (response.data.success == true) {
+                
+                    this.$parent.openNewSlideMaterials();
+
+                } else {                   
+
+                    alert (response.data.message);
                     
-                        this.$parent.openNewSlideMaterials();
-
-                    } else {                   
-
-                        alert (response.data.message);
-                        
-                    }
+                }
                 
             });           
 
         },
         async startNewSlide() {
 
-            this.updateSlideFolder();
+            if ( this.lessonSelectedFolderID !== "null" ) {
+
+                //take the lesson id from the reservation
+
+                this.lessonID   = this.$props.reservation.schedule_id
+                this.userID     = this.$props.reservation.member_id;
+
+                this.updateSlideFolder();
+            } else {
+                alert ("please select a new lesson")
+            }
+            
             
         },
         getBaseURL(path) {
@@ -179,7 +197,8 @@
                 if (hierarchy == 0) 
                 {
                     this.lessonOptions = [{
-                        value: null,
+                        id: "null",
+                        value: "null",
                         html: "Please select lesson",       
                         label: "Please select lesson",
                         description:  "Please select lesson"                            

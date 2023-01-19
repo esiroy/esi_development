@@ -91,6 +91,7 @@
                     </li>
 
                     @if(Auth::user()->user_type == 'TUTOR')
+                    
                         @php 
                             $scheduleID = app('request')->get('roomid');
                             $lessonHistory = App\models\lessonHistory::where('schedule_id', $scheduleID)->first();

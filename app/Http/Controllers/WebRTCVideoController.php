@@ -45,32 +45,42 @@ class WebRTCVideoController extends Controller
 
             if (!$material) 
             {
-                //@todo: message no selected material
-                //@todo: get previous if current lesson is finished?
-                echo "User has not selected a folder";
-                exit();
+                //@note: Auto Folder Selected is false;
+                $isFolderSelected   = false;
+                $folderID           = null;
 
-            } else {  
+                //folder URI
+                $folderSegments     = "";
+                $folderURLArray     = [];
+                $files              = []; 
 
-                //@desc: get the folder materials
-                $folderID       = $material->folder_id;
-                $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
-                $folderURLArray = Folder::getURLArray( $material->folder_id);
-                $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();            
+            } else{
+            
+                $isFolderSelected   = true;               
+                $folderID           = $material->folder_id;
+
+                //folder URI
+                $folderSegments     = Folder::getURLSegments( $material->folder_id, " > ");
+                $folderURLArray     = Folder::getURLArray( $material->folder_id);
+                $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();  
+
 
             }
 
+        
 
+            //@note: Lesson history to check surveys, 
+            //@note: Blade view will detect if be (MEMBER OR TUTOR) based on the session
             $lessonHistory = lessonHistory::where('schedule_id', $reserve->id)->first();
 
-                    
-            //check if it has a survey
+            //@note: check if session of a user has a survey
+            //@note: show lesson finshed View if user has finshed the survey, or the page will persist the survey modal via (Vue Modal)
             if ($lessonHistory) {
-
 
                 if ($userInfo->user_type == "MEMBER") {       
 
-                    //@todo: check if the member is done with the satisfaction survey
+                    //@note(1): check if the member is done with the satisfaction survey, 
+                    //@note(2): show lesson finished if member submitted a satisfaction survey
                     $lessonSurvey = SatisfactionSurvey::where('schedule_id', $reserve->id)->first();
                     
                     if ($lessonSurvey) {
@@ -79,15 +89,19 @@ class WebRTCVideoController extends Controller
 
                 } else if ($userInfo->user_type == "TUTOR") {       
 
-                    //@todo: check if the tutor filled up the member feedback form
+                    //@note:    check if the tutor filled up the member feedback form
+                    //@note(2): show lesson finished if member submitted member survey
                     $memberFeedback = MemberFeedback::where('schedule_id', $reserve->id)->first();
 
                     if ($memberFeedback) {
                         return Response::view('modules.webRTC.lessonFinished');                
-                    } 
-
-
+                    }
                 }
+
+            } else {
+            
+                $lessonHistory = null;
+
             }
             
 
@@ -114,8 +128,8 @@ class WebRTCVideoController extends Controller
                 } else {
                 
                     return view('errors.500',[
-                        'title'     => 'Recipient not found',
-                        'message'   => 'Recipient not found',
+                        'title'     => 'Member was not found on our records',
+                        'message'   => 'Member was not found on our records',
                         'code'      => '500'
                     ]);                
                 
@@ -143,14 +157,14 @@ class WebRTCVideoController extends Controller
                 } else {
 
                     return view('errors.500',[
-                        'title'     => 'Recipient not found',
-                        'message'   => 'Recipient not found',
+                        'title'     => 'Sorry, Tutor was not found, please contact administrator',
+                        'message'   => 'Sorry, Tutor was not found, please contact administrator',
                         'code'      => '500'
                     ]);
                 }
             }
 
-            return Response::view('modules.webRTC.index', compact('lessonHistory', 'roomID', 'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
+            return Response::view('modules.webRTC.index', compact('isFolderSelected', 'lessonHistory', 'roomID', 'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
 
         } else {
 
