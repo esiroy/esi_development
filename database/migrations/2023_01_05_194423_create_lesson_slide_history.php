@@ -15,10 +15,11 @@ class CreateLessonSlideHistory extends Migration
     {
         Schema::create('lesson_slide_history', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('lesson_history_id')->unique()->index('lesson_history_id'); 
-            $table->unsignedBigInteger('slide_index')->unique()->index('slide_index');
+            $table->unsignedBigInteger('lesson_history_id')->index('lesson_history_id'); 
+            $table->unsignedBigInteger('slide_index')->index('slide_index');
             $table->longText('content');
             $table->timestamps();
+            
             $table->foreign('lesson_history_id')->references('id')->on('lesson_history');       
         });
     }

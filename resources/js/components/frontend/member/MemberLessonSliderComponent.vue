@@ -433,6 +433,7 @@ export default {
     {  
 
         this.socket = io.connect(this.$props.canvas_server);
+
         window.lessonSliderComponent = this;
 
         //register as currently active users can see ONLINE  status
@@ -459,7 +460,7 @@ export default {
         this.socket.on("GOTO_SLIDE", (data) =>  {
             this.$refs['audioPlayer'].resetAudioIndex();
             this.viewerCurrentSlide = data.num
-            this.currentSlide = data.num
+            this.currentSlide = data.num;
             this.goToSlide(data.num);            
         });
 
@@ -509,7 +510,14 @@ export default {
 
                     if (response.canvasData.objects.length >= 1) {                    
 
-                        this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);          
+
+                        let curLen = this.canvas[this.currentSlide]._objects.length;
+                        let incLen = response.canvasData.objects.length;
+
+                        if (curLen !== incLen) {
+                        
+                             this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);       
+                        }                         
                         
                     } else {
 
@@ -719,6 +727,7 @@ export default {
         //window.addEventListener('scroll', this.reOffset);
         //window.addEventListener('resize', this.reOffset);
 
+        this.newFolderID = this.$props.folder_id;
 
     },
     methods: {
@@ -741,7 +750,10 @@ export default {
             this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
 
         },
-        openNewSlideMaterials() {
+        openNewSlideMaterials(newFolderID) {
+
+            
+            this.newFolderID = newFolderID;
 
             //Slide Selector already update the slide selector folder, 
             //So lets refresh the member slides!
@@ -812,6 +824,30 @@ export default {
                 alert (err)                
             }); 
         },
+        saveSlideHistoryData(canvasData) {
+
+            console.log("saving... slide history")
+
+            axios.post("/api/saveLessonSlideHistory?api_token=" + this.api_token,
+            {
+                'method'          : "POST",
+                //'folder_id'       : this.$props.folder_id,
+                //'totalSlides'     : this.slides,
+                //'currentSlide'    : this.currentSlide,
+                //'reservation'     : reservationData,                
+                //'slidesData'      : slidesData,     
+
+                'folderID'          : this.newFolderID,
+                'slideIndex'        : this.currentSlide,
+                'reservation'       : this.reservation,
+                'canvasData'        : canvasData
+
+            }).then(response => {
+
+                console.log("save slide history", response);
+            });
+        
+        },
         async getCanvasSlideData(slideIndex) {
             return this.canvas[slideIndex].toJSON();       
         },
@@ -838,8 +874,14 @@ export default {
             /** 
                 @todo: add the status (new, done, skipped)
                 @todo: add note, if created a empty slide
+
+                @todo(1):  Determine if has isTimerStarted is False then posting lesson is new
+                @todo(2):  Determine if has isTimerStarted is TRUE then posting lesson is skipped
+
             **/
+            
                 
+            console.log(this.$props.folder_id , this.newFolderID)
 
             axios.post("/api/postLessonHistory?api_token=" + this.api_token,
             {
@@ -848,7 +890,8 @@ export default {
                 'totalSlides'     : this.slides,
                 'currentSlide'    : this.currentSlide,
                 'reservation'     : reservationData,                
-                'slidesData'      : slidesData        
+                'slidesData'      : slidesData,        
+                'isTimerStarted'  : this.isTimerStarted
             }).then(response => {
 
                 this.startTimer();                
@@ -984,10 +1027,7 @@ export default {
             let mediaContainer = document.getElementById('editor'+ index);
             mediaContainer.append(canvasElement);            
         },        
-        getSlideMaterials(reservation) 
-        {
-
-            console.log("hello", reservation);
+        getSlideMaterials(reservation) {         
 
 
             this.isLoading = true;
@@ -1018,7 +1058,8 @@ export default {
                         this.createNewSlide();
 
                 
-                        this.$nextTick(function(){ 
+                        this.$nextTick(function() 
+                        { 
 
                             //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
                             this.userSlideAccess();
@@ -1034,7 +1075,9 @@ export default {
 
                         //Array of images
                         this.imageURL = response.data.files;
-                        this.audioFiles = response.data.audioFiles;   
+                        this.audioFiles = response.data.audioFiles; 
+
+                        let slideHistory = response.data.slideHistory.data
 
 
                         for (var i = 1; i <= this.slides; i++) 
@@ -1044,28 +1087,41 @@ export default {
                             this.canvas[i]  = new fabric.Canvas('canvas'+i, {
                                 backgroundColor : "#fff"
                             });  
-                    
-                            this.setSlideBackgroundImage(i, this.imageURL[i-1]);
+
+                             this.setSlideBackgroundImage(i, this.imageURL[i-1]);
+
+
+                            /** 
+                                @description: History Slide Retrieval
+                                @note : this will find the item index if is is same as the current index "(i) == slide_index"
+                             */
+                            if (slideHistory) {
+                            
+                                var item = slideHistory.find((item) => {
+                                    return item.slide_index == i;
+                                });
+                            
+                                if (item) {
+                                
+                                    this.updateCanvas(this.canvas[i], item.content);                             
+                                }
+                                
+                            } 
+
 
                             this.$forceUpdate();
 
-                            if (i ==  this.slides)
-                            {
+                            if (i ==  this.slides) {                                
+                            
+                                this.$nextTick(() => {  
 
-                                
-                                this.$nextTick(function()
-                                { 
                                     //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
                                     this.userSlideAccess();
                                     //this.slides = (response.data.files).length;
-
-
                                     //START SLIDE
                                     this.startSlide();
-
                                     //LOAD AUDIO
-                                    this.loadAudio()    
-
+                                    this.loadAudio();
 
                                     this.$refs['slideSelector'].closeSlideSelector();
                                 });
@@ -1088,7 +1144,6 @@ export default {
 			});
 
         }, 
-
         alignCanvas() {
             try {
                 var delta = new fabric.Point(0, 0);        
@@ -1174,6 +1229,7 @@ export default {
                     'recipient'     : this.getRecipient()
                 };            
 
+
                 this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);  
             }
             
@@ -1184,7 +1240,7 @@ export default {
             //@note(1): determine if a session is active when page is refreshed
             //@note(2): if session is active calculate the remaining or running time (negative value)
            
-           console.log("lesson history ", this.$props.lesson_history)
+           //console.log("lesson history ", this.$props.lesson_history)
 
             if (this.$props.lesson_history) 
             {
@@ -1307,22 +1363,27 @@ export default {
         canvasSendJSON(canvasID, canvasData) 
         { 
             let recipient = this.getRecipient();
-            console.log("scale", this.canvas[this.currentSlide]['scale']);
 
-            let memberCanvasData = {
-                'currentSlide'  : this.currentSlide,
-                'channelid'     : this.channelid,
-                'sender'        : {
-                                    userid: this.user_info.id,
-                                    username: this.user_info.username
-                                  },
-                'recipient'     : recipient,
-                'canvasid'      : canvasID,
-                'canvasData'    : canvasData,
-                'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
-                'canvasDelta'   : this.delta,
-            };       
-            this.socket.emit('SEND_DRAWING', memberCanvasData);  
+            if (this.$props.isBroadcaster == true) {  
+
+                let memberCanvasData = {
+                    'currentSlide'  : this.currentSlide,
+                    'channelid'     : this.channelid,
+                    'sender'        : {
+                                        userid: this.user_info.id,
+                                        username: this.user_info.username
+                                    },
+                    'recipient'     : recipient,
+                    'canvasid'      : canvasID,
+                    'canvasData'    : canvasData,
+                    'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
+                    'canvasDelta'   : this.delta,
+                };  
+                            
+                 this.socket.emit('SEND_DRAWING', memberCanvasData);  
+            }
+
+           
         },       
         canvasGetJSON() 
         {
@@ -1562,7 +1623,8 @@ export default {
 
             for (var i = 1; i <= this.slides; i++) 
             {
-                if (i == slide) {   
+                if (i == slide) 
+                {   
 
                     let editorElement = document.getElementById('editor'+ i);
 
@@ -1573,7 +1635,9 @@ export default {
                                  
 
                     //@todo: if tutor then broadcast get the drawn canvas
-                    if (this.$props.isBroadcaster == true) {      
+                    if (this.$props.isBroadcaster == true) {   
+
+                        console.log("slide sending data")   
                         let data = this.canvas[slide].toJSON(); 
                         this.canvasSendJSON(this.canvas[slide], data);
                     }
@@ -1628,27 +1692,21 @@ export default {
 
             //the audio index needs to be reset since it is global
             this.$refs['audioPlayer'].resetAudioIndex();
-
             this.$refs['audioPlayer'].stopAudio();
-
             this.rescale(1);
 
-            if (this.currentSlide < this.slides) 
-            {
+            if (this.currentSlide < this.slides) {
+
                 this.currentSlide ++;            
                 this.autoSelectTool(); 
 
-
                 //let data = this.canvasGetJSON();
                 //this.canvasSendJSON(this.canvas[this.currentSlide], data); 
-
-
 
                 let data = {
                     'channelid': this.channelid,
                     'num': this.currentSlide
                 }
-
 
                 //if (delegateToNode == true) {
                     this.socket.emit('GOTO_SLIDE', data);     
@@ -1685,97 +1743,63 @@ export default {
         mouseClickHandler(e) 
         {
 
-            this.canvas[this.currentSlide].on('mouse:down', (options) => 
-            {
-
+            this.canvas[this.currentSlide].on('mouse:down', (options) => {
                 var pointer = this.canvas[this.currentSlide].getPointer(options.e);
-
-                if (this.isText == true)
-                {
+                if (this.isText == true){
                     this.canvas[this.currentSlide].defaultCursor = 'text';  
-
                     this.mouseX = pointer.x ;
                     this.mouseY = pointer.y; 
-
-                    var selectedObj = this.canvas[this.currentSlide].getActiveObject();
-                    
-                    if (!selectedObj) {          
-
+                    var selectedObj = this.canvas[this.currentSlide].getActiveObject();                    
+                    if (!selectedObj) {
                         if (this.isTextEditing == true) {
                             this.isTextEditing = false;
                         } else {
                             this.$bvModal.show('modalAddInputText');                           
-                        }
-                        
+                        }                        
                     } else {
-
                         this.resetModes();     
                         this.isText             = true;
                         this.isTextEditing      = true;
                         //this.isSelector = true;
-                    }                    
-
+                    }
                 } else if (this.isSelector) {
-
                     this.canvas[this.currentSlide].defaultCursor = 'default';   
-
                 } else if (this.isDragger) {
-
-                    this.panning = true;
-                    
+                    this.panning = true;                    
                     this.canvas[this.currentSlide].defaultCursor = 'grabbing';   
                     document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
                         element.style.cursor = 'grabbing';
-                    });              
-
-                }  else {
-                
+                    });
+                }  else {                
                     this.canvas[this.currentSlide].defaultCursor = 'move';   
                     this.$forceUpdate();
-
                 }
-
-
             }).on('mouse:move', (options) => {
 
                 if (this.isDragger) {
-
-                    if (this.panning) 
-                    {
+                    if (this.panning) {
                         this.delta = new fabric.Point(options.e.movementX, options.e.movementY);
-                        this.canvas[this.currentSlide].relativePan(this.delta);
-                     
+                        this.canvas[this.currentSlide].relativePan(this.delta);                     
                         let data = this.canvasGetJSON();
                         this.canvasSendJSON(this.canvas[this.currentSlide], data);   
                     }
                 }
 
             }).on('mouse:up', () => {
-
                
                 if (this.isText == true) {
-
-                    this.canvas[this.currentSlide].defaultCursor = 'text';  
-
-            
+                    this.canvas[this.currentSlide].defaultCursor = 'text';              
                 } else if (this.isSelector) {
-
                      this.canvas[this.currentSlide].defaultCursor = 'default';   
-
                 } else  if (this.isDragger) {
-
                         //reset to default cursor of the current
                     this.canvas[this.currentSlide].defaultCursor = 'grab';
-
-                    document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
+                    document.querySelectorAll('.upper-canvas').forEach(function(element) {                            
                         element.style.cursor = 'grab';
                     });      
 
                     this.panning  = false;
                     this.delta    = null;
-
-
-
                 } else {
                     this.canvas[this.currentSlide].defaultCursor = 'default';   
                 }
@@ -1783,6 +1807,11 @@ export default {
                 //tool and send canvas json to viewer
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);    
+
+                console.log("mouse up: mouclick handler")
+
+                this.saveSlideHistoryData(data);
+
 
             }).on('mouse:out', (options) => {
                 if (this.isDragger == true) 
@@ -2055,7 +2084,10 @@ export default {
             });
 
             let data = this.canvasGetJSON();
+            
             this.canvasSendJSON(this.canvas[this.currentSlide], data);     
+
+            this.saveSlideHistoryData(data);
 
 
         },        
@@ -2119,8 +2151,8 @@ export default {
                     canvas.renderAll(); 
 
                     //let data = this.canvasGetJSON();
-                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);         
-                }         
+                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);  
+                }
 
             }).on('mouse:up', (object) => {
 
@@ -2128,6 +2160,8 @@ export default {
 
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);   
+
+                this.saveSlideHistoryData(data);
 
                 //[ADD TO HISTORY]    
                 /*            
@@ -2162,11 +2196,9 @@ export default {
                 this.canvas[this.currentSlide].add(this.line);
 
             }).on('mouse:move', (object) => {
-                if (this.isDrawingLine ) {
-                   
+
+                if (this.isDrawingLine ) {                   
                    this.disableSelect();
-
-
                     var pointer = this.canvas[this.currentSlide].getPointer(object.e);
                     this.line.set({ x2: pointer.x, y2: pointer.y });
                     this.line.setCoords();
@@ -2181,6 +2213,8 @@ export default {
                 this.isDrawingLine = false;
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);
+
+                this.saveSlideHistoryData(data);
 
             });
 
@@ -2225,10 +2259,12 @@ export default {
                     //this.canvasSendJSON(this.canvas[this.currentSlide], data);      
                 }
             }).on('mouse:up', (object) => {
-                this.isDrawing = false;
 
+                this.isDrawing = false;
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);
+
+                this.saveSlideHistoryData(data);
             
             });            
 
@@ -2329,7 +2365,9 @@ export default {
                     this.canvas[this.currentSlide].remove(selectedObj);     
 
                     let data = this.canvasGetJSON();
-                    this.canvasSendJSON(this.canvas[this.currentSlide], data);                
+                    this.canvasSendJSON(this.canvas[this.currentSlide], data);              
+
+                    this.saveSlideHistoryData(data);  
                 }                
             }
             this.mouseClickHandler();

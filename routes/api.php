@@ -247,14 +247,22 @@ Route::middleware('auth:api')->post('/deleteMemberMiniTestResult/{id}', 'API\Mem
 Route::middleware('auth:api')->post('/getMemberLessonSelected', 'API\LessonSlideMaterials@getMemberLessonSelected')->name('APIGetLessonMaterialSelected');
 Route::middleware('auth:api')->post('/updateSelectedLesson', 'API\LessonSlideMaterials@updateSelectedLesson')->name('APIUpdateSelectedSlidesFolder');
 
+//Lesson Selected 
+Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
+
 //lesson slide materials
 Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlides')->name('APIGetLessonMaterialSlides');
-Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList');
-Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
+Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
 
 //lesson slide preview (NEW)
 Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlideMaterials@getLessonSelectedPreview')->name('APIGetLessonSelectedPreview');
 
+
+//Lesson History Controller
+Route::middleware('auth:api')->post('/postLessonHistory', 'API\LessonHistoryController@postLessonHistory')->name('APIPostLessonHistory');
+
+//lesson Slide History
+Route::middleware('auth:api')->post('/saveLessonSlideHistory', 'API\LessonHistoryController@saveLessonSlideHistory')->name('APISaveLessonHistory');
 
 
 //File Manager
@@ -266,8 +274,6 @@ Route::middleware('auth:api')->delete('deleteAudio', 'FileUploadController@delet
 //File Ordering
 Route::middleware('auth:api')->post('/saveFileOrder', 'API\FileController@saveFileOrder')->name('saveFileOrder');
 
-//Lesson History Controller
-Route::middleware('auth:api')->post('/postLessonHistory', 'API\LessonHistoryController@postLessonHistory')->name('APIPostLessonHistory');
 
 //Member Satisfaction Survey
 Route::middleware('auth:api')->post('/postSatisfactionSurvey', 'API\MemberSatisfactionSurveyController@postSatisfactionSurvey')->name('APIPostSatisfactionSurvey');

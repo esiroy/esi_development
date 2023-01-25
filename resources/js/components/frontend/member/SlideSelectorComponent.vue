@@ -155,8 +155,10 @@
             }).then(response => {
 
                 if (response.data.success == true) {
+
+                    //alert(response.data.newFolderID)
                 
-                    this.$parent.openNewSlideMaterials();
+                    this.$parent.openNewSlideMaterials(response.data.newFolderID);
 
                 } else {                   
 

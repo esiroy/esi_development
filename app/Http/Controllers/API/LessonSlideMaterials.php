@@ -12,6 +12,8 @@ use App\Models\MemberSelectedLessonSlideMaterial;
 use App\Models\File;
 use App\Models\FileAudio;
 
+use App\Models\LessonHistory;
+use App\Models\LessonSlideHistory;
 
 class LessonSlideMaterials extends Controller
 {
@@ -50,42 +52,46 @@ class LessonSlideMaterials extends Controller
         @param: @request->userID 
         @param: @request->userID 
     */
-    public function updateSelectedLesson(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) {
+    public function updateSelectedLesson(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial, LessonHistory $lessonHistory) {
 
         $userID             = $request->userID;
         $lessonScheduleID   = $request->lessonID;
-        $folderID           = $request->folderID;
+        $newFolderID        = $request->folderID;
 
         $lessonSelected = $memberSelectedLessonSlideMaterial->where('user_id', $userID)->where('schedule_id', $lessonScheduleID)->first();
 
         if (!$lessonSelected) {
 
-            $created = ['test'=> "this is a test"];
-
-            $memberSelectedLessonSlideMaterial->create([
+            $created = $memberSelectedLessonSlideMaterial->create([
                     'user_id'       => $userID,
                     'schedule_id'   => $lessonScheduleID,
-                    'folder_id'     => $folderID,            
+                    'folder_id'     => $newFolderID,            
             ]);
+
+            $isLessonSkipped = $lessonHistory->skipLesson($userID, $lessonScheduleID, $newFolderID);
             
             return Response()->json([
                 "success"           => true,
-                "updated"           => $created,
+                "created"           => $created,
                 "message"           => "Member selected Lesson Material has been successfully created"
             ]); 
- 
+
 
         } else if ($lessonSelected) {
         
             $updated = $lessonSelected->update([
-                'folder_id' => $folderID
+                'folder_id' => $newFolderID
             ]);
 
             if ($updated) {
-            
+
+
+                $isLessonSkipped = $lessonHistory->skipLesson($userID, $lessonScheduleID, $newFolderID);
+
+
                 return Response()->json([
-                    "success"           => true,
-                    "updated"           => $updated,
+                    "success"           => true,                    
+                    'newFolderID'       => $newFolderID,
                     "message"           => "Member selected Lesson Material has been successfully updated"
                 ]); 
 
@@ -116,8 +122,8 @@ class LessonSlideMaterials extends Controller
     {
 
     
-        $scheduleID = $request->scheduleID;
-        $memberID     = $request->memberID;
+        $scheduleID     = $request->scheduleID;
+        $memberID       = $request->memberID;
 
         /*
             @todo: get the selected member (lesson_id)
@@ -144,17 +150,23 @@ class LessonSlideMaterials extends Controller
                 }
             }
 
+            //@note: lesson history
+            $lessonSlideHistory = new LessonSlideHistory();
+            $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+
+
             //seach for files in folder as images
             return Response([
-                    "success"              => true,
-                    'folderID'             => $folderID, 
-                    "files"                => $slides,
-                    "audioFiles"           => $audioFiles ?? null,
-                    "folderSegments"       => $folderSegments,
-                    "folderURLArray"       => $folderURLArray
-            ])->withHeaders([                  
-                'Accept-Ranges' => 'bytes',                    
-            ]);  
+                        "success"              => true,
+                        'folderID'             => $folderID, 
+                        "files"                => $slides,
+                        "slideHistory"         => $slideHistory,
+                        "audioFiles"           => $audioFiles ?? null,
+                        "folderSegments"       => $folderSegments,
+                        "folderURLArray"       => $folderURLArray
+                    ])->withHeaders([                  
+                        'Accept-Ranges' => 'bytes',                    
+                    ]);  
 
         } else {
             return Response([
@@ -163,6 +175,12 @@ class LessonSlideMaterials extends Controller
             ]);         
         }
     }
+
+
+    public function getLessonSlideMaterialHistory() {
+    
+    }
+
 
     /*
         @description: Get the folder with heirarchy for file manager

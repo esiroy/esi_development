@@ -15,7 +15,7 @@ class CreateLessonHistory extends Migration
     {
         Schema::create('lesson_history', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('schedule_id')->unique()->index('schedule_id');            
+            $table->unsignedBigInteger('schedule_id')->index('schedule_id');            
             $table->unsignedBigInteger('member_id')->index('member_id');
             $table->unsignedBigInteger('tutor_id')->index('tutor_id');
             $table->unsignedBigInteger('folder_id')->nullable()->index('folder_id');
@@ -24,7 +24,7 @@ class CreateLessonHistory extends Migration
 
             
             $table->string('status', '12');  //active, skipped, finished, cancelled
-            $table->string('additional_notes', '32');  //acti
+            $table->string('additional_notes', '64');  //acti
 
             //member lesson started
             $table->dateTime('time_started');

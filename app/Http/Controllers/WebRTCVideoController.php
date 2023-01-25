@@ -12,7 +12,7 @@ use App\Models\ScheduleItem;
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\MemberSelectedLessonSlideMaterial;
-use App\Models\lessonHistory;
+use App\Models\LessonHistory;
 
 use App\Models\SatisfactionSurvey;
 use App\Models\MemberFeedback;
@@ -45,6 +45,7 @@ class WebRTCVideoController extends Controller
 
             if (!$material) 
             {
+                
                 //@note: Auto Folder Selected is false;
                 $isFolderSelected   = false;
                 $folderID           = null;
@@ -62,8 +63,7 @@ class WebRTCVideoController extends Controller
                 //folder URI
                 $folderSegments     = Folder::getURLSegments( $material->folder_id, " > ");
                 $folderURLArray     = Folder::getURLArray( $material->folder_id);
-                $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();  
-
+                $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
 
             }
 
@@ -71,11 +71,13 @@ class WebRTCVideoController extends Controller
 
             //@note: Lesson history to check surveys, 
             //@note: Blade view will detect if be (MEMBER OR TUTOR) based on the session
-            $lessonHistory = lessonHistory::where('schedule_id', $reserve->id)->first();
+            $lessonHistory = LessonHistory::where('schedule_id', $reserve->id)->where('status', "NEW")->first();
 
             //@note: check if session of a user has a survey
             //@note: show lesson finshed View if user has finshed the survey, or the page will persist the survey modal via (Vue Modal)
             if ($lessonHistory) {
+
+              
 
                 if ($userInfo->user_type == "MEMBER") {       
 
@@ -101,6 +103,8 @@ class WebRTCVideoController extends Controller
             } else {
             
                 $lessonHistory = null;
+
+                //@todo: we will check if the user has older schedule 
 
             }
             

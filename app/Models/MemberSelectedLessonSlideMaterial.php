@@ -13,11 +13,11 @@ class MemberSelectedLessonSlideMaterial extends Model
     protected $guarded = array('created_at', 'updated_at');
 
 
-      /**     
-     * @desc  determine if the user pre-selected a lesson
+    /**     
+     * Determine if the user pre-selected a lesson
+     *
      * @param  $userID, $lessonScheduleID
-     */
-    
+    */    
     public function selectedLesson($userID, $lessonScheduleID) 
     {      
         $memberSelectedLesson = MemberSelectedLessonSlideMaterial::where('user_id', $userID)->where('schedule_id', $lessonScheduleID)->first();        

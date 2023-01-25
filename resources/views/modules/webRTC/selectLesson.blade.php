@@ -2,6 +2,8 @@
 
 @section('content')
 
+    <!-- this is cancelled-->
+
     {{ $folderID }}, {{ $isBroadcaster}}
 
     <new-lesson-slide-selector-component        

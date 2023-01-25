@@ -42,6 +42,9 @@ use Carbon\Carbon;
 
 use App\Jobs\SendAutoReplyJob;
 
+use App\Models\LessonSlideHistory;
+
+
 class dummyController extends Controller
 {
 
@@ -50,9 +53,45 @@ class dummyController extends Controller
     }
 
 
-    public function index() 
+    public function index(Request $request) 
     {
-        phpinfo();
+
+
+
+        $scheduleID = $request->id;
+
+
+        $lessonSlideHistory = new LessonSlideHistory();
+
+        /*
+        $lessonHistory = (object) [
+                'lesson_history_id' => 5,
+                'slide_index'       => 1,
+                'content'           => "just a test" 
+        ];
+        */
+        //$response = $lessonSlideHistory->saveSlideHistory($lessonHistory);
+
+        $slideHistory = $lessonSlideHistory ->getAllSlideHistory($scheduleID);
+
+
+        echo "<pre>";
+       
+        foreach ($slideHistory->data as $index => $slide) {
+        
+            print_r ($slide->content);
+
+            echo "<BR>";
+
+        }
+           
+
+         
+
+
+        echo "</pre>";
+
+
     }
 
 
