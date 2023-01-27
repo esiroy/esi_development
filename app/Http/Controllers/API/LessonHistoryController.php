@@ -16,7 +16,9 @@ use Auth, Config;
 
 class LessonHistoryController extends Controller
 {
-    /**
+    /** 
+        @description: when user starts a lesson, the lesson history will be updated
+
         @param: $request->reservation       - reservation details
         @param: $request->totalSlides       - total number of slides
         @param: $request->currentSlide      - Current slide
@@ -99,12 +101,13 @@ class LessonHistoryController extends Controller
     public function saveLessonSlideHistory(Request $request, LessonSlideHistory $lessonSlideHistory) 
     {
 
+        $totalSlides        = $request->totalSlides;
         $slideIndex         = $request->slideIndex;
         $reservation        = $request->reservation;
         $canvasData         = json_encode($request->canvasData);
-   
+        
 
-        $res = $lessonSlideHistory->saveSlideHistory($slideIndex, $reservation, $canvasData);
+        $res = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData);
 
         if ($res) {
         

@@ -43,6 +43,8 @@ use Carbon\Carbon;
 use App\Jobs\SendAutoReplyJob;
 
 use App\Models\LessonSlideHistory;
+use App\Models\CustomTutorLessonMaterials;
+
 
 
 class dummyController extends Controller
@@ -56,41 +58,31 @@ class dummyController extends Controller
     public function index(Request $request) 
     {
 
+        $folderID = 17;
+        $scheduleID = 366;
 
 
-        $scheduleID = $request->id;
+        $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+        $customFiles = CustomTutorLessonMaterials::where('folder_id', $folderID)->where('lesson_schedule_id', $scheduleID)->get();
 
 
-        $lessonSlideHistory = new LessonSlideHistory();
+        $mergedFilesArray = array_merge_recursive($customFiles->toArray(), $files->toArray());
 
-        /*
-        $lessonHistory = (object) [
-                'lesson_history_id' => 5,
-                'slide_index'       => 1,
-                'content'           => "just a test" 
-        ];
-        */
-        //$response = $lessonSlideHistory->saveSlideHistory($lessonHistory);
+   
 
-        $slideHistory = $lessonSlideHistory ->getAllSlideHistory($scheduleID);
+        $mergedFiles = json_decode (json_encode ($mergedFilesArray), FALSE);
 
 
-        echo "<pre>";
-       
-        foreach ($slideHistory->data as $index => $slide) {
+
+
+        foreach ($mergedFiles as $file) {
         
-            print_r ($slide->content);
+            echo "<pre>";
 
-            echo "<BR>";
+            print_r ($file);
 
+            
         }
-           
-
-         
-
-
-        echo "</pre>";
-
 
     }
 

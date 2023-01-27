@@ -108,7 +108,10 @@
             files: null,
             folder: null,
 
-            imageURL: null            
+            imageURL: null,           
+
+            currentSlide: null,
+            totalSlide: null,
         }
     },
     mounted() { 
@@ -141,34 +144,6 @@
         closeSlideSelector() {
             this.$refs['slideSelectorModal'].hide();
         },
-        async updateSlideFolder() {
-
-            //@todo: update the selected folder from
-
-            axios.post("/api/updateSelectedLesson?api_token=" + this.api_token,
-            {
-                'method'        : "POST",
-                'lessonID'      : this.lessonID,
-                'userID'        : this.userID,
-                'folderID'      : this.lessonSelectedFolderID
-
-            }).then(response => {
-
-                if (response.data.success == true) {
-
-                    //alert(response.data.newFolderID)
-                
-                    this.$parent.openNewSlideMaterials(response.data.newFolderID);
-
-                } else {                   
-
-                    alert (response.data.message);
-                    
-                }
-                
-            });           
-
-        },
         async startNewSlide() {
 
             if ( this.lessonSelectedFolderID !== "null" ) {
@@ -184,6 +159,33 @@
             }
             
             
+        },        
+        async updateSlideFolder() {
+
+            //@todo: update the selected folder from
+
+            axios.post("/api/updateSelectedLesson?api_token=" + this.api_token,
+            {
+                'method'        : "POST",
+                'lessonID'      : this.lessonID,
+                'userID'        : this.userID,
+                'folderID'      : this.lessonSelectedFolderID,
+                
+
+            }).then(response => {
+
+                if (response.data.success == true) {
+
+                    this.$parent.openNewSlideMaterials(response.data.newFolderID);
+
+                } else {                   
+
+                    alert (response.data.message);
+                    
+                }
+                
+            });           
+
         },
         getBaseURL(path) {
             return window.location.origin + "/" +path

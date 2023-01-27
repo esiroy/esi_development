@@ -14,13 +14,21 @@ class LessonSlideHistory extends Model
     protected $guarded = array('created_at', 'updated_at');
 
   
-    public function saveSlideHistory($slideIndex, $reservation, $canvasData) 
+    public function saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData) 
     {
         $scheduleID =  $reservation['schedule_id'];
 
         $lessonHistory = LessonHistory::where('schedule_id',  $scheduleID )->where('status', "NEW")->first();
 
         if ($lessonHistory) {
+
+
+            $lessonHistory->update([
+                'current_slide'   => $slideIndex,
+                'total_slides'      => $totalSlides
+            ]);
+
+
 
             $lessonSlideHistory = LessonSlideHistory::where('slide_index', $slideIndex)->where('lesson_history_id',  $lessonHistory->id )->first();
 

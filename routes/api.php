@@ -250,9 +250,13 @@ Route::middleware('auth:api')->post('/updateSelectedLesson', 'API\LessonSlideMat
 //Lesson Selected 
 Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
 
+
 //lesson slide materials
 Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlides')->name('APIGetLessonMaterialSlides');
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
+
+//Save Lesson Materials
+Route::middleware('auth:api')->post('/saveEmptyCustomSlide', 'API\LessonSlideMaterials@saveEmptyCustomSlide')->name('APIsaveEmptyCustomSlide');
 
 //lesson slide preview (NEW)
 Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlideMaterials@getLessonSelectedPreview')->name('APIGetLessonSelectedPreview');

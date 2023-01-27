@@ -241,8 +241,9 @@ export default {
         
         }
     },
-    createEmptySlide() {
-        this.$parent.createNewSlide();
+    createEmptySlide() {    
+
+        this.$parent.userCreateNewEmptySlide();
         this.$refs['modalCreateNewSlide'].hide();
     },
     prepareSlider(reservation, slide_index) 

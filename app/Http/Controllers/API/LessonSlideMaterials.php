@@ -14,9 +14,44 @@ use App\Models\FileAudio;
 
 use App\Models\LessonHistory;
 use App\Models\LessonSlideHistory;
+use App\Models\CustomTutorLessonMaterials;
+
 
 class LessonSlideMaterials extends Controller
 {
+
+
+    public function saveEmptyCustomSlide(Request $request) { 
+
+       $createdCustomLesson = CustomTutorLessonMaterials::create([
+            'lesson_schedule_id'    => $request->scheduleID,
+            'folder_id'             => $request->folderID,
+            'file_name'             => "EMPTY",
+            'upload_name'           => "EMPTY",
+            'path'                  => null,       
+            'size'                  => 0,
+            'order_id'              => $request->slideIndex
+        ]);
+
+        if ($createdCustomLesson) {
+        
+
+            return Response()->json([
+                "success"                => true,
+                "message"                => "Custom Lesson Material has been successfully added"
+            ]);         
+        
+        } else {
+        
+        
+            return Response()->json([
+                "success"                => false,
+                "message"                => "Error :: Custom Lesson Material was not added due to an errord"
+            ]); 
+        }
+
+
+    }
 
     
     //@description: determine if the user pre-selected a lesson
@@ -58,7 +93,7 @@ class LessonSlideMaterials extends Controller
         $lessonScheduleID   = $request->lessonID;
         $newFolderID        = $request->folderID;
 
-        $lessonSelected = $memberSelectedLessonSlideMaterial->where('user_id', $userID)->where('schedule_id', $lessonScheduleID)->first();
+        $lessonSelected     = $memberSelectedLessonSlideMaterial->where('user_id', $userID)->where('schedule_id', $lessonScheduleID)->first();
 
         if (!$lessonSelected) {
 
@@ -72,6 +107,7 @@ class LessonSlideMaterials extends Controller
             
             return Response()->json([
                 "success"           => true,
+                'newFolderID'       => $newFolderID,
                 "created"           => $created,
                 "message"           => "Member selected Lesson Material has been successfully created"
             ]); 
@@ -137,30 +173,54 @@ class LessonSlideMaterials extends Controller
             $folderID       = $material->folder_id;
             $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
             $folderURLArray = Folder::getURLArray( $material->folder_id);
-            $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+
+            
+            //@todo: add the custom upload by teacher
+            $files              = File::where('folder_id', $folderID)->orderBy('.order_id', 'ASC')->get();
+            $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+         
+
+            //get Lesson History details
+            $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
+
+            if ($lessonHistory) {
+                //Initialzie Audio Objects
+                for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
+                    $audioFiles[$ctr+1] =  [];
+                }
+            } 
+
+
+            //@note: lesson slide history
+            $lessonSlideHistory = new LessonSlideHistory();
+            $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+
 
             if ($files) 
             {
                 $slides = [];
 
-                foreach ($files as $index => $file) {
+                foreach ($files  as $index => $file) {
                     array_push($slides, url($file->path));
                     //make the index same as the slide number
                     $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
                 }
-            }
 
-            //@note: lesson history
-            $lessonSlideHistory = new LessonSlideHistory();
-            $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+                
+            } else {
+            
+                $slides = [];
+            }
 
 
             //seach for files in folder as images
             return Response([
                         "success"              => true,
+                        "lessonHistory"        => $lessonHistory,
                         'folderID'             => $folderID, 
                         "files"                => $slides,
-                        "slideHistory"         => $slideHistory,
+                        'customFiles'          => $customFiles,
+                        "slideHistory"         => $slideHistory ?? null,
                         "audioFiles"           => $audioFiles ?? null,
                         "folderSegments"       => $folderSegments,
                         "folderURLArray"       => $folderURLArray
@@ -169,17 +229,23 @@ class LessonSlideMaterials extends Controller
                     ]);  
 
         } else {
+
+
+            //@note: lesson slide history
+            $lessonSlideHistory = new LessonSlideHistory();
+            $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+
+            
+
             return Response([
-                "success"   => false,
-                "message"   => "No slides for this lesson"
+                "success"           => false,
+                "slideHistory"      => $slideHistory,
+                "message"           => "No slides for this lesson"
             ]);         
         }
     }
 
 
-    public function getLessonSlideMaterialHistory() {
-    
-    }
 
 
     /*

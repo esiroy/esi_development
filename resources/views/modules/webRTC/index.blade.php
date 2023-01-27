@@ -69,11 +69,12 @@
 
                             <div class="myButtonsContainer" class="row">
 
+                                @if (Auth::user()->user_type == "TUTOR")
                                 <button id="btnShareScreen" type="button" class="btn btn-sm">
                                     <i class="fas fa-desktop text-white"></i>
                                     <!--<span class="small">Screen Share</span>-->
                                 </button>
-
+                                @endif
                                 
 
                                 <button type="button" class="btn btn-sm"  data-toggle="modal" data-target="#mySettingsModal">
