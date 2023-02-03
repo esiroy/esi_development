@@ -4,8 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Permalink;
+use App\Models\LessonHistory;
+use App\Models\File;
+
 use Gate;
 use Auth;
+
+
+
 
 class Folder extends Model
 {
@@ -570,4 +576,164 @@ class Folder extends Model
         }
         return $updated;
     }
+
+
+
+    /************************************************************
+        SLIDES FOLDER SEARCH NEXT IDS
+    ************************************************************/    
+    public function getRecentLessonHistory($memberID, $status) 
+    {    
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('status', $status)->orderBy("time_ended", 'DESC')->first();        
+        if ($lessonHistory) { return $lessonHistory; } else { return false; }        
+    }
+
+
+    public function getRecentlyCompletedFolderID($memberID, $status = "COMPLETED") {
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('status', $status)->orderBy("time_ended", 'DESC')->first();
+        if ($lessonHistory) { return $lessonHistory->folder_id; } else { return false; }        
+    }
+
+
+    /**
+        @todo; Next Folder Slide 
+
+    **/
+    public function getNextFolderID($memberID) {
+
+        $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
+        
+        if ($recentLessonHistory) {   
+
+            $recentHistoryID       = $recentLessonHistory->id;
+            $recentHistoryFolderID = $recentLessonHistory->folder_id;
+            $nextFolder             = $this->getNextFolder($recentLessonHistory->folder_id);
+
+            if ($nextFolder) {
+                $newFolderID       = $nextFolder->id;
+            } else {
+
+                $nextParentFolder = $this->getNextParentFolder($recentLessonHistory->folder_id);
+
+                if ($nextParentFolder) {
+
+                    $newFolderID       = $nextParentFolder->id;
+
+                } else {           
+
+                    $nextParentFolder = $this->getNextParentFolder($recentLessonHistory->folder_id, true);
+
+                    if ($nextParentFolder) { 
+
+                        $newFolderID       = $nextParentFolder->id;
+
+                    } else {                    
+                        $newFolderID       = null;                    
+                    }            
+                }        
+            }
+
+        } else {      
+
+            $firstFolder = $this->getFirstFolder();
+
+            //new folder must be a new lesson
+            $newFolderID       = $firstFolder->id;
+        }
+
+        return $newFolderID;    
+    }
+
+
+    public function getFirstFolder() {
+    
+        $folder     = Folder::where('privacy', 'public')->where('parent_id', 0)->orderBy('order_id', "ASC")->first(); 
+
+        if ($folder) {
+            return $folder;
+        } else {
+            return null;
+        }
+    }
+
+
+    public function getNextFolder($currentFolderID) {
+
+        $currentFolder         = Folder::where('id', $currentFolderID)->where('privacy', 'public')->first(); 
+
+        if ($currentFolder) 
+        {
+            $previousFolderParentID = $currentFolder->parent_id;
+            $previousFolderOrderID  = $currentFolder->order_id;
+            $nextFolderOrderID      = $previousFolderOrderID + 1;
+
+            $nextLessonFolder = Folder::where('parent_id', $previousFolderParentID)->where('order_id', '>=', $nextFolderOrderID)->where('privacy', 'public')->first();
+
+            if ($nextLessonFolder) 
+            {
+
+                if ($nextLessonFolder->parent_id == null)  {
+
+                    $filesCounter = File::where('folder_id', $nextLessonFolder->id)->count();
+
+                    if ($filesCounter == 0) {
+
+                        $childFolder = Folder::where('parent_id', $nextLessonFolder->id)->orderBy('order_id', 'ASC')->where('privacy', 'public')->first();
+
+                        if ($childFolder)                         
+                            return $childFolder;                        
+                        else
+                            return $this->getNextFolder($nextLessonFolder->id);                                                
+                    
+                    } else 
+
+                        return $nextLessonFolder;
+
+                } else {
+
+                    return $nextLessonFolder;   
+                }
+                
+
+            } else {
+
+                return null;
+            }
+        
+        } else {
+        
+            return null;
+        }
+
+
+    }
+
+     public function getNextParentFolder($parentFolderID, $allowEmptyFiles = false) {      
+
+        $currentParentFolder = Folder::where('id', $parentFolderID)->first();
+
+        if ($currentParentFolder)  {
+        
+            $nextParentFolder = Folder::where('parent_id', $currentParentFolder->parent_id)->where('order_id', '>', $currentParentFolder->order_id)->where('privacy', 'public')->first();
+
+            if ($nextParentFolder) {
+
+                $filesCounter = File::where('folder_id', $nextParentFolder->id)->count();
+
+                if ($filesCounter == 0 && $allowEmptyFiles == false) {
+
+                    return $this->getNextParentFolder($nextParentFolder->id);
+
+                } else {               
+                
+                    return $nextParentFolder;
+                }
+                
+            }
+
+        }
+    }
+
+
+    
 }

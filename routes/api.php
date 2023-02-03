@@ -252,7 +252,7 @@ Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\Les
 
 
 //lesson slide materials
-Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlides')->name('APIGetLessonMaterialSlides');
+Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlidesAutoNextFolder')->name('APIGetLessonMaterialSlides');
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
 
 //Save Lesson Materials
@@ -262,7 +262,7 @@ Route::middleware('auth:api')->post('/saveEmptyCustomSlide', 'API\LessonSlideMat
 Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlideMaterials@getLessonSelectedPreview')->name('APIGetLessonSelectedPreview');
 
 
-//Lesson History Controller
+//Lesson History Controller (END LESSON)
 Route::middleware('auth:api')->post('/postLessonHistory', 'API\LessonHistoryController@postLessonHistory')->name('APIPostLessonHistory');
 
 //lesson Slide History
@@ -281,6 +281,8 @@ Route::middleware('auth:api')->post('/saveFileOrder', 'API\FileController@saveFi
 
 //Member Satisfaction Survey
 Route::middleware('auth:api')->post('/postSatisfactionSurvey', 'API\MemberSatisfactionSurveyController@postSatisfactionSurvey')->name('APIPostSatisfactionSurvey');
+
+//Tutor Feeback to Member
 Route::middleware('auth:api')->post('/postMemberFeedback', 'API\MemberFeedbackController@postMemberFeedback')->name('APIMemberFeedback');
 
 

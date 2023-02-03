@@ -22,11 +22,7 @@ class LessonHistory extends Model
 
 
     /**    
-        @description:   - CHECK IF THERE IS A 'NEW' LESSON STATUS CREATED 
-                        - UPDATE THE NEW STATUS TO SKIP AND 
-                       
-        
-        SKIP The current lesson and create new lesson 
+        @description:   - SKIP AND CREATE 'NEW' STATUS LESSON
     */
     public function skipLesson($userID, $lessonScheduleID, $newFolderID) 
     {
@@ -84,6 +80,18 @@ class LessonHistory extends Model
 
             DB::rollBack();
         }
+    }
+
+
+
+    /**    
+        @description:   - GET NEW LESSON       
+    */
+
+    public function getRecentLessonHistory($memberID, $status) 
+    {    
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('status', $status)->orderBy("time_ended", 'DESC')->first();        
+        if ($lessonHistory) { return $lessonHistory; } else { return false; }        
     }
 
 

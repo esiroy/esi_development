@@ -19,6 +19,7 @@
 
                 <div id="starsRating" class="col-8">
 
+                    <!--
                     <div class="row">
                         <div class="col-7">
                             <div class="feedback-title">
@@ -29,6 +30,7 @@
                             <star-rating v-model="generalCourseRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>            
                         </div>
                     </div>
+                    -->
 
                     <div class="row mt-3">
                         <div class="col-7"> 
@@ -41,6 +43,7 @@
                         </div>                
                     </div>
 
+                    <!--
                     <div class="row mt-3">
                         <div class="col-7">        
                             <div class="feedback-title">    
@@ -51,6 +54,7 @@
                             <star-rating v-model="teacherSelfPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>
                         </div>
                     </div>
+                    -->
 
                 </div>
 
@@ -153,9 +157,9 @@ export default {
             showMessage: false,
 
             //Stars Container Ratings
-            generalCourseRating: null,
+            //generalCourseRating: null,
             studentPerformanceRating: null,
-            teacherSelfPerformanceRating: null,
+            //teacherSelfPerformanceRating: null,
 
             //Contents
             feeback: null,
@@ -207,11 +211,10 @@ export default {
         },
         checkLessonRated() 
         {
-            return this.isArrayValid([
-                                    this.generalCourseRating, 
-                                    this.studentPerformanceRating, 
-                                    this.teacherSelfPerformanceRating]
-                                )
+            //return this.isArrayValid([this.generalCourseRating, this.studentPerformanceRating,this.teacherSelfPerformanceRating])
+
+            return this.isArrayValid([this.studentPerformanceRating])
+
         },
         submitFeedback() {           
            let isLessonRated = this.checkLessonRated();     

@@ -523,11 +523,13 @@ export default {
                         }                         
                         
                     } else {
-                        console.log("there is no drawing detected")                        
+                        console.log("there is no drawing detected")       
+
+                         this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);                    
                     }
                     
                 } catch (error) {
-                    console.log("canvas delta errror", error);
+                    console.log("canvas errror", error);
                 }
             } 
         });        
@@ -1100,6 +1102,8 @@ export default {
                     let slideHistory    = response.data.slideHistory.data;
                     let customFiles     = response.data.customFiles;  
 
+                    this.newFolderID    = response.data.folderID;  
+
                     //Slide Count 
                     if (customFiles) {                        
                         this.slides  = (response.data.files).length + customFiles.length;
@@ -1109,18 +1113,61 @@ export default {
 
 
                     if (this.slides == 0) {
-                        this.slides = 0;
+
+                      
+
+                        let firstSlideIndex = 1;
+
+                        //this.slides = 0;
+
                         this.createNewSlide();
 
-                        this.$nextTick(function() { 
+
+                        if (slideHistory) {
+                        
+                            var item = slideHistory.find((item) => {
+                                return item.slide_index == firstSlideIndex;
+                            });
+
+                            if (item) {
+
+                                let slideHistoryContent = JSON.parse(item.content);
+
+                                if (slideHistoryContent.objects.length >= 1) { 
+
+                                    this.updateCanvas(this.canvas[firstSlideIndex], item.content);
+
+                                } else {
+
+                                    this.getCustomBackground(firstSlideIndex, customFiles);
+                                }
+
+                            } else {                                
+                                this.getCustomBackground(firstSlideIndex, customFiles);
+                            }                                
+
+                        } else {                                
+
+                            this.getCustomBackground(firstSlideIndex, customFiles);                               
+                        }
+
+
+                        this.$nextTick(() => { 
+
+                        
                             //DETERMINE IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
                             this.userSlideAccess();
-                            //START SLIDE
-                            this.startSlide(lessonHistory.current_slide);
+
+                            //START SLIDE (SELECT FROM CURRENT HISTORY IF THERE IS CURRENT SLIDE)
+                            let currentSlide =  (lessonHistory) ? lessonHistory.current_slide : 1;                            
+                            this.startSlide(currentSlide);
+
+
                             //LOAD AUDIO
                             this.loadAudio();
                             this.$refs['slideSelector'].closeSlideSelector();                        
                         });
+                        
                     } else {           
                     
 
@@ -1163,14 +1210,20 @@ export default {
                                     //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
                                     this.userSlideAccess();
                                     //this.slides = (response.data.files).length;
-                                    //START SLIDE
-                                    this.startSlide(lessonHistory.current_slide);
+                                 
+                                 
+                                    //START SLIDE (SELECT FROM CURRENT HISTORY IF THERE IS CURRENT SLIDE)
+                                    let currentSlide =  (lessonHistory) ? lessonHistory.current_slide : 1;                            
+                                    this.startSlide(currentSlide);
+
                                     //LOAD AUDIO
                                     this.loadAudio();
 
                                     this.$refs['slideSelector'].closeSlideSelector();
                                 });
 
+
+                                this.refreshMemberSlides();;
                             }
                         } 
                     }              
@@ -1191,14 +1244,39 @@ export default {
                         });
                     
                         if (item) {
+                        
                             let slideHistoryContent = JSON.parse(item.content);
+
                             if (slideHistoryContent.objects.length >= 1) { 
                                 this.updateCanvas(this.canvas[index], item.content);                             
                             }
 
                              this.startSlide(index);
+                        } else {
+                        
+                            alert ("no item for history")
                         }
-                    }                     
+
+
+                    } else {
+                    
+                        alert ("test")
+
+                                           
+                        this.createNewSlide();
+
+                        this.$nextTick(() => {                         
+                            //DETERMINE IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
+                            this.userSlideAccess();
+                            //START SLIDE
+                            this.startSlide(1);
+                            //LOAD AUDIO
+                            this.loadAudio();
+                            this.$refs['slideSelector'].closeSlideSelector();                        
+                        });
+
+
+                    }                    
                 }
 			});
 

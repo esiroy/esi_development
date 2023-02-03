@@ -45,6 +45,7 @@ class MemberFeedbackController extends Controller
             ]);
 
             //Add the ratings
+            /*
             $rating1 = MemberFeedbackDetails::create([
                 'member_feedback_id'  => $created->id,
                 'name'              => 'general_course_ratings',
@@ -53,6 +54,7 @@ class MemberFeedbackController extends Controller
                 'order_id'          => 1,
                 'is_active'         => true,
             ]);
+           */
 
             	
             $rating2 = MemberFeedbackDetails::create([
@@ -64,6 +66,8 @@ class MemberFeedbackController extends Controller
                 'is_active'         => true,
             ]);
 
+
+            /*
             $rating3 = MemberFeedbackDetails::create([
                 'member_feedback_id'  => $created->id,
                 'name'              => 'teacher_self_performace_rating',
@@ -72,6 +76,7 @@ class MemberFeedbackController extends Controller
                 'order_id'          => 3,
                 'is_active'         => true,
             ]);  
+            */
 
 
             return Response()->json([

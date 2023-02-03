@@ -45,19 +45,24 @@ class MemberSelectedLessonSlideMaterial extends Model
                                                     ->first(); 
         if ($item) {
         
-            $item->update([
+            $response = $item->update([
                     'user_id'       => $userID,
                     'schedule_id'   => $lessonScheduleID,
                     'folder_id'     => $selectedOption['id'],
             ]);
 
+
+            return $response;
+
         } else {
 
-            MemberSelectedLessonSlideMaterial::create([
+            $response = MemberSelectedLessonSlideMaterial::create([
                     'user_id'       => $userID,
                     'schedule_id'   => $lessonScheduleID,
                     'folder_id'     => $selectedOption['id'],            
             ]);
+
+            return $response;
         }
     }    
 }

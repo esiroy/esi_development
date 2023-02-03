@@ -42,7 +42,9 @@ use Carbon\Carbon;
 
 use App\Jobs\SendAutoReplyJob;
 
+use App\Models\LessonHistory;
 use App\Models\LessonSlideHistory;
+use App\Models\MemberSelectedLessonSlideMaterial;
 use App\Models\CustomTutorLessonMaterials;
 
 
@@ -55,8 +57,116 @@ class dummyController extends Controller
     }
 
 
-    public function index(Request $request) 
+    public function index(Request $request, Folder $folder) 
     {
+
+        $memberID = 148;
+        $scheduleID = $request->schedule_id;
+
+
+        $selectedMaterial = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+
+
+        if ($selectedMaterial) {        
+            $folderID       = $selectedMaterial->folder_id;
+        } else {        
+            $folderID       = $folder->getNextFolderID($memberID);
+        }
+
+
+
+        echo $folderID;
+
+
+        echo $folder->getURLSegments($folderID);
+
+
+
+        exit();
+        
+        echo "<p> Schedule ID : " . $scheduleID ."</p>";
+        
+        $selectedMaterial = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+
+        if (!$selectedMaterial) {
+
+            $folder = new Folder();
+
+            $recentLessonHistory = $folder->getRecentLessonHistory($memberID, "COMPLETED");
+
+
+            echo  "LESSON HISTORY ID:: (" . $recentLessonHistory->id  .") ";
+
+            echo "<br>";
+
+            echo  "RECENTLY COMPLETED FOLDER ID:: (" . $recentLessonHistory->folder_id  .") ";
+          
+           
+
+            $nextFolder = $folder->getNextFolder($recentLessonHistory->folder_id);
+
+            if ($nextFolder) {
+
+                echo "parent ? " . $nextFolder->parent_id;
+                echo "<br>";
+                echo "<br>";
+
+                echo "NEXT FOLDER ID : <B> " . $nextFolder->id ."</B>"; 
+                
+
+            } else {
+                
+                $nextParentFolder = $folder->getNextParentFolder($recentLessonHistory->folder_id);
+
+                if ($nextParentFolder) {
+
+                     dd($nextParentFolder);
+                
+                } else {
+                
+
+                    $nextParentFolder = $folder->getNextParentFolder($recentLessonHistory->folder_id, true);
+
+                    if ($nextParentFolder) {
+                    
+                          echo "NEXT Parent folder id : " .($nextParentFolder->id);
+
+                    } else {
+
+                        //END OF ALL FOLDERS
+                    
+                        return null;
+
+                    }
+                
+                }
+
+               
+            }
+
+            
+
+
+
+            echo "<pre>";
+            dd ($nextFolder);
+            echo "</pre>";
+
+        
+        
+        } else {
+        
+        
+            echo "folder found";
+        }
+
+
+        
+    }
+
+
+    public function testCustomLessonMaterials() {
+    
 
         $folderID = 17;
         $scheduleID = 366;
@@ -74,7 +184,6 @@ class dummyController extends Controller
 
 
 
-
         foreach ($mergedFiles as $file) {
         
             echo "<pre>";
@@ -83,6 +192,7 @@ class dummyController extends Controller
 
             
         }
+
 
     }
 

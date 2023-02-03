@@ -17,7 +17,8 @@ use Auth, Config;
 class LessonHistoryController extends Controller
 {
     /** 
-        @description: when user starts a lesson, the lesson history will be updated
+        @description: when user starts a lesson lesson will be MAREKD STARTED
+                         OR  the lesson history will be updated TO MARKED TIME ENDED
 
         @param: $request->reservation       - reservation details
         @param: $request->totalSlides       - total number of slides
@@ -35,16 +36,16 @@ class LessonHistoryController extends Controller
         {    
 
             $lessonHistory->update([
+                'status'            => 'COMPLETED',
                 'current_slide'     => $request->currentSlide,
                 'total_slides'      => $request->totalSlides,               
                 'time_ended'        => Carbon::now(),                
             ]);
 
             return Response()->json([
-                "success" => true,             
-                
-                "reservation" => $request->reservation,
-                "message" => "Lesson Materials posted successfully."
+                "success"       => true,
+                "reservation"   => $request->reservation,
+                "message"       => "Lesson Materials posted successfully."
             ]); 
 
         

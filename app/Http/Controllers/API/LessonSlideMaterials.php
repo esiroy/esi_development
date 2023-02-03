@@ -152,9 +152,139 @@ class LessonSlideMaterials extends Controller
 
 
     /** 
+        @description: get the lesson material slides of the folder, with auto selection
+    */    
+    public function getLessonMaterialSlidesAutoNextFolder(Request $request, Folder $folder, MemberSelectedLessonSlideMaterial $memberSelectedMaterial)
+    {
+        $scheduleID         = $request->scheduleID;
+        $memberID           = $request->memberID;
+
+        $selectedMaterial = $memberSelectedMaterial->where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+
+        //get Lesson History details
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
+
+
+        if ($selectedMaterial) {        
+            $folderID       = $selectedMaterial->folder_id;
+        } else {        
+
+           
+            
+
+                $folderID       = $folder->getNextFolderID($memberID);
+
+           
+            
+        }
+
+
+        if ($lessonHistory) {
+            //Initialzie Audio Objects
+            for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
+                $audioFiles[$ctr+1] =  [];
+            }
+        } 
+
+        //Folder Segment
+        $folderSegments     = Folder::getURLSegments($folderID, " > ");
+        $folderURLArray     = Folder::getURLArray($folderID);
+
+
+       //get Lesson History details
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
+        if ($lessonHistory) {
+            //Initialzie Audio Objects
+            for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
+                $audioFiles[$ctr+1] =  [];
+            }
+        } 
+
+
+        //SLIDES HISTORY
+        $lessonSlideHistory = new LessonSlideHistory();
+        $slideHistory       = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+
+        
+        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+
+
+        if (isset($newFolderID)) {   
+
+            //$selectedLesson['id'] = $newFolderID;
+            //$res = $memberSelectedMaterial->saveSelectedLesson($memberID, $scheduleID, $selectedLesson);    
+
+            $folderID = $newFolderID;    
+
+        } else if (isset($folderID)) {
+        
+           // $selectedLesson['id'] = $folderID;
+           // $res = $memberSelectedMaterial->saveSelectedLesson($memberID, $scheduleID, $selectedLesson);   
+
+        } else {
+
+            return Response([
+                "success"           => false,
+                "message"           => "No slides for this lesson",  
+                "slideHistory"      => $slideHistory ?? null,
+                "message"           => "No slides for this lesson"
+            ]);         
+              
+        }
+        
+
+        
+        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+        
+
+
+
+        //@note: lesson slide history
+        $lessonSlideHistory = new LessonSlideHistory();
+        $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+
+
+        if ($files) {
+            $slides = [];
+            foreach ($files as $index => $file) {
+                array_push($slides, url($file->path));
+                //make the index same as the slide number
+                $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
+            }                
+        } else {            
+            $slides = [];
+        }
+
+
+        //seach for files in folder as images
+        return Response([
+                    "success"              => true,
+                    'folderID'             => $folderID, 
+                    "folderSegments"       => $folderSegments,
+                    "folderURLArray"       => $folderURLArray,
+
+                    "files"                => $slides,
+                    'customFiles'          => $customFiles,
+
+                    "lessonHistory"        => $lessonHistory,
+                    "slideHistory"         => $slideHistory ?? null,
+
+                    "audioFiles"           => $audioFiles ?? null,
+                    
+                ])->withHeaders([                  
+                    'Accept-Ranges' => 'bytes',                    
+                ]); 
+
+    }
+
+
+
+    /** 
         @description: get the lesson material slides of the folder 
     */    
-    public function getLessonMaterialSlides(Request $request)
+    public function getLessonMaterialSlidesCurrentFolder(Request $request)
     {
 
     
@@ -162,27 +292,26 @@ class LessonSlideMaterials extends Controller
         $memberID       = $request->memberID;
 
         /*
-            @todo: get the selected member (lesson_id)
-                 : if the member has not selected return false
+            @todo: get the selected member (lesson_id) : if the member has not selected return false
         */
         $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
 
         if ($material) {
-
-            //@done: get the folder materials
+            
             $folderID       = $material->folder_id;
-            $folderSegments = Folder::getURLSegments( $material->folder_id, " > ");
-            $folderURLArray = Folder::getURLArray( $material->folder_id);
 
             
-            //@todo: add the custom upload by teacher
-            $files              = File::where('folder_id', $folderID)->orderBy('.order_id', 'ASC')->get();
+
+
+            $folderSegments     = Folder::getURLSegments($folderID, " > ");
+            $folderURLArray     = Folder::getURLArray($folderID);
+         
+            $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
             $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
          
 
             //get Lesson History details
             $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
-
             if ($lessonHistory) {
                 //Initialzie Audio Objects
                 for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
@@ -196,19 +325,14 @@ class LessonSlideMaterials extends Controller
             $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
 
 
-            if ($files) 
-            {
+            if ($files) {
                 $slides = [];
-
-                foreach ($files  as $index => $file) {
+                foreach ($files as $index => $file) {
                     array_push($slides, url($file->path));
                     //make the index same as the slide number
                     $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
-                }
-
-                
-            } else {
-            
+                }                
+            } else {            
                 $slides = [];
             }
 
@@ -216,37 +340,24 @@ class LessonSlideMaterials extends Controller
             //seach for files in folder as images
             return Response([
                         "success"              => true,
-                        "lessonHistory"        => $lessonHistory,
                         'folderID'             => $folderID, 
+                        "folderSegments"       => $folderSegments,
+                        "folderURLArray"       => $folderURLArray,
+
                         "files"                => $slides,
                         'customFiles'          => $customFiles,
+
+                        "lessonHistory"        => $lessonHistory,
                         "slideHistory"         => $slideHistory ?? null,
+
                         "audioFiles"           => $audioFiles ?? null,
-                        "folderSegments"       => $folderSegments,
-                        "folderURLArray"       => $folderURLArray
+                        
                     ])->withHeaders([                  
                         'Accept-Ranges' => 'bytes',                    
                     ]);  
 
-        } else {
-
-
-            //@note: lesson slide history
-            $lessonSlideHistory = new LessonSlideHistory();
-            $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
-
-            
-
-            return Response([
-                "success"           => false,
-                "slideHistory"      => $slideHistory,
-                "message"           => "No slides for this lesson"
-            ]);         
-        }
+        } 
     }
-
-
-
 
     /*
         @description: Get the folder with heirarchy for file manager
