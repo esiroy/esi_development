@@ -1259,9 +1259,6 @@ export default {
 
 
                     } else {
-                    
-                        alert ("test")
-
                                            
                         this.createNewSlide();
 
