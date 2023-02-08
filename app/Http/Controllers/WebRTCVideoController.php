@@ -29,16 +29,6 @@ class WebRTCVideoController extends Controller
         if ($reserve) 
         {
 
-
-            $isLessonFinished = LessonHistory::where('schedule_id', $reserve->id)->where('status', "COMPLETED")->first();
-
-            if ($isLessonFinished) {
-            
-                return Response::view('modules.webRTC.lessonFinished');                
-            
-            }
-
-
             $reservationData = [
                 'schedule_id'       => $reserve->id,
                 'tutor_id'          => $reserve->tutor_id,
@@ -49,6 +39,18 @@ class WebRTCVideoController extends Controller
                 'schedule_status'   => $reserve->schedule_status
             ];         
 
+
+
+
+            $isLessonFinished = LessonHistory::where('schedule_id', $reserve->id)->where('status', "COMPLETED")->first();
+
+            if ($isLessonFinished) {
+            
+               // return Response::view('modules.webRTC.lessonFinished');                
+            
+            }
+
+            
             $userInfo =  Auth::user();
 
             //get the selected material chosen by users
