@@ -131,6 +131,11 @@ class WritingController extends Controller
                         $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];  
                         $fields[$key] = $value;  
 
+                    } else {
+                    
+                        $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];  
+                        $fields[$key] = $value; 
+                    
                     }
 
                 } else { 
