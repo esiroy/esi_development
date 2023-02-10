@@ -264,6 +264,16 @@ export default {
 
         lesson_history: Object,    
 
+        lesson_completed: {
+            type: [Boolean],
+            required: true        
+        },   
+
+        feedback_completed: {
+            type: [Boolean],
+            required: true        
+        },   
+
         isBroadcaster: {
             type: [Boolean],
             required: true        
@@ -438,6 +448,24 @@ export default {
     },
     mounted() 
     {  
+        //@done: check survey is added?
+        if (this.$props.lesson_completed == true) {    
+
+            this.sessionActive = false;
+
+            if (this.$props.feedback_completed == false) {
+
+                if (this.$props.isBroadcaster == true) {   
+
+                    this.hideTimer();                    
+                    this.showMemberFeedbackModal();
+
+                } else {
+
+                    this.showRatingModal();
+                }            
+            }        
+        } 
 
         this.socket = io.connect(this.$props.canvas_server);
 

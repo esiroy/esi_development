@@ -40,14 +40,18 @@ class WebRTCVideoController extends Controller
             ];         
 
 
-
-
             $isLessonFinished = LessonHistory::where('schedule_id', $reserve->id)->where('status', "COMPLETED")->first();
 
             if ($isLessonFinished) {
             
-               // return Response::view('modules.webRTC.lessonFinished');                
+                $lessonCompleted = true;
+
+              // return Response::view('modules.webRTC.lessonFinished');                
             
+            } else {
+            
+                $lessonCompleted = false;
+
             }
 
             
@@ -56,9 +60,7 @@ class WebRTCVideoController extends Controller
             //get the selected material chosen by users
             $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $reserve->id)->where('user_id', $reserve->member_id)->first();
 
-            if (!$material) 
-            {
-                
+            if (!$material) {                
                 //@note: Auto Folder Selected is false;
                 $isFolderSelected   = false;
                 $folderID           = $folder->getNextFolderID($reserve->member_id);
@@ -69,7 +71,7 @@ class WebRTCVideoController extends Controller
                 $files              = []; 
 
             } else{
-            
+                        
                 $isFolderSelected   = true;               
                 $folderID           = $material->folder_id;
 
@@ -86,42 +88,41 @@ class WebRTCVideoController extends Controller
             //@note: Blade view will detect if be (MEMBER OR TUTOR) based on the session
             $lessonHistory = LessonHistory::where('schedule_id', $reserve->id)->where('status', "NEW")->first();
 
+            if (!$lessonHistory) {
+                 $lessonHistory = null;
+            }
+
             //@note: check if session of a user has a survey
             //@note: show lesson finshed View if user has finshed the survey, or the page will persist the survey modal via (Vue Modal)
-            if ($lessonHistory) {
-
-                    if ($userInfo->user_type == "MEMBER") {       
-
-                        //@note(1): check if the member is done with the satisfaction survey, 
-                        //@note(2): show lesson finished if member submitted a satisfaction survey
-                        $lessonSurvey = SatisfactionSurvey::where('schedule_id', $reserve->id)->first();
-                        
-                        if ($lessonSurvey) {
-                            return Response::view('modules.webRTC.lessonFinished');                
-                        } 
-
-                    } else if ($userInfo->user_type == "TUTOR") {       
-
-                        //@note:    check if the tutor filled up the member feedback form
-                        //@note(2): show lesson finished if member submitted member survey
-                        $memberFeedback = MemberFeedback::where('schedule_id', $reserve->id)->first();
-
-                        if ($memberFeedback) {
-                            return Response::view('modules.webRTC.lessonFinished');                
-                        }
-                    }
-                    
-
-              
+                $feedbackCompleted = false;
 
 
-            } else {
-            
-                $lessonHistory = null;
+            if ($userInfo->user_type == "MEMBER") {       
 
-                //@todo: we will check if the user has older schedule 
+                //@note(1): check if the member is done with the satisfaction survey, 
+                //@note(2): show lesson finished if member submitted a satisfaction survey
+                $lessonSurvey = SatisfactionSurvey::where('schedule_id', $reserve->id)->first();
+                
+                if ($lessonSurvey) {
 
-            }
+                    $feedbackCompleted = true;
+
+                    return Response::view('modules.webRTC.lessonFinished');
+                }  
+
+            } else if ($userInfo->user_type == "TUTOR") {       
+
+                //@note:    check if the tutor filled up the member feedback form
+                //@note(2): show lesson finished if member submitted member survey
+                $memberFeedback = MemberFeedback::where('schedule_id', $reserve->id)->first();
+
+                if ($memberFeedback) {
+
+                    $feedbackCompleted = true;
+
+                    return Response::view('modules.webRTC.lessonFinished');                
+                }
+            }            
             
 
 
@@ -183,7 +184,8 @@ class WebRTCVideoController extends Controller
                 }
             }
 
-            return Response::view('modules.webRTC.index', compact('isFolderSelected', 'lessonHistory', 'roomID', 'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
+            return Response::view('modules.webRTC.index', compact('lessonCompleted', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 'roomID', 
+                                                        'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
 
         } else {
 

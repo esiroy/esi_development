@@ -235,9 +235,9 @@ export default {
                 message                         : this.message, 
 
                 //Ratings
-                generalCourseRating             : this.generalCourseRating, 
+                //generalCourseRating             : this.generalCourseRating, 
                 studentPerformanceRating         : this.studentPerformanceRating, 
-                teacherSelfPerformanceRating    : this.teacherSelfPerformanceRating
+                //teacherSelfPerformanceRating    : this.teacherSelfPerformanceRating
 
             }).then(response => {
 

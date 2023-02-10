@@ -19,6 +19,7 @@
 
                 <div id="starsRating" class="col-8">
 
+                    <!--
                     <div class="row">
                         <div class="col-7">
                             <div class="feedback-title">
@@ -29,6 +30,7 @@
                             <star-rating v-model="generalCourseRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>            
                         </div>
                     </div>
+                    -->
 
                     <div class="row mt-3">
                         <div class="col-7"> 
@@ -41,6 +43,7 @@
                         </div>                
                     </div>
 
+                    <!--
                     <div class="row mt-3">
                         <div class="col-7">        
                             <div class="feedback-title">    
@@ -51,6 +54,7 @@
                             <star-rating v-model="studentSelfPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>
                         </div>
                     </div>
+                    -->
 
                 </div>
 
@@ -153,9 +157,9 @@ export default {
             showMessage: false,
 
             //Stars Container Ratings
-            generalCourseRating: null,
+            //generalCourseRating: null,
             teacherPerformanceRating: null,
-            studentSelfPerformanceRating: null,
+            //studentSelfPerformanceRating: null,
 
             //Contents
             feeback: null,
@@ -206,11 +210,9 @@ export default {
         },
         checkLessonRated() 
         {
-            return this.isArrayValid([
-                                    this.generalCourseRating, 
-                                    this.teacherPerformanceRating, 
-                                    this.studentSelfPerformanceRating]
-                                )
+            //return this.isArrayValid([this.generalCourseRating, this.teacherPerformanceRating, this.studentSelfPerformanceRating])
+
+            return this.isArrayValid([this.teacherPerformanceRating])
         },
         submitSurvey() {           
            let isLessonRated = this.checkLessonRated();     
@@ -229,10 +231,11 @@ export default {
                 reservation                     : this.reservationData,
                 feeback                         : this.feeback,
                 message                         : this.message,   
+                
                 //Ratings
-                generalCourseRating             : this.generalCourseRating, 
+                //generalCourseRating             : this.generalCourseRating, 
                 teacherPerformanceRating        : this.teacherPerformanceRating, 
-                studentSelfPerformanceRating    : this.studentSelfPerformanceRating
+                //studentSelfPerformanceRating    : this.studentSelfPerformanceRating
 
             }).then(response => {
             

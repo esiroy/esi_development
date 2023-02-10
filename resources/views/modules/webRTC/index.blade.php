@@ -8,6 +8,9 @@
         :channelid="{{ $roomID }}"
         folder_id="{{ $folderID ?? null }}"
 
+        :lesson_completed="{{ json_encode($lessonCompleted) }}"
+        :feedback_completed="{{ json_encode($feedbackCompleted)  }}"
+
         :lesson_history="{{ json_encode($lessonHistory) }}"
         :reservation="{{ json_encode($reservationData) }}"            
 
