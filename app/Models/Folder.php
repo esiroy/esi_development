@@ -614,20 +614,19 @@ class Folder extends Model
             } else {
 
                 $nextParentFolder = $this->getNextParentFolder($recentLessonHistory->folder_id);
-
                 if ($nextParentFolder) {
 
                     $newFolderID       = $nextParentFolder->id;
-
                 } else {           
 
                     $nextParentFolder = $this->getNextParentFolder($recentLessonHistory->folder_id, true);
 
-                    if ($nextParentFolder) { 
+                    if ($nextParentFolder) {
 
                         $newFolderID       = $nextParentFolder->id;
 
-                    } else {                    
+                    } else {     
+
                         $newFolderID       = null;                    
                     }            
                 }        
@@ -640,6 +639,8 @@ class Folder extends Model
             //new folder must be a new lesson
             $newFolderID       = $firstFolder->id;
         }
+
+
 
         return $newFolderID;    
     }
@@ -667,12 +668,15 @@ class Folder extends Model
             $previousFolderOrderID  = $currentFolder->order_id;
             $nextFolderOrderID      = $previousFolderOrderID + 1;
 
-            $nextLessonFolder = Folder::where('parent_id', $previousFolderParentID)->where('order_id', '>=', $nextFolderOrderID)->where('privacy', 'public')->first();
+            $nextLessonFolder = Folder::where('parent_id', $previousFolderParentID)->where('order_id', '>=', $nextFolderOrderID)
+                        ->orderBy('order_id', 'ASC')
+                        ->where('privacy', 'public')->first();
 
-            if ($nextLessonFolder) 
-            {
+            if ($nextLessonFolder) {
 
-                if ($nextLessonFolder->parent_id == null)  {
+                //echo " next folder" . $nextLessonFolder->id .  " parent id". $nextLessonFolder->parent_id ."<BR>";             
+
+                if ($nextLessonFolder->parent_id == null || $nextLessonFolder->parent_id == 0)  {
 
                     $filesCounter = File::where('folder_id', $nextLessonFolder->id)->count();
 
@@ -685,20 +689,18 @@ class Folder extends Model
                         else
                             return $this->getNextFolder($nextLessonFolder->id);                                                
                     
-                    } else 
-
+                    } else {
+                    
                         return $nextLessonFolder;
+                    }
 
-                } else {
-
+                } else 
                     return $nextLessonFolder;   
-                }
-                
 
-            } else {
+            } else
 
                 return null;
-            }
+            
         
         } else {
         
@@ -708,31 +710,50 @@ class Folder extends Model
 
     }
 
-     public function getNextParentFolder($parentFolderID, $allowEmptyFiles = false) {      
+     public function getNextParentFolder($folderID, $allowEmptyFiles = false) {
+      
+        //GET current folder and get the parent id.
 
-        $currentParentFolder = Folder::where('id', $parentFolderID)->first();
+        $currentFolder = Folder::where('id', $folderID)->first();
 
-        if ($currentParentFolder)  {
+        if ($currentFolder)  {
         
-            $nextParentFolder = Folder::where('parent_id', $currentParentFolder->parent_id)->where('order_id', '>', $currentParentFolder->order_id)->where('privacy', 'public')->first();
+            //select the parent folder and  determine next parent
 
-            if ($nextParentFolder) {
+            $parentFolder = Folder::where('id', $currentFolder->parent_id)->where('privacy', 'public')->first();
 
-                $filesCounter = File::where('folder_id', $nextParentFolder->id)->count();
+            if ($parentFolder) {
 
-                if ($filesCounter == 0 && $allowEmptyFiles == false) {
+                $nextParentFolder = Folder::where('parent_id', $parentFolder->parent_id)->where('order_id', '>', $parentFolder->order_id )->where('privacy', 'public')->first();
 
-                    return $this->getNextParentFolder($nextParentFolder->id);
+                if ($nextParentFolder) {
+
+                    $filesCounter = File::where('folder_id', $nextParentFolder->id)->count();
+                
+                    
+                    if ($filesCounter == 0 && $allowEmptyFiles == false) {
+
+                      
+                        $nextSubFolder = Folder::where('parent_id', $nextParentFolder->id)->orderBy('order_id', 'ASC')->where('privacy', 'public')->first();
+
+                        return $nextSubFolder;
+
+                    } else {               
+                    
+              
+                        return $nextParentFolder;
+                    }
+
+                  
 
                 } else {               
-                
-                    return $nextParentFolder;
-                }
-                
-            }
+            
 
-        }
-    }
+                    return null;
+                }
+            }
+        }     
+     }   
 
 
     

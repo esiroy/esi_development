@@ -11,6 +11,8 @@ use App\Models\User;
 use App\Models\MemberSelectedLessonSlideMaterial;
 use App\Models\LessonHistory;
 use App\Models\LessonSlideHistory;
+use App\Models\ScheduleItem;
+
 use Auth, Config;
 
 
@@ -35,12 +37,25 @@ class LessonHistoryController extends Controller
         if ($lessonHistory) 
         {    
 
+
+
             $lessonHistory->update([
                 'status'            => 'COMPLETED',
                 'current_slide'     => $request->currentSlide,
                 'total_slides'      => $request->totalSlides,               
                 'time_ended'        => Carbon::now(),                
             ]);
+
+
+            $scheduleItem = ScheduleItem::where('id', $reservation['schedule_id'])->first();
+
+            if ($scheduleItem) {            
+                $scheduleItem->update([
+                    'schedule_status' => "COMPLETED"
+                ]);
+            }
+            
+
 
             return Response()->json([
                 "success"       => true,

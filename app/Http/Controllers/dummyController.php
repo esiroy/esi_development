@@ -64,6 +64,9 @@ class dummyController extends Controller
         $scheduleID = $request->schedule_id;
 
 
+        echo "TEST";
+
+
         $selectedMaterial = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
 
 
@@ -77,12 +80,13 @@ class dummyController extends Controller
 
         echo $folderID;
 
-
         echo $folder->getURLSegments($folderID);
 
 
 
-        exit();
+
+
+     
         
         echo "<p> Schedule ID : " . $scheduleID ."</p>";
         
@@ -116,6 +120,8 @@ class dummyController extends Controller
 
             } else {
                 
+                echo  "<P>PARENT FOLDER : " . $recentLessonHistory->folder_id ."</P>";
+
                 $nextParentFolder = $folder->getNextParentFolder($recentLessonHistory->folder_id);
 
                 if ($nextParentFolder) {
@@ -133,8 +139,9 @@ class dummyController extends Controller
 
                     } else {
 
-                        //END OF ALL FOLDERS
-                    
+                        //FIND THE INCOMPLETE OF THIS EXISTING
+                        echo "no folder";
+
                         return null;
 
                     }

@@ -15,7 +15,8 @@ use App\Models\FileAudio;
 use App\Models\LessonHistory;
 use App\Models\LessonSlideHistory;
 use App\Models\CustomTutorLessonMaterials;
-
+use App\Models\MemberFeedback;
+use App\Models\SatisfactionSurvey;
 
 class LessonSlideMaterials extends Controller
 {
@@ -121,9 +122,7 @@ class LessonSlideMaterials extends Controller
 
             if ($updated) {
 
-
                 $isLessonSkipped = $lessonHistory->skipLesson($userID, $lessonScheduleID, $newFolderID);
-
 
                 return Response()->json([
                     "success"           => true,                    
@@ -159,123 +158,133 @@ class LessonSlideMaterials extends Controller
         $scheduleID         = $request->scheduleID;
         $memberID           = $request->memberID;
 
-        $selectedMaterial = $memberSelectedMaterial->where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+        //Lesson History for this scheduleID else get the NEW
+        $incompleteLessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "INCOMPLETE")->first();
 
-        //get Lesson History details
-        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
-
-
-        if ($selectedMaterial) {        
-            $folderID       = $selectedMaterial->folder_id;
-        } else {        
-
-           
-            
-
-                $folderID       = $folder->getNextFolderID($memberID);
-
-           
-            
-        }
-
+        if ($incompleteLessonHistory)  {             
+            $lessonHistory = $incompleteLessonHistory;
+        } else {            
+            $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
+        }       
 
         if ($lessonHistory) {
             //Initialzie Audio Objects
             for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
                 $audioFiles[$ctr+1] =  [];
             }
-        } 
+        } else {
 
+            $completed = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "COMPLETED")->first();
+
+            if ($completed) {
+                $lessonHistory = $completed; 
+            }
+        }
+
+        $selectedMaterial = $memberSelectedMaterial->where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+
+        if ($selectedMaterial) {        
+            $folderID       = $selectedMaterial->folder_id;
+        } else {
+
+            if ($incompleteLessonHistory)  {
+                /** @note:  set the folderID to the incomplete lesson */
+
+                $folderID = $incompleteLessonHistory->folder_id;
+
+            } else {
+
+                /** AUTOMATICALLY GET THE NEXT FOLDER NEXT FOLDER  */
+
+                /** @todo: check if the lesson has a feeback
+                    @desc: prevent next folder ID if it has not give a feeback
+                */ 
+
+                if (Auth::user()->user_type == "MEMBER") {      
+
+                    $lessonSurvey = SatisfactionSurvey::where('schedule_id', $scheduleID)->first();
+                    
+                    if ($lessonSurvey) {
+                        $folderID       = $folder->getNextFolderID($memberID);
+                    } else {
+
+                        if ($lessonHistory) {
+                            $folderID       = $lessonHistory->folder_id;
+                        } else {
+                            $folderID       = $folder->getNextFolderID($memberID);
+                        }
+                        
+                    }
+
+                } else if (Auth::user()->user_type == "TUTOR") {  
+
+                    $memberFeedback = MemberFeedback::where('schedule_id',  $scheduleID)->first();
+
+                    if ($memberFeedback)  {
+                        $folderID       = $folder->getNextFolderID($memberID);
+                    } else {
+
+                        if ($lessonHistory) {
+                            $folderID       = $lessonHistory->folder_id;
+                        } else {
+                            $folderID       = $folder->getNextFolderID($memberID);
+                        }
+                        
+                    }
+                }
+              
+            }            
+        }
+      
         //Folder Segment
         $folderSegments     = Folder::getURLSegments($folderID, " > ");
         $folderURLArray     = Folder::getURLArray($folderID);
 
 
-       //get Lesson History details
-        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
-        if ($lessonHistory) {
-            //Initialzie Audio Objects
-            for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
-                $audioFiles[$ctr+1] =  [];
-            }
-        } 
+        //FILES (IMAGES)
+        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
 
-
-        //SLIDES HISTORY
+        //SLIDE HISTORY        
         $lessonSlideHistory = new LessonSlideHistory();
         $slideHistory       = $lessonSlideHistory->getAllSlideHistory($scheduleID);
 
-        
-        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
-        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
-
-
-        if (isset($newFolderID)) {   
-
-            //$selectedLesson['id'] = $newFolderID;
-            //$res = $memberSelectedMaterial->saveSelectedLesson($memberID, $scheduleID, $selectedLesson);    
-
-            $folderID = $newFolderID;    
-
-        } else if (isset($folderID)) {
-        
-           // $selectedLesson['id'] = $folderID;
-           // $res = $memberSelectedMaterial->saveSelectedLesson($memberID, $scheduleID, $selectedLesson);   
-
-        } else {
-
-            return Response([
-                "success"           => false,
-                "message"           => "No slides for this lesson",  
-                "slideHistory"      => $slideHistory ?? null,
-                "message"           => "No slides for this lesson"
-            ]);         
-              
-        }
-        
-
-        
-        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
-        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
-        
-
-
-
-        //@note: lesson slide history
-        $lessonSlideHistory = new LessonSlideHistory();
-        $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
-
-
         if ($files) {
+
             $slides = [];
             foreach ($files as $index => $file) {
                 array_push($slides, url($file->path));
                 //make the index same as the slide number
                 $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
-            }                
+            }           
+
         } else {            
             $slides = [];
         }
 
-
-        //seach for files in folder as images
-        return Response([
+        if (isset($folderID)) {
+        
+            return Response([
                     "success"              => true,
                     'folderID'             => $folderID, 
                     "folderSegments"       => $folderSegments,
                     "folderURLArray"       => $folderURLArray,
-
                     "files"                => $slides,
                     'customFiles'          => $customFiles,
-
                     "lessonHistory"        => $lessonHistory,
                     "slideHistory"         => $slideHistory ?? null,
+                    "audioFiles"           => $audioFiles ?? null                    
+                ]);
 
-                    "audioFiles"           => $audioFiles ?? null,
-                    
-                ])->withHeaders([                  
-                    'Accept-Ranges' => 'bytes',                    
-                ]); 
+        } else {
+        
+            return Response([
+                "success"           => false,
+                "message"           => "No slides for this lesson",  
+                "slideHistory"      => $slideHistory ?? null,
+                "message"           => "No slides for this lesson"
+            ]);     
+        }
 
     }
 

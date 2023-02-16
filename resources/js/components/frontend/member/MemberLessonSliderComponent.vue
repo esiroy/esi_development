@@ -5,8 +5,9 @@
 
         <div id="component-container" v-show="sessionActive">
 
-            <div id="satisfactionSurveyContainer">
-                <SatisfactionSurveyComponent 
+            <div id="satisfactionSurveyContainer">              
+                <!-- Member will be viewing this "Satisfaction Survey" -->
+                <SatisfactionSurveyComponent                    
                     ref="satisfactionSurvey" 
                     :folder_id="this.$props.folder_id"
                     :is-broadcaster="this.$props.isBroadcaster"
@@ -18,6 +19,7 @@
 
 
             <div id="memberFeebackComponentContainer">
+                <!-- Teacher will be viewing this "Member feeback" -->
                 <MemberFeebackComponent 
                     ref="memberFeedback" 
                     :folder_id="this.$props.folder_id"
@@ -436,7 +438,7 @@ export default {
             newBackgroundImage: null,
 
             //test variable for testing 
-            test: null,
+            files: null,
             
            
         };
@@ -448,7 +450,8 @@ export default {
     },
     mounted() 
     {  
-        //@done: check survey is added?
+        //@done: check survey is added?\
+        /*
         if (this.$props.lesson_completed == true) {    
 
             this.sessionActive = false;
@@ -458,14 +461,14 @@ export default {
                 if (this.$props.isBroadcaster == true) {   
 
                     this.hideTimer();                    
-                    this.showMemberFeedbackModal();
+                    this.showMemberFeedbackModal(this.reservation, this.files);
 
                 } else {
 
                     this.showRatingModal();
                 }            
             }        
-        } 
+        } */
 
         this.socket = io.connect(this.$props.canvas_server);
 
@@ -955,7 +958,7 @@ export default {
                     console.log("session end was broadcasted");
 
                     this.stopTimer();  
-                    this.showMemberFeedbackModal();
+                    this.showMemberFeedbackModal(this.reservation, this.files);
                     this.socket.emit('END_SESSION', this.getSessionData());  
                 }             
 
@@ -963,9 +966,9 @@ export default {
            
         },
 
-        showMemberFeedbackModal(){
+        showMemberFeedbackModal(reservation){
        
-            this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation);
+            this.$refs['memberFeedback'].showMemberFeedbackModal(reservation, this.files);
         },
         showRatingModal() {
             this.$refs['satisfactionSurvey'].showRatingAndFeedbackModal(this.reservation);
@@ -1122,6 +1125,9 @@ export default {
                     this.segments = response.data.folderURLArray;
 
 
+                    //[new] send this to file history
+                    this.files = response.data.files;
+
                     //Array of images
                     this.imageURL = response.data.files;
                     this.audioFiles = response.data.audioFiles;           
@@ -1255,6 +1261,25 @@ export default {
                             }
                         } 
                     }              
+
+
+                    if (this.$props.lesson_completed == true) {    
+
+                        this.sessionActive = false;
+
+                        if (this.$props.feedback_completed == false) {
+
+                            if (this.$props.isBroadcaster == true) {   
+
+                                this.hideTimer();                    
+                                this.showMemberFeedbackModal(this.reservation, this.files);
+
+                            } else {
+
+                                this.showRatingModal();
+                            }            
+                        }        
+                    } 
 
                 } else {                    
 
@@ -1448,7 +1473,7 @@ export default {
                     if (this.$props.isBroadcaster == true) 
                     {   
                         this.hideTimer();
-                        this.showMemberFeedbackModal();
+                        this.showMemberFeedbackModal(this.reservation);
                     } else {
                         this.showRatingModal();
                     }

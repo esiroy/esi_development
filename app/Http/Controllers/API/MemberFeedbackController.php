@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\MemberFeedback;
 use App\Models\MemberFeedbackDetails;
+use App\Models\LessonHistory;
 
 class MemberFeedbackController extends Controller
 {
@@ -26,10 +27,10 @@ class MemberFeedbackController extends Controller
         $feeback = $request->feeback;
         $message = $request->message;
 
-        //Stars Ratings
-        $generalCourseRating                    = $request->generalCourseRating;
-        $studentPerformanceRating            =   $request->studentPerformanceRating;
-        $teacherSelfPerformanceRating        = $request->teacherSelfPerformanceRating;
+        //Stars Ratings  
+        $studentPerformanceRating   =   $request->studentPerformanceRating;
+
+        //get the status "INCOMPLETE" , "COMPLETE"
 
         $memberFeedback = MemberFeedback::where('schedule_id', $scheduleID)->first();
 
@@ -45,18 +46,6 @@ class MemberFeedbackController extends Controller
             ]);
 
             //Add the ratings
-            /*
-            $rating1 = MemberFeedbackDetails::create([
-                'member_feedback_id'  => $created->id,
-                'name'              => 'general_course_ratings',
-                'description'       => "General Course Ratings",
-                'value'             => $generalCourseRating,
-                'order_id'          => 1,
-                'is_active'         => true,
-            ]);
-           */
-
-            	
             $rating2 = MemberFeedbackDetails::create([
                 'member_feedback_id'  => $created->id,
                 'name'              => 'student_performance_rating',
@@ -67,16 +56,26 @@ class MemberFeedbackController extends Controller
             ]);
 
 
-            /*
-            $rating3 = MemberFeedbackDetails::create([
-                'member_feedback_id'  => $created->id,
-                'name'              => 'teacher_self_performace_rating',
-                'description'       => "Teacher Self Performace Rating",
-                'value'             => $teacherSelfPerformanceRating,
-                'order_id'          => 3,
-                'is_active'         => true,
-            ]);  
-            */
+            /** @todo: UPDATE "COMPLETE"  the "INCOMPLETE" IF USER SELECTED "INCOMPLETE" since user was not complete */
+            $lessonStatus =  $request->lessonStatus;
+
+            if ($lessonStatus == "INCOMPLETE") {
+
+                $lessonHistory = LessonHistory::where('member_id', $memberID)
+                                            ->where('schedule_id', $scheduleID)
+                                            ->where('status', "COMPLETED")->first();
+
+                if ($lessonHistory) {
+
+                    $lessonHistory->update([                    
+                        'status' => "INCOMPLETE"
+                    ]);               
+                
+                }
+
+            }
+
+
 
 
             return Response()->json([

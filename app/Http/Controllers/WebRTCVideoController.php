@@ -86,11 +86,24 @@ class WebRTCVideoController extends Controller
 
             //@note: Lesson history to check surveys, 
             //@note: Blade view will detect if be (MEMBER OR TUTOR) based on the session
-            $lessonHistory = LessonHistory::where('schedule_id', $reserve->id)->where('status', "NEW")->first();
 
-            if (!$lessonHistory) {
-                 $lessonHistory = null;
+            $incompleteLessonHistory = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id',$reserve->id)->where('status', "INCOMPLETE")->first();
+
+            if ($incompleteLessonHistory) {
+            
+                $lessonHistory = $incompleteLessonHistory;
+
+            } else {
+            
+                $lessonHistory = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id', $reserve->id)->where('status', "NEW")->first();
+
+                if (!$lessonHistory) {
+                    $lessonHistory = null;
+                }
+
             }
+
+
 
             //@note: check if session of a user has a survey
             //@note: show lesson finshed View if user has finshed the survey, or the page will persist the survey modal via (Vue Modal)

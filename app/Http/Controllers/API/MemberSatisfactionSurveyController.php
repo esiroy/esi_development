@@ -23,8 +23,8 @@ class MemberSatisfactionSurveyController extends Controller
         $message = $request->message;
 
         //Stars Ratings
-        $generalCourseRating            = $request->generalCourseRating;
-        $studentSelfPerformanceRating   = $request->studentSelfPerformanceRating;
+        //$generalCourseRating            = $request->generalCourseRating;
+        //$studentSelfPerformanceRating   = $request->studentSelfPerformanceRating;
         $teacherPerformanceRating        = $request->teacherPerformanceRating;
 
         $lessonSurvey = SatisfactionSurvey::where('schedule_id', $scheduleID)->first();
@@ -40,6 +40,7 @@ class MemberSatisfactionSurveyController extends Controller
                 'is_active'         => true,
             ]);
 
+            /*
             //Add the ratings
             $rating1 = SatisfactionSurveyDetails::create([
                 'lesson_survey_id'  => $created->id,
@@ -59,6 +60,7 @@ class MemberSatisfactionSurveyController extends Controller
                 'order_id'          => 2,
                 'is_active'         => true,
             ]);
+            */
 
             $rating3 = SatisfactionSurveyDetails::create([
                 'lesson_survey_id'  => $created->id,

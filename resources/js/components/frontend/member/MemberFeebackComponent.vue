@@ -3,6 +3,7 @@
 
     <b-modal ref="memberFeedback" header-bg-variant="primary" header-text-variant="white" size="lg" no-close-on-backdrop hide-footer no-close-on-esc  hide-header-close>
 
+       
 
         <template #modal-header>
             <div class="mx-auto">
@@ -33,15 +34,41 @@
                     -->
 
                     <div class="row mt-3">
-                        <div class="col-7"> 
+                        <div class="col-6"> 
                             <div class="feedback-title">           
-                                Student Performance Satisfaction
+                                Student Performance
                             </div>
                         </div>
-                        <div class="col-5"> 
+                        <div class="col-6"> 
                             <star-rating v-model="studentPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>  
                         </div>                
                     </div>
+
+
+                    <div class="row mt-3" v-if="this.showRatings == true">
+                        <div class="col-6"> 
+                            <div class="feedback-title">           
+                                Lesson Status
+                            </div>
+                        </div>
+                        <div class="col-6"> 
+                            <b-form-select v-model="selected" :options="options"></b-form-select>                           
+                        </div>                
+                    </div>
+
+
+                    <div class="row mt-3" v-if="this.selected != null && this.selected == 'INCOMPLETE'">
+                        <div class="col-6"> 
+                            <div class="feedback-title">           
+                               Select Member's Next Lesson
+                            </div>
+                        </div>
+                        <div class="col-6"> 
+                            <b-form-select v-model="lessonSelected" :options="nextLessonOptions"></b-form-select>                           
+                        </div>                
+                    </div>
+
+
 
                     <!--
                     <div class="row mt-3">
@@ -151,6 +178,24 @@ export default {
     },        
     data() {
         return {
+
+            //Selected LESSON
+            files: [],
+
+            selected: null,
+            options: [
+                { value: null, text: 'SELECT AN OPTION' },
+                { value: 'COMPLETED', text: 'COMPLETED' },
+                { value: 'INCOMPLETE', text: 'INCOMPLETE' }                
+            ],
+
+
+            lessonSelected: null,
+            nextLessonOptions: [
+                { value: null, text: 'SELECT AN OPTION' },
+            ],
+
+
             //forms
             showRatings: false,
             showFeedback: false,
@@ -180,7 +225,30 @@ export default {
     },    
     methods: {
  
-        showMemberFeedbackModal(reservationData) {               
+        showMemberFeedbackModal(reservationData, files) {
+
+            if (files.length == 0) {
+            
+                this.nextLessonOptions.push({
+                    value: 1,
+                    text: "LESSSON SLIDE " + 1
+                }); 
+
+
+            } else {
+
+                Object.keys(files).forEach((item, index ) => {                
+                    let lessonIndex = index + 1;
+                    this.nextLessonOptions.push({
+                        value: lessonIndex,
+                        text: "LESSSON SLIDE " + lessonIndex
+                    })            
+                });            
+            
+            }
+
+
+
             this.reservationData = reservationData;
             this.showRatingsForm();        
             this.$refs['memberFeedback'].show();
@@ -213,7 +281,12 @@ export default {
         {
             //return this.isArrayValid([this.generalCourseRating, this.studentPerformanceRating,this.teacherSelfPerformanceRating])
 
-            return this.isArrayValid([this.studentPerformanceRating])
+            if (this.selected == 'INCOMPLETE') 
+            {            
+                return this.isArrayValid([this.studentPerformanceRating, this.selected, this.lessonSelected]);
+            } else {            
+                return this.isArrayValid([this.studentPerformanceRating, this.selected])
+            }           
 
         },
         submitFeedback() {           
@@ -223,7 +296,7 @@ export default {
                 this.postFeeback();
                 
            } else {
-                alert ("You have not rated your student, please click the stars to rate")
+                alert ("You have not rated your student, please click the stars to rate student and leave the lesson status")
            }
         },
         postFeeback() {        
@@ -232,8 +305,9 @@ export default {
                 'method'                        : "POST",
                 reservation                     : this.reservationData,              
                 feeback                         : this.feeback,
-                message                         : this.message, 
-
+                message                         : this.message,
+                lessonStatus                    : this.selected,
+                nextLessonSelected              : this.lessonSelected,
                 //Ratings
                 //generalCourseRating             : this.generalCourseRating, 
                 studentPerformanceRating         : this.studentPerformanceRating, 
