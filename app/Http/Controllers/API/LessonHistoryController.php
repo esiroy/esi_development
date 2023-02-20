@@ -34,10 +34,7 @@ class LessonHistoryController extends Controller
 
         $lessonHistory = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();
 
-        if ($lessonHistory) 
-        {    
-
-
+        if ($lessonHistory) {
 
             $lessonHistory->update([
                 'status'            => 'COMPLETED',

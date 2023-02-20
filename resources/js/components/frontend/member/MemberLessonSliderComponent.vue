@@ -31,7 +31,7 @@
             </div>
 
 
-            <div id="slideSelectorContainer">
+            <div id="slideSelectorContainer" v-if="isBroadcaster == true">
                 <SlideSelectorComponent
                     ref="slideSelector" 
                     :reservation="this.reservation"
@@ -240,11 +240,20 @@
             </div>
         </div>
 
+        
+        <TutorSlideNotesComponent ref="TutorSlideNotes" 
+        v-if="this.$props.isBroadcaster == true"
+        v-show="sessionActive"
+        :api_token="this.api_token" 
+        :csrf_token="this.csrf_token"></TutorSlideNotesComponent>
+      
+                    
     </div>
 </template>
 
 
 <script>
+import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue'
 import SlideSelectorComponent from './SlideSelectorComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
 //Uploader
@@ -258,7 +267,7 @@ import io from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
-    components: { SlideSelectorComponent, AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
+    components: { TutorSlideNotesComponent, SlideSelectorComponent, AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
     props: {
         csrf_token: String,		
         api_token: String,
@@ -425,9 +434,6 @@ export default {
 
      
             imageURL: [],
-
-            notes: "<bold>lorem epusm dollor </bold>",
-
 
             //currentID 
             currentFolderID: null,
@@ -1127,6 +1133,7 @@ export default {
 
                     //[new] send this to file history
                     this.files = response.data.files;
+                    this.notes = response.data.notes;
 
                     //Array of images
                     this.imageURL = response.data.files;
@@ -1143,12 +1150,14 @@ export default {
                         this.slides  = (response.data.files).length + customFiles.length;
                     } else {
                         this.slides  = (response.data.files).length;
-                    }                    
+                    }                
+
+                    if (this.$props.isBroadcaster == true) {
+                        this.$refs['TutorSlideNotes'].loadNotes(this.notes);   
+                    }
 
 
                     if (this.slides == 0) {
-
-                      
 
                         let firstSlideIndex = 1;
 
@@ -1199,7 +1208,12 @@ export default {
 
                             //LOAD AUDIO
                             this.loadAudio();
-                            this.$refs['slideSelector'].closeSlideSelector();                        
+
+                            if (this.$props.isBroadcaster == true) {
+                                this.$refs['slideSelector'].closeSlideSelector();          
+                            }
+
+                                          
                         });
                         
                     } else {           
@@ -1253,7 +1267,10 @@ export default {
                                     //LOAD AUDIO
                                     this.loadAudio();
 
-                                    this.$refs['slideSelector'].closeSlideSelector();
+                                    if (this.$props.isBroadcaster == true) {
+                                        this.$refs['slideSelector'].closeSlideSelector();          
+                                    }
+
                                 });
 
 
@@ -1322,7 +1339,11 @@ export default {
                             this.startSlide(1);
                             //LOAD AUDIO
                             this.loadAudio();
-                            this.$refs['slideSelector'].closeSlideSelector();                        
+
+                            if (this.$props.isBroadcaster == true) {
+                                this.$refs['slideSelector'].closeSlideSelector();          
+                            }
+                     
                         });
 
 
@@ -1795,6 +1816,10 @@ export default {
             }
             
 
+            if (this.$props.isBroadcaster == true) {
+                this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
+            }
+
 
             this.autoSelectTool();
             
@@ -1842,7 +1867,10 @@ export default {
             this.currentSlide = slide;
             this.viewerCurrentSlide = slide;
 
-           
+
+            if (this.$props.isBroadcaster == true) {
+                this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
+            }           
 
             for (var i = 1; i <= this.slides; i++) 
             {

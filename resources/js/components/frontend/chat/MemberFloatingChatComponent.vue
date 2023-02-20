@@ -546,8 +546,6 @@ export default {
             }
 
             if (sendBtn) {
-
-                console.log ("1");
                 sendBtn.style.display = "none";
             }
             

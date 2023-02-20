@@ -249,6 +249,10 @@ class LessonSlideMaterials extends Controller
         $lessonSlideHistory = new LessonSlideHistory();
         $slideHistory       = $lessonSlideHistory->getAllSlideHistory($scheduleID);
 
+
+        $notes[1] = "";
+
+
         if ($files) {
 
             $slides = [];
@@ -256,11 +260,15 @@ class LessonSlideMaterials extends Controller
                 array_push($slides, url($file->path));
                 //make the index same as the slide number
                 $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
+                $notes[$index+1]  = $file->notes;
             }           
 
         } else {            
             $slides = [];
+          
         }
+
+
 
         if (isset($folderID)) {
         
@@ -271,13 +279,14 @@ class LessonSlideMaterials extends Controller
                     "folderURLArray"       => $folderURLArray,
                     "files"                => $slides,
                     'customFiles'          => $customFiles,
+                    'notes'                => $notes,
                     "lessonHistory"        => $lessonHistory,
                     "slideHistory"         => $slideHistory ?? null,
                     "audioFiles"           => $audioFiles ?? null                    
                 ]);
 
         } else {
-        
+
             return Response([
                 "success"           => false,
                 "message"           => "No slides for this lesson",  
