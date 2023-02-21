@@ -115,22 +115,46 @@
         <!-- [start] chat media for user and teacher -->
         <div class="cabinet-holder middle-cabinet-holder">
 
+           
+
+
             <div class="button-overlap">
                 <div class="bg-lightblue float-right mt-3 pr-1 pl-2 rounded-left">
                     <a class="toggleLiveChat" href="#"><i class="fas fa-pencil-alt text-white"></i></i></a>
                 </div>
             </div>
 
+
+
+            @php            
+                $userImageObj = new \App\Models\UserImage;
+               
+
+                $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
+
+                if ($userImage == null) {
+                    $memberProfileImage = Storage::url('user_images/noimage.jpg');
+                } else {
+                    $memberProfileImage = Storage::url("$userImage->original");
+                }
+
+
+            @endphp 
+
+
             <div id="right-chat-sidebar">
                 <div class="media">
                     <lesson-slider-chatroom-component 
                         ref="lessonSliderComponent"
+                        user_image="{{ $memberProfileImage ?? '' }}"
+
                         :is-broadcaster="{{ $isBroadcaster }}"
                         :channelid="{{ $roomID }}"
                         canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
                         :user_info="{{  json_encode(Auth::user()) }}"            
                         :reservation="{{ json_encode($reservationData) }}"
                         :member_info="{{  json_encode($userInfo) }}"
+                        :recipient_info="{{ json_encode($recipientInfo) }}"
                         api_token="{{ Auth::user()->api_token }}" 
                         csrf_token="{{ csrf_token() }}"
                         >

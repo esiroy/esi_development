@@ -286,3 +286,4 @@ Route::middleware('auth:api')->post('/postSatisfactionSurvey', 'API\MemberSatisf
 Route::middleware('auth:api')->post('/postMemberFeedback', 'API\MemberFeedbackController@postMemberFeedback')->name('APIMemberFeedback');
 
 
+//Lesson Slider Chatroom
