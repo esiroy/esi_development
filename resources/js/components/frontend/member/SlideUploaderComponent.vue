@@ -26,7 +26,7 @@
                                         <tr v-if="!files.length">
                                         <td colspan="7" align="center">
                                             <h4> Drop files anywhere to upload<br />or</h4>
-                                            <label for="file" class="btn btn-lg btn-primary">Select Files</label>
+                                            <label for="slide-uploader-file" class="btn btn-lg btn-primary">Select Files</label>
                                         </td>
                                         </tr>
                                         <tr v-for="(file, index) in files" :key="file.id">
@@ -71,7 +71,7 @@
 
                                             <file-upload
                                                 name="file"
-                                                input-id="file"
+                                                input-id="slide-uploader-file"
                                                 class="btn btn-primary"
                                                 extensions="jpeg,jpg,gif,png"
                                                 accept="image/png,image/gif,image/jpeg"

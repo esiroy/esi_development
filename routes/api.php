@@ -287,3 +287,10 @@ Route::middleware('auth:api')->post('/postMemberFeedback', 'API\MemberFeedbackCo
 
 
 //Lesson Slider Chatroom
+Route::middleware('auth:api')->post('/saveLessonChat', 'API\lessonChatController@saveLessonChat')->name('APIsaveLessonChat');
+Route::middleware('auth:api')->post('/getLessonChathistory', 'API\lessonChatController@getLessonChatHistory')->name('APIGetLessonChathistory');
+
+//Route::middleware('auth:api')->post('/getUnreadLessonChatMessages', 'API\lessonChatController@getUnreadLessonChatMessages')->name('APIGetUnreadLessonChatMessages');
+//Route::middleware('auth:api')->post('/markLessonChatMessagesRead', 'API\lessonChatController@markLessonChatMessagesRead')->name('APIMarkLessonChatMessagesRead');
+
+

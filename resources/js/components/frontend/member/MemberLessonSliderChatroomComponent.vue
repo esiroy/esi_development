@@ -5,6 +5,7 @@
         <div id="fileUpload" class="position-right" style="display:none">
             <file-upload
                 name="file"
+                input-id="lesson-chatroom-file"
                 class="btn btn-primary"
                 extensions="jpeg,jpg,gif,pdf,png,webp"
                 accept="image/png, application/pdf, image/gif, image/jpeg, image/webp"
@@ -21,7 +22,7 @@
                 :drop-directory="true"
                 @input="updatetValue"
                 @input-file="inputFile"
-                @input-filter="inputFilter" ref="upload">      
+                @input-filter="inputFilter" ref="lessonChatUploader">      
             </file-upload>
         </div>
 
@@ -100,7 +101,7 @@
                         <div class="col-9 pr-0 mr-0">
                             <div v-for="(file, index) in files" :key="file.id" class="image-prieview-container bg-light  w-25 d-inline-block p-1 border border-light rounded">
                                 <div class="remove-image-upload float-right">
-                                    <a class="" href="#" @click.prevent="$refs.upload.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
+                                    <a class="" href="#" @click.prevent="$refs.lessonChatUploader.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
                                 </div>
 
                                 <div  v-if="file.type == 'image/jpeg' || file.type == 'image/png'" >
@@ -137,23 +138,23 @@
                         </div>
                         <div class="col-4 px-0">
                             <div id="attach-button" class="input-group-append d-inline-block float-left">
-                                <label id="file-select-button" for="file" class="btn btn-primary mr-1 btn-sm">
+                                <label id="file-select-button" for="lesson-chatroom-file" class="btn btn-primary mr-1 btn-sm">
                                     <i class="fas fa-paperclip"></i>
                                 </label>
                             </div>
 
                             <div id="send-button" class="input-group-append d-inline-block float-left">
-                                <button type="button"  @click.prevent="$refs.upload.active = false; sendMessage(privateMessage); " class="btn btn-sm btn-primary">
+                                <button type="button"  @click.prevent="$refs.lessonChatUploader.active = false; sendMessage(privateMessage); " class="btn btn-sm btn-primary">
                                     <i class="fa fa-paper-plane" aria-hidden="true"></i>
                                 </button>
                             </div>     
 
                             <span class="button-controls" style=" display:none">
-                                <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                                <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.lessonChatUploader || !$refs.lessonChatUploader.active" @click.prevent="$refs.lessonChatUploader.active = true">
                                     <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
                                 </button>
 
-                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.lessonChatUploader.active = false">
                                     <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
                                 </button>
                             </span>                                  
@@ -264,19 +265,20 @@ export default {
 
   },
 
-  mounted() {
+  mounted() 
+  {
     
+    
+    //Transfer the object to the window
+    window.lessonSliderChatroom = this;
 
-    socket = io.connect(this.$props.canvas_server);
 
-    let user = this.getUser();
+    socket     = io.connect(this.$props.canvas_server);
+    let user    = this.getUser();
 
     socket.emit('REGISTER', user); 
 
-    socket.on('SEND_SLIDE_PRIVATE_MESSAGE', (response) => {    
-
-        console.log(response);
-        
+    socket.on('SEND_SLIDE_PRIVATE_MESSAGE', (response) => {           
         new Promise((resolve, reject) => {
             this.pushPrivateMessage(response);
             resolve('private message resolved');                
@@ -286,24 +288,19 @@ export default {
         }); 
     });
 
+    this.getChatHistory();
 
     window.addEventListener("keyup", (e) =>{
         this.prepareButtons();       
-    });
-
-
+    });    
 
 
     this.initializeChatBox(user);
 
-    this.getUnreadMemberMessages(this.userid);
-
   },
   methods: {
-
-    popUpImage(index, message) {
-
-       //alert(message)
+   
+    popUpImage(index, message) {     
        return false;
     },
     getUser() {
@@ -317,7 +314,8 @@ export default {
                 nickname: this.$props.member_info.nickname,
                 user_image: this.user_image,    
                 type: this.$props.user_info.user_type,      
-                status: 'online'
+                status: 'online',
+                chat_type: 'sender'     
             } 
         } else if (this.$props.user_info.user_type == "TUTOR") {        
             return {
@@ -339,11 +337,7 @@ export default {
         this.messages.push(data);
 
     },    
-    sendMessage: function(message) 
-    {
-     
-        console.log("sending message", message);
-
+    sendMessage: function(message) {
 
         //files is empty and message is empty, stop sending message
         if (this.files.length == 0 && message === "" || message === undefined)
@@ -353,41 +347,110 @@ export default {
 
         if (message === "" || message === undefined) {
 
-            document.getElementById("startUpload").click();
-         
+            document.getElementById("startUpload").click();         
 
         } else {
 
-             document.getElementById("startUpload").click();
+            document.getElementById("startUpload").click();
+            this.emitMessage(this.privateMessage);
             
-
-            var currentTime = new Date();    
-            let channelid = this.channelid;           
-            let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-            let sender      = this.getUser();
-            let recipient   = this.getRecipient();
-        
-
-            socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", { channelid, time, recipient, sender, message }); 
-
-       
-
-    
-            //clear (always at bottom)
+            
             this.privateMessage = "";
             this.$forceUpdate();   
             
-            this.$nextTick(function()
-            {
+            this.$nextTick(() => {
                 this.scrollToEnd();
                 this.prepareButtons();            
-            });
-
-        
+            });        
         } 
     },
+    emitMessage(message) 
+    {
 
 
+        var currentTime = new Date();    
+        let channelid   = this.channelid;           
+        let time        = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false })
+
+        let sender      = this.getUser();
+        let recipient   = this.getRecipient();
+
+        socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", { channelid, time, recipient, sender, message }); 
+
+
+        axios.post("/api/saveLessonChat?api_token=" + this.api_token, 
+        {
+            method              : "POST",
+            channelid           : this.channelid,
+            sender_id           : sender.userid,
+            recipient_id        : recipient.userid,
+            message             : message,
+            is_read             : false,
+            valid               : true,
+            message_type        : sender.type,
+
+        }).then(response => {
+            if (response.data.success === true) {
+
+            } else {
+                //@todo: HIGHLIGHT error
+            }
+        }).catch(function(error) {
+            console.log("Error " + error);                
+        }); 
+    },
+    getChatHistory() {
+    
+        this.isFetching = true;
+
+        let channelid   = this.channelid;
+
+        //user is the sender
+        axios.post("/api/getLessonChathistory?api_token=" + this.api_token, 
+        {
+            method              : "POST",
+            channelid           : channelid
+        }).then(response => {  
+
+            if (response.data.success === true) {                               
+
+                this.isFetching = false;
+
+                let chatHistoryItems =  response.data.chatHistoryItems
+                
+                chatHistoryItems.forEach(data => {
+                    let message = data.message;
+                    let time    =  data.created_at;
+
+                    let sender = {
+                        userid:     data.sender_id,
+                        username:   this.$props.member_info.username,                
+                        nickname:   data.nickname ?? data.firstname,
+                        type:       data.message_type
+                    }
+
+                    let recipient = {
+                        userid:     data.recipient_id,
+                        //nickname:   "recipient",
+                        type:       data.message_type                    
+                    }
+
+                    this.messages.unshift({ channelid, time, recipient, sender, message });
+
+                  
+                });
+
+
+           
+
+                this.$nextTick(() => {
+                    this.scrollToEnd();
+                }); 
+
+            }
+        });
+
+    },
     scrollToTop: function() {
         this.$forceUpdate();
 
@@ -398,6 +461,8 @@ export default {
     },
     scrollToEnd: function() 
     {
+        alert ("scrolling to end");
+
         this.$forceUpdate();   
 
         this.$nextTick(function()
@@ -409,14 +474,6 @@ export default {
             }
         });
 
-        this.$nextTick(function() {
-            if (this.chatFetchStatus == "ACTIVE") {
-                this.getPaginatedHistory();
-            } else {
-                //console.log("unable to fetch chat history result still busy, please try again")
-            }
-            
-        });
     },
     updatetValue(value) {
         //this.files = value;
@@ -444,29 +501,16 @@ export default {
                                 'size'      : newFile.response.size,
                             }];
 
-
-               
-
-                    var currentTime = new Date();    
-                    let channelid = this.channelid;           
-                    let time = currentTime.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true })
-                    let sender      = this.getUser();
-                    let recipient   = this.getRecipient();
-                    let message     = newFile.response.image;
-                
-
-                    socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", { channelid, time, recipient, sender, message }); 
-
+                    this.emitMessage(newFile.response.image);
                 }               
 
             }
         }
 
-        if (this.$refs.upload.uploaded) {
+        if (this.$refs.lessonChatUploader.uploaded) {
             // console.log("all queue uploaded");
             this.files = [];
-
-              this.scrollToEnd();
+            this.scrollToEnd();
         }
     },
     /**
@@ -490,12 +534,12 @@ export default {
             newFile.blob = ''
             let URL = window.URL || window.webkitURL
             if (URL && URL.createObjectURL) {
-            newFile.blob = URL.createObjectURL(newFile.file)
+                newFile.blob = URL.createObjectURL(newFile.file)
             }
             // Thumbnails
             newFile.thumb = ''
             if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
-            newFile.thumb = newFile.blob
+                newFile.thumb = newFile.blob
             }
         }
     },
@@ -516,201 +560,24 @@ export default {
             if (sendBtn) {
                 sendBtn.style.display = "none";
             }
-            
-             
         } else {
-
             if (fileSelectBtn) {
                 fileSelectBtn.style.display = "none";            
             }
-
             if (sendBtn) {
                 sendBtn.style.display = "block";
             }
         }        
     },    
-    closeChatBox() {
-        this.showChatbox = false;
-        this.unread_message_count = 0;
-    },
-    openChatBox() 
-    {
-        this.showChatbox = true;
-        let user = this.getUser();
-        if (isNaN(this.page[user.userid])) {
-            this.page[user.userid] = 1;            
-        }
-        this.scrollToEnd();
 
-        //mark read after opening
-        this.delayandMarkUnread();
-    },    
-
-    addChatEventListener() {
-
-    
-        let user = this.getUser();
-        socket.emit('REGISTER', user);     
-
-        //update the list
-        socket.on('update_user_list', users => {
-            this.updateUserList(users); 
-        });
-
-
-        socket.on('PRIVATE_MESSAGE', data => 
-        {  
-
-
-            let admin = {
-                userid: 1,
-                username: "admin",
-            }
-
-            if (data.sender.username  == this.username) 
-            {
-                //user sent
-            
-                let sender = {
-                    'userid': data.sender.userid,
-                    'username': data.sender.username,   
-                    'nickname': data.sender.nickname,
-                    'message': data.sender.message,
-                    'user_image': this.user_image,      
-                    'type': data.sender.type,             
-                };
-                
-                this.chatlogs[admin.userid].push({
-                    time: data.time,
-                    sender: sender            
-                });   
-
-                this.$forceUpdate();  
-
-                this.$nextTick(function()
-                {
-                    this.scrollToEnd();  
-                   
-                });             
-            }
-
-            if (data.recipient.userid == this.userid) 
-            {
-
-                this.openChatBox(admin);
-
-                console.log("sent from support")
-
-                this.unread_message_count++;
-
-
-                let sender_customer_support = {
-                    'userid': data.sender.userid,
-                    'username': data.sender.username,   
-                    'nickname': data.sender.nickname,
-                    'message': data.sender.message,
-                    'type': data.sender.type,
-                };
-
-                this.chatlogs[admin.userid].push({
-                        time: data.time,
-                        sender: sender_customer_support,
-                        //message: data.sender.message        
-                });      
-
-                this.$forceUpdate();  
-
-                this.$nextTick(function()
-                {
-                    this.scrollToEnd(); 
-
-                });
-            
-                //play audio
-                let audio = new Audio("/mp3/message-sent.mp3");
-                audio.play();            
-            }  
-
-        });
-
-    },
-    initializeChatBox: function(user) {   
-      
-	    //@note: user is the sender
-        this.current_chatbox_userid = user.userid;      
-       
+    initializeChatBox: function(user) 
+    {   
+        this.current_chatbox_userid = user.userid;
         this.messages = [];
-
         this.$forceUpdate();
-
-        this.$nextTick(function()
-        {
+        this.$nextTick(function(){
             this.scrollToEnd();
             this.prepareButtons(); 
-        });            
-          
-    },
-    getUnreadMemberMessages(userid) 
-    {
-        axios.post("/api/getUnreadChatMessages?api_token=" + this.api_token, 
-        {
-            method           : "POST",
-            userID           : userid,
-        }).then(response => {  
-
-            if (response.data.success === true) 
-            {
-
-                this.unread_message_count = response.data.unreadMessageCount;
-
-                response.data.chatItems.forEach(data => {
-
-                    let chatboxUsername = null;
-                    let chatboxNickname = null;
-                    let chatboxImage = null;
-
-                    if (data.message_type == "MEMBER") {
-
-                        let member = this.getUser();
-
-                        chatboxUsername = member.username;
-                        chatboxNickname = member.nickname;
-                        chatboxImage = this.user_image; 
-
-                    } else {
-
-
-                        chatboxUsername = "CUSTOMER SUPPORT";
-                        chatboxNickname = "CUSTOMER SUPPORT"
-                        chatboxImage = this.user_image;
-                    }
-
-
-                    let chatSupportMessages = {
-                        'msgCtr': 0,
-                        'userid': data.sender_id, //id of chat support                        
-                        'nickname': chatboxNickname,
-                        'username': chatboxUsername,          
-                        'user_image': this.customer_support_image,
-                        'message': data.message,                            
-                        'type': data.message_type
-                    };
-
-                    //the admin is the customer support
-                    let user = this.getUser();
-
-                    this.chatlogs[user.userid].unshift({
-                            time: data.created_at,
-                            sender: chatSupportMessages,
-                    }); 
-                });
-
-
-                this.$forceUpdate();
-            } else {
-            
-                this.unread_message_count = response.data.unreadMessageCount;
-            }
         });
     },
     delayandMarkUnread() {
@@ -735,13 +602,11 @@ export default {
             if (response.data.success === true) 
             {              
                 this.unread_message_count = 0;
+                clearInterval(this.interval);
 
-                 clearInterval(this.interval);
             } else {
                 clearInterval(this.interval);
             }
-
-           
         });    
         
     },

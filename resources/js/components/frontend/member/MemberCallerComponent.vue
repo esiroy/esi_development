@@ -80,7 +80,7 @@
                     <div>Lesson Description: {{ folder.folder_description }}</div>                 
                     <div class="container pt-4" v-if="files != null">
                         <div class="row">
-                            <div class="col-2" v-for="file in files">                            
+                            <div class="col-2" v-for="(file, fileIndex) in files" :key="fileIndex">
                                 <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" @click="imageViewer(getBaseURL(file.path))"/>
                             </div>
                         </div>

@@ -261,11 +261,12 @@
 
                     // Animation complete.
                     if (document.getElementById("right-chat-sidebar").style.display == 'none') {
-                        //alert('this Element is hidden');
-                          isChatboxActive = false;
+                        //Close Chat sidebar
+                        isChatboxActive = false;
                     } else {
-                        // alert('this Element is block');
-                          isChatboxActive = true;
+                        //Open Chat sidebar
+                        lessonSliderChatroom.scrollToEnd()
+                        isChatboxActive = true;
                     }
 
                     resizeAspectRatio();  

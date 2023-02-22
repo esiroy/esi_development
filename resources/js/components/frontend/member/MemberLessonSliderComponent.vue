@@ -1081,6 +1081,8 @@ export default {
         },
         createCanvas(index) {
 
+         
+
             //added to make canvas visible if the index is the first one
             let visibility = 'hidden';
             let display = 'none';
@@ -1091,23 +1093,36 @@ export default {
             } 
 
             //Editor Container Element
-            let editorElement = document.createElement("div");
-            editorElement.setAttribute("id",    "editor" + index);
-            editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display:"+ display +";");
+            var elementExists = document.getElementById("editor" + index);
 
-            let slideContainer = document.getElementById('slide-container');
-            slideContainer.append(editorElement);            
+            if (!elementExists) {
+            
+                console.log("++++++++create canvas++++++++");
 
-            //Add canvas to the editor
-            let canvasElement = document.createElement("canvas");
-            canvasElement = document.createElement('canvas');
-            canvasElement.setAttribute("id",    "canvas" + index);
-            canvasElement.setAttribute("width", this.canvas_width);
-            canvasElement.setAttribute("height", this.canvas_height);
-            canvasElement.setAttribute("style", "border: 7px solid rgb(0, 118, 190); height: 100%;");
+                let editorElement = document.createElement("div");
+                editorElement.setAttribute("id",    "editor" + index);
+                editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display:"+ display +";");
 
-            let mediaContainer = document.getElementById('editor'+ index);
-            mediaContainer.append(canvasElement);            
+                let slideContainer = document.getElementById('slide-container');
+                slideContainer.append(editorElement);            
+
+                //Add canvas to the editor
+                let canvasElement = document.createElement("canvas");
+                canvasElement = document.createElement('canvas');
+                canvasElement.setAttribute("id",    "canvas" + index);
+                canvasElement.setAttribute("width", this.canvas_width);
+                canvasElement.setAttribute("height", this.canvas_height);
+                canvasElement.setAttribute("style", "border: 7px solid rgb(0, 118, 190); height: 100%;");
+
+                let mediaContainer = document.getElementById('editor'+ index);
+                mediaContainer.append(canvasElement);               
+            
+            } else {
+            
+                  console.log("------ CANVAS IS ALREADY CREATED ------ ");
+            }
+
+         
         },        
         getSlideMaterials(reservation) {         
 

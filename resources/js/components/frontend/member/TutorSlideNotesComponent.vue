@@ -24,7 +24,9 @@
             </div>
 
             <div v-if="this.note == ''">
-                <span class="text-danger small"  v-if="hideSlideNotes == true">no available notes for this current slide</span>
+                <span class="text-danger small"  v-if="hideSlideNotes == true">
+                    no available notes for this current slide
+                </span>
             </div>
             <div v-else>
                 <span v-html="this.note" v-if="hideSlideNotes == true"></span>
@@ -109,6 +111,7 @@ export default {
                 this.showNotes();
         },
         loadNotes(notes) {
+            console.log(notes);
             this.notes = notes;           
             this.showNotes();
             this.loaded = false;
@@ -125,6 +128,13 @@ export default {
             this.note = this.notes[index];
             this.loaded = true;
             this.$forceUpdate();
+
+        
+            if (this.note == undefined || this.note == 'undefined' || this.note === undefined || this.note == '') {
+                this.note = '';
+                //this.hideNotes();             
+            }
+            
         }
     }    
 }
