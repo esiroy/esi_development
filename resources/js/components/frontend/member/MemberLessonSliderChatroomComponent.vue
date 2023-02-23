@@ -35,14 +35,11 @@
 
                     <div id="user-chatlog" class="user-chatlog border rounded text-center">
                         <div class="chatlog-wrapper">
-                            <div class="chat mt-1 p-1" v-for="(chatlog, chatlogIndex) in messages" :key="'my_chatlog_'+ chatlogIndex">  
-                               
 
-                                <div v-if="current_chatbox_userid == chatlog.sender.userid">  
+                            <div class="chat mt-1 p-1" v-for="(chatlog, chatlogIndex) in messages" :key="'my_chatlog_'+ chatlogIndex">                               
+                                <div v-if="current_chatbox_userid == chatlog.sender.userid">
                                     <div class="sender-container">  
-
-                                        <div class="sender-wrapper text-right small">
-                                          
+                                        <div class="sender-wrapper text-right small">                                          
                                             <div class="sender small text-right"  v-if="chatlogIndex >= 1 && messages[chatlogIndex - 1].sender.type !== messages[chatlogIndex].sender.type">
                                                 {{chatlog.sender.nickname}}
                                             </div>
@@ -64,7 +61,6 @@
                                 <div v-else>
                                     <div class="recipient-container">
                                         <div class="recipient-wrapper text-left small">
-
                                             <div class="sender small text-left" v-if="chatlogIndex >= 1 && messages[chatlogIndex - 1].sender.type !== messages[chatlogIndex].sender.type" >
                                                 {{ chatlog.sender.nickname}}
                                             </div>
@@ -86,10 +82,109 @@
                                     </div>
                                 </div>
 
+                            </div>
 
+                            <div class="strike" v-if="unreadMessages.length >= 1">
+                                <span class="small">Unread Message(s)</span>
+                            </div>
 
-                                   
+                            <div class="chat mt-1 p-1" v-for="(chatlog, chatlogIndex) in unreadMessages" :key="'my_unread_chatlog_'+ chatlogIndex">                               
+                                <div v-if="current_chatbox_userid == chatlog.sender.userid">
+                                    <div class="sender-container">  
+                                        <div class="sender-wrapper text-right small">                                          
+                                            <div class="sender small text-right"  v-if="chatlogIndex >= 1 && unreadMessages[chatlogIndex - 1].sender.type !== unreadMessages[chatlogIndex].sender.type">
+                                                {{chatlog.sender.nickname}}
+                                            </div>
+                                            <div  class="sender small text-right"  v-if="chatlogIndex == 0">
+                                                {{ chatlog.sender.nickname}}
+                                            </div>
+                                            
+                                            <div class="message-container">
+                                                <div class="message small">
+                                                    <span v-html="chatlog.message"></span>
+                                                    <div class="small text-align-right">
+                                                        <span class="small font-italic text-secondary">{{chatlog.time }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <div class="recipient-container">
+                                        <div class="recipient-wrapper text-left small">
+                                            <div class="sender small text-left" v-if="chatlogIndex >= 1 && unreadMessages[chatlogIndex - 1].sender.type !== unreadMessages[chatlogIndex].sender.type" >
+                                                {{ chatlog.sender.nickname}}
+                                            </div>
 
+                                            <div  class="sender small text-left"  v-if="chatlogIndex == 0">
+                                                {{ chatlog.sender.nickname}}
+                                            </div>
+
+                                            <div class="message-container">
+                                                <div class="message small">
+                                                    <span v-html="chatlog.message"></span>
+                                                    <div class="small text-align-right">
+                                                        <span class="small font-italic text-secondary">{{chatlog.time }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="strike" v-if="newMessageAdded == true">
+                                <span class="small">Recent Message(s)</span>
+                            </div>
+
+                            <div class="chat mt-1 p-1" v-for="(chatlog, chatlogIndex) in recentMessages" :key="'my_unread_chatlog_'+ chatlogIndex">                               
+                                <div v-if="current_chatbox_userid == chatlog.sender.userid">
+                                    <div class="sender-container">  
+                                        <div class="sender-wrapper text-right small">                                          
+                                            <div class="sender small text-right"  v-if="chatlogIndex >= 1 && recentMessages[chatlogIndex - 1].sender.type !== recentMessages[chatlogIndex].sender.type">
+                                                {{chatlog.sender.nickname}}
+                                            </div>
+                                            <div  class="sender small text-right"  v-if="chatlogIndex == 0">
+                                                {{ chatlog.sender.nickname}}
+                                            </div>
+                                            
+                                            <div class="message-container">
+                                                <div class="message small">
+                                                    <span v-html="chatlog.message"></span>
+                                                    <div class="small text-align-right">
+                                                        <span class="small font-italic text-secondary">{{chatlog.time }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <div class="recipient-container">
+                                        <div class="recipient-wrapper text-left small">
+                                            <div class="sender small text-left" v-if="chatlogIndex >= 1 && recentMessages[chatlogIndex - 1].sender.type !== recentMessages[chatlogIndex].sender.type" >
+                                                {{ chatlog.sender.nickname}}
+                                            </div>
+
+                                            <div  class="sender small text-left"  v-if="chatlogIndex == 0">
+                                                {{ chatlog.sender.nickname}}
+                                            </div>
+
+                                            <div class="message-container">
+                                                <div class="message small">
+                                                    <span v-html="chatlog.message"></span>
+                                                    <div class="small text-align-right">
+                                                        <span class="small font-italic text-secondary">{{chatlog.time }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
                         </div>
@@ -196,15 +291,13 @@ export default {
         privateMessage: "",
 
         messages: [],
-        messageHistory: [],
+        unreadMessages:[],
+        recentMessages:[],
 
         
         users: [],
 
         //chat boxes
-        showChatbox: true,
-
-      
         message_count: 0,
         unread_message_count: 0,
 
@@ -226,6 +319,8 @@ export default {
         //page
         page:[],
     
+
+        newMessageAdded: false,
     };
   },
   props: {
@@ -278,10 +373,17 @@ export default {
 
     socket.emit('REGISTER', user); 
 
-    socket.on('SEND_SLIDE_PRIVATE_MESSAGE', (response) => {           
+    socket.on('SEND_SLIDE_PRIVATE_MESSAGE', (response) => { 
         new Promise((resolve, reject) => {
+
+            this.newMessageAdded = true;
+
+            this.markMessageRead();
             this.pushPrivateMessage(response);
-            resolve('private message resolved');                
+
+            resolve('private message resolved');    
+
+
         }).then((result) => {
             this.message = null;
             this.scrollToEnd();
@@ -334,8 +436,7 @@ export default {
         return this.$props.recipient_info;
     },
     pushPrivateMessage(data) {
-        this.messages.push(data);
-
+        this.recentMessages.push(data);
     },    
     sendMessage: function(message) {
 
@@ -352,8 +453,7 @@ export default {
         } else {
 
             document.getElementById("startUpload").click();
-            this.emitMessage(this.privateMessage);
-            
+            this.emitMessage(this.privateMessage);           
             
             this.privateMessage = "";
             this.$forceUpdate();   
@@ -364,9 +464,7 @@ export default {
             });        
         } 
     },
-    emitMessage(message) 
-    {
-
+    emitMessage(message) {
 
         var currentTime = new Date();    
         let channelid   = this.channelid;           
@@ -399,6 +497,16 @@ export default {
             console.log("Error " + error);                
         }); 
     },
+     markMessageRead() {
+        this.scrollToEnd();
+
+        axios.post("/api/markLessonChatMessagesRead?api_token=" + this.api_token,        {
+            method              : "POST",
+            channelid           : this.channelid
+        }).then(response => {
+            console.log("marked read")
+        });
+    },
     getChatHistory() {
     
         this.isFetching = true;
@@ -416,9 +524,11 @@ export default {
 
                 this.isFetching = false;
 
-                let chatHistoryItems =  response.data.chatHistoryItems
+
+                //unread
+                let unreadChatHistoryItems =  response.data.unreadChatHistoryItems
                 
-                chatHistoryItems.forEach(data => {
+                unreadChatHistoryItems.forEach(data => {
                     let message = data.message;
                     let time    =  data.created_at;
 
@@ -435,13 +545,32 @@ export default {
                         type:       data.message_type                    
                     }
 
-                    this.messages.unshift({ channelid, time, recipient, sender, message });
-
-                  
+                    this.unreadMessages.unshift({ channelid, time, recipient, sender, message });                  
                 });
 
 
-           
+                //read
+                let readChatHistoryItems =  response.data.readChatHistoryItems
+                
+                readChatHistoryItems.forEach(data => {
+                    let message = data.message;
+                    let time    =  data.created_at;
+
+                    let sender = {
+                        userid:     data.sender_id,
+                        username:   this.$props.member_info.username,                
+                        nickname:   data.nickname ?? data.firstname,
+                        type:       data.message_type
+                    }
+
+                    let recipient = {
+                        userid:     data.recipient_id,
+                        //nickname:   "recipient",
+                        type:       data.message_type                    
+                    }
+
+                    this.messages.unshift({ channelid, time, recipient, sender, message });                  
+                });
 
                 this.$nextTick(() => {
                     this.scrollToEnd();
@@ -638,12 +767,15 @@ export default {
 
 
 <style>
-.img_preview {
-    width: 100%;
-}
-.custom-pdf {
-    font-size: 100px;
-}
+    .img_preview {
+        width: 100%;
+    }
+    .custom-pdf {
+        font-size: 100px;
+    }
+
+
+
 </style>
 
 
@@ -764,5 +896,40 @@ export default {
         padding: 5px 15px 5px;
         margin-bottom: 7px;
     }
+
+    .strike {
+        display: block;
+        text-align: center;
+        overflow: hidden;
+        white-space: nowrap; 
+        width: 100%;
+    }
+
+    .strike > span {
+        position: relative;
+        display: inline-block;
+        font-size: 10px;
+    }
+
+    .strike > span:before,
+    .strike > span:after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        width: 9999px;
+        height: 1px;
+        background: #ccc;
+    }
+
+    .strike > span:before {
+        right: 100%;
+        margin-right: 5px;
+    }
+
+    .strike > span:after {
+        left: 100%;
+        margin-left: 5px;
+    }
+
 
 </style>

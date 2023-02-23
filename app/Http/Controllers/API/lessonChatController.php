@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\LessonChat;
 use App\Models\User;
 use App\Models\UserImage;
+use Auth;
 
 
 class lessonChatController extends Controller
@@ -18,20 +19,34 @@ class lessonChatController extends Controller
         //$page = $request->page;
         $lessonid      = $request->channelid;
         $sender_id      = $request->sender_id;
-        $recipient_id   = $request->recipient_id;
+        $recipient_id   = $request->recipient_id;  
 
-        $chatHistoryItems = $lessonChat
+
+        $readChatHistoryItems = $lessonChat
                                 ->select('lesson_chat_history.*', 'users.id', 'users.firstname', 'members.nickname')
                                 ->where('lesson_id', $lessonid)
+                                ->where('is_read', true)
                                 ->leftJoin('users', 'users.id', '=', 'lesson_chat_history.sender_id')
                                 ->leftJoin('members', 'members.user_id', '=', 'lesson_chat_history.sender_id')
                                 ->orderby('lesson_chat_history.id', "DESC")->get();
-                              
 
-        if ($chatHistoryItems->count() > 0)  {
+                                
+        $unreadChatHistoryItems = $lessonChat
+                                ->select('lesson_chat_history.*', 'users.id', 'users.firstname', 'members.nickname')
+                                ->where('lesson_id', $lessonid)
+                                ->where('is_read', false)
+                                ->leftJoin('users', 'users.id', '=', 'lesson_chat_history.sender_id')
+                                ->leftJoin('members', 'members.user_id', '=', 'lesson_chat_history.sender_id')
+                                ->orderby('lesson_chat_history.id', "DESC")->get();                                
+            
+        $allhistory = $unreadChatHistoryItems->count() + $readChatHistoryItems->count();           
+
+        if ( $allhistory > 0)  {
             return Response()->json([
-                "success"           => true,                
-                "chatHistoryItems"  => $chatHistoryItems,                
+                "success"                       => true,                
+                "unreadChatHistoryItems"        => $unreadChatHistoryItems,
+                "readChatHistoryItems"          => $readChatHistoryItems,   
+                
             ]);
         } else {
             return Response()->json([
@@ -80,6 +95,31 @@ class lessonChatController extends Controller
             "success"  => true,
         ]);
 
+    }
+
+
+    public function markLessonChatMessagesRead(Request $request, LessonChat $lessonChat) 
+    {       
+        $lessonid       = $request->channelid;
+        $unread         = $lessonChat->where('lesson_id', $lessonid)->where('recipient_id', Auth::user()->id)->where('is_read', false);
+
+        if ($unread) {
+        
+            $unread->update([
+                'is_read' => true
+            ]);
+
+            return Response()->json([
+                "success"  => true,
+            ]);
+
+        } else {
+            return Response()->json([
+                "success"  => false,
+            ]);
+
+        }
+        
     }
 
 }

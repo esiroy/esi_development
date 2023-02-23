@@ -265,7 +265,7 @@
                         isChatboxActive = false;
                     } else {
                         //Open Chat sidebar
-                        lessonSliderChatroom.scrollToEnd()
+                        lessonSliderChatroom.markMessageRead()
                         isChatboxActive = true;
                     }
 
