@@ -118,9 +118,9 @@ class LessonHistoryController extends Controller
         $slideIndex         = $request->slideIndex;
         $reservation        = $request->reservation;
         $canvasData         = json_encode($request->canvasData);
-        
+        $imageData          = json_encode($request->imageData);
 
-        $res = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData);
+        $res = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData, $imageData);
 
         if ($res) {
         

@@ -3,6 +3,10 @@
 
     <div class="main-component-holder">
 
+        <button value="testing" @click="saveAllSlides()">
+            testing
+        </button>
+
         <div id="component-container" v-show="sessionActive">
 
             <div id="satisfactionSurveyContainer">              
@@ -769,6 +773,19 @@ export default {
 
     },
     methods: {
+
+        async saveAllSlides() {
+            
+            for (var index = 1; index <= this.slides; index++) {
+
+                //let canvasData  = await this.getCanvasSlideData(index);
+                //this.saveSlideHistoryData(canvasData, index)
+
+                let imageData = this.canvas[index].toDataURL('image/jpeg', 0.5)
+                this.saveSlideHistoryData(imageData, index)
+            }
+
+        },
         updateUserList: function(users) {
             this.users = users;      
             this.$forceUpdate();                 
@@ -855,6 +872,9 @@ export default {
             }).then(isConfirmed => {
 
                 if (isConfirmed == true)  {      
+
+                    this.saveAllSlides();
+
                     this.postLessonEndSessionHistory(this.reservation);
                 } 
 
@@ -863,7 +883,7 @@ export default {
                 alert (err)                
             }); 
         },
-        saveSlideHistoryData(canvasData) {
+        saveSlideHistoryData(canvasData, slideIndex) {
 
             console.log("saving... slide history")
 
@@ -878,9 +898,10 @@ export default {
 
                 'folderID'          : this.newFolderID,
                 'totalSlides'       : this.slides,
-                'slideIndex'        : this.currentSlide,                
+                'slideIndex'        : slideIndex,                
                 'reservation'       : this.reservation,
-                'canvasData'        : canvasData
+                'canvasData'        : canvasData,
+                'imageData'         : this.canvas[slideIndex].toDataURL('image/jpeg', 0.5)
 
             }).then(response => {
 
@@ -997,7 +1018,8 @@ export default {
 
             let data = this.canvasGetJSON();            
             this.canvasSendJSON(this.canvas[this.currentSlide], data);     
-            this.saveSlideHistoryData(data);
+
+            this.saveSlideHistoryData(data, this.currentSlide);
 
         },
         userCreateNewEmptySlide() 
@@ -2077,7 +2099,7 @@ export default {
 
                 console.log("mouse up: mouclick handler")
 
-                this.saveSlideHistoryData(data);
+                this.saveSlideHistoryData(data, this.currentSlide);
 
 
             }).on('mouse:out', (options) => {
@@ -2352,7 +2374,7 @@ export default {
 
             let data = this.canvasGetJSON();            
             this.canvasSendJSON(this.canvas[this.currentSlide], data);     
-            this.saveSlideHistoryData(data);
+            this.saveSlideHistoryData(data. this.currentSlide);
 
 
         },        
@@ -2426,7 +2448,7 @@ export default {
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);   
 
-                this.saveSlideHistoryData(data);
+                this.saveSlideHistoryData(data, this.currentSlide);
 
                 //[ADD TO HISTORY]    
                 /*            
@@ -2479,7 +2501,7 @@ export default {
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);
 
-                this.saveSlideHistoryData(data);
+                this.saveSlideHistoryData(data, this.currentSlide);
 
             });
 
@@ -2529,7 +2551,7 @@ export default {
                 let data = this.canvasGetJSON();
                 this.canvasSendJSON(this.canvas[this.currentSlide], data);
 
-                this.saveSlideHistoryData(data);
+                this.saveSlideHistoryData(data, this.currentSlide);
             
             });            
 
@@ -2632,7 +2654,7 @@ export default {
                     let data = this.canvasGetJSON();
                     this.canvasSendJSON(this.canvas[this.currentSlide], data);              
 
-                    this.saveSlideHistoryData(data);  
+                    this.saveSlideHistoryData(data, this.currentSlide);  
                 }                
             }
             this.mouseClickHandler();

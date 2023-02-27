@@ -14,7 +14,7 @@ class LessonSlideHistory extends Model
     protected $guarded = array('created_at', 'updated_at');
 
   
-    public function saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData) 
+    public function saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData, $imageData) 
     {
         $scheduleID =  $reservation['schedule_id'];
 
@@ -35,7 +35,8 @@ class LessonSlideHistory extends Model
             if ($lessonSlideHistory) {
             
                 $updated =  $lessonSlideHistory->update([            
-                    'content' => $canvasData   
+                    'content' => $canvasData,  
+                    'data'    => $imageData
                 ]);
 
                 if ($updated) {
@@ -65,7 +66,8 @@ class LessonSlideHistory extends Model
                 $created = LessonSlideHistory::create([
                     'slide_index'       => $slideIndex,
                     'lesson_history_id' => $lessonHistory->id,            
-                    'content'           => $canvasData
+                    'content'           => $canvasData,
+                    'data'              => $imageData
                 ]);
 
                 if ($created) {
@@ -135,11 +137,19 @@ class LessonSlideHistory extends Model
 
     public function getAllSlideHistory($scheduleID) {
     
-        $lessonHistory = LessonHistory::where('schedule_id',  $scheduleID )->where('status', "NEW")->first();
+        //$lessonHistory = LessonHistory::where('schedule_id',  $scheduleID )->where('status', "NEW")->first();
+
+        $lessonHistory = LessonHistory::where('schedule_id',  $scheduleID )->where(function ($query) 
+        {
+            $query->where('status', '=', "NEW")
+                    ->orWhere('status', '=', "INCOMPLETE")
+                    ->orWhere('status', '=', "COMPLETED");
+
+        })->orderBy('id', 'DESC')->first();
 
         if ($lessonHistory) 
         {
-            $lessonSlideHistory = LessonSlideHistory::where('lesson_history_id',  $lessonHistory->id )->get();
+            $lessonSlideHistory = LessonSlideHistory::where('lesson_history_id',  $lessonHistory->id )->orderBy('slide_index', 'ASC')->get();
 
             if ($lessonSlideHistory)  {
             

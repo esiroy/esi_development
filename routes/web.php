@@ -216,6 +216,8 @@ Route::get('/userreportcarddate/{id}', 'LessonRecordController@userreportcarddat
 Route::resource('/questionnaire', 'Members\QuestionnaireController');
 
 
+Route::resource('/lessonslidehistory', 'LessonSlideHistoryController');
+
 /* Public Folder View */
 //Route::get("folder/{path}", "PublicFolderController@show")->where('path', '.+');
 

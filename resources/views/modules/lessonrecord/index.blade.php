@@ -44,7 +44,7 @@
                                         <th class="small text-center bg-light text-dark font-weight-bold">View</th>
                                     </tr>
                                     @foreach ($scheduleItems as $scheduleItem)
-                                    <tr>
+                                    <tr id="{{ 'scheduleItem-'. $scheduleItem->id }}">
                                         <td class="text-center">
 
                                            {{ ESIDateFormat($scheduleItem->lesson_time) }} {{ ESILessonTimeRange($scheduleItem->lesson_time) }}
@@ -67,17 +67,35 @@
 
                                         </td>
                                         <td class="text-center">
-                                            <!--@todo: create a link for the graded report card only-->
+                                            <!--@todo: create a link if there is lesson slider -->
                                             @php                                                
-                                                $reportcard = new App\Models\ReportCard;
-                                                $gradedReportcard = $reportcard->where('schedule_item_id', $scheduleItem->id)->first();
+                                                $lessonHistory = new App\Models\LessonHistory;
+                                                $lessonHistory = $lessonHistory->where('schedule_id', $scheduleItem->id)
+                                                                ->orderBy('id', 'DESC')
+                                                                ->first();
                                             @endphp
 
-                                            @if ($gradedReportcard)                                                
-                                                <a href="reportcard/{{$gradedReportcard->id}}">» 評価</a>                                                
-                                            @else 
-                                                » 評価
+                                            @if ($lessonHistory) 
+
+                                                <a href="lessonslidehistory/{{$lessonHistory->schedule_id}}">» 評価</a> 
+
+                                            @else
+
+                                                <!--@done: create a link for the graded report card only-->
+                                                @php                                                
+                                                    $reportcard = new App\Models\ReportCard;
+                                                    $gradedReportcard = $reportcard->where('schedule_item_id', $scheduleItem->id)->first();
+                                                @endphp
+
+                                                @if ($gradedReportcard)                                                
+                                                    <a href="reportcard/{{$gradedReportcard->id}}">» 評価</a>                                                
+                                                @else 
+                                                    » 評価
+                                                @endif
+
                                             @endif
+
+
                                         </td>
                                     </tr>
                                     @endforeach

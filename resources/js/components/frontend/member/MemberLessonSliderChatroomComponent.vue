@@ -819,7 +819,7 @@ export default {
     }
 
     .chatlog-wrapper {
-        margin-top: 30px;
+        margin-top: 5px;
     }
 
 
