@@ -149,7 +149,129 @@ class LessonSlideMaterials extends Controller
 
     }
 
+    /*
+    public function getLessonMaterialSlidesAutoNextFolderOld(Request $request, Folder $folder, MemberSelectedLessonSlideMaterial $memberSelectedMaterial)
+    {
+        $scheduleID         = $request->scheduleID;
+        $memberID           = $request->memberID;
 
+        $selectedMaterial = $memberSelectedMaterial->where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+
+        //get Lesson History details
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
+
+
+        if ($selectedMaterial) {        
+            $folderID       = $selectedMaterial->folder_id;
+        } else {     
+            $folderID       = $folder->getNextFolderID($memberID);
+        }
+
+
+  
+
+        if ($lessonHistory) {
+            //Initialzie Audio Objects
+            for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
+                $audioFiles[$ctr+1] =  [];
+            }
+        } 
+
+        //Folder Segment
+        $folderSegments     = Folder::getURLSegments($folderID, " > ");
+        $folderURLArray     = Folder::getURLArray($folderID);
+
+
+       //get Lesson History details
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
+        if ($lessonHistory) {
+            //Initialzie Audio Objects
+            for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
+                $audioFiles[$ctr+1] =  [];
+            }
+        } 
+
+
+        //SLIDES HISTORY
+        $lessonSlideHistory = new LessonSlideHistory();
+        $slideHistory       = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+
+
+        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+
+
+        if (isset($newFolderID)) {   
+
+            //$selectedLesson['id'] = $newFolderID;
+            //$res = $memberSelectedMaterial->saveSelectedLesson($memberID, $scheduleID, $selectedLesson);    
+
+            $folderID = $newFolderID;    
+
+        } else if (isset($folderID)) {
+
+           // $selectedLesson['id'] = $folderID;
+           // $res = $memberSelectedMaterial->saveSelectedLesson($memberID, $scheduleID, $selectedLesson);   
+
+        } else {
+
+            return Response([
+                "success"           => false,
+                "message"           => "No slides for this lesson",  
+                "slideHistory"      => $slideHistory ?? null,
+                "message"           => "No slides for this lesson"
+            ]);         
+
+        }
+
+
+
+        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+
+
+
+
+        //@note: lesson slide history
+        $lessonSlideHistory = new LessonSlideHistory();
+        $slideHistory = $lessonSlideHistory->getAllSlideHistory($scheduleID);
+
+
+        if ($files) {
+            $slides = [];
+            foreach ($files as $index => $file) {
+                array_push($slides, url($file->path));
+                //make the index same as the slide number
+                $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
+            }                
+        } else {            
+            $slides = [];
+        }
+
+
+        //seach for files in folder as images
+        return Response([
+                    "success"              => true,
+                    'folderID'             => $folderID, 
+                    "folderSegments"       => $folderSegments,
+                    "folderURLArray"       => $folderURLArray,
+
+                    "files"                => $slides,
+                    'customFiles'          => $customFiles,
+
+                    "lessonHistory"        => $lessonHistory,
+                    "slideHistory"         => $slideHistory ?? null,
+
+                    "audioFiles"           => $audioFiles ?? null,
+
+                ])->withHeaders([                  
+                    'Accept-Ranges' => 'bytes',                    
+                ]); 
+
+    }
+    */
+
+    
     /** 
         @description: get the lesson material slides of the folder, with auto selection
     */    
@@ -231,6 +353,10 @@ class LessonSlideMaterials extends Controller
                         }
                         
                     }
+                } else {
+                
+                
+                    $folderID = null;
                 }
               
             }            
@@ -289,6 +415,7 @@ class LessonSlideMaterials extends Controller
 
             return Response([
                 "success"           => false,
+                 'folderID'             => $folderID, 
                 "message"           => "No slides for this lesson",  
                 "slideHistory"      => $slideHistory ?? null,
                 "message"           => "No slides for this lesson"

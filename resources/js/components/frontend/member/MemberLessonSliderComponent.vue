@@ -1,11 +1,5 @@
 <template>
-
-
     <div class="main-component-holder">
-
-        <button value="testing" @click="saveAllSlides()">
-            testing
-        </button>
 
         <div id="component-container" v-show="sessionActive">
 
@@ -777,12 +771,8 @@ export default {
         async saveAllSlides() {
             
             for (var index = 1; index <= this.slides; index++) {
-
-                //let canvasData  = await this.getCanvasSlideData(index);
-                //this.saveSlideHistoryData(canvasData, index)
-
-                let imageData = this.canvas[index].toDataURL('image/jpeg', 0.5)
-                this.saveSlideHistoryData(imageData, index)
+                let canvasData  = await this.getCanvasSlideData(index);
+                this.saveSlideHistoryData(canvasData, index);        
             }
 
         },
@@ -885,7 +875,7 @@ export default {
         },
         saveSlideHistoryData(canvasData, slideIndex) {
 
-            console.log("saving... slide history")
+            console.log("saving... slide history " + slideIndex)
 
             axios.post("/api/saveLessonSlideHistory?api_token=" + this.api_token,
             {
@@ -984,9 +974,15 @@ export default {
                 {   
                     console.log("session end was broadcasted");
 
-                    this.stopTimer();  
-                    this.showMemberFeedbackModal(this.reservation, this.files);
+                    this.stopTimer(); 
+                    this.hideEndSessionButton();                   
                     this.socket.emit('END_SESSION', this.getSessionData());  
+
+                    if (  this.sessionActive == true)  {
+                        this.sessionActive = false;
+                        this.showMemberFeedbackModal(this.reservation, this.files);
+                    }
+
                 }             
 
             });
@@ -1361,7 +1357,7 @@ export default {
                              this.startSlide(index);
                         } else {
                         
-                            alert ("no item for history")
+                            //alert ("no item for history")
                         }
 
 
@@ -1464,8 +1460,6 @@ export default {
             }
 
             this.keyPressHandler();
-            this.isSessionActive()
-            
         },      
 
         hideTimer() {
@@ -1537,6 +1531,7 @@ export default {
                     }
 
                     this.stopTimer();
+                    window.close();
 
                 } 
 
@@ -1555,6 +1550,9 @@ export default {
                 if (endSession) {
                     endSession.style.display = 'none';                    
                 }
+
+              
+
                 
             }
 
@@ -1819,6 +1817,12 @@ export default {
         },
         stopTimer() {
             clearInterval(this.myIntervalTimer); 
+        },
+        hideEndSessionButton() {
+            const endSession = document.getElementById('endSessionContainer');
+            if (endSession) {
+                endSession.style.display = 'none';                    
+            }        
         },
         showSessionControls() {       
 

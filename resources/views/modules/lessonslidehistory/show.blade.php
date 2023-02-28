@@ -99,7 +99,6 @@
 
                                     <tr>
                                         <td colspan="3">
-
                                             <lesson-viewer-component  
                                                 ref="lessonSliderComponent" 
                                                 :channelid="{{ $lessonHistory->schedule_id }}"   
@@ -112,6 +111,7 @@
                                         </td>
                                     </tr>
 
+                                    <!--
                                     <tr valign="top">
                                         <td>Chat</td>
                                         <td>:</td>
@@ -134,14 +134,17 @@
                                                
                                            @endforeach
                                         </td>
-                                    </tr>                                 
+                                    </tr>      
+                                    -->
+
+                                    <!--                           
                                     <tr valign="top">
                                         <td>Tutor Comment</td>
                                         <td>:</td>
                                         <td>
                                            
                                         </td>
-                                    </tr>
+                                    </tr>-->
 
                                 </tbody>
                             </table>

@@ -92,11 +92,13 @@
                                 Write Course Feedback
                             </span>
                         </button>
+                        <!--
                         <button class="btn btn-success w-100" @click="showMessageForm">
                             <span class="small">
                                 Leave Encouraging Messages
                             </span>
                         </button>
+                        -->
                     </div>               
                 </div>
 
@@ -128,7 +130,7 @@
             </div>
         </div>
 
-
+        <!--
         <div id="messageForm" class="row" v-show="showMessage">
             <div class="col-12">
                 <h5 class="text-maroon">Give us a message </h5>           
@@ -143,10 +145,9 @@
                         Back
                     </button>
                 </div>
-
-            </div>
-           
+            </div>           
         </div>        
+        -->
 
 
     </b-modal>
@@ -226,8 +227,9 @@ export default {
     methods: {
  
         showMemberFeedbackModal(reservationData, files) {
+        
 
-            if (files.length == 0) {
+            if (files == null || files.length == 0) {
             
                 this.nextLessonOptions.push({
                     value: 1,
