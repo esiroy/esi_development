@@ -228,7 +228,7 @@
                             if (currentIndex == 1) {
                                 console.log("we need to reset");
 
-                                $('.cfLogic').hide();
+                                //$('.cfLogic').hide(); (bug this will hide when clicking previos)
                             }
 
                             return true;
@@ -314,6 +314,13 @@
             @endphp
 
             @foreach ($items as $item)
+
+                //reset on the first page when hitting options
+                $('#writing-form-p-0 {{ '#' . $item->selected_option_id }}').on('change', function() {
+                     $('.cfLogic').hide();
+                });
+
+
                 $('{{ '#' . $item->selected_option_id }}').on('change keyup blur', function() {
                     @php 
                         $showFields = $cfLogic->where('form_id', $form_id)->where('selected_option_id', $item->selected_option_id)->groupby(['field_id'])->get();
@@ -357,6 +364,8 @@
                      @endforeach
                 });
                 $('{{ '#' . $item->selected_option_id }}').trigger('change', 'keypress');
+
+      
             @endforeach
 
 
