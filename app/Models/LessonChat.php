@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Auth;
 
 class LessonChat extends Model
 {
@@ -21,7 +22,18 @@ class LessonChat extends Model
         } else {
             //return Carbon::parse($date)->setTimezone('Asia/Singapore')->format('l d F G:i:s A');
 
-            return Carbon::parse($date)->setTimezone('Asia/Singapore')->format('d F G:i:s A');
+            if (Auth::user()->user_type == "MEMBER") {
+
+                return ESIDateTimeFormat($date);
+
+                
+            } else {
+
+
+                return Carbon::parse($date)->setTimezone('Asia/Singapore')->format('d F G:i:s A');
+            }
+
+            
         } 
     }
 

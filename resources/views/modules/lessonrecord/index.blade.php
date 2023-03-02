@@ -77,7 +77,16 @@
 
                                             @if ($lessonHistory) 
 
-                                                <a href="lessonslidehistory/{{$lessonHistory->schedule_id}}">» 評価</a> 
+                                               <!-- <a href="lessonslidehistory/{{$lessonHistory->schedule_id}}">» 評価</a> -->
+
+                                                
+                                                @if ($scheduleItem->schedule_status == "COMPLETED")
+                                                    <a href="lessonslidehistory/{{$lessonHistory->schedule_id}}">» 評価</a> 
+                                                @else 
+                                                    » 評価
+                                                @endif
+                                                
+
 
                                             @else
 

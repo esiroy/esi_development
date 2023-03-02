@@ -9,6 +9,8 @@ use App\Models\Folder;
 use App\Models\File;
 use App\Models\ScheduleItem;
 use App\Models\LessonChat;
+use App\Models\MemberFeedback;
+use App\Models\MemberFeedbackDetails;
 
 use Auth;
 
@@ -28,7 +30,9 @@ class LessonSlideHistoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($lessonHistoryID, LessonHistory $lessonHistory, LessonSlideHistory $lessonSlideHistory, Folder $folder, File $file, LessonChat $lessonChat)
+    public function show($lessonHistoryID, LessonHistory $lessonHistory, LessonSlideHistory $lessonSlideHistory, 
+                        Folder $folder, File $file, LessonChat $lessonChat,
+                        MemberFeedback $memberFeedback, MemberFeedbackDetails $memberFeedbackDetails)
     {     
 
         $lessonHistory = $lessonHistory->where('schedule_id', $lessonHistoryID)
@@ -36,7 +40,8 @@ class LessonSlideHistoryController extends Controller
                         ->orderBy('id','DESC')
                         ->first();
 
-        if ($lessonHistory) {
+        if ($lessonHistory) 
+        {
 
             $lessonFolder = $folder->getURLArray($lessonHistory->folder_id);
             $lessonTitle = implode(" > ", $lessonFolder);
@@ -53,20 +58,37 @@ class LessonSlideHistoryController extends Controller
                 'schedule_status'   => $reserve->schedule_status
             ];   
             //we will get the material images
-            $slides  = $file->where('files.folder_id', $lessonHistory->folder_id)->orderby('files.order_id', 'ASC')->get();
+            $slides  = $file->where('files.folder_id', $lessonHistory->folder_id)->orderBy('files.order_id', 'ASC')->get();
 
-            //@todo: get the
-            $slideHistory = $lessonSlideHistory->where('lesson_history_id',  $lessonHistory->id )->get();
+            $memberFeedback = $memberFeedback->where('member_feedback.schedule_id', $lessonHistoryID)->get();
 
-         
-            $chatHistoryItems = $lessonChat->select('lesson_chat_history.*', 'users.id', 'users.firstname', 'users.user_type','members.nickname')
+            if ($memberFeedback) {            
+                foreach($memberFeedback as $index => $feedback) {
+                    $feedbackdetails = $memberFeedbackDetails->where('member_feedback_id', $feedback->id)->get();
+                    if ($feedbackdetails) {
+                        $memberFeedback[$index]['details'] = (object) $feedbackdetails;
+                    }                
+                }               
+            } else {
+                  $memberFeedback[$index]['details'] = (object) [];
+            }
+
+                   
+
+            //Member Feeback
+
+            //@todo: slides
+            $slideHistory = $lessonSlideHistory->where('lesson_history_id',  $lessonHistory->id )->orderBy('slide_index', 'ASC')->get();
+
+            //Chat Viewer
+            $messages = $lessonChat->select('lesson_chat_history.*', 'users.id', 'users.firstname', 'users.user_type','members.nickname')
                                 ->where('lesson_chat_history.lesson_id', $lessonHistoryID )                              
                                 ->leftJoin('users', 'users.id', '=', 'lesson_chat_history.sender_id')
                                 ->leftJoin('members', 'members.user_id', '=', 'lesson_chat_history.sender_id')
                                 ->orderby('lesson_chat_history.id', "DESC")->get();
 
             
-            return view('modules.lessonslidehistory.show', compact('lessonHistory', 'lessonTitle', 'slides', 'slideHistory', 'reservationData', 'chatHistoryItems'));
+            return view('modules.lessonslidehistory.show', compact('lessonHistory', 'lessonTitle', 'slides', 'slideHistory', 'reservationData', 'messages', 'memberFeedback'));
 
         } else {
         

@@ -101,6 +101,7 @@ Vue.component('lesson-slider-chatroom-component', require('./components/frontend
 Vue.component('member-caller-component', require('./components/frontend/member/MemberCallerComponent.vue').default);
 
 Vue.component('lesson-viewer-component', require('./components/frontend/member/LessonSlideViewerComponent.vue').default);
+Vue.component('lesson-chat-viewer-component', require('./components/frontend/member/LessonSlideChatViewerComponent.vue').default);
 
 
 /**

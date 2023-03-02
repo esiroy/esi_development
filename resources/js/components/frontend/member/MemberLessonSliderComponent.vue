@@ -1,5 +1,10 @@
 <template>
+
+    
+
     <div class="main-component-holder">
+
+        <!--<button @click="saveAllSlides()"> Save all slides </button>-->
 
         <div id="component-container" v-show="sessionActive">
 
@@ -746,16 +751,13 @@ export default {
 
         });                  
 
-         
+           this.isSessionActive()
 
          //the user has not selected anything then we create new slide
         if (this.$props.folder_id == '' || this.$props.folder_id == null || this.$props.folder_id == 'null' ) {
             this.createNewSlide();  
-
             this.keyPressHandler();
-            this.isSessionActive()
-            this.userSlideAccess();       
-        }
+        } 
 
 
 
@@ -1805,6 +1807,10 @@ export default {
 
                 //turn on the timer
                 this.isTimerStarted = true    
+
+                
+            } else {
+            
             }
         },        
         updateTimer() {            

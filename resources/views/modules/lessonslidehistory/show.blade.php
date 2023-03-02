@@ -105,47 +105,30 @@
                                                 :reservation="{{ json_encode($reservationData) }}"   
                                                 :lesson_history="{{ json_encode($lessonHistory) }}"
                                                 :slide_history="{{ json_encode($slideHistory) }}"
+                                                :member_feedback="{{ json_encode($memberFeedback) }}"
                                                 api_token="{{ Auth::user()->api_token }}" 
                                                 csrf_token="{{ csrf_token() }}"
                                                 ></lesson-viewer-component>                                        
                                         </td>
                                     </tr>
 
-                                    <!--
-                                    <tr valign="top">
-                                        <td>Chat</td>
-                                        <td>:</td>
-                                        <td>
-                                           @foreach ($chatHistoryItems as $chat)
-
-                                            <div class="">
-                                                <div class="small">
-                                                    @if ($chat->user_type == "MEMBER") 
-                                                        {{ $chat->nickname }}                                                   
-                                                    @else 
-                                                        {{ $chat->firstname }}
-                                                    @endif
-                                                    {{ $chat->user_type }}
-                                                </div>
-                                                <div class="message">
-                                                    {{ $chat->message }}
-                                                </div>
-                                            </div>
-                                               
-                                           @endforeach
+                                    <tr>
+                                         <td class="mt-3">                                            
+                                            <h5 class="font-weight-bold mt-4">Chat Messages</h5>
+                                        </td>  
+                                    </tr>
+                                    <tr>                                  
+                                        <td colspan="3">
+                                            <lesson-chat-viewer-component  
+                                                ref="lessonSliderComponent"
+                                                :user="{{  json_encode(Auth::user()) }}"                                                
+                                                :messages="{{ json_encode($messages) }}"
+                                            >
+                                            </lesson-chat-viewer-component>                                        
                                         </td>
-                                    </tr>      
-                                    -->
+                                    </tr>
 
-                                    <!--                           
-                                    <tr valign="top">
-                                        <td>Tutor Comment</td>
-                                        <td>:</td>
-                                        <td>
-                                           
-                                        </td>
-                                    </tr>-->
-
+                                  
                                 </tbody>
                             </table>
                         </div>

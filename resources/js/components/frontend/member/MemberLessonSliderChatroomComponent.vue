@@ -588,22 +588,6 @@ export default {
             container.scrollTop = 0;
         }
     },
-    scrollToEnd: function() 
-    {
-        alert ("scrolling to end");
-
-        this.$forceUpdate();   
-
-        this.$nextTick(function()
-        {      
-            var container = this.$el.querySelector("#user-chatlog");
-            if(container){
-                container.scrollTop = container.scrollHeight;
-                console.log(container.scrollHeight)   
-            }
-        });
-
-    },
     updatetValue(value) {
         //this.files = value;
     },
@@ -736,10 +720,8 @@ export default {
             } else {
                 clearInterval(this.interval);
             }
-        });    
-        
+        });  
     },
-
     updateUserList: function(users) 
     {
       this.users = users;      
