@@ -18,6 +18,7 @@ class CreateLessonSlideHistory extends Migration
             $table->unsignedBigInteger('lesson_history_id')->index('lesson_history_id'); 
             $table->unsignedBigInteger('slide_index')->index('slide_index');
             $table->longText('content');
+            $table->longText('data');
             $table->timestamps();
             
             $table->foreign('lesson_history_id')->references('id')->on('lesson_history');       
