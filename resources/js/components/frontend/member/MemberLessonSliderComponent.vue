@@ -770,11 +770,14 @@ export default {
     },
     methods: {
 
-        async saveAllSlides() {
+        saveAllSlides() {
             
             for (var index = 1; index <= this.slides; index++) {
-                let canvasData  = await this.getCanvasSlideData(index);
-                this.saveSlideHistoryData(canvasData, index);        
+                let canvasData  = this.getCanvasSlideData(index);
+
+                if (canvasData) {
+                    this.saveSlideHistoryData(canvasData, index);        
+                }                
             }
 
         },
