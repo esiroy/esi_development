@@ -25,7 +25,7 @@ class LessonSlideHistory extends Model
 
             $lessonHistory->update([
                 'current_slide'   => $slideIndex,
-                'total_slides'      => $totalSlides
+                'total_slides'    => $totalSlides
             ]);
 
 
@@ -48,12 +48,16 @@ class LessonSlideHistory extends Model
                             "created"           => $updated
                         ];
 
+                    return  (object) $response;
+
                 } else {
                 
                     $response = [
                         'success' => false,
                         'message' => "Lesson history encountered an error"
-                    ];        
+                    ];     
+
+                    return  (object) $response;   
                 }
               
             
@@ -78,12 +82,17 @@ class LessonSlideHistory extends Model
                             "created"    => $created
                         ];
 
+                    return  (object) $response;
+
+
                 } else {
                 
                     $response = [
                         'success' => false,
                         'message' => "Lesson history encountered an error"
                     ];        
+
+                    return  (object) $response;
                 }
 
 
@@ -91,7 +100,16 @@ class LessonSlideHistory extends Model
             }
 
 
-            return  (object) $response;
+            
+
+        } else {
+
+            $response = [
+                'success' => false,
+                'message' => "Lesson history was not found, please try again later"
+            ];     
+
+            return  (object) $response;   
 
         }
 

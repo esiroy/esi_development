@@ -770,13 +770,18 @@ export default {
     },
     methods: {
 
-        saveAllSlides() {
-            
+        async saveAllSlides() {
+
+           let allSlidesData = await this.getAllSlideData();
+
+           console.log(allSlidesData);
+
+            /*
             for (var index = 1; index <= this.slides; index++) {
-                let canvasData  = this.getCanvasSlideData(index);                
-                this.saveSlideHistoryData(canvasData, index);        
-                               
-            }
+                let canvasData  = await this.getCanvasSlideData(index);                
+                this.saveSlideHistoryData(canvasData, index);                                       
+            }*/
+
 
         },
         updateUserList: function(users) {
@@ -905,6 +910,9 @@ export default {
         async getCanvasSlideData(slideIndex) {
             return this.canvas[slideIndex].toJSON();       
         },
+        async getCanvasSlideImage(slideIndex) {
+            return this.canvas[slideIndex].toDataURL('image/jpeg', 0.1)  
+        },
         async getAllSlideData() {
 
             let slidesDataArray = new Array();
@@ -912,9 +920,12 @@ export default {
             for (var i = 1; i <= this.slides; i++) 
             {
                 let canvasData  = await this.getCanvasSlideData(i);
+                let canvasImage = await this.getCanvasSlideImage(i);
+
                 let data = {
                     'slideIndex': i,
-                    'canvasData': canvasData,                    
+                    'canvasData': canvasData,   
+                    'imageData':  canvasImage
                 };                    
                 slidesDataArray.push(data);
             }

@@ -30,7 +30,7 @@ class LessonHistoryController extends Controller
 
         $reservation        = $request->reservation;
         $isTimerStarted     = $request->isTimerStarted;
-
+        $slidesData         = $request->slidesData;
 
         $lessonHistory = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();
 
@@ -81,13 +81,6 @@ class LessonHistoryController extends Controller
                 }
             }
 
-  
-            /**
-                @done: add the status (new, [done], skipped)
-                @todo: add note, if created a empty slide
-            */                
-
-
             $lessonHistory = lessonHistory::create([
                 'folder_id'         => $folderID,
                 'current_slide'     => $request->currentSlide,
@@ -97,11 +90,26 @@ class LessonHistoryController extends Controller
                 'member_id'         => $reservation['member_id'],
                 'time_started'      => Carbon::now(),
 
-                //lesson history new
-                'status'            => "NEW"
-               
+                //lesson history for new 
+                'status'            => "NEW"               
             ]);
                       
+            if ($lessonHistory) {
+                
+                foreach($slidesData as $slide) {
+
+                    
+                        
+                    $created = LessonSlideHistory::create([
+                        'slide_index'       => $slide['slideIndex'],
+                        'lesson_history_id' => $lessonHistory->id,            
+                        'content'           => json_encode($slide['canvasData']),
+                        'data'              => json_encode($slide['imageData'])
+                    ]); 
+
+                }
+
+            }
 
             return Response()->json([
                 "success" => false,                
@@ -122,6 +130,9 @@ class LessonHistoryController extends Controller
 
         $res = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData, $imageData);
 
+
+
+
         if ($res->success == true) {
         
             return Response()->json([
@@ -140,5 +151,7 @@ class LessonHistoryController extends Controller
 
 
 
-    }        
+    }     
+
+
 }
