@@ -122,7 +122,7 @@ class LessonHistoryController extends Controller
 
         $res = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData, $imageData);
 
-        if ($res) {
+        if ($res->success == true) {
         
             return Response()->json([
                 "success"       => $res->success,                
