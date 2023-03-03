@@ -532,7 +532,13 @@ export default {
 
 
         this.socket.on('UPDATE_DRAWING', (response) => {
+
+            console.log("update drawing",    response     )
             
+
+            
+
+
             if (this.currentSlide !== response.currentSlide) {
                 this.viewerCurrentSlide = response.currentSlide;
             }
@@ -560,6 +566,10 @@ export default {
 
                         if (curLen !== incLen) {                        
                              this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);       
+                        } else {
+
+                            console.log("updating via drag select tool")
+                            this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);  
                         }                         
                         
                     } else {
@@ -821,27 +831,16 @@ export default {
 
             this.$forceUpdate(); 
         },
-        removeOldSlidesAndOpenNewSlides() {
-
-         
-            for (var i = 1; i <= this.slides; i++) 
-            {
-                //this.canvas[i].dispose();
-
-                //re-open with new slides
-                if (i ==  this.slides) {
-
-                    //@note: remove the other stuff generated under the slide container
+        removeOldSlidesAndOpenNewSlides() {         
+            for (var i = 1; i <= this.slides; i++) {                                
+                if (i ==  this.slides) {                    
                     let slideElement = document.getElementById('slide-container')                    
-                    slideElement.innerHTML = '';            
-
-
+                    slideElement.innerHTML = '';
                     this.getSlideMaterials(this.reservation);
                 }
             }        
         },
-        enableSession(){
-            //@todo: show
+        enableSession(){            
             this.sessionActive = true;
         },
         disableSession(){
@@ -869,15 +868,12 @@ export default {
                 centered: true,
             }).then(isConfirmed => {
 
-                if (isConfirmed == true)  {      
-
+                if (isConfirmed == true)  {
                     this.saveAllSlides();
-
                     this.postLessonEndSessionHistory(this.reservation);
-                } 
-
+                }
             }).catch(err => {
-                // An error occurred
+                
                 alert (err)                
             }); 
         },
@@ -903,7 +899,7 @@ export default {
 
             }).then(response => {
 
-                console.log("save slide history", response);
+                //console.log("save slide history", response);
             });
         
         },
@@ -1611,8 +1607,9 @@ export default {
         getRecipient() { 
             return this.$props.recipient_info;
         },
-        updateCanvas(canvas, data)
-        {
+        updateCanvas(canvas, data){
+
+            console.log("updating canvas");
 
             canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {            
                 if(this.$props.isBroadcaster == false) {
@@ -2097,7 +2094,7 @@ export default {
                 }
 
             }).on('mouse:up', () => {
-               
+        
                 if (this.isText == true) {
                     this.canvas[this.currentSlide].defaultCursor = 'text';              
                 } else if (this.isSelector) {
@@ -2115,16 +2112,42 @@ export default {
                     this.canvas[this.currentSlide].defaultCursor = 'default';   
                 }
 
-                //tool and send canvas json to viewer
-                let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);    
 
-                console.log("mouse up: mouclick handler")
 
-                this.saveSlideHistoryData(data, this.currentSlide);
+                    let currentCanvas = this.canvas[this.currentSlide].toJSON()
 
+                    let newObjects = [];
+
+                    this.canvas[this.currentSlide].forEachObject((obj) => {
+                        let dataObject = JSON.stringify(obj);
+                        let reMakedObject = JSON.parse(dataObject)
+                        newObjects.push(reMakedObject);
+                    });     
+
+                    currentCanvas.objects = newObjects               
+
+
+                    console.log(currentCanvas)
+
+
+
+                setTimeout(() => { 
+                    console.log("send canvas json")
+
+                    
+                    this.canvasSendJSON(this.canvas[this.currentSlide], currentCanvas); 
+
+                    this.saveSlideHistoryData(currentCanvas, this.currentSlide);
+
+                }, 1500);
+
+
+               
 
             }).on('mouse:out', (options) => {
+
+                this.canvas[this.currentSlide].renderAll();
+
                 if (this.isDragger == true) 
                 {
                     this.canvas[this.currentSlide].defaultCursor = 'grab';
@@ -2396,8 +2419,7 @@ export default {
 
             let data = this.canvasGetJSON();            
             this.canvasSendJSON(this.canvas[this.currentSlide], data);     
-            this.saveSlideHistoryData(data. this.currentSlide);
-
+            this.saveSlideHistoryData(data, this.currentSlide);
 
         },        
         drawCircle() {

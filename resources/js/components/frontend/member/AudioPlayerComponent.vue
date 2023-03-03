@@ -347,7 +347,7 @@
                 if (this.audioFiles[index].path == this.audioFiles[this.audioIndex].path) 
                 {
                     this.playBtn = false;  
-                    this.audio.play();
+                    var playPromise1 = this.audio.play();
                 } else {                
                     this.audioIndex = index;
                     this.loadAudio(this.audioFiles[index], {'autoPlay': true });                    
@@ -355,6 +355,20 @@
 
                 //we will send this and let client play audio
                 this.$root.$emit('goToAudio', this.audioIndex)                
+
+                if (playPromise1 !== undefined) {
+                    playPromise1.then(_ => {
+                        // Automatic playback started!
+                        // Show playing UI.
+                        console.log("Automatic playback started! #001-goToAudio")
+                    })
+                    .catch(error => {
+                        // Auto-play was prevented
+                        // Show paused UI.
+                        console.log("Auto-play was prevented #001-goToAudio", error)
+                    });
+                }
+
             }          
         },
         play() {
@@ -363,17 +377,36 @@
         togglePlay() {        
 
             this.audio = document.getElementById('audio');
-            if (this.audio.paused === false) {
+
+            if (!this.audio.paused && this.audio.currentTime > 0) {  
+
+                console.log("pausing");
+
                 this.audio.pause();   
                 this.playBtn = true;
                 //we will send this through server and let client play audio
                 this.$root.$emit('pauseAudio', this.audioIndex); 
             } else {
-                this.audio.play();
+                var playPromise2 = this.audio.play();
                 this.playBtn = false;  
                 //we will send this through server and let client play audio
                 this.$root.$emit('playAudio', this.audioIndex);
             }
+
+            if (playPromise2 !== undefined) {
+                playPromise2.then(_ => {
+                    // Automatic playback started!
+                    // Show playing UI.
+                    console.log("Automatic playback started! #002-togglePlay")
+                })
+                .catch(error => {
+                    // Auto-play was prevented
+                    // Show paused UI.
+                    console.log("Auto-play was prevented #002-togglePlay", error)
+                });
+            }
+
+
         },        
         stopAudio() {
 
