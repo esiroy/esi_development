@@ -631,10 +631,7 @@
 
     
 
-        function sendMemberReply(scheduleID, message) 
-        {
-            console.log(scheduleID, message);
-
+        function sendMemberReply(scheduleID, message) {
             $.ajax({         
                 type: 'POST',
                 dataType: 'json',
@@ -659,12 +656,9 @@
                 {
                     let teacherProfileImage = $('#memberProfile').html();
                     let date = data.date;
-                    console.log(date);
-
                     addMemberReplyBubble(teacherProfileImage, data) 
                 },
-            });
-                    
+            });                    
         }
 
         function getUnreadTeacherMessages(scheduleID) 
@@ -691,8 +685,7 @@
                 success: function(data) 
                 {
                     let replies = data.conversations;
-                    replies.forEach(createReplyBubble);             
-                    console.log(data.message)
+                    replies.forEach(createReplyBubble);                                 
                 },
             });
         }
@@ -724,10 +717,10 @@
                 {
                     $("#total_unread_message").text("("+ data.unread + ")");
 
-                    $( ".dropdown-menu" ).children().remove();                    
+                    $( ".member-inbox .dropdown-menu" ).children().remove();                    
                     
                     if (data.inboxCount == 0){                                             
-                        $( ".dropdown-menu" ).append(noInbox); 
+                        $( ".member-inbox .dropdown-menu" ).append(noInbox); 
                     } else {
                         let inbox = data.inbox;
                         inbox.forEach(updateInboxList);
@@ -771,7 +764,7 @@
 
             let rowend = "</div>";                    
 
-            $( ".dropdown-menu" ).append(row + col1 + col2 + rowend); 
+            $( ".member-inbox .dropdown-menu" ).append(row + col1 + col2 + rowend); 
             
         }
 

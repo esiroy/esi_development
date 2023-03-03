@@ -105,6 +105,7 @@
                                                 :reservation="{{ json_encode($reservationData) }}"   
                                                 :lesson_history="{{ json_encode($lessonHistory) }}"
                                                 :slide_history="{{ json_encode($slideHistory) }}"
+                                                :audio_files="{{ json_encode($audioFiles) }}"
                                                 :member_feedback="{{ json_encode($memberFeedback) }}"
                                                 api_token="{{ Auth::user()->api_token }}" 
                                                 csrf_token="{{ csrf_token() }}"

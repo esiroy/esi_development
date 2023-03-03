@@ -11,7 +11,7 @@ use App\Models\ScheduleItem;
 use App\Models\LessonChat;
 use App\Models\MemberFeedback;
 use App\Models\MemberFeedbackDetails;
-
+use App\Models\FileAudio;
 use Auth;
 
 class LessonSlideHistoryController extends Controller
@@ -58,7 +58,23 @@ class LessonSlideHistoryController extends Controller
                 'schedule_status'   => $reserve->schedule_status
             ];   
             //we will get the material images
-            $slides  = $file->where('files.folder_id', $lessonHistory->folder_id)->orderBy('files.order_id', 'ASC')->get();
+            $files      = $file->where('files.folder_id', $lessonHistory->folder_id)->orderBy('files.order_id', 'ASC')->get();
+            $audioFiles = [];
+
+            if ($files) {
+
+                $slides = [];
+                foreach ($files as $index => $file) {
+                    array_push($slides, url($file->path));
+                    //make the index same as the slide number
+                    $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
+                    $notes[$index+1]  = $file->notes;
+                }           
+
+            } else {            
+                $slides = [];
+                
+            }
 
             $memberFeedback = $memberFeedback->where('member_feedback.schedule_id', $lessonHistoryID)->get();
 
@@ -73,7 +89,7 @@ class LessonSlideHistoryController extends Controller
                   $memberFeedback[$index]['details'] = (object) [];
             }
 
-                   
+           
 
             //Member Feeback
 
@@ -88,7 +104,7 @@ class LessonSlideHistoryController extends Controller
                                 ->orderby('lesson_chat_history.id', "DESC")->get();
 
             
-            return view('modules.lessonslidehistory.show', compact('lessonHistory', 'lessonTitle', 'slides', 'slideHistory', 'reservationData', 'messages', 'memberFeedback'));
+            return view('modules.lessonslidehistory.show', compact('lessonHistory', 'lessonTitle', 'files', 'audioFiles', 'slideHistory', 'reservationData', 'messages', 'memberFeedback'));
 
         } else {
         

@@ -4,6 +4,12 @@
 
         <div class="col-12">
 
+            <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="true"></AudioPlayerComponent>
+
+        </div>
+
+        <div class="col-12">
+
             <div> Slide {{ currentSlide }} of {{ this.$props.slide_history.length }} </div>
 
             <div id="slides">
@@ -64,29 +70,42 @@
 </template>
 
 <script>
+import AudioPlayerComponent from './AudioPlayerComponent.vue'
+
+
 export default {
     name: "lessonSlideViewerComponent",
-    components: { },
+    components: { AudioPlayerComponent },
+    
     props: {
         csrf_token: String,		
         api_token: String,
         reservation: Object,        
         slide_history: Array,
         member_feedback: Array,
+        audio_files: Object,
     },
     data() {
         return {
             currentSlide: 1,
-            noFeedBackNotification: "<span class='text-danger small'>No Tutor Feedback Found</span>"
+            noFeedBackNotification: "<span class='text-danger small'>No Tutor Feedback Found</span>",
+            audioFiles: [],
         };
     },
     mounted() {
-        this.currentSlide = 1;        
+        this.currentSlide = 1;    
+        this.audioFiles = this.$props.audio_files;
+
+        console.log(this.audioFiles)    
+        this.loadAudio();
+        this.$forceUpdate();
     },
     methods: {
         prev() {
             if (this.currentSlide > 1) {
                 this.currentSlide--;
+
+                this.loadAudio();
                 this.$forceUpdate();
             }   
          
@@ -94,9 +113,18 @@ export default {
         next() {
             if (this.currentSlide < this.$props.slide_history.length) {
                 this.currentSlide++;
+                this.loadAudio();
                 this.$forceUpdate();
             } 
-        }
+        },
+        loadAudio() {
+            if (this.$refs['audioPlayer']) {
+                this.$refs['audioPlayer'].loadAudioList(this.audioFiles, this.currentSlide); 
+            } else {
+            
+                console.log("audio list hidden")
+            }
+        },
     }
 };
 </script>
