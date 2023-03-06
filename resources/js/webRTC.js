@@ -8,14 +8,22 @@
 
 const socket = io('https://rtcserver.esuccess-inc.com:40002', {});
 
+let myId = null;
+
 const peer = new Peer({
     initiator: false,
     trickle: false,
 });
 
 'use strict';
+
 let myVideoStream = null;
 let myAudioStream = null;
+
+//this will determine who calls
+let userCallStream = null;
+let recieverCallStream = null;
+let userJoinedStream = null;
 
 let videoElement;
 let audioElement;
@@ -676,17 +684,19 @@ peer.on('call', call => {
 
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
+        userCallStream = stream;
+
         if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
             //alert("stream from sender is a video 1")
         } else {
             //alert("stream from sender is a audio 2")
         }
 
-
         call.answer(stream);
 
         call.on('stream', (userStream) => {
 
+            recieverCallStream = userStream;
 
 
             peerConnections[call.peer] = call;
@@ -758,6 +768,9 @@ peer.on('call', call => {
 
         navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
+            userCallStream = stream;
+
+
             if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
 
                 //alert("stream from sender is a video 3")
@@ -772,6 +785,9 @@ peer.on('call', call => {
             call.answer(stream);
 
             call.on('stream', (userStream) => {
+
+                recieverCallStream = userStream;
+
 
                 peerConnections[call.peer] = call;
 
@@ -864,6 +880,9 @@ socket.on('userJoined', (data) => {
 
         console.log("user joined ::: calling initiator with just audio and video", data.id);
 
+
+        userJoinedStream = mediaStream;
+
         callback = peer.call(data.id, mediaStream);
 
         if (callback) {
@@ -932,14 +951,12 @@ socket.on('userJoined', (data) => {
         };
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((mediaCallStream) => {
+            userJoinedStream = mediaCallStream;
+
 
             if (myVideoStream) {
-
-
                 callback = peer.call(data.id, mediaCallStream);
-
             } else {
-
                 data = {
                     'id': myId,
                     'user': user,
@@ -1142,6 +1159,10 @@ socket.on('mediaChanged', (data) => {
 
         navigator.mediaDevices.getUserMedia(audioConstraints).then((userStream) => {
 
+
+            userCallStream = userStream;
+
+
             console.log("initiator SENT AND AUDIO")
 
             callback = peer.call(data.id, userStream);
@@ -1151,6 +1172,8 @@ socket.on('mediaChanged', (data) => {
                 let ctr = 0;
 
                 callback.on('stream', (userStream) => {
+
+                    recieverCallStream = userStream;
 
 
                     console.log("this is for the audio, stream of the initiator");
@@ -1314,29 +1337,109 @@ socket.on('userDisconnect', id => {
 });
 
 function muteMic() {
+    if (userJoinedStream != null) {
+        userJoinedStream.getAudioTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+            console.log(track);
 
-    console.log("audio mute mic")
+            if (track.enabled == true) {
+                $('#toggleAudio .fa-volume-up').show();
+                $('#toggleAudio .fa-volume-mute').hide();
+            } else {
+                $('#toggleAudio .fa-volume-up').hide();
+                $('#toggleAudio .fa-volume-mute').show();
+            }
+        });
 
-    if (myVideoStream != null) {
-        console.log("muting video")
-        myVideoStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
     }
 
-    if (myAudioStream != null) {
-        console.log("muting myAudioStream")
-        myAudioStream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-    }
+    if (userCallStream != null) {
+        userCallStream.getAudioTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+            console.log(track);
 
+            if (track.enabled == true) {
+                $('#toggleAudio .fa-volume-up').show();
+                $('#toggleAudio .fa-volume-mute').hide();
+            } else {
+                $('#toggleAudio .fa-volume-up').hide();
+                $('#toggleAudio .fa-volume-mute').show();
+            }
+        });
+    }
 }
 
 
+function stopCamera() {
+    if (userJoinedStream != null) {
+        userJoinedStream.getVideoTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+            console.log(track);
 
-document.getElementById("btnShareScreen").addEventListener("click", function() {
-    shareScreen();
-});
+            if (track.enabled == true) {
+                $('#toggleCamera .fa-video').show();
+                $('#toggleCamera .fa-video-slash').hide();
+            } else {
+                $('#toggleCamera .fa-video').hide();
+                $('#toggleCamera .fa-video-slash').show();
+            }
+        });
+    }
 
-/*
-document.getElementById("toggleAudio").addEventListener("click", function() {
-    muteMic();
+
+    if (userCallStream != null) {
+        userCallStream.getVideoTracks().forEach((track) => {
+            track.enabled = !track.enabled;
+            console.log(track);
+
+            if (track.enabled == true) {
+                $('#toggleCamera .fa-video').show();
+                $('#toggleCamera .fa-video-slash').hide();
+            } else {
+                $('#toggleCamera .fa-video').hide();
+                $('#toggleCamera .fa-video-slash').show();
+            }
+
+        });
+
+    }
+}
+
+let shareScreenBtn = document.getElementById("btnShareScreen")
+
+if (shareScreenBtn) {
+    document.getElementById("btnShareScreen").addEventListener("click", function() {
+        shareScreen();
+    });
+}
+
+
+let toggleCameraBtn = document.getElementById("toggleCamera");
+
+if (toggleCameraBtn) {
+    document.getElementById("toggleCamera").addEventListener("click", function() {
+        stopCamera()
+    });
+}
+
+let toggleAudioBtn = document.getElementById("toggleAudio")
+
+if (toggleAudioBtn) {
+    document.getElementById("toggleAudio").addEventListener("click", function() {
+        muteMic();
+    });
+}
+
+/************VOLUME CONTROL*************** */
+
+function setVolume(volume) {
+    myVideoStream.getAudioTracks().forEach(track => {
+        track.applyConstraints({ volume: volume });
+    });
+}
+
+const volumeControl = document.getElementById('volume-control');
+volumeControl.addEventListener('input', () => {
+    setVolume(volumeControl.value);
+
 });
-*/

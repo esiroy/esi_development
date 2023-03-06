@@ -80,25 +80,27 @@
                                 @endif
                                 
 
-                                <button type="button" class="btn btn-sm"  data-toggle="modal" data-target="#mySettingsModal">
+                                <button id="mySettingsBtn" type="button" class="btn btn-sm" data-toggle="modal" data-target="#mySettingsModal">
                                     <i class="fas fa-cog text-white"></i>
                                     <!--<span class="small">Settings</span>-->
                                 </button>                
 
-                                <!--
-                                <button type="button" id="stopCamera" class="btn btn-sm">
+                               
+                                <button id="toggleCamera"  type="button"class="btn btn-sm">
                                     <i class="fas fa-video text-white"></i>
-                                    <i class="fas fa-video-slash text-white"></i>
+                                    <i class="fas fa-video-slash text-white" style="display:none"></i>
                                 </button>
+                                
+                               
+                                <!--
+                                <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1" style="width:50px">
                                 -->
 
-                                <!--<button type="button" id="toggleCamera">Camera Hide On/Off</button>
-
-                                <button id="toggleAudio" type="button" class="btn btn-sm">
-                                    <i class="fas fa-volume-up text-white"></i>
-                                    <i class="fas fa-volume-mute text-white"></i>
+                                <button id="toggleAudio" class="btn btn-sm">
+                                    <i class="fas fa-volume-up text-white" ></i>
+                                    <i class="fas fa-volume-mute text-white" style="display:none"></i>
                                 </button>
-                                -->
+                               
 
 
                             </div>
