@@ -1,10 +1,11 @@
 <template>
-
-    
-
     <div class="main-component-holder">
 
-        <!--<button @click="saveAllSlides()"> Save all slides </button>-->
+        <!--<button @click="saveAllSlides()"> Save all slides </button>
+                
+        <button @click="testEndSessionEmitter()"> Emit end </button>
+        -->
+
 
         <div id="component-container" v-show="sessionActive">
 
@@ -457,27 +458,7 @@ export default {
         this.getSlideMaterials(this.reservation);
     
     },
-    mounted() 
-    {  
-        //@done: check survey is added?\
-        /*
-        if (this.$props.lesson_completed == true) {    
-
-            this.sessionActive = false;
-
-            if (this.$props.feedback_completed == false) {
-
-                if (this.$props.isBroadcaster == true) {   
-
-                    this.hideTimer();                    
-                    this.showMemberFeedbackModal(this.reservation, this.files);
-
-                } else {
-
-                    this.showRatingModal();
-                }            
-            }        
-        } */
+    mounted() {
 
         this.socket = io.connect(this.$props.canvas_server);
 
@@ -497,8 +478,6 @@ export default {
        
         this.socket.on('update_user_list', users => {
             this.updateUserList(users); 
-            //this.goToSlide(this.currentSlide);
-            //this.alignCanvas();
         });   
         
         this.customSelectorBounds(fabric);
@@ -512,15 +491,14 @@ export default {
             
             this.viewerCurrentSlide = data.num
             this.currentSlide = data.num;
-
-
             this.goToSlide(data.num);            
         });
 
         
-        this.socket.on("CREATE_NEW_SLIDE", (data) => {
-            if (this.$props.isBroadcaster == false) {
-
+        this.socket.on("CREATE_NEW_SLIDE", (data) => 
+        {
+            if (this.$props.isBroadcaster == false) 
+            {
                 this.slides = data.slidesCount;
                 this.createNewSlide();
                 if (data.backgroundURL) {
@@ -532,12 +510,6 @@ export default {
 
 
         this.socket.on('UPDATE_DRAWING', (response) => {
-
-            console.log("update drawing",    response     )
-            
-
-            
-
 
             if (this.currentSlide !== response.currentSlide) {
                 this.viewerCurrentSlide = response.currentSlide;
@@ -586,17 +558,13 @@ export default {
         
 
         /* TUTOR NEW SLIDE ACTINS */
-        this.socket.on('TUTOR_SELECTED_NEW_SLIDES', (response) => {
-
+        this.socket.on('TUTOR_SELECTED_NEW_SLIDES', (response) => 
+        {
             try {
-
                 if (this.$props.isBroadcaster == false) {   
-
                     this.openNewSlideMaterials();
                 }
-
             } catch (error) {
-
                 console.log("Error, tutor can't select new slide ", error);
             }
         });
@@ -699,11 +667,8 @@ export default {
 
 
         /*************** SESSION HANDLERS ****************/
-
          this.socket.on('JOIN_SESSION', (response) => {
-
             if (this.$props.isBroadcaster == false) {
-
                 console.log("USER JOINED A SESSION")
             }
         });  
@@ -736,27 +701,34 @@ export default {
         }); 
 
         this.socket.on('END_SESSION', (response) => {
+        
+            if (this.$props.isBroadcaster == false) 
+            {
 
-            if (this.$props.isBroadcaster == false) {
+                $("#destroy-session-media").trigger("click");
 
                 if (response.channelid == this.channelid) {
                 
                     if (response.recipient.userid == this.user_info.id)
                     {                    
-                        console.log("TEACHER ENDED A SESSION", response);
+                        //console.log("TEACHER ENDED A SESSION", response);
+                       
                     } else {                    
                         //end a session for all 
-                        console.log("TEACHER ENDED A SESSION FOR ALL USERS", response);
+                        //console.log("TEACHER ENDED A SESSION FOR ALL USERS", response);
                     }                
+
                     this.showRatingModal();
-                    this.stopTimer();                  
+                    this.stopTimer();      
+
                 } else {
-                
+                    console.log("channel not found");
                 }
 
             } else if (this.$props.isBroadcaster == true) {
-            
-                //console.log("TEACHER ENDED OWN SESSION", response);
+
+                $("#destroy-session-media").trigger("click");
+                
             }
 
         });                  
@@ -779,7 +751,12 @@ export default {
 
     },
     methods: {
-
+        test() {
+            window.test();
+        },
+        testEndSessionEmitter() {
+            this.socket.emit('END_SESSION', this.getSessionData()); 
+        },
         async saveAllSlides() {
 
            let allSlidesData = await this.getAllSlideData();
@@ -872,6 +849,8 @@ export default {
                     this.saveAllSlides();
                     this.postLessonEndSessionHistory(this.reservation);
                 }
+
+
             }).catch(err => {
                 
                 alert (err)                
@@ -1323,23 +1302,8 @@ export default {
                     }              
 
 
-                    if (this.$props.lesson_completed == true) {    
-
-                        this.sessionActive = false;
-
-                        if (this.$props.feedback_completed == false) {
-
-                            if (this.$props.isBroadcaster == true) {   
-
-                                this.hideTimer();                    
-                                this.showMemberFeedbackModal(this.reservation, this.files);
-
-                            } else {
-
-                                this.showRatingModal();
-                            }            
-                        }        
-                    } 
+  
+                    this.showRatingOptions();
 
                 } else {                    
 
@@ -1390,12 +1354,35 @@ export default {
                         });
 
 
-                    }                    
+                    }     
+
+
+                    this.showRatingOptions();               
                 }
 			});
 
         }, 
 
+        showRatingOptions() {
+            if (this.$props.lesson_completed == true) 
+            {                           
+
+                this.sessionActive = false;
+                
+                if (this.$props.feedback_completed == false) {    
+
+                    if (this.$props.isBroadcaster == true) {   
+                    
+
+                        this.hideTimer();                    
+                        this.showMemberFeedbackModal(this.reservation, this.files);
+                    } else {
+                        this.showRatingModal();
+                    }            
+                }        
+            } 
+
+        },
         getCustomBackground(index, customFiles) {
 
             var customItem = customFiles.find((item) => {

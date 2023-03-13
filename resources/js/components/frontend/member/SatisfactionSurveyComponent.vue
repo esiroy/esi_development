@@ -2,17 +2,17 @@
 
 
     <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-backdrop  no-close-on-esc  hide-header-close>
-
-
         <template #modal-header>
             <div class="mx-auto">
                 <h4 class="text-center text-white">Satisfaction Survey</h4>
             </div>           
         </template>
+     
 
+     
         <div id="ratingsForm" v-show="showRatings">
             <h5 class="text-maroon">Course Satisfaction Survey</h5>
-           
+        
             <h6 class="font-weight-bold">Your comments and suggestions will assist us in continuosly improving our services</h6>
             <hr/>
             <div id="ratingsWrapper" class="row">    
@@ -118,25 +118,24 @@
                 </div>
 
             </div>
-           
-        </div>        
-
-
+        
+        </div> 
+      
     </b-modal>
 
 </template>
 
-<style scoped>
 
+
+<style scoped>
     .feedback-title {
         min-height: 40px;
         display: flex;
         align-items: center;
         font-weight: bold;
     }
-
-
 </style>
+
 <script>
 import StarRating from 'vue-star-rating'
 import VueCkeditor from 'vue-ckeditor2';
@@ -183,6 +182,7 @@ export default {
             this.reservationData = reservationData;
             this.showRatingsForm();
             this.$refs['ratingAndFeedBack'].show();
+          
         },
         showRatingsForm() {
             this.showRatings = true,
