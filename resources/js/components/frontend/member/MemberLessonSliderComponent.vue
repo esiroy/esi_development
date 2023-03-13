@@ -1,4 +1,5 @@
 <template>
+
     <div class="main-component-holder">
 
         <!--<button @click="saveAllSlides()"> Save all slides </button>
@@ -276,6 +277,7 @@ export default {
         csrf_token: String,		
         api_token: String,
         reservation: Object,       
+        user_image: String,
 
         lesson_history: Object,    
 
@@ -464,18 +466,38 @@ export default {
 
         window.lessonSliderComponent = this;
 
+
         //register as currently active users can see ONLINE  status
         let user = {
             userid: this.member_info.user_id ,
-            nickname: this.member_info.nickname,            
-            username: this.user_info.username,            
+            nickname: this.user_info.firstname,            
+            username: this.user_info.username,     
+            firstname: this.user_info.firstname,    
+            lastname: this.user_info.lastname,               
             channelid: this.channelid,
             status: "ONLINE",
-            type: this.user_info.user_type,      
+            type: this.user_info.user_type, 
+            image:   this.$props.user_image  
         }
         this.socket.emit('REGISTER', user); 
+                                                
 
-       
+        //CALL THE MEMBER ON LOAD
+        if (this.$props.isBroadcaster == true) {   
+            let data = {
+                recipient       :   this.recipient_info,    //recipient 
+                caller          :   user,     //caller (is always member info since it)
+                reservationData :   this.reservation
+            }
+
+            console.log ("calling member on load", data)
+
+            this.socket.emit('CALL_USER',  data);  
+        }
+
+
+
+
         this.socket.on('update_user_list', users => {
             this.updateUserList(users); 
         });   

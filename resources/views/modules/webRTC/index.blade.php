@@ -4,9 +4,22 @@
 
     <!--{{ $lessonCompleted }}-->
 
+    @php            
+        $userImageObj = new \App\Models\UserImage;
+        $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
+        if ($userImage == null) {
+            $memberProfileImage = Storage::url('user_images/noimage.jpg');
+        } else {
+            $memberProfileImage = Storage::url("$userImage->original");
+        }
+    @endphp 
 
 <div id="slide-component">
-    <lesson-slider-component  ref="lessonSliderComponent"
+    <lesson-slider-component  
+        ref="lessonSliderComponent"
+
+         user_image="{{ $memberProfileImage ?? '' }}"
+         
         :is-broadcaster="{{ $isBroadcaster }}"
         :editor_id="'canvas'"
         :channelid="{{ $roomID }}"
@@ -133,20 +146,6 @@
 
 
 
-                @php            
-                    $userImageObj = new \App\Models\UserImage;
-                
-
-                    $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
-
-                    if ($userImage == null) {
-                        $memberProfileImage = Storage::url('user_images/noimage.jpg');
-                    } else {
-                        $memberProfileImage = Storage::url("$userImage->original");
-                    }
-
-
-                @endphp 
 
 
                 <div id="right-chat-sidebar">

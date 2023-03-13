@@ -20,8 +20,19 @@ use App\Models\MemberFeedback;
 
 class WebRTCVideoController extends Controller
 {
+
     public function index(Request $request,  Folder $folder) 
     {
+
+        if (Auth::user()->roles->contains('title', 'Admin')) {
+
+            return redirect(route('admin.dashboard.index'));
+
+        } else if (Auth::user()->roles->contains('title', 'Tutor')) {
+
+            return redirect(route('admin.webRTC.index'));
+        }
+
         $roomID = $request->get('roomid');
         $reserve = ScheduleItem::where('id', $roomID)->first();
 

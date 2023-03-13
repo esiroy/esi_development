@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('lesson_slides', 'LessonSlidesController');
 
-Route::resource('webRTC', 'WebRTCVideoController');
+
 
 
 Route::get('test', 'dummyController@index');
@@ -273,6 +273,10 @@ Route::get('writing/success', 'Writing\WritingController@success')->name('writin
 
 
 
+Route::middleware('auth')->resource('webRTC', 'WebRTCVideoController');
+
+
+
 
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
@@ -292,6 +296,7 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
     Route::group(['middleware' => 'admin.auth'], function()
     {
 
+        Route::resource('webRTC', 'Modules\TutorWebRTCVideoController');
 
         Route::resource('/minitest/category/type', 'Modules\MiniTestCategoryTypeController',  ['names' => 'minitest.category.type' ]);
 

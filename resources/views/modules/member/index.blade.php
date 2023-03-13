@@ -222,8 +222,14 @@
                                                 ];
                                             @endphp
 
+                                            @php 
+                                            /*
+                                            ** @note: This will call tutor
                                             <a href="javascript:void(0)" class="small" onClick="window.memberCallerComponent.callTutor('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Call Teacher</a>
                                             |
+                                            */
+                                            @endphp
+
                                             <a href="javascript:void(0)" class="small" onClick="window.memberCallerComponent.selectLesson('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Select Lesson</a>
 
                                             <div>
