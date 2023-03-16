@@ -99,6 +99,16 @@ io.on('connection', function(socket) {
         io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
     });
 
+    //@desc: this will send a ping to determin if online
+    socket.on("JOIN_SESSION_PING", (data) => {
+        io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
+    });
+
+    //@desc: this will send a pingback to sender to signal online status
+    socket.on("JOIN_SESSION_PINGBACK", (data) => {
+        io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
+    });
+
     socket.on("LEAVE_SESSION", (data) => {
         io.to('' + data.channelid + '').emit("LEAVE_SESSION", data);
     });
