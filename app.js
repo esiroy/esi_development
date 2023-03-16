@@ -73,7 +73,7 @@ io.on('connection', function(socket) {
 
 
     /*****************************************/
-    /*  CANVAS SERVER
+    /*  MEMBER ALL PAGE CALL TO ACTIONS
     /*****************************************/
 
     socket.on("CALL_USER", (data) => {
@@ -86,16 +86,45 @@ io.on('connection', function(socket) {
     });
 
 
-
-    socket.on("START_SLIDER", (data) => {
-        io.sockets.emit("START_SLIDER", data);
-    });
-
-
     socket.on("DROP_CALL", (data) => {
         io.sockets.emit("DROP_CALL", data);
     });
 
+
+    /*****************************************/
+    /*  SESSION ACTIONS
+    /*****************************************/
+
+    socket.on("JOIN_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
+    });
+
+    socket.on("LEAVE_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("LEAVE_SESSION", data);
+    });
+
+
+    socket.on("START_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("START_SESSION", data);
+    });
+
+    socket.on("CANCEL_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("CANCEL_SESSION", data);
+    });
+
+    socket.on("END_SESSION", (data) => {
+        io.to('' + data.channelid + '').emit("END_SESSION", data);
+    });
+
+
+    /*****************************************/
+    /*  CANVAS SERVER
+    /*****************************************/
+
+
+    socket.on("START_SLIDER", (data) => {
+        io.sockets.emit("START_SLIDER", data);
+    });
 
     socket.on("SEND_DRAWING", (data) => {
         io.to('' + data.channelid + '').emit('UPDATE_DRAWING', data);
@@ -120,26 +149,6 @@ io.on('connection', function(socket) {
         io.to('' + data.channelid + '').emit("TUTOR_SELECTED_NEW_SLIDES", data);
     });
 
-    /*****************************************/
-    /*  LESSON SESSION ACTIONS
-    /*****************************************/
-
-    socket.on("JOIN_SESSION", (data) => {
-        io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
-    });
-
-    socket.on("LEAVE_SESSION", (data) => {
-        io.to('' + data.channelid + '').emit("LEAVE_SESSION", data);
-    });
-
-
-    socket.on("START_SESSION", (data) => {
-        io.to('' + data.channelid + '').emit("START_SESSION", data);
-    });
-
-    socket.on("END_SESSION", (data) => {
-        io.to('' + data.channelid + '').emit("END_SESSION", data);
-    });
 
 
     /*****************************************/
