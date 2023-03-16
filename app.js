@@ -105,8 +105,13 @@ io.on('connection', function(socket) {
     });
 
     //@desc: this will send a pingback to sender to signal online status
-    socket.on("JOIN_SESSION_PINGBACK", (data) => {
-        io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
+    socket.on("TUTOR_JOINED", (data) => {
+        io.to('' + data.channelid + '').emit("TUTOR_JOINED", data);
+    });
+
+
+    socket.on("MEMBER_JOINED", (data) => {
+        io.to('' + data.channelid + '').emit("TUTOR_JOINED", data);
     });
 
     socket.on("LEAVE_SESSION", (data) => {
