@@ -101,7 +101,7 @@ io.on('connection', function(socket) {
 
     //@desc: this will send a ping to determin if online
     socket.on("JOIN_SESSION_PINGBACK", (data) => {
-        io.to('' + data.channelid + '').emit("JOIN_SESSION", data);
+        io.to('' + data.channelid + '').emit("JOIN_SESSION_PINGBACK", data);
     });
 
 
