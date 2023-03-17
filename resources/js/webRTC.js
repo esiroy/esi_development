@@ -59,7 +59,7 @@ function gotDevices(deviceInfos) {
             option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
             videoSelect.appendChild(option);
         } else {
-            console.log('Some other kind of source/device: ', deviceInfo);
+            //console.log('Some other kind of source/device: ', deviceInfo);
         }
     }
     selectors.forEach((select, selectorIndex) => {
@@ -80,7 +80,7 @@ function attachSinkId(element, sinkId) {
     if (typeof element.sinkId !== 'undefined') {
         element.setSinkId(sinkId)
             .then(() => {
-                console.log(`Success, audio output device attached: ${sinkId}`);
+                //console.log(`Success, audio output device attached: ${sinkId}`);
             })
             .catch(error => {
                 let errorMessage = error;
@@ -242,7 +242,7 @@ function createUserMedia(video, audio, constraints) {
             //add to my audio stream
             myAudioStream = stream;
 
-            console.log("this is a audio only")
+            //console.log("this is a audio only")
 
             /*******
                 (NOTE: THIS SHOULD BE MUTED = TRUE) 
@@ -296,7 +296,7 @@ function start(video, audio, data) {
             video: { deviceId: videoSource ? { exact: videoSource } : undefined }
         };
 
-        console.log("connect video : start")
+        //console.log("connect video : start")
 
         createUserMedia(video, audio, constraints)
 
@@ -307,7 +307,7 @@ function start(video, audio, data) {
             video: false
         };
 
-        console.log("connect audio : start")
+        //console.log("connect audio : start")
         createUserMedia(video, audio, constraints)
 
     } else {
@@ -333,7 +333,7 @@ function restart() {
     };
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
 
-        console.log("restarted")
+        //console.log("restarted")
 
 
         window.stream = stream; // make stream available to console
@@ -412,19 +412,19 @@ function detectDesktopShared(stream) {
 
 
     peer.on('close', function(conn) {
-        console.log("close")
+        //console.log("close")
     });
 
     peer.on('call', call => {
 
         if (stream == null) {
 
-            console.log("answer the stream without any stream", call)
+            //console.log("answer the stream without any stream", call)
             call.answer();
 
         } else {
 
-            console.log("answer the stream", stream)
+            //console.log("answer the stream", stream)
 
             call.answer(stream);
 
@@ -486,7 +486,7 @@ function detectDesktopShared(stream) {
         });
 
         call.on('finish', function() {
-            console.log("called finish")
+            //console.log("called finish")
         });
 
         call.on('error', (err) => {
@@ -584,7 +584,7 @@ peer.on('connection', function(conn) {
 
     conn.on('data', function(data) {
 
-        console.log("peer connected", data)
+        //console.log("peer connected", data)
 
         if (data.sharedScreen == true) {
 
@@ -605,16 +605,16 @@ peer.on('connection', function(conn) {
     });
 
     conn.on('close', (conn) => {
-        console.log("connection of peer has been closed", conn)
+        //console.log("connection of peer has been closed", conn)
     });
 
 });
 
 peer.on('open', (id) => {
 
-    console.log("my peer id" + id)
-    console.log("my user ", user)
-    console.log("my room id ", roomID)
+    //console.log("my peer id" + id)
+    //console.log("my user ", user)
+    //console.log("my room id ", roomID)
 
     myId = id;
 
@@ -642,7 +642,7 @@ peer.on('call', call => {
 
     let ctr = 0;
 
-    console.log("PEER:: CALLING... for a video stream or audio stream ...");
+    //console.log("PEER:: CALLING... for a video stream or audio stream ...");
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
@@ -670,7 +670,7 @@ peer.on('call', call => {
 
             peerConnections[call.peer] = call;
 
-            console.log("recieve video from initiator ", call);
+            //console.log("recieve video from initiator ", call);
 
             if (ctr == 0) {
 
@@ -720,12 +720,12 @@ peer.on('call', call => {
 
         call.on('close', () => {
             removeElementByID(call.peer);
-            console.log("user disconected")
+            //console.log("user disconected")
         });
 
     }).catch((error) => {
 
-        console.log("recieve audio from initiator", call);
+        //console.log("recieve audio from initiator", call);
 
 
 
@@ -796,7 +796,7 @@ peer.on('call', call => {
 
             call.on('close', () => {
                 removeElementByID(call.peer);
-                console.log("user disconected")
+                //console.log("user disconected")
             });
 
         }).catch((error) => {
@@ -876,7 +876,7 @@ socket.on('userJoined', (data) => {
             });
 
             callback.on('error', (err) => {
-                console.log(err);
+                //console.log(err);
             });
 
 
@@ -950,7 +950,7 @@ socket.on('userJoined', (data) => {
                 });
 
                 callback.on('error', (err) => {
-                    console.log(err);
+                    //console.log(err);
                 });
 
                 peerConnections[data.id] = callback;
@@ -958,7 +958,7 @@ socket.on('userJoined', (data) => {
         }).catch((error) => {
 
             //alert("Please connect audioinput device and try again");
-            // console.log(error)
+            // //console.log(error)
         });
 
     });
@@ -1021,7 +1021,7 @@ socket.on('mediaChanged', (data) => {
             });
 
             callback.on('error', (err) => {
-                console.log(err);
+                //console.log(err);
             });
 
             peerConnections[data.id] = callback;
@@ -1055,8 +1055,8 @@ socket.on('mediaChanged', (data) => {
 
                     if (ctr == 0) {
 
-                        console.log(userStream.getAudioTracks().length)
-                        console.log(userStream.getVideoTracks().length)
+                        //console.log(userStream.getAudioTracks().length)
+                        //console.log(userStream.getVideoTracks().length)
 
                         if (userStream.getAudioTracks().length == 1 && userStream.getVideoTracks().length == 1) {
 
@@ -1091,7 +1091,7 @@ socket.on('mediaChanged', (data) => {
                 });
 
                 callback.on('error', (err) => {
-                    console.log(err);
+                    //console.log(err);
                 });
 
                 peerConnections[data.id] = callback;
@@ -1101,7 +1101,7 @@ socket.on('mediaChanged', (data) => {
         }).catch((error) => {
 
             //alert("audio only");
-            console.log(error)
+            //console.log(error)
         });
 
     });
@@ -1109,12 +1109,12 @@ socket.on('mediaChanged', (data) => {
 
 
 socket.on('userDisconnect', id => {
-    console.log("userDisconnected", id);
+    //console.log("userDisconnected", id);
     removeElementByID(id);
     try {
         peerConnections[id].close();
     } catch (err) {
-        console.log("error disconnect : ", err)
+        //console.log("error disconnect : ", err)
     }
 });
 
@@ -1122,7 +1122,7 @@ function toggleMic() {
     if (userJoinedStream != null) {
         userJoinedStream.getAudioTracks().forEach((track) => {
             track.enabled = !track.enabled;
-            console.log(track);
+            //console.log(track);
 
             if (track.enabled == true) {
                 $('#toggleAudio .fa-volume-up').show();
@@ -1138,7 +1138,7 @@ function toggleMic() {
     if (userCallStream != null) {
         userCallStream.getAudioTracks().forEach((track) => {
             track.enabled = !track.enabled;
-            console.log(track);
+            //console.log(track);
 
             if (track.enabled == true) {
                 $('#toggleAudio .fa-volume-up').show();
@@ -1156,7 +1156,7 @@ function toggleCamera() {
     if (userJoinedStream != null) {
         userJoinedStream.getVideoTracks().forEach((track) => {
             track.enabled = !track.enabled;
-            console.log(track);
+            //console.log(track);
 
             if (track.enabled == true) {
                 $('#toggleCamera .fa-video').show();
@@ -1172,7 +1172,7 @@ function toggleCamera() {
     if (userCallStream != null) {
         userCallStream.getVideoTracks().forEach((track) => {
             track.enabled = !track.enabled;
-            console.log(track);
+            //console.log(track);
 
             if (track.enabled == true) {
                 $('#toggleCamera .fa-video').show();

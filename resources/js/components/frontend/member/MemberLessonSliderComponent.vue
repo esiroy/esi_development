@@ -251,8 +251,15 @@
         v-show="sessionActive"
         :api_token="this.api_token" 
         :csrf_token="this.csrf_token"></TutorSlideNotesComponent>
-      
-                    
+
+
+        <TutorSessionInvitePopUpComponent 
+        ref="TutorSessionInvite" 
+        :is_broadcaster="this.$props.isBroadcaster"
+        :api_token="this.api_token" 
+        :csrf_token="this.csrf_token"></TutorSessionInvitePopUpComponent>
+
+
     </div>
 </template>
 
@@ -261,6 +268,8 @@
 import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue'
 import SlideSelectorComponent from './SlideSelectorComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
+import TutorSessionInvitePopUpComponent from './TutorSessionInvitePopUpComponent.vue'
+
 //Uploader
 import SlideUploaderComponent from './SlideUploaderComponent.vue'
 //Feedback
@@ -272,7 +281,7 @@ import io from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
-    components: { TutorSlideNotesComponent, SlideSelectorComponent, AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
+    components: { TutorSessionInvitePopUpComponent, TutorSlideNotesComponent, SlideSelectorComponent, AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
     props: {
         csrf_token: String,		
         api_token: String,
@@ -451,6 +460,10 @@ export default {
 
             //test variable for testing 
             files: null,
+
+            //current user for pingack
+
+            user: null,
             
            
         };
@@ -468,7 +481,7 @@ export default {
 
 
         //register as currently active users can see ONLINE  status
-        let user = {
+        this.user = {
             userid: this.member_info.user_id ,
             nickname: this.user_info.firstname,            
             username: this.user_info.username,     
@@ -479,23 +492,10 @@ export default {
             type: this.user_info.user_type, 
             image:   this.$props.user_image  
         }
-        this.socket.emit('REGISTER', user); 
-                                                
-
-        //CALL THE MEMBER ON LOAD
-        if (this.$props.isBroadcaster == true) {   
-            let data = {
-                recipient       :   this.recipient_info,    //recipient 
-                caller          :   user,     //caller (is always member info since it)
-                reservationData :   this.reservation
-            }
-
-            console.log ("calling member on load", data)
-
-            this.socket.emit('CALL_USER',  data);  
-        }
 
 
+
+        this.socket.emit('REGISTER', this.user); 
 
 
         this.socket.on('update_user_list', users => {
@@ -611,7 +611,6 @@ export default {
             } 
         });
 
-
         this.$root.$on('pauseAudio', (index) => {
             if (this.$props.isBroadcaster == true) {
                 this.socket.emit('PAUSE_AUDIO', {
@@ -689,11 +688,68 @@ export default {
 
 
         /*************** SESSION HANDLERS ****************/
-         this.socket.on('JOIN_SESSION', (response) => {
-            if (this.$props.isBroadcaster == false) {
-                console.log("USER JOINED A SESSION")
+
+        //CALL THE MEMBER ON LOAD
+        if (this.$props.isBroadcaster == true) 
+        {   
+            let data = {
+                recipient       :   this.recipient_info,    //recipient 
+                caller          :   this.user,     //caller (is always member info since it)
+                reservationData :   this.reservation
             }
-        });  
+            this.socket.emit('CALL_USER',  data);  
+        }
+
+
+
+        this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+
+
+        this.socket.emit('JOIN_SESSION', this.user); 
+
+
+        this.socket.on('JOIN_SESSION', (userData) => {
+
+             if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {
+
+                this.$refs['TutorSessionInvite'].addParticipants(userData); 
+
+                this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
+
+             } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
+
+                this.$refs['TutorSessionInvite'].addParticipants(userData); 
+
+                this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
+             }
+
+        });
+        
+
+         this.socket.on('JOIN_SESSION_PINGBACK', (userData) => {
+
+             if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {
+
+                console.log("member pingback recieved", userData)
+
+            } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
+
+                console.log("TUTOR pingback recieved", userData)
+            }
+
+         });
+
+
+      
+
+        this.socket.on('LEAVE_SESSION', (response) => 
+        {
+            if (this.$props.isBroadcaster == false) {
+                console.log("USER LEFT A SESSION")
+            } else {
+                console.log("TEAChER LEFT A SESSION")
+            }
+        });
 
 
         this.socket.on('START_SESSION', (response) => {
@@ -721,6 +777,9 @@ export default {
             }
 
         }); 
+
+
+
 
         this.socket.on('END_SESSION', (response) => {
         
@@ -1126,7 +1185,7 @@ export default {
 
             if (!elementExists) {
             
-                console.log("++++++++create canvas++++++++");
+                //console.log("++++++++create canvas++++++++");
 
                 let editorElement = document.createElement("div");
                 editorElement.setAttribute("id",    "editor" + index);
@@ -1148,7 +1207,7 @@ export default {
             
             } else {
             
-                  console.log("------ CANVAS IS ALREADY CREATED ------ ");
+                //console.log("------ CANVAS IS ALREADY CREATED ------ ");
             }
 
          
@@ -1413,7 +1472,9 @@ export default {
 
             if (customItem) { 
                 if (customItem.path == null) {
-                    console.log("empty path")
+
+                    //console.log("empty custom path")
+
                 } else {
                     this.setSlideBackgroundImage(index, this.getBaseURL(customItem.path));
                 }                
@@ -1555,10 +1616,8 @@ export default {
                 } 
 
             } else {
-
-
                 //hide countdown timer  
-                console.log("no lesson history, hide countdown timer");
+                //console.log("no lesson history, hide countdown timer");
                 
                 const elemCountdown = document.getElementById('countDownTimerContainer');
                 if (elemCountdown) {
@@ -1569,10 +1628,6 @@ export default {
                 if (endSession) {
                     endSession.style.display = 'none';                    
                 }
-
-              
-
-                
             }
 
         },
@@ -1905,8 +1960,7 @@ export default {
                 this.socket.emit('GOTO_SLIDE', data);                  
             } else {
 
-                //when user lands a page (he will not dectate it but go to current slide)
-            
+                //when user lands a page (he will not dictate it but go to current slide)            
                 this.goToSlide(currentSlide)
             }
 
@@ -2489,9 +2543,6 @@ export default {
 
                     activeObj.setCoords();
                     canvas.renderAll(); 
-
-                    //let data = this.canvasGetJSON();
-                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);  
                 }
 
             }).on('mouse:up', (object) => {
@@ -2499,18 +2550,8 @@ export default {
                 this.isDrawingCircle = false;
 
                 let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);   
-
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);  
                 this.saveSlideHistoryData(data, this.currentSlide);
-
-                //[ADD TO HISTORY]    
-                /*            
-                this.historyCounter++;
-                this.history[this.currentSlide].push({                   
-                        'data': this.canvasGetJSON()                
-                });
-                */
-
             });
 
         },        

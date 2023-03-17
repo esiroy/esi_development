@@ -111,7 +111,6 @@ export default {
                 this.showNotes();
         },
         loadNotes(notes) {
-            console.log(notes);
             this.notes = notes;           
             this.showNotes();
             this.loaded = false;
@@ -127,14 +126,15 @@ export default {
         viewNote(index) {
             this.note = this.notes[index];
             this.loaded = true;
-            this.$forceUpdate();
+      
 
-        
             if (this.note == undefined || this.note == 'undefined' || this.note === undefined || this.note == '') {
                 this.note = '';
-                //this.hideNotes();             
+                //this.hideNotes();
+             
             }
             
+            this.$forceUpdate();
         }
     }    
 }

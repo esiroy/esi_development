@@ -3,16 +3,25 @@
     <div class="audioPlayerContainer">
 
         <!-- Start custom Audio player-->
-        <div class="audio-player" v-show="this.audioFiles.length <= 0" >
-            <div class="nomedia small text-center text-light">
-                <div class="nomedia-information">Slide has no audio</div>
+        <div v-if="!this.audioFiles">
+            <div class="audio-player">
+                <div class="nomedia small text-center text-light">
+                    <div class="nomedia-information">No Media Available</div>
+                </div>
+            </div>
+        </div>
+        <div v-else>
+            <div class="audio-player" v-show="this.audioFiles && this.audioFiles.length <= 0" >
+                <div class="nomedia small text-center text-light">
+                    <div class="nomedia-information">Slide has no audio</div>
+                </div>
             </div>
         </div>
 
-        <div class="audio-player" v-show="this.audioFiles.length >= 1">
+        <div class="audio-player" v-show="this.audioFiles && this.audioFiles.length >= 1">
 
             <div id="audio-info" class="text-center small text-light">
-                <div class="text-center" v-if="this.audioFiles[this.audioIndex]">
+                <div class="text-center" v-if="this.audioFiles && this.audioFiles[this.audioIndex]">
                     <span id="track_heading">Now Playing</span>
                     <span id="track_index">({{ ( this.audioIndex + 1 ) + "/" + this.audioFiles.length }})</span>
                     <span id="track_sep"> : </span>                    
@@ -24,7 +33,7 @@
                 <source src="" type="audio/mp3">
             </audio>
 
-            <div class="player-controls" >
+            <div class="player-controls" v-if="this.audioFiles &&  this.audioFiles.length >= 1">
 
                 <b-dropdown id="dropdown-audio-list" class="m-md-2" no-caret v-show="this.$props.isBroadcaster == true">
                     <template #button-content>
@@ -296,16 +305,24 @@
             { 
                 this.audioFiles = audioFiles[num];               
 
-                if (this.audioFiles.length >= 1) {
-                    //load the first on the list           
-                    this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': false }); 
-                } else {
                 
-                    console.log("can't load audio listings for this slide")
+                if (this.audioFiles) {
+                
+                    if (this.audioFiles.length >= 1) {
+                        //load the first on the list           
+                        this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': false }); 
+                    } else {
+                    
+                        this.audioFiles = [];
+
+                        console.log("can't load audio listings for this slide")
+                    }
+
                 }
 
             } else {
                 console.log("no audio file added")
+                this.audioFiles = [];
             }           
         },
         loadAudio(audio, settings) 
@@ -324,10 +341,14 @@
                 };
             } else {            
                 console.log("no audio for this slide")
+                this.audioFiles = [];
             }
         },        
         gotoAndPlayClientAudio(index) 
         {
+
+          console.log(this.audioFiles);
+
             if (this.audioFiles[index]) {  
                 if (this.audioFiles[index].path == this.audioFiles[this.audioIndex].path) 
                 {                    
@@ -337,10 +358,14 @@
                     this.audioIndex = index;                
                     this.loadAudio(this.audioFiles[this.audioIndex], {'alwaysPlay': true });             
                 }                                
+            } else {
+                this.audioFiles = [];
             }          
         },
         goToAudio(index) 
         {
+            console.log(this.audioFiles);
+
             //BROADCASTER ONLY
             if (this.audioFiles[index]) 
             {    
@@ -360,16 +385,18 @@
                     playPromise1.then(_ => {
                         // Automatic playback started!
                         // Show playing UI.
-                        console.log("Automatic playback started! #001-goToAudio")
+                        //console.log("Automatic playback started! #001-goToAudio")
                     })
                     .catch(error => {
                         // Auto-play was prevented
                         // Show paused UI.
-                        console.log("Auto-play was prevented #001-goToAudio", error)
+                        //console.log("Auto-play was prevented #001-goToAudio", error)
                     });
                 }
 
-            }          
+            } else {
+                 this.audioFiles = [];
+            }
         },
         play() {
             this.togglePlay();         
@@ -380,7 +407,7 @@
 
             if (!this.audio.paused && this.audio.currentTime > 0) {  
 
-                console.log("pausing");
+                //console.log("pausing");
 
                 this.audio.pause();   
                 this.playBtn = true;
@@ -397,12 +424,12 @@
                 playPromise2.then(_ => {
                     // Automatic playback started!
                     // Show playing UI.
-                    console.log("Automatic playback started! #002-togglePlay")
+                    //console.log("Automatic playback started! #002-togglePlay")
                 })
                 .catch(error => {
                     // Auto-play was prevented
                     // Show paused UI.
-                    console.log("Auto-play was prevented #002-togglePlay", error)
+                    //console.log("Auto-play was prevented #002-togglePlay", error)
                 });
             }
 
@@ -424,6 +451,9 @@
             
         },        
         nextAudio() {
+
+            console.log(this.audioFiles);
+
             if (this.audioIndex <  this.audioFiles.length -1 ) {
                 this.audioIndex = this.audioIndex + 1;
                 this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': true });
@@ -445,6 +475,8 @@
             this.loadAudio(audio);
             this.togglePlay();  
 
+            console.log("load audio")
+
             //we will send this through server and let client get the next audio
             this.$root.$emit('playAudio', this.audioIndex)                   
         },   
@@ -459,11 +491,11 @@
                 const percent = e.offsetX / offsetWidth;
                 seekAudio.currentTime = percent * seekAudio.duration;
 
-                console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
+                //console.log(e.offsetX , offsetWidth, percent * seekAudio.duration);
 
                 let trackTime = percent * seekAudio.duration
 
-                console.log("track time", trackTime)
+                //console.log("track time", trackTime)
                 // seekAudio.play();
 
                 //we will send this through server and let client get the prev audio
