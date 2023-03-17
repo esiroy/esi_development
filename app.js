@@ -26,6 +26,7 @@ server.listen(serverPort, function() {
 
 
 var users = [];
+var roomUsers = [];
 
 io.on('connection', function(socket) {
     //console.log("user connected, with id " + socket.id)
@@ -242,10 +243,8 @@ io.on('connection', function(socket) {
     socket.on('disconnect', function() {
         for (var i in users) {
             if (users[i].id === socket.id) {
-                delete users[i];
-
                 io.emit('LEAVE_SESSION', users[i]);
-
+                delete users[i];
                 break;
             }
         }
