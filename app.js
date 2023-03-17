@@ -243,6 +243,9 @@ io.on('connection', function(socket) {
         for (var i in users) {
             if (users[i].id === socket.id) {
                 delete users[i];
+
+                io.emit('LEAVE_SESSION', users[i]);
+
                 break;
             }
         }
