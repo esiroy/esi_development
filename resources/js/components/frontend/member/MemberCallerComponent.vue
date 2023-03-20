@@ -239,10 +239,10 @@
 
             //Register the member Info
             this.user = {
+                channelid: this.channelid, 
                 userid: this.memberInfo.user_id,
                 username: this.userInfo.username,
-                nickname: this.userInfo.nickname,
-                channelid: this.channelid,                
+                nickname: this.userInfo.nickname,                               
                 type: this.userInfo.user_type,
                 status: "ONLINE",
             }  
@@ -254,6 +254,31 @@
             this.socket.on('update_user_list', users => {
                 this.updateUserList(users); 
             });
+
+
+            this.socket.on("CALL_USER", (data) =>  
+            {
+                if (this.user.userid == data.recipient.userid ) 
+                {       
+                    this.caller              = data.caller;                        
+                    this.recipient           = data.recipient;
+                    this.callReservation     = data.reservationData;
+
+
+                    this.$bvModal.show('modal-call-alert');  
+
+                    //SEND THE CALL USER PING BACK WITH CHANNEL ID
+                    this.recipient.channelid = data.reservationData.schedule_id;
+
+                    console.log(data.recipient,  "callback")
+
+                    
+                    this.socket.emit('CALL_USER_PINGBACK', this.recipient); 
+
+                }                
+            });
+
+
 
             this.socket.on("ACCEPT_CALL", (data) =>  {
 
@@ -269,43 +294,33 @@
                 console.log(data)
             });
 
-            this.socket.on("CALL_USER", (data) =>  
-            {
-                if (this.user.userid == data.recipient.userid ) 
-                {       
-                    this.caller              = data.caller;                        
-                    this.recipient           = data.recipient;
-                    this.callReservation     = data.reservationData;
-                    this.$bvModal.show('modal-call-alert');  
-                    console.log("call user");                    
-                }                
-            });
 
 
-            this.socket.on("START_SLIDER", (data) =>  
-            {
 
-                console.log(data);
+
+
+            this.socket.on("START_SLIDER", (data) =>  {
 
                 if (this.user.userid == data.recipient.userid ) 
                 {
                     this.lessonReservationData  = data.reservationData;
                     this.$bvModal.hide('modal-call-teacher'); 
                     this.$bvModal.hide('modal-call-member');             
-                    this.openChannelTab(data.channelid);       
+                    this.openSelfWindow(data.channelid);       
 
                 } else if (this.user.userid == data.caller.userid ) {
                  
                     this.lessonReservationData  = data.reservationData;
                     this.$bvModal.hide('modal-call-teacher'); 
                     this.$bvModal.hide('modal-call-member');             
-                    this.openChannelTab(data.channelid);  
+                    this.openSelfWindow(data.channelid);  
                  
                  }
 
             }); 
         },
         methods: {
+
             selectLesson(tutor, member, reservation) 
             {           
                 this.tutor              = JSON.parse(tutor);
@@ -337,8 +352,11 @@
                         this.$bvModal.show('modalSelectLesson');     
                     }
                 });
-            },              
-            openChannelTab(channelid) {
+            }, 
+            openSelfWindow(channelid) {
+                window.location.href = window.location.origin + "/webRTC?roomid="+ channelid
+            },
+            openNewChannelTab(channelid) {
                 var baseURL = window.location.origin + "/webRTC?roomid="+ channelid
                 window.open(baseURL, '_blank');
             },
@@ -528,11 +546,10 @@
                 ///console.log(this.caller,  this.recipient, this.callReservation );
                              
                 this.sliderLoaded = false;
-
                 this.channelid                 = this.callReservation.schedule_id;
                 this.lessonReservationData     = this.callReservation;       
                
-                console.log("accept call " , this.callReservation);
+                //console.log("accept call " , this.callReservation);
 
                 this.$bvModal.hide('modal-call-alert'); 
 
@@ -552,6 +569,11 @@
 
                 
 
+            },
+            callPingBack() {
+
+
+            
             },
             callMember(tutor, member, reservation) {
 

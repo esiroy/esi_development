@@ -505,6 +505,7 @@ export default {
         this.customSelectorBounds(fabric);
 
 
+
         this.socket.on("GOTO_SLIDE", (data) =>  {
 
             if (this.$refs['audioPlayer']) {
@@ -687,8 +688,28 @@ export default {
         });        
 
 
-        /*************** SESSION HANDLERS ****************/
+        /*  TAB EVENT FOCUS LISTNERS
+        window.addEventListener('focus', () => {
+            console.log("window has focus")
+            this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
+        });
 
+
+        window.addEventListener('blur',  () => {
+            console.log("window lost focus")
+        });
+
+        if (document.hasFocus()) {
+            console.log("Window is active");
+        } else {
+            console.log("Window is not active");
+        }
+        */
+
+
+
+        /*************** SESSION HANDLERS ****************/
+       
         //CALL THE MEMBER ON LOAD
         if (this.$props.isBroadcaster == true) 
         {   
@@ -697,13 +718,49 @@ export default {
                 caller          :   this.user,     //caller (is always member info since it)
                 reservationData :   this.reservation
             }
+
             this.socket.emit('CALL_USER',  data);  
+
+            /*************** NEW - VERSION 6 ***************/
+            this.$refs['TutorSessionInvite'].showCallUserModal(); 
+            //@todo: wait 5 seconds and do another call if not accepted         
+
+
+            this.$root.$on('redialUser', (response) => {
+
+                console.log(response, data, "redial user fired");      
+
+                 this.socket.emit('CALL_USER',  data);  
+
+            }); 
+
+
+
+        } else {
+        
+
+            //MEMBER WILL DIRECTLY SHOW WAITING LIST NO MORE CALLING USER MODAL TO SHOW
+
+            this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+
         }
 
 
+        this.socket.on("CALL_USER_PINGBACK", (userData) => {
+        
+            console.log("call pingback recieved", userData);
 
-        this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+            this.$refs['TutorSessionInvite'].hideCallUserModal(); 
 
+            this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+
+        });
+
+
+     
+
+
+        /****************USER JOINED ******************* */
 
         this.socket.emit('JOIN_SESSION', this.user); 
 
@@ -714,7 +771,10 @@ export default {
 
                 this.$refs['TutorSessionInvite'].addParticipants(userData); 
 
+                /*************** NEW - VERSION 6  PING BACK ***************/
                 this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
+
+
 
              } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
 
@@ -728,26 +788,43 @@ export default {
 
          this.socket.on('JOIN_SESSION_PINGBACK', (userData) => {
 
-             if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {
+             if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {  
 
-                console.log("member pingback recieved", userData)
+                this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                this.$refs['TutorSessionInvite'].addParticipants(userData);                
+
+                console.log("member pingback recieved", userData);
+
+                //hide caller
+                
+
 
             } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
-
+                this.$refs['TutorSessionInvite'].addParticipants(userData); 
                 console.log("TUTOR pingback recieved", userData)
             }
 
          });
 
+       
 
-      
-
-        this.socket.on('LEAVE_SESSION', (response) => 
+        this.socket.on('LEAVE_SESSION', (userData) => 
         {
             if (this.$props.isBroadcaster == false) {
-                console.log("USER LEFT A SESSION")
+
+                console.log("USER LEFT A SESSION");
+
+                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                this.$refs['TutorSessionInvite'].showWaitingListModal();
+                this.$refs['TutorSessionInvite'].stopLessonTimer();           
+
             } else {
-                console.log("TEAChER LEFT A SESSION")
+
+                console.log("TUTOR LEFT A SESSION");
+
+                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+                this.$refs['TutorSessionInvite'].stopLessonTimer();           
             }
         });
 
