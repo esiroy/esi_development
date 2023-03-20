@@ -82,6 +82,11 @@ io.on('connection', function(socket) {
         io.sockets.emit("CALL_USER", data);
     });
 
+    socket.on("CALL_USER_PINGBACK", (data) => {
+        io.to('' + data.channelid + '').emit("CALL_USER_PINGBACK", data);
+    });
+
+
     socket.on("ACCEPT_CALL", (data) => {
         io.sockets.emit("ACCEPT_CALL", data);
     });
@@ -113,7 +118,7 @@ io.on('connection', function(socket) {
 
 
     socket.on("MEMBER_JOINED", (data) => {
-        io.to('' + data.channelid + '').emit("TUTOR_JOINED", data);
+        io.to('' + data.channelid + '').emit("MEMBER_JOINED", data);
     });
 
     socket.on("LEAVE_SESSION", (data) => {
