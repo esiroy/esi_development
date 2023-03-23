@@ -1,13 +1,10 @@
 <template>
-
     <div class="main-component-holder">
 
         <!--<button @click="saveAllSlides()"> Save all slides </button>
                 
         <button @click="testEndSessionEmitter()"> Emit end </button>
         -->
-
-
         <div id="component-container" v-show="sessionActive">
 
             <div id="satisfactionSurveyContainer">              
@@ -255,6 +252,8 @@
 
         <TutorSessionInvitePopUpComponent 
         ref="TutorSessionInvite" 
+        :reservation="this.$props.reservation"
+        :lesson_history="this.lesson_history"
         :is_broadcaster="this.$props.isBroadcaster"
         :api_token="this.api_token" 
         :csrf_token="this.csrf_token"></TutorSessionInvitePopUpComponent>
@@ -352,6 +351,8 @@ export default {
         return {
 
             sessionActive: true,
+            isExpiredSession: false,
+            isNoShow: false,
             //socket
             socket: null,
 
@@ -465,20 +466,39 @@ export default {
 
             user: null,
             
+            expiredLessonDate: null,
+            specificDate: null,
+
+            currentDate: null,
+
            
         };
     },
     created() {
+  
+  
+        this.checkExpiredSession();
 
-        this.getSlideMaterials(this.reservation);
-    
+        document.onreadystatechange = () => {
+        
+            if (document.readyState == "complete") {
+                if (this.isExpiredSession == false) {
+                    this.getSlideMaterials(this.reservation);
+                } else {
+                    this.stopTimer();     
+                    this.disableSession();
+                    $("#destroy-session-media").trigger("click");
+                }            
+            }
+        }
     },
     mounted() {
 
         this.socket = io.connect(this.$props.canvas_server);
-
         window.lessonSliderComponent = this;
 
+
+  
 
         //register as currently active users can see ONLINE  status
         this.user = {
@@ -507,7 +527,6 @@ export default {
 
 
         this.socket.on("GOTO_SLIDE", (data) =>  {
-
             if (this.$refs['audioPlayer']) {
                 this.$refs['audioPlayer'].resetAudioIndex();
             }
@@ -719,22 +738,17 @@ export default {
                 reservationData :   this.reservation
             }
 
-            this.socket.emit('CALL_USER',  data);  
+            if (this.isNoShow == false) {
+                this.socket.emit('CALL_USER',  data); 
+            } else {
+                console.log("I will not call since the user is a no show, we will wait for a manual call to action from the teacher moving forward")
+            }
+
+     
 
             /*************** NEW - VERSION 6 ***************/
             this.$refs['TutorSessionInvite'].showCallUserModal(); 
-            //@todo: wait 5 seconds and do another call if not accepted         
-
-
-            this.$root.$on('redialUser', (response) => {
-
-                console.log(response, data, "redial user fired");      
-
-                 this.socket.emit('CALL_USER',  data);  
-
-            }); 
-
-
+            //@todo: wait 5 seconds and do another call if not accepted     
 
         } else {
         
@@ -745,15 +759,37 @@ export default {
 
         }
 
+        this.$root.$on('redialUser', (response) => {
+            console.log(response, data, "redial user fired");      
+
+            let data = {
+                recipient       :   this.recipient_info,    //recipient 
+                caller          :   this.user,     //caller (is always member info since it)
+                reservationData :   this.reservation
+            }
+
+            if (this.isNoShow == false) {
+                this.socket.emit('CALL_USER',  data); 
+            } else {
+                console.log("I will not re-dial, since the user is a no show, we will wait for a manual call to action from the teacher moving forward")
+            }
+
+        }); 
 
         this.socket.on("CALL_USER_PINGBACK", (userData) => {
-        
+
             console.log("call pingback recieved", userData);
 
-            this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+        
+           if (this.isNoShow == false) {
+                this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+                this.$refs['TutorSessionInvite'].stopRedialTimer(); 
+           } else {
+               // alert ("no show!")
 
-            this.$refs['TutorSessionInvite'].showWaitingListModal(); 
-
+               console.log("no show, we will not hide caller or particpants waiting modal")
+           }
         });
 
 
@@ -774,12 +810,11 @@ export default {
                 /*************** NEW - VERSION 6  PING BACK ***************/
                 this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
 
-
-
              } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
 
                 this.$refs['TutorSessionInvite'].addParticipants(userData); 
 
+                /*************** NEW - VERSION 6  PING BACK ***************/
                 this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
              }
 
@@ -790,16 +825,34 @@ export default {
 
              if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {  
 
-                this.$refs['TutorSessionInvite'].hideCallUserModal(); 
-                this.$refs['TutorSessionInvite'].addParticipants(userData);                
+                if (this.lesson_history == null) {
 
-                console.log("member pingback recieved", userData);
+                    this.checkExpiredSession();
 
-                //hide caller
+                    if (this.isExpiredSession == false) {
+
+                        this.$refs['TutorSessionInvite'].showCallUserModal(); 
+                        this.$refs['TutorSessionInvite'].addParticipants(userData);
+                    } else {
+                        alert ("no show!")
+                    }
+
+                    console.log("member pingback recieved (no history)", userData);
+
+                } else {
                 
+                    //the lesson is valid
+                    this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                    this.$refs['TutorSessionInvite'].addParticipants(userData);
 
+                    console.log("member pingback recieved (with history)", userData);
+                }
 
+                
+                
             } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
+
+                this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                 this.$refs['TutorSessionInvite'].addParticipants(userData); 
                 console.log("TUTOR pingback recieved", userData)
             }
@@ -812,19 +865,23 @@ export default {
         {
             if (this.$props.isBroadcaster == false) {
 
-                console.log("USER LEFT A SESSION");
-
-                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
-                this.$refs['TutorSessionInvite'].showWaitingListModal();
-                this.$refs['TutorSessionInvite'].stopLessonTimer();           
-
-            } else {
-
                 console.log("TUTOR LEFT A SESSION");
 
                 this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                this.$refs['TutorSessionInvite'].showWaitingListModal();
+                this.$refs['TutorSessionInvite'].stopLessonTimer();  
+                                  
+
+            } else {
+
+               
+                 console.log("USER LEFT A SESSION");
+
+
+                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                 this.$refs['TutorSessionInvite'].showWaitingListModal(); 
-                this.$refs['TutorSessionInvite'].stopLessonTimer();           
+                this.$refs['TutorSessionInvite'].stopLessonTimer();      
+                   
             }
         });
 
@@ -908,7 +965,43 @@ export default {
         this.newFolderID = this.$props.folder_id;
 
     },
+
     methods: {
+
+        checkExpiredSession() {
+            //Expired Session without teacher initiation
+                // Create a new Date object for the specific date and time
+                //const specificDate = new Date('2023-03-21T01:00:00');
+
+                
+                this.specificDate = new Date(this.reservation.lesson_time);  
+                this.specificDate.setTime(this.specificDate.getTime() + (15 * 60 * 1000));
+
+
+                // Add 30 minutes to the specific date and time
+                this.expiredLessonDate = new Date( this.reservation.lesson_time);
+                this.expiredLessonDate.setTime(this.specificDate.getTime() + (30 * 60 * 1000));
+
+                // Get the current date and time
+                this.currentDate = new Date();
+
+                // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
+                if (this.currentDate.getTime() > this.specificDate.getTime()) {
+
+                    if (this.$props.lesson_history == null) {
+                        this.isNoShow = true; 
+                        console.log('The current time is after 15 minutes from the specific date and time.');        
+                    } else if (this.$props.lesson_history !== null && this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
+                        console.log("==============expired without history============");
+                        this.isExpiredSession  = true;
+                    } else {
+                        console.log("the tutor has engaged a lesson for this session, ")
+                    }            
+
+                } else {
+                    console.log('The current time is not yet after 15 minutes from the specific date and time.');
+                }            
+        },
         test() {
             window.test();
         },
@@ -1125,7 +1218,7 @@ export default {
                     this.hideEndSessionButton();                   
                     this.socket.emit('END_SESSION', this.getSessionData());  
 
-                    if (  this.sessionActive == true)  {
+                    if (this.sessionActive == true)  {
                         this.sessionActive = false;
                         this.showMemberFeedbackModal(this.reservation, this.files);
                     }
@@ -1522,16 +1615,11 @@ export default {
         }, 
 
         showRatingOptions() {
-            if (this.$props.lesson_completed == true) 
-            {                           
+            if (this.$props.lesson_completed == true) {                           
 
-                this.sessionActive = false;
-                
+                this.sessionActive = false;                
                 if (this.$props.feedback_completed == false) {    
-
                     if (this.$props.isBroadcaster == true) {   
-                    
-
                         this.hideTimer();                    
                         this.showMemberFeedbackModal(this.reservation, this.files);
                     } else {
