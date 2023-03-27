@@ -144,6 +144,13 @@ io.on('connection', function(socket) {
         io.to('' + data.channelid + '').emit("START_MEMBER_TIMER", data);
     });
 
+    socket.on("PAUSE_MEMBER_TIMER", (data) => {
+        io.to('' + data.channelid + '').emit("PAUSE_MEMBER_TIMER", data);
+    });
+
+    socket.on("STOP_MEMBER_TIMER", (data) => {
+        io.to('' + data.channelid + '').emit("STOP_MEMBER_TIMER", data);
+    });
 
     /*****************************************/
     /*  CANVAS SERVER
