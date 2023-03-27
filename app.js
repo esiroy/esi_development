@@ -139,6 +139,12 @@ io.on('connection', function(socket) {
     });
 
 
+
+    socket.on("START_MEMBER_TIMER", (data) => {
+        io.to('' + data.channelid + '').emit("START_MEMBER_TIMER", data);
+    });
+
+
     /*****************************************/
     /*  CANVAS SERVER
     /*****************************************/
