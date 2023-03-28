@@ -4,7 +4,7 @@
 
         <div class="container">
 
-            <b-modal id="modal-call-member" title="Requesting Lesson...">
+            <b-modal id="modal-call-member" content-class="esi-modal" title="Requesting Lesson..." :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close >
                 <div v-if="this.reservation !== null" class="text-center">
                     <!--
                     <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
@@ -25,7 +25,7 @@
             </b-modal>
 
 
-            <b-modal id="modal-call-teacher" title="Requesting Lesson...">
+            <b-modal id="modal-call-teacher" content-class="esi-modal" title="Requesting Lesson..." :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
                 <div v-if="this.reservation !== null" class="text-center">
                     <!--
                     <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
@@ -46,19 +46,35 @@
             </b-modal>
 
 
-            <b-modal id="modal-call-alert" title="Calling...">
-                <div v-if="this.callReservation !== null" class="text-center">   
-                    <div class="h5 mb-0 pb-0">
-                        <span class="fullname">{{ this.caller.firstname + " " + this.caller.lastname }}</span>
-                        <span v-show="this.caller.nickname">({{ this.caller.nickname }})</span>
-                    </div>
-                    <div>{{ this.caller.email }}</div>
-                    <img :src="this.caller.image" class="rounded-circle">   
+            <b-modal id="modal-call-alert" :title="'A tutor is inviting you for a call'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
+
+
+                <div class="row text-center" v-if="this.callReservation !== null" >   
+
+                  
+                    <div class="col-12 text-center">
+
+                        <div class="alert alert-primary" role="alert">
+
+                            Please accept a lesson invitation from <span v-show="this.caller.nickname">({{ this.caller.nickname }})</span>
+
+                            <!--  <div class="fullname">{{ this.caller.firstname + " " + this.caller.lastname }}</div>-->                            
+                            <!-- Email: {{ this.caller.email }}  </div>-->
+                        </div>
+
+                         <img :src="this.caller.image" class="rounded-circle " width="150px">   
+                     </div>                
+                   
                 </div>
 
                 <template #modal-footer>
                     <div class="container text-center">
-                        <b-button variant="success" @click="acceptCall">Accept Lesson Request</b-button>
+                        <b-button variant="success" @click="acceptCall">
+
+                            <b-icon icon="telephone-inbound" animation="throb" font-scale="1"></b-icon> 
+
+                            <span class="pb-3" animation="throb">Accept Lesson Request</span>
+                        </b-button>
                     </div>
                 </template>
             </b-modal>
@@ -186,6 +202,9 @@
         },
         data() {
             return {
+                headerBgVariant: 'lightblue',
+
+
                 user: null,
                 users: null,
                 tutor: null,
@@ -757,6 +776,8 @@
         margin: 1.75rem 1rem;
     }
 */
+
+
 
  .cursor-pointer {
     cursor: pointer;

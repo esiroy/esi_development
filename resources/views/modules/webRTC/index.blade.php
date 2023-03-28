@@ -253,9 +253,12 @@
             window.addEventListener('load', function () 
             {
 
+             
+
 
                 /*** TOGGLE MEDIA CABINETS EFFECTS */
                 $(".toggleCamera").click(function() {
+
                     $('#right-video-sidebar').animate({ width: 'toggle' }, 25, () => {
                         // Animation complete.
                         if (document.getElementById("right-video-sidebar").style.display == 'none') {
@@ -270,6 +273,8 @@
 
                     })
                 });
+
+               
 
                 $(".toggleLiveChat").click(function() {
                     $('#right-chat-sidebar').animate({ width: 'toggle' }, 25, () => {
@@ -287,6 +292,7 @@
                         resizeAspectRatio();  
                     })
                 });
+
 
 
                 function resizeAspectRatio()  
@@ -309,6 +315,11 @@
                     }
 
                 }
+
+
+
+                $(".toggleLiveChat").trigger('click');
+                $(".toggleCamera").trigger('click');
 
             })
 

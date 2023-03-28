@@ -5,6 +5,20 @@
 
 /****************** ADMIN PANEL ***************/
 
+.esi-modal {
+    border-width: 3px;
+    border-color: $lightblue;
+    border-radius: 15px;
+    .modal-header {
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        color: #fff;
+    }
+}
+
+
+/****************** ADMIN PANEL ***************/
+
 .esi-card {
     border: 2px solid #cbe5ee;
     .esi-html-container {

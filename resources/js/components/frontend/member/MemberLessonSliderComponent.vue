@@ -350,6 +350,10 @@ export default {
     {
         return {
 
+            isMemberTimerStarted: false,
+            memberTimerInterval: false,
+            memberCountdownTimer: 3,
+
             sessionActive: true,
             isExpiredSession: false,
             isNoShow: false,
@@ -524,6 +528,15 @@ export default {
         
         this.customSelectorBounds(fabric);
 
+
+
+        this.socket.on("START_MEMBER_TIMER", (data) =>  {
+
+
+            this.isMemberTimerStarted = true;
+            this.startMemberCountdownTimer();
+
+        });
 
 
         this.socket.on("GOTO_SLIDE", (data) =>  {
@@ -732,34 +745,97 @@ export default {
         //CALL THE MEMBER ON LOAD
         if (this.$props.isBroadcaster == true) 
         {   
+
+
             let data = {
                 recipient       :   this.recipient_info,    //recipient 
                 caller          :   this.user,     //caller (is always member info since it)
                 reservationData :   this.reservation
             }
 
-            if (this.isNoShow == false) {
-                this.socket.emit('CALL_USER',  data); 
-            } else {
-                console.log("I will not call since the user is a no show, we will wait for a manual call to action from the teacher moving forward")
+            /* CHECK THE SESSION */
+
+            this.checkExpiredSession();
+
+            if (this.isNoShow == false && this.isExpiredSession == false) {
+
+                if (this.$props.lesson_completed == true) {
+
+                    //Lesson Completed
+                    console.log("lesson completed");
+
+                } else {
+
+                    //CALL THE USER
+                    console.log("emit call user ", data);
+
+                    this.socket.emit('CALL_USER',  data); 
+
+                    /*************** NEW - VERSION 6 ***************/
+                    this.$refs['TutorSessionInvite'].showCallUserModal(); 
+                    //@todo: wait 5 seconds and do another call if not accepted     
+
+                }
+
+            } else if (this.isNoShow == true) {
+
+                /* Student did not show after 15 minutes and the lesson is less than 30 minutes */
+
+                this.sessionActive = false;
+                this.hideTimer();  
+                this.hideEndSessionButton();
+                this.destroySessionMedia();
+
+
+            } else if (this.isExpiredSession == true) {
+
+                /*********** EXPIRED SESSSION ********** */
+           
+
+
+                if (this.$props.lesson_completed == true) 
+                {                
+                    console.log("lesson completed");
+                    //this.endSession();
+                    //this.hideEndSessionButton();
+                    //this.destroySessionMedia();
+
+                } else {
+
+
+
+                    console.log("lesson is NOT COMPLETED ");
+
+                    this.endSession();
+                    this.hideEndSessionButton();
+                    this.destroySessionMedia();
+
+                    console.log("I will not call since the user is a no show, we will wait for a manual call to action from the teacher moving forward");
+                }
+
+
             }
 
-     
-
-            /*************** NEW - VERSION 6 ***************/
-            this.$refs['TutorSessionInvite'].showCallUserModal(); 
-            //@todo: wait 5 seconds and do another call if not accepted     
-
-        } else {
-        
+        } else {        
 
             //MEMBER WILL DIRECTLY SHOW WAITING LIST NO MORE CALLING USER MODAL TO SHOW
+            console.log("session active?", this.sessionActive);
 
-            this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+            if (this.$props.lesson_completed == true) {
 
+                console.log("lesson is complete! ")
+
+            } else {
+
+                console.log("lesson is not complete! ", this.$props.lesson_completed )
+
+                this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+
+            }
         }
 
         this.$root.$on('redialUser', (response) => {
+
             console.log(response, data, "redial user fired");      
 
             let data = {
@@ -797,8 +873,11 @@ export default {
 
 
         /****************USER JOINED ******************* */
+        if (this.$props.lesson_completed == true) {
 
-        this.socket.emit('JOIN_SESSION', this.user); 
+        } else {
+            this.socket.emit('JOIN_SESSION', this.user); 
+        }
 
 
         this.socket.on('JOIN_SESSION', (userData) => {
@@ -821,7 +900,7 @@ export default {
         });
         
 
-         this.socket.on('JOIN_SESSION_PINGBACK', (userData) => {
+        this.socket.on('JOIN_SESSION_PINGBACK', (userData) => {
 
              if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {  
 
@@ -829,12 +908,15 @@ export default {
 
                     this.checkExpiredSession();
 
-                    if (this.isExpiredSession == false) {
+                    if (this.isExpiredSession == false)
+                    {
 
-                        this.$refs['TutorSessionInvite'].showCallUserModal(); 
-                        this.$refs['TutorSessionInvite'].addParticipants(userData);
+                        //this.$refs['TutorSessionInvite'].showCallUserModal(); 
+                        this.$refs['TutorSessionInvite'].addParticipants(userData)
+                        
                     } else {
-                        alert ("no show!")
+
+                        alert ("no show!");
                     }
 
                     console.log("member pingback recieved (no history)", userData);
@@ -863,26 +945,21 @@ export default {
 
         this.socket.on('LEAVE_SESSION', (userData) => 
         {
-            if (this.$props.isBroadcaster == false) {
-
-                console.log("TUTOR LEFT A SESSION");
-
-                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
-                this.$refs['TutorSessionInvite'].showWaitingListModal();
-                this.$refs['TutorSessionInvite'].stopLessonTimer();  
-                                  
-
-            } else {
-
-               
-                 console.log("USER LEFT A SESSION");
-
-
-                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
-                this.$refs['TutorSessionInvite'].showWaitingListModal(); 
-                this.$refs['TutorSessionInvite'].stopLessonTimer();      
-                   
+            if (this.$props.isBroadcaster == false) 
+            {
+                console.log("TUTOR LEFT A SESSION");                                  
+            } else {               
+                 console.log("USER LEFT A SESSION");                
             }
+
+            
+            this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+
+            if (this.$props.lesson_completed == false) {
+                this.$refs['TutorSessionInvite'].showWaitingListModal();                
+            }  
+
+            this.$refs['TutorSessionInvite'].stopLessonTimer(); 
         });
 
 
@@ -967,6 +1044,63 @@ export default {
     },
 
     methods: {
+    
+        startMemberTimer() {
+            this.socket.emit('START_MEMBER_TIMER', this.getSessionData()); 
+            this.isMemberTimerStarted = true;
+        },
+        startMemberCountdownTimer() {
+
+            if (this.isMemberTimerStarted == true) {
+
+                this.hideMemberMemberTimerStartButton();
+
+                this.memberTimerInterval = setInterval(()=> {
+                    this.updateMemberTimer();
+
+                    this.memberCountdownTimer --;    
+
+                    if (this.memberCountdownTimer < 0) {     
+
+                        console.log("timer alarm triggered")                  
+                        this.playIncomingCallAudio({'path': 'mp3/alarm.mp3'})                       
+                        this.stopMemberCountdownTimer();
+
+                        this.showMemberMemberTimerStartButton();
+                    }
+
+                }, this.timerSpeed);   
+            } 
+        },
+        resetMemberCountdownTimer() {
+            this.memberCountdownTimer = 3;
+        },
+        stopMemberCountdownTimer() {
+            
+            this.resetMemberCountdownTimer();
+            this.isMemberTimerStarted = false;
+            clearInterval(this.memberTimerInterval); 
+        },
+        updateMemberTimer() {           
+            console.log(this.memberCountdownTimer);
+            $("#memberTimer").html(this.memberCountdownTimer)
+        },
+        showMemberMemberTimerStartButton() {
+            $("#memberTimerButtonContainer").show();
+        },
+        hideMemberMemberTimerStartButton() {
+            $("#memberTimerButtonContainer").hide();
+        },
+        playIncomingCallAudio(audio) {              
+           
+            let incomingCallAudio = document.getElementById('incomingCallAudio');
+            if (incomingCallAudio) {      
+                incomingCallAudio.src = window.location.origin +"/"+ audio.path;                              
+                incomingCallAudio.load();
+                incomingCallAudio.play();  
+            }
+        },          
+
 
         checkExpiredSession() {
             //Expired Session without teacher initiation
@@ -984,21 +1118,33 @@ export default {
 
                 // Get the current date and time
                 this.currentDate = new Date();
+                
+                if (this.currentDate.getTime() > this.specificDate.getTime()) 
+                {
 
-                // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
-                if (this.currentDate.getTime() > this.specificDate.getTime()) {
+                    //Detect if no show or expired
 
-                    if (this.$props.lesson_history == null) {
+                    if (this.$props.lesson_history == null) 
+                    {
                         this.isNoShow = true; 
-                        console.log('The current time is after 15 minutes from the specific date and time.');        
-                    } else if (this.$props.lesson_history !== null && this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
-                        console.log("==============expired without history============");
+                        console.log('The current time is after 15 minutes from the specific date and time.');   
+
+                    } else if (this.$props.lesson_history != null && this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
+
+                            
+
+                        console.log("==============expired lesson history============", this.$props.lesson_history);
                         this.isExpiredSession  = true;
+
                     } else {
-                        console.log("the tutor has engaged a lesson for this session, ")
+
+                        this.isExpiredSession  = false;
+                        console.log("current session is still valid???")
                     }            
 
                 } else {
+
+                    this.isExpiredSession  = false;
                     console.log('The current time is not yet after 15 minutes from the specific date and time.');
                 }            
         },
@@ -1008,6 +1154,7 @@ export default {
         testEndSessionEmitter() {
             this.socket.emit('END_SESSION', this.getSessionData()); 
         },
+
         async saveAllSlides() {
 
            let allSlidesData = await this.getAllSlideData();
@@ -1917,7 +2064,7 @@ export default {
          
             if (diff.days >= 1) {
 
-                alert ("this lesson has lapsed for more than one day, please consult admin");
+                //alert ("this lesson has lapsed for more than one day, please consult admin");
 
                 //@todo: alert admin and end session
                 
@@ -2038,15 +2185,11 @@ export default {
             return hDisplay + mDisplay + sDisplay; 
         },         
         startTimer() {
-        
             if (this.isTimerStarted == false) {
                 this.showSessionControls();
                 this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);        
-
                 //turn on the timer
-                this.isTimerStarted = true    
-
-                
+                this.isTimerStarted = true;                
             } else {
             
             }
@@ -2067,6 +2210,15 @@ export default {
             if (endSession) {
                 endSession.style.display = 'none';                    
             }        
+        },
+        destroySessionMedia() {
+            document.onreadystatechange = () => {                
+                if (document.readyState == "complete") {
+                    this.stopTimer();     
+                    this.disableSession();
+                    $("#destroy-session-media").trigger("click");
+                }
+            }         
         },
         showSessionControls() {       
 

@@ -211,6 +211,8 @@ export default {
         *****************************************************/
         showCallUserModal() {
 
+            console.log("show call user modal");
+            
             this.$bvModal.show('modal-callUser');
 
             // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
@@ -232,7 +234,7 @@ export default {
                 if (this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
  
                     console.log("expired");
-
+                    this.stopRedialTimer();
                 } else {
                 
                     console.log('The Timer has started, so we need to call till end of time');
@@ -243,7 +245,8 @@ export default {
         },
         hideCallUserModal() {
             this.$bvModal.hide('modal-callUser');  
-            this.resetRedialTimer();           
+            this.resetRedialTimer();   
+            this.stopRedialTimer();        
         },
         /***************************************************** 
                 SHOW WAITING MODAL 
@@ -258,7 +261,9 @@ export default {
                     this.$bvModal.show('modal-callUser');
                     this.stopRedialTimer();
                     this.stopWaitingTimer();
+
                     console.log('The current time is after 15 minutes from the specific date and time.');
+
                 } else {
                     this.resetLessonTimer();   
                     this.startWaitingTimer();
@@ -283,6 +288,9 @@ export default {
         hideWaitingListModal() {       
             this.$bvModal.hide('modal-participants');             
             this.resetLessonTimer();
+            this.stopRedialTimer();
+            this.stopLessonTimer();
+            console.log("hide and stop redialing")
         },
 
         /***************************************************** 
@@ -313,21 +321,31 @@ export default {
         resetRedialTimer() {
             this.redialTimer = 8;            
         },        
+        stopRedialTimer() {
+           clearInterval(this.callRedialInterval);
+        },        
         startRedialTimer() {
+
+            console.log("start Redial Timer");
+
             this.callRedialInterval = setInterval(() => {
                 this.redialTimer--;
                 if (this.redialTimer < 0) {
+
                     this.$root.$emit('redialUser', this.participants);   
+
+
                     this.resetRedialTimer();
-
-
-
                     // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
                     if (this.currentDate.getTime() > this.specificDate.getTime()) {
                         console.log('The current time is after 15 minutes from the specific date and time.');                        
                         this.timeLimitExpired = true;
                         this.stopRedialTimer();
                     } else {
+
+
+
+                   
                         console.log('The current time is not yet after 15 minutes from the specific date and time.');
                     }
 
@@ -344,9 +362,7 @@ export default {
 
             }, this.timerSpeed)   
         },
-        stopRedialTimer() {
-           clearInterval(this.callRedialInterval);
-        },
+
 
         /***************************************************** 
                 WAITING TIMER (30 seconds)   
@@ -354,41 +370,43 @@ export default {
         resetWaitingTimer() {
             this.waitingTimer = 30;            
         },
+        stopWaitingTimer() {
+            clearInterval(this.waitingInterval);
+        },        
         startWaitingTimer() {
 
             this.stopWaitingTimer();
-           
-            this.waitingInterval = setInterval(() => {
-                this.waitingTimer--;
-                if (this.waitingTimer < 0) {
 
-                    this.$root.$emit('redialUser', this.participants);   
-                    this.resetWaitingTimer();
-                    
+            if (this.$props.is_broadcaster == true) {
 
-                    this.waitingRedialCounter--; //
+               
 
-                    // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
-                    if (this.currentDate.getTime() > this.specificDate.getTime()) {
-                        console.log('The current time is after 15 minutes from the specific date and time.');
-                        this.stopWaitingTimer();       
+                this.waitingInterval = setInterval(() => {
+                    this.waitingTimer--;
+                    if (this.waitingTimer < 0) {
 
-                    } else {
-                        console.log('The current time is not yet after 15 minutes from the specific date and time.');
+                        this.$root.$emit('redialUser', this.participants);   
+                        this.resetWaitingTimer();
+                        this.waitingRedialCounter--; 
+
+                        // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
+                        if (this.currentDate.getTime() > this.specificDate.getTime()) {
+                            console.log('The current time is after 15 minutes from the specific date and time.');
+                            this.stopWaitingTimer();       
+
+                        } else {
+                            console.log('The current time is not yet after 15 minutes from the specific date and time.');
+                        }      
                     }
+                    //console.log(this.waitingTimer);
+                }, this.timerSpeed)       
 
-                    /*                                        
-                    if (this.waitingRedialCounter <= 0) {
-                        this.stopWaitingTimer();       
-                    } 
-                    */                   
-                }
-                //console.log(this.waitingTimer);
-            }, this.timerSpeed)             
+            } else {
+            
+                console.log("waiting timer of user is in progress")
+            }     
         },
-        stopWaitingTimer() {
-            clearInterval(this.waitingInterval);
-        },
+
 
         /***************************************************** 
                     PARTICIPANTS
@@ -426,9 +444,8 @@ export default {
                     this.participants.splice(i);
 
                     this.isDisconnected = true;
-
-                    this.stopWaitingTimer();
                     this.resetWaitingTimer();
+                    this.stopWaitingTimer();
 
                     this.$forceUpdate();
                     break;

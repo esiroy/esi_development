@@ -80,11 +80,35 @@
                 <!--[start]right navigation -->
                 <ul class="navbar-nav">
 
+
+                    <audio id="incomingCallAudio">
+                        <source src="" type="audio/mp3">
+                    </audio>
+                    
+                    @if(Auth::user()->user_type == 'TUTOR')
+                        <li class="pr-4 pt-2" id="memberTimerButtonContainer">                         
+                             <button id="memberTimerButton" class="btn btn-md btn-success" onClick="window.lessonSliderComponent.startMemberTimer()">
+                               <b-icon icon="alarm" aria-hidden="true"></b-icon> Start Member Timer
+                             </button>
+                        </li>                    
+                    @endif
+
+                    <li class="pr-4" id="memberTimerContainer">
+                        <div class="badge d-flex align-items-center  border  rounded-pill">
+                            <span id="memberTimer" class="text-white font-weight-bold h4 mt-2 px-3" >
+                                0:00
+                            </span>  
+                        </div>                            
+                    </li>                    
+
+
+                    @if(Auth::user()->user_type == 'MEMBER')
                     <li class="pr-2">
                         <a class="navbar-brand" href="#" onClick="javascript:return false">
                             <i class="fas fa-headset  fa-2x text-white"></i>
                         </a>
                     </li>
+                    @endif
 
                     <li class="pr-4 pt-2" id="countDownTimerContainer">
                         <span class="text-white font-weight-bold h2 mt-3" id="countDownTimer"></span>                       
@@ -99,7 +123,7 @@
 
                         @if (!$lessonHistory)
                         <li class="pr-4 pt-2" id="startSessionContainer">
-                            <button id="startSessionC" class="btn btn-md btn-success" onClick="window.lessonSliderComponent.startSession()">Start Timer</button>                       
+                            <button id="startSession" class="btn btn-md btn-success" onClick="window.lessonSliderComponent.startSession()">Start Timer</button>                       
                         </li>
                         @endif
                        
