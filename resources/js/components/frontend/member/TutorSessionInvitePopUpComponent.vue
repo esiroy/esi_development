@@ -78,16 +78,37 @@
                                     
                                     <div class="py-2">Please wait for your tutor to connect... </div>
 
-                                    <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>                 
+                                    <div v-if="this.supportCountdownTimer >= 1">
+                                        <div class="py-2">Technical support will assist you in {{ this.supportCountdownTimer }} when you are not connected</div>
+                                        <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                                    </div>
+                                    <div v-else-if="this.supportCountdownTimer == 0">
+                                        <div class="py-2">Opening Chat Support, please wait... </div>
+                                        <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                                    </div>
+                                    <div v-else>
+                                        <div class="mt-3">
+                                            <b-button pill variant="primary" @click="contactCustomerSupport">
+                                                <span class="small">Click here to contact constumer support</span>
+                                            </b-button>
+                                        </div>     
+                                    </div>
                                 </div>
 
                                 <div v-if="isDisconnected == true">
 
                                     Please wait for the tutor to reconnect...  
 
-                                    <div v-if="showTechnicalSupportLink == false">                                        
-                                        <div class="py-2">Technical support will assist you in {{ this.supportCountdownTimer }} when you are not connected</div>
-                                        <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                                    <div v-if="showTechnicalSupportLink == false">
+                                        <div v-if="this.supportCountdownTimer >= 1">
+                                            <div class="py-2">Technical support will assist you in {{ this.supportCountdownTimer }} when you are not connected</div>
+                                            <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                                        </div>
+                                        <div v-else>
+                                             <div class="py-2">Opening Chat Support, please wait... </div>
+                                            <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                                        </div>
+
                                     </div>
 
                                     <div class="mt-3" v-else-if="showTechnicalSupportLink == true">
@@ -254,7 +275,8 @@ export default {
                 Support Countdown timer
         *****************************************************/
         startSupportCountdownTimer() {
-
+        
+            this.stopSupportCountdownTimer();
             this.resetSupportCountdownTimer();
 
             this.showTechnicalSupportLink = false;
@@ -457,8 +479,6 @@ export default {
 
             if (this.$props.is_broadcaster == true) {
 
-               
-
                 this.waitingInterval = setInterval(() => {
                     this.waitingTimer--;
                     if (this.waitingTimer < 0) {
@@ -481,6 +501,9 @@ export default {
 
             } else {
             
+                this.resetSupportCountdownTimer();
+                this.startSupportCountdownTimer();
+
                 console.log("waiting timer of user is in progress")
             }     
         },
@@ -496,14 +519,14 @@ export default {
 
             this.showWaitingListModal();
 
-            this.isDisconnected = false;
-
             if (this.participants.length == 0) {
 
                 this.participants.push(user);
                 this.startLessonStartTimer();
                 this.stopWaitingTimer();
                 
+
+
             } else {
                 let result = this.participants.find(participant => participant.userid === user.userid);
                 if (result) {
