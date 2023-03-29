@@ -258,6 +258,21 @@
         :api_token="this.api_token" 
         :csrf_token="this.csrf_token"></TutorSessionInvitePopUpComponent>
 
+        <div v-if="this.$props.isBroadcaster == false">
+            <MemberFloatingChat
+                ref="memberFloatingChat" 
+                :userid="''+this.user_info.id+''" 
+                :username="this.user_info.username"
+                :user_image="this.user_image"        
+                :nickname="this.user_info.firstname"        
+                :customer_support_image="'images/cs-profile.png'"
+                :chatserver_url="this.chatserver_url"
+                :api_token="this.api_token" 
+                :csrf_token="this.csrf_token"
+                :show_sidebar="false"
+            >
+            </MemberFloatingChat>
+        </div>
 
     </div>
 </template>
@@ -268,6 +283,7 @@ import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue'
 import SlideSelectorComponent from './SlideSelectorComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
 import TutorSessionInvitePopUpComponent from './TutorSessionInvitePopUpComponent.vue'
+import MemberFloatingChat from '../chat/MemberFloatingChatComponent.vue'
 
 //Uploader
 import SlideUploaderComponent from './SlideUploaderComponent.vue'
@@ -280,8 +296,16 @@ import io from "socket.io-client";
 
 export default {
     name: "lessonSliderComponent",
-    components: { TutorSessionInvitePopUpComponent, TutorSlideNotesComponent, SlideSelectorComponent, AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent},
+    components: { 
+        TutorSessionInvitePopUpComponent, TutorSlideNotesComponent, SlideSelectorComponent, 
+        AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent,
+        MemberFloatingChat
+    },
     props: {
+
+        chatserver_url: String, //This will fire chat server on webRTC page
+
+
         csrf_token: String,		
         api_token: String,
         reservation: Object,       
@@ -501,9 +525,6 @@ export default {
         this.socket = io.connect(this.$props.canvas_server);
         window.lessonSliderComponent = this;
 
-
-  
-
         //register as currently active users can see ONLINE  status
         this.user = {
             userid: this.member_info.user_id ,
@@ -531,8 +552,6 @@ export default {
 
 
         this.socket.on("START_MEMBER_TIMER", (data) =>  {
-
-
             this.isMemberTimerStarted = true;
             this.startMemberCountdownTimer();
 
@@ -622,6 +641,13 @@ export default {
             } catch (error) {
                 console.log("Error, tutor can't select new slide ", error);
             }
+        });
+
+
+        this.$root.$on('openCustomerSupport', () => {
+
+            this.$refs['TutorSessionInvite'].hideWaitingListModal();
+            this.openFloatinChatBox();
         });
 
 
@@ -768,9 +794,7 @@ export default {
 
                     //CALL THE USER
                     console.log("emit call user ", data);
-
                     this.socket.emit('CALL_USER',  data); 
-
                     /*************** NEW - VERSION 6 ***************/
                     this.$refs['TutorSessionInvite'].showCallUserModal(); 
                     //@todo: wait 5 seconds and do another call if not accepted     
@@ -790,9 +814,6 @@ export default {
             } else if (this.isExpiredSession == true) {
 
                 /*********** EXPIRED SESSSION ********** */
-           
-
-
                 if (this.$props.lesson_completed == true) 
                 {                
                     console.log("lesson completed");
@@ -832,6 +853,10 @@ export default {
                 this.$refs['TutorSessionInvite'].showWaitingListModal(); 
 
             }
+
+
+            //close chat box
+            this.closeFloatingChatIcon();
         }
 
         this.$root.$on('redialUser', (response) => {
@@ -947,19 +972,25 @@ export default {
         {
             if (this.$props.isBroadcaster == false) 
             {
-                console.log("TUTOR LEFT A SESSION");                                  
+                console.log("TUTOR LEFT THE SESSION");                                  
+              
+          
+
             } else {               
-                 console.log("USER LEFT A SESSION");                
+                console.log("USER LEFT A SESSION");                
             }
 
             
             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+            this.$refs['TutorSessionInvite'].stopLessonTimer()
 
-            if (this.$props.lesson_completed == false) {
+            if (this.$props.lesson_completed == false) 
+            {
+                //if lesson is not finished 
                 this.$refs['TutorSessionInvite'].showWaitingListModal();                
             }  
 
-            this.$refs['TutorSessionInvite'].stopLessonTimer(); 
+          ; 
         });
 
 
@@ -1044,7 +1075,19 @@ export default {
     },
 
     methods: {
-    
+        showFloatingChatIcon() {        
+            this.$refs['memberFloatingChat'].openFloatingChatIcon();
+        },
+        hideFloatingChatIcon() {
+            this.$refs['memberFloatingChat'].closeFloatingChatIcon();
+        },
+        openFloatinChatBox() {
+            this.$refs['memberFloatingChat'].openFloatingChatIcon()
+            this.$refs['memberFloatingChat'].openChatBox();
+        },
+        closeFloatingChatIcon() {
+            this.$refs['memberFloatingChat'].closeFloatingChatIcon();
+        },
         startMemberTimer() {
             this.socket.emit('START_MEMBER_TIMER', this.getSessionData()); 
             this.isMemberTimerStarted = true;
@@ -1060,12 +1103,9 @@ export default {
 
                     this.memberCountdownTimer --;    
 
-                    if (this.memberCountdownTimer < 0) {     
-
-                        console.log("timer alarm triggered")                  
-                        this.playIncomingCallAudio({'path': 'mp3/alarm.mp3'})                       
+                    if (this.memberCountdownTimer < 0) {  
+                        this.playAlarmAudio({'path': 'mp3/alarm.mp3'})                       
                         this.stopMemberCountdownTimer();
-
                         this.showMemberMemberTimerStartButton();
                     }
 
@@ -1091,17 +1131,14 @@ export default {
         hideMemberMemberTimerStartButton() {
             $("#memberTimerButtonContainer").hide();
         },
-        playIncomingCallAudio(audio) {              
-           
-            let incomingCallAudio = document.getElementById('incomingCallAudio');
-            if (incomingCallAudio) {      
-                incomingCallAudio.src = window.location.origin +"/"+ audio.path;                              
-                incomingCallAudio.load();
-                incomingCallAudio.play();  
+        playAlarmAudio(audio) {
+            let alarmAudio = document.getElementById('alarmAudio');
+            if (alarmAudio) {      
+                alarmAudio.src = window.location.origin +"/"+ audio.path;                              
+                alarmAudio.load();
+                alarmAudio.play();  
             }
-        },          
-
-
+        },
         checkExpiredSession() {
             //Expired Session without teacher initiation
                 // Create a new Date object for the specific date and time

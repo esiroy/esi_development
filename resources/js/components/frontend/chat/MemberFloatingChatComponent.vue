@@ -51,13 +51,15 @@
         </div>
 
         <!--[START] CHAT BUTTON -->
-        <div class="position-bottom-right" v-show="showChatbox == false">
-            <b-button class="chat-button mb-4 mr-5"  variant="primary" @click="openChatBox">
-                 <h2 class="fa fa-comments mt-1"></h2>
-                 <span class="badge badge-danger text-white small m-0 p-1" v-show="this.unread_message_count > 0">
-                 {{this.unread_message_count}}
-                 </span>
-            </b-button>
+        <div class="floatingChatIcon" v-show="showFloatingChatIcon == true">
+            <div class="position-bottom-right" v-show="showChatbox == false">
+                <b-button class="chat-button mb-4 mr-5"  variant="primary" @click="openChatBox">
+                    <h2 class="fa fa-comments mt-1"></h2>
+                    <span class="badge badge-danger text-white small m-0 p-1" v-show="this.unread_message_count > 0">
+                    {{this.unread_message_count}}
+                    </span>
+                </b-button>
+            </div>
         </div>
         <!--[END] CHAT BUTTON -->
        
@@ -231,6 +233,8 @@ export default {
   },    
   data() {
     return {            
+
+        showFloatingChatIcon: true,
 
         //history is fetching status
         isFetching: false,
@@ -560,6 +564,12 @@ export default {
                 sendBtn.style.display = "block";
             }
         }        
+    },    
+    openFloatingChatIcon() {
+        this.showFloatingChatIcon = true;
+    },
+    closeFloatingChatIcon() {
+        this.showFloatingChatIcon = false;
     },    
     closeChatBox() {
         this.showChatbox = false;

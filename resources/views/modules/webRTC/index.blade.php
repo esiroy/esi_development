@@ -15,10 +15,11 @@
     @endphp 
 
 <div id="slide-component">
+
+
     <lesson-slider-component  
         ref="lessonSliderComponent"
-
-         user_image="{{ $memberProfileImage ?? '' }}"
+        user_image="{{ $memberProfileImage ?? '' }}"
          
         :is-broadcaster="{{ $isBroadcaster }}"
         :editor_id="'canvas'"
@@ -43,6 +44,9 @@
 
         api_token="{{ Auth::user()->api_token }}" 
         csrf_token="{{ csrf_token() }}"
+
+        chatserver_url="{{ env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001') }}"
+
         ></lesson-slider-component> 
 </div>
 

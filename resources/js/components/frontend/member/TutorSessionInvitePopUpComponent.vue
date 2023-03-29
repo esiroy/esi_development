@@ -7,12 +7,13 @@
                             CALL USER MODAL
             ***************************************************/
         -->
-        <b-modal id="modal-callUser" title="Calling Student Please wait">
+        <b-modal id="modal-callUser"  :title="'Calling Student Please wait'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
              <div v-if="timeLimitExpired == true">
                 <div>Time is up the student did not show on the lesson.</div>
                 <div>This lesson is counted please slide the button to confirm.</div>
             </div>
             <div v-else-if="callAttemptFailed == false">
+            
                 <div class="text-center">                    
                     <span class="text-primary small">
                         Sending student a lesson invitation, please wait
@@ -48,7 +49,7 @@
                             CALL WAITING FOR PARTICIPANTS
             ***************************************************/
         -->
-        <b-modal id="modal-participants" :title="modalTitle">
+        <b-modal id="modal-participants" :title="modalTitle" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
 
             <div class="modal-body" v-if="participants.length <= 0">
                 <div id="waiting" class="text-center">
@@ -59,30 +60,51 @@
                         </span>
                     </div>
                     <div v-else>
-                        <div class="pb-3">
+
+                        <div class="pb-3 alert alert-primar" role="alert">
+                        
                             <div class="text-primary small" v-if="is_broadcaster == true">  
                                 <div v-if="isDisconnected == false">                           
                                     Invite recieved, Please wait for the student to accept and connect...                            
                                 </div>
                                 <div v-if="isDisconnected == true">  
-                                    Please wait for the student to reconnect...  
+                                    Please wait for the student to reconnect... 
+                                    <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>     
                                 </div> 
                             </div>
 
                             <span class="text-primary small" v-if="is_broadcaster == false">
                                 <div v-if="isDisconnected == false">                           
-                                    Please wait for your tutor to connect...              
+                                    
+                                    <div class="py-2">Please wait for your tutor to connect... </div>
+
+                                    <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>                 
                                 </div>
-                                <div v-if="isDisconnected == true">                                     
+
+                                <div v-if="isDisconnected == true">
+
                                     Please wait for the tutor to reconnect...  
+
+                                    <div v-if="showTechnicalSupportLink == false">                                        
+                                        <div class="py-2">Technical support will assist you in {{ this.supportCountdownTimer }} when you are not connected</div>
+                                        <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>    
+                                    </div>
+
+                                    <div class="mt-3" v-else-if="showTechnicalSupportLink == true">
+                                        <b-button pill variant="primary" @click="contactCustomerSupport">
+                                            <span class="small">Click here to contact constumer support</span>
+                                        </b-button>
+                                    </div>
+
                                 </div>
-                            </span>                            
+                            </span>          
                         </div>
-                        <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>                           
+                                              
                     </div>
                 </div>
             </div>
             <div v-else-if="participants.length >= 1">
+
                 <div  class="text-center" v-for="(participant, index) in participants" :key="index">             
                     <div class="text-center">
                         {{ participant.firstname }} {{ participant.lastname }}
@@ -106,7 +128,14 @@
 
                 <div class="container text-center"  v-if="is_broadcaster == false">
                     <div v-if="participants.length <= 0">
-                        Please wait for your tutor to connect
+                       
+                        <div v-if="isDisconnected == false">                           
+                            Please wait for your tutor to connect...              
+                        </div>
+                        <div v-if="isDisconnected == true">                                     
+                            Please wait for the tutor to reconnect...  
+                        </div>
+
                     </div>
                     <div v-else>
                         Lesson will start {{ lessonStartTimer }}
@@ -150,6 +179,8 @@ export default {
     },    
     data() {
         return {
+            headerBgVariant: 'lightblue',
+
             loaded: false,
             variants: ['primary'],
             modalTitle: null,
@@ -178,7 +209,16 @@ export default {
             currentDate: null,
 
 
+            //Support link timer (15 seconds)
+            isSupportTimerStarted: false,
+            supportTimerInterval: false,
+            supportCountdownTimer: 15,
+
+
+            //Determin if user has been disconnected
             isDisconnected: false,
+
+            showTechnicalSupportLink: false,
 
         }
     },
@@ -205,6 +245,47 @@ export default {
         
     },
     methods: {
+
+        contactCustomerSupport() {
+
+            this.$root.$emit('openCustomerSupport');
+        },
+        /***************************************************** 
+                Support Countdown timer
+        *****************************************************/
+        startSupportCountdownTimer() {
+
+            this.resetSupportCountdownTimer();
+
+            this.showTechnicalSupportLink = false;
+
+            if (this.isSupportTimerStarted == false) {
+                this.isSupportTimerStarted = true;
+            } else {
+            
+            }
+
+            if (this.isSupportTimerStarted == true) {
+                this.supportTimerInterval = setInterval(()=> {
+                    this.supportCountdownTimer --;  
+                    if (this.supportCountdownTimer < 0) {  
+                        //@todo: trigger customer support module
+                        this.stopSupportCountdownTimer();
+                        this.showTechnicalSupportLink = true;
+                    }
+                }, this.timerSpeed);  
+            }
+        },
+        resetSupportCountdownTimer() {
+            this.supportCountdownTimer = 15;
+        },        
+        stopSupportCountdownTimer() {
+
+            console.log("stop support timer triggered...")
+            this.isSupportTimerStarted = false;
+            clearInterval(this.supportTimerInterval); 
+        },
+
 
         /***************************************************** 
                 CALL USER MODAL 
@@ -342,9 +423,6 @@ export default {
                         this.timeLimitExpired = true;
                         this.stopRedialTimer();
                     } else {
-
-
-
                    
                         console.log('The current time is not yet after 15 minutes from the specific date and time.');
                     }
@@ -439,13 +517,21 @@ export default {
         removeParticipants(user) {
 
             for (var i in this.participants) {
-                if (this.participants[i].userid === user.userid) {
-                    //console.log(this.participants[i]);  
-                    this.participants.splice(i);
 
+                if (this.participants[i].userid === user.userid) {
+
+                    console.log(this.participants[i], "- left the session");  
+                    this.participants.splice(i);
                     this.isDisconnected = true;
                     this.resetWaitingTimer();
                     this.stopWaitingTimer();
+
+                    /**
+                    ** @date: MARCH: 28. 2023
+                    ** @todo: Start Support Countdown For members only 
+                    **/
+                    this.resetSupportCountdownTimer();
+                    this.startSupportCountdownTimer();
 
                     this.$forceUpdate();
                     break;

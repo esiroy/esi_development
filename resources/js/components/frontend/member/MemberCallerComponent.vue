@@ -2,8 +2,15 @@
 
     <div id="caller-wrapper">
 
+
         <div class="container">
 
+
+            <audio id="incomingCallAudio">
+                <source src="" type="audio/mp3">
+            </audio>
+
+            
             <b-modal id="modal-call-member" content-class="esi-modal" title="Requesting Lesson..." :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close >
                 <div v-if="this.reservation !== null" class="text-center">
                     <!--
@@ -49,15 +56,10 @@
             <b-modal id="modal-call-alert" :title="'A tutor is inviting you for a call'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
 
 
-                <div class="row text-center" v-if="this.callReservation !== null" >   
-
-                  
+                <div class="row text-center" v-if="this.callReservation !== null" >                     
                     <div class="col-12 text-center">
-
                         <div class="alert alert-primary" role="alert">
-
                             Please accept a lesson invitation from <span v-show="this.caller.nickname">({{ this.caller.nickname }})</span>
-
                             <!--  <div class="fullname">{{ this.caller.firstname + " " + this.caller.lastname }}</div>-->                            
                             <!-- Email: {{ this.caller.email }}  </div>-->
                         </div>
@@ -70,9 +72,7 @@
                 <template #modal-footer>
                     <div class="container text-center">
                         <b-button variant="success" @click="acceptCall">
-
                             <b-icon icon="telephone-inbound" animation="throb" font-scale="1"></b-icon> 
-
                             <span class="pb-3" animation="throb">Accept Lesson Request</span>
                         </b-button>
                     </div>
@@ -282,14 +282,13 @@
                     this.caller              = data.caller;                        
                     this.recipient           = data.recipient;
                     this.callReservation     = data.reservationData;
-
-
                     this.$bvModal.show('modal-call-alert');  
-
                     //SEND THE CALL USER PING BACK WITH CHANNEL ID
                     this.recipient.channelid = data.reservationData.schedule_id;
 
-                    console.log(data.recipient,  "callback")
+                    this.playIncomingCallAudio({'path': 'mp3/incoming-call.mp3'})
+
+                    console.log(data.recipient,  "emit call user pingback")
 
                     
                     this.socket.emit('CALL_USER_PINGBACK', this.recipient); 
@@ -340,6 +339,14 @@
         },
         methods: {
 
+            playIncomingCallAudio(audio) {
+                let incomingCallAudio = document.getElementById('incomingCallAudio');
+                if (incomingCallAudio) {      
+                    incomingCallAudio.src = window.location.origin +"/"+ audio.path;                              
+                    incomingCallAudio.load();
+                    incomingCallAudio.play();  
+                }
+            },
             selectLesson(tutor, member, reservation) 
             {           
                 this.tutor              = JSON.parse(tutor);

@@ -81,7 +81,7 @@
                 <ul class="navbar-nav">
 
 
-                    <audio id="incomingCallAudio">
+                    <audio id="alarmAudio">
                         <source src="" type="audio/mp3">
                     </audio>
                     
@@ -104,7 +104,7 @@
 
                     @if(Auth::user()->user_type == 'MEMBER')
                     <li class="pr-2">
-                        <a class="navbar-brand" href="#" onClick="javascript:return false">
+                        <a class="navbar-brand" href="#" onClick="window.lessonSliderComponent.openFloatinChatBox()">
                             <i class="fas fa-headset  fa-2x text-white"></i>
                         </a>
                     </li>
