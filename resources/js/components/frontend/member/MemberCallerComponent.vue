@@ -1,8 +1,6 @@
 <template>
 
     <div id="caller-wrapper">
-
-
         <div class="container">
 
 
@@ -54,8 +52,6 @@
 
 
             <b-modal id="modal-call-alert" :title="'A tutor is inviting you for a call'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
-
-
                 <div class="row text-center" v-if="this.callReservation !== null" >                     
                     <div class="col-12 text-center">
                         <div class="alert alert-primary" role="alert">
@@ -84,7 +80,6 @@
 
         <!-- SELECT LESSON -->
         <div id="select-lesson-container" class="container-fluid">
-
              <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList" >
                 Select Lesson 
                 <b-form-select id="lessonSelector" v-model="lessonSelectedFolderID" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
@@ -116,10 +111,6 @@
                         <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>
                     </div>
                 </template>
-
-
-
-
              </b-modal>
         </div>
 

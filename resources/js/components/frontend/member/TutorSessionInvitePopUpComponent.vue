@@ -16,7 +16,10 @@
             
                 <div class="text-center">                    
                     <span class="text-primary small">
-                        Sending student a lesson invitation, please wait
+                         <div class="py-2">Sending student a lesson invitation, please wait</div>
+
+                         <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>  
+
                     </span>
                 </div>
             </div>           
@@ -56,7 +59,10 @@
 
                     <div v-if="waitingTimer <= 0"> 
                         <span class="text-primary small">
-                            Sending student a lesson another invitation, please wait
+
+                            <div class="py-2">We arre resending student a lesson another invitation, please wait...</div>
+
+                            <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>  
                         </span>
                     </div>
                     <div v-else>
@@ -68,7 +74,9 @@
                                     Invite recieved, Please wait for the student to accept and connect...                            
                                 </div>
                                 <div v-if="isDisconnected == true">  
-                                    Please wait for the student to reconnect... 
+
+                                    <div>Please wait for the student to reconnect...</div>
+
                                     <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>     
                                 </div> 
                             </div>

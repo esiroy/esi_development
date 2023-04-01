@@ -2,51 +2,86 @@
     <div class="slideSelectorContainer">
 
         <div class="slideSelectorWrapper">
-            <b-modal ref="slideSelectorModal"  @show="getLessonsList" title="Please preview a lesson for your student" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-esc>
-                <!--
-                <template #modal-header>
-                    <div class="mx-auto">
-                        <h4 class="text-center text-white">Please preview a lesson for your student</h4>
-                    </div>    
-                </template>
-                -->
 
+            <b-modal ref="slideSelectorModal"  @show="getLessonsList" title="Select a lesson for your student" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-esc>
+            
                 <div id="slideSelection">
-                    <h5 class="text-maroon">Please preview and select a Lesson </h5>
+
+                    <h5 class="text-maroon">Please select a Lesson </h5>
               
-                    <hr/>
+                    <div class="mb-2">
+                        <button class="btn btn-primary mr-4" @click="selectCategory(parentID)" v-if="parentID !== null">
+                            Previous Folder
+                        </button>
+                    </div>
 
-                    Select Lesson 
-                    <b-form-select id="lessonSelector" v-model="lessonSelectedFolderID" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
+                    <div v-if="currentFolder !== null">
+                        <div class="card flex-row flex-wrap">
 
-                    <!--[START] - (NEW! 2023) PREVIEW: Lesson Image gallery for the selected lesson-->
-                    <div class="mt-3" v-if="folder !== null">
-                        <div class="pt-2">You have selected:</div>                
-                        <div>Lesson Name: <strong>{{ folder.folder_name }} </strong></div>
-                        <div>Lesson Description: {{ folder.folder_description }}</div>                 
-                        <div class="container pt-4" v-if="files != null">
-                            <div class="row">
-                                <div class="col-2" v-for="file in files" v-bind:key="file.id">                            
-                                    <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" @click="imageViewer(getBaseURL(file.path))"/>
-                                </div>
+                            <div class="card-header border-0 w-25">
+                                {{ "Root Category"}}
+                            </div>
+                            <div class="card-block px-2">
+                                <h4 class="card-title"> {{ currentFolder.folder_name }}</h4>
+                                <p class="card-text">{{ currentFolder.folder_description }}</p>
+                                <a href="#" class="btn btn-primary">Select Lesson</a>
+                            </div>
+                            <div class="w-100"></div>
+                            <div class="card-footer w-100 text-muted">
+                                Footer stating cats are CUTE little animals
                             </div>
                         </div>
-                        <div v-else class="text-center">
-                            <span class="text-danger">No Images found for this slides</span>
+                    </div>
+
+
+                    <div class="category-files">
+                        <div class="file" v-for="file in files" :key="'file_'+ file.id">
+                            <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" @click="imageViewer(getBaseURL(file.path))"/>
+                        </div>
+                    </div>
+
+                    <hr/>
+
+                    <fieldset class="border p-2">
+
+                        <legend  class="w-auto text-primary">
+                            <span v-if="parentID !== null"> Related Lesson Categories</span>
+                            <span v-else>Lesson Categories</span>
+                        </legend>
+
+                        <div id="folder-categories"  class="row" v-if="folderCategories.length >= 1" >
+
+                            <div class="col-3" v-for="category in folderCategories" :key="'category_'+category.id" @click="selectCategory(category.id)">
+
+                                <div class="card mb-3 border-primary">
+                                    <div class="card-header bg-primary">
+                                        <span class="text-white">
+                                            {{ category.folder_name }}
+                                        </span>
+                                    </div>
+                                    <div class="card-body card-body-minimum">
+                                        <p class="card-text small">
+                                            {{ category.folder_description }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div v-else>
+                            <div class="text-center my-4">
+                                <span class="small text-maroon">No more lesson category</span>
+                            </div>
                         </div>
 
-                    </div>
-                    <div v-else class="mt-3 text-center">
-                        <div class="text-danger">Please select a folder</div>
-                    </div>
-                    <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->                      
-               
-                    <div class="my-5 text-center">
-                        <button class="btn btn-success" @click="startNewSlide()">
-                            Choose Slide and Start Lesson
-                        </button>
-                    </div>            
+                    </fieldset>
+                    
+
+
+
                 </div>
+
+
             </b-modal>
 
         </div>
@@ -90,6 +125,19 @@
     data() {
         return {
 
+            selectedLessonID: null,
+
+            //[list]
+            currentFolderID: null,
+            currentFolder: null,
+            parentID: null,
+       
+            folderCategories: [],
+            files: [],
+
+
+
+
             //client ID
             lessonID: null,
             userID : null,
@@ -118,11 +166,6 @@
 
         if (this.$props.folder_id == '' || this.$props.folder_id == 'null' || this.$props.folder_id == null) {                
             this.lessonSelectedFolderID = "null";
-
-            /** 
-                AUTO SHOW SELECTOR MODAL (OPTIONAL/EXPERIMENTAL)
-             */
-            //this.$refs['slideSelectorModal'].show();        
         }
 
 
@@ -133,10 +176,102 @@
         
     },
     methods: {      
+
+        selectCategory(id) {
+
+            if (id == 0) {                
+                this.selectedLessonID = null; 
+            } else {
+                this.selectedLessonID = id; 
+            }
+            
+            this.getLessonsList();
+        },
+        getLessonsList() {
+            axios.post("/api/getLessonFolders?api_token=" + this.api_token, 
+            {
+                method          : "POST",                
+                folderID        : this.selectedLessonID,
+                //public_folder_id : null,
+            }).then(response => {
+
+                if (response.data.success == true) {
+
+                    this.parentID           = response.data.parentID;
+                    this.currentFolder      = response.data.currentFolder;
+                    this.folderCategories   = response.data.folderCategories;     
+                    this.files              = response.data.files;
+
+                    this.$forceUpdate();
+
+                } else {
+                
+                    alert ("Error")
+                }
+            });
+        },
+
+        getFolderOptions(FolderName, folders, hierarchy) 
+        {   
+                if (hierarchy == 0) 
+                {
+                    this.lessonOptions = [{
+                        id: "null",
+                        value: "null",
+                        html: "Please select lesson",       
+                        label: "Please select lesson",
+                        description:  "Please select lesson"                            
+                    }];                
+                }
+
+                folders.forEach((folder) => { 
+
+                    let folderOptionName = null;
+
+                    if (FolderName !== null) {
+                        folderOptionName = FolderName + " ====> " + folder.name;
+                    } else {
+                        folderOptionName = folder.name;                    
+                    }
+
+
+                    this.lessonOptions.push({                  
+                        id              : folder.id,
+                        name            : folder.name,
+                        label           : folderOptionName,
+                        html            : folderOptionName,
+                        description     : folder.description,                             
+                        value           : folder.id
+                    });    
+                       
+                    if (folder.children.length >= 1) 
+                    {
+                        this.getFolderOptions(folderOptionName, folder.children, hierarchy + 1);
+                    }
+
+                });
+                
+        },        
+
+        getOptionSelected(targetID) 
+        {
+            let selectedID = document.getElementById(targetID).value;
+            this.getLessonSelectedPreviewByID(selectedID);
+
+            let select = document.getElementById(targetID);
+            let selectedIndex = select.selectedIndex;
+            this.selectedOption = this.lessonOptions[selectedIndex];  
+
+            return this.selectedOption;
+        },
         openSlideSelector(lessonID, userID) {
         
+
+            this.selectedLessonID = null;
+            this.parentID  = null;
+
             //MEMBER INFO
-            this.lessonID = lessonID;
+            this.lessonID   = lessonID;
             this.userID     = userID;
 
             this.$refs['slideSelectorModal'].show();
@@ -191,78 +326,10 @@
             return window.location.origin + "/" +path
         },
         imageViewer(imageURL) {
-
             this.imageURL = imageURL;
-
             this.$bvModal.show('modalImageViewer');
         },        
-        getFolderOptions(FolderName, folders, hierarchy) 
-        {   
-                if (hierarchy == 0) 
-                {
-                    this.lessonOptions = [{
-                        id: "null",
-                        value: "null",
-                        html: "Please select lesson",       
-                        label: "Please select lesson",
-                        description:  "Please select lesson"                            
-                    }];                
-                }
-
-                folders.forEach((folder) => { 
-
-                    let folderOptionName = null;
-
-                    if (FolderName !== null) {
-                        folderOptionName = FolderName + " ====> " + folder.name;
-                    } else {
-                        folderOptionName = folder.name;                    
-                    }
-
-
-                    this.lessonOptions.push({                  
-                        id              : folder.id,
-                        name            : folder.name,
-                        label           : folderOptionName,
-                        html            : folderOptionName,
-                        description     : folder.description,                             
-                        value           : folder.id
-                    });    
-                       
-                    if (folder.children.length >= 1) 
-                    {
-                        this.getFolderOptions(folderOptionName, folder.children, hierarchy + 1);
-                    }
-
-                });
-                
-        },        
-        getLessonsList() 
-        {
-            axios.post("/api/get_folders?api_token=" + this.api_token, 
-            {
-                method          : "POST",
-                lessonID         : this.selectedLessonID,
-                //public_folder_id : null,
-            }).then(response => {
-
-                if (response.data.success == true) {
-                    
-                    this.getFolderOptions(null, response.data.folders, 0);
-                }
-            });
-        },
-        getOptionSelected(targetID) 
-        {
-            let selectedID = document.getElementById(targetID).value;
-            this.getLessonSelectedPreviewByID(selectedID);
-
-            let select = document.getElementById(targetID);
-            let selectedIndex = select.selectedIndex;
-            this.selectedOption = this.lessonOptions[selectedIndex];  
-
-            return this.selectedOption;
-        },        
+        
 
         getLessonSelectedPreviewByID(lessonSelectedFolderID) 
         {
@@ -303,3 +370,11 @@
     }
  }
  </script>
+
+ <style scoped>
+    .card-body-minimum {
+    
+        min-height: 100px;
+    }
+
+ </style>

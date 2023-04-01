@@ -292,3 +292,5 @@ Route::middleware('auth:api')->post('/saveLessonChat', 'API\lessonChatController
 Route::middleware('auth:api')->post('/markLessonChatMessagesRead', 'API\lessonChatController@markLessonChatMessagesRead')->name('APIMarkLessonChatMessagesRead');
 
 
+//(2023) New Lesson Folder parent thumbnail viewer
+Route::middleware('auth:api')->post('/getLessonFolders', 'API\LessonFolderController@getLessonFolders')->name('APIGetLessonFolders');
