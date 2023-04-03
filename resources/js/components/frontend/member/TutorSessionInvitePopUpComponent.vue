@@ -9,8 +9,8 @@
         -->
         <b-modal id="modal-callUser"  :title="'Calling Student Please wait'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
              <div v-if="timeLimitExpired == true">
-                <div>Time is up the student did not show on the lesson.</div>
-                <div>This lesson is counted please slide the button to confirm.</div>
+                <div>Time is up the student did not show on time for the lesson</div>
+                <div>This lesson is counted please click to confirm.</div>
             </div>
             <div v-else-if="callAttemptFailed == false">
             
@@ -59,9 +59,7 @@
 
                     <div v-if="waitingTimer <= 0"> 
                         <span class="text-primary small">
-
                             <div class="py-2">We arre resending student a lesson another invitation, please wait...</div>
-
                             <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>  
                         </span>
                     </div>
@@ -180,7 +178,26 @@
                         LESSON EXPIRED MODAL
             ***************************************************/
         -->
+         <b-modal id="modal-expired" title="Your lesson has expired" size="lg" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>                      
 
+            <div class="alert alert-danger" role="alert">
+                <div class="row">
+                    <div class="col-1 pt-3 text-right">
+                        <b-icon scale="3.5" icon="exclamation-circle"></b-icon>
+                    </div>
+                    <div class="col-11 pl-4">
+                        <div class="mt-2 small font-weight-bold">Sorry, lesson time is up. You did not show up in time for your lesson.</div>
+                        <div class="mt-2 small">This lesson is counted</div>  
+                    </div>
+                </div>
+            </div>
+
+            <template #modal-footer>
+                <div class="container text-center">
+                    <b-button variant="success" @click="backToMemberHome()">I Agree and take me back to homepage</b-button>                                                                           
+                </div>
+            </template>
+         </b-modal>
 
     </div>
    
@@ -275,6 +292,10 @@ export default {
     },
     methods: {
 
+        backToMemberHome() {
+            window.location.assign('' + this.baseURL('/home') +'');            
+        },
+        
         contactCustomerSupport() {
 
             this.$root.$emit('openCustomerSupport');
@@ -369,7 +390,13 @@ export default {
                 if (this.currentDate.getTime() > this.specificDate.getTime()) 
                 {
                     this.timeLimitExpired = true;
-                    this.$bvModal.show('modal-callUser');
+
+                    if (this.$props.is_broadcaster == true) {
+                        this.$bvModal.show('modal-callUser');
+                    } else {
+                         this.$bvModal.show('modal-expired');
+                    }
+                  
                     this.stopRedialTimer();
                     this.stopWaitingTimer();
 

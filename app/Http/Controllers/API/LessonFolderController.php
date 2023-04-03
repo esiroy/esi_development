@@ -54,8 +54,7 @@ class LessonFolderController extends Controller
             ]);   
 
 
-        } else {
-        
+        } else {       
 
             //@todo: get the parent folder (id = 0)
 
@@ -85,8 +84,41 @@ class LessonFolderController extends Controller
     }
 
     public function searchFolders(Request $request, Folder $folder, File $file) {
-    
-    
+
+        if ($request->searchKeyword) {
+        
+            $keyword = $request->searchKeyword;
+        
+            $folders = $folder
+                    ->where('folder_name', 'LIKE', '%'.$keyword.'%')
+                    ->orWhere('folder_description', 'LIKE', '%'.$keyword.'%')
+
+                    ->orWhere('folder_name', $keyword)
+                    ->orWhere('folder_description', $keyword)
+
+                    ->orderBy('order_id', 'ASC')->get();
+
+            if ($folders) {
+                return Response()->json([
+                    "success"       => true,
+                    "folders"       => $folders,            
+                ]); 
+            } else {
+                return Response()->json([
+                    "success"       => false,
+                    "folders"       => [],
+                    "message"       => "No Result Found",            
+                ]);   
+            }
+
+        } else {
+        
+            return Response()->json([
+                "success"       => false,
+                "folders"       => [],
+                "message"       => "No keywords supplied",            
+            ]); 
+        }
     }
    
 }
