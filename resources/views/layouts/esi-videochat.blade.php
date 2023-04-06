@@ -30,19 +30,12 @@
         <nav class="navbar navbar-expand-md navbar-light shadow-sm bg-darkblue">
 
             <div class="container-fluid">
-
                 <ul class="navbar-nav mr-auto">
-
                     <li class="pr-4">
-
                         @if(Auth::user()->user_type == 'TUTOR')
-                            <a class="navbar-brand" href="{{ url('/admin') }}">
-                                <i class="fas fa-home fa-2x text-white"></i>
-                            </a>
+                            <a class="navbar-brand" href="{{ url('/admin') }}"><i class="fas fa-home fa-2x text-white"></i></a>
                         @else 
-                            <a class="navbar-brand" href="{{ url('/') }}">
-                                <i class="fas fa-home fa-2x text-white"></i>
-                            </a>
+                            <a class="navbar-brand" href="{{ url('/') }}"><i class="fas fa-home fa-2x text-white"></i></a>
                         @endif
                     </li>
 
@@ -80,15 +73,15 @@
                 <!--[start]right navigation -->
                 <ul class="navbar-nav">
 
-
                     <audio id="alarmAudio">
                         <source src="" type="audio/mp3">
                     </audio>
                     
                     @if(Auth::user()->user_type == 'TUTOR')
                         <li class="pr-4 pt-2" id="memberTimerButtonContainer">                         
-                             <button id="memberTimerButton" class="btn btn-md btn-success" onClick="window.lessonSliderComponent.startMemberTimer()">
-                               <b-icon icon="alarm" aria-hidden="true"></b-icon> Start Member Timer
+                             <button id="memberTimerButton" class="btn btn-md btn-success small" onClick="window.lessonSliderComponent.showTimerControlModal()">
+                               <b-icon icon="alarm" aria-hidden="true"></b-icon> 
+                               <span class="small">Set Countdown Timer</span>
                              </button>
                         </li>                    
                     @endif
@@ -123,7 +116,10 @@
 
                         @if (!$lessonHistory)
                         <li class="pr-4 pt-2" id="startSessionContainer">
-                            <button id="startSession" class="btn btn-md btn-success" onClick="window.lessonSliderComponent.startSession()">Start Timer</button>                       
+                            <button id="startSession" class="btn btn-md btn-success small" onClick="window.lessonSliderComponent.startSession()">                                
+                                <b-icon icon="play" aria-hidden="true"></b-icon> 
+                                <span class="small">Start Session</span>
+                            </button>
                         </li>
                         @endif
                        

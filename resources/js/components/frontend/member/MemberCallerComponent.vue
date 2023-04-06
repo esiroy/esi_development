@@ -1,55 +1,12 @@
 <template>
 
     <div id="caller-wrapper">
+
+        <!--[start] Incoming Call -->
         <div class="container">
-
-
             <audio id="incomingCallAudio">
                 <source src="" type="audio/mp3">
             </audio>
-
-            
-            <b-modal id="modal-call-member" content-class="esi-modal" title="Requesting Lesson..." :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close >
-                <div v-if="this.reservation !== null" class="text-center">
-                    <!--
-                    <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
-                    <div>Current Time {{ this.currentTime }}</div>
-                    -->
-
-                    <div class="text-primary font-weight-bold">Member {{ this.member.firstname }}  {{ this.member.lastname }}</div>
-                    <div class="textsecondary">{{ this.reservation.lessonTimeRage }}</div>
-
-                    <img :src="this.member.image" class="rounded-circle">    
-
-                </div>
-                <template #modal-footer>
-                    <div class="container text-center">
-                        <b-button variant="danger" @click="cancelCall">Cancel Lesson Request</b-button>
-                    </div>
-                </template>
-            </b-modal>
-
-
-            <b-modal id="modal-call-teacher" content-class="esi-modal" title="Requesting Lesson..." :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
-                <div v-if="this.reservation !== null" class="text-center">
-                    <!--
-                    <div>Lesson time : {{ this.lessonStartTime }} To {{ this.lessonEndTime }}</div>
-                    <div>Current Time {{ this.currentTime }}</div>
-                    -->
-
-                    <div class="text-primary font-weight-bold">Teacher {{ this.tutor.firstname }}  {{ this.tutor.lastname }}</div>
-                    <div class="textsecondary">{{ this.reservation.lessonTimeRage }}</div>
-
-                    <img :src="this.tutor.image" class="rounded-circle">    
-
-                </div>
-                <template #modal-footer>
-                    <div class="container text-center">
-                        <b-button variant="danger" @click="cancelCall">Cancel Lesson Request</b-button>
-                    </div>
-                </template>
-            </b-modal>
-
 
             <b-modal id="modal-call-alert" :title="'A tutor is inviting you for a call'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
                 <div class="row text-center" v-if="this.callReservation !== null" >                     
@@ -74,24 +31,26 @@
                     </div>
                 </template>
             </b-modal>
-
         </div>
+        <!--[end]-->
 
 
         <!-- SELECT LESSON -->
         <div id="select-lesson-container" class="container-fluid">
-             <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList" >
-                Select Lesson 
-                <b-form-select id="lessonSelector" v-model="lessonSelectedFolderID" :options="lessonOptions" v-on:change="getOptionSelected('lessonSelector')"></b-form-select>
-             
-                <!--[START] - (NEW! 2023) PREVIEW: Lesson Image gallery for the selected lesson-->
-                <div class="mt-3" v-if="folder !== null">
+
+            <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList">            
+          
+                <div v-if="currentSelectedFolder !== null">
+
+                    <!-- Current Selected Folder Information-->
                     <div class="pt-2">You have selected:</div>                
-                    <div>Lesson Name: <strong>{{ folder.folder_name }} </strong></div>
-                    <div>Lesson Description: {{ folder.folder_description }}</div>                 
-                    <div class="container pt-4" v-if="files != null">
+                    <div>Lesson Name: <strong>{{ currentSelectedFolder.folder_name }} </strong></div>
+                    <div>Lesson Description: {{ currentSelectedFolder.folder_description }}</div>   
+
+                    <!--[START] - (NEW! 2023) PREVIEW: Lesson Image gallery for the selected lesson-->
+                    <div class="container pt-4" v-if="currentSelectedFiles != null">
                         <div class="row">
-                            <div class="col-2" v-for="(file, fileIndex) in files" :key="fileIndex">
+                            <div class="col-2" v-for="(file, fileIndex) in currentSelectedFiles" :key="fileIndex">
                                 <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" @click="imageViewer(getBaseURL(file.path))"/>
                             </div>
                         </div>
@@ -99,16 +58,190 @@
                     <div v-else class="text-center">
                         <span class="text-danger">No Images found for this slides</span>
                     </div>
+                    <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->  
 
                 </div>
                 <div v-else class="mt-3 text-center">
                     <div class="text-danger">Please select a folder</div>
                 </div>
-                <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->  
+                
+
+
+                <div id="ui-search-folders" class="container">
+                    <div id="slideSelection" v-if="isSearching == false">
+
+                        <div id="lesson-instructions" class="row mb-2">
+                            <div class="col-4">
+                                <h5 class="text-maroon">Please select a Lesson </h5>              
+                            </div>
+                            <div class="col-8">
+                                <div class="float-right">
+                                    <b-button variant="primary" @click="openSearchUI()">
+                                        <b-icon icon="search" aria-hidden="true"></b-icon>
+                                    </b-button>
+
+                                    <b-button variant="primary" @click="selectCategory(parentID)" v-if="parentID !== null">
+                                        <b-icon icon="arrow-return-left" aria-hidden="true"></b-icon>
+                                    </b-button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div v-if="currentFolder !== null">
+                            <!--[start] Lesson Card -->
+                            <div class="card flex-row flex-wrap">
+                                <div class="card-header border-0 w-25">
+                                    <!--[start] Preview Images -->
+                                    <b-carousel id="carousel-files" v-model="slide" class="cursor-pointer"
+                                        :interval="4000" controls indicators background="#ababab" style="text-shadow: 1px 1px 2px #333;"
+                                        @sliding-start="onSlideStart" @sliding-end="onSlideEnd">
+                                        <b-carousel-slide v-for="file in files" :key="'file_'+ file.id" >
+                                            <template #img>
+                                                <div class="text-center " style="height:150px">
+                                                    <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" height="auto" @click="imageViewer(getBaseURL(file.path))"/>                                        
+                                                </div>
+                                            </template>
+                                        </b-carousel-slide>
+                                    </b-carousel>
+                                    <!--[end] Preview Images -->
+                                </div>
+                                <!-- [start] Lesson Information  -->
+                                <div class="card-block px-2">
+                                    <div id="lesson-information" class="py-3">
+                                        <h4 class="card-title h3">{{ currentFolder.folder_name }}</h4>
+                                        <p  class="card-text small text-secondary">{{ currentFolder.folder_description }}</p>
+
+                                        <div id="button-lesson-select" v-if="folderCategories.length <= 0">
+                                            <b-button variant="primary" @click="selectNewLesson(currentFolder.id)">
+                                                Select Lesson
+                                            </b-button>
+                                        </div>
+
+                                        <div v-else id="more-lessons-container" class="text-secondary">
+                                            <div class="alert alert-primary" role="alert">
+                                                <span class="text-success">Please select a topic below</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <!-- [end] Lesson Information  -->                           
+                            </div>
+                            <!--[end] Lesson Card-->
+                        </div>
+
+                        <div class="mt-3">
+                            <fieldset class="border p-2">
+
+                                <legend  class="w-auto text-primary">
+                                    <span v-if="parentID !== null"> Related Lesson Categories</span>
+                                    <span v-else>Lesson Categories</span>
+                                </legend>
+
+                                <div id="folder-categories" class="row" v-if="folderCategories.length >= 1" >
+
+                                    <div class="col-3 cursor-pointer" v-for="category in folderCategories" :key="'category_'+category.id" @click="selectCategory(category.id)">
+                                        <div class="card mb-3 border-primary cursor-pointer">
+                                            <div class="card-header bg-primary">
+                                                <span class="text-white">
+                                                    {{ category.folder_name }}
+                                                </span>
+                                            </div>
+                                            <div class="card-body card-body-minimum">
+                                                <p class="card-text small">
+                                                    {{ category.folder_description }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div v-else>
+                                    <div class="text-center my-4">
+                                        <span class="small text-maroon">No more lesson category</span>
+                                    </div>
+                                </div>
+
+                            </fieldset>
+                        </div>
+                        
+                    </div>
+
+                    <div v-else-if="isSearching == true">
+
+                        <div id="lesson-instructions" class="row mb-2">
+                            <div class="col-4">
+                                <h5 class="text-maroon">Search </h5>              
+                            </div>
+                            <div class="col-8">
+                                <div class="float-right">
+                                    <b-button variant="primary" @click="closeSearchUI()">
+                                        <b-icon icon="x" aria-hidden="true"></b-icon>
+                                    </b-button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div role="group" class="input-group">
+                            <!--[start] Seach Icon-->
+                            <div class="input-group-prepend">
+                                <div class="input-group-text">                            
+                                    <b-icon icon="search" aria-hidden="true"></b-icon>                              
+                                </div>
+                            </div> 
+                            <!--[end] Search Icon -->                        
+                            <!--[start] Seach Keyword -->
+                            <input id="bv-icons-table-search" type="search" v-model="searchKeyword" 
+                                @blur="handleSearch()"  @keyup="handleSearch()" @change="handleSearch()" @clear:append="handleSearch()" @click="handleSearch()"
+                                autocomplete="off" aria-controls="bv-icons-table-result" 
+                                class="form-control"
+                            >
+                            <!--[end] Search Keyword-->
+                        </div>
+
+                        <!--[start] search results -->
+
+                        <fieldset class="border p-2 mt-2">
+
+                            <legend class="w-auto text-primary">                              
+                                <span>Search Results</span>
+                            </legend>
+
+                            <div class="container">
+                                <div class="row mt-1" v-if="searchResults.length >= 1">
+                                    <div class="col-3 cursor-pointer" v-for="category in searchResults" :key="'search_'+category.id"  @click="selectCategory(category.id)">
+                                        <div class="card mb-3 border-primary">
+                                            <div class="card-header bg-primary">
+                                                <span class="text-white">
+                                                    {{ category.folder_name }}
+                                                </span>
+                                            </div>
+                                            <div class="card-body card-body-minimum">
+                                                <p class="card-text small">
+                                                    {{ category.folder_description }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>   
+                                </div>
+                                <div v-else class="col-12 text-center">
+                                    <div class="py-4">
+                                        <span class="text-danger small">No results found</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </fieldset>
+                    
+                        <!--[end] -->
+
+                    </div>
+                </div>
+              
 
                 <template #modal-footer>
                     <div class="w-100">
-                        <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>
+                       <!-- <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>-->
                     </div>
                 </template>
              </b-modal>
@@ -121,37 +254,7 @@
                 </div>
             </b-modal>
         </div>
-
-
-        <div id="lesson-slider-container" class="container-fluid" tabindex="9999999999999">
-
-            <b-modal id="modal-lesson-slider" ref="modalLessonSlider" @hide="clearLessonChannel()" title="Lesson" size="xl"  :tabindex="9999999999999">                
-                <div v-if="this.sliderLoaded == true && this.channelid != null">
-                    <lesson-slider-component 
-                        ref="lessonSliderComponent"
-                        :editor_id="'canvas'"
-                        :channelid="this.channelid"
-                        :reservation="this.lessonReservationData"
-                        :isBroadcaster="this.isBroadcaster"
-                        :canvas_server="this.canvasServer"                
-                        :canvas_width="500"
-                        :canvas_height="500"
-                        :user_info="this.userInfo"
-                        :member_info="this.memberInfo" 
-                        :api_token="this.api_token" 
-                        :csrf_token="this.csrf_token"
-                        >
-                    </lesson-slider-component> 
-                </div>
-                <div v-else>
-                    <div class="d-flex justify-content-center mb-3">
-                        <b-spinner label="Loading..."></b-spinner>
-                    </div>                    
-                </div>
-            </b-modal>
-        </div>
-
-
+        
     </div>
 
 
@@ -223,29 +326,59 @@
 
                 //loader
                 sliderLoaded: false,
-
                 channelid: null,
-                selectedLessonID: null,
+
 
                 //Member Reservation
                 lessonReservationData: null,
 
-                //files
-                files: null,
+               
+
+
+                isSearching: false,
+                searchTimeout: null,
+                searchKeyword: null,
+                searchResults: [],
+
+                //Carousel sliders
+                slide: 0,
+                sliding: null,
+
+                //Lesson Selected ID
+                selectedLessonID: null,
+
+                //[list]
+                currentFolderID: null,
+                currentFolder: null,
+                parentID: null,
+        
+                folderCategories: [],
+                files: [],
                 folder: null,
+                imageURL: null,         
 
-                imageURL: null
+                //client ID
+                lessonID: null,
+                userID : null,
+        
 
+                //Model lesson Value
+                lessonSelected: null,
+                lessonSelectedFolderID: null,                
+
+                //Current Selected (Lesson)
+                currentMember: null,
+                myReservation: null,
+
+                currentSelectedFolder: null,
+                currentSelectedFiles: []
             }
         },
         mounted() {
 
             //Transfer the object to the window
             window.memberCallerComponent = this;
-
             this.socket = io.connect(this.canvasServer);
-
-
 
             //Register the member Info
             this.user = {
@@ -278,35 +411,23 @@
                     this.recipient.channelid = data.reservationData.schedule_id;
 
                     this.playIncomingCallAudio({'path': 'mp3/incoming-call.mp3'})
-
-                    console.log(data.recipient,  "emit call user pingback")
-
-                    
                     this.socket.emit('CALL_USER_PINGBACK', this.recipient); 
-
+                    console.log(data.recipient,  "emit call user pingback")
                 }                
             });
 
-
-
-            this.socket.on("ACCEPT_CALL", (data) =>  {
+            this.socket.on("ACCEPT_CALL", (data) =>  
+            {
+                console.log("ACCEPT_CALL", data);
 
                 if (this.user.userid == data.tutorData.userid ) 
                 {    
                     this.$bvModal.hide('modal-call-alert');   
-
                     this.caller              = data.caller;                        
                     this.recipient           = data.recipient;
-                    this.callReservation     = data.reservationData;
-                    console.log("accept call");
+                    this.callReservation     = data.reservationData;                    
                 } 
-                console.log(data)
             });
-
-
-
-
-
 
             this.socket.on("START_SLIDER", (data) =>  {
 
@@ -329,7 +450,11 @@
             }); 
         },
         methods: {
-
+            updateUserList: function(users) 
+            {
+                this.users = users;      
+                this.$forceUpdate();
+            },
             playIncomingCallAudio(audio) {
                 let incomingCallAudio = document.getElementById('incomingCallAudio');
                 if (incomingCallAudio) {      
@@ -338,38 +463,6 @@
                     incomingCallAudio.play();  
                 }
             },
-            selectLesson(tutor, member, reservation) 
-            {           
-                this.tutor              = JSON.parse(tutor);
-                this.member             = JSON.parse(member);
-                this.reservation        = JSON.parse(reservation); 
-
-                //IMPORTANT: SELECTED ID IS FROM THE HTML FORM
-                this.selectedLessonID = this.reservation.schedule_id;
-                this.getMemberSelectedLesson()             
-                
-            },
-            getMemberSelectedLesson() 
-            {            
-
-                axios.post("/api/getMemberLessonSelected?api_token=" + this.api_token, 
-                {
-                    method          : "POST",
-                    userID          : this.member.userid,
-                    lessonID        : this.selectedLessonID
-                }).then(response => {
-
-                    if (response.data.success == true) {
-                        this.lessonSelectedFolderID =  response.data.memberSelectedLesson.folder_id;
-                        this.getLessonSelectedPreviewByID(this.lessonSelectedFolderID)
-                        this.$bvModal.show('modalSelectLesson');
-                    } else {                       
-                        //Member Selected Lesson Material not found
-                        //alert (response.data.message);
-                        this.$bvModal.show('modalSelectLesson');     
-                    }
-                });
-            }, 
             openSelfWindow(channelid) {
                 window.location.href = window.location.origin + "/webRTC?roomid="+ channelid
             },
@@ -377,199 +470,13 @@
                 var baseURL = window.location.origin + "/webRTC?roomid="+ channelid
                 window.open(baseURL, '_blank');
             },
-            getBaseURL(path) {
-               return window.location.origin + "/" +path
-            },
-            imageViewer(imageURL) {
-
-                this.imageURL = imageURL;
-
-                this.$bvModal.show('modalImageViewer');
-            },
-            clearLessonChannel() {
-                //make this to mark user is on a channel is awaiting calls and free
-                this.user.channelid = null
-                this.channelid = null;
-
-            },
-            autoAdjustModal() {
-                if (this.isMobile()) {
-                    setTimeout(this.expandModal, 50);        
-                } else {                
-                    setTimeout(this.revertModal, 50);
-                }       
-            },
-
-            getOptionSelected(targetID) 
-            {
-                let selectedID = document.getElementById(targetID).value;
-                this.getLessonSelectedPreviewByID(selectedID);
-
-                let select = document.getElementById(targetID);
-                let selectedIndex = select.selectedIndex;
-                this.selectedOption = this.lessonOptions[selectedIndex];  
-
-                return this.selectedOption;
-            },
-            getLessonSelectedPreviewByID(lessonSelectedFolderID) {
-                axios.post("/api/getLessonSelectedPreview?api_token=" + this.api_token, 
-                {
-                    method                  : "POST",
-                    userID                  : this.member.userid,
-                    lessonID                : this.selectedLessonID,
-                    lessonSelectedFolderID  : lessonSelectedFolderID
-
-                }).then(response => {
-
-                    if (response.data.success == true) 
-                    {        
-                        this.folder = response.data.folder;           
-                    
-                        //determine the file
-                        if (response.data.files.length == 0) {
-                            this.files = null;
-                            this.$forceUpdate();
-                        } else {
-                            this.files = response.data.files;
-                            this.$forceUpdate();
-                        }
-
-                    } else {
-                        //@note:  nullify files to null to make the notication appear
-                        this.files = null;
-                        this.folder = null;   
-                        this.$forceUpdate();  
-                    }
-                });
-
-            },
-            saveOptionSelected(targetID) 
-            {
-                let select = document.getElementById(targetID);
-                let selectedIndex = select.selectedIndex;
-                this.selectedOption = this.lessonOptions[selectedIndex];                
-
-                axios.post("/api/saveSelectedLessonSlideMaterial?api_token=" + this.api_token, 
-                {
-                    method          : "POST",
-                    userID          : this.member.userid,
-                    lessonID        : this.selectedLessonID,
-                    selectedOption  : this.selectedOption
-
-                }).then(response => {
-
-                    if (response.data.success == false) {
-                        alert (response.data.message);
-                    } else {
-                         alert (response.data.message);
-                    }
-                });
-
-            },          
-            getTabbings(hierarchy) {
-                let tab = '';
-                if (hierarchy >= 1) {
-                    for(let i= 1; i<= hierarchy; i++) {
-                        tab += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
-                    }                        
-                }
-                return tab;
-            },
-            getFolderOptions(FolderName, folders, hierarchy) 
-            {   
-                if (hierarchy == 0) 
-                {
-                    this.lessonOptions = [{
-                        value: null,
-                        html: "Please select lesson",       
-                        label: "Please select lesson",
-                        description:  "Please select lesson"                            
-                    }];                
-                }
-
-                folders.forEach((folder) => { 
-
-                    let folderOptionName = null;
-
-                    if (FolderName !== null) {
-                        folderOptionName = FolderName + " ====> " + folder.name;
-                    } else {
-                        folderOptionName = folder.name;                    
-                    }
-
-
-                    this.lessonOptions.push({                  
-                        id              : folder.id,
-                        name            : folder.name,
-                        label           : folderOptionName,
-                        html            : folderOptionName,
-                        description     : folder.description,                             
-                        value           : folder.id
-                    });    
-                       
-                    if (folder.children.length >= 1) 
-                    {
-                        this.getFolderOptions(folderOptionName, folder.children, hierarchy + 1);
-                    }
-
-                });
-                
-            },
-            getLessonsList() {
-                axios.post("/api/get_folders?api_token=" + this.api_token, 
-                {
-                    method          : "POST",
-                    lessonID         : this.selectedLessonID,
-                    //public_folder_id : null,
-                }).then(response => {
-
-                    if (response.data.success == true) {
-                        
-                        this.getFolderOptions(null, response.data.folders, 0);
-                    }
-                });
-            },
-            revertModal() {
-                this.sliderLoaded = true;
-
-                $(".modal-dialog").css({
-                    'max-width': '1140px'
-                }); 
-            },
-            expandModal() {
-
-                this.sliderLoaded = true;
-                $(".modal-dialog").css({
-                    'max-width': '90%'
-                });
-
-                
-            },
-            isMobile() {
-                if (window.innerWidth <= 1024 || screen.width  <= 1024 ) {
-                    return true
-                } else {
-                    return false
-                }   
-            },
-
-            updateUserList: function(users) 
-            {
-                this.users = users;      
-                this.$forceUpdate();
-            },
             acceptCall() {
-
-                ///console.log(this.caller,  this.recipient, this.callReservation );
-                             
+                ///console.log(this.caller,  this.recipient, this.callReservation );                             
                 this.sliderLoaded = false;
                 this.channelid                 = this.callReservation.schedule_id;
-                this.lessonReservationData     = this.callReservation;       
-               
-                //console.log("accept call " , this.callReservation);
+                this.lessonReservationData     = this.callReservation;
 
                 this.$bvModal.hide('modal-call-alert'); 
-
 
                 let data = {
                     channelid       :  this.channelid,
@@ -583,14 +490,6 @@
 
                 //this.$bvModal.show('modal-lesson-slider');                
                 this.socket.emit('START_SLIDER', data);
-
-                
-
-            },
-            callPingBack() {
-
-
-            
             },
             callMember(tutor, member, reservation) {
 
@@ -616,22 +515,15 @@
                     alert ("Sorry, Member is not online at the moment");
                     return false
                 }  else {         
-
-
                     let response = this.checkTime();
-
-                    if (response.valid == true) 
-                    {
-
+                    if (response.valid == true) {
                         this.$bvModal.show('modal-call-member');       
-
                         //CALL USER (EMIT DATA)
                         let data = {
                             recipient       :   this.member,    //recipient 
                             caller          :   this.tutor,     //caller
                             reservationData :   this.reservation
                         }
-
                         this.socket.emit('CALL_USER',  data);  
                     }
                 }
@@ -760,26 +652,196 @@
 
                 }
             
-            }
+            },
 
+            /****** START SEACH UI****  */     
+            openSearchUI() {
+                this.isSearching = true;
+            },
+            closeSearchUI() {
+                this.isSearching = false;
+            },
+            handleSearch() {            
+                const str = ''+ this.searchTimeout + ''; 
+                const trimmedStr = str.trim(); 
+                const isEmpty = trimmedStr.length === 0;
+
+                if (isEmpty) {
+                //@todo: add empty message
+                } else {
+                    clearTimeout(this.searchTimeout);
+                    // Start a new timeout to delay the search by half a second
+                    this.searchTimeout = setTimeout(this.search, 500);
+                }
+            },
+            search() {
+                console.log("searching...");
+
+                axios.post("/api/searchFolders?api_token=" + this.api_token, 
+                {
+                    method          : "POST",                
+                    searchKeyword          : this.searchKeyword,
+                
+                }).then(response => {
+
+                    if (response.data.success == true) {       
+            
+                        this.searchResults = response.data.folders;
+
+                    } else {                
+                        //alert ("Error, we can't do a search on your keyword, please try again later")
+                        this.searchResults = [];
+                        this.$forceUpdate();
+                    }
+                });
+            },
+
+            /* Select Lesson */
+            selectLesson(tutor, member, reservation) 
+            {           
+                //this.tutor              = JSON.parse(tutor);
+                //this.member             = JSON.parse(member);
+                //this.reservation        = JSON.parse(reservation);
+                let myTutor                 = JSON.parse(tutor);
+                this.myReservation          = JSON.parse(reservation); 
+                this.currentMember          = JSON.parse(member);
+                this.getMemberSelectedLesson(this.myReservation, this.currentMember )                             
+            },            
+            getMemberSelectedLesson(myReservation, currentMember) {
+                axios.post("/api/getMemberLessonSelected?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    userID          : currentMember.userid,
+                    lessonID        : myReservation.schedule_id
+                }).then(response => {
+
+                    if (response.data.success == true) {
+                        this.lessonSelectedFolderID =  response.data.memberSelectedLesson.folder_id;
+                        this.getLessonSelectedPreviewByID(myReservation, this.lessonSelectedFolderID)
+                        this.$bvModal.show('modalSelectLesson');
+                    } else {  
+                        this.$bvModal.show('modalSelectLesson');     
+                    }
+                });
+            },
+            getLessonSelectedPreviewByID(myReservation, lessonSelectedFolderID) 
+            {
+                axios.post("/api/getLessonSelectedPreview?api_token=" + this.api_token, 
+                {
+                    method                  : "POST",
+                    userID                  : myReservation.member_id,
+                    lessonID                : this.selectedLessonID,
+                    lessonSelectedFolderID  : lessonSelectedFolderID
+
+                }).then(response => {
+
+                    if (response.data.success == true) {        
+
+                        this.currentSelectedFolder = response.data.folder;      
+
+                        //determine the file
+                        if (response.data.files.length == 0) {
+                            this.currentSelectedFiles = null;
+                            this.$forceUpdate();
+                        } else {
+                            this.currentSelectedFiles = response.data.files;
+                            this.$forceUpdate();
+                        }
+                    } else {
+                        //@note:  nullify files to null to make the notication appear
+                        this.currentSelectedFiles = null;
+                        this.folder = null;   
+                        this.$forceUpdate();  
+                    }
+                });
+            },                      
+            openSlideSelector(lessonID, userID) {
+                this.selectedLessonID = null;
+                this.parentID  = null;
+                //MEMBER INFO
+                this.lessonID   = lessonID;
+                this.userID     = userID;
+                this.$refs['slideSelectorModal'].show();
+            },
+            closeSlideSelector() {
+                this.$refs['slideSelectorModal'].hide();
+            },
+            selectNewLesson(folderID) {        
+                this.lessonSelectedFolderID = folderID;
+                this.saveOptionSelected(folderID);
+            },
+            saveOptionSelected(folderID) {
+                console.log(this.selectedLessonID);
+
+                axios.post("/api/saveSelectedLessonSlideMaterial?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    userID          : this.currentMember.userid,
+                    lessonID        : this.myReservation.schedule_id,
+                    folderID        : folderID,
+
+                }).then(response => {
+
+                    if (response.data.success == false) {
+                        alert (response.data.message);
+                    } else {
+                         alert (response.data.message);
+                    }
+                });
+
+            },             
+            selectCategory(id) {
+                this.isSearching = false;
+                if (id == 0) {                
+                    this.selectedLessonID = null; 
+                } else {
+                    this.selectedLessonID = id; 
+                }
+                this.getLessonsList();
+            },
+            getLessonsList() {
+                axios.post("/api/getLessonFolders?api_token=" + this.api_token, 
+                {
+                    method          : "POST",                
+                    folderID        : this.selectedLessonID,
+                    //public_folder_id : null,
+                }).then(response => {
+
+                    if (response.data.success == true) {
+
+                        this.parentID           = response.data.parentID;
+                        this.currentFolder      = response.data.currentFolder;
+                        this.folderCategories   = response.data.folderCategories;     
+                        this.files              = response.data.files;
+                        this.$forceUpdate();
+                    } else {                    
+                        alert ("Error, we can't get your list of lesson, please try again later")
+                    }
+                });
+            },
+            onSlideStart(slide) {
+                this.sliding = true
+            },
+            onSlideEnd(slide) {
+                this.sliding = false
+            },
+            getBaseURL(path) {
+                return window.location.origin + "/" +path
+            },
+            imageViewer(imageURL) {
+                this.imageURL = imageURL;
+                this.$bvModal.show('modalImageViewer');
+            }, 
+           
         }
-
     };
 </script>
 
-<style >
-/*
-    #modal-lesson-slider .modal-dialog {        
-        max-width: 100%;
-        margin: 1.75rem 1rem;
+<style scoped>
+    .cursor-pointer {
+        cursor: pointer;
     }
-*/
-
-
-
- .cursor-pointer {
-    cursor: pointer;
- }
-
+    .card-body-minimum {
+        min-height: 100px;
+    }    
 </style>
-

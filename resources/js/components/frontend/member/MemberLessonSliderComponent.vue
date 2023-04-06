@@ -5,6 +5,8 @@
                 
         <button @click="testEndSessionEmitter()"> Emit end </button>
         -->
+
+
         <div id="component-container" v-show="sessionActive">
 
             <div id="satisfactionSurveyContainer">              
@@ -243,11 +245,20 @@
         </div>
 
         
-        <TutorSlideNotesComponent ref="TutorSlideNotes" 
+        <MemberLessonTimerComponent 
+            ref="MemberLessonTimer" 
+            :api_token="this.api_token" 
+            :csrf_token="this.csrf_token">
+        </MemberLessonTimerComponent>
+
+
+        <TutorSlideNotesComponent 
+            ref="TutorSlideNotes" 
         v-if="this.$props.isBroadcaster == true"
         v-show="sessionActive"
         :api_token="this.api_token" 
-        :csrf_token="this.csrf_token"></TutorSlideNotesComponent>
+            :csrf_token="this.csrf_token">
+        </TutorSlideNotesComponent>
 
 
         <TutorSessionInvitePopUpComponent 
@@ -279,6 +290,8 @@
 
 
 <script>
+import MemberLessonTimerComponent from './MemberLessonTimerComponent.vue'
+
 import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue'
 import SlideSelectorComponent from './SlideSelectorComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
@@ -299,7 +312,7 @@ export default {
     components: { 
         TutorSessionInvitePopUpComponent, TutorSlideNotesComponent, SlideSelectorComponent, 
         AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent,
-        MemberFloatingChat
+    MemberFloatingChat,MemberLessonTimerComponent
     },
     props: {
 
@@ -552,11 +565,17 @@ export default {
 
 
         this.socket.on("START_MEMBER_TIMER", (data) =>  {
-            this.isMemberTimerStarted = true;
-            this.startMemberCountdownTimer();
-
+            if (this.$props.isBroadcaster == false) {
+                this.$refs['MemberLessonTimer'].setTimeRemaining(data.timeRemaining);
+                this.$refs['MemberLessonTimer'].startCountdown(); 
+            }
         });
 
+        this.socket.on("STOP_MEMBER_TIMER", (data) =>  {
+            if (this.$props.isBroadcaster == false) {
+                this.$refs['MemberLessonTimer'].stopCountdown(); 
+            }
+        });
 
         this.socket.on("GOTO_SLIDE", (data) =>  {
             if (this.$refs['audioPlayer']) {
@@ -631,6 +650,29 @@ export default {
         });        
         
 
+        this.$root.$on('startMemberTimer', (timeRemaining) => {        
+            if (this.$props.isBroadcaster == true) {
+                this.socket.emit('START_MEMBER_TIMER', {
+                    'channelid': this.channelid,
+                    'timeRemaining': timeRemaining
+                });
+            }
+        });
+
+        this.$root.$on('stoptMemberTimer', (timeRemaining) => {        
+            if (this.$props.isBroadcaster == true) {
+                this.socket.emit('STOP_MEMBER_TIMER', {
+                    'channelid': this.channelid,
+                    'timeRemaining': timeRemaining
+                });
+            }
+        });
+
+        this.$root.$on('playAlarmAudio', (alarmAudio) => {
+            this.playAlarmAudio(alarmAudio);
+        });
+
+
         /* TUTOR NEW SLIDE ACTINS */
         this.socket.on('TUTOR_SELECTED_NEW_SLIDES', (response) => 
         {
@@ -643,12 +685,11 @@ export default {
             }
         });
 
-
         this.$root.$on('openCustomerSupport', () => {
-
             this.$refs['TutorSessionInvite'].hideWaitingListModal();
             this.openFloatinChatBox();
         });
+
 
 
         /****************AUDIO ACTIONS CONTROLLER (Broadcaster) **************** */
@@ -822,9 +863,6 @@ export default {
                     //this.destroySessionMedia();
 
                 } else {
-
-
-
                     console.log("lesson is NOT COMPLETED ");
 
                     this.endSession();
@@ -1088,6 +1126,11 @@ export default {
         closeFloatingChatIcon() {
             this.$refs['memberFloatingChat'].closeFloatingChatIcon();
         },
+
+        /****** [NEW] SET MEMBER TIMER **/
+        showTimerControlModal() {
+            this.$refs['MemberLessonTimer'].showTimerControlModal()
+        },
         startMemberTimer() {
             this.socket.emit('START_MEMBER_TIMER', this.getSessionData()); 
             this.isMemberTimerStarted = true;
@@ -1099,7 +1142,7 @@ export default {
                 this.hideMemberMemberTimerStartButton();
 
                 this.memberTimerInterval = setInterval(()=> {
-                    this.updateMemberTimer();
+                    this.showMemberTimer();
 
                     this.memberCountdownTimer --;    
 
@@ -1121,8 +1164,10 @@ export default {
             this.isMemberTimerStarted = false;
             clearInterval(this.memberTimerInterval); 
         },
-        updateMemberTimer() {           
-            console.log(this.memberCountdownTimer);
+        updateMemberTimer(time) {
+            this.memberCountdownTimer = time;
+        },
+        showMemberTimer() {                     
             $("#memberTimer").html(this.memberCountdownTimer)
         },
         showMemberMemberTimerStartButton() {
@@ -1140,7 +1185,7 @@ export default {
             }
         },
         checkExpiredSession() {
-            //Expired Session without teacher initiation
+                //Expired Session without teacher initiation
                 // Create a new Date object for the specific date and time
                 //const specificDate = new Date('2023-03-21T01:00:00');
 
@@ -2190,7 +2235,7 @@ export default {
 
             return t;         
         },        
-       getTime() {
+        getTime() {
             if (this.timer >= 0) {
                 return this.secondsToHms(this.timer)    
             } else {

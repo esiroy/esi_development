@@ -236,32 +236,20 @@
        
             folderCategories: [],
             files: [],
-
-
-
+            imageURL: null,         
 
             //client ID
             lessonID: null,
             userID : null,
-
-            //Lesson Options
-            lessonOptions: [],
-
-            //Selected lesson Options
-            selectedOption: null,
+       
 
             //Model lesson Value
             lessonSelected: null,
             lessonSelectedFolderID: null,
 
-            //files
-            files: null,
-            folder: null,
+       
+             
 
-            imageURL: null,           
-
-            currentSlide: null,
-            totalSlide: null,
         }
     },
     mounted() { 
@@ -278,33 +266,24 @@
         
     },
     methods: {      
-
-
         openSearchUI() {
             this.isSearching = true;
         },
         closeSearchUI() {
             this.isSearching = false;
         },
-
-        handleSearch() {
-            
+        handleSearch() {            
             const str = ''+ this.searchTimeout + ''; 
             const trimmedStr = str.trim(); 
             const isEmpty = trimmedStr.length === 0;
 
             if (isEmpty) {
-
               //@todo: add empty message
-
             } else {
                 clearTimeout(this.searchTimeout);
                 // Start a new timeout to delay the search by half a second
                 this.searchTimeout = setTimeout(this.search, 500);
-
             }
-        
-
         },
         search() {
             console.log("searching...");
@@ -326,25 +305,29 @@
                     this.$forceUpdate();
                 }
             });
-
         },
-
+        openSlideSelector(lessonID, userID) {
+            this.selectedLessonID = null;
+            this.parentID  = null;
+            //MEMBER INFO
+            this.lessonID   = lessonID;
+            this.userID     = userID;
+            this.$refs['slideSelectorModal'].show();
+        },
+        closeSlideSelector() {
+            this.$refs['slideSelectorModal'].hide();
+        },
         selectNewLesson(folderID) {        
             this.lessonSelectedFolderID = folderID;
             this.startNewSlide();
         },
         selectCategory(id) {
-
-            console.log("selecting " + id);
-        
             this.isSearching = false;
-
             if (id == 0) {                
                 this.selectedLessonID = null; 
             } else {
                 this.selectedLessonID = id; 
-            }            
-
+            }
             this.getLessonsList();
         },
         getLessonsList() {
@@ -370,126 +353,37 @@
                 }
             });
         },
-
         onSlideStart(slide) {
             this.sliding = true
         },
         onSlideEnd(slide) {
             this.sliding = false
         },
-        
-
-
-        getFolderOptions(FolderName, folders, hierarchy) 
-        {   
-                if (hierarchy == 0) 
-                {
-                    this.lessonOptions = [{
-                        id: "null",
-                        value: "null",
-                        html: "Please select lesson",       
-                        label: "Please select lesson",
-                        description:  "Please select lesson"                            
-                    }];                
-                }
-
-                folders.forEach((folder) => { 
-
-                    let folderOptionName = null;
-
-                    if (FolderName !== null) {
-                        folderOptionName = FolderName + " ====> " + folder.name;
-                    } else {
-                        folderOptionName = folder.name;                    
-                    }
-
-
-                    this.lessonOptions.push({                  
-                        id              : folder.id,
-                        name            : folder.name,
-                        label           : folderOptionName,
-                        html            : folderOptionName,
-                        description     : folder.description,                             
-                        value           : folder.id
-                    });    
-                       
-                    if (folder.children.length >= 1) 
-                    {
-                        this.getFolderOptions(folderOptionName, folder.children, hierarchy + 1);
-                    }
-
-                });
-                
-        },        
-
-        getOptionSelected(targetID) 
+        async startNewSlide() 
         {
-            let selectedID = document.getElementById(targetID).value;
-            this.getLessonSelectedPreviewByID(selectedID);
-
-            let select = document.getElementById(targetID);
-            let selectedIndex = select.selectedIndex;
-            this.selectedOption = this.lessonOptions[selectedIndex];  
-
-            return this.selectedOption;
-        },
-        openSlideSelector(lessonID, userID) {
-        
-
-            this.selectedLessonID = null;
-            this.parentID  = null;
-
-            //MEMBER INFO
-            this.lessonID   = lessonID;
-            this.userID     = userID;
-
-            this.$refs['slideSelectorModal'].show();
-        },
-        closeSlideSelector() {
-            this.$refs['slideSelectorModal'].hide();
-        },
-        async startNewSlide() {
-
             if ( this.lessonSelectedFolderID !== "null" ) {
-
                 //take the lesson id from the reservation
-
                 this.lessonID   = this.$props.reservation.schedule_id
                 this.userID     = this.$props.reservation.member_id;
-
                 this.updateSlideFolder();
             } else {
                 alert ("please select a new lesson")
             }
-            
-            
         },        
         async updateSlideFolder() {
-
-            //@todo: update the selected folder from
-
             axios.post("/api/updateSelectedLesson?api_token=" + this.api_token,
             {
                 'method'        : "POST",
                 'lessonID'      : this.lessonID,
                 'userID'        : this.userID,
-                'folderID'      : this.lessonSelectedFolderID,
-                
-
+                'folderID'      : this.lessonSelectedFolderID
             }).then(response => {
-
                 if (response.data.success == true) {
-
                     this.$parent.openNewSlideMaterials(response.data.newFolderID);
-
-                } else {                   
-
-                    alert (response.data.message);
-                    
-                }
-                
-            });           
-
+                } else {
+                    alert (response.data.message);                    
+                }                
+            });
         },
         getBaseURL(path) {
             return window.location.origin + "/" +path
@@ -497,53 +391,43 @@
         imageViewer(imageURL) {
             this.imageURL = imageURL;
             this.$bvModal.show('modalImageViewer');
-        },        
-        
-
+        }, 
         getLessonSelectedPreviewByID(lessonSelectedFolderID) 
         {
+            axios.post("/api/getLessonSelectedPreview?api_token=" + this.api_token, 
+            {
+                method                  : "POST",
+                //userID                  : this.member.userid,
+                userID                  : this.reservation.member_id,
+                lessonID                : this.selectedLessonID,
+                lessonSelectedFolderID  : lessonSelectedFolderID
 
-            
-                axios.post("/api/getLessonSelectedPreview?api_token=" + this.api_token, 
-                {
-                    method                  : "POST",
-                    //userID                  : this.member.userid,
-                    userID                  : this.reservation.member_id,
-                    lessonID                : this.selectedLessonID,
-                    lessonSelectedFolderID  : lessonSelectedFolderID
+            }).then(response => {
 
-                }).then(response => {
-
-                    if (response.data.success == true) 
-                    {        
-                        this.folder = response.data.folder;           
-                    
-                        //determine the file
-                        if (response.data.files.length == 0) {
-                            this.files = null;
-                            this.$forceUpdate();
-                        } else {
-                            this.files = response.data.files;
-                            this.$forceUpdate();
-                        }
-
-                    } else {
-                        //@note:  nullify files to null to make the notication appear
+                if (response.data.success == true) {        
+                    this.folder = response.data.folder;                           
+                    //determine the file
+                    if (response.data.files.length == 0) {
                         this.files = null;
-                        this.folder = null;   
-                        this.$forceUpdate();  
+                        this.$forceUpdate();
+                    } else {
+                        this.files = response.data.files;
+                        this.$forceUpdate();
                     }
-                });
-
-            },             
+                } else {
+                    //@note:  nullify files to null to make the notication appear
+                    this.files = null;
+                    this.folder = null;   
+                    this.$forceUpdate();  
+                }
+            });
+        }
     }
  }
  </script>
 
  <style scoped>
     .card-body-minimum {
-    
         min-height: 100px;
     }
-
  </style>

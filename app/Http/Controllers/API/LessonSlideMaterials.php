@@ -520,18 +520,17 @@ class LessonSlideMaterials extends Controller
     {
         $userID             = $request->userID;
         $lessonScheduleID   = $request->lessonID;
-        $selectedOption     = $request->selectedOption;
+        $folderID           = $request->folderID;
 
-        if ($selectedOption['value'] !== null) 
+        if ($folderID) 
         {
 
-            $memberSelectedLessonSlideMaterial->saveSelectedLesson($userID, $lessonScheduleID, $selectedOption);   
+            $memberSelectedLessonSlideMaterial->saveSelectedLesson($userID, $lessonScheduleID, $folderID);   
 
             return Response()->json([
                 "success"       => true,
                 "userID"        => $userID,
-                "folderID"      => $selectedOption['id'],
-                "folderName"    => $selectedOption['name'],
+                "folderID"      => $folderID,                
                 "message"       => "Lesson Material has been successfully saved"
             ]);  
 

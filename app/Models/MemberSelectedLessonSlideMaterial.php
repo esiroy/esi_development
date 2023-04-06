@@ -38,8 +38,8 @@ class MemberSelectedLessonSlideMaterial extends Model
      *
      * @param  $userID, $lessonScheduleID,$selectedOption
      */
-    public function saveSelectedLesson($userID, $lessonScheduleID, $selectedOption)
-    {
+    public function saveSelectedLesson($userID, $lessonScheduleID, $folderID) {
+
         $item = MemberSelectedLessonSlideMaterial::where('user_id', $userID )
                                                     ->where('schedule_id', $lessonScheduleID)                                            
                                                     ->first(); 
@@ -48,7 +48,7 @@ class MemberSelectedLessonSlideMaterial extends Model
             $response = $item->update([
                     'user_id'       => $userID,
                     'schedule_id'   => $lessonScheduleID,
-                    'folder_id'     => $selectedOption['id'],
+                    'folder_id'     => $folderID,
             ]);
 
 
@@ -59,7 +59,7 @@ class MemberSelectedLessonSlideMaterial extends Model
             $response = MemberSelectedLessonSlideMaterial::create([
                     'user_id'       => $userID,
                     'schedule_id'   => $lessonScheduleID,
-                    'folder_id'     => $selectedOption['id'],            
+                    'folder_id'     => $folderID,            
             ]);
 
             return $response;
