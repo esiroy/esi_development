@@ -58,13 +58,17 @@
 
                 </div>
 
+                
                 <div id="feebacks" class="col-4">
+                 
                     <div class="text-center">
+                        <!--
                         <button class="btn btn-success w-100 mb-4" @click="showFeebackForm">
                             <span class="small">
                                 Write Course Feedback
                             </span>
                         </button>
+                        -->
                         <button class="btn btn-success w-100" @click="showMessageForm">
                             <span class="small">
                                 Leave Encouraging Messages

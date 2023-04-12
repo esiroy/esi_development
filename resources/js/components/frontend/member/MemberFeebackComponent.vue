@@ -89,7 +89,7 @@
                     <div class="text-center">
                         <button class="btn btn-success w-100 mb-4" @click="showFeebackForm">
                             <span class="small">
-                                Write Course Feedback
+                                Student Feedback
                             </span>
                         </button>
                         <!--
@@ -114,8 +114,8 @@
 
         <div id="feedbackForm" class="row" v-show="showFeedback">
             <div class="col-12">
-                <h5 class="text-maroon">Course Feeback</h5>           
-                <h6 class="font-weight-bold">Your feedback will help us make the course better and improve our services</h6>
+                <h5 class="text-maroon">Student Feeback</h5>           
+                <h6 class="font-weight-bold">Student feedback will help us make the course better and improve our services</h6>
                 <hr/>     
                 <div id="feedbackFormWrapper">         
                     <vue-ckeditor v-model="feeback" :config="config" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
