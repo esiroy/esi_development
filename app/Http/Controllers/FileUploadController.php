@@ -81,7 +81,7 @@ class FileUploadController extends Controller
                     $file = "<a class='img_preview' target='_blank' href='$url'><img src='$url' class='img_preview'></a>";
                 } else {
                     $file = "<a class='img_preview' target='_blank' href='$url'><i class='fas fa-file-pdf custom-pdf'></i></a> ";
-                    $file .= "<div>". $request->file('file')->getClientOriginalName() ."</div>";
+                    $file .= "<div><a class='img_link' target='_blank' href='$url'>". $request->file('file')->getClientOriginalName() ."</a></div>";
                 }
                 
 

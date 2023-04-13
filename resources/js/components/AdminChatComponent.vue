@@ -1442,8 +1442,42 @@ Vue.component("chatlogs-component", {
     {
        return this.urlify(message);
     },
-    linkify(str) {
+    linkify_v1(str) {
        return str.replace(/((http(s)?(\:\/\/))?(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))(?!(.*a>)|(\'|\"))/g, '<a href="$1"  target="_blank" >$1</a>');    
+    },
+    linkify(text) {
+
+        // Create a temporary DOM element
+        var tempElement = document.createElement('div');
+        tempElement.innerHTML = text;
+
+        // Get all text nodes within the temporary DOM element
+        var textNodes = [];
+        var treeWalker = document.createTreeWalker(tempElement, NodeFilter.SHOW_TEXT, null, false);
+        while (treeWalker.nextNode()) {
+            textNodes.push(treeWalker.currentNode);
+        }
+
+        // Replace URLs with anchor tags in text nodes
+        textNodes.forEach(function(node) {
+            var nodeText = node.nodeValue;
+            var urlRegex = /((http|https|ftp):\/\/[^\s]+)/g;
+            var replacedText = nodeText.replace(urlRegex, function(url) {
+            // Exclude anchor tags, img tags, href links, and text inside img tags
+            if (node.parentNode.tagName !== 'A' && node.parentNode.tagName !== 'IMG' && node.parentNode.getAttribute('href') !== url && node.parentNode.getAttribute('src') !== url) {
+                return '<a href="' + url + '" target="_blank">' + url + '</a>';
+            } else {
+                return url;
+            }
+            });
+            if (replacedText !== nodeText) {
+            var newNode = document.createElement('span');
+            newNode.innerHTML = replacedText;
+            node.parentNode.replaceChild(newNode, node);
+            }
+        });
+
+        return tempElement.innerHTML;
     },
     urlify(text) {
         var addHTTPsExp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig;   
