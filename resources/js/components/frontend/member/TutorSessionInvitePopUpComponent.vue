@@ -242,7 +242,7 @@ export default {
             redialCounter: 10,
 
             lessonStartInterval: null,
-            lessonStartTimer: 5,
+            lessonStartTimer: 3,
 
             /******** WAITING TIMER  */
 
@@ -435,7 +435,7 @@ export default {
                     LESSON COMMENCING MODAL
         *****************************************************/     
         resetLessonTimer() {
-             this.lessonStartTimer = 5;
+             this.lessonStartTimer = 3;
         },        
         startLessonStartTimer() {
             this.lessonStartInterval = setInterval(this.updateLessonTimer, this.timerSpeed);

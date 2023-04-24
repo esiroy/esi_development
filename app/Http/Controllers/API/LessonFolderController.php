@@ -11,45 +11,94 @@ use App\Models\File;
 class LessonFolderController extends Controller
 {
 
+    public function getLessonList(Request $request, Folder $folder, File $file) {
+
+        $itemsPerPage = 10;            
+
+        if (isset($request->folderID)) 
+        {
+
+            if(!isset($request->page)) {
+                $page = 1;
+            } else {
+                $page = $request->page;
+            }
+
+
+            $folderID = $request->folderID;      
+
+            //parent folder details
+            $currentFolder = $folder->where('id', $folderID)->where('privacy', 'public')->first();
+
+            if (!$currentFolder) {            
+                return Response()->json([
+                    "success"               => true,
+                    "message"               => "Folder was not found, please try again"
+                ]);
+            }
+           
+            $lessons = $folder->getFolderLessons($folderID, $page, $itemsPerPage);
+        }
+
+        return Response()->json([
+            "success"               => true,
+            "currentFolderID"       => $folderID,
+            "currentFolder"         => $currentFolder,
+            "parentID"              => $currentFolder->parent_id,
+            "lessons"               => $lessons
+        ]);   
+
+    }
+
+
+
     public function getLessonFolders(Request $request, Folder $folder, File $file)
-    {
+    {       
 
-        $folderCategories = [];
-        $files          = [];
+        $itemsPerPage = 10;
 
-        if (isset($request->folderID)) {
+        $folderCategories   = [];
+        $lessons            = [];
+        $files              = [];
 
+        if(!isset($request->page)) {
+            $page = 1;
+        } else {
+            $page = $request->page;
+        }
+                
+
+        if (isset($request->folderID)) 
+        {
             $folderID = $request->folderID;
 
             //parent folder details
             $currentFolder = $folder->where('id', $folderID)->where('privacy', 'public')->first();
 
-            if (!$currentFolder) {
-            
+            if (!$currentFolder) {            
                 return Response()->json([
                     "success"               => true,
                     "message"               => "Folder was not found, please try again"
-                ]);   
-
-            }
-
-            //get the sub folders 
-            $folders = $folder->where('parent_id', $folderID)->where('privacy', 'public')->orderBy('order_id', 'ASC')->get();
-
-            $files = $file->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
-
-
-            foreach ($folders as $folder) {  
-                array_push($folderCategories, $folder);
+                ]);
             }
 
 
+
+            $folders = $folder->getSubFolders($folderID, $page, "*");
+            $lessons = $folder->getFolderLessons($folderID, $page, "*");
+
+            $files = [];
+            
             return Response()->json([
                 "success"               => true,
                 "currentFolderID"       => $folderID,
                 "currentFolder"         => $currentFolder,
                 "parentID"              => $currentFolder->parent_id,
-                "folderCategories"      => $folderCategories,
+                "folderCategories"      => $folders,
+                "lessons"               => $lessons,
+
+                "lesson_rows"            => count($lessons),
+
                 'files'                 => $files
             ]);   
 
@@ -60,14 +109,22 @@ class LessonFolderController extends Controller
 
             $folderID = 0;
 
-
             $folders = $folder->where('parent_id', $folderID)->where('privacy', 'public')->orderBy('order_id', 'ASC')->get();
 
             $files = $file->where('folder_id', $folderID)->get(); 
 
-            foreach ($folders as $folder) 
-            {
-                array_push($folderCategories, $folder);
+
+            foreach ($folders as $index => $folder) {               
+
+                $lessonCounter = $folder->where('parent_id', $folder->id)->where('privacy', 'public')->orderBy('order_id', 'ASC')->count();
+
+                if ($lessonCounter >= 1) {
+                    array_push($folderCategories, $folder);
+                    $folderCategories[$index]['subcategoryCounter'] = $lessonCounter;                
+                } else {
+                    array_push($lessons, $folder);
+                    $lessons[$index]['subcategoryCounter'] = $lessonCounter;
+                }
             }
 
 
@@ -77,11 +134,126 @@ class LessonFolderController extends Controller
                 "currentFolder"         => null,                
                 "parentID"              => null,
                 "folderCategories"      => $folderCategories,
+                "lessons"               => $lessons,
                 'files'                 => $files
             ]);  
 
         }
     }
+
+
+
+    public function getLessonFoldersOld(Request $request, Folder $folder, File $file)
+    {
+
+        $lessons            = [];
+        $folderCategories   = [];
+        $files              = [];
+
+        if (isset($request->folderID)) {
+
+            $folderID = $request->folderID;
+
+
+            //parent folder details
+            $currentFolder = $folder->where('id', $folderID)->where('privacy', 'public')->first();
+
+            if (!$currentFolder) {            
+                return Response()->json([
+                    "success"               => true,
+                    "message"               => "Folder was not found, please try again"
+                ]);
+            }
+            //get the sub folders 
+            $folders    = $folder->where('parent_id', $folderID)->where('privacy', 'public')->orderBy('order_id', 'ASC')->get();            
+            $files      = $file->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+
+            foreach ($folders as $index => $folder) 
+            {
+                $subCategoriesCounter = $folder->where('parent_id', $folder->id)->where('privacy', 'public')->orderBy('order_id', 'ASC')->count();
+
+                if ($subCategoriesCounter >= 1) {
+                    array_push($folderCategories, $folder);
+                    $folderCategories[$index]['subcategoryCounter'] = $subCategoriesCounter;                
+                } else {
+                    array_push($lessons, $folder);
+                    $lessons[$index]['subcategoryCounter'] = $subCategoriesCounter;
+                }
+            }
+            
+            return Response()->json([
+                "success"               => true,
+                "currentFolderID"       => $folderID,
+                "currentFolder"         => $currentFolder,
+                "parentID"              => $currentFolder->parent_id,
+                "folderCategories"      => $folderCategories,
+                "lessons"               => $lessons,
+                'files'                 => $files
+            ]);   
+
+
+        } else {       
+
+            //@todo: get the parent folder (id = 0)
+
+            $folderID = 0;
+
+            $folders = $folder->where('parent_id', $folderID)->where('privacy', 'public')->orderBy('order_id', 'ASC')->get();
+
+            $files = $file->where('folder_id', $folderID)->get(); 
+
+
+            foreach ($folders as $index => $folder) {               
+
+                $lessonCounter = $folder->where('parent_id', $folder->id)->where('privacy', 'public')->orderBy('order_id', 'ASC')->count();
+
+                if ($lessonCounter >= 1) {
+                    array_push($folderCategories, $folder);
+                    $folderCategories[$index]['subcategoryCounter'] = $lessonCounter;                
+                } else {
+                    array_push($lessons, $folder);
+                    $lessons[$index]['subcategoryCounter'] = $lessonCounter;
+                }
+            }
+
+
+            return Response()->json([
+                "success"               => true,
+                "currentFolderID"       => null,
+                "currentFolder"         => null,                
+                "parentID"              => null,
+                "folderCategories"      => $folderCategories,
+                "lessons"               => $lessons,
+                'files'                 => $files
+            ]);  
+
+        }
+    }
+
+
+    public function getLessonImages(Request $request, File $file)
+    {
+
+        $folderID = $request->folderID;
+        
+        if (!isset($folderID)) {
+
+            return Response()->json([
+                "success"       => false,
+                "files"         => []
+            ]);
+        }
+
+        $files = $file->where('folder_id', $folderID)->get(['file_name', 'path']);
+
+        return Response()->json([
+            "success"       => true,
+            "files"         => $files,
+            "message"       => "Test",            
+        ]);  
+        
+    }
+
 
     public function searchFolders(Request $request, Folder $folder, File $file) {
 

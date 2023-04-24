@@ -18,7 +18,7 @@
                         </div>
 
                          <img :src="this.caller.image" class="rounded-circle " width="150px">   
-                     </div>                
+                     </div>              
                    
                 </div>
 
@@ -37,213 +37,307 @@
 
         <!-- SELECT LESSON -->
         <div id="select-lesson-container" class="container-fluid">
+            <b-modal id="modalSelectLesson"  @show="getLessonsList" title="Select a Lesson" 
+                size="xl" header-bg-variant="primary" header-text-variant="white" 
+                hide-footer no-close-on-esc
+            > 
 
-            <b-modal id="modalSelectLesson"  title="Select a Lesson" size="xl" @show="getLessonsList">            
-          
-                <div v-if="currentSelectedFolder !== null">
-
-                    <!-- Current Selected Folder Information-->
-                    <div class="pt-2">You have selected:</div>                
-                    <div>Lesson Name: <strong>{{ currentSelectedFolder.folder_name }} </strong></div>
-                    <div>Lesson Description: {{ currentSelectedFolder.folder_description }}</div>   
-
-                    <!--[START] - (NEW! 2023) PREVIEW: Lesson Image gallery for the selected lesson-->
-                    <div class="container pt-4" v-if="currentSelectedFiles != null">
-                        <div class="row">
-                            <div class="col-2" v-for="(file, fileIndex) in currentSelectedFiles" :key="fileIndex">
-                                <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" @click="imageViewer(getBaseURL(file.path))"/>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-else class="text-center">
-                        <span class="text-danger">No Images found for this slides</span>
-                    </div>
-                    <!--[END] PREVIEW: Lesson Image gallery for the selected lesson-->  
-
+                <div v-if="hasSelected == true">
+                    <div class="alert alert-success" role="alert">
+                        You selected a new lesson.
+                    </div>                                    
                 </div>
-                <div v-else class="mt-3 text-center">
-                    <div class="text-danger">Please select a folder</div>
-                </div>
-                
 
-
-                <div id="ui-search-folders" class="container">
-                    <div id="slideSelection" v-if="isSearching == false">
-
-                        <div id="lesson-instructions" class="row mb-2">
-                            <div class="col-4">
-                                <h5 class="text-maroon">Please select a Lesson </h5>              
-                            </div>
-                            <div class="col-8">
-                                <div class="float-right">
-                                    <b-button variant="primary" @click="openSearchUI()">
-                                        <b-icon icon="search" aria-hidden="true"></b-icon>
-                                    </b-button>
-
-                                    <b-button variant="primary" @click="selectCategory(parentID)" v-if="parentID !== null">
-                                        <b-icon icon="arrow-return-left" aria-hidden="true"></b-icon>
-                                    </b-button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-if="currentFolder !== null">
-                            <!--[start] Lesson Card -->
-                            <div class="card flex-row flex-wrap">
-                                <div class="card-header border-0 w-25">
-                                    <!--[start] Preview Images -->
-                                    <b-carousel id="carousel-files" v-model="slide" class="cursor-pointer"
-                                        :interval="4000" controls indicators background="#ababab" style="text-shadow: 1px 1px 2px #333;"
-                                        @sliding-start="onSlideStart" @sliding-end="onSlideEnd">
-                                        <b-carousel-slide v-for="file in files" :key="'file_'+ file.id" >
-                                            <template #img>
-                                                <div class="text-center " style="height:150px">
-                                                    <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" height="auto" @click="imageViewer(getBaseURL(file.path))"/>                                        
-                                                </div>
-                                            </template>
-                                        </b-carousel-slide>
-                                    </b-carousel>
-                                    <!--[end] Preview Images -->
-                                </div>
-                                <!-- [start] Lesson Information  -->
-                                <div class="card-block px-2">
-                                    <div id="lesson-information" class="py-3">
-                                        <h4 class="card-title h3">{{ currentFolder.folder_name }}</h4>
-                                        <p  class="card-text small text-secondary">{{ currentFolder.folder_description }}</p>
-
-                                        <div id="button-lesson-select" v-if="folderCategories.length <= 0">
-                                            <b-button variant="primary" @click="selectNewLesson(currentFolder.id)">
-                                                Select Lesson
-                                            </b-button>
-                                        </div>
-
-                                        <div v-else id="more-lessons-container" class="text-secondary">
-                                            <div class="alert alert-primary" role="alert">
-                                                <span class="text-success">Please select a topic below</span>
+                <div v-if="hasSelected == false">
+                    <div class="container" v-if="currentSelectedFolder !== null">
+                        <div class="card mb-3">
+                            <h5 class="card-header bg-secondary text-white">Current Lesson Selected </h5>
+                            <div class="card-body bg-light">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card-title">{{ currentSelectedFolder.folder_name }}</div>
+                                        <p class="card-text">{{ currentSelectedFolder.folder_description }}</p>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="row" v-if="currentSelectedFiles != null">
+                                            <div class="col-2" v-for="(file, fileIndex) in currentSelectedFiles" :key="'image-'+fileIndex">
+                                                <img :src="getBaseURL(file.path)" class="img-fluid cursor-pointer" @click.prevent="imageViewer(getBaseURL(file.path))"/>
                                             </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else class="mt-3 text-center">
+                        <div class="text-danger">Please select a folder</div>
+                    </div>
+
+                    <div id="ui-search-folders" class="container">
+                        <div id="slideSelection" v-if="isSearching == false">
+
+                            <div id="lesson-instructions" class="row mb-2">
+                                <div class="col-4">
+                                    <h5 class="text-maroon">Please select a Lesson </h5>              
+                                </div>
+                                <div class="col-8">
+                                    <div class="float-right">
+                                        <b-button variant="primary" @click="openSearchUI()">
+                                            <b-icon icon="search" aria-hidden="true"></b-icon>
+                                        </b-button>
+
+                                        <b-button variant="primary" @click="selectCategory(parentID)" v-if="parentID !== null">
+                                            <b-icon icon="arrow-return-left" aria-hidden="true"></b-icon>
+                                        </b-button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="currentFolder !== null">
+                                <!--[start] Lesson Card -->
+                                <div class="card">
+
+                                    <!--[start] Preview Images -->
+                                    <!--
+                                    <div class="card-header">                                   
+                                        <b-carousel id="carousel-files" v-model="slide" class="cursor-pointer"
+                                            :interval="4000" controls indicators background="#ababab" style="text-shadow: 1px 1px 2px #333;"
+                                            @sliding-start="onSlideStart" @sliding-end="onSlideEnd">
+                                            <b-carousel-slide v-for="file in files" :key="'file_'+ file.id" >
+                                                <template #img>
+                                                    <div class="text-center " style="height:150px">
+                                                        <img :src="getBaseURL(file.path)" class="img-fluid  cursor-pointer" height="auto" @click="imageViewer(getBaseURL(file.path))"/>                                        
+                                                    </div>
+                                                </template>
+                                            </b-carousel-slide>
+                                        </b-carousel>                                    
+                                    </div>
+                                    -->
+                                    <!--[end] Preview Images -->
+
+                                    <!-- [start] Lesson Information  -->
+                                    <div class="card px-2">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div id="lesson-information" class="py-3">
+                                                    <h4 class="card-title h3">{{ currentFolder.folder_name }}</h4>
+                                                    <p  class="card-text small text-secondary">{{ currentFolder.folder_description }}</p>
+
+                                                    <div id="button-lesson-select" v-if="folderCategories.length > 0 ">
+                                                        <div class="alert alert-primary" role="alert">
+                                                            <span class="text-success">Please select a category</span>
+                                                        </div> 
+                                                    </div>
+
+                                                    <div v-else id="more-lessons-container" class="text-secondary">
+                                                        <div class="alert alert-primary" role="alert">
+                                                            <span class="text-success">Please select a lesson</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-6">
+
+                                                <div id="lessons-container" class="accordion my-4" v-if="rows >= 1" >
+                                                    <b-table  id="lesson-table" ref="lesson-table"
+                                                        :items="lessons" 
+                                                        :fields="fields"                                                
+                                                        :per-page="perPage"
+                                                        :current-page="currentPage"
+                                                        :striped="false"
+                                                        :hover="true"
+                                                        borderless
+                                                        :outlined="false"
+                                                        :class="'no-padding'"
+                                                    >
+
+                                                    
+                                                        <template #cell(actions)="row" >
+
+                                                            <b-card no-body>
+                                                                <b-card-header header-tag="header" class="p-0" role="tab">
+                                                                    <b-button-group block class="w-100">        
+                                                                        <b-button block variant="primary" @click="getLessonImages(row.index, row.item.id)">
+                                                                            {{ row.item.folder_name }} 
+                                                                        </b-button>
+                                                                        <b-button variant="success" size="sm" class="w-25" @click.prevent="selectNewLesson(row.item.id)">                                                               
+                                                                            <div class="small text-center"> Select Lesson</div>              
+                                                                        </b-button>                                                                    
+                                                                    </b-button-group>
+                                                                </b-card-header>                                                                
+                                                                <b-collapse v-model="isCollapsed[row.index]" id="my-collapse-id">
+                                                                    <b-card-body v-if="folder_images[row.index]">
+                                                                        <div class="row">
+                                                                            <div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" 
+                                                                                    :key="'folder_images_'+row.index+'_'+imageIndex">
+                                                                                <img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(getBaseURL(images.path))">   
+                                                                            </div>
+                                                                        </div>
+                                                                    </b-card-body>
+                                                                </b-collapse>
+                                                            </b-card>
+                                                            
+
+                                                        </template>
+                                                    </b-table>
+
+                                            
+
+                                                
+                                                    <div class="mt-3">                                                     
+                                                        <!--<b-pagination v-model="currentPage" :total-rows="rows" :input="openPage('page-' +currentPage)" :per-page="perPage" :limit="10"></b-pagination>-->
+                                                        <b-pagination 
+                                                            v-model="currentPage" 
+                                                            :total-rows="rows" 
+                                                            :per-page="perPage" 
+                                                            :limit="5"
+                                                            @input="clearFolderImages"
+                                                            aria-controls="lesson-listings"
+                                                            >
+                                                        </b-pagination>
+                                                    </div>
+
+                                                    <!--
+                                                    <div class="col-12 cursor-pointer" v-for="lesson in lessons" :key="'lesson_'+lesson.id" @click="selectNewLesson(lesson.id)">
+                                                        <div class="card mb-3 border-primary cursor-pointer">
+                                                            <div class="card-header bg-primary">
+                                                                <span class="text-white">
+                                                                    {{ lesson.folder_name }}
+                                                                </span>
+                                                            </div>
+                                                            <div class="card-body card-body-minimum">
+                                                                <p class="card-text small">
+                                                                    {{ lesson.folder_description }}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    -->
+
+                                                </div>
+
+                                                <!--
+                                                <div v-else>
+                                                    <div class="text-center my-4">
+                                                        <span class="small text-maroon">No Lessons for this category</span>
+                                                    </div>
+                                                </div>-->
+                                            </div>
+
                                         </div>
 
                                     </div>
+                                    <!-- [end] Lesson Information  -->                           
                                 </div>
-                                <!-- [end] Lesson Information  -->                           
+                                <!--[end] Lesson Card-->
                             </div>
-                            <!--[end] Lesson Card-->
+
+                        
+
+                            <!-- Categories -->
+                            <div class="mt-3" v-if="folderCategories.length >= 1">
+                                <fieldset class="border p-2">
+
+                                    <legend  class="w-auto text-primary">
+                                        <span v-if="parentID !== null"> Related Categories</span>
+                                        <span v-else>Lesson Categories</span>
+                                    </legend>
+
+                                    <div id="folder-categories" class="row"  >
+                                        <div class="col-3 cursor-pointer" v-for="category in folderCategories" :key="'category_'+category.id" @click="selectCategory(category.id)">
+                                            <div class="card mb-3 border-primary cursor-pointer">
+                                                <div class="card-header bg-primary">
+                                                    <span class="text-white">
+                                                        {{ category.folder_name }}
+                                                    </span>
+                                                </div>
+                                                <div class="card-body card-body-minimum">
+                                                    <p class="card-text small">
+                                                        {{ category.folder_description }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <!--[end] Categories -->
+                            
                         </div>
 
-                        <div class="mt-3">
-                            <fieldset class="border p-2">
+                        <div v-else-if="isSearching == true">
 
-                                <legend  class="w-auto text-primary">
-                                    <span v-if="parentID !== null"> Related Lesson Categories</span>
-                                    <span v-else>Lesson Categories</span>
+                            <div id="lesson-instructions" class="row mb-2">
+                                <div class="col-4">
+                                    <h5 class="text-maroon">Search </h5>              
+                                </div>
+                                <div class="col-8">
+                                    <div class="float-right">
+                                        <b-button variant="primary" @click="closeSearchUI()">
+                                            <b-icon icon="x" aria-hidden="true"></b-icon>
+                                        </b-button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div role="group" class="input-group">
+                                <!--[start] Seach Icon-->
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">                            
+                                        <b-icon icon="search" aria-hidden="true"></b-icon>                              
+                                    </div>
+                                </div> 
+                                <!--[end] Search Icon -->                        
+                                <!--[start] Seach Keyword -->
+                                <input id="bv-icons-table-search" type="search" v-model="searchKeyword" 
+                                    @blur="handleSearch()"  @keyup="handleSearch()" @change="handleSearch()" @clear:append="handleSearch()" @click="handleSearch()"
+                                    autocomplete="off" aria-controls="bv-icons-table-result" 
+                                    class="form-control"
+                                >
+                                <!--[end] Search Keyword-->
+                            </div>
+
+                            <!--[start] search results -->
+
+                            <fieldset class="border p-2 mt-2">
+
+                                <legend class="w-auto text-primary">                              
+                                    <span>Search Results</span>
                                 </legend>
 
-                                <div id="folder-categories" class="row" v-if="folderCategories.length >= 1" >
-
-                                    <div class="col-3 cursor-pointer" v-for="category in folderCategories" :key="'category_'+category.id" @click="selectCategory(category.id)">
-                                        <div class="card mb-3 border-primary cursor-pointer">
-                                            <div class="card-header bg-primary">
-                                                <span class="text-white">
-                                                    {{ category.folder_name }}
-                                                </span>
+                                <div class="container">
+                                    <div class="row mt-1" v-if="searchResults.length >= 1">
+                                        <div class="col-3 cursor-pointer" v-for="category in searchResults" :key="'search_'+category.id"  @click="selectCategory(category.id)">
+                                            <div class="card mb-3 border-primary">
+                                                <div class="card-header bg-primary">
+                                                    <span class="text-white">
+                                                        {{ category.folder_name }}
+                                                    </span>
+                                                </div>
+                                                <div class="card-body card-body-minimum">
+                                                    <p class="card-text small">
+                                                        {{ category.folder_description }}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div class="card-body card-body-minimum">
-                                                <p class="card-text small">
-                                                    {{ category.folder_description }}
-                                                </p>
-                                            </div>
-                                        </div>
+                                        </div>   
                                     </div>
-
-                                </div>
-                                <div v-else>
-                                    <div class="text-center my-4">
-                                        <span class="small text-maroon">No more lesson category</span>
+                                    <div v-else class="col-12 text-center">
+                                        <div class="py-4">
+                                            <span class="text-danger small">No results found</span>
+                                        </div>
                                     </div>
                                 </div>
 
                             </fieldset>
-                        </div>
                         
-                    </div>
+                            <!--[end] -->
 
-                    <div v-else-if="isSearching == true">
-
-                        <div id="lesson-instructions" class="row mb-2">
-                            <div class="col-4">
-                                <h5 class="text-maroon">Search </h5>              
-                            </div>
-                            <div class="col-8">
-                                <div class="float-right">
-                                    <b-button variant="primary" @click="closeSearchUI()">
-                                        <b-icon icon="x" aria-hidden="true"></b-icon>
-                                    </b-button>
-                                </div>
-                            </div>
                         </div>
-
-                        <div role="group" class="input-group">
-                            <!--[start] Seach Icon-->
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">                            
-                                    <b-icon icon="search" aria-hidden="true"></b-icon>                              
-                                </div>
-                            </div> 
-                            <!--[end] Search Icon -->                        
-                            <!--[start] Seach Keyword -->
-                            <input id="bv-icons-table-search" type="search" v-model="searchKeyword" 
-                                @blur="handleSearch()"  @keyup="handleSearch()" @change="handleSearch()" @clear:append="handleSearch()" @click="handleSearch()"
-                                autocomplete="off" aria-controls="bv-icons-table-result" 
-                                class="form-control"
-                            >
-                            <!--[end] Search Keyword-->
-                        </div>
-
-                        <!--[start] search results -->
-
-                        <fieldset class="border p-2 mt-2">
-
-                            <legend class="w-auto text-primary">                              
-                                <span>Search Results</span>
-                            </legend>
-
-                            <div class="container">
-                                <div class="row mt-1" v-if="searchResults.length >= 1">
-                                    <div class="col-3 cursor-pointer" v-for="category in searchResults" :key="'search_'+category.id"  @click="selectCategory(category.id)">
-                                        <div class="card mb-3 border-primary">
-                                            <div class="card-header bg-primary">
-                                                <span class="text-white">
-                                                    {{ category.folder_name }}
-                                                </span>
-                                            </div>
-                                            <div class="card-body card-body-minimum">
-                                                <p class="card-text small">
-                                                    {{ category.folder_description }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>   
-                                </div>
-                                <div v-else class="col-12 text-center">
-                                    <div class="py-4">
-                                        <span class="text-danger small">No results found</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </fieldset>
-                    
-                        <!--[end] -->
-
                     </div>
                 </div>
-              
-
-                <template #modal-footer>
-                    <div class="w-100">
-                       <!-- <b-button variant="primary" size="sm" class="float-right" @click="saveOptionSelected('lessonSelector')"> Select Lesson Material </b-button>-->
-                    </div>
-                </template>
              </b-modal>
         </div>
 
@@ -353,6 +447,7 @@
                 parentID: null,
         
                 folderCategories: [],
+                lessons: [],
                 files: [],
                 folder: null,
                 imageURL: null,         
@@ -371,10 +466,28 @@
                 myReservation: null,
 
                 currentSelectedFolder: null,
-                currentSelectedFiles: []
+                currentSelectedFiles: [],
+
+                //Lesson list
+                hasSelected: false,
+                selectSuccessMessage: null,
+
+                currentPage: null,
+                rows: 0,
+                perPage: 5,               
+                fields: [
+                    //{ key: 'folder_name', label: 'Lesson', sortable: true, sortDirection: 'desc' },
+                    { key: 'actions', label: 'Actions' }
+                ],                
+              
+
+                //accordion images
+                folder_images: [],
+                isCollapsed: [],
             }
         },
         mounted() {
+
 
             //Transfer the object to the window
             window.memberCallerComponent = this;
@@ -450,6 +563,46 @@
             }); 
         },
         methods: {
+            showCollapse(index) 
+            {             
+                for (var i = 0; i <= this.perPage; i++) 
+                {                    
+                    if (i == index)  {                    
+                        if (this.isCollapsed[index] == false) {
+                            this.$set(this.isCollapsed, index, true)
+                        } else {                          
+                            this.$set(this.isCollapsed, index, false) //hide
+                        } 
+                    } else {                        
+                        this.$set(this.isCollapsed, i, false) //hide
+                    }                
+                }                
+            },        
+            getLessonImages(index, folderID) {
+                this.showCollapse(index) 
+                axios.post("/api/getLessonImages?api_token=" + this.api_token, 
+                {
+                    method                  : "POST",
+                    folderID                : folderID,
+                }).then(response => {
+
+                    if (response.data.success == true) 
+                    {       
+                        this.$set(this.folder_images, index, response.data.files)
+                        this.$forceUpdate();
+
+                    } else {
+                        
+                    }
+                });
+            }, 
+            clearFolderImages() {
+                this.folder_images = [];
+                for (var i = 0; i <= this.perPage; i++) {  
+                    this.$set(this.isCollapsed, i, false);
+                }
+            },
+            
             updateUserList: function(users) 
             {
                 this.users = users;      
@@ -706,7 +859,8 @@
                 this.myReservation          = JSON.parse(reservation); 
                 this.currentMember          = JSON.parse(member);
                 this.getMemberSelectedLesson(this.myReservation, this.currentMember )                             
-            },            
+            },                                
+           
             getMemberSelectedLesson(myReservation, currentMember) {
                 axios.post("/api/getMemberLessonSelected?api_token=" + this.api_token, 
                 {
@@ -771,7 +925,6 @@
                 this.saveOptionSelected(folderID);
             },
             saveOptionSelected(folderID) {
-                console.log(this.selectedLessonID);
 
                 axios.post("/api/saveSelectedLessonSlideMaterial?api_token=" + this.api_token, 
                 {
@@ -782,10 +935,15 @@
 
                 }).then(response => {
 
-                    if (response.data.success == false) {
-                        alert (response.data.message);
+                    if (response.data.success == true) {
+                        this.hasSelected = true;
+                    
+                        setTimeout(() => {
+                            this.$bvModal.hide('modalSelectLesson');  
+                        }, 1500);
+                      
                     } else {
-                         alert (response.data.message);
+                        alert (response.data.message);
                     }
                 });
 
@@ -799,7 +957,24 @@
                 }
                 this.getLessonsList();
             },
+            openPage(num) {
+                axios.post("/api/getLessonList?api_token=" + this.api_token, 
+                {
+                    method          : "POST",                
+                    folderID        : this.selectedLessonID,
+                    //public_folder_id : null,
+                }).then(response => {
+                    if (response.data.success == true) {
+                        this.lessons            = response.data.lessons.data; 
+                    } else {                    
+                        alert ("Error, we can't get your list of lesson, please try again later")
+                    }
+                });             
+            },                        
             getLessonsList() {
+
+                this.hasSelected = false;
+
                 axios.post("/api/getLessonFolders?api_token=" + this.api_token, 
                 {
                     method          : "POST",                
@@ -811,8 +986,13 @@
 
                         this.parentID           = response.data.parentID;
                         this.currentFolder      = response.data.currentFolder;
-                        this.folderCategories   = response.data.folderCategories;     
+                        this.folderCategories   = response.data.folderCategories;                          
+                        this.lessons            = response.data.lessons;
+                        this.rows               = response.data.lesson_rows; 
                         this.files              = response.data.files;
+
+                        //this.lessons            = response.data.lessons.data; (lazy loading)
+
                         this.$forceUpdate();
                     } else {                    
                         alert ("Error, we can't get your list of lesson, please try again later")
@@ -832,7 +1012,9 @@
                 this.imageURL = imageURL;
                 this.$bvModal.show('modalImageViewer');
             }, 
-           
+            toggleDetails(row) {
+                return row;
+            }
         }
     };
 </script>
@@ -844,4 +1026,11 @@
     .card-body-minimum {
         min-height: 100px;
     }    
+
+</style>
+
+<style >
+    .no-padding td {
+        padding: 0;
+    }
 </style>

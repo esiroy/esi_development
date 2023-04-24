@@ -64,12 +64,23 @@ class Folder extends Model
     }
 
     /**
+    * @return  subcategories of the folder.
+    */
+    public function subCats()
+    {
+        return $this->hasMany(self::class, 'parent_id', 'id')->where('privacy', 'public');
+    }
+
+
+    /**
      * @return  files of the folder.
      */
     public function files()
     {        
         return $this->hasMany('App\Models\File')->orderBy('order_id', 'ASC');
     }
+
+   
 
 
     public function users() 
@@ -753,8 +764,36 @@ class Folder extends Model
                 }
             }
         }     
-     }   
+    }   
 
 
-    
+    public function getSubFolders($id, $page, $itemsPerPage = 10) 
+    {    
+        if (!isset($id)) {
+            $id = 0; //replace null to 0  
+        } 
+
+        $query = $this->where('parent_id', '=', $id)->whereHas('subCats')->with('subCats')->where('privacy', 'public')->orderBy('order_id', 'ASC');
+
+        if ($itemsPerPage == "*") {
+            return $query->get();
+        } else {
+            return $query->paginate($itemsPerPage, ['*'], 'page', $page);
+        }
+    }
+
+    public function getFolderLessons($id, $page, $itemsPerPage = 10) 
+    {
+
+        $query = $this->where('parent_id', '=', $id)->doesntHave('subCats')->where('privacy', 'public')->orderBy('order_id', 'ASC');
+
+        if ($itemsPerPage == "*") {
+            return $query->get(['id', 'folder_name']);
+        } else {
+            return $query->paginate($itemsPerPage, ['*'], 'page', $page);
+        }
+   
+        
+    }
+
 }

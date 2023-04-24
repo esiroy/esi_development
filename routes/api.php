@@ -294,4 +294,8 @@ Route::middleware('auth:api')->post('/markLessonChatMessagesRead', 'API\lessonCh
 
 //(2023) New Lesson Folder parent thumbnail viewer
 Route::middleware('auth:api')->post('/getLessonFolders', 'API\LessonFolderController@getLessonFolders')->name('APIGetLessonFolders');
+Route::middleware('auth:api')->post('/getLessonList', 'API\LessonFolderController@getLessonList')->name('APIGetLessonList');
 Route::middleware('auth:api')->post('/searchFolders', 'API\LessonFolderController@searchFolders')->name('APISearchFolders');
+
+//Get lesson Images
+Route::middleware('auth:api')->post('/getLessonImages', 'API\LessonFolderController@getLessonImages')->name('APIGetLessonImages');

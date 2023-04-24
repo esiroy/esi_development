@@ -59,6 +59,47 @@ class dummyController extends Controller
 
     public function index(Request $request, Folder $folder) 
     {
+        
+        $id = $request->id;
+        $page = $request->page;
+
+        $itemsPerPage = 1;
+
+        echo $page;
+      
+        $folders = $folder->getSubFolders($id, $page, 1);
+
+        echo "folders<BR>";
+
+
+        foreach ($folders as $folder) {
+            echo $folder->id . " - " . $folder->folder_name . "<BR>" ;
+        }
+
+        echo  $folders->links();
+
+
+
+        echo "<BR><BR>";
+
+        echo "lessons<BR>";
+
+        $lessons = $folder->getFolderLessons($id, $page, 1);
+
+        echo "<pre>";
+        echo "total?";
+        print_r($lessons->total());
+
+        echo "</pre>";
+
+        foreach ($lessons as $lesson) {
+            echo $lesson->id . " - " . $lesson->folder_name . "<BR>" ;
+        }
+       
+    }
+
+    public function selectslide(Request $request, Folder $folder) 
+    {
 
         $memberID = 148;
         $scheduleID = $request->schedule_id;
