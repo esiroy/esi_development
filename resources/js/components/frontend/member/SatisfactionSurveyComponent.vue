@@ -2,129 +2,97 @@
 
 
     <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-backdrop  no-close-on-esc  hide-header-close>
-        <template #modal-header>
+            <template #modal-header>
             <div class="mx-auto">
-                <h4 class="text-center text-white">Satisfaction Survey</h4>
+                <h4 class="text-center text-white">Lesson Satisfaction Survey</h4>
             </div>           
-        </template>
-     
+        </template> 
 
-     
-        <div id="ratingsForm" v-show="showRatings">
-            <h5 class="text-maroon">Course Satisfaction Survey</h5>
-        
-            <h6 class="font-weight-bold">Your comments and suggestions will assist us in continuosly improving our services</h6>
+        <div class="info-container">
+            <h5 class="text-maroon">Lesson Satisfaction Survey</h5>        
+            <h6 class="font-weight-bold"> 必ず満足度（★）を入力してください </h6>
             <hr/>
-            <div id="ratingsWrapper" class="row">    
-
-                <div id="starsRating" class="col-8">
-
-                    <!--
-                    <div class="row">
-                        <div class="col-7">
-                            <div class="feedback-title">
-                                General Course Satisfaction
-                            </div>
-                        </div>
-                        <div class="col-5">
-                            <star-rating v-model="generalCourseRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>            
-                        </div>
-                    </div>
-                    -->
-
-                    <div class="row mt-3">
-                        <div class="col-7"> 
-                            <div class="feedback-title">           
-                                Teacher Performance Satisfaction
-                            </div>
-                        </div>
-                        <div class="col-5"> 
-                            <star-rating v-model="teacherPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>  
-                        </div>                
-                    </div>
-
-                    <!--
-                    <div class="row mt-3">
-                        <div class="col-7">        
-                            <div class="feedback-title">    
-                                Student Self-Performance Satisfaction
-                            </div>
-                        </div>
-                        <div class="col-5">   
-                            <star-rating v-model="studentSelfPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>
-                        </div>
-                    </div>
-                    -->
-
-                </div>
-
-                
-                <div id="feebacks" class="col-4">
-                 
-                    <div class="text-center">
-                        <!--
-                        <button class="btn btn-success w-100 mb-4" @click="showFeebackForm">
-                            <span class="small">
-                                Write Course Feedback
-                            </span>
-                        </button>
-                        -->
-                        <button class="btn btn-success w-100" @click="showMessageForm">
-                            <span class="small">
-                                Leave Encouraging Messages
-                            </span>
-                        </button>
-                    </div>               
-                </div>
-
-            </div>
-            <div class="my-5 text-center">
-                <button class="btn btn-success" @click="submitSurvey()">
-                    Submit Feedback
-                </button>
-            </div>            
         </div>
 
+        <div class="thankyou-container" v-if="showEndPage == true">
 
-
-        <div id="feedbackForm" class="row" v-show="showFeedback">
-            <div class="col-12">
-                <h5 class="text-maroon">Course Feeback</h5>           
-                <h6 class="font-weight-bold">Your feeback will help us make the course better and improve our services</h6>
-                <hr/>     
-                <div id="feedbackFormWrapper">         
-                    <vue-ckeditor v-model="feeback" :config="config" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
-                </div>       
-
-                <div class="my-2 text-center">
-                    <button class="btn btn-success" @click="showRatingsForm()">
-                        Back
-                    </button>
+            <div class="my-4">
+                Thank you for taking the lesson. if you have any comments about today's lesson, please enter 
+                <div class="d-inline" v-if="this.reservationData.schedule_id">
+                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケートに答える!」at </a>
                 </div> 
+                MyPage
+            </div>
 
+            <div class="mt-4 mb-2 text-center">
+                <button class="btn btn-success" @click="exitSurvey()">
+                    EXIT
+                </button>
             </div>
         </div>
 
+        <div class="ratings-form-container" v-if="showEndPage == false">
+     
+            <div id="ratingsForm" v-show="showRatings">
 
-        <div id="messageForm" class="row" v-show="showMessage">
-            <div class="col-12">
-                <h5 class="text-maroon">Give us a message </h5>           
-                <h6 class="font-weight-bold">Your message will help improve our services and make teachers proud of their effort</h6>
-                <hr/>     
-                <div id="messageFormWrapper">         
-                    <vue-ckeditor v-model="message" :config="config" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
-                </div>    
 
-                <div class="my-2 text-center">
-                    <button class="btn btn-success" @click="showRatingsForm()">
-                        Back
-                    </button>
+
+                <b-alert show variant="danger" v-show="errorMessage">
+                    <div class="d-flex">
+                        <div class="flex">
+                            <b-icon icon="exclamation-circle-fill" variant="danger" font-scale="2"></b-icon> 
+                        </div>
+                        <div class="flex pl-2 pt-1 w-100  error-message">
+                            {{ errorMessage }}
+                        </div>  
+                    </div>
+                </b-alert>          
+
+                <div id="ratingsContainer" class="row">
+                    <div id="starsRating" class="col-12">
+                        <div class="row mt-3">
+                            <div class="col-5"> 
+                                <div class="title">           
+                                    Teacher Performance Satisfaction
+                                </div>
+                                <hr class="m-0">
+                                <div class="text-secondary small pt-1"> 
+                                Please rate your teacher from 1 Star rating to 5 Star rating for the highest satisfaction
+                                </div>                            
+                            </div>
+                            <div class="col-7"> 
+                                <star-rating v-model="teacherPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>  
+                            </div>                
+                        </div>                   
+                    </div>
                 </div>
 
+                <!--
+                <div id="messageFormContainer" class="row" v-show="showMessage">
+                    <div id="messageForm" class="col-12">
+                        <div class="row mt-3">
+                            <div class="col-5"> 
+                                <div class="title">Give us your comments</div>
+                                <hr class="m-0">
+                                <div class="text-secondary small pt-1">           
+                                    Help improve our services and make teachers proud of their effort
+                                </div>
+                            </div>
+                            <div class="col-7"> 
+                                <vue-ckeditor v-model="message" :config="config" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
+                            </div>                
+                        </div>                   
+                    </div>
+                </div>  
+                -->
+
+                <div class="mt-4 mb-2 text-center">
+                    <button class="btn btn-success" @click="submitSurvey()">
+                        Submit
+                    </button>
+                </div>
             </div>
-        
-        </div> 
-      
+        </div>
     </b-modal>
 
 </template>
@@ -132,18 +100,23 @@
 
 
 <style scoped>
-    .feedback-title {
+    .error-message { 
+        vertical-align: text-bottom;
+    }
+
+    .title {
         min-height: 40px;
         display: flex;
         align-items: center;
         font-weight: bold;
     }
+
 </style>
+
 
 <script>
 import StarRating from 'vue-star-rating'
 import VueCkeditor from 'vue-ckeditor2';
-
 
 export default {
     name: "satisfactionSurveyComponent",
@@ -154,6 +127,10 @@ export default {
     },    
     data() {
         return {
+
+            errorMessage: null,           
+
+
             //forms
             showRatings: false,
             showFeedback: false,
@@ -168,30 +145,48 @@ export default {
             feeback: null,
             message: null,     
 
+            //showEndPage
+            showEndPage: false,
+
             //Configuration for CKEditor
             config: {
                 toolbar: [
                     [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', 'NumberedList' ],
                     
                 ],
-                height: 300
+                removePlugins: ['easyimage', 'cloudservices', 'exportpdf'],
+                height: 150
             },
             //reservationData
             reservationData: null,            
         }
     },    
     methods: {
- 
-        showRatingAndFeedbackModal(reservationData) {
+        getBaseURL(path) {
+            return window.location.origin + "/" +path
+        },    
+        exitSurvey() {            
+            window.location.href = this.getBaseURL('home');
+        },
+        showRatingAndFeedbackModal(reservationData) 
+        {
+            /** 
+                @todo:  reverify if show ratings for is still not added
+                //for back or refreshed and cached page.
+            **/
             this.reservationData = reservationData;
             this.showRatingsForm();
-            this.$refs['ratingAndFeedBack'].show();
-          
+            this.$refs['ratingAndFeedBack'].show();            
+        },
+        showThankYou() {
+            this.showEndPage = true;
+            this.$refs.ratingAndFeedBack.show();
+            console.log(this.showEndPage);
         },
         showRatingsForm() {
             this.showRatings = true,
             this.showFeedback = false;
-            this.showMessage = false;         
+            this.showMessage = true;         
         },
         showFeebackForm() {
             this.showRatings = false,
@@ -215,37 +210,49 @@ export default {
         checkLessonRated() 
         {
             //return this.isArrayValid([this.generalCourseRating, this.teacherPerformanceRating, this.studentSelfPerformanceRating])
-
             return this.isArrayValid([this.teacherPerformanceRating])
         },
-        submitSurvey() {           
-           let isLessonRated = this.checkLessonRated();     
+        hasMessage() {
+            if (this.message == '')
+                return false;
+            else return true;
+        },
+        submitSurvey() {      
+
+           let isLessonRated = this.checkLessonRated(); 
 
            if (isLessonRated == true) {
+                this.errorMessage = null;               
                 this.postSurvey();
            } else {
-                alert ("You have not rated your teacher, please click the stars to rate")
+                this.errorMessage = "Please rate your teacher using stars";          
            }
         },
-        postSurvey() {
-        
+        postSurvey() { 
+
             axios.post("/api/postSatisfactionSurvey?api_token=" + this.api_token,
             {
                 method                          : "POST",
                 reservation                     : this.reservationData,
                 feeback                         : this.feeback,
-                message                         : this.message,   
-                
+                //message                         : this.message,
                 //Ratings
-                //generalCourseRating             : this.generalCourseRating, 
                 teacherPerformanceRating        : this.teacherPerformanceRating, 
+
+                //(Discared below)
+                //generalCourseRating             : this.generalCourseRating,                 
                 //studentSelfPerformanceRating    : this.studentSelfPerformanceRating
 
             }).then(response => {
             
                 if (response.data.success == true) {
-                    this.$refs['ratingAndFeedBack'].hide();
-                    this.$parent.disableSession();
+
+
+                    this.showThankYou();
+
+                    //this.$refs['ratingAndFeedBack'].hide();
+                    //this.$parent.disableSession();
+
                 } else {
                     this.$refs['ratingAndFeedBack'].hide();  
                     this.$parent.disableSession();              

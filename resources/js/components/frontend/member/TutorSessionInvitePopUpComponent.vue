@@ -503,7 +503,7 @@ export default {
                 WAITING TIMER (30 seconds)   
         *****************************************************/
         resetWaitingTimer() {
-            this.waitingTimer = 30;            
+            this.waitingTimer = 15;            
         },
         stopWaitingTimer() {
             clearInterval(this.waitingInterval);

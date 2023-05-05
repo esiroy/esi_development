@@ -299,3 +299,6 @@ Route::middleware('auth:api')->post('/searchFolders', 'API\LessonFolderControlle
 
 //Get lesson Images
 Route::middleware('auth:api')->post('/getLessonImages', 'API\LessonFolderController@getLessonImages')->name('APIGetLessonImages');
+
+//Homeworks
+Route::middleware('auth:api')->post('/uploader/uploadHomework', 'API\HomeworkController@uploadHomework')->name('APIuploadHomework');

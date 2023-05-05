@@ -26,8 +26,8 @@
                 <!-- Teacher will be viewing this "Member feeback" -->
                 <MemberFeebackComponent 
                     ref="memberFeedback" 
-                    :folder_id="this.$props.folder_id"
-                    :is-broadcaster="this.$props.isBroadcaster"
+                    :user_info="this.$props.user_info"
+                    :reservation="this.$props.reservation"
                     :api_token="this.api_token" 
                     :csrf_token="this.csrf_token"
                 >
@@ -149,7 +149,6 @@
                 <!--[start] breadcrumb -->
                 <nav aria-label="breadcrumb" class="d-inline-block">
 
-
                     <ol class="breadcrumb bg-transparent my-2 p-0" v-if="segments">
                         <li class="breadcrumb-item" aria-current="page">Home</li>
                         <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
@@ -191,12 +190,9 @@
 
                 <div id="audio-container" class="d-inline-block" v-if="segments">
                     <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.isBroadcaster"></AudioPlayerComponent>
-                    
                     <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
                         <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
                     </div>
-
-
                     <SlideUploaderComponent 
                         ref="slideUploader" 
                         :reservation="this.$props.reservation"
@@ -209,8 +205,6 @@
                 </div>
                 
                 <div id="slide-container"></div>
-            
-
             </div>
             <!--********** [END] Lesson Slides *************-->
 
@@ -236,7 +230,14 @@
                     <div class="col-12"> 
                         <div class="mt-4">
                             <b-card header="Lesson Information">   
-                                <b-card-text class="text-danger text-center">Session has ended</b-card-text>
+                                <b-card-text class="text-danger text-center">
+                                
+                                    Session has ended
+
+                                    {{ lessonStatusMessage }}
+                                
+                                </b-card-text>
+
                             </b-card>
                         </div>                        
                     </div>
@@ -254,9 +255,9 @@
 
         <TutorSlideNotesComponent 
             ref="TutorSlideNotes" 
-        v-if="this.$props.isBroadcaster == true"
-        v-show="sessionActive"
-        :api_token="this.api_token" 
+            v-if="this.$props.isBroadcaster == true"
+            v-show="sessionActive"
+            :api_token="this.api_token" 
             :csrf_token="this.csrf_token">
         </TutorSlideNotesComponent>
 
@@ -386,6 +387,7 @@ export default {
     data() 
     {
         return {
+            lessonStatusMessage: null,
 
             isMemberTimerStarted: false,
             memberTimerInterval: false,
@@ -863,16 +865,13 @@ export default {
                     //this.destroySessionMedia();
 
                 } else {
-                    console.log("lesson is NOT COMPLETED ");
+
+                    console.log("lesson has  15 minute overdue - (tigger) [endSession])");
 
                     this.endSession();
                     this.hideEndSessionButton();
-                    this.destroySessionMedia();
-
-                    console.log("I will not call since the user is a no show, we will wait for a manual call to action from the teacher moving forward");
+                    this.destroySessionMedia();                   
                 }
-
-
             }
 
         } else {        
@@ -1211,16 +1210,17 @@ export default {
                         this.isNoShow = true; 
                         console.log('The current time is after 15 minutes from the specific date and time.');   
 
-                    } else if (this.$props.lesson_history != null && this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
+                    } else if (this.$props.lesson_history != null && this.currentDate.getTime() > this.expiredLessonDate.getTime()) {                           
 
-                            
+                        console.log("==============(15 min extension, session expired lesson history============", this.$props.lesson_history);
 
-                        console.log("==============expired lesson history============", this.$props.lesson_history);
+
                         this.isExpiredSession  = true;
 
                     } else {
 
                         this.isExpiredSession  = false;
+
                         console.log("current session is still valid???")
                     }            
 
@@ -1230,8 +1230,17 @@ export default {
                     console.log('The current time is not yet after 15 minutes from the specific date and time.');
                 }            
         },
-        test() {
-            window.test();
+        getMaterial() {            
+
+            let subject = this.segments.pop();
+            let material = this.segments.pop();
+
+            return {
+                'segments': this.segments,
+                'course': this.segments[0],
+                'material': material,
+                'subject':subject
+            }
         },
         testEndSessionEmitter() {
             this.socket.emit('END_SESSION', this.getSessionData()); 
@@ -1317,20 +1326,16 @@ export default {
                 buttonSize: 'sm',
                 okVariant: 'primary',
                 okTitle: 'YES',
-
                 cancelTitle: 'NO',
                 cancelVariant: 'danger',
                 footerClass: 'p-2',
                 hideHeaderClose: false,
                 centered: true,
             }).then(isConfirmed => {
-
                 if (isConfirmed == true)  {
                     this.saveAllSlides();
                     this.postLessonEndSessionHistory(this.reservation);
                 }
-
-
             }).catch(err => {
                 
                 alert (err)                
@@ -1512,6 +1517,10 @@ export default {
 
 
         },
+        getSelectedFolder() {
+            return this.$props.folder_id;
+        },
+
         createNewSlide() 
         {
         

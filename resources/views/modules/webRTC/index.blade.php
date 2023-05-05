@@ -138,26 +138,26 @@
 
             <!-- [start] chat media for user and teacher -->
             <div class="cabinet-holder middle-cabinet-holder">
-
-            
-
-
-                <div class="button-overlap">
+                <div id="toggleLiveChatContainer" class="button-overlap">
                     <div class="bg-lightblue float-right mt-3 pr-1 pl-2 rounded-left">
-                        <a class="toggleLiveChat" href="#"><i class="fas fa-pencil-alt text-white"></i></i></a>
+                        <a class="toggleLiveChat" href="#">
+                            <i class="fas fa-pencil-alt text-white"></i>
+                        </a>
                     </div>
                 </div>
-
-
-
-
+                <div id="toggleLiveChatMaximizedContainer" class="button-overlap">
+                    <div class="bg-lightblue float-right pr-1 pl-2 rounded-left">                        
+                        <a class="toggleLiveChatMaximized" href="#">
+                            <b-icon icon="square" class="text-white" aria-hidden="true"></b-icon>
+                        </a>
+                    </div>
+                </div>
 
                 <div id="right-chat-sidebar">
                     <div class="media">
                         <lesson-slider-chatroom-component 
                             ref="lessonSliderComponent"
                             user_image="{{ $memberProfileImage ?? '' }}"
-
                             :is-broadcaster="{{ $isBroadcaster }}"
                             :channelid="{{ $roomID }}"
                             canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
@@ -186,8 +186,6 @@
         
     <!--[start] Own Video Settings-->        
     <div class="modal" id="mySettingsModal" tabindex="-1" role="dialog" aria-hidden="true">
-
-
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
@@ -197,22 +195,18 @@
                 </button>
             </div>
             <div class="modal-body">
-                
                 <div class="select mb-2">
                     <label for="audioSource" class="font-weight-bold my-0">Audio input source: </label>
                     <select id="audioSource" class="form-control form-control-sm py-0" ></select>
                 </div>
-
                 <div class="select mb-2">
                     <label for="audioOutput" class="font-weight-bold my-0">Audio output destination: </label>
                     <select id="audioOutput" class="form-control form-control-sm py-0"></select>
                 </div>
-
                 <div class="select mb-2">
                     <label for="videoSource"  class="font-weight-bold my-0">Video source: </label>
                     <select id="videoSource" class="form-control form-control-sm py-0"></select>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
@@ -220,8 +214,6 @@
             </div>
             </div>
         </div>
-
-
     </div>
     <!--[end] Settings -->
 
@@ -233,12 +225,13 @@
 
 @section('scripts')      
 
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script> 
 
     <!-- this will only get the script if lesson  is not complete to reduce loading -->
 
     @if ($lessonCompleted == false)
 
-        <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script> 
+ 
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
         <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" defer></script>
         <script src="{{ url('js/webRTC.js') }}" charset="utf-8" defer></script>
@@ -252,13 +245,11 @@
 
             let isCameraActive = false;
             let isChatboxActive = false;
+            let isChatboxMaximized = false;
 
+            window.addEventListener('load', function () {
 
-            window.addEventListener('load', function () 
-            {
-
-             
-
+                
 
                 /*** TOGGLE MEDIA CABINETS EFFECTS */
                 $(".toggleCamera").click(function() {
@@ -281,8 +272,9 @@
                
 
                 $(".toggleLiveChat").click(function() {
-                    $('#right-chat-sidebar').animate({ width: 'toggle' }, 25, () => {
 
+                    document.getElementById("right-chat-sidebar").style.width = "225px";
+                    $('#right-chat-sidebar').animate({ width: 'toggle' }, 25, () => {
                         // Animation complete.
                         if (document.getElementById("right-chat-sidebar").style.display == 'none') {
                             //Close Chat sidebar
@@ -292,9 +284,42 @@
                             lessonSliderChatroom.markMessageRead()
                             isChatboxActive = true;
                         }
-
                         resizeAspectRatio();  
                     })
+                });
+
+
+
+                $(".toggleLiveChatMaximized").click(function() {
+
+                    document.getElementById("right-chat-sidebar").style.width = "400px";
+
+                    if (isChatboxActive == true) {
+                        if (isChatboxMaximized == false) {
+                            $('#right-chat-sidebar').animate({ width: '425px', height: '', }, 25, () => {                            
+                                isChatboxMaximized = true;
+                            });
+                        } else {                        
+                            $('#right-chat-sidebar').animate({ width: '225px' }, 25, () => {
+                                isChatboxMaximized = false;
+                            });                        
+                        }
+                        resizeAspectRatio();                  
+                    } else {
+                    
+                        $('#right-chat-sidebar').animate({ width: 'toggle' }, 25, () => {
+                            // Animation complete.
+                            if (document.getElementById("right-chat-sidebar").style.display == 'none') {
+                                //Close Chat sidebar
+                                isChatboxActive = false;
+                            } else {
+                                //Open Chat sidebar
+                                lessonSliderChatroom.markMessageRead()
+                                isChatboxActive = true;                          
+                        }
+                            resizeAspectRatio();  
+                        });
+                    }
                 });
 
 
@@ -317,16 +342,14 @@
                             elements[i].classList.remove("canvas-windowed");
                         }
                     }
-
                 }
-
-
-
+                
                 $(".toggleLiveChat").trigger('click');
                 $(".toggleCamera").trigger('click');
 
-            })
+            });
 
+          
 
         </script>
 
@@ -375,8 +398,10 @@
             opacity: 0;
         }
 
-
-
+        #toggleLiveChatMaximizedContainer {
+            margin-top: 42px;
+        }
+           
     </style>
 @endsection
 
