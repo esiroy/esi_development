@@ -4,8 +4,12 @@ namespace App\Models;
 
 use Auth;
 use DB;
+use DateTime;
+use Carbon\Carbon;
+
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MemoReply;
+use App\Models\ScheduleItem;
 
 use App\Models\MiniTestResult;
 
@@ -16,6 +20,136 @@ class ScheduleItem extends Model
     protected $guarded = array('created_at', 'updated_at');
 
     private $limit = 30;
+
+    public function getConsecutiveLessons($scheduleID) {
+
+        $scheduleItem           = new ScheduleItem();
+        $noLessons              = Array();    
+        $firstScheduledLesson   = $scheduleItem->where('id',  $scheduleID)->where('valid', true)->first();
+
+        if ($firstScheduledLesson) {
+            $firstLessonTime    = Carbon::parse($firstScheduledLesson->lesson_time)->format('Y-m-d H:i:s');
+            $remainingLessons   = $this->getMemberSchedule($firstScheduledLesson);
+            $consecutiveLessons = $this->filterConsecutiveSchedules($remainingLessons);   
+
+            //Compare first lesson to the first consecutive lesson for the day and return if is        
+            if  (count($consecutiveLessons) >= 1) {            
+                if($firstLessonTime == $consecutiveLessons[0]['startTime']) { 
+                    return $consecutiveLessons;
+                } else {
+                    return $noLessons;
+                }
+            } else {
+                return $noLessons;
+            }
+
+        } else {        
+            return $noLessons;
+        }        
+    }
+
+
+
+    public function getMemberSchedule($schedule) 
+    {
+
+        $lessonTime = $schedule->lesson_time;        
+        $memberID   = $schedule->member_id;
+
+        $currentDate    = new DateTime($lessonTime);
+        $startDate      = Carbon::parse($currentDate);
+        $endDate        = Carbon::parse($currentDate)->addDay()->setTime(1, 30, 0);
+
+        $scheduleItem   = new ScheduleItem();    
+
+        return  $scheduleItem->select('id','lesson_time')
+                    ->where('member_id',  $memberID)
+                    ->where('valid', true)            
+                    ->whereBetween('lesson_time', [$startDate, $endDate])  
+                    ->where(function ($query) {
+                        $query->where('schedule_status', 'CLIENT_RESERVED')
+                        ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                    })
+                    ->get()
+                    ->toArray();
+    }
+
+
+    function filterConsecutiveSchedules(array $schedule): array {
+        $filteredSchedules = [];
+        $numSchedules = count($schedule);
+
+        if ($numSchedules < 2) {
+           // return $schedule; // Only one schedule or empty array, so return the original schedule
+
+           if (isset($schedule[0])) {
+                $filteredSchedules[] = $this->formatLessonTime($schedule[0]);
+                return $filteredSchedules;
+           } else {
+                return $filteredSchedules;
+           }
+
+        }
+
+        $firstTime = strtotime($schedule[0]['lesson_time']);
+
+        $filteredSchedules[] =  $this->formatLessonTime($schedule[0]); // Add the first schedule as it's always considered consecutive
+
+        for ($i = 1; $i < $numSchedules; $i++) {
+            $currentTime = strtotime($schedule[$i]['lesson_time']);
+            $timeDiff = $currentTime - $firstTime;
+
+            if ($timeDiff === ($i * 1800)) {
+                $filteredSchedules[] = $this->formatLessonTime($schedule[$i]) ; // Add the schedule if it's 30 minutes apart from the first schedule
+            }
+        }
+
+        return $filteredSchedules;
+    }
+
+
+    /*
+        @startTime:
+        @endTime:
+        @duration:        this will get the duration in minutes for the consecutive lessons 
+    */
+    public function getConsecutiveLessonDuration($consecutiveLessons) {
+
+        $lessonCount = count($consecutiveLessons);
+        $duration = $lessonCount * 25; //minutes
+
+        if ($lessonCount == 1) {
+
+            return [
+                    'startTime' => $consecutiveLessons[0]['startTime'],
+                    'endTime'   => $consecutiveLessons[0]['endTime'],
+                    'length'    => $duration,
+                ];
+
+        } elseif($lessonCount > 1) {
+            return [
+                    'startTime' => $consecutiveLessons[0]['startTime'],
+                    'endTime'   => $consecutiveLessons[$lessonCount-1]['endTime'],
+                    'length'    => $duration,
+                ];  
+        }        
+    
+    }
+
+    public function formatLessonTime($schedule) {
+
+        $id     = $schedule['id'];
+        $startTime = $schedule['lesson_time'];
+        $newTime = Carbon::parse($startTime);
+        $endTime = $newTime->addMinutes(25)->format('Y-m-d H:i:s');
+
+        return [
+            'id'        => $id,
+            'startTime' =>  $startTime,
+            'endTime' => $endTime
+        ];
+    }
+
 
     /**
      * PLOT RESERVATIONS FOR MEMBERS

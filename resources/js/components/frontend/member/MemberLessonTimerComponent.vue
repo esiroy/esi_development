@@ -1,7 +1,8 @@
 <template>
     
      <div class="timer-holder">
-         <b-modal id="modal-member-timer" content-class="esi-modal" title="Set Countdown Timer" :header-bg-variant="headerBgVariant" header-text-variant="white" size="lg" hide-footer no-close-on-esc no-close-on-backdrop>        
+         <b-modal id="modal-member-timer" content-class="esi-modal" title="Set Countdown Timer" 
+         :header-bg-variant="headerBgVariant" header-text-variant="white" size="lg" hide-footer no-close-on-esc no-close-on-backdrop>        
 
             <div class="container">         
                 <div class="border border-dark rounded">
@@ -159,7 +160,7 @@ export default {
         stopCountdown() {
             if (this.isTimerStarted == true) {            
                 this.isTimerStarted = false;        
-                this.$root.$emit('stoptMemberTimer', this.timeRemaining);        
+                this.$root.$emit('stopMemberTimer', this.timeRemaining);        
                 this.stopCountdownTimer();
             }            
         },

@@ -110,9 +110,22 @@ class LessonHistory extends Model
                 'time_started'      => $lessonHistory->time_started,
                 //time_ended
             ]);
-
-
     }
 
+
+    public function updateLessonStatus($lessonStatus, $scheduleID, $memberID) 
+    { 
+        if ($lessonStatus == "INCOMPLETE") 
+        {
+            $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "COMPLETED")->first();
+            if ($lessonHistory) {
+                return $lessonHistory->update(['status' => "INCOMPLETE"]);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
 
 }

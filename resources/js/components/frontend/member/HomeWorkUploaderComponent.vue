@@ -77,8 +77,9 @@
                         @input-filter="this.inputFilter"
                         :data="{
                             //order_id: this.homework_index,
-                            lesson_schedule_id: this.reservation.schedule_id,
-                            reservation: JSON.stringify(this.reservation)
+                            'lesson_schedule_id': this.reservation.schedule_id,
+                            'reservation': JSON.stringify(this.reservation),
+                            'instruction': this.instructions
                         }"
                         ref="homeworkUploader">
                         
@@ -89,12 +90,12 @@
                     </file-upload>
 
 
-                    <!--
+                   
                     <button type="button" class="btn btn-success"
-                        @click.prevent="testFeedback()">
+                        @click.prevent="triggerPostFeedback()">
                         <i class="fa fa-arrow-up" aria-hidden="true"></i>Test Feedback
                     </button>
-                    -->
+                  
 
 
                     <!--
@@ -176,17 +177,10 @@ export default {
   },
   methods: {
 
-    testFeedback() {   
+    triggerPostFeedback() {   
+      
+        this.$root.$refs['lessonSliderComponent'].$refs['memberFeedback'].postFeedback();
         
-        //this.$parent.memberFeedback.test();
-
-        console.log(this.$parent)
-
-        this.$root.$refs['lessonSliderComponent'].$refs['memberFeedback'].test();
-
-        let material = this.$root.$refs['lessonSliderComponent'].getMaterial();
-
-        console.log(material);
     },
     getFileCount() {
         return this.files.length;
@@ -204,8 +198,7 @@ export default {
      * @param  Object|undefined   oldFile   Read only
      * @return undefined
      */
-    inputFile: function(newFile, oldFile) 
-    {
+    inputFile(newFile, oldFile) {
       if (newFile && oldFile && !newFile.active && oldFile.active) {
 
         if (newFile.xhr) {
@@ -223,7 +216,7 @@ export default {
                                 'owner'     : newFile.response.owner,
                             };
 
-                 this.$root.$refs['lessonSliderComponent'].$refs['memberFeedback'].postFeeback();
+                this.triggerPostFeedback();
 
                 //remove the files
                 this.files.splice(this.files.findIndex(function(i){
@@ -240,7 +233,7 @@ export default {
      * @param  Function           prevent   Prevent changing
      * @return undefined
      */
-    inputFilter: function(newFile, oldFile, prevent) {
+    inputFilter(newFile, oldFile, prevent) {
         if (newFile && !oldFile) {
             // Filter non-image file
             if (!/\.(jpeg|jpg|gif|png|pdf)$/i.test(newFile.name)) {

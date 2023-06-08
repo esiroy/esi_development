@@ -1,7 +1,5 @@
 <template>
     <div class="slideSelectorContainer">
-        
-
 
         <div class="slideSelectorWrapper">
 
@@ -292,18 +290,11 @@
  export default {
     name: "slideSelectorComponent",
     props: {
+        folder_id: Number,
+        reservation: Object,
         csrf_token: String,		
         api_token: String,  
-        isBroadcaster: {
-            type: [Boolean],
-            required: true        
-        },           
-
-        reservation: Object,
-        folder_id: {
-            type: [String, Number],
-            required: true        
-        },        
+        is_broadcaster: Boolean
     },
     data() {
         return {
@@ -528,6 +519,7 @@
             }
         },        
         async updateSlideFolder() {
+
             axios.post("/api/updateSelectedLesson?api_token=" + this.api_token,
             {
                 'method'        : "POST",                
@@ -537,6 +529,8 @@
             }).then(response => {
 
                 if (response.data.success == true) {
+
+                    console.log("updateSlideFolder", response.data)
 
                     this.hasSelected = true;
 

@@ -147,16 +147,9 @@ export default {
   },
   props: {
     reservation: Object, 
-    file_id: {
-      type: Number
-    },
-    folder_id: {
-        type: [String, Number],
-        required: true        
-    },
-    csrf_token: {
-      type: String
-    }     
+    file_id: Number,
+    folder_id: Number,
+    csrf_token: String,
   },
   data() {
     return {

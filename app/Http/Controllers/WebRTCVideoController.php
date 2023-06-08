@@ -21,7 +21,7 @@ use App\Models\MemberFeedback;
 class WebRTCVideoController extends Controller
 {
 
-    public function index(Request $request,  Folder $folder) 
+    public function index(Request $request, Folder $folder, ScheduleItem $scheduleItem) 
     {
 
         if (Auth::user()->roles->contains('title', 'Admin')) {
@@ -40,6 +40,9 @@ class WebRTCVideoController extends Controller
         if ($reserve) 
         {
 
+             $userInfo =  Auth::user();
+
+
             $reservationData = [
                 'schedule_id'       => $reserve->id,
                 'tutor_id'          => $reserve->tutor_id,
@@ -51,22 +54,28 @@ class WebRTCVideoController extends Controller
             ];         
 
 
-            $isLessonFinished = LessonHistory::where('schedule_id', $reserve->id)->where('status', "COMPLETED")->first();
-
-            if ($isLessonFinished) {
-            
-                $lessonCompleted = true;
-
-              // return Response::view('modules.webRTC.lessonFinished');                
-            
-            } else {
-            
-                $lessonCompleted = false;
-
+            if ($reserve->schedule_status == "COMPLETED") {
+                $isLessonCompleted = true;
+            } else {            
+                $isLessonCompleted = false;
             }
 
+
+            //detect if lesson has started.
             
-            $userInfo =  Auth::user();
+            $startedLesson = LessonHistory::where('member_id', $reserve->member_id)
+                                ->where('tutor_id',$reserve->tutor_id)
+                                ->where('schedule_id',$reserve->id)->where('status', "NEW")->first();
+
+            if ($startedLesson) {
+                $isLessonStarted = true;
+            } else {
+                $isLessonStarted = false;
+            }
+         
+
+            
+         
 
             //get the selected material chosen by users
             $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $reserve->id)->where('user_id', $reserve->member_id)->first();
@@ -97,11 +106,10 @@ class WebRTCVideoController extends Controller
 
             //@note: Lesson history to check surveys, 
             //@note: Blade view will detect if be (MEMBER OR TUTOR) based on the session
-
+	        $lessonCompleted        = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id',$reserve->id)->where('status', "COMPLETED")->first();
             $incompleteLessonHistory = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id',$reserve->id)->where('status', "INCOMPLETE")->first();
 
             if ($incompleteLessonHistory) {
-            
                 $lessonHistory = $incompleteLessonHistory;
 
             } else {
@@ -114,6 +122,8 @@ class WebRTCVideoController extends Controller
 
             }
 
+
+         
 
 
             //@note: check if session of a user has a survey
@@ -208,8 +218,21 @@ class WebRTCVideoController extends Controller
                 }
             }
 
-            return Response::view('modules.webRTC.index', compact('lessonCompleted', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 'roomID', 
-                                                        'folderID', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
+
+
+            //Get Consecutive Lessons
+            $lessons = $scheduleItem->getConsecutiveLessons($reserve->id);
+            $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
+
+            $consecutiveSchedules     = [                                        
+                                        'lessons'   => $lessons,
+                                        'duration'  => $consecutiveDuration
+                                    ];
+
+                  
+
+            return Response::view('modules.webRTC.index', compact('lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 'consecutiveSchedules', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 'roomID', 
+                                                        'folderID', 'folderURLArray', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');
 
         } else {
 

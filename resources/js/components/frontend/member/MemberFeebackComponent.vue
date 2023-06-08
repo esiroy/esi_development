@@ -215,13 +215,18 @@
 
 
 
-
             <div class="mt-4 mb-2 text-center">
                 <button class="btn btn-success" @click="submitFeedback()">
+
+                    <b-icon icon="exclamation-circle-fill" variant="danger" v-show="errorMessage">
+                    </b-icon> 
+
                     Submit Feedback
                 </button>
             </div>            
         </div>
+
+
 
 
     </b-modal>
@@ -316,18 +321,27 @@ export default {
     },    
     methods: {
         test() {
-
             //this.$refs.homeWorkUploader.startUpload();
-
-            alert ("member feedback test")
-            
+            alert ("member feedback test");
         },
+        updateLessonDetails(segments) {
+            let course = segments[0];
+            let subject = segments.pop();
+            let lessonMaterial = segments.pop();
 
+            this.material = {
+                'segments': segments,
+                'course': course,
+                'material': lessonMaterial,
+                'subject': subject
+            }
+        },
+        /*
         getLessonSlideMaterial() {
-            this.material = this.$root.$refs['lessonSliderComponent'].getMaterial(); 
+            this.material = this.$parent.getMaterial(); 
             return this.material;
-        },       
-
+        },   
+        */    
         getLessonSlideDetails() {
             alert ("get lesson slide detials")
         
@@ -335,7 +349,7 @@ export default {
         showMemberFeedbackModal(reservationData, files) 
         {
 
-            this.getLessonSlideMaterial();
+           // this.getLessonSlideMaterial();
 
             if (files == null || files.length == 0) {            
                 this.nextLessonOptions.push({
@@ -385,8 +399,7 @@ export default {
             return this.isArrayValid([this.studentPerformanceRating]);
         },
         hasLessonStatus() {
-            if (this.lessonStatusSelected == 'INCOMPLETE') 
-            {            
+            if (this.lessonStatusSelected == 'INCOMPLETE') {            
                 return this.isArrayValid([this.lessonStatusSelected, this.lessonSelected]);
             } else {            
                 return this.isArrayValid([this.lessonStatusSelected])
@@ -399,7 +412,8 @@ export default {
         },        
         submitFeedback() {       
 
-         
+            console.log("submitting feedback");
+
             let homeworkCount   = this.$refs.homeWorkUploader.getFileCount()
             let isLessonRated   = this.checkLessonRated();     
             let hasFeedback     = this.hasFeedback();
@@ -410,7 +424,7 @@ export default {
                 if (homeworkCount >= 1) {
                      this.$refs.homeWorkUploader.startUpload();
                 } else {
-                    this.postFeeback();
+                    this.postFeedback();
                 }               
             } else if (isLessonRated == false && hasFeedback == false && hasLessonStatus == false) {
                 this.errorMessage = "Please rate your student and add a student feedback";
@@ -428,13 +442,13 @@ export default {
                  this.errorMessage = "Oops! You have not rated your student and added a feedback";
             } 
         },
-        postFeeback() { 
+        postFeedback() { 
         
             axios.post("/api/postMemberFeedback?api_token=" + this.api_token,
             {
                 'method'                    : "POST",               
                 'reservation'               : this.reservationData,              
-                'material'                  : JSON.stringify(this.getLessonSlideMaterial()),
+                'material'                  : JSON.stringify(this.material),
                 'feedback'                  : this.feedback,
                 //'message'                   : this.message, ()
                 'lessonStatus'              : this.lessonStatusSelected,
@@ -451,7 +465,8 @@ export default {
                     this.$refs['memberFeedbackModal'].hide();  
                     this.$parent.disableSession();              
                 }
-            });   
+            });  
+           
         }
 
     }    

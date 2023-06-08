@@ -28,7 +28,8 @@ class Notes extends Model
                     ->paginate(Auth::user()->items_per_page);
     }
 
-    function saveMemberNote($memberID, $tutorID, $note) {
+    function saveMemberNote($memberID, $tutorID, $note) 
+    {
     
         return Notes::create([            
             'member_id' => $memberID,

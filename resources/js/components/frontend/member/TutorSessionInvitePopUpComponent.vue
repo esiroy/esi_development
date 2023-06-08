@@ -1,13 +1,125 @@
 <template>
-    <div class="tutor-session-invite-container">
 
+    <div class="container">
       
-        <!-- 
-            /*************************************************** 
-                            CALL USER MODAL
-            ***************************************************/
-        -->
-        <b-modal id="modal-callUser"  :title="'Calling Student Please wait'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
+
+       <!--[start] MODAL PROMPTS -->
+        <b-modal id="modal-user-prompt"  :title="userPromptTitle" 
+            content-class="esi-modal" 
+            :header-bg-variant="headerBgVariant" 
+            no-close-on-esc no-close-on-backdrop hide-header-close>
+
+            <div class="modal-body"> 
+                <div class="alert alert-danger" role="alert">
+                    <div class="row">
+                        <div class="col-1 pt-3 pb-2 text-right">
+                            <b-icon scale="2.5" icon="exclamation-circle"></b-icon>
+                        </div>
+                        <div class="col-11 pl-4">
+                            <div class="mt-2 small">
+                                <span class="text-center" v-html="userPromptMessage"></span>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <template #modal-footer>
+                <div class="container text-center">
+                    <b-button variant="primary" @click="backToMemberHome()">I Agree and take me back to homepage</b-button>
+                </div>
+            </template>
+        </b-modal>
+        <!--[end] MODAL ABSENT -->
+
+
+        <!--[start] MODAL ABSENT -->
+        <b-modal id="modal-user-absent"  :title="userPromptTitle" 
+            content-class="esi-modal" 
+            :header-bg-variant="headerBgVariant" 
+            no-close-on-esc no-close-on-backdrop hide-header-close>
+
+            <div class="modal-body">            
+                {{ userPromptMessage }}
+            </div>
+
+            <template #modal-footer>
+                <div class="container text-center">
+                    <b-button variant="primary" @click="markStudentAbsent()">Yes, I Confirm</b-button>
+                </div>
+            </template>
+        </b-modal>
+        <!--[end] MODAL ABSENT -->
+
+
+        <!--[start] MODAL EXIRED -->
+        <b-modal id="modal-expired" :title="expiredModalTitle" size="lg" 
+            content-class="esi-modal" 
+            :header-bg-variant="headerBgVariant" 
+            no-close-on-esc no-close-on-backdrop hide-header-close>                      
+
+            <div class="alert alert-danger" role="alert">
+                <div class="row">
+                    <div class="col-1 pt-3 text-right">
+                        <b-icon scale="3.5" icon="exclamation-circle"></b-icon>
+                    </div>
+                    <div class="col-11 pl-4">
+                        <div class="mt-2 small font-weight-bold">
+                            <span v-html="expiredModalMessage"/>
+                        </div>
+                        <div class="mt-2 small">This lesson will be counted after clicking I agree button</div>  
+                    </div>
+                </div>
+            </div>
+
+            <template #modal-footer>
+                <div class="container text-center">
+                    <b-button variant="success" @click="backToMemberHome()">I Agree and take me back to homepage</b-button>                                                                           
+                </div>
+            </template>
+        </b-modal>
+        <!--[end] MODAL EXIRED -->
+
+       <!--[start] MODAL EXIRED -->
+        <b-modal id="modal-expired-options" :title="expiredModalTitle" size="lg" 
+            content-class="esi-modal" 
+            :header-bg-variant="headerBgVariant" 
+            no-close-on-esc no-close-on-backdrop hide-header-close>                      
+
+            <div class="alert alert-danger" role="alert">
+                <div class="row">
+                    <div class="col-1 pt-3 text-right">
+                        <b-icon scale="3.5" icon="exclamation-circle"></b-icon>
+                    </div>
+                    <div class="col-11 pl-4">
+                        <div class="mt-2 small font-weight-bold">
+                            <span v-html="expiredModalMessage"/>
+                        </div>
+                        <div class="mt-2 small">This lesson will be counted after ending session</div>  
+                    </div>
+                </div>
+            </div>
+
+            <template #modal-footer>
+                <div class="container text-center">
+                    <b-button variant="danger" @click="triggerContinueSession()">Continue Session</b-button>    
+                    <b-button variant="success" @click="triggerEndSession()">End Session</b-button>                                                                           
+                </div>
+            </template>
+        </b-modal>
+        <!--[end] MODAL EXIRED -->
+
+        <b-modal id="modal-completed" title="Your lesson has been completed" size="lg" 
+            content-class="esi-modal" 
+            :header-bg-variant="headerBgVariant" 
+            no-close-on-esc no-close-on-backdrop hide-header-close>                      
+            Modal completed
+        </b-modal>
+
+
+
+
+
+        <b-modal id="modal-call-user"  :title="'Calling Student Please wait'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
              <div v-if="timeLimitExpired == true">
                 <div>Time is up the student did not show on time for the lesson</div>
                 <div>This lesson is counted please click to confirm.</div>
@@ -59,7 +171,7 @@
 
                     <div v-if="waitingTimer <= 0"> 
                         <span class="text-primary small">
-                            <div class="py-2">We arre resending student a lesson another invitation, please wait...</div>
+                            <div class="py-2">We are resending student a lesson another invitation, please wait...</div>
                             <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>  
                         </span>
                     </div>
@@ -178,26 +290,7 @@
                         LESSON EXPIRED MODAL
             ***************************************************/
         -->
-         <b-modal id="modal-expired" title="Your lesson has expired" size="lg" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>                      
 
-            <div class="alert alert-danger" role="alert">
-                <div class="row">
-                    <div class="col-1 pt-3 text-right">
-                        <b-icon scale="3.5" icon="exclamation-circle"></b-icon>
-                    </div>
-                    <div class="col-11 pl-4">
-                        <div class="mt-2 small font-weight-bold">Sorry, lesson time is up. You did not show up in time for your lesson.</div>
-                        <div class="mt-2 small">This lesson is counted</div>  
-                    </div>
-                </div>
-            </div>
-
-            <template #modal-footer>
-                <div class="container text-center">
-                    <b-button variant="success" @click="backToMemberHome()">I Agree and take me back to homepage</b-button>                                                                           
-                </div>
-            </template>
-         </b-modal>
 
     </div>
    
@@ -226,6 +319,18 @@ export default {
     data() {
         return {
             headerBgVariant: 'lightblue',
+
+            expiredModalTitle:   '',
+            expiredModalMessage: '',
+
+            userPromptTitle: '',
+            userPromptMessage: '',
+
+            //Call waiting (Absent time)
+            callWaitingLimit: null, //default time
+
+            absentStartTime: null,
+           
 
             loaded: false,
             variants: ['primary'],
@@ -291,9 +396,72 @@ export default {
         
     },
     methods: {
+        triggerContinueSession() {
+            this.$bvModal.hide('modal-expired-options');
+        },
+        triggerEndSession() {
+            alert("end session")
+        },
+        markStudentAbsent() {
+            console.log("marking student as absent");
 
+            //@todo: Mark student absent       
+        },
+        showModalAbsent(params) { 
+            console.log('showModalAbsent', params)
+            this.userPromptTitle = params.title;
+            this.userPromptMessage = params.message;       
+            this.callWaitingLimit = params.callWaitingLimit;   
+            this.$bvModal.show('modal-user-absent');
+            
+        },
+        hideModalAbsent() {
+            this.userPromptTitle = params.title;
+            this.userPromptMessage = params.message;        
+            this.$bvModal.hide('modal-user-absent');
+        },
+
+        showSessionExpiredOptionsModal(params) {
+            this.expiredModalTitle = params.title;
+            this.expiredModalMessage = params.message;
+            this.$bvModal.show('modal-expired-options');
+        },        
+        hideModalExpiredOptionsModal() {
+            this.$bvModal.hide('modal-expired-options');
+        },
+
+        showModalExpired(params) {
+            this.expiredModalTitle = params.title;
+            this.expiredModalMessage = params.message;
+            this.$bvModal.show('modal-expired');
+        },        
+        hideModalExpired() {
+            this.$bvModal.hide('modal-expired');
+        },
+
+        showModalCompleted() {       
+            this.$bvModal.show('modal-completed');
+        },
+        hideModalCompleted() {
+            this.$bvModal.hide('modal-completed');
+        },
+
+        showUserPromptModal(params) {
+            this.userPromptTitle = params.title;
+            this.userPromptMessage = params.message;         
+            this.$bvModal.show('modal-user-prompt'); 
+        },
+        hideUserPromptModal() {
+            this.$bvModal.hide('modal-user-prompt');
+        },
+
+        
         backToMemberHome() {
-            window.location.assign('' + this.baseURL('/home') +'');            
+            if (this.$props.is_broadcaster == true) {
+                window.location.assign(this.baseURL('/admin'));            
+            } else {
+                window.location.assign(this.baseURL('/home'));            
+            }
         },
         
         contactCustomerSupport() {
@@ -345,7 +513,7 @@ export default {
 
             console.log("show call user modal");
             
-            this.$bvModal.show('modal-callUser');
+           // this.$bvModal.show('modal-call-user');
 
             // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
             if (this.$props.lesson_history == null) {
@@ -376,7 +544,7 @@ export default {
           
         },
         hideCallUserModal() {
-            this.$bvModal.hide('modal-callUser');  
+            this.$bvModal.hide('modal-call-user');  
             this.resetRedialTimer();   
             this.stopRedialTimer();        
         },
@@ -392,7 +560,7 @@ export default {
                     this.timeLimitExpired = true;
 
                     if (this.$props.is_broadcaster == true) {
-                        this.$bvModal.show('modal-callUser');
+                        this.$bvModal.show('modal-call-user');
                     } else {
                          this.$bvModal.show('modal-expired');
                     }

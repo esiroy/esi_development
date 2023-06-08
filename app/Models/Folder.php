@@ -659,14 +659,34 @@ class Folder extends Model
 
     public function getFirstFolder() {
     
-        $folder     = Folder::where('privacy', 'public')->where('parent_id', 0)->orderBy('order_id', "ASC")->first(); 
+        $parentFolder     = Folder::where('privacy', 'public')
+                        ->where('parent_id', 0)
+                        ->orderBy('order_id', "ASC")->first();        
 
-        if ($folder) {
-            return $folder;
-        } else {
-            return null;
-        }
+       $lastSubfolder = $this->getLastSubFolderRecursively($parentFolder);
+      
+       return $lastSubfolder;
     }
+
+
+
+     public function getLastSubFolderRecursively($parentFolder) {
+     
+        $subfolder     = Folder::where('privacy', 'public')->where('parent_id', $parentFolder->id)
+                            ->orderBy('order_id', "ASC")
+                            ->first(); 
+        if ($subfolder) {
+
+            return $this->getLastSubFolderRecursively($subfolder);
+
+        } else {
+        
+            return $parentFolder;
+        }
+
+     }
+
+
 
 
     public function getNextFolder($currentFolderID) {

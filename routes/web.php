@@ -278,6 +278,7 @@ Route::middleware('auth')->resource('webRTC', 'WebRTCVideoController');
 
 
 
+
 /* Admin Panel */
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], function() {
 

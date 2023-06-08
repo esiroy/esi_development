@@ -528,6 +528,41 @@ if (! function_exists('getRemainingDays'))
 }
 
 
+
+/*********************************
+   Calculate Lesson Duration
+/********************************* */
+if (! function_exists('minutesToMilliseconds')) 
+{
+    function minutesToMilliseconds($minutes) {
+        $milliseconds = $minutes * 60000;
+        return $milliseconds;
+    }
+}
+
+if (! function_exists('millisecondsToMinutes')) 
+{
+    function millisecondsToMinutes($milliseconds) {
+        $seconds = floor($milliseconds / 1000); // Convert milliseconds to seconds
+        $minutes = floor($seconds / 60); // Calculate the minutes
+        $remainingSeconds = $seconds % 60; // Calculate the remaining seconds
+
+        return array('minutes' => $minutes, 'seconds' => $remainingSeconds);
+    }
+}
+
+
+
+
+if (! function_exists('calcuculateRemainingMinutes')) 
+{
+    function calculateRemainingMilliseconds($lessonDurationInMilliseconds, $elapsedMilliseconds) {
+        $remainingMilliseconds = $lessonDurationInMilliseconds - $elapsedMilliseconds;
+        return $remainingMilliseconds;
+    } 
+}
+
+
 /*********************************
     Database Time formatting
 /********************************* */

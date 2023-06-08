@@ -504,7 +504,7 @@ export default {
             method              : "POST",
             channelid           : this.channelid
         }).then(response => {
-            console.log("marked read")
+            //console.log("marked read")
         });
     },
     getChatHistory() {

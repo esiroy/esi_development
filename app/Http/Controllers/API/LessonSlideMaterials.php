@@ -17,13 +17,15 @@ use App\Models\LessonSlideHistory;
 use App\Models\CustomTutorLessonMaterials;
 use App\Models\MemberFeedback;
 use App\Models\SatisfactionSurvey;
+use App\Models\ScheduleItem;
+
 
 class LessonSlideMaterials extends Controller
 {
 
 
-    public function saveEmptyCustomSlide(Request $request) { 
-
+    public function saveEmptyCustomSlide(Request $request) 
+    { 
        $createdCustomLesson = CustomTutorLessonMaterials::create([
             'lesson_schedule_id'    => $request->scheduleID,
             'folder_id'             => $request->folderID,
@@ -34,24 +36,19 @@ class LessonSlideMaterials extends Controller
             'order_id'              => $request->slideIndex
         ]);
 
-        if ($createdCustomLesson) {
-        
+        //@todo: add to history
 
+        if ($createdCustomLesson) {
             return Response()->json([
                 "success"                => true,
                 "message"                => "Custom Lesson Material has been successfully added"
-            ]);         
-        
+            ]);
         } else {
-        
-        
             return Response()->json([
                 "success"                => false,
-                "message"                => "Error :: Custom Lesson Material was not added due to an errord"
+                "message"                => "Error :: Custom Lesson Material was not added due to an error"
             ]); 
         }
-
-
     }
 
     
@@ -275,19 +272,30 @@ class LessonSlideMaterials extends Controller
     /** 
         @description: get the lesson material slides of the folder, with auto selection
     */    
-    public function getLessonMaterialSlidesAutoNextFolder(Request $request, Folder $folder, MemberSelectedLessonSlideMaterial $memberSelectedMaterial)
+    public function getLessonMaterialSlidesAutoNextFolder(Request $request, Folder $folder, MemberSelectedLessonSlideMaterial $memberSelectedMaterial, ScheduleItem $scheduleItem)
     {
         $scheduleID         = $request->scheduleID;
         $memberID           = $request->memberID;
 
+
+
+
+
         //Lesson History for this scheduleID else get the NEW
         $incompleteLessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "INCOMPLETE")->first();
 
-        if ($incompleteLessonHistory)  {             
+        if ($incompleteLessonHistory)  
+        {             
             $lessonHistory = $incompleteLessonHistory;
+
         } else {            
-            $lessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
+
+            $lessonHistory = LessonHistory::where('member_id', $memberID)
+                                ->where('schedule_id', $scheduleID)
+                                ->where('status', "NEW")->first();
         }       
+
+
 
         if ($lessonHistory) {
             //Initialzie Audio Objects
@@ -368,8 +376,19 @@ class LessonSlideMaterials extends Controller
 
 
         //FILES (IMAGES)
-        $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
-        $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+        if (isset($folderID)) {
+
+            $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+            $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+
+        } else {
+        
+            $files              = [];
+            $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->orderBy('order_id', 'ASC')->get();         
+        
+        }
+
+
 
         //SLIDE HISTORY        
         $lessonSlideHistory = new LessonSlideHistory();
@@ -393,8 +412,16 @@ class LessonSlideMaterials extends Controller
             $slides = [];
           
         }
+ 
 
+        //Get Consecutive Lessons
+        $lessons             = $scheduleItem->getConsecutiveLessons($scheduleID);
+        $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
 
+        $consecutiveSchedules     = [                                        
+                                    'lessons'   => $lessons,
+                                    'duration'  => $consecutiveDuration
+                                ];
 
         if (isset($folderID)) {
         
@@ -408,17 +435,25 @@ class LessonSlideMaterials extends Controller
                     'notes'                => $notes,
                     "lessonHistory"        => $lessonHistory,
                     "slideHistory"         => $slideHistory ?? null,
-                    "audioFiles"           => $audioFiles ?? null                    
+                    "audioFiles"           => $audioFiles ?? null,
+                    "consecutiveSchedules" => $consecutiveSchedules              
                 ]);
 
         } else {
 
+            //@todo: c
+            //"folderSegments"       => $folderSegments,
+            //"folderURLArray"       => $folderURLArray,
+
             return Response([
                 "success"           => false,
-                 'folderID'             => $folderID, 
+                'folderID'          => $folderID, 
+                "files"             => $slides,
+                'customFiles'       => $customFiles,
                 "message"           => "No slides for this lesson",  
                 "slideHistory"      => $slideHistory ?? null,
-                "message"           => "No slides for this lesson"
+                "message"           => "No slides for this lesson",
+                "consecutiveSchedules" => $consecutiveSchedules
             ]);     
         }
 

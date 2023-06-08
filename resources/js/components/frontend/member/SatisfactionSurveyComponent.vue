@@ -1,7 +1,7 @@
 <template>
 
 
-    <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-backdrop  no-close-on-esc  hide-header-close>
+        <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-backdrop  no-close-on-esc  hide-header-close>
             <template #modal-header>
             <div class="mx-auto">
                 <h4 class="text-center text-white">Lesson Satisfaction Survey</h4>
@@ -34,9 +34,6 @@
         <div class="ratings-form-container" v-if="showEndPage == false">
      
             <div id="ratingsForm" v-show="showRatings">
-
-
-
                 <b-alert show variant="danger" v-show="errorMessage">
                     <div class="d-flex">
                         <div class="flex">
@@ -168,7 +165,7 @@ export default {
         exitSurvey() {            
             window.location.href = this.getBaseURL('home');
         },
-        showRatingAndFeedbackModal(reservationData) 
+        showSatisfactionSurveyModal(reservationData) 
         {
             /** 
                 @todo:  reverify if show ratings for is still not added

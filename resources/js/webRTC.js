@@ -36,6 +36,9 @@ const selectors = [audioInputSelect, audioOutputSelect, videoSelect];
 
 audioOutputSelect.disabled = !('sinkId' in HTMLMediaElement.prototype);
 
+navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+
+
 function gotDevices(deviceInfos) {
     // Handles being called several times to update labels. Preserve values.
     const values = selectors.map(select => select.value);
@@ -69,7 +72,7 @@ function gotDevices(deviceInfos) {
     });
 }
 
-navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
+
 
 // Attach audio output device to video element using device/sink ID.
 function attachSinkId(element, sinkId) {
@@ -130,6 +133,7 @@ function handleError(error) {
         'user': user,
         'roomID': roomID
     }
+
     start(video, audio, data);
 }
 
@@ -332,10 +336,6 @@ function restart() {
         video: { deviceId: videoSource ? { exact: videoSource } : undefined }
     };
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
-
-        //console.log("restarted")
-
-
         window.stream = stream; // make stream available to console
         videoElement.srcObject = stream;
 

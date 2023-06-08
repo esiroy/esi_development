@@ -255,18 +255,28 @@ Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\Les
 Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlidesAutoNextFolder')->name('APIGetLessonMaterialSlides');
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
 
-//Save Lesson Materials
+
+Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
+
+//Save Lesson Materials Custom Slides
 Route::middleware('auth:api')->post('/saveEmptyCustomSlide', 'API\LessonSlideMaterials@saveEmptyCustomSlide')->name('APIsaveEmptyCustomSlide');
 
 //lesson slide preview (NEW)
 Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlideMaterials@getLessonSelectedPreview')->name('APIGetLessonSelectedPreview');
 
 
-//Lesson History Controller (END LESSON)
-Route::middleware('auth:api')->post('/postLessonHistory', 'API\LessonHistoryController@postLessonHistory')->name('APIPostLessonHistory');
+//Save Lesson Slides
+Route::middleware('auth:api')->post('/saveLessonSlideHistory', 'API\LessonHistoryController@saveLessonSlideHistory')->name('APISaveLessonSlideHistory');
 
-//lesson Slide History
-Route::middleware('auth:api')->post('/saveLessonSlideHistory', 'API\LessonHistoryController@saveLessonSlideHistory')->name('APISaveLessonHistory');
+
+//Lesson History Controller (POST START)
+Route::middleware('auth:api')->post('/postLessonStartHistory', 'API\LessonHistoryController@postLessonStartHistory')->name('APIPostLessonStartHistory');
+
+//Lesson History Controller ( START)
+Route::middleware('auth:api')->post('/startLesson', 'API\LessonHistoryController@startLesson')->name('APIStartLesson');
+
+//lesson Slide History (END LESSON)
+Route::middleware('auth:api')->post('/postLessonEndHistory', 'API\LessonHistoryController@postLessonEndHistory')->name('APIpostLessonEndHistory');
 
 
 //File Manager

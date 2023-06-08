@@ -16,7 +16,7 @@ class CreateCustomTutorLessonMaterials extends Migration
         Schema::create('custom_tutor_lesson_materials', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('lesson_schedule_id');
-            $table->unsignedBigInteger('folder_id');
+            $table->unsignedBigInteger('folder_id')->nullable();
             $table->string('file_name');
             $table->string('upload_name');
             $table->string('path');

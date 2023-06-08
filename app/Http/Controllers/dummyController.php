@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Schema as Schema;
 
 
 use Illuminate\Http\Request;
+
+
+
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\User;
@@ -26,12 +29,15 @@ use App\Models\TimeManagerProgress;
 use App\Models\MiniTestResult;
 use App\Models\ChatSupportHistory;
 
+
 use App;
 use Gate;
 use DB;
 use Auth;
 use Config;
 use Mail;
+use DateTime;
+
 use App\Models\LessonMailer;
 
 use App\Mail\CustomerSupport as CustomerSupportMail;
@@ -56,8 +62,176 @@ class dummyController extends Controller
     {
     }
 
+    public function index(Request $request) {
+    
+        $isLessonStarted            = true;
+        $isUserAbsent               = "false";
+        $isLessonExpired            = "false";
+        $isLessonExceedGracePeriod  = false;
+        $gracePerionInMin           = 15; //Grace Period Extion to End Time or Session Expiration
 
-    public function index(Request $request, Folder $folder) 
+        $startTime      = Carbon::createFromFormat('Y-m-d H:i:s', trim($request->startTime)); 
+        $endTime        = Carbon::createFromFormat('Y-m-d H:i:s', trim($request->endTime));
+        //$currentTime    = Carbon::now(); 
+        $currentTime    =  Carbon::createFromFormat('Y-m-d H:i:s', trim($request->currentTime));
+
+        //Format Time
+        $start      = $startTime->format('Y-m-d H:i:s');
+        $end        = $endTime->format('Y-m-d H:i:s');       
+        $current    = $currentTime->format('Y-m-d H:i:s');
+        $interval   = $currentTime->diff($start);
+
+        //Calcuate duration in milliseconds
+        $durationInMilliseconds = minutesToMilliseconds($request->duration);
+
+        /*
+        if ($startTime->format('H') === '00') {
+            // Add a day when the hours is 0
+            $newStarTime = $startTime->modify('+1 day');
+            $start = $newStarTime->format('Y-m-d H:i:s');
+        }
+
+        if ($endTime->format('H') === '00') {
+            // Add a day when the hours is 0
+            $newEndTime = $endTime->modify('+1 day');
+            $end = $newEndTime->format('Y-m-d H:i:s');
+        }   
+        */     
+
+
+        //adjust grace end period
+        $graceEnd   = Carbon::parse($end)->addMinutes($gracePerionInMin)->format('Y-m-d H:i:s');
+
+        
+
+        //Get Elapsed Time 
+        $elapsedMilliseconds    = $interval->format("%f");
+        $elapsedDays            = $interval->format("%a");
+        $elapsedHours           = $interval->format("%h");
+        $elapsedMinutes         = $interval->format("%i");
+        $elapsedSeconds         = $interval->format("%s");
+
+        //Get Total Elapsed Time in Minutes
+        $totalElapsedMinutes = ($elapsedDays * 24 * 60) +
+                            ($elapsedHours * 60) +
+                            $elapsedMinutes;
+
+
+        //Get Total Elapsed Time in Seconds
+        $totalElapsedMilliseconds = ($elapsedDays * 24 * 60 * 60 * 1000) +
+                           ($elapsedHours * 60 * 60 * 1000) +
+                           ($elapsedMinutes * 60 * 1000) +
+                           ($elapsedSeconds * 1000) +
+                           $elapsedMilliseconds;
+
+
+        $remaningLessonDurationInMilliseconds   = calculateRemainingMilliseconds($durationInMilliseconds, $totalElapsedMilliseconds);
+        $remaningLessonDurationInMinutes        = millisecondsToMinutes($remaningLessonDurationInMilliseconds);
+
+        if ($startTime > $currentTime) {
+
+            //Lesson should not start since the lesson start time is so advance
+            $success                = false;  
+            $startTimeInvalid       = true;
+            $message                = "Lesson time has not started yet";
+
+        } else if ($isLessonStarted == false && $totalElapsedMinutes >= 15) {
+
+            $success            = false;
+            $isUserAbsent       = true;
+            $message            = "User is absent, Elapsed time is 15 minutes or over";
+
+        } else if ($isLessonStarted == true && $currentTime >= $endTime) {
+        
+            if ($currentTime >= $graceEnd) {
+
+                //Lesson should not start since the lesson start time is so advance
+                $success                = false;  
+                $startTimeInvalid       = true;
+                $isLessonExpired        = true;
+               
+                $message                = "Lesson time has expired";                
+
+            } else {
+            
+                //Lesson should not start since the lesson start time is so advance
+                $success                = true;  
+                $startTimeInvalid       = true;
+             
+                $message                = "Lesson time has been given 15 min grace period to finish lesson";
+            
+            }
+
+        } else {
+        
+            $success            = true;
+           
+            $message            = "User is present, Elapsed time is $totalElapsedMinutes, which less than 15 minutes";
+            
+        }       
+
+        $test =([                    
+            'success'               => $success,
+            //Determin User Absent
+            'isLessonStarted'       => $isLessonStarted,
+            'isUserAbsent'          => $isUserAbsent,
+            'isLessonExpired'       => $isLessonExpired,                        
+            'message'               => $message,
+
+            'currentDateTime'       => $current,
+            'startTime'             => $start,
+            'endTime'               => $end,
+            'graceEnd'              => $graceEnd,
+            'durationInMin'         => $request->duration,
+            'durationInMs'          => $durationInMilliseconds,
+
+            //Get Elapsed Time
+            'elapsed'               => [
+                                        'milliseconds'   => $elapsedMilliseconds,
+                                        'days'           => $elapsedDays,
+                                        'hours'          => $elapsedHours,
+                                        'minutes'        => $elapsedMinutes,
+                                        'seconds'        => $elapsedSeconds,
+                                    ],
+
+            //Remaining Lesson Duration
+            'remaningDurationInMilliseconds'    => $remaningLessonDurationInMilliseconds,
+            'remainingDurationInMinutes'        => $remaningLessonDurationInMinutes,
+
+            //Get total Ellapsed 
+            'totalElapsedMinutes'        => $totalElapsedMinutes, 
+            'totalElapsedMilliseconds'   => $totalElapsedMilliseconds,
+        ]); 
+
+        echo "<pre>";
+        print_r ($test);
+        echo "</pre>";
+
+
+    }
+
+    public function consecutiveLessons(Request $request, Folder $folder, ScheduleItem $scheduleItem) {
+    
+        echo "<p>". Auth::user()->id ."</p>";
+        $scheduleID = $request->id;
+        $consecutiveSchedules = $scheduleItem->getConsecutiveLessons($scheduleID);
+        $duration = $scheduleItem->getConsecutiveLessonDuration($consecutiveSchedules);
+
+
+        echo "<pre>";
+        print_r ($duration);
+        echo "</pre>";
+        
+
+
+        echo "<pre>";
+        print_r ($consecutiveSchedules);
+        echo "</pre>";
+    
+    }
+
+
+    public function getFolderPages(Request $request, Folder $folder) 
     {
         
         $id = $request->id;

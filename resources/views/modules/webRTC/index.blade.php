@@ -1,9 +1,5 @@
 @extends('layouts.esi-videochat')
-
 @section('content')
-
-    <!--{{ $lessonCompleted }}-->
-
     @php            
         $userImageObj = new \App\Models\UserImage;
         $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
@@ -12,172 +8,184 @@
         } else {
             $memberProfileImage = Storage::url("$userImage->original");
         }
+        
+       
+
     @endphp 
 
-<div id="slide-component">
+    
 
+    <div id="slide-component">
 
-    <lesson-slider-component  
-        ref="lessonSliderComponent"
-        user_image="{{ $memberProfileImage ?? '' }}"
-         
-        :is-broadcaster="{{ $isBroadcaster }}"
-        :editor_id="'canvas'"
-        :channelid="{{ $roomID }}"
-        folder_id="{{ $folderID ?? null }}"
+        <lesson-slider-component  
+            ref="lessonSliderComponent"
+            user_image="{{ $memberProfileImage ?? '' }}"
+            :is_broadcaster="{{ $isBroadcaster }}"
+            :editor_id="'canvas'"
+            :channelid="{{ $roomID }}"
+            :folder_id="{{ json_encode($folderID) ?? null }}"
+            :folder_url_array="{{ json_encode($folderURLArray) ?? null }}"
 
-        :lesson_completed="{{ json_encode($lessonCompleted) }}"
-        :feedback_completed="{{ json_encode($feedbackCompleted)  }}"
+            :consecutive_schedules="{{ json_encode($consecutiveSchedules) }}"
 
-        :lesson_history="{{ json_encode($lessonHistory) }}"
-        :reservation="{{ json_encode($reservationData) }}"            
+            :is_lesson_started="{{ json_encode($isLessonStarted) }}"
+            :is_lesson_completed="{{ json_encode($isLessonCompleted) }}"
 
-        webrtc_server="{{  env('APP_WEBRTC_SERVER_URL') }}"
-        canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
+            :lesson_completed="{{ json_encode($lessonCompleted) }}"            
+            :feedback_completed="{{ json_encode($feedbackCompleted)  }}"
 
-        canvas_width="1920"
-        canvas_height="1080"
+            :lesson_history="{{ json_encode($lessonHistory) }}"
+            :reservation="{{ json_encode($reservationData) }}"            
 
-        :user_info="{{  json_encode(Auth::user()) }}"
-        :member_info="{{  json_encode($userInfo) }}"
-        :recipient_info="{{ json_encode($recipientInfo) }}"
+            webrtc_server="{{  env('APP_WEBRTC_SERVER_URL') }}"
+            canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
 
-        api_token="{{ Auth::user()->api_token }}" 
-        csrf_token="{{ csrf_token() }}"
+            canvas_width="1920"
+            canvas_height="1080"
 
-        chatserver_url="{{ env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001') }}"
+            :user_info="{{  json_encode(Auth::user()) }}"
+            :member_info="{{  json_encode($userInfo) }}"
+            :recipient_info="{{ json_encode($recipientInfo) }}"
+            
 
-        ></lesson-slider-component> 
-</div>
+            api_token="{{ Auth::user()->api_token }}" 
+            csrf_token="{{ csrf_token() }}"
 
-@if ($lessonCompleted == false)
-    <div class="right-fixed">
+            
 
-        <div class="main-cabinet">
-            <!-- [start] video media for user and teacher -->
-            <div class="cabinet-holder top-cabinet-holder">
-                <div class="button-overlap">
-                    <div class="bg-lightblue float-right mt-3 pr-1 pl-2 rounded-left">
-                        <a class="toggleCamera" href="#"><i class="fas fa-camera text-white"></i></a>
-                    </div>
-                </div>
+            chatserver_url="{{ env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001') }}"
 
-                <div id="right-video-sidebar">
+            ></lesson-slider-component> 
+    </div>
 
-                    <div class="media">
+    @if ($isLessonCompleted == false)
+        <div class="right-fixed">
 
-                        <ul class="nav nav-tabs" style="background-color:#ccc">
-                            <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#tab-mycontact">
-                                    <!--MENU -->
-                                    @if (Auth::user()->user_type == "TUTOR") {{ "STUDENT" }} @else {{ "TEACHER" }} @endif                    
-                                </a>
-                            </li>   
-
-                            <li class="nav-item">
-                                <a class="nav-link " data-toggle="tab"  href="#tab-mymedia">
-                                    <!-- MENU ITEMS -->
-                                    @if (Auth::user()->user_type == "TUTOR") {{ "TEACHER" }} @else {{ "STUDENT" }} @endif
-                                </a>
-                            </li>
-                        </ul>
-
-                        <div class="tab-content">
-
-                            <div id="tab-mycontact" class="tab-pane active show ">
-                                <div id="videoGrid"></div>
-                            </div>
-
-                            <div id="tab-mymedia" class="tab-pane fade">
-                                <div id="myMediaContainer" class="row">
-                                </div>
-
-                                <div class="myButtonsContainer" class="row">
-
-                                    @if (Auth::user()->user_type == "TUTOR")
-                                    <button id="btnShareScreen" type="button" class="btn btn-sm">
-                                        <i class="fas fa-desktop text-white"></i>
-                                        <!--<span class="small">Screen Share</span>-->
-                                    </button>
-                                    @endif
-                                    
-
-                                    <button id="mySettingsBtn" type="button" class="btn btn-sm" data-toggle="modal" data-target="#mySettingsModal">
-                                        <i class="fas fa-cog text-white"></i>
-                                        <!--<span class="small">Settings</span>-->
-                                    </button>                
-
-                                
-                                    <button id="toggleCamera"  type="button"class="btn btn-sm">
-                                        <i class="fas fa-video text-white"></i>
-                                        <i class="fas fa-video-slash text-white" style="display:none"></i>
-                                    </button>
-                                    
-                                
-                                    <!--
-                                    <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1" style="width:50px">
-                                    -->
-
-                                    <button id="toggleAudio" class="btn btn-sm">
-                                        <i class="fas fa-volume-up text-white" ></i>
-                                        <i class="fas fa-volume-mute text-white" style="display:none"></i>
-                                    </button>
-                                
-
-
-                                </div>
-                            </div>
-
-
+            <div class="main-cabinet">
+                <!-- [start] video media for user and teacher -->
+                <div class="cabinet-holder top-cabinet-holder">
+                    <div class="button-overlap">
+                        <div class="bg-lightblue float-right mt-3 pr-1 pl-2 rounded-left">
+                            <a class="toggleCamera" href="#"><i class="fas fa-camera text-white"></i></a>
                         </div>
                     </div>
 
+                    <div id="right-video-sidebar">
+
+                        <div class="media">
+
+                            <ul class="nav nav-tabs" style="background-color:#ccc">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-toggle="tab" href="#tab-mycontact">
+                                        <!--MENU -->
+                                        @if (Auth::user()->user_type == "TUTOR") {{ "STUDENT" }} @else {{ "TEACHER" }} @endif                    
+                                    </a>
+                                </li>   
+
+                                <li class="nav-item">
+                                    <a class="nav-link " data-toggle="tab"  href="#tab-mymedia">
+                                        <!-- MENU ITEMS -->
+                                        @if (Auth::user()->user_type == "TUTOR") {{ "TEACHER" }} @else {{ "STUDENT" }} @endif
+                                    </a>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content">
+
+                                <div id="tab-mycontact" class="tab-pane active show ">
+                                    <div id="videoGrid"></div>
+                                </div>
+
+                                <div id="tab-mymedia" class="tab-pane fade">
+                                    <div id="myMediaContainer" class="row">
+                                    </div>
+
+                                    <div class="myButtonsContainer" class="row">
+
+                                        @if (Auth::user()->user_type == "TUTOR")
+                                        <button id="btnShareScreen" type="button" class="btn btn-sm">
+                                            <i class="fas fa-desktop text-white"></i>
+                                            <!--<span class="small">Screen Share</span>-->
+                                        </button>
+                                        @endif
+                                        
+
+                                        <button id="mySettingsBtn" type="button" class="btn btn-sm" data-toggle="modal" data-target="#mySettingsModal">
+                                            <i class="fas fa-cog text-white"></i>
+                                            <!--<span class="small">Settings</span>-->
+                                        </button>                
+
+                                    
+                                        <button id="toggleCamera"  type="button"class="btn btn-sm">
+                                            <i class="fas fa-video text-white"></i>
+                                            <i class="fas fa-video-slash text-white" style="display:none"></i>
+                                        </button>
+                                        
+                                    
+                                        <!--
+                                        <input type="range" id="volume-control" min="0" max="1" step="0.1" value="1" style="width:50px">
+                                        -->
+
+                                        <button id="toggleAudio" class="btn btn-sm">
+                                            <i class="fas fa-volume-up text-white" ></i>
+                                            <i class="fas fa-volume-mute text-white" style="display:none"></i>
+                                        </button>
+                                    
+
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
+                <!-- [end] video media for user and teacher -->
+
+                <!-- [start] chat media for user and teacher -->
+                <div class="cabinet-holder middle-cabinet-holder">
+                    <div id="toggleLiveChatContainer" class="button-overlap">
+                        <div class="bg-lightblue float-right mt-3 pr-1 pl-2 rounded-left">
+                            <a class="toggleLiveChat" href="#">
+                                <i class="fas fa-pencil-alt text-white"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div id="toggleLiveChatMaximizedContainer" class="button-overlap">
+                        <div class="bg-lightblue float-right pr-1 pl-2 rounded-left">                        
+                            <a class="toggleLiveChatMaximized" href="#">
+                                <b-icon icon="square" class="text-white" aria-hidden="true"></b-icon>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div id="right-chat-sidebar">
+                        <div class="media">
+                            <lesson-slider-chatroom-component 
+                                ref="lessonSliderComponent"
+                                user_image="{{ $memberProfileImage ?? '' }}"
+                                :is-broadcaster="{{ $isBroadcaster }}"
+                                :channelid="{{ json_encode($roomID) }}"
+                                canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
+                                :user_info="{{  json_encode(Auth::user()) }}"            
+                                :reservation="{{ json_encode($reservationData) }}"
+                                :member_info="{{  json_encode($userInfo) }}"
+                                :recipient_info="{{ json_encode($recipientInfo) }}"
+                                api_token="{{ Auth::user()->api_token }}" 
+                                csrf_token="{{ csrf_token() }}"
+                                >
+                            </lesson-slider-chatroom-component>  
+                        </div>
+                    </div>
+                </div>
+                <!--[end] chat media for user and teachervideo media for user and teacher -->
+
             </div>
-            <!-- [end] video media for user and teacher -->
 
-            <!-- [start] chat media for user and teacher -->
-            <div class="cabinet-holder middle-cabinet-holder">
-                <div id="toggleLiveChatContainer" class="button-overlap">
-                    <div class="bg-lightblue float-right mt-3 pr-1 pl-2 rounded-left">
-                        <a class="toggleLiveChat" href="#">
-                            <i class="fas fa-pencil-alt text-white"></i>
-                        </a>
-                    </div>
-                </div>
-                <div id="toggleLiveChatMaximizedContainer" class="button-overlap">
-                    <div class="bg-lightblue float-right pr-1 pl-2 rounded-left">                        
-                        <a class="toggleLiveChatMaximized" href="#">
-                            <b-icon icon="square" class="text-white" aria-hidden="true"></b-icon>
-                        </a>
-                    </div>
-                </div>
-
-                <div id="right-chat-sidebar">
-                    <div class="media">
-                        <lesson-slider-chatroom-component 
-                            ref="lessonSliderComponent"
-                            user_image="{{ $memberProfileImage ?? '' }}"
-                            :is-broadcaster="{{ $isBroadcaster }}"
-                            :channelid="{{ $roomID }}"
-                            canvas_server="{{ env('APP_CANVAS_SERVER_URL') }}"
-                            :user_info="{{  json_encode(Auth::user()) }}"            
-                            :reservation="{{ json_encode($reservationData) }}"
-                            :member_info="{{  json_encode($userInfo) }}"
-                            :recipient_info="{{ json_encode($recipientInfo) }}"
-                            api_token="{{ Auth::user()->api_token }}" 
-                            csrf_token="{{ csrf_token() }}"
-                            >
-                        </lesson-slider-chatroom-component>  
-                    </div>
-                </div>
-            </div>
-            <!--[end] chat media for user and teachervideo media for user and teacher -->
-
+            <button class="btn btn-primary" id="destroy-session-media" style="display:none">End Session</button>
         </div>
-
-        <button class="btn btn-primary" id="destroy-session-media" style="display:none">End Session</button>
-    </div>
 
 
 
@@ -216,6 +224,9 @@
         </div>
     </div>
     <!--[end] Settings -->
+@else
+
+        Lesson has been completed
 
 @endif
 
@@ -326,10 +337,12 @@
 
                 function resizeAspectRatio()  
                 {
-                    console.log(isCameraActive, isChatboxActive)
+                    //console.log(isCameraActive, isChatboxActive)
+                    
 
                     if (isCameraActive == true || isChatboxActive == true) {                  
-                        console.log("at least one cabinet opened, we are going to resize");
+                        //console.log("at least one cabinet opened, we are going to resize");
+                        
                         const elements = document.getElementsByTagName("canvas");
                         for (i = 0; i < elements.length; i++) {
                             //it does work
