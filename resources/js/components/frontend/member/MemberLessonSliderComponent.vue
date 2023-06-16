@@ -6,23 +6,13 @@
             <source src="" type="audio/mp3">
         </audio>
 
-        <button @click="endSessionTest" class="btn btn-success">
-            END TEST
-        </button>
-
-
-        
-       
-
         <!-- Tutor to Member Feedback-->
-        <MemberFeebackComponent ref="memberFeedback" 
+        <MemberFeebackComponent 
+            ref="memberFeedback" 
             :user_info="this.$props.user_info" 
             :reservation="this.$props.reservation" 
             :api_token="this.api_token" 
             :csrf_token="this.csrf_token"/>
-
-
-             {{ "is lesson started? " + this.$props.is_lesson_started }}
 
         <!-- Member Satisfaction Survey Component-->
         <SatisfactionSurveyComponent 
@@ -246,6 +236,52 @@
             this.customSelectorBounds(fabric);
 
 
+            this.socket.on('START_SESSION', (response) => {
+
+                console.log("start session");
+
+                if (this.$props.is_broadcaster == false) {
+
+                    if (response.channelid == this.channelid) {
+                    
+                        if (response.recipient.userid == this.user_info.id)
+                        {                    
+                            console.log("TEACHER STARTED A SESSION", response);
+                        } else {                    
+                            //end a session for all 
+                            console.log("TEACHER STARTED A SESSION FOR ALL USERS", response);
+                        }                
+                    
+                        this.startCountdown();                
+                    } else {
+                    
+                    }
+
+                } else if (this.$props.is_broadcaster == true) {
+                
+                    //console.log("TEACHER ENDED OWN SESSION", response);
+                }
+            }); 
+
+
+
+
+            this.socket.on('END_SESSION', (response) => { 
+                if (this.$props.is_broadcaster == false) {
+                    if (response.channelid == this.channelid) {
+                        this.$refs['satisfactionSurvey'].showSatisfactionSurveyModal(this.reservation);
+                        this.$ref['MemberLessonTimer'].stopCountdown(); 
+                        $("#destroy-session-media").trigger("click");     
+
+                    } else {
+                        console.log("channel not found");
+                    }
+                } else if (this.$props.is_broadcaster == true) {
+                    $("#destroy-session-media").trigger("click");                
+                }
+            });  
+
+
             this.socket.on('CALL_USER', (userData) => {
 
                 console.log(" [START] =====  CALL_USER ===== ", userData, userData.caller.type);
@@ -298,59 +334,44 @@
 
 
             this.socket.on("CALL_USER_PINGBACK", (userData) => {
-
-
-                console.log(" [START] =====  CALL_USER_PINGBACK ===== ", userData);
-
-
-
+                console.log(" [START] =====  CALL_USER_PINGBACK RECIEVED FROM : ", userData);
                 if (this.$props.is_broadcaster == true  && userData.type == "MEMBER") {
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData); 
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
                     this.$refs['TutorSessionInvite'].showWaitingListModal();
-
                 }
 
-
-                 if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-                    console.log("CALL_USER_PINGBACK, SHOW_WAITING_LIST (TUTOR) ", userData);
+                if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
+                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :", userData);
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData);         
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
-                 }
-
-              
+                }             
 
             });
 
             this.socket.on('JOIN_SESSION', (userData) => {
-
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
-
                     console.log(" << MEMBER_JOINED_SESSION ==>> ", userData);
-
                     this.$refs['TutorSessionInvite'].addParticipants(userData); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
-                    this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
-                    
-                    this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
-                    
+                    this.$refs['TutorSessionInvite'].hideWaitingListModal();                     
+                    this.socket.emit('JOIN_SESSION_PINGBACK', this.user);                     
                 }
 
 
                 if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
 
-                    console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData);
+                    console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
+
+                    this.startCountdown(this.millisecondsLeft);
+
 
                     this.$refs['TutorSessionInvite'].addParticipants(this.user); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
-                    this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
-                    
-                    this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
-                    
-                }
-
-   
+                    this.$refs['TutorSessionInvite'].hideWaitingListModal();                     
+                    this.socket.emit('JOIN_SESSION_PINGBACK', this.user);                     
+                }   
             });
 
 
@@ -372,46 +393,60 @@
                 }
 
               if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-
-                    console.log("JOIN_SESSION_PINGBACK [MEMBER]", userData);
-                
+                    console.log("JOIN_SESSION_PINGBACK [MEMBER]", userData);                
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].addParticipants(userData);
-                    //this.$refs['TutorSessionInvite'].hideWaitingListModal(); //[this will auto join] buggy                        
                 }                
                 
             });
 
+            this.socket.on('LEAVE_SESSION', (userData) => {
 
+                if (this.$props.is_broadcaster == false) 
+                {
+                    console.log("TUTOR LEFT THE SESSION"); 
+
+                } else {               
+                    console.log("USER LEFT A SESSION");                
+                }
+
+                
+                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                this.$refs['TutorSessionInvite'].stopLessonTimer()
+
+                if (this.$props.is_lesson_complete == false) 
+                {
+                    //if lesson is not finished 
+                    this.$refs['TutorSessionInvite'].showWaitingListModal();                
+                }  
+
+            ; 
+            });
 
 
             this.socket.on("ACCEPT_CALL", (userData) =>  {
 
-                console.log("ACCEPT_CALL", userData);
+
+                if (this.$props.is_broadcaster == false) {
+                    let params = {
+                        'startTime' : this.consecutiveSchedules.duration.startTime,
+                        'endTime'   : this.consecutiveSchedules.duration.endTime,
+                        'length'    : this.consecutiveSchedules.duration.length,
+                        'isLessonStarted': true, //force lesson started (since)
+                    };
+                    this.$refs['MemberLessonTimer'].startCountdown();
+                    console.log("ACCEPT_CALL", userData, params);                   
+                }
+
+                               
+
                 this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                 this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
-
-                    /*
-                if (this.is_broadcaster == true && userData.recipient.type == "MEMBER") {
-                    //call accepted user [auto accept triegger]
-                    console.log("TUTOR_AUTO_ACCEPTED_CALL");
-
-                    this.$refs['TutorSessionInvite'].hideCallUserModal(); 
-                    this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
-
-                } else if (this.is_broadcaster == false && userData.recipient.type == "TUTOR") {
-
-                   console.log("MEMBER_AUTO_ACCEPTED_CALL");
-
-                    this.$refs['TutorSessionInvite'].hideCallUserModal(); 
-                    this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
-
-                }*/
-
             });
 
             /** [start] SOCKETS SERVERS **/
             this.socket.on("START_MEMBER_TIMER", (data) =>  {
+
                 if (this.$props.is_broadcaster == false) {
                     this.$refs['MemberLessonTimer'].setTimeRemaining(data.timeRemaining);
                     this.$refs['MemberLessonTimer'].startCountdown(); 
@@ -425,12 +460,10 @@
             });
 
          
-            this.socket.on('UPDATE_DRAWING', (response) => {
-            
+            this.socket.on('UPDATE_DRAWING', (response) => {            
                if (this.$props.is_broadcaster == true) {
                     console.log("broadcaster update halted...");   
                } else {                  
-
                     this.$refs['LessonSlider'].delegateUpdateCanvas(response.currentSlide, response.canvasData);
                     this.$refs['LessonSlider'].delegateSetZoom(response.currentSlide, response.canvasZoom);
 
@@ -441,16 +474,13 @@
             });
 
             this.socket.on("GOTO_SLIDE", (data) =>  {
-
                 console.log("goto slide socket sent", data);               
-
                 if (this.$refs['audioPlayer']) {    this.$refs['audioPlayer'].resetAudioIndex() }                
-
                 this.viewerCurrentSlide = data.num
                 this.currentSlide = data.num;
-
                 this.$refs['LessonSlider'].goToSlide(data.num);            
             }); 
+
 
             this.socket.on("CREATE_NEW_SLIDE", (data) => {
                 if (this.$props.is_broadcaster == false) {
@@ -544,7 +574,117 @@
             //[end] Mini Task Timer
 
 
-         
+            /****************AUDIO ACTIONS CONTROLLER (Broadcaster) **************** */
+            this.$root.$on('playAudio', (index) => {
+                if (this.$props.is_broadcaster == true) {
+                    this.socket.emit('PLAY_AUDIO', {
+                        'channelid': this.channelid,
+                        'index':index
+                    });
+                } 
+            });
+
+            this.$root.$on('goToAudio', (index) => {
+                if (this.$props.is_broadcaster == true) {
+                    this.socket.emit('GOTO_AUDIO', {
+                        'channelid': this.channelid,
+                        'index':index
+                    });
+                } 
+            });
+
+            this.$root.$on('pauseAudio', (index) => {
+                if (this.$props.is_broadcaster == true) {
+                    this.socket.emit('PAUSE_AUDIO', {
+                        'channelid': this.channelid,
+                        'index':index
+                    });
+                } 
+            });
+                            
+            this.$root.$on('nextAudio', (index) => {
+                if (this.$props.is_broadcaster) {
+                    this.socket.emit('NEXT_AUDIO', {
+                        'channelid': this.channelid,
+                        'index':index
+                    }); 
+                }
+            });
+
+            this.$root.$on('prevAudio', (index) => {
+                if (this.$props.is_broadcaster) {
+                    this.socket.emit('PREV_AUDIO', {
+                        'channelid': this.channelid,
+                        'index':index
+                    }); 
+                }
+            });
+
+            this.$root.$on('seekAudio', (data) => {
+                if (this.$props.is_broadcaster) {
+                    this.socket.emit('SEEK_AUDIO', {
+                        'channelid': this.channelid,
+                        'trackTime': data.trackTime,
+                        'index': data.index
+                    }); 
+                }
+            });
+
+
+            /* AUDIO SOCKET CONTROLLER */
+            this.socket.on('PLAY_AUDIO', (response) => {
+                if (this.$props.is_broadcaster == false) {
+                this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index);  
+                }
+            });
+
+            this.socket.on('GOTO_AUDIO', (response) => {
+                if (this.$props.is_broadcaster == false) {                
+                    this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index); 
+                }
+            });
+
+            this.socket.on('PAUSE_AUDIO', (response) => {
+                if (this.$props.is_broadcaster == false) {
+                    this.$refs['audioPlayer'].stopAudio();       
+                }
+            });
+
+            this.socket.on('NEXT_AUDIO', (response) => {
+                if (this.$props.is_broadcaster == false) {
+                    this.$refs['audioPlayer'].goToAudio(response.index);       
+                }
+            });
+
+            this.socket.on('PREV_AUDIO', (response) => {           
+                if (this.$props.is_broadcaster == false) {
+                    this.$refs['audioPlayer'].goToAudio(response.index);
+                }
+            });
+
+            this.socket.on('SEEK_AUDIO', (response) => {           
+                if (this.$props.is_broadcaster == false) {
+                this.$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
+                }
+            });                        
+
+
+            this.$root.$on('redialUser', (response) => {
+                console.log(response, data, "redial user fired");      
+
+                let data = {
+                    recipient       :   this.recipient_info,    //recipient 
+                    caller          :   this.user,     //caller (is always member info since it)
+                    reservationData :   this.reservation
+                }
+
+                if (this.isUserAbsent == false) {
+                    this.socket.emit('CALL_USER',  data); 
+                } else {
+                    console.log("I will not re-dial, since the user is a no show, we will wait for a manual call to action from the teacher moving forward")
+                }
+
+            }); 
 
         },
        methods: {
@@ -706,9 +846,6 @@
 
                     } else if (response.data.isLessonStarted == true && response.data.isLessonExpired == true) {                      
 
-
-                                                       
-
                         this.startSession(); 
 
                         if (this.is_broadcaster == true)  {
@@ -745,8 +882,6 @@
             },
             async startSession() {
 
-             
-
                 axios.post("/api/startLesson?api_token=" + this.api_token,
                 {
                     'method'          : "POST",
@@ -760,16 +895,18 @@
                 }).then(response => {
 
 
-                   console.log("is lesson started?", this.isLessonStarted);
+                   console.log("success", response.data.success);
+
                    console.log("is lesson expired?", this.isLessonExpired);
                    console.log("is session expired?", this.isSessionExpired);
              
              
 
                     if (response.data.success == true) {
-
                         
                         this.$refs['NavigationMenu'].startTimer();
+
+                        console.log("emit start session")
 
                         this.socket.emit('START_SESSION', this.getSessionData());    
                         this.startCountdown();

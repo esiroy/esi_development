@@ -26,7 +26,7 @@ class LessonHistoryController extends Controller
         $lessonHistory      = LessonHistory::where('schedule_id', $request->reservation['schedule_id'])->first();
         $isLessonStarted    = ($lessonHistory) ? true : false;
 
-        //$isLessonStarted    = true; //TEST ONLY
+       // $isLessonStarted    = false; //TEST ONLY
       
         //Booleans Status
         $startTimeInvalid           = false;
@@ -112,7 +112,7 @@ class LessonHistoryController extends Controller
             $isUserAbsent       = true;       
             $title              = "Student is absent";    
             $message            = "<div class='mt-2 font-weight-bold text-left'>Student was unable to connect or student is absent</div>";
-            $message           .= "<div class='mt-2 font-weight-bold text-left'>Elapsed time is $callWaitingLimit over.</div>";
+            $message           .= "<div class='mt-2 font-weight-bold text-left'>Elapsed time is over $callWaitingLimit minutes.</div>";
 
         } else if ($isLessonStarted == true && $currentTime >= $endTime) { 
 
