@@ -212,9 +212,7 @@
                 </b-collapse>
                 </b-card>
             </div>
-
-
-
+            
             <div class="mt-4 mb-2 text-center">
                 <button class="btn btn-success" @click="submitFeedback()">
 
@@ -225,9 +223,6 @@
                 </button>
             </div>            
         </div>
-
-
-
 
     </b-modal>
 
@@ -458,16 +453,22 @@ export default {
                 //generalCourseRating             : this.generalCourseRating,                 
                 //teacherSelfPerformanceRating    : this.teacherSelfPerformanceRating
             }).then(response => {
+
                 if (response.data.success == true) {
                     this.$refs['memberFeedbackModal'].hide();
-                    this.$parent.disableSession();
+
+                    this.$nextTick(() => {
+                        this.redirect('admin');                    
+                    });                    
                 } else {
-                    this.$refs['memberFeedbackModal'].hide();  
-                    this.$parent.disableSession();              
+                    alert ("Error:", response.data.message);
                 }
-            });  
-           
-        }
+            });
+
+        },
+        redirect(url) {
+            window.location.href = window.location.origin + "/" + url
+        },        
 
     }    
 }

@@ -29,15 +29,9 @@ class Folder extends Model
      *
      * @var array
      */
-    protected $fillable = [
-        'user_id',
-        'parent_id',
-        'slug',
-        'folder_name', 
-        'folder_description',
-        'order_id',
-        'privacy'
-    ];
+
+    protected $guarded = array('created_at', 'updated_at');
+    
 
     /**
      * The attributes that should be hidden for arrays.
@@ -55,7 +49,7 @@ class Folder extends Model
      */
     protected $casts = [
         'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'updated_at' => 'datetime'
     ];
 
 
@@ -63,6 +57,8 @@ class Folder extends Model
         return date('F d, Y', strtotime($this->created_at));
     }
 
+
+  
     /**
     * @return  subcategories of the folder.
     */
@@ -452,6 +448,11 @@ class Folder extends Model
                 'pid'                   => $id,
                 'name'                  => $rootFolder->folder_name,
                 'description'           => $rootFolder->folder_description,
+                //thumbails
+                "thumb_file_name"       => $rootFolder->thumb_file_name,
+                "thumb_upload_name"     => $rootFolder->thumb_upload_name,
+                "thumb_path"            => $rootFolder->thumb_path,
+
                 'permalink'             => Folder::getLink($rootFolder->id),
                 'owner'                 => User::select('id', 'firstname', 'lastname', 'user_type', 'lastname')->find($rootFolder->user_id),
                 'privacy'               => $rootFolder->privacy,
@@ -531,6 +532,11 @@ class Folder extends Model
                 'pid'                   => $parentID,
                 'name'                  => $subfolder->folder_name,
                 'description'           => $subfolder->folder_description,
+                //thumbails
+                "thumb_file_name"       => $subfolder->thumb_file_name,
+                "thumb_upload_name"     => $subfolder->thumb_upload_name,
+                "thumb_path"            => $subfolder->thumb_path,
+
                 'permalink'             => Folder::getLink($subfolder->id),
                 'owner'                 => User::select('id', 'firstname', 'lastname', 'user_type', 'lastname')->find($subfolder->user_id),
                 'sharedTo'              => Folder::getPermittedUsers($subfolder->id),

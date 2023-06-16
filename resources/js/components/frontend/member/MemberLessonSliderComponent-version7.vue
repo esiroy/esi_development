@@ -6,10 +6,10 @@
 
             <div class="container-fluid">
                 <ul class="navbar-nav mr-auto">
-                    <li class="pr-4" v-if="this.$props.isBroadcaster == true">                        
+                    <li class="pr-4" v-if="this.$props.is_broadcaster == true">                        
                         <a class="navbar-brand" href="/admin"><i class="fas fa-home fa-2x text-white"></i></a>
                     </li>
-                    <li class="pr-4" v-if="this.$props.isBroadcaster == false">                        
+                    <li class="pr-4" v-if="this.$props.is_broadcaster == false">                        
                         <a class="navbar-brand" href="/"><i class="fas fa-home fa-2x text-white"></i></a>
                     </li>
                     
@@ -24,7 +24,7 @@
                     </audio>
                     
                  
-                    <li class="pr-4 pt-2" id="memberTimerButtonContainer" v-if="this.$props.isBroadcaster == true && this.$props.is_lesson_completed == false">
+                    <li class="pr-4 pt-2" id="memberTimerButtonContainer" v-if="this.$props.is_broadcaster == true && this.$props.is_lesson_completed == false">
                         <button id="memberTimerButton" class="btn btn-md btn-success small" @click="showTimerControlModal()">
                             <b-icon icon="alarm" aria-hidden="true"></b-icon> 
                             <span class="small">Set Countdown Timer</span>
@@ -42,7 +42,7 @@
 
 
               
-                    <li class="pr-2" v-if="this.$props.isBroadcaster == false">
+                    <li class="pr-2" v-if="this.$props.is_broadcaster == false">
                         <a class="navbar-brand" href="#" @click="openFloatinChatBox">
                             <i class="fas fa-headset  fa-2x text-white"></i>
                         </a>
@@ -54,7 +54,7 @@
                     </li>
 
     
-                    <li class="pr-4 pt-2" id="startSessionContainer" v-if="this.$props.isBroadcaster == true">
+                    <li class="pr-4 pt-2" id="startSessionContainer" v-if="this.$props.is_broadcaster == true">
                         <button id="startSession" class="btn btn-md btn-success small" @click="startSession()">                                
                             <b-icon icon="play" aria-hidden="true"></b-icon> 
                             <span class="small">Start Session</span>
@@ -63,7 +63,7 @@
                      
                        
 
-                    <li class="pr-4 pt-2" id="endSessionContainer" style="display:none" v-if="this.$props.isBroadcaster == true">
+                    <li class="pr-4 pt-2" id="endSessionContainer" style="display:none" v-if="this.$props.is_broadcaster == true">
                         <button class="btn btn-sm">
                             <i class="fas fa-sign-in-alt fa-2x text-white" @click="endSession()"></i>    
                         </button>
@@ -80,7 +80,7 @@
             ref="TutorSessionInvite" 
             :reservation="this.$props.reservation" 
             :lesson_history="this.lesson_history" 
-            :is_broadcaster="this.$props.isBroadcaster" 
+            :is_broadcaster="this.$props.is_broadcaster" 
             :api_token="this.api_token" 
             :csrf_token="this.csrf_token"/>
 
@@ -97,7 +97,7 @@
             <SatisfactionSurveyComponent 
             ref="satisfactionSurvey" 
             :folder_id="this.$props.folder_id" 
-            :is-broadcaster="this.$props.isBroadcaster" 
+            :is-broadcaster="this.$props.is_broadcaster" 
             :api_token="this.api_token" 
             :csrf_token="this.csrf_token"/>            
         </div>
@@ -112,12 +112,12 @@
         
         <MemberLessonTimerComponent ref="MemberLessonTimer" :api_token="this.api_token" :csrf_token="this.csrf_token"/>
       
-        <div id="slideSelectorContainer" v-if="isBroadcaster == true">
+        <div id="slideSelectorContainer" v-if="is_broadcaster == true">
             <SlideSelectorComponent
                 ref="slideSelector" 
                 :reservation="this.reservation"
                 :folder_id="this.$props.folder_id"
-                :is-broadcaster="this.$props.isBroadcaster"
+                :is-broadcaster="this.$props.is_broadcaster"
                 :api_token="this.api_token" 
                 :csrf_token="this.csrf_token"
             >
@@ -138,7 +138,7 @@
                 Lesson commencing (NOT COMPLETE)  
 
             <!--[start] toolbox -->
-            <div id="toolbox" v-show="this.$props.isBroadcaster == true">
+            <div id="toolbox" v-show="this.$props.is_broadcaster == true">
                 <div class="tool-container">
 
                     <!-- [START] TOOL WRAPPER -->
@@ -230,7 +230,7 @@
 
                 <!--[start] slide selector for broadcaster -->
                 <div id="slideSelectorContainer" class="d-inline-block">
-                    <button type="button" @click="selectSlides" v-show="this.$props.isBroadcaster == true">
+                    <button type="button" @click="selectSlides" v-show="this.$props.is_broadcaster == true">
                         <b-icon icon="images" aria-hidden="true"></b-icon>
                     </button>
                 </div>
@@ -258,18 +258,18 @@
                 <div class="slide-controls d-inline-block" v-if="segments">                  
                     <div class="buttons-container">
                         <div class="d-flex justify-content-center">
-                            <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.is_broadcaster == true">
                                 <i class="fa fa-backward" aria-hidden="true"></i>
                             </div>
                             <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
-                                <div v-show="this.$props.isBroadcaster == true">
+                                <div v-show="this.$props.is_broadcaster == true">
                                     Slide {{ this.currentSlide }} of {{ this.slides }}
                                 </div>
-                                <div v-show="this.$props.isBroadcaster == false">
+                                <div v-show="this.$props.is_broadcaster == false">
                                     Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
                                 </div>
                             </div>
-                            <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.isBroadcaster == true">
+                            <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.is_broadcaster == true">
                                 <i class="fa fa-forward" aria-hidden="true"></i>
                             </div>
                         </div>
@@ -279,15 +279,15 @@
 
 
                 <div id="audio-container" class="d-inline-block" v-if="segments">
-                    <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.isBroadcaster"></AudioPlayerComponent>
+                    <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.is_broadcaster"></AudioPlayerComponent>
                     <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
-                        <i class="far fa-file-alt" v-if="this.$props.isBroadcaster == true"></i>
+                        <i class="far fa-file-alt" v-if="this.$props.is_broadcaster == true"></i>
                     </div>
                     <SlideUploaderComponent 
                         ref="slideUploader" 
                         :reservation="this.$props.reservation"
                         :folder_id="this.$props.folder_id"
-                        :is-broadcaster="this.$props.isBroadcaster"
+                        :is-broadcaster="this.$props.is_broadcaster"
                         :api_token="this.api_token" 
                         :csrf_token="this.csrf_token"
                     >
@@ -315,7 +315,7 @@
                 <div class="">{{ this.$props.lesson_history }}</div>
 
                 <TutorSlideNotesComponent ref="TutorSlideNotes" 
-                v-if="this.$props.isBroadcaster == true" 
+                v-if="this.$props.is_broadcaster == true" 
                 
                 :api_token="this.api_token"
                 :csrf_token="this.csrf_token"/>
@@ -327,7 +327,7 @@
 
 
 
-        <div v-if="this.$props.isBroadcaster == false">
+        <div v-if="this.$props.is_broadcaster == false">
             <MemberFloatingChat
                 ref="memberFloatingChat" 
                 :userid="''+this.user_info.id+''" 
@@ -397,7 +397,7 @@ export default {
             required: true        
         },   
 
-        isBroadcaster: {
+        is_broadcaster: {
             type: [Boolean],
             required: true        
         },   
@@ -627,14 +627,14 @@ export default {
 
 
         this.socket.on("START_MEMBER_TIMER", (data) =>  {
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
                 this.$refs['MemberLessonTimer'].setTimeRemaining(data.timeRemaining);
                 this.$refs['MemberLessonTimer'].startCountdown(); 
             }
         });
 
         this.socket.on("STOP_MEMBER_TIMER", (data) =>  {
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
                 this.$refs['MemberLessonTimer'].stopCountdown(); 
             }
         });
@@ -655,7 +655,7 @@ export default {
             if (this.$props.is_lesson_completed == false) {      
 
 
-                if (this.$props.isBroadcaster == false) 
+                if (this.$props.is_broadcaster == false) 
                 {
                     this.slides = data.slidesCount;
                     this.createNewSlide();
@@ -722,7 +722,7 @@ export default {
         
 
         this.$root.$on('startMemberTimer', (timeRemaining) => {        
-            if (this.$props.isBroadcaster == true) {
+            if (this.$props.is_broadcaster == true) {
                 this.socket.emit('START_MEMBER_TIMER', {
                     'channelid': this.channelid,
                     'timeRemaining': timeRemaining
@@ -731,7 +731,7 @@ export default {
         });
 
         this.$root.$on('stoptMemberTimer', (timeRemaining) => {        
-            if (this.$props.isBroadcaster == true) {
+            if (this.$props.is_broadcaster == true) {
                 this.socket.emit('STOP_MEMBER_TIMER', {
                     'channelid': this.channelid,
                     'timeRemaining': timeRemaining
@@ -748,7 +748,7 @@ export default {
         this.socket.on('TUTOR_SELECTED_NEW_SLIDES', (response) => 
         {
             try {
-                if (this.$props.isBroadcaster == false) {   
+                if (this.$props.is_broadcaster == false) {   
                     this.openNewSlideMaterials();
                 }
             } catch (error) {
@@ -765,7 +765,7 @@ export default {
 
         /****************AUDIO ACTIONS CONTROLLER (Broadcaster) **************** */
         this.$root.$on('playAudio', (index) => {
-            if (this.$props.isBroadcaster == true) {
+            if (this.$props.is_broadcaster == true) {
                 this.socket.emit('PLAY_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
@@ -774,7 +774,7 @@ export default {
         });
 
         this.$root.$on('goToAudio', (index) => {
-            if (this.$props.isBroadcaster == true) {
+            if (this.$props.is_broadcaster == true) {
                 this.socket.emit('GOTO_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
@@ -783,7 +783,7 @@ export default {
         });
 
         this.$root.$on('pauseAudio', (index) => {
-            if (this.$props.isBroadcaster == true) {
+            if (this.$props.is_broadcaster == true) {
                 this.socket.emit('PAUSE_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
@@ -792,7 +792,7 @@ export default {
         });
                         
         this.$root.$on('nextAudio', (index) => {
-            if (this.$props.isBroadcaster) {
+            if (this.$props.is_broadcaster) {
                 this.socket.emit('NEXT_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
@@ -801,7 +801,7 @@ export default {
         });
 
         this.$root.$on('prevAudio', (index) => {
-            if (this.$props.isBroadcaster) {
+            if (this.$props.is_broadcaster) {
                 this.socket.emit('PREV_AUDIO', {
                     'channelid': this.channelid,
                     'index':index
@@ -810,7 +810,7 @@ export default {
         });
 
         this.$root.$on('seekAudio', (data) => {
-            if (this.$props.isBroadcaster) {
+            if (this.$props.is_broadcaster) {
                 this.socket.emit('SEEK_AUDIO', {
                     'channelid': this.channelid,
                     'trackTime': data.trackTime,
@@ -822,37 +822,37 @@ export default {
 
         /*************** AUDIO SOCKET CONTROLLER (RECEIVER ONLY) ****************/
         this.socket.on('PLAY_AUDIO', (response) => {
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
                this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index);  
             }
         });
 
         this.socket.on('GOTO_AUDIO', (response) => {
-            if (this.$props.isBroadcaster == false) {                
+            if (this.$props.is_broadcaster == false) {                
                 this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index); 
             }
         });
 
         this.socket.on('PAUSE_AUDIO', (response) => {
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
                 this.$refs['audioPlayer'].stopAudio();       
             }
         });
 
         this.socket.on('NEXT_AUDIO', (response) => {
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
                  this.$refs['audioPlayer'].goToAudio(response.index);       
             }
         });
 
         this.socket.on('PREV_AUDIO', (response) => {           
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
                  this.$refs['audioPlayer'].goToAudio(response.index);
             }
         });
 
         this.socket.on('SEEK_AUDIO', (response) => {           
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
                this.$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
             }
         });        
@@ -881,7 +881,7 @@ export default {
         /*************** SESSION HANDLERS ****************/
        
         //CALL THE MEMBER ON LOAD
-        if (this.$props.isBroadcaster == true) {   
+        if (this.$props.is_broadcaster == true) {   
 
 
             let data = {
@@ -1025,14 +1025,14 @@ export default {
 
         this.socket.on('JOIN_SESSION', (userData) => {
 
-             if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {
+             if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
 
                 this.$refs['TutorSessionInvite'].addParticipants(userData); 
 
                 /*************** NEW - VERSION 6  PING BACK ***************/
                 this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
 
-             } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
+             } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
 
                 this.$refs['TutorSessionInvite'].addParticipants(userData); 
 
@@ -1049,7 +1049,7 @@ export default {
                 return false;
             }
 
-            if (this.$props.isBroadcaster == true && userData.type == "MEMBER") {  
+            if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {  
 
                 if (this.lesson_history == null) {
 
@@ -1078,7 +1078,7 @@ export default {
 
                 
                 
-            } else if (this.$props.isBroadcaster == false && userData.type == "TUTOR") {
+            } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
 
                 this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                 this.$refs['TutorSessionInvite'].addParticipants(userData); 
@@ -1091,7 +1091,7 @@ export default {
 
         this.socket.on('LEAVE_SESSION', (userData) => 
         {
-            if (this.$props.isBroadcaster == false) 
+            if (this.$props.is_broadcaster == false) 
             {
                 console.log("TUTOR LEFT THE SESSION"); 
 
@@ -1115,7 +1115,7 @@ export default {
 
         this.socket.on('START_SESSION', (response) => {
 
-            if (this.$props.isBroadcaster == false) {
+            if (this.$props.is_broadcaster == false) {
 
                 if (response.channelid == this.channelid) {
                 
@@ -1132,7 +1132,7 @@ export default {
                 
                 }
 
-            } else if (this.$props.isBroadcaster == true) {
+            } else if (this.$props.is_broadcaster == true) {
             
                 //console.log("TEACHER ENDED OWN SESSION", response);
             }
@@ -1144,7 +1144,7 @@ export default {
 
         this.socket.on('END_SESSION', (response) => {
         
-            if (this.$props.isBroadcaster == false) 
+            if (this.$props.is_broadcaster == false) 
             {
 
                 $("#destroy-session-media").trigger("click");
@@ -1167,7 +1167,7 @@ export default {
                     console.log("channel not found");
                 }
 
-            } else if (this.$props.isBroadcaster == true) {
+            } else if (this.$props.is_broadcaster == true) {
 
                 $("#destroy-session-media").trigger("click");
                 
@@ -1355,7 +1355,7 @@ export default {
 
             //Slide Selector already update the slide selector folder, 
             //So lets refresh the member slides!
-            if (this.$props.isBroadcaster == true) { 
+            if (this.$props.is_broadcaster == true) { 
                 //call remove slides and open new slides
                 this.removeOldSlidesAndOpenNewSlides();
                 this.refreshMemberSlides();
@@ -1509,7 +1509,7 @@ export default {
         {
             let slidesData = await this.getAllSlideData();
 
-            if (this.$props.isBroadcaster == false) {                       
+            if (this.$props.is_broadcaster == false) {                       
                 alert ("Member is not allowed to end a session");
                 return false
             }    
@@ -1526,7 +1526,7 @@ export default {
                 'isTimerStarted'  : this.isTimerStarted                
             }).then(response => {
        
-                if (this.$props.isBroadcaster == true) 
+                if (this.$props.is_broadcaster == true) 
                 {   
                     console.log("session end was broadcasted");
 
@@ -1622,7 +1622,7 @@ export default {
             }
             
 
-            if (this.$props.isBroadcaster == true) {  
+            if (this.$props.is_broadcaster == true) {  
 
                 let memberCanvasData = {
                     'slidesCount'   : currentSlideCount,
@@ -1757,7 +1757,7 @@ export default {
                         this.slides  = (response.data.files).length;
                     }                
 
-                    if (this.$props.isBroadcaster == true) {
+                    if (this.$props.is_broadcaster == true) {
                         this.$refs['TutorSlideNotes'].loadNotes(this.notes);   
                     }
 
@@ -1808,7 +1808,7 @@ export default {
                             //LOAD AUDIO
                             this.loadAudio();
 
-                            if (this.$props.isBroadcaster == true) {
+                            if (this.$props.is_broadcaster == true) {
                                 this.$refs['slideSelector'].closeSlideSelector();          
                             }
 
@@ -1870,7 +1870,7 @@ export default {
                                     //LOAD AUDIO
                                     this.loadAudio();
 
-                                    if (this.$props.isBroadcaster == true) {
+                                    if (this.$props.is_broadcaster == true) {
                                         this.$refs['slideSelector'].closeSlideSelector();          
                                     }
 
@@ -1926,7 +1926,7 @@ export default {
                             this.startSlide(1);
                             //LOAD AUDIO
                             this.loadAudio();
-                            if (this.$props.isBroadcaster == true) {
+                            if (this.$props.is_broadcaster == true) {
                                 this.$refs['slideSelector'].closeSlideSelector();          
                             }
                         });
@@ -1947,7 +1947,7 @@ export default {
 
                 if (this.$props.feedback_completed == false) {    
 
-                    if (this.$props.isBroadcaster == true) {   
+                    if (this.$props.is_broadcaster == true) {   
                         this.hideTimer();                    
                         this.showMemberFeedbackModal(this.reservation, this.files);
                     } else {
@@ -2018,7 +2018,7 @@ export default {
 
         userSlideAccess() 
         {
-            if (this.$props.isBroadcaster == false) 
+            if (this.$props.is_broadcaster == false) 
             {
                 //Your are not a broadcaster
                 this.disableSelect();
@@ -2043,7 +2043,7 @@ export default {
         },
         refreshMemberSlides() {
 
-            if (this.$props.isBroadcaster == true) {   
+            if (this.$props.is_broadcaster == true) {   
         
                 let slidesData = {
                     'currentSlide'  : this.currentSlide,
@@ -2099,7 +2099,7 @@ export default {
 
                     //@todo: Time end update
                   
-                    if (this.$props.isBroadcaster == true) 
+                    if (this.$props.is_broadcaster == true) 
                     {   
                        // this.hideTimer();
                        // this.showMemberFeedbackModal(this.reservation);
@@ -2174,7 +2174,7 @@ export default {
             console.log("updating canvas");
 
             canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {            
-                if(this.$props.isBroadcaster == false) {
+                if(this.$props.is_broadcaster == false) {
                     this.deactivateSelector()                
                 }                
             });            
@@ -2194,7 +2194,7 @@ export default {
         { 
             let recipient = this.getRecipient();
 
-            if (this.$props.isBroadcaster == true) {  
+            if (this.$props.is_broadcaster == true) {  
 
                 let memberCanvasData = {
                     'currentSlide'  : this.currentSlide,
@@ -2441,7 +2441,7 @@ export default {
             }
             
 
-            if (this.$props.isBroadcaster == true) {
+            if (this.$props.is_broadcaster == true) {
                 this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
             }
 
@@ -2457,7 +2457,7 @@ export default {
             //this.loadAudio()
 
             //@todo: if tutor then broadcast current slide
-            if (this.$props.isBroadcaster == true) {            
+            if (this.$props.is_broadcaster == true) {            
                 let data = {
                     'channelid': this.channelid,
                     'num': this.currentSlide
@@ -2492,7 +2492,7 @@ export default {
             this.viewerCurrentSlide = slide;
 
 
-            if (this.$props.isBroadcaster == true) {
+            if (this.$props.is_broadcaster == true) {
                 this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
             }           
 
@@ -2510,7 +2510,7 @@ export default {
                                  
 
                     //@todo: if tutor then broadcast get the drawn canvas
-                    if (this.$props.isBroadcaster == true) {   
+                    if (this.$props.is_broadcaster == true) {   
 
                         //console.log("slide sending data")   
 

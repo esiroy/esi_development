@@ -290,6 +290,7 @@
                 :is-broadcaster="false"     
                 :user-Info="{{  json_encode(Auth::user()) }}" 
                 :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
+                user_image="{{ $memberProfileImage }}"   
                 canvas-Server="{{$canvas_url}}"
                 editor-ID="canvas"
                 canvas-Width="680"

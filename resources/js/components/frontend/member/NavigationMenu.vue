@@ -1,6 +1,6 @@
 <template>
 
-    <nav class="navbar navbar-expand-md navbar-light shadow-sm bg-darkblue">
+    <nav class="navbar navbar-expand-md navbar-light shadow-sm bg-darkblue" v-if="isNavMenuVisible == true">
         <div class="container-fluid">
 
             
@@ -22,9 +22,9 @@
             
             
             <!--[start] RIGHT NAVIGATION -->
-            <ul class="navbar-nav" v-if="this.isLessonCompleted == false">
+            <ul class="navbar-nav" v-if="this.isNavMenuDisabled == false">
                 
-                <li class="pr-4 pt-2" id="memberTimerButtonContainer" v-if="this.$props.is_broadcaster == true && isLessonCompleted == false">
+                <li class="pr-4 pt-2" id="memberTimerButtonContainer" v-if="this.$props.is_broadcaster == true && isNavMenuDisabled == false">
                     <button id="memberTimerButton" class="btn btn-md btn-success small" @click="triggerShowMiniTaskTimer()">
                         <b-icon icon="alarm" aria-hidden="true"></b-icon> 
                         <span class="small">Set Countdown Timer</span>
@@ -32,7 +32,7 @@
                 </li>
 
                 <li class="pr-4" id="memberTimerContainer">
-                    <div class="badge d-flex align-items-center border rounded-pill" v-if="isLessonCompleted == false">
+                    <div class="badge d-flex align-items-center border rounded-pill" v-if="isNavMenuDisabled == false">
                         <span id="memberTimer" class="text-white font-weight-bold h4 mt-2 px-3" >
                             0:00
                         </span>  
@@ -58,7 +58,7 @@
                 </li>
                 <li class="pr-4 pt-2" id="endSessionContainer" v-if="this.$props.is_broadcaster == true && this.isTimerStarted == true">
                     <button class="btn btn-sm">
-                        <i class="fas fa-sign-in-alt fa-2x text-white" @click="tiggerEndSession()"></i>    
+                        <i class="fas fa-sign-in-alt fa-2x text-white" @click="tiggerConfirmEndSession()"></i>    
                     </button>
                 </li> 
             </ul>
@@ -85,15 +85,40 @@
         data() {
             return {
                 isTimerStarted: false,
-                isUserAbsent: false,
-                isLessonCompleted: false,
+
+                isNavMenuVisible: false,
+                isNavMenuDisabled: false,
+
                 countdownTimer: "00:00:00",
             }            
         },
         mounted() {
 
+
+            this.showNavigationMenu(true);
+            this.enableNavigationMenu(true);
+            
         },
         methods: {
+
+            showNavigationMenu(param) {            
+                this.isNavMenuVisible = param;
+            },
+            hideNavigationMenu(param) {
+                this.isNavMenuVisible = param;
+            },
+
+            enableNavigationMenu(param) {
+          
+                this.isNavMenuDisabled = false;
+            },
+            disableNavigationMenu(param) {
+          
+                this.isNavMenuDisabled = false;
+            },
+         
+         
+            //Start Lesson
             startTimer() {
                 this.isTimerStarted = true;
                 console.log(this.isTimerStarted, "timer started!")
@@ -105,16 +130,15 @@
             tiggerStartSession() {
                 this.$root.$emit('tiggerStartSession')        
             },         
-            tiggerEndSession() {
-                this.$root.$emit('tiggerEndSession')        
+            tiggerConfirmEndSession() {
+                this.$root.$emit('tiggerConfirmEndSession')        
             },             
 
+            //Timer
             updateTimer(countdownTimer) {
                 this.countdownTimer = countdownTimer;
             },
-            updateLessonStatus(isLessonCompleted) {
-                this.isLessonCompleted = isLessonCompleted; //true, false
-            },
+
 
             triggerFloatinChatBox() {
                 this.$root.$emit('triggerFloatinChatBox')             

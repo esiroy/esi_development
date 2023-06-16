@@ -370,7 +370,7 @@
         {
             csrf_token: String,		
             api_token: String,
-
+            user_image: String,
             isBroadcaster: {
                 type: [Boolean],
                 required: true        
@@ -390,6 +390,7 @@
         },
         data() {
             return {
+
                 headerBgVariant: 'lightblue',
 
 
@@ -488,7 +489,7 @@
         },
         mounted() {
 
-
+          
             //Transfer the object to the window
             window.memberCallerComponent = this;
             this.socket = io.connect(this.canvasServer);
@@ -498,11 +499,15 @@
                 channelid: this.channelid, 
                 userid: this.memberInfo.user_id,
                 username: this.userInfo.username,
-                nickname: this.userInfo.nickname,                               
+                nickname: this.userInfo.nickname,
+                image:   this.$props.user_image,
                 type: this.userInfo.user_type,
                 status: "ONLINE",
+               
             }  
        
+
+           
             this.socket.emit('REGISTER', this.user); 
 
 
@@ -512,20 +517,27 @@
             });
 
 
-            this.socket.on("CALL_USER", (data) =>  
+            this.socket.on("CALL_USER", (userData) =>  
             {
-                if (this.user.userid == data.recipient.userid ) 
+                if (this.user.userid == userData.recipient.userid ) 
                 {       
-                    this.caller              = data.caller;                        
-                    this.recipient           = data.recipient;
-                    this.callReservation     = data.reservationData;
+                    this.caller              = userData.caller;                        
+                    this.recipient           = userData.recipient;
+                    this.callReservation     = userData.reservationData;
+
+                    console.log("socket CALL_USER ", userData, this.caller);
+                    
                     this.$bvModal.show('modal-call-alert');  
+
                     //SEND THE CALL USER PING BACK WITH CHANNEL ID
-                    this.recipient.channelid = data.reservationData.schedule_id;
+                    this.recipient.channelid = userData.reservationData.schedule_id;
+                    this.recipient.channelid = userData.reservationData.schedule_id;
 
                     this.playIncomingCallAudio({'path': 'mp3/incoming-call.mp3'})
+
                     this.socket.emit('CALL_USER_PINGBACK', this.recipient); 
-                    console.log(data.recipient,  "emit call user pingback")
+                    
+                    console.log(userData.recipient,  "emit call user pingback")
                 }                
             });
 
@@ -548,15 +560,17 @@
                 {
                     this.lessonReservationData  = data.reservationData;
                     this.$bvModal.hide('modal-call-teacher'); 
-                    this.$bvModal.hide('modal-call-member');             
-                    this.openSelfWindow(data.channelid);       
+                    this.$bvModal.hide('modal-call-member'); 
+                    this.$bvModal.hide('modal-call-alert');            
+                    //this.openSelfWindow(data.channelid);       
 
                 } else if (this.user.userid == data.caller.userid ) {
                  
                     this.lessonReservationData  = data.reservationData;
                     this.$bvModal.hide('modal-call-teacher'); 
-                    this.$bvModal.hide('modal-call-member');             
-                    this.openSelfWindow(data.channelid);  
+                    this.$bvModal.hide('modal-call-member'); 
+                    this.$bvModal.hide('modal-call-alert');            
+                    //this.openSelfWindow(data.channelid);  
                  
                  }
 
@@ -641,8 +655,10 @@
                 this.$bvModal.hide('modal-call-teacher'); 
                 this.$bvModal.hide('modal-call-member'); 
 
-                //this.$bvModal.show('modal-lesson-slider');                
-                this.socket.emit('START_SLIDER', data);
+                //this.$bvModal.show('modal-lesson-slider'); (v1)              
+                this.socket.emit('START_SLIDER', data); //(v2)
+                this.openSelfWindow(this.channelid);  //v3
+
             },
             callMember(tutor, member, reservation) {
 

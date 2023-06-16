@@ -145,6 +145,25 @@
 						<div class="col-md-3">Created On</div>
 						<div class="col-md-9">{{ this.displayCreatedAt }}</div>
 					</div>
+
+					<div class="row">
+						<div class="col-md-3">Thumbnail</div>
+						<div class="col-md-9">
+                            
+
+                            <div v-if="thumb_path !== ''">
+                                <img :src="getBaseURL(this.thumb_path)" width="250px">
+                            </div>
+
+                            <div class="invisible d-none">
+                                <div>{{ this.thumb_file_name }}</div>
+                                <div>{{ this.thumb_upload_name }}</div>
+                                <div>{{ this.thumb_path }}</div>
+                            </div>
+
+                        </div>
+					</div>
+
 				</div>
 			</div>
 
@@ -344,6 +363,106 @@
                                 :state="folderDescriptionState"
                             ></b-form-textarea>
                         </b-form-group>
+
+
+                        <table class="table table-borderless table-hover">
+                            <thead v-if="uploadFiles.length">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="!uploadFiles.length">
+                                <td colspan="7" align="center">
+                                    <div class="small"> Drop files anywhere to upload thumbnial</div>
+                                    <div>or</div>
+                                    <label for="uploadFiles" class="btn btn-sm btn-primary">Select Files</label>
+                                                       
+                  
+                                </td>
+                                </tr>
+                                <tr v-for="(file, index) in uploadFiles" :key="file.id">
+                                <td>{{index + 1}}</td>
+                                <td>
+                                    <div class="filename">{{file.name}}</div>
+                                    <div class="progress" v-if="file.active || file.progress !== '0.00'">
+                                    <div
+                                        :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"
+                                        role="progressbar"
+                                        :style="{width: file.progress + '%'}"
+                                    >{{file.progress}}%</div>
+                                    </div>
+                                </td>
+                                <td>{{file.size | formatSize}}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a :class="{'dropdown-item small': true, disabled: !file.active}" href="#" @click.prevent="file.active ? $refs.upload.update(file, {error: 'cancel'}) : false">Cancel</a>
+
+                                            <a class="dropdown-item small" href="#" v-if="file.active" @click.prevent="$refs.upload.update(file, {active: false})">Abort</a>
+
+                                            <!--<a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing' && $refs.upload.features.html5" -->
+                                            <a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing'"  @click.prevent="$refs.upload.update(file, {active: true, error: '', progress: '0.00'})">Retry upload</a>
+
+                                            <a :class="{'dropdown-item small': true, disabled: file.success || file.error === 'compressing'}" href="#" 
+                                                v-else @click.prevent="file.success || file.error === 'compressing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
+                                            <div class="dropdown-divider"></div>
+
+                                            <a class="dropdown-item small" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
+                                        </div>
+                                    </div>
+
+                                </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                         
+                        <div class="upload">
+                          
+                         
+                                <file-upload
+                                    name="uploadFiles"
+                                    input-id="uploadFiles"
+                                    class="btn btn-sm btn-primary"
+                                    extensions="jpeg,jpg,gif,png"
+                                    accept="image/png,image/gif,image/jpeg"
+                                    v-model="uploadFiles"
+                                    :post-action="getPostActionUrl()"
+                                    :headers="{'X-CSRF-TOKEN': this.csrf_token }"
+                                    :multiple="false"
+                                    :drop="true"
+                                    :drop-directory="true"                                   
+
+                                    @input="updateValue"
+                                    @input-file="inputFile"
+                                    @input-filter="inputFilter"
+                                  
+                                    ref="upload">
+                                    <i class="fa fa-plus"></i>
+                                    Select files
+                                </file-upload>
+
+                                <button type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                                <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
+                                </button>
+
+                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                                <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
+                                </button>
+
+                        </div>
+                       
+
+                        
+
+
                     </form>
                 </b-modal>
             </div>
@@ -427,6 +546,9 @@
 </template>
 
 <script>
+
+import FileUpload from 'vue-upload-component'
+
 import qs from "qs";
 import { VueTreeList, Tree, TreeNode } from "vue-tree-list";
 import Multiselect from 'vue-multiselect'
@@ -437,7 +559,8 @@ Vue.use(VueClipboard)
 export default {
 	components: {
         VueTreeList,
-        Multiselect
+        Multiselect,
+        FileUpload
 	},
 	props: {
 		public: {
@@ -497,6 +620,10 @@ export default {
 	},
 	data() {
 		return {
+            uploadFiles: [],
+            tempID: null,
+         
+
             //variables
             firstLoad       : true,
             folderLoading   : null,
@@ -535,6 +662,10 @@ export default {
 			folderID                : null,
 			folderName              : "",
 			folderDescription       : "",
+            //new updates
+            thumb_file_name         : "",
+            thumb_upload_name       : "",
+            thumb_path              : "",
 
             //Modal Variable State
 			folderNameState         : null,
@@ -570,6 +701,9 @@ export default {
 	beforeMount() {},
     mounted() 
     {
+
+        this.tempID = Math.floor(Math.random() * 999) + 1;
+
         //get all folders
         this.getFolders();
 
@@ -583,6 +717,129 @@ export default {
 
 	},
 	methods: {
+        getBaseURL(path) {
+            return window.location.origin + "/" +path
+        },
+
+        getPostActionUrl() { 
+           return '/api/uploader/uploadFolderThumbnail?api_token='+this.api_token+'&tempID='+ this.tempID;
+        },
+
+        //[start] uploader
+        updateValue(value) {
+            this.uploadFiles = value;
+        },
+        /**
+        * Has changed
+        * @param  Object|undefined   newFile   Read only
+        * @param  Object|undefined   oldFile   Read only
+        * @return undefined
+        */
+        inputFile: function(newFile, oldFile) {
+
+            if (newFile && oldFile && !newFile.active && oldFile.active) {
+
+                if (newFile.xhr) {
+
+                console.log(newFile.xhr.status)
+
+                    if ( newFile.xhr.status === 200) {
+
+
+                        console.log("XHR", newFile, oldFile);
+
+                        if (this.FolderType == "rootFolder") {
+
+                            this.$bvModal.hide("createNewFolder");
+
+                        } else if (this.FolderType == "subFolder")  {
+
+                             this.$bvModal.hide("createNewSubFolder");
+
+                        }
+
+
+                        this.thumb_file_name = newFile.response.thumb_file_name;
+                        this.thumb_upload_name = newFile.response.thumb_upload_name;
+                        this.thumb_path = newFile.response.path; 
+
+                     
+                        this.uploadFiles = [{
+                                        'id'          : newFile.response.id,
+                                        'file_name'   : newFile.response.file,
+                                        'size'        : newFile.response.size,
+                                        'owner'       : newFile.response.owner,
+                                        'notes'       : newFile.response.notes,
+                                        'audioFiles'  : newFile.response.audioFiles,
+                                    }];  
+               
+
+                        axios.post("/api/updateFolderThumbDetails?api_token=" + this.api_token, 
+                        {
+                            method: "POST",
+                            'folderID'              : this.folderID,
+                            'thumb_file_name'       : newFile.response.thumb_file_name,
+                            'thumb_upload_name'     : newFile.response.thumb_upload_name,
+                            'path'                  : newFile.response.path
+                        }).then(response => {
+                            if (response.data.success == false) {
+                                alert (response.data.message)
+                            }
+                            
+                        });
+
+
+                                        
+
+                        //remove the files
+                        this.uploadFiles.splice(this.uploadFiles.findIndex(function(i){
+                            return i.id === newFile.id;
+                        }), 1);
+
+
+                        this.uploadFiles = [];
+                                                
+                    }
+                }
+            }
+        },
+        /**
+        * Pretreatment
+        * @param  Object|undefined   newFile   Read and write
+        * @param  Object|undefined   oldFile   Read only
+        * @param  Function           prevent   Prevent changing
+        * @return undefined
+        */
+        inputFilter: function(newFile, oldFile, prevent) {
+
+           console.log(newFile, oldFile);
+
+
+            if (newFile && !oldFile) {
+                // Filter non-image file
+                if (!/\.(jpeg|jpg|gif|png)$/i.test(newFile.name)) {
+                    alert ("Please upload only images here")
+                    return prevent();
+                }
+            }
+
+
+            if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
+                // Create a blob field
+                newFile.blob = ''
+                let URL = window.URL || window.webkitURL
+                if (URL && URL.createObjectURL) {
+                    newFile.blob = URL.createObjectURL(newFile.file)
+                }
+                // Thumbnails
+                newFile.thumb = ''
+                if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
+                    newFile.thumb = newFile.blob
+                }
+            }
+        },        
+
+        //[start]Folder
         onCopy: function (e) {
             this.fadeOut("fade", 2);
         },
@@ -883,6 +1140,7 @@ export default {
 					//console.log(error);
 				});
         },
+  
         autoClickFolder(data) 
         {
 			let nodeItem = {
@@ -912,10 +1170,19 @@ export default {
 					folder_id: folderID
 				})
 				.then(response => {
+
+                    console.log(response.data)
+                
 					//set the name of modal
 					this.folderID = response.data.folder_id;
 					this.folderName = response.data.folder_name;
 					this.folderDescription = response.data.folder_description;
+                    
+                    //thumbnail
+                    this.thumb_file_name = response.data.thumb_file_name;
+                    this.thumb_upload_name = response.data.thumb_upload_name;
+                    this.thumb_path = response.data.thumb_path;
+
                     this.$root.$refs.treeListComponent.$refs.folderFilesComponent.files = response.data.files;
                     this.$root.$refs.treeListComponent.$refs.folderFilesComponent.file_loading = false;
 				})
@@ -928,10 +1195,9 @@ export default {
         onClick(node) 
         {
 
-            console.log(node.owner);
+            console.log("onClick", node);
 
             this.getFolderFiles(node.id);
-
            
             //set the display info
             this.folderCurrentID        = node.id.toString();
@@ -941,6 +1207,12 @@ export default {
             this.displayFolderLink      = node.permalink;
             this.displayFolderOwner     = node.owner.firstname + " " + node.owner.lastname;
             this.displayCreatedAt       = node.created_at;
+
+            //thumbnail
+            console.log("?=>"+ node.thumb_path)
+            this.thumb_file_name = node.thumb_file_name;
+            this.thumb_upload_name = node.thumb_upload_name;
+            this.thumb_path = node.thumb_path;            
 
 			//reset the uploader and files
 			if (this.can_user_upload) {
@@ -1103,10 +1375,19 @@ export default {
                             id              : response.data.folder.id,
                             name            : this.folderName,
                             description     : this.folderDescription,
+                            
+                            //thumbnail
+                            thumb_file_name : response.data.thumb_file_name,
+                            thumb_upload_name : response.data.thumb_upload_name,
+                            thumb_path : response.data.thumb_path,
+
                             permalink       : response.data.folder.permalink,
                             owner           : response.data.folder.owner,
                             created_at      : response.data.folder.created_at,
                         };
+
+                        console.log("nodeItem", nodeItem);
+
                         this.onClick(nodeItem);
                     });
                 }
@@ -1117,43 +1398,73 @@ export default {
         },
         createFolderOnServer(parent_id) 
         {
+           
+
             axios.post("/api/create_folder?api_token=" + this.api_token, 
             {
                 method: "POST",
                 parent_id: parent_id,
                 folder_name: this.folderName,
-                folder_description: this.folderDescription
+                folder_description: this.folderDescription,
+                thumb_file_name: this.tempID,
             })
             .then(response => 
             {
+                
+
                 if (response.data.success === false) {
+
                     this.invalidFeedbackMessage = response.data.message;
                     this.folderNameState = false;
+
                 } else {
+
+
+                    this.folderID   = response.data.folder.id;
+                  
+
+                    this.$forceUpdate();
 
                     if (this.FolderType == "rootFolder") 
                     {
                         this.addNode(response.data.folder);
-                        this.$bvModal.hide("createNewFolder");
-                    }
-                     else if (this.FolderType == "subFolder") 
-                    {
+
+                        if (this.uploadFiles.length >= 1 ) {
+                            this.$refs.upload.active = true;
+                        } else {
+                            this.$bvModal.hide("createNewFolder");
+                        }
+
+                    } else if (this.FolderType == "subFolder") {
+
                         this.currentNodeCreated.id = response.data.folder.id;
                         this.currentNodeCreated.name = this.folderName;
                         this.currentNodeCreated.description = this.folderDescription;
                         this.currentNodeCreated.addLeafNodeDisabled = true;
-                        this.$bvModal.hide("createNewSubFolder");
+
+                        if (this.uploadFiles.length >= 1 ) {
+                            this.$refs.upload.active = true;                        
+                        } else {
+                            this.$bvModal.hide("createNewSubFolder");
+                        }                          
                     }
 
                     this.$nextTick(function() {
+
                         let nodeItem = {
                             id: response.data.folder.id,
                             name: this.folderName,
                             description: this.folderDescription,
+                            //thumbnail
+                            thumb_file_name : response.data.thumb_file_name,
+                            thumb_upload_name : response.data.thumb_upload_name,
+                            thumb_path : response.data.thumb_path,
+
                             permalink: response.data.folder.permalink,
                             owner: response.data.folder.owner,
                             created_at: response.data.folder.created,
                         };
+
                         this.onClick(nodeItem);
                         this.getFolders();
                     });
@@ -1190,15 +1501,30 @@ export default {
                         this.displayFolderLink  = response.data.folder.permalink;
                         this.displayFolderOwner = response.data.folder.owner.first_name + " " + response.data.folder.owner.last_name;
 
+                        this.thumb_file_name = response.data.thumb_file_name,
+                        this.thumb_upload_name = response.data.thumb_upload_name,
+                        this.thumb_path = response.data.thumb_path,
+
 						this.onChangeName(this.folderID);
                         this.$bvModal.hide("editFolder");
                         
                         this.$nextTick(function() {
                             
+                            //upload thumbs
+                            if (this.uploadFiles.length >= 1 ) 
+                            {
+                                this.$refs.upload.active = true;
+                            }  
+
                             let nodeItem = {
                                 id: response.data.folder.id,
                                 name: response.data.folder.folder_name,
                                 description: response.data.folder.folder_description,
+
+                                thumb_file_name: response.data.thumb_file_name,
+                                thumb_upload_name: response.data.thumb_upload_name,
+                                thumb_path: response.data.thumb_path,
+
                                 permalink: response.data.folder.permalink,
                                 owner:  {
                                     id: response.data.folder.owner.id,
@@ -1345,28 +1671,42 @@ export default {
 		},
 		handleOk(bvModalEvt) {
 			bvModalEvt.preventDefault();
-			this.handleSubmit();
+            this.handleSubmit();
         },
 		handleSubmit() {
+
+            
 			// Exit when the form isn't valid
 			if (!this.checkFormValidity()) {
 				return;
 			}
 
-            if (this.FolderType == "shareFolder") 
-            {
+
+            if (this.FolderType == "shareFolder") {
+
+                console.log("shareFolder");
+
                 //Share
                 this.shareFolderOnServer(this.parentID);
 
             }else if (this.FolderType == "rootFolder") {
+                
+                console.log("rootFolder")
+
 				//Create the root folder
 				this.createFolderOnServer(0);
 	
 			} else if (this.FolderType == "subFolder") {
+             
+                console.log("subFolder")
+
 				//create the subfolder
 				this.createFolderOnServer(this.currentNodeCreated.parent.id);
 		
 			} else if (this.FolderType == "editFolder") {
+
+                console.log("editFolder")
+
 				this.updateFolderOnServer(this.folderID);
 
 			}
@@ -1519,6 +1859,12 @@ export default {
 	background: #1e88e5;
 	color: #fafafa;
 }
+
+.uploader label.btn {
+  margin-bottom: 0;
+  margin-right: 1rem;
+}
 </style>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+

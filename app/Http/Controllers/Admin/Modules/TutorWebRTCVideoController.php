@@ -52,20 +52,27 @@ class TutorWebRTCVideoController extends Controller
             }
 
 
+         
             //detect if lesson has started.
             
             $startedLesson = LessonHistory::where('member_id', $reserve->member_id)
                                 ->where('tutor_id',$reserve->tutor_id)
-                                ->where('schedule_id',$reserve->id)->where('status', "NEW")->first();
+                                ->where('schedule_id',$reserve->id)
+                                ->where('status', "NEW")
+                                ->orderBy('id', 'DESC')
+                                ->first();
 
+
+    
             if ($startedLesson) {
+              
                 $isLessonStarted = true;
             } else {
+                
                 $isLessonStarted = false;
             }
 
-             //TESTING ONLY
-             $isLessonStarted = true;
+           
 
 
 
@@ -184,7 +191,8 @@ class TutorWebRTCVideoController extends Controller
                         'username'=> $user->username,
                         'nickname'=> $user->memberInfo->nickname,            
                         'type'=> $user->user_type, 
-                        'broadcaster'=>  $isBroadcaster
+                        'broadcaster'=>  $isBroadcaster,
+                        'image'=>  $user->image(),
                     ];
 
                 } else {
@@ -213,7 +221,8 @@ class TutorWebRTCVideoController extends Controller
                                     'username'=> $tutor->user->username,
                                     'nickname'=> $tutor->user->firstname,            
                                     'type'=> $tutor->user->user_type, 
-                                    'broadcaster'=>  $isBroadcaster
+                                    'broadcaster'=>  $isBroadcaster,
+                                    'image'=>  $tutor->image(),
                                 ];
 
                 } else {
@@ -243,8 +252,10 @@ class TutorWebRTCVideoController extends Controller
                                     ];
 
 
-            return Response::view('modules.webRTC.index', compact('lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 'consecutiveSchedules', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 'roomID', 
-                                                        'folderID', 'folderURLArray', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster')
+            return Response::view('modules.webRTC.index', compact('roomID', 'lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 
+                                                            'consecutiveSchedules', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 
+                                                            'folderID', 'folderURLArray',
+                                                            'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster')
                                                         )->header('Accept-Ranges', 'bytes');
 
         } else {

@@ -34,8 +34,8 @@ class LessonHistoryController extends Controller
         $isLessonExpired            = false;
         $isLessonExceedGracePeriod  = false;
 
-        $callWaitingLimit           = 30; //Call waiting Limit (Mark Absent Modal trigger) in Minutes (15 min default)
-        $gracePerionInMinutes       = 30; //Grace Period Extion to End Time or Session Expiration (15 min default)
+        $callWaitingLimit           = 15; //Call waiting Limit (Mark Absent Modal trigger) in Minutes (15 min default)
+        $gracePerionInMinutes       = 15; //Grace Period Extion to End Time or Session Expiration (15 min default)
 
         //Calcuate duration in milliseconds
         $durationInMilliseconds = minutesToMilliseconds($request->duration);
@@ -84,13 +84,17 @@ class LessonHistoryController extends Controller
         $remaningLessonDurationInMilliseconds   = calculateRemainingMilliseconds($durationInMilliseconds, $totalElapsedMilliseconds);
         $remaningLessonDurationInMinutes        = millisecondsToMinutes($remaningLessonDurationInMilliseconds);
 
+        $esiStartTime = ESIDateTimeFormat($startTime);
+        $esiEndTime = ESIDateTimeFormat($endTime);
+        $esiGracePeriodEndTime = ESIDateTimeFormat($gracePeriodEndTime);
+
         if ($startTime > $currentTime) {
 
             //Lesson should not start since the lesson start time is so advance
             $success                = false;  
             $startTimeInvalid       = true;
             $title                  = "Lesson time not started";
-            $message                = "<div class='font-weight-bold'>Lesson time $startTime has not started yet</div>";
+            $message                = "<div class='font-weight-bold'>Lesson time ". ($esiStartTime) ." has not started yet</div>";
             $message                .= "<div>please check back again later</div>";
 
         } else if ($isLessonStarted == false && $currentTime >= $gracePeriodEndTime) {
@@ -98,16 +102,20 @@ class LessonHistoryController extends Controller
             $success            = false;
             $isLessonExpired    = true;
             $title              = "Expired Lesson";
-            $message            = "Expired Lesson, Grace period time  $gracePeriodEndTime(JST) was given and exceeded.";
+            $message            = "<div class='font-weight-bold text-left'><font-weight-bold>Lesson $esiStartTime - $esiEndTime has expired</strong></div>";           
+            $message           .= "<div class='mt-2 font-weight-bold text-left'>Grace time  $esiGracePeriodEndTime was also exceeded.</div>";
+           
 
         } else if ($isLessonStarted == false && $totalElapsedMinutes >= $callWaitingLimit) {
 
             $success            = false;
             $isUserAbsent       = true;       
             $title              = "Student is absent";    
-            $message            = "Student is absent, Elapsed time is $callWaitingLimit minutes or over";
+            $message            = "<div class='mt-2 font-weight-bold text-left'>Student was unable to connect or student is absent</div>";
+            $message           .= "<div class='mt-2 font-weight-bold text-left'>Elapsed time is $callWaitingLimit over.</div>";
 
         } else if ($isLessonStarted == true && $currentTime >= $endTime) { 
+
             //make this lesson started to "false" to nullify expiration
         
             if ($currentTime >= $gracePeriodEndTime) {
@@ -117,8 +125,9 @@ class LessonHistoryController extends Controller
                 $isLessonExpired        = true;
                 $isUserAbsent           = false; //The user was not absent since  tutor confirm that it should started
                 $title                  = "Expired Session";    
-                $message                = "<div>Lesson time has expired beyond grace time period</div>";
-                 $message              .= "<div>Grace Time: ($gracePeriodEndTime)</div>";
+                $message                = "<div class='font-weight-bold mt-1'>Lesson time expired beyond grace time period, ending session is recommended</div>";
+                $message               .= "<div class='mt-1 small'>Lesson Time: $startTime - $endTime </div>";
+                $message               .= "<div class='mt-1 small'>Grace Period: ($gracePeriodEndTime)</div>";
 
             } else {
                             
@@ -146,7 +155,7 @@ class LessonHistoryController extends Controller
 
         return Response()->json([                    
             'success'               => $success,
-            'title'             => $title,
+            'title'                 => $title,
             'message'               => $message,
 
             //Determine User Status
@@ -211,12 +220,18 @@ class LessonHistoryController extends Controller
         $isTimerStarted     = $request->isTimerStarted;
         $slidesData         = $request->slidesData;
 
+        $now              = Carbon::now();
+        $currentTime      = $now->format('Y-m-d H:i:s');
+
         $lessonHistory = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();
 
         if ($lessonHistory) {
 
+           
+
             return Response()->json([
                 "success"       => true,
+                "currentTime"   => $currentTime,
                 "reservation"   => $request->reservation,
                 "message"       => "Lesson History already added."
             ]); 
@@ -283,37 +298,138 @@ class LessonHistoryController extends Controller
     }
 
 
-    public function postLessonEndHistory(Request $request, Member $member) {             
+    public function postLessonAbsentHistory(Request $request) {    
 
-        $reservation        = $request->reservation;
-        $isTimerStarted     = $request->isTimerStarted;
-        $slidesData         = $request->slidesData;
+    
+        $scheduleID = $request->reservation['schedule_id'];
+        $scheduleItem = ScheduleItem::where('id', $scheduleID)->first();
 
-        $lessonHistory = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();
+        if (!$scheduleItem) {
 
-        if ($lessonHistory) {
+            $message = "<div class='font-weight-bold'>Sorry,  We found an error while updating student records</div>";
 
-            $lessonHistory->update([
-                'status'            => 'COMPLETED',
-                'current_slide'     => $request->currentSlide,
-                'total_slides'      => $request->totalSlides,               
-                'time_ended'        => Carbon::now(),                
-            ]);
+            return Response()->json([
+                "success"       => false,
+                "reservation"   => $request->reservation,
+                "message"       => $message . "<div>We can't find lesson schedule and was unable to mark your student absent</div>",
+            ]);           
+        
+        }
 
+        if ($scheduleItem->schedule_status == 'CLIENT_RESERVED' || $scheduleItem->schedule_status == 'CLIENT_RESERVED_B') {       
+        
+            $lessonData = [
+                'schedule_status' => 'CLIENT_NOT_AVAILABLE'
+            ];
 
-            $scheduleItem = ScheduleItem::where('id', $reservation['schedule_id'])->first();
-
-            if ($scheduleItem) {            
-                $scheduleItem->update([
-                    'schedule_status' => "COMPLETED"
-                ]);
-            }
-            
-
+            $scheduleItem->update($lessonData);
 
             return Response()->json([
                 "success"       => true,
                 "reservation"   => $request->reservation,
+                "message"       => "Student was successfully marked as absent",
+            ]);
+
+        } else {
+        
+            return Response()->json([
+                "success"       => false,
+                "reservation"   => $request->reservation,
+                "message"       => $message . "<div>Error marking student absent, please try again later</div>",
+            ]);        
+        }
+    }
+
+
+
+    public function postLessonEndHistory(Request $request, Member $member) {             
+
+        $reservation            = $request->reservation;
+        $isTimerStarted         = $request->isTimerStarted;
+        $slidesData             = $request->slidesData;
+        $consecutiveSchedules   = $request->consecutiveSchedules;
+
+        $lessonHistory  = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();
+      
+
+        if ($lessonHistory) {
+
+            if (count($consecutiveSchedules) > 1) {
+
+                foreach($consecutiveSchedules['lessons'] as $lesson) {        
+
+                    $consecutiveLessonHistories = LessonHistory::where('schedule_id', $lesson['id'])->where('status', 'NEW')->first();                 
+
+                    if ($consecutiveLessonHistories) 
+                    {
+                        $consecutiveLessonHistories->update([
+                            'status'            => 'COMPLETED',
+                            'current_slide'     => $request->currentSlide,
+                            'total_slides'      => $request->totalSlides,               
+                            'time_ended'        => Carbon::now(),                
+                        ]);
+
+                    } else {
+                    
+                        //the consecutive lesson did not found any history we will duplicate it from the first lesson!
+                        //@todo: duplicate $lessonHistory to other consecutive schedules!
+                        $newHistory = $lessonHistory->replicate();
+                        $arrayReplicatedData = $newHistory->toArray();
+
+                        $arrayReplicatedData['schedule_id'] = $lesson['id'];
+                        $newCreatedModel = LessonHistory::create($arrayReplicatedData);
+
+                        $newHistoryslideID = $newCreatedModel->id;
+
+                        //@todo:replicate the slides from the first lesson
+                        $firstLessonSlides = LessonSlideHistory::where('lesson_history_id', $lessonHistory->id)->get();    
+                        if ($firstLessonSlides) {
+                            foreach($firstLessonSlides as $slide)  {
+                                $newSlide = $slide->replicate();
+                                $newSlide->lesson_history_id = $newHistoryslideID; // the new project_id
+                                $createdNewSlide = $newSlide->save(); 
+                            }                      
+                        }
+
+                        //tutor feedback [clone here]
+
+                        //chat messages [clone here]
+
+
+                    }
+   
+
+                    
+                    $scheduleItem = ScheduleItem::where('id', $lesson['id'])->first();
+
+                    if ($scheduleItem) {
+                        $scheduleItem->update(['schedule_status' => "COMPLETED"]);            
+                    }
+                    
+                }
+
+            } else {
+            
+                $lessonHistory->update([
+                    'status'            => 'COMPLETED',
+                    'current_slide'     => $request->currentSlide,
+                    'total_slides'      => $request->totalSlides,               
+                    'time_ended'        => Carbon::now(),                
+                ]);
+
+                $scheduleItem = ScheduleItem::where('id', $reservation['schedule_id'])->first();
+            
+                if ($scheduleItem) {
+                
+                
+                    $scheduleItem->update(['schedule_status' => "COMPLETED"]);
+                }
+            }
+
+            return Response()->json([
+                "success"       => true,
+                "reservation"   => $request->reservation,
+                "consecutiveSchedules"  => $consecutiveSchedules,
                 "message"       => "Lesson Materials posted successfully."
             ]); 
 
@@ -352,10 +468,16 @@ class LessonHistoryController extends Controller
             ]);
                       
             if ($lessonHistory) {
-                
-                foreach($slidesData as $slide) {
 
-                    
+
+                $scheduleItem = ScheduleItem::where('id', $reservation['schedule_id'])->first();
+
+                if ($scheduleItem) {
+                    $scheduleItem->update(['schedule_status' => "COMPLETED"]);            
+                }
+
+
+                foreach($slidesData as $slide) {
                         
                     $created = LessonSlideHistory::create([
                         'slide_index'       => $slide['slideIndex'],
@@ -365,6 +487,8 @@ class LessonHistoryController extends Controller
                     ]); 
 
                 }
+
+
 
             }
 
@@ -376,6 +500,9 @@ class LessonHistoryController extends Controller
         }
     }
 
+
+
+
     public function saveLessonSlideHistory(Request $request, LessonSlideHistory $lessonSlideHistory) 
     {
 
@@ -385,16 +512,13 @@ class LessonHistoryController extends Controller
         $canvasData         = json_encode($request->canvasData);
         $imageData          = json_encode($request->imageData);
 
-        $res = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData, $imageData);
+        $response = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData, $imageData);
 
-
-
-
-        if ($res->success == true) {
+        if ($response->success == true) {
         
             return Response()->json([
-                "success"       => $res->success,                
-                "message"       => $res->message,              
+                "success"       => $response->success,                
+                "message"       => $response->message,              
             ]); 
 
         } else {

@@ -65,7 +65,10 @@ class WebRTCVideoController extends Controller
             
             $startedLesson = LessonHistory::where('member_id', $reserve->member_id)
                                 ->where('tutor_id',$reserve->tutor_id)
-                                ->where('schedule_id',$reserve->id)->where('status', "NEW")->first();
+                                ->where('schedule_id',$reserve->id)
+                                ->where('status', "NEW")
+                                ->orderBy('id', 'DESC')
+                                ->first();
 
             if ($startedLesson) {
                 $isLessonStarted = true;
@@ -224,12 +227,13 @@ class WebRTCVideoController extends Controller
             $lessons = $scheduleItem->getConsecutiveLessons($reserve->id);
             $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
 
+
+           
+
             $consecutiveSchedules     = [                                        
                                         'lessons'   => $lessons,
                                         'duration'  => $consecutiveDuration
                                     ];
-
-                  
 
             return Response::view('modules.webRTC.index', compact('lessonCompleted', 'isLessonStarted', 'isLessonCompleted', 'consecutiveSchedules', 'feedbackCompleted', 'isFolderSelected', 'lessonHistory', 'roomID', 
                                                         'folderID', 'folderURLArray', 'userInfo', 'recipientInfo', 'reservationData', 'isBroadcaster'))->header('Accept-Ranges', 'bytes');

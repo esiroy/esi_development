@@ -133,7 +133,12 @@ class FolderController extends Controller
             "folder_name"           => $folder['folder_name'],
             "folder_description"    => $folder['folder_description'],
             "permalink"             => Folder::getLink($folderID),
-            "files"                 => json_decode($files)
+            "files"                 => json_decode($files),
+            //thumbails
+            "thumb_file_name"       => $folder['thumb_file_name'],
+            "thumb_upload_name"     => $folder['thumb_upload_name'],
+            "thumb_path"            => $folder['thumb_path'],
+
         ]);
     }
  
@@ -159,7 +164,12 @@ class FolderController extends Controller
             "folder_name"           => $folder['folder_name'],
             "folder_description"    => $folder['folder_description'],
             "permalink"             => Folder::getLink($folderID),
-            "files"                 => json_decode($files)
+            "files"                 => json_decode($files),
+            //thumbails
+            "folder"                => $folder,
+            "thumb_file_name"       => $folder->thumb_file_name,
+            "thumb_upload_name"     => $folder->thumb_upload_name,
+            "thumb_path"            => $folder->thumb_path,            
         ]);
     }
 
@@ -207,7 +217,7 @@ class FolderController extends Controller
                 'order_id'              => $next_order_id,
                 'slug'                  => Str::slug($request['folder_name'], '-'),
                 'folder_name'           => $request['folder_name'],
-                'folder_description'    => $request['folder_description']
+                'folder_description'    => $request['folder_description'],
             ];
         
             //Create Folder 
@@ -516,4 +526,113 @@ class FolderController extends Controller
         }
     }
 
+
+    public function uploadFolderThumbnail(Request $request)
+    {
+
+        $tempID = $request->input('tempID');
+
+        if ($files = $request->file('uploadFiles')) {
+                    
+          
+
+            //file path
+            $originalPath = 'storage/uploads/folder_thumbnails/';
+
+            $newFilename = time()."_". preg_replace('/\s+/', '_', $files->getClientOriginalName());
+
+            $newFilename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $newFilename);
+            
+            // Remove any runs of periods (thanks falstro!)
+            $newFilename = mb_ereg_replace("([\.]{2,})", '', $newFilename);
+
+            //check if the filesize is not 0 / or cancelled
+            if ($request->file('uploadFiles')->getSize() > 0) {
+
+                // Save to folder table as thumbs
+                try {
+
+               
+                    // for save original image name
+                    //$path = $request->file('uploadFiles')->store('public/uploads');
+
+                    //save in storage -> storage/public/uploads/
+                    $path = $request->file('uploadFiles')->storeAs(
+                        'public/uploads/folder_thumbnails/', $newFilename
+
+                        ///'storage/uploads/folder_thumbnails/', $newFilename
+                    );
+
+                    //create public path -> public/storage/uploads/{folder_id}
+                    $public_file_path = $originalPath . $newFilename;  
+
+                    //Output JSON reply
+                    return Response()->json([
+                        "success"               => true,   
+                        //'thumb_file_name'       => $request->file('uploadFiles')->getClientOriginalName(), //original filename
+                        //'public_file_path'      => url($public_file_path),
+                        'thumb_file_name'       => basename($public_file_path), //original filename
+                        'thumb_upload_name'     => $request->file('uploadFiles')->getFileName(), //generated filename
+                        'thumb_size'            => $request->file('uploadFiles')->getSize(),    
+                        "path"                  => $public_file_path,
+                      
+                    ]); 
+
+                } catch (\Exception $e) {
+                 
+
+                    return Response()->json([
+                        "success"   => false,
+                        "message"   => $e->getMessage()
+                    ]);                    
+                }
+
+
+
+
+            } else {
+
+                return Response()->json([
+                    "success"   => false,
+                    "message"   => "File Aborted or cancelled"
+                ]);
+
+            }
+
+        } else {
+            return Response()->json([
+                "success" => false
+            ]);
+
+        }    
+
+
+    }
+
+
+    public function updateFolderThumbDetails(Request $request) 
+    {
+        $folder = Folder::find($request['folderID']); 
+
+        if ($folder) {
+        
+            $updated = $folder->update([
+               'thumb_file_name'    => $request['thumb_file_name'],
+               'thumb_upload_name'  => $request['thumb_upload_name'],
+               'thumb_path'         => $request['path']           
+            ]);
+
+            return Response()->json([
+                "success" => true,
+                "updated" => $updated,
+            ]);
+
+        } else {
+        
+            return Response()->json([
+                "success"   => false,
+                "message"   => "Folder not found"
+            ]);        
+        }
+    }
 }

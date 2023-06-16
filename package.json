@@ -38,6 +38,7 @@
     "bootstrap-vue": "^2.17.3",
     "chart.js": "^2.9.4",
     "ckeditor4-vue": "^2.2.1",
+    "cropperjs": "^1.5.13",
     "datatables.net": "^1.10.22",
     "font-awesome": "^4.7.0",
     "md5": "^2.3.0",

@@ -44,6 +44,9 @@ Route::middleware('auth:api')->post('/reorder_items', 'API\FolderController@reor
 Route::middleware('auth:api')->post('/delete_folder', 'API\FolderController@deleteFolder')->name('APIDeleteFolders');
 Route::middleware('auth:api')->post('/get_child_folders', 'API\FolderController@getChildFolders')->name('APIGetPublicFolders');
 Route::middleware('auth:api')->post('/get_public_folder_files', 'API\FolderController@getPublicFiles')->name('APIGetPublicFolderFiles');
+Route::middleware('auth:api')->post('/updateFolderThumbDetails', 'API\FolderController@updateFolderThumbDetails')->name('APIUpdateFolderThumbDetails');
+
+
 
 //[start] My Page Scheduler
 Route::middleware('auth:api')->post('/get_tutors', 'API\TutorController@getTutors')->name('APIGetTutors');
@@ -269,14 +272,12 @@ Route::middleware('auth:api')->post('/getLessonSelectedPreview', 'API\LessonSlid
 Route::middleware('auth:api')->post('/saveLessonSlideHistory', 'API\LessonHistoryController@saveLessonSlideHistory')->name('APISaveLessonSlideHistory');
 
 
-//Lesson History Controller (POST START)
+//Lesson History Controller
+Route::middleware('auth:api')->post('/checkSessionValidity', 'API\LessonHistoryController@postLessonStartHistory')->name('APICheckSessionValidity');
 Route::middleware('auth:api')->post('/postLessonStartHistory', 'API\LessonHistoryController@postLessonStartHistory')->name('APIPostLessonStartHistory');
-
-//Lesson History Controller ( START)
 Route::middleware('auth:api')->post('/startLesson', 'API\LessonHistoryController@startLesson')->name('APIStartLesson');
-
-//lesson Slide History (END LESSON)
 Route::middleware('auth:api')->post('/postLessonEndHistory', 'API\LessonHistoryController@postLessonEndHistory')->name('APIpostLessonEndHistory');
+Route::middleware('auth:api')->post('/postLessonAbsentHistory', 'API\LessonHistoryController@postLessonAbsentHistory')->name('APIpostLessonAbsentHistory');
 
 
 //File Manager
@@ -312,3 +313,6 @@ Route::middleware('auth:api')->post('/getLessonImages', 'API\LessonFolderControl
 
 //Homeworks
 Route::middleware('auth:api')->post('/uploader/uploadHomework', 'API\HomeworkController@uploadHomework')->name('APIuploadHomework');
+
+//Folder Thumbnial
+Route::middleware('auth:api')->post('/uploader/uploadFolderThumbnail', 'API\FolderController@uploadFolderThumbnail')->name('APIuploadFolderThumbnail');

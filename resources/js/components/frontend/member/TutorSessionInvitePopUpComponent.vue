@@ -4,7 +4,7 @@
       
 
        <!--[start] MODAL PROMPTS -->
-        <b-modal id="modal-user-prompt"  :title="userPromptTitle" 
+        <b-modal id="modal-user-prompt"  :title="userPromptTitle" size="lg" 
             content-class="esi-modal" 
             :header-bg-variant="headerBgVariant" 
             no-close-on-esc no-close-on-backdrop hide-header-close>
@@ -38,13 +38,24 @@
             :header-bg-variant="headerBgVariant" 
             no-close-on-esc no-close-on-backdrop hide-header-close>
 
-            <div class="modal-body">            
-                {{ userPromptMessage }}
+            <div class="modal-body">      
+                <div class="alert alert-danger" role="alert">
+                    <div class="row">
+                        <div class="col-1 pt-3 pb-2 text-right">
+                            <b-icon scale="2.5" icon="exclamation-circle"></b-icon>
+                        </div>
+                        <div class="col-11 pl-4">
+                            <div class="mt-2 small">
+                                <span class="text-center" v-html="userPromptMessage"></span>
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <template #modal-footer>
                 <div class="container text-center">
-                    <b-button variant="primary" @click="markStudentAbsent()">Yes, I Confirm</b-button>
+                    <b-button variant="primary" @click="markStudentAbsent()">Yes, I Confirm to mark my student as absent</b-button>
                 </div>
             </template>
         </b-modal>
@@ -73,7 +84,9 @@
 
             <template #modal-footer>
                 <div class="container text-center">
-                    <b-button variant="success" @click="backToMemberHome()">I Agree and take me back to homepage</b-button>                                                                           
+                    <b-button variant="success" @click="triggerEndSession()">
+                        I Agree and take me back to homepage
+                    </b-button>
                 </div>
             </template>
         </b-modal>
@@ -119,7 +132,10 @@
 
 
 
-        <b-modal id="modal-call-user"  :title="'Calling Student Please wait'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
+        <b-modal id="modal-call-user"  :title="'Calling Student Please wait'" 
+            content-class="esi-modal" 
+            :header-bg-variant="headerBgVariant" 
+            no-close-on-esc no-close-on-backdrop hide-header-close>
              <div v-if="timeLimitExpired == true">
                 <div>Time is up the student did not show on time for the lesson</div>
                 <div>This lesson is counted please click to confirm.</div>
@@ -164,9 +180,24 @@
                             CALL WAITING FOR PARTICIPANTS
             ***************************************************/
         -->
-        <b-modal id="modal-participants" :title="modalTitle" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
+        <b-modal id="show-modal-participants" :title="modalTitle" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
 
-            <div class="modal-body" v-if="participants.length <= 0">
+            <div v-if="participants.length >= 1">
+            
+                {{ participants }}
+
+                <div  class="text-center" v-for="(participant, index) in participants" :key="index">             
+                    <div class="text-center">
+                        {{ participant.firstname }} {{ participant.lastname }}
+                    </div>
+                    <div class="img-fluid">
+                        <img :src="baseURL(participant.image)" class="participant-image">
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-body" v-else-if="participants.length <= 0">
                 <div id="waiting" class="text-center">
 
                     <div v-if="waitingTimer <= 0"> 
@@ -192,6 +223,7 @@
                             </div>
 
                             <span class="text-primary small" v-if="is_broadcaster == false">
+
                                 <div v-if="isDisconnected == false">                           
                                     
                                     <div class="py-2">Please wait for your tutor to connect... </div>
@@ -242,17 +274,7 @@
                     </div>
                 </div>
             </div>
-            <div v-else-if="participants.length >= 1">
 
-                <div  class="text-center" v-for="(participant, index) in participants" :key="index">             
-                    <div class="text-center">
-                        {{ participant.firstname }} {{ participant.lastname }}
-                    </div>
-                    <div class="img-fluid">
-                        <img :src="baseURL(participant.image)" class="participant-image">
-                    </div>
-                </div>
-            </div>
 
             <template #modal-footer>
                 <div class="container text-center"  v-if="is_broadcaster == true">
@@ -277,20 +299,22 @@
 
                     </div>
                     <div v-else>
-                        Lesson will start {{ lessonStartTimer }}
+                        <div v-if="isLessonTimeStarted == true">
+                            Lesson will start {{ lessonStartTimer }}
+                        </div>
+                        <div v-if="isLessonTimeStarted == false">
+                            Please wait..                        
+                        </div>
+
                     </div>
                 </div>
 
             </template>
+
         </b-modal>
 
 
-        <!-- 
-            /*************************************************** 
-                        LESSON EXPIRED MODAL
-            ***************************************************/
-        -->
-
+   
 
     </div>
    
@@ -307,9 +331,9 @@
 
 <script>
 export default {
-    name: "TutorSessionInvitePopUpComponent",
+    name: "TutorSessionInvite",
     components: {},
-    props: {
+    props: {        
         is_broadcaster: Boolean,	
         lesson_history: Object,
         reservation: Object,
@@ -346,6 +370,7 @@ export default {
             redialTimer: 8, //5 seconds (countdown), (3 seconds to waiting time to connect)
             redialCounter: 10,
 
+            isLessonTimeStarted: false,
             lessonStartInterval: null,
             lessonStartTimer: 3,
 
@@ -396,15 +421,118 @@ export default {
         
     },
     methods: {
+    
+        /***************************************************** 
+                SHOW WAITING MODAL  FOR PARTICIPANTS
+        *****************************************************/
+        showWaitingListModal() {         
+         this.isLessonTimeStarted = false;  
+            this.$bvModal.show('show-modal-participants');
+        },
+        hideWaitingListModal() {   
+          this.isLessonTimeStarted = true;
+          this.startLessonStartTimer();    
+            //this.$bvModal.hide('show-modal-participants');            
+            
+        },
+
+        startLessonStartTimer() {
+            this.isLessonTimeStarted = false;
+            this.lessonStartInterval = setInterval(this.updateLessonTimer, this.timerSpeed);
+            this.stopWaitingTimer();
+        },
+        stopLessonTimer() {
+            this.isLessonTimeStarted = false;
+            clearInterval(this.lessonStartInterval);
+        },           
+        resetLessonTimer() {
+
+            this.isLessonTimeStarted = false;
+            this.lessonStartTimer = 3;
+
+        }, 
+        updateLessonTimer() {   
+
+            this.lessonStartTimer--;
+            this.$forceUpdate();
+
+            if (this.lessonStartTimer <= 0) {
+                this.$bvModal.hide('show-modal-participants');
+                this.stopLessonTimer();  
+                this.stopWaitingTimer();              
+            }
+        },    
+
+        /***************************************************** 
+                SHOW WAITING MODAL TIMER
+        *****************************************************/
+        resetRedialTimer() {
+            this.redialTimer = 8;            
+        },        
+        stopRedialTimer() {
+           clearInterval(this.callRedialInterval);
+        },        
+        startRedialTimer() 
+        {
+            this.callRedialInterval = setInterval(() => 
+            {
+                this.redialTimer--;
+
+                if (this.redialTimer < 0) {
+
+                    this.$root.$emit('redialUser', this.participants);   
+
+
+                    this.resetRedialTimer();
+
+                    // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
+                    if (this.currentDate.getTime() > this.specificDate.getTime()) {
+                        console.log('The current time is after 15 minutes from the specific date and time.');                        
+                        this.timeLimitExpired = true;
+                        this.stopRedialTimer();
+                    } else {
+                   
+                        console.log('The current time is not yet after 15 minutes from the specific date and time.');
+                    }
+                 
+                }
+                //console.log(this.redialTimer);
+
+            }, this.timerSpeed)   
+        },        
+
+
+        /***************************************************** 
+                CALL USER MODAL 
+        *****************************************************/
+        showCallUserModal(WaitingTimeLimit) {
+            this.$bvModal.show('modal-call-user');
+            this.startRedialTimer();
+        },
+        hideCallUserModal() {
+            this.$bvModal.hide('modal-call-user');  
+            this.resetRedialTimer();   
+            this.stopRedialTimer();        
+        },
+
+
         triggerContinueSession() {
             this.$bvModal.hide('modal-expired-options');
+
+            //continue session will call user to test if it is in session
+            this.$root.$emit('triggerCallUser');
         },
-        triggerEndSession() {
-            alert("end session")
+        triggerEndSession() {            
+            this.$root.$emit('triggerEndSession');
         },
+
+
+        /***************************************************** 
+                ABSENT 
+        *****************************************************/
         markStudentAbsent() {
             console.log("marking student as absent");
-
+            this.$root.$emit('triggerMarkStudentAbsent');
             //@todo: Mark student absent       
         },
         showModalAbsent(params) { 
@@ -413,14 +541,17 @@ export default {
             this.userPromptMessage = params.message;       
             this.callWaitingLimit = params.callWaitingLimit;   
             this.$bvModal.show('modal-user-absent');
-            
-        },
+        },        
         hideModalAbsent() {
             this.userPromptTitle = params.title;
             this.userPromptMessage = params.message;        
             this.$bvModal.hide('modal-user-absent');
         },
 
+
+        /***************************************************** 
+                EXPIRED with OPTIONS (STARTED LESSON) 
+        *****************************************************/
         showSessionExpiredOptionsModal(params) {
             this.expiredModalTitle = params.title;
             this.expiredModalMessage = params.message;
@@ -430,6 +561,9 @@ export default {
             this.$bvModal.hide('modal-expired-options');
         },
 
+        /***************************************************** 
+                EXPIRED (LESSON NOT STARTED) 
+        *****************************************************/
         showModalExpired(params) {
             this.expiredModalTitle = params.title;
             this.expiredModalMessage = params.message;
@@ -455,7 +589,6 @@ export default {
             this.$bvModal.hide('modal-user-prompt');
         },
 
-        
         backToMemberHome() {
             if (this.$props.is_broadcaster == true) {
                 window.location.assign(this.baseURL('/admin'));            
@@ -465,9 +598,9 @@ export default {
         },
         
         contactCustomerSupport() {
-
             this.$root.$emit('openCustomerSupport');
         },
+        
         /***************************************************** 
                 Support Countdown timer
         *****************************************************/
@@ -506,169 +639,15 @@ export default {
         },
 
 
-        /***************************************************** 
-                CALL USER MODAL 
-        *****************************************************/
-        showCallUserModal() {
-
-            console.log("show call user modal");
-            
-           // this.$bvModal.show('modal-call-user');
-
-            // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
-            if (this.$props.lesson_history == null) {
-                //User has no lesson history (the lesson was not started after 15 min, we will promted time limit exceeded)
-                if (this.currentDate.getTime() > this.specificDate.getTime()) {
-                    this.timeLimitExpired = true;
-                    this.stopRedialTimer();
-                    console.log('The current time is after 15 minutes from the specific date and time.');
-                } else if (this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
-
-                    alert ("expired")
-                } else {
-                    this.startRedialTimer();
-                    console.log('The current time is not yet after 15 minutes from the specific date and time.');
-                }
-            } else {
-
-                if (this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
- 
-                    console.log("expired");
-                    this.stopRedialTimer();
-                } else {
-                
-                    console.log('The Timer has started, so we need to call till end of time');
-                    this.startRedialTimer();                
-                }
-            }
-          
-        },
-        hideCallUserModal() {
-            this.$bvModal.hide('modal-call-user');  
-            this.resetRedialTimer();   
-            this.stopRedialTimer();        
-        },
-        /***************************************************** 
-                SHOW WAITING MODAL 
-        *****************************************************/
-        showWaitingListModal() {       
-
-            if (this.$props.lesson_history == null) {
-                //User has no lesson history (the lesson was not started after 15 min, we will promted time limit exceeded)
-                if (this.currentDate.getTime() > this.specificDate.getTime()) 
-                {
-                    this.timeLimitExpired = true;
-
-                    if (this.$props.is_broadcaster == true) {
-                        this.$bvModal.show('modal-call-user');
-                    } else {
-                         this.$bvModal.show('modal-expired');
-                    }
-                  
-                    this.stopRedialTimer();
-                    this.stopWaitingTimer();
-
-                    console.log('The current time is after 15 minutes from the specific date and time.');
-
-                } else {
-                    this.resetLessonTimer();   
-                    this.startWaitingTimer();
-                    this.hideCallUserModal();
-                    this.$bvModal.show('modal-participants');
-                }
-            } else {
-
-                // check if more than 30 minutes ()
-                if (this.currentDate.getTime() > this.expiredLessonDate.getTime()) {
-                    console.log("expired")                    
-                } else {
-                    this.resetLessonTimer();   
-                    this.startWaitingTimer();
-                    this.hideCallUserModal();
-                    this.$bvModal.show('modal-participants');
-                }
-            }
 
 
-        },
-        hideWaitingListModal() {       
-            this.$bvModal.hide('modal-participants');             
-            this.resetLessonTimer();
-            this.stopRedialTimer();
-            this.stopLessonTimer();
-            console.log("hide and stop redialing")
-        },
-
-        /***************************************************** 
-                    LESSON COMMENCING MODAL
-        *****************************************************/     
-        resetLessonTimer() {
-             this.lessonStartTimer = 3;
-        },        
-        startLessonStartTimer() {
-            this.lessonStartInterval = setInterval(this.updateLessonTimer, this.timerSpeed);
-            this.stopWaitingTimer();
-        },
-        stopLessonTimer() {
-            clearInterval(this.lessonStartInterval);
-        },
-        updateLessonTimer() {   
-            this.lessonStartTimer--;
-            this.$forceUpdate();
-            if (this.lessonStartTimer < 1) {
-                this.hideWaitingListModal();
-                this.stopLessonTimer();  
-                this.stopWaitingTimer();              
-            }
-        },
 
 
-        /* Redial Timers*/
-        resetRedialTimer() {
-            this.redialTimer = 8;            
-        },        
-        stopRedialTimer() {
-           clearInterval(this.callRedialInterval);
-        },        
-        startRedialTimer() {
 
-            console.log("start Redial Timer");
-
-            this.callRedialInterval = setInterval(() => {
-                this.redialTimer--;
-                if (this.redialTimer < 0) {
-
-                    this.$root.$emit('redialUser', this.participants);   
-
-
-                    this.resetRedialTimer();
-                    // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
-                    if (this.currentDate.getTime() > this.specificDate.getTime()) {
-                        console.log('The current time is after 15 minutes from the specific date and time.');                        
-                        this.timeLimitExpired = true;
-                        this.stopRedialTimer();
-                    } else {
-                   
-                        console.log('The current time is not yet after 15 minutes from the specific date and time.');
-                    }
-
-                    /*
-                    this.redialCounter--; //
-                    if (this.redialCounter <= 0) {
-
-                        this.callAttemptFailed = true;
-                        this.stopRedialTimer();       
-                    } 
-                    */                   
-                }
-                //console.log(this.redialTimer);
-
-            }, this.timerSpeed)   
-        },
 
 
         /***************************************************** 
-                WAITING TIMER (30 seconds)   
+                WAITING TIMER (15 seconds)   
         *****************************************************/
         resetWaitingTimer() {
             this.waitingTimer = 15;            
@@ -712,34 +691,40 @@ export default {
         },
 
 
+
+
+    
+
         /***************************************************** 
                     PARTICIPANTS
-        *****************************************************/
-
+        *****************************************************/        
         addParticipants(user) {
 
-            //console.log("participant added", user, this.participants.length);
+            this.resetLessonTimer();
+            this.stopLessonTimer();
 
-            this.showWaitingListModal();
 
             if (this.participants.length == 0) {
 
                 this.participants.push(user);
-                this.startLessonStartTimer();
-                this.stopWaitingTimer();
+
+                if (this.participants >= 1) {
+                    this.showWaitingListModal();
+                    //this.startLessonStartTimer();
+                } else {
                 
-
-
+                
+                }
             } else {
                 let result = this.participants.find(participant => participant.userid === user.userid);
                 if (result) {
-                    //alert ("already on the list")
-                    //console.log("user is already on the list, commence the lesson")
-                    this.stopWaitingTimer();
-                    this.resetWaitingTimer();
+                    this.showWaitingListModal();
+                    //this.startLessonStartTimer();
                 }
             }
+
         },
+
         removeParticipants(user) {
 
             for (var i in this.participants) {

@@ -19,6 +19,12 @@ class UpdateFoldersTable extends Migration
             $table->bigInteger('order_id')->after('user_id');
             $table->enum('privacy', ['public', 'private'])->default('private')->after('folder_description');
             $table->text('slug')->after('order_id');
+
+            //added thumbnails
+            $table->string('thumb_file_name');
+            $table->string('thumb_upload_name');
+            $table->string('thumb_path');
+            $table->integer('thumb_size');              
             
         });
     }

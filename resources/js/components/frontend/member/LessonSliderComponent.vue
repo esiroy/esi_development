@@ -216,7 +216,9 @@ export default {
         canvas_height   : { type: [String, Number],required: true }        
     },
     data() {
+
         return {
+
             isLoading: false,
             socket: null,
 
@@ -472,7 +474,11 @@ export default {
 
                 if (response.data.success == true) {
 
-                    this.createNewSlide();                    
+                    //console.log("=====> CREATE_NEW_EMPTY_SLIDE =====");
+
+                    this.createNewSlide(); 
+
+
                     this.saveSlideHistoryData(this.canvasGetJSON(), this.currentSlide);
                      
                 } else {                
@@ -1276,7 +1282,7 @@ export default {
             return slidesDataArray;
         },        
         async saveAllSlides() {
-            console.log("saving all slides...")
+           
             for (var index = 1; index <= this.slides; index++) {
                 let canvasData  = await this.getCanvasSlideData(index);                
                 this.saveSlideHistoryData(canvasData, index);                                       
@@ -1327,9 +1333,7 @@ export default {
             }        
         },        
         saveSlideHistoryData(canvasData, slideIndex) {
-
-            console.log("saving... slide history " + slideIndex)
-
+            //console.log("saving... slide history " + slideIndex)
             axios.post("/api/saveLessonSlideHistory?api_token=" + this.api_token,
             {
                 'method'          : "POST",
@@ -1342,7 +1346,13 @@ export default {
 
             }).then(response => {
 
-                console.log(" slide history saved : ", response.data);
+                if (response.data.success == true) {
+                    console.log(" SLIDE DATA : ", response.data);
+                } else {
+                   // console.log(" SLIDE DATA SAVING FAILED : ", response.data);
+                }
+
+                
             });
         
         },        
