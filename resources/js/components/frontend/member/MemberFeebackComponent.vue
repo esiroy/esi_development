@@ -201,6 +201,7 @@
                                             :reservation="this.$props.reservation"
                                             :api_token="this.api_token" 
                                             :csrf_token="this.csrf_token"
+                                            @post-feedback="postFeedback"
                                         >
                                         </HomeWorkUploader>
 

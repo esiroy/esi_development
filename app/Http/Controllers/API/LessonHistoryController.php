@@ -26,7 +26,7 @@ class LessonHistoryController extends Controller
         $lessonHistory      = LessonHistory::where('schedule_id', $request->reservation['schedule_id'])->first();
         $isLessonStarted    = ($lessonHistory) ? true : false;
 
-       // $isLessonStarted    = false; //TEST ONLY
+        //$isLessonStarted    = TRUE; //TEST ONLY (TRUE FOR STARTED DEFAULT)
       
         //Booleans Status
         $startTimeInvalid           = false;
@@ -34,8 +34,8 @@ class LessonHistoryController extends Controller
         $isLessonExpired            = false;
         $isLessonExceedGracePeriod  = false;
 
-        $callWaitingLimit           = 15; //Call waiting Limit (Mark Absent Modal trigger) in Minutes (15 min default)
-        $gracePerionInMinutes       = 15; //Grace Period Extion to End Time or Session Expiration (15 min default)
+        $callWaitingLimit           = 2222; //Call waiting Limit (Mark Absent Modal trigger) in Minutes (15 min default)
+        $gracePerionInMinutes       = 17; //Grace Period Extion to End Time or Session Expiration (15 min default)
 
         //Calcuate duration in milliseconds
         $durationInMilliseconds = minutesToMilliseconds($request->duration);
@@ -97,7 +97,7 @@ class LessonHistoryController extends Controller
             $message                = "<div class='font-weight-bold'>Lesson time ". ($esiStartTime) ." has not started yet</div>";
             $message                .= "<div>please check back again later</div>";
 
-        } else if ($isLessonStarted == false && $currentTime >= $gracePeriodEndTime) {
+        } else if ($isLessonStarted == false && $currentTime > $gracePeriodEndTime) {
 
             $success            = false;
             $isLessonExpired    = true;
@@ -106,7 +106,7 @@ class LessonHistoryController extends Controller
             $message           .= "<div class='mt-2 font-weight-bold text-left'>Grace time  $esiGracePeriodEndTime was also exceeded.</div>";
            
 
-        } else if ($isLessonStarted == false && $totalElapsedMinutes >= $callWaitingLimit) {
+        } else if ($isLessonStarted == false && $totalElapsedMinutes > $callWaitingLimit) {
 
             $success            = false;
             $isUserAbsent       = true;       

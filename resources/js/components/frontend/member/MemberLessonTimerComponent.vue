@@ -6,7 +6,7 @@
 
             <div class="container">         
                 <div class="border border-dark rounded">
-                    <div class="timer-style">
+                    <div class="timer-style" :class="{'text-danger': isLessThan5Seconds}">
                         {{ timeRemaining }}<span class="milliseconds">.{{milliseconds}}</span>
                     </div>               
                 </div>
@@ -125,6 +125,13 @@ export default {
          this.timeRemaining = this.prependWithColons(this.timeRemaining);
 
     },
+    computed: {
+        isLessThan5Seconds() {    
+            const timerString = this.timeRemaining.toString(); // Convert to string
+            const seconds = parseInt(timerString.split(':')[2]);
+            return (seconds > 0 && seconds <= 5);            
+        }, 
+    }, 
     methods: {
         appendDigit(num) {
             this.numbers.push(num);
@@ -151,6 +158,7 @@ export default {
             this.timeRemaining = this.converToTime(timeRemaining);
         },
         startCountdown() {
+            console.log("startCountdown")
             if (this.isTimerStarted == false) {            
                 this.isTimerStarted = true;        
                 this.$root.$emit('startMemberTimer', this.timeRemaining)     
@@ -208,12 +216,15 @@ export default {
             clearInterval(this.timer);
             this.clearTimer();        
         },
-        startCountdownTimer() 
-        {
+        startCountdownTimer() {
+
+            console.log("startCountdownTimer");
+
             const endTime = new Date().getTime() + (this.hours * 3600 + this.minutes * 60 + this.seconds) * 1000
 
             this.timer = setInterval(() => {
-                const timeRemaining = endTime - new Date().getTime()
+                const timeRemaining = endTime - new Date().getTime();
+
                 if (timeRemaining > 0) {
                     this.hours = Math.floor(timeRemaining / (60 * 60 * 1000))
                     this.minutes = Math.floor((timeRemaining / (60 * 1000)) % 60)
@@ -239,7 +250,9 @@ export default {
             }, 10);          
         },
         updateMemberTimer(time) {
-            $("#memberTimer").html(time +"."+ this.milliseconds)
+            //console.log("mini timer "+ time)
+           // $("#memberTimer").html(time +"."+ this.milliseconds)
+            this.$parent.$refs.NavigationMenu.miniTimerUpdate(this.timeRemaining); 
         }
         
     }

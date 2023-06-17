@@ -54,9 +54,12 @@
             </div>
 
             <template #modal-footer>
-                <div class="container text-center">
+                <div class="container text-center" v-if="is_broadcaster == true">
                     <b-button variant="primary" @click="markStudentAbsent()">Yes, I Confirm to mark my student as absent</b-button>
                 </div>
+                <div class="container text-center" v-else>
+                    <b-button variant="primary" @click="backToMemberHome()">Okay, Take me back to homepage</b-button>
+                </div>                
             </template>
         </b-modal>
         <!--[end] MODAL ABSENT -->
@@ -183,9 +186,6 @@
         <b-modal id="show-modal-participants" :title="modalTitle" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
 
             <div v-if="participants.length >= 1">
-            
-                {{ participants }}
-
                 <div  class="text-center" v-for="(participant, index) in participants" :key="index">             
                     <div class="text-center">
                         {{ participant.firstname }} {{ participant.lastname }}
@@ -215,9 +215,7 @@
                                     Invite recieved, Please wait for the student to accept and connect...                            
                                 </div>
                                 <div v-if="isDisconnected == true">  
-
-                                    <div>Please wait for the student to reconnect...</div>
-
+                                    <div>Please wait for the student to connect...</div>
                                     <b-spinner v-for="variant in variants" :variant="variant" :key="variant"></b-spinner>     
                                 </div> 
                             </div>
@@ -283,7 +281,12 @@
                         <div v-else> Redialing in {{ waitingTimer }} </div>
                     </div>
                     <div v-else>
-                        Lesson will start {{ lessonStartTimer }}
+                        <div v-if="isLessonTimeStarted == true">
+                            Lesson will start {{ lessonStartTimer }}
+                        </div>
+                        <div v-if="isLessonTimeStarted == false">
+                            Please wait for your student to connect.                        
+                        </div>
                     </div>
                 </div>
 
@@ -299,11 +302,12 @@
 
                     </div>
                     <div v-else>
+                      
                         <div v-if="isLessonTimeStarted == true">
                             Lesson will start {{ lessonStartTimer }}
                         </div>
                         <div v-if="isLessonTimeStarted == false">
-                            Please wait..                        
+                           Please wait for your teacher to connect.                
                         </div>
 
                     </div>
@@ -426,33 +430,33 @@ export default {
                 SHOW WAITING MODAL  FOR PARTICIPANTS
         *****************************************************/
         showWaitingListModal() {         
-         this.isLessonTimeStarted = false;  
+            this.isLessonTimeStarted = false;  
             this.$bvModal.show('show-modal-participants');
         },
         hideWaitingListModal() {   
-          this.isLessonTimeStarted = true;
+          this.isLessonTimeStarted = false;
           this.startLessonStartTimer();    
             //this.$bvModal.hide('show-modal-participants');            
             
         },
 
         startLessonStartTimer() {
-            this.isLessonTimeStarted = false;
+            this.isLessonTimeStarted = true;
             this.lessonStartInterval = setInterval(this.updateLessonTimer, this.timerSpeed);
             this.stopWaitingTimer();
         },
+                
         stopLessonTimer() {
+            this.resetLessonTimer();
             this.isLessonTimeStarted = false;
             clearInterval(this.lessonStartInterval);
         },           
         resetLessonTimer() {
-
             this.isLessonTimeStarted = false;
             this.lessonStartTimer = 3;
-
         }, 
-        updateLessonTimer() {   
-
+        updateLessonTimer() {
+            
             this.lessonStartTimer--;
             this.$forceUpdate();
 
@@ -462,6 +466,36 @@ export default {
                 this.stopWaitingTimer();              
             }
         },    
+        /***************************************************** 
+               "redialUser"  WAITING TIMER (15 seconds)   
+        *****************************************************/
+        resetWaitingTimer() {
+            ///waiting timer for tutor to make an "emit" a "redialUser"
+            this.stopWaitingTimer();
+            this.waitingTimer = 15;            
+        },
+        stopWaitingTimer() {
+            clearInterval(this.waitingInterval);
+        },         
+        startWaitingTimer() {
+            if (this.$props.is_broadcaster == true) {
+                this.waitingInterval = setInterval(() => {
+                    this.waitingTimer--;
+                    if (this.waitingTimer < 0) {
+                        this.$root.$emit('redialUser', this.participants);   
+                        this.resetWaitingTimer();
+                        this.waitingRedialCounter--;                           
+                    }                   
+                }, this.timerSpeed)       
+
+            } else {
+            
+                this.resetSupportCountdownTimer();
+                this.startSupportCountdownTimer();
+
+                console.log("waiting timer of user is in progress")
+            }     
+        },         
 
         /***************************************************** 
                 SHOW WAITING MODAL TIMER
@@ -639,82 +673,18 @@ export default {
         },
 
 
-
-
-
-
-
-
-
-        /***************************************************** 
-                WAITING TIMER (15 seconds)   
-        *****************************************************/
-        resetWaitingTimer() {
-            this.waitingTimer = 15;            
-        },
-        stopWaitingTimer() {
-            clearInterval(this.waitingInterval);
-        },        
-        startWaitingTimer() {
-
-            this.stopWaitingTimer();
-
-            if (this.$props.is_broadcaster == true) {
-
-                this.waitingInterval = setInterval(() => {
-                    this.waitingTimer--;
-                    if (this.waitingTimer < 0) {
-
-                        this.$root.$emit('redialUser', this.participants);   
-                        this.resetWaitingTimer();
-                        this.waitingRedialCounter--; 
-
-                        // Compare the two dates to see if the current time is after 15 minutes from the specific date and time
-                        if (this.currentDate.getTime() > this.specificDate.getTime()) {
-                            console.log('The current time is after 15 minutes from the specific date and time.');
-                            this.stopWaitingTimer();       
-
-                        } else {
-                            console.log('The current time is not yet after 15 minutes from the specific date and time.');
-                        }      
-                    }
-                    //console.log(this.waitingTimer);
-                }, this.timerSpeed)       
-
-            } else {
-            
-                this.resetSupportCountdownTimer();
-                this.startSupportCountdownTimer();
-
-                console.log("waiting timer of user is in progress")
-            }     
-        },
-
-
-
-
-    
-
         /***************************************************** 
                     PARTICIPANTS
         *****************************************************/        
         addParticipants(user) {
-
             this.resetLessonTimer();
             this.stopLessonTimer();
-
-
             if (this.participants.length == 0) {
-
                 this.participants.push(user);
-
                 if (this.participants >= 1) {
                     this.showWaitingListModal();
                     //this.startLessonStartTimer();
-                } else {
-                
-                
-                }
+                } 
             } else {
                 let result = this.participants.find(participant => participant.userid === user.userid);
                 if (result) {
@@ -722,10 +692,11 @@ export default {
                     //this.startLessonStartTimer();
                 }
             }
-
         },
 
         removeParticipants(user) {
+
+            this.isDisconnected = true;
 
             for (var i in this.participants) {
 
@@ -733,7 +704,7 @@ export default {
 
                     console.log(this.participants[i], "- left the session");  
                     this.participants.splice(i);
-                    this.isDisconnected = true;
+                    
                     this.resetWaitingTimer();
                     this.stopWaitingTimer();
 

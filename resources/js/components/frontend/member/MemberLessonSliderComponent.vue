@@ -6,6 +6,10 @@
             <source src="" type="audio/mp3">
         </audio>
 
+        <!--
+        <button @click="testEndSession()">end</button>
+        -->
+
         <!-- Tutor to Member Feedback-->
         <MemberFeebackComponent 
             ref="memberFeedback" 
@@ -30,6 +34,12 @@
             :api_token="this.api_token" 
             :csrf_token="this.csrf_token"/>
 
+        <MemberConsecutiveLessons 
+            ref="MemberConsecutiveLessons"
+            :consecitive_lesson="consecutiveSchedules"
+            :api_token="this.api_token" 
+            :csrf_token="this.csrf_token"/>   
+
         <NavigationMenu 
             ref="NavigationMenu"
             :reservation="this.$props.reservation" 
@@ -37,12 +47,6 @@
             :is_broadcaster="this.$props.is_broadcaster" 
             :api_token="this.api_token" 
             :csrf_token="this.csrf_token"/>
-
-        <MemberConsecutiveLessons 
-            ref="MemberConsecutiveLessons"
-            :consecitive_lesson="consecutiveSchedules"
-            :api_token="this.api_token" 
-            :csrf_token="this.csrf_token"/>                        
         
         <MemberLessonTimerComponent 
             ref="MemberLessonTimer" 
@@ -89,14 +93,10 @@
 <script>
     import {fabric} from "fabric";
     import io from "socket.io-client";
-
     import NavigationMenu from './NavigationMenu.vue';
-
     import LessonSlider from './LessonSliderComponent.vue';
     import MemberLessonTimerComponent from './MemberLessonTimerComponent.vue';
-    import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue';
     import SlideSelectorComponent from './SlideSelectorComponent.vue';
-    import AudioPlayerComponent from './AudioPlayerComponent.vue';
     import TutorSessionInvitePopUpComponent from './TutorSessionInvitePopUpComponent.vue';
     import MemberFloatingChat from '../chat/MemberFloatingChatComponent.vue';
     import MemberConsecutiveLessons from './MemberConsecutiveLessonsComponent.vue';
@@ -109,8 +109,8 @@
         name: "lessonSliderComponent",
         components: { 
             NavigationMenu,
-            TutorSessionInvitePopUpComponent, TutorSlideNotesComponent, SlideSelectorComponent, 
-            AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent,
+            TutorSessionInvitePopUpComponent, SlideSelectorComponent, 
+            SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent,
             MemberFloatingChat, MemberLessonTimerComponent, MemberConsecutiveLessons, LessonSlider
         },
         props: {
@@ -164,7 +164,8 @@
                 isLessonStarted: false,   
                 isLessonExpired: false,
                 isLessonCompleted: false, 
-                isUserAbsent: false,   
+                isUserAbsent: false, 
+                isLessonStartTimeInvalid: false,  
 
                 //Session (all of components)
                 isSessionExpired: true,   
@@ -267,16 +268,26 @@
 
 
             this.socket.on('END_SESSION', (response) => { 
+
                 if (this.$props.is_broadcaster == false) {
+
                     if (response.channelid == this.channelid) {
+
+                        console.log("END SESSION RECIEVED BY MEMBER", response)
+                        this.$refs['NavigationMenu'].stopTimer(); 
+                        this.$refs['NavigationMenu'].disableNavigationMenu();
+                        this.isLessonCompleted = true;
                         this.$refs['satisfactionSurvey'].showSatisfactionSurveyModal(this.reservation);
-                        this.$ref['MemberLessonTimer'].stopCountdown(); 
                         $("#destroy-session-media").trigger("click");     
 
                     } else {
                         console.log("channel not found");
                     }
+
                 } else if (this.$props.is_broadcaster == true) {
+
+                    console.log("END SESSION RECIEVED BY TUTOR")
+                    this.isLessonCompleted = true;  
                     $("#destroy-session-media").trigger("click");                
                 }
             });  
@@ -305,7 +316,7 @@
                         this.$refs['TutorSessionInvite'].hideCallUserModal();                                            
                         this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
 
-                        console.log("ACCEPTED_CALL_EMITTED_FROM", userData.caller.type,  "EMMITTING ACCEPT CALL")
+                        console.log("CALL_USER", userData.caller.type,  "EMMITTING ACCEPT CALL")
 
 
                     }
@@ -326,7 +337,7 @@
                         this.$refs['TutorSessionInvite'].hideCallUserModal();                                            
                         this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
 
-                        console.log("ACCEPTED_CALL_EMITTED_FROM", userData.caller.type, "EMMITTING ACCEPT CALL")
+                        console.log("CALL_USER", userData.caller.type, "EMMITTING ACCEPT CALL")
 
                     }
                 } 
@@ -334,15 +345,18 @@
 
 
             this.socket.on("CALL_USER_PINGBACK", (userData) => {
-                console.log(" [START] =====  CALL_USER_PINGBACK RECIEVED FROM : ", userData);
+
                 if (this.$props.is_broadcaster == true  && userData.type == "MEMBER") {
+                 
+                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData); 
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
                     this.$refs['TutorSessionInvite'].showWaitingListModal();
                 }
 
                 if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :", userData);
+                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData);         
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
@@ -351,22 +365,19 @@
             });
 
             this.socket.on('JOIN_SESSION', (userData) => {
+
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
+
                     console.log(" << MEMBER_JOINED_SESSION ==>> ", userData);
                     this.$refs['TutorSessionInvite'].addParticipants(userData); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal();                     
                     this.socket.emit('JOIN_SESSION_PINGBACK', this.user);                     
-                }
 
-
-                if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
+                } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
 
                     console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
-
                     this.startCountdown(this.millisecondsLeft);
-
-
                     this.$refs['TutorSessionInvite'].addParticipants(this.user); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal();                     
@@ -379,13 +390,13 @@
 
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
 
-                    console.log("JOIN_SESSION_PINGBACK [TUTOR]", userData);
+                    console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);
                 
-                    this.$refs['TutorSessionInvite'].hideCallUserModal(); 
-                    this.$refs['TutorSessionInvite'].addParticipants(userData);
+                    this.$refs['TutorSessionInvite'].hideCallUserModal();
+                    this.$refs['TutorSessionInvite'].addParticipants(userData);  
 
                     if (this.isLessonStarted == true) {
-                        console.log("hide waiting list modal")
+                        console.log("lesson not started, hide waiting list modal")
                         //this.$refs['TutorSessionInvite'].hideWaitingListModal(); //[this will auto join]
                     }
                     
@@ -393,55 +404,79 @@
                 }
 
               if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-                    console.log("JOIN_SESSION_PINGBACK [MEMBER]", userData);                
+                    //TUTOR JOINED THE SESSION
+                    console.log("JOIN_SESSION_PINGBACK FROM [" + userData.type + "]", userData);                
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].addParticipants(userData);
+                    this.$refs['TutorSessionInvite'].hideWaitingListModal()
                 }                
                 
             });
 
             this.socket.on('LEAVE_SESSION', (userData) => {
 
-                if (this.$props.is_broadcaster == false) 
-                {
-                    console.log("TUTOR LEFT THE SESSION"); 
+                let currrentTutor = this.getRecipient();
 
-                } else {               
-                    console.log("USER LEFT A SESSION");                
+                if (userData.userid == currrentTutor.userid) {
+
+                    if (this.$props.is_broadcaster == false) 
+                    {
+
+                        if (this.isLessonCompleted == false && this.isLessonStartTimeInvalid == false)    {
+
+                            console.log("TUTOR LEFT THE SESSION"); 
+
+                            this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+            
+                            this.$refs['TutorSessionInvite'].resetLessonTimer()
+                            this.$refs['TutorSessionInvite'].startLessonStartTimer();
+                            this.$refs['TutorSessionInvite'].showWaitingListModal();
+                        }                  
+
+                    } else {           
+
+                        if (this.isLessonCompleted == false 
+                            && this.isLessonStartTimeInvalid == false
+                            &&  this.isUserAbsent  == false
+                            && this.isLessonExpired == false
+                            )    {
+                            
+                            console.log("USER LEFT A SESSION");     
+
+                            this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+                            this.$refs['TutorSessionInvite'].stopLessonTimer()
+                            this.$refs['TutorSessionInvite'].showWaitingListModal();
+
+                            //waiting timer for tutor to make an "emit" a "redialUser"
+                            this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                            this.$refs['TutorSessionInvite'].startWaitingTimer()   
+
+                        } else {
+                            console.log(" USER LEFT A SESSION !!! LESSON COMPLETED !!!");    
+                        }
+                    }  
+
                 }
 
-                
-                this.$refs['TutorSessionInvite'].removeParticipants(userData); 
-                this.$refs['TutorSessionInvite'].stopLessonTimer()
-
-                if (this.$props.is_lesson_complete == false) 
-                {
-                    //if lesson is not finished 
-                    this.$refs['TutorSessionInvite'].showWaitingListModal();                
-                }  
-
+           
             ; 
             });
 
 
             this.socket.on("ACCEPT_CALL", (userData) =>  {
 
-
                 if (this.$props.is_broadcaster == false) {
-                    let params = {
-                        'startTime' : this.consecutiveSchedules.duration.startTime,
-                        'endTime'   : this.consecutiveSchedules.duration.endTime,
-                        'length'    : this.consecutiveSchedules.duration.length,
-                        'isLessonStarted': true, //force lesson started (since)
-                    };
-                    this.$refs['MemberLessonTimer'].startCountdown();
-                    console.log("ACCEPT_CALL", userData, params);                   
+                    console.log("ACCEPT_CALL, (call accepted by member)", userData);
+                    this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                    this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
+                } 
+
+                if (this.$props.is_broadcaster == true) { 
+                    console.log("ACCEPT_CALL (call accepted by tutor)", userData);     
+                    this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                    this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
                 }
 
-                               
-
-                this.$refs['TutorSessionInvite'].hideCallUserModal(); 
-                this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
             });
 
             /** [start] SOCKETS SERVERS **/
@@ -460,22 +495,33 @@
             });
 
          
-            this.socket.on('UPDATE_DRAWING', (response) => {            
+            this.socket.on('UPDATE_DRAWING', (response) => {   
+
+                if (this.currentSlide !== response.currentSlide) {
+                    this.viewerCurrentSlide = response.currentSlide;
+                }
+
                if (this.$props.is_broadcaster == true) {
-                    console.log("broadcaster update halted...");   
-               } else {                  
+                    console.log("UPDATE_DRAWING TUTOR");   
+               } else {          
+                    console.log("UPDATE_DRAWING MEMBER");   
+
                     this.$refs['LessonSlider'].delegateUpdateCanvas(response.currentSlide, response.canvasData);
                     this.$refs['LessonSlider'].delegateSetZoom(response.currentSlide, response.canvasZoom);
 
                     if (response.canvasDelta !== null) {
                         this.$refs['LessonSlider'].delegateRelativePan(response.currentSlide, response.canvasDelta);
                     }
+
+                   ;  
                }
             });
 
             this.socket.on("GOTO_SLIDE", (data) =>  {
                 console.log("goto slide socket sent", data);               
-                if (this.$refs['audioPlayer']) {    this.$refs['audioPlayer'].resetAudioIndex() }                
+                if (this.$refs['audioPlayer']) {    
+                    this.$refs['audioPlayer'].resetAudioIndex() 
+                }
                 this.viewerCurrentSlide = data.num
                 this.currentSlide = data.num;
                 this.$refs['LessonSlider'].goToSlide(data.num);            
@@ -556,6 +602,8 @@
                         'channelid': this.channelid,
                         'timeRemaining': timeRemaining
                     });
+                } else {
+                    console.log("startMemberTimer")
                 }
             });
 
@@ -565,10 +613,13 @@
                         'channelid': this.channelid,
                         'timeRemaining': timeRemaining
                     });
+                } else {
+                    console.log("startMemberTimer")
                 }
             });
 
             this.$root.$on('playAlarmAudio', (alarmAudio) => {
+                console.log("play alarm audio", alarmAudio)
                 this.playAlarmAudio(alarmAudio);
             });
             //[end] Mini Task Timer
@@ -634,37 +685,37 @@
             /* AUDIO SOCKET CONTROLLER */
             this.socket.on('PLAY_AUDIO', (response) => {
                 if (this.$props.is_broadcaster == false) {
-                this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index);  
+                    this.$refs['LessonSlider'].$refs['audioPlayer'].gotoAndPlayClientAudio(response.index);  
                 }
             });
 
             this.socket.on('GOTO_AUDIO', (response) => {
                 if (this.$props.is_broadcaster == false) {                
-                    this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index); 
+                    this.$refs['LessonSlider'].$refs['audioPlayer'].gotoAndPlayClientAudio(response.index);  
                 }
             });
 
             this.socket.on('PAUSE_AUDIO', (response) => {
                 if (this.$props.is_broadcaster == false) {
-                    this.$refs['audioPlayer'].stopAudio();       
+                    this.$refs['LessonSlider'].$refs['audioPlayer'].stopAudio();       
                 }
             });
 
             this.socket.on('NEXT_AUDIO', (response) => {
                 if (this.$props.is_broadcaster == false) {
-                    this.$refs['audioPlayer'].goToAudio(response.index);       
+                    this.$refs['LessonSlider'].$refs['audioPlayer'].goToAudio(response.index);       
                 }
             });
 
             this.socket.on('PREV_AUDIO', (response) => {           
                 if (this.$props.is_broadcaster == false) {
-                    this.$refs['audioPlayer'].goToAudio(response.index);
+                    this.$refs['LessonSlider'].$refs['audioPlayer'].goToAudio(response.index);
                 }
             });
 
             this.socket.on('SEEK_AUDIO', (response) => {           
                 if (this.$props.is_broadcaster == false) {
-                this.$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
+                    this.$refs['LessonSlider'].$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
                 }
             });                        
 
@@ -688,9 +739,12 @@
 
         },
        methods: {
-            endSessionTest() {
-            
-                console.log("Test end session here...")
+            testEndSession() {
+                if (this.$props.is_broadcaster == true) {
+                    console.log("emit end session")
+
+                    this.socket.emit('END_SESSION', this.getSessionData())
+                }
             },
             async checkLessonSessionStatus() {
             
@@ -701,7 +755,7 @@
                     this.message += "Our client informed us that they are not available for this lesson, please proceed to your next lesson. thank you!";
 
                     this.promptUser();
-                    this.$refs['NavigationMenu'].disableNavigationMenu(true);
+                    this.$refs['NavigationMenu'].disableNavigationMenu();
 
                 } else if (this.lessonStatus == "TUTOR_CANCELLED") {
 
@@ -711,7 +765,7 @@
 
                     this.promptUser();
 
-                    this.$refs['NavigationMenu'].disableNavigationMenu(true);            
+                    this.$refs['NavigationMenu'].disableNavigationMenu();            
 
                 } else if (this.isLessonCompleted == true) {
 
@@ -764,12 +818,17 @@
                     this.millisecondsLeft       = response.data.remaningDurationInMilliseconds;
                     this.message                = response.data.message;
                     this.title                  = response.data.title;
+                    this.isLessonStartTimeInvalid = response.data.isStartTimeInvalid;
 
 
                     console.log(response.data);
 
                     if (response.data.success == true && response.data.isLessonStarted == false 
-                        && response.data.isLessonExceedGracePeriod == false && this.isLessonExpired  == false && this.isUserAbsent  == false ) {
+                        && response.data.isLessonExceedGracePeriod == false 
+                        && this.isLessonExpired  == false 
+                        && this.isLessonExpired  == false 
+                        && response.data.isStartTimeInvalid == false 
+                        && this.isUserAbsent  == false ) {
 
                         
 
@@ -786,18 +845,13 @@
 
                     } else if (response.data.success == false) {
 
-                        if (response.data.isLessonStarted == false && response.data.isLessonExpired == true) {                          
-
-                            //alert ("to absent #1")
-
+                        if (response.data.isLessonStarted == false && response.data.isLessonExpired == true) {
                             this.isSessionExpired = true;
-                            this.promptLessonAbsent();                      
-
-                                                        
+                            this.promptLessonAbsent();                                                                              
                         } else if (this.isLessonStarted  == false && response.data.isUserAbsent == true) {                        
-
                             this.isUserAbsent = true;
                             this.promptLessonAbsent();    
+                            console.log("absent")
 
                         } else {                       
 ;
@@ -966,7 +1020,7 @@
 
                             
                                 //member joined...
-                                console.log("member joined");
+                                console.log("EMIT JOIN_SESSION TO TUTOR");
                                 this.socket.emit('JOIN_SESSION', this.user); 
                             }
 
@@ -988,11 +1042,11 @@
                 this.users = users;      
                 this.$forceUpdate();                 
             },
-            async getSessionData() {
+            getSessionData() {
 
                 //Pre-load the slides for saving
-                this.currentSlide = await this.$refs['LessonSlider'].getCurrentSlide()
-                this.slidesData = await this.$refs['LessonSlider'].getAllSlideData();
+                this.currentSlide = this.$refs['LessonSlider'].getCurrentSlide()
+                this.slidesData = this.$refs['LessonSlider'].getAllSlideData();
 
                 let sessionData = {
                     'totalSlide'    : this.slidesData.length,
@@ -1038,10 +1092,9 @@
             },                  
             promptLessonAbsent() {
 
-                this.$refs['NavigationMenu'].disableNavigationMenu(this.isUserAbsent);                            
+                this.$refs['NavigationMenu'].disableNavigationMenu();                            
 
-                if (this.$props.is_broadcaster == true) 
-                {
+                if (this.$props.is_broadcaster == true) {
                 
                     let params = {                                  
                                 'title'     : this.title, 
@@ -1051,6 +1104,15 @@
 
                     this.$refs['TutorSessionInvite'].showModalAbsent(params);  
 
+                } else {
+                
+                    let params = {                                  
+                                'title'     : this.title, 
+                                'message'   : this.message,
+                                'callWaitingLimit': this.callWaitingLimit,
+                            }
+
+                    this.$refs['TutorSessionInvite'].showModalAbsent(params);                  
                 }
              
             },
@@ -1072,7 +1134,7 @@
                 //@todo: mark its first lesson if expired.
 
                 let params = {'title': this.title, 'message': this.message }
-                this.$refs['NavigationMenu'].disableNavigationMenu(this.isSessionExpired);
+                this.$refs['NavigationMenu'].disableNavigationMenu();
                 this.$refs['TutorSessionInvite'].showModalExpired(params);                           
             },
             promptUser() {               
@@ -1083,7 +1145,7 @@
 
                 console.log("promptSessionComplete");
 
-                this.$refs['NavigationMenu'].disableNavigationMenu(this.isLessonCompleted);
+                this.$refs['NavigationMenu'].disableNavigationMenu();
                 //this.$refs['TutorSessionInvite'].showModalCompleted();
 
                 if (this.$props.is_broadcaster == true) {
@@ -1187,7 +1249,7 @@
                 this.isMemberTimerStarted = true;
             },
             //[end] Mini Task Timer        
-            playAlarmAudio(audio) {
+            playAlarmAudio(audio) {                
                 let alarmAudio = document.getElementById('alarmAudio');
                 if (alarmAudio) {      
                     alarmAudio.src = window.location.origin +"/"+ audio.path;                              
@@ -1262,10 +1324,8 @@
                 }
 
             },            
-            async endSession() {
-             
+            async endSession() {             
                 this.$refs['LessonSlider'].saveAllSlides();          
-
                 this.postLessonEndSessionHistory(this.reservation);
 
             },
@@ -1297,19 +1357,17 @@
         
                     if (this.$props.is_broadcaster == true) {
 
-                       
+                        this.isLessonCompleted = true;
+
                         this.stopCountdown(); 
 
-                        //this.hideEndSessionButton();
-
                         if (this.is_broadcaster == true) {
-
+                            this.$refs['NavigationMenu'].stopTimer();                    
+                            this.$refs['NavigationMenu'].disableNavigationMenu();
                             this.socket.emit('END_SESSION', this.getSessionData()); 
-
                             console.log("session end was broadcasted");
-
                             this.showMemberFeedbackModal(this.reservation, this.files);
-
+                            $("#destroy-session-media").trigger("click"); 
                         }
 
                         return true;

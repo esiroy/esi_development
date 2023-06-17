@@ -1091,8 +1091,9 @@ export default {
 
         this.socket.on('LEAVE_SESSION', (userData) => 
         {
-            if (this.$props.is_broadcaster == false) 
-            {
+
+            if (this.$props.is_broadcaster == false) {
+
                 console.log("TUTOR LEFT THE SESSION"); 
 
             } else {               
@@ -1877,7 +1878,8 @@ export default {
                                 });
 
 
-                                this.refreshMemberSlides();;
+                                this.removeOldSlidesAndOpenNewSlides();
+                                this.refreshMemberSlides();
                             }
                         } 
                     }              

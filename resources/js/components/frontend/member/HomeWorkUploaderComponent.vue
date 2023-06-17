@@ -90,15 +90,12 @@
                     </file-upload>
 
 
-                   
+                   <!--
                     <button type="button" class="btn btn-success"
                         @click.prevent="triggerPostFeedback()">
                         <i class="fa fa-arrow-up" aria-hidden="true"></i>Test Feedback
                     </button>
-                  
-
-
-                    <!--
+                    
 
                     <button type="button" class="btn btn-success"
                         @click.prevent="startUpload()">
@@ -147,6 +144,7 @@
 import FileUpload from 'vue-upload-component'
 import VueCkeditor from 'vue-ckeditor2'
 export default {
+    name: "homeWorkUploader",
     components: {
         FileUpload, VueCkeditor
     },
@@ -177,10 +175,8 @@ export default {
   },
   methods: {
 
-    triggerPostFeedback() {   
-      
-        this.$root.$refs['lessonSliderComponent'].$refs['memberFeedback'].postFeedback();
-        
+    triggerPostFeedback() {         
+       this.$emit('post-feedback');    
     },
     getFileCount() {
         return this.files.length;

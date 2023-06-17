@@ -1,11 +1,13 @@
 <template>
 
     <div class="slides-container">
-        {{ "Channel: "+ this.channelid }} <br>
-        {{ "Server:" + this.$props.canvas_server }} <br>
-        {{ "props folder ID:" + this.$props.folder_id }} <br>
 
-        {{ "data current folder ID:" + this.currentFolderID }} <br>
+        <div style="display:none">
+            {{ "Channel: "+ this.channelid }} <br>
+            {{ "Server:" + this.$props.canvas_server }} <br>
+            {{ "props folder ID:" + this.$props.folder_id }} <br>
+            {{ "data current folder ID:" + this.currentFolderID }} <br>
+            </div>
 
         <!--[start] toolbox -->
         <div id="toolbox" v-show="this.$props.is_broadcaster == true">
@@ -181,6 +183,13 @@
                 </b-form-group>
             </form>
         </b-modal> 
+
+        <TutorSlideNotesComponent 
+            ref="TutorSlideNotes" 
+            v-if="this.$props.is_broadcaster == true"        
+            :api_token="this.api_token"
+            :csrf_token="this.csrf_token"/>
+
     </div>
 </template>
 
@@ -193,11 +202,15 @@ import io from "socket.io-client";
 import SlideSelectorComponent from './SlideSelectorComponent.vue'
 import SlideUploaderComponent from './SlideUploaderComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
+import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue';
 
 export default {
     name: "LessonSlider",
     components: { 
-        SlideSelectorComponent, SlideUploaderComponent, AudioPlayerComponent
+        SlideSelectorComponent, 
+        SlideUploaderComponent, 
+        AudioPlayerComponent,
+        TutorSlideNotesComponent
     },
     props: {
         channelid       : Number,
@@ -333,34 +346,61 @@ export default {
                 this.segments       = response.data.folderURLArray;
                 let customFiles     = response.data.customFiles;  
 
+
+                
+
+
+                //Files, Audio and notes
+                this.files = response.data.files;
+                this.imageURL = response.data.files;
+                this.audioFiles = response.data.audioFiles;  
+                this.notes = response.data.notes;
+
+
                 //Lesson History and its slides
                 let lessonHistory   = response.data.lessonHistory;
                 let slideHistory    = response.data.slideHistory.data;
 
                 if (this.$props.is_broadcaster == true) {
-                    //this.$refs['TutorSlideNotes'].loadNotes(this.notes);   
+                    this.$refs['TutorSlideNotes'].loadNotes(this.notes);   
                 }
 
                 if (lessonHistory && slideHistory.length >= 1) {
 
+                    console.log("getSlidesFromHistory")
+
                     this.getSlidesFromHistory(slideHistory);
                 
                 } else if (response.data.files.length >= 1) {
+
+                    console.log("getSlidesFromFiles")
                 
                     this.getSlidesFromFiles(response.data.files);
 
                 } else {
 
-                    this.createEmptySlide();
-
+                    this.createNewSlide();
+                    
                 }
 
                 this.$nextTick(() => {
+               
                     //DETERMINE IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
-                    //this.userSlideAccess();      
+                    this.userSlideAccess();      
 
-                    this.canvas[this.currentSlide].on('object:moving', this.handleObjectMoving);
-                    this.canvas[this.currentSlide].on('object:modified', this.handleObjectModified);  
+                    //START SLIDE (SELECT FROM CURRENT HISTORY IF THERE IS CURRENT SLIDE)
+                    let currentSlide =  (lessonHistory) ? lessonHistory.current_slide : 1;                            
+
+                    this.startSlide(currentSlide);
+                    
+                    //LOAD AUDIO
+                    this.loadAudio();
+
+                    if (this.$props.is_broadcaster == true) {
+                        this.canvas[this.currentSlide].on('object:moving', this.handleObjectMoving);
+                        this.canvas[this.currentSlide].on('object:modified', this.handleObjectModified); 
+                        this.$refs['slideSelector'].closeSlideSelector();          
+                    }         
 
                 });
             });
@@ -403,12 +443,16 @@ export default {
             }        
         },
         createEmptySlide() {
+
+            console.log("create empty slide");
+
             let slideIndex = 1;
             this.createCanvas(slideIndex);
             this.slides     = slideIndex;
             this.canvas[1]  = new fabric.Canvas('canvas'+slideIndex, { backgroundColor : "#fff" }); 
 
             // Add a delay of 1 seconds (adjust the delay as needed)
+           
             var delayInMilliseconds = 1000;
             var delayPromise = new Promise((resolve) => {
                 setTimeout(resolve, delayInMilliseconds);
@@ -416,7 +460,7 @@ export default {
 
             delayPromise.then(() => {
                 this.saveAllSlides(); 
-            });                   
+            });              
         },
 
         setSlideBackgroundImage(index, imageURL) 
@@ -473,12 +517,8 @@ export default {
             }).then(response => {
 
                 if (response.data.success == true) {
-
-                    //console.log("=====> CREATE_NEW_EMPTY_SLIDE =====");
-
-                    this.createNewSlide(); 
-
-
+                    console.log("CREATE_NEW_EMPTY_SLIDE"); 
+                    this.createNewSlide();
                     this.saveSlideHistoryData(this.canvasGetJSON(), this.currentSlide);
                      
                 } else {                
@@ -487,6 +527,8 @@ export default {
             });
         },                  
         createNewSlide() {  
+
+            console.log("createNewSlide");
 
             let currentSlideCount   = this.slides; 
             this.slides             = this.slides + 1;
@@ -592,12 +634,21 @@ export default {
             }
         },
         delegateUpdateCanvas(currentSlide, canvasData) {
+
+        
+
+            console.log(canvasData);
+            this.updateCanvas(this.canvas[this.currentSlide], canvasData);
+
             if (this.$props.is_broadcaster == false) {
+                console.log("delegate update canvas as member")
                 if (currentSlide !== this.currentSlide) {
                     this.goToSlide(currentSlide);
                 }
-                this.updateCanvas(this.canvas[currentSlide], canvasData);
-            }                
+                
+            } else {
+             console.log("delegate update canvas as tutor")
+            }    
         },
         delegateRelativePan(currentSlide, canvasDelta) {
             if (canvasDelta !== null) {
@@ -614,6 +665,7 @@ export default {
             }
 
         },
+    
         updateCanvas(canvas, canvasData){
             if (canvas) {
                 canvas.loadFromJSON(canvasData, this.disableCanvas, (o, object) => {            
@@ -1165,7 +1217,14 @@ export default {
         },          
         selectSlides() {
             this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
-        },              
+        },  
+        loadAudio() {
+            if (this.$refs['audioPlayer']) {
+                this.$refs['audioPlayer'].loadAudioList(this.audioFiles, this.currentSlide); 
+            } else {
+                console.log("audio list hidden")
+            }
+        },                    
         goToSlide(slide) {   
 
             console.log("goToSlide triggered!");
@@ -1175,14 +1234,14 @@ export default {
                 this.$refs['audioPlayer'].stopAudio();
             }
             
-            //this.loadAudio(slide);
+            this.loadAudio(slide);
 
             this.currentSlide = slide;
             this.viewerCurrentSlide = slide;
 
 
             if (this.$props.is_broadcaster == true) {
-                //this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
+                this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
             }           
 
             for (var i = 1; i <= this.slides; i++) {
@@ -1291,6 +1350,7 @@ export default {
             return true;
         },
        openNewSlideMaterials(newFolderID) { 
+
             this.newFolderID = newFolderID;
             //Slide Selector already update the slide selector folder, 
             //So lets refresh the member slides!
@@ -1356,6 +1416,46 @@ export default {
             });
         
         },        
+
+        startSlide(currentSlide) {
+            if (this.$props.is_lesson_completed == true) {
+                return false;            
+            }
+
+            if (currentSlide >= 1) {
+                this.currentSlide = currentSlide;
+            } else {
+                this.currentSlide = 1;
+            }            
+
+            if (this.$props.is_broadcaster == true) {
+                this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
+            }
+
+            this.autoSelectTool();
+            
+            let data = this.canvasGetJSON();
+
+            this.canvasSendJSON(this.canvas[this.currentSlide], data); 
+            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";
+
+            //Load List of Audio Array
+            this.loadAudio()
+
+            //@todo: if tutor then broadcast current slide
+            if (this.$props.is_broadcaster == true) {            
+                let data = {
+                    'channelid': this.channelid,
+                    'num': this.currentSlide
+                }
+                this.socket.emit('GOTO_SLIDE', data);                  
+            } else {
+
+                //when user lands a page (he will not dictate it but go to current slide)            
+                this.goToSlide(currentSlide)
+            }
+
+        },
 
         //Delete Object
         deleteObj() {

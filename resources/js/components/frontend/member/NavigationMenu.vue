@@ -33,8 +33,9 @@
 
                 <li class="pr-4" id="memberTimerContainer">
                     <div class="badge d-flex align-items-center border rounded-pill" v-if="isNavMenuDisabled == false">
-                        <span id="memberTimer" class="text-white font-weight-bold h4 mt-2 px-3" >
-                            0:00
+                        <span id="memberTimer" class="text-white font-weight-bold h4 mt-2 px-3"  
+                            :class="{'text-danger': isLessThan5Seconds}">
+                            {{ miniTimer }}
                         </span>  
                     </div>                            
                 </li>
@@ -46,9 +47,11 @@
                 </li>
 
                 <li class="pr-4 pt-2" id="countDownTimerContainer">
-                    <span class="text-white font-weight-bold h2 mt-3" id="countDownTimer">
-                        {{ countdownTimer }}
-                    </span>                       
+
+                    <span class="text-white font-weight-bold h2 mt-3" :class="{'text-danger': isTimerNegative}" id="countDownTimer">
+                    {{ countdownTimer }}
+                    </span>  
+
                 </li>
                 <li class="pr-4 pt-2" id="startSessionContainer" v-if="this.$props.is_broadcaster == true && this.isTimerStarted == false">
                     <button id="startSession" class="btn btn-md btn-success small" @click="tiggerStartSession()">                                
@@ -90,6 +93,7 @@
                 isNavMenuDisabled: false,
 
                 countdownTimer: "00:00:00",
+                miniTimer:  "00:00:00",
             }            
         },
         mounted() {
@@ -99,22 +103,32 @@
             this.enableNavigationMenu(true);
             
         },
+        computed: {
+            isTimerNegative() {
+                return this.countdownTimer.charAt(0) === '-';
+            },
+            isLessThan5Seconds() {
+                const timerString = this.miniTimer.toString(); // Convert to string
+                const seconds = parseInt(timerString.split(':')[2]);
+                return (seconds > 0 && seconds <= 5);   
+            },            
+        },  
         methods: {
-
-            showNavigationMenu(param) {            
-                this.isNavMenuVisible = param;
+            miniTimerUpdate(time) {               
+                this.miniTimer = time;
             },
-            hideNavigationMenu(param) {
-                this.isNavMenuVisible = param;
+            showNavigationMenu() {            
+                this.isNavMenuVisible = true;
+            },
+            hideNavigationMenu() {
+                this.isNavMenuVisible = false;
             },
 
-            enableNavigationMenu(param) {
-          
+            enableNavigationMenu() {          
                 this.isNavMenuDisabled = false;
             },
-            disableNavigationMenu(param) {
-          
-                this.isNavMenuDisabled = false;
+            disableNavigationMenu() {          
+                this.isNavMenuDisabled = true;
             },
          
          
