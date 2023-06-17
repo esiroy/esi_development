@@ -34,8 +34,8 @@ class LessonHistoryController extends Controller
         $isLessonExpired            = false;
         $isLessonExceedGracePeriod  = false;
 
-        $callWaitingLimit           = 2222; //Call waiting Limit (Mark Absent Modal trigger) in Minutes (15 min default)
-        $gracePerionInMinutes       = 17; //Grace Period Extion to End Time or Session Expiration (15 min default)
+        $callWaitingLimit           = 15; //Call waiting Limit (Mark Absent Modal trigger) in Minutes (15 min default)
+        $gracePerionInMinutes       = 15; //Grace Period Extion to End Time or Session Expiration (15 min default)
 
         //Calcuate duration in milliseconds
         $durationInMilliseconds = minutesToMilliseconds($request->duration);
