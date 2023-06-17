@@ -251,9 +251,13 @@
                         } else {                    
                             //end a session for all 
                             console.log("TEACHER STARTED A SESSION FOR ALL USERS", response);
-                        }                
-                    
-                        this.startCountdown();                
+                        }   
+
+                        if (this.isMemberTimerStarted == false) {
+                            console.log("this.startCountdown();")
+                            this.startCountdown();                
+                        }
+                        
                     } else {
                     
                     }
@@ -377,7 +381,15 @@
                 } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
 
                     console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
-                    this.startCountdown(this.millisecondsLeft);
+
+
+                    if (this.isMemberTimerStarted == false) {
+                        console.log("this.startCountdown();")
+                        this.startCountdown(this.millisecondsLeft);;                
+                    }
+
+                  
+
                     this.$refs['TutorSessionInvite'].addParticipants(this.user); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal();                     
@@ -427,10 +439,15 @@
                             console.log("TUTOR LEFT THE SESSION"); 
 
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
-            
-                            this.$refs['TutorSessionInvite'].resetLessonTimer()
-                            this.$refs['TutorSessionInvite'].startLessonStartTimer();
+                            this.$refs['TutorSessionInvite'].stopLessonTimer()
                             this.$refs['TutorSessionInvite'].showWaitingListModal();
+
+                            //this.$refs['TutorSessionInvite'].resetLessonTimer()
+                            //this.$refs['TutorSessionInvite'].startLessonStartTimer();
+
+                            this.$refs['TutorSessionInvite'].resetWaitingTimer();
+                            this.$refs['TutorSessionInvite'].startWaitingTimer()   
+
                         }                  
 
                     } else {           
@@ -596,7 +613,10 @@
                 this.triggerShowMiniTaskTimer();                
             });
 
-            this.$root.$on('startMemberTimer', (timeRemaining) => {   
+            this.$root.$on('startMemberTimer', (timeRemaining) => {  
+
+                console.log("startMemberTimer") ;
+
                 if (this.$props.is_broadcaster == true) {
                     this.socket.emit('START_MEMBER_TIMER', {
                         'channelid': this.channelid,
