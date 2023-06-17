@@ -25,16 +25,18 @@ class TutorWebRTCVideoController extends Controller
     public function index(Request $request,  Folder $folder, ScheduleItem $scheduleItem) 
     {
 
+
         $roomID = $request->get('roomid');
         $reserve = ScheduleItem::where('id', $roomID)->first();
 
-        
         if ($reserve) {
+
+            $scheduleID =  $reserve->id;
 
             $userInfo =  Auth::user();
 
             $reservationData = [
-                'schedule_id'       => $reserve->id,
+                'schedule_id'       => $scheduleID,
                 'tutor_id'          => $reserve->tutor_id,
                 'member_id'         => $reserve->member_id,
                 'duration'          => $reserve->duration,
@@ -43,32 +45,65 @@ class TutorWebRTCVideoController extends Controller
                 'schedule_status'   => $reserve->schedule_status
             ];         
 
-            if ($reserve->schedule_status == "COMPLETED") {
-
-                $isLessonCompleted = true;
-                
-            } else {            
-                $isLessonCompleted = false;
-            }
-
-
-         
-            //detect if lesson has started.
             
-            $startedLesson = LessonHistory::where('member_id', $reserve->member_id)
+
+ 
+
+            //detect if merged
+            $merged = LessonHistory::where('member_id', $reserve->member_id)
                                 ->where('tutor_id',$reserve->tutor_id)
-                                ->where('schedule_id',$reserve->id)
-                                ->where('status', "NEW")
+                                ->where('schedule_id',$scheduleID)
+                                ->where('status', "CS_MERGED")
                                 ->orderBy('id', 'DESC')
                                 ->first();
 
+            if ($merged) {
+            
+                //merged is set as the lesson
+                $startedLesson = $merged;
 
-    
-            if ($startedLesson) {
-              
-                $isLessonStarted = true;
+                //get the parent
+                $parentHistoryID  = $merged->parent_lesson_id;
+                $parentLessonhistory = LessonHistory::where('id', $parentHistoryID)->first();
+
+                if ($parentLessonhistory) {                
+
+                    //NOTE:!!! ASSIGN THE NEW LESSON SCHUDULE ID for the child
+                    $scheduleID = $parentLessonhistory->schedule_id;
+
+                    
+                    $reserve = ScheduleItem::where('id', $scheduleID)->first();
+                    if ($reserve->schedule_status == "COMPLETED") {
+                        $isLessonCompleted = true;                
+                    } else {            
+                        $isLessonCompleted = false;
+                    }
+                }
+            
+
             } else {
-                
+            
+                //detect if lesson has started.
+                $startedLesson = LessonHistory::where('member_id', $reserve->member_id)
+                        ->where('tutor_id',$reserve->tutor_id)
+                        ->where('schedule_id',$scheduleID)
+                        ->where('status', "NEW")
+                        ->orderBy('id', 'DESC')
+                        ->first();
+
+                    
+
+                if ($reserve->schedule_status == "COMPLETED") {
+                    $isLessonCompleted = true;                
+                } else {            
+                    $isLessonCompleted = false;
+                }
+                                        
+            }
+    
+            if ($startedLesson) {              
+                $isLessonStarted = true;
+            } else {                
                 $isLessonStarted = false;
             }
 
@@ -77,7 +112,7 @@ class TutorWebRTCVideoController extends Controller
 
 
             //get the selected material chosen by users
-            $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $reserve->id)->where('user_id', $reserve->member_id)->first();
+            $material = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $reserve->member_id)->first();
 
             if (!$material) {     
 
@@ -124,14 +159,14 @@ class TutorWebRTCVideoController extends Controller
             //@note: Lesson history to check surveys, 
             //@note: Blade view will detect if be (MEMBER OR TUTOR) based on the session
 
-			$lessonCompleted = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id',$reserve->id)->where('status', "COMPLETED")->first();
+			$lessonCompleted = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id',$scheduleID)->where('status', "COMPLETED")->first();
 
-            $incompleteLessonHistory = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id',$reserve->id)->where('status', "INCOMPLETE")->first();
+            $incompleteLessonHistory = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id',$scheduleID)->where('status', "INCOMPLETE")->first();
 
             if ($incompleteLessonHistory) {            
                 $lessonHistory = $incompleteLessonHistory;
             } else {            
-                $lessonHistory = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id', $reserve->id)->where('status', "NEW")->first();
+                $lessonHistory = LessonHistory::where('member_id', $reserve->member_id)->where('schedule_id', $scheduleID)->where('status', "NEW")->first();
                 if (!$lessonHistory) {
                     $lessonHistory = null;
                 }
@@ -150,7 +185,7 @@ class TutorWebRTCVideoController extends Controller
 
                 //@note(1): check if the member is done with the satisfaction survey, 
                 //@note(2): show lesson finished if member submitted a satisfaction survey
-                $lessonSurvey = SatisfactionSurvey::where('schedule_id', $reserve->id)->first();
+                $lessonSurvey = SatisfactionSurvey::where('schedule_id', $scheduleID)->first();
                 
                 if ($lessonSurvey) {
 
@@ -163,7 +198,7 @@ class TutorWebRTCVideoController extends Controller
 
                 //@note:    check if the tutor filled up the member feedback form
                 //@note(2): show lesson finished if member submitted member survey
-                $memberFeedback = MemberFeedback::where('schedule_id', $reserve->id)->first();
+                $memberFeedback = MemberFeedback::where('schedule_id', $scheduleID)->first();
 
                 if ($memberFeedback) {
 
@@ -241,7 +276,7 @@ class TutorWebRTCVideoController extends Controller
   
 
             //Get Consecutive Lessons
-            $lessons             = $scheduleItem->getConsecutiveLessons($reserve->id);
+            $lessons             = $scheduleItem->getConsecutiveLessons($scheduleID);
             $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
 
             

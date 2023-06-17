@@ -248,18 +248,18 @@
                         if (response.recipient.userid == this.user_info.id)
                         {                    
                             console.log("TEACHER STARTED A SESSION", response);
+
+                            if (this.isMainTimerStarted == false) {
+                                console.log("this.startCountdown();")
+                                this.startCountdown(); 
+                            }
+                        
                         } else {                    
                             //end a session for all 
-                            console.log("TEACHER STARTED A SESSION FOR ALL USERS", response);
-                        }   
-
-                        if (this.isMemberTimerStarted == false) {
-                            console.log("this.startCountdown();")
-                            this.startCountdown();                
-                        }
-                        
+                            //console.log("TEACHER STARTED A SESSION FOR ALL USERS", response);
+                        } 
                     } else {
-                    
+                        //wrong channel
                     }
 
                 } else if (this.$props.is_broadcaster == true) {
@@ -383,12 +383,11 @@
                     console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
 
 
-                    if (this.isMemberTimerStarted == false) {
-                        console.log("this.startCountdown();")
-                        this.startCountdown(this.millisecondsLeft);;                
-                    }
 
-                  
+                    if (this.isMainTimerStarted == false) {
+                        console.log("this.startCountdown();")
+                        this.startCountdown(); 
+                    }
 
                     this.$refs['TutorSessionInvite'].addParticipants(this.user); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
@@ -498,14 +497,15 @@
 
             /** [start] SOCKETS SERVERS **/
             this.socket.on("START_MEMBER_TIMER", (data) =>  {
-
-                if (this.$props.is_broadcaster == false) {
+               //MEMBER LESSON MINI TIMER
+                if (this.$props.is_broadcaster == false) {                 
                     this.$refs['MemberLessonTimer'].setTimeRemaining(data.timeRemaining);
                     this.$refs['MemberLessonTimer'].startCountdown(); 
                 }
             });
 
             this.socket.on("STOP_MEMBER_TIMER", (data) =>  {
+                //MEMBER LESSON MINI TIMER
                 if (this.$props.is_broadcaster == false) {
                     this.$refs['MemberLessonTimer'].stopCountdown(); 
                 }
@@ -982,8 +982,15 @@
 
                         console.log("emit start session")
 
-                        this.socket.emit('START_SESSION', this.getSessionData());    
-                        this.startCountdown();
+                        this.socket.emit('START_SESSION', this.getSessionData());   
+
+
+                        if (this.isMainTimerStarted == false) {
+                            console.log("this.startCountdown();")
+                            this.startCountdown(); 
+                        }
+
+                   
 
                         this.$refs['MemberConsecutiveLessons'].hideConsecutiveLessonModal(); 
 
@@ -1207,6 +1214,8 @@
 
             //Main Countdown timer
             startCountdown(millisecondsLeft) {
+                this.isMainTimerStarted = true;
+
                 //if method passed a parameter take this parameter else this.milliseconds will be added as value
                 if (!(millisecondsLeft == null || millisecondsLeft == undefined || millisecondsLeft == 'undefined')) {
                     this.millisecondsLeft = millisecondsLeft;
@@ -1265,8 +1274,9 @@
                 this.$refs['MemberLessonTimer'].showTimerControlModal()
             },
             startMemberTimer() {
+                console.log("START_MEMBER_TIMER - EMIT")
                 this.socket.emit('START_MEMBER_TIMER', this.getSessionData()); 
-                this.isMemberTimerStarted = true;
+                this.isMainTimerStarted = true;
             },
             //[end] Mini Task Timer        
             playAlarmAudio(audio) {                

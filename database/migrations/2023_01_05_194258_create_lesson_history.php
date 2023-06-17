@@ -15,17 +15,12 @@ class CreateLessonHistory extends Migration
     {
         Schema::create('lesson_history', function (Blueprint $table) {
             $table->id();
-            
-            $table->unsignedBigInteger('parent_lesson_id')->nullable()->index('parent_lesson_id');
-
             $table->unsignedBigInteger('schedule_id')->index('schedule_id');            
             $table->unsignedBigInteger('member_id')->index('member_id');
             $table->unsignedBigInteger('tutor_id')->index('tutor_id');
             $table->unsignedBigInteger('folder_id')->nullable()->index('folder_id');
             $table->unsignedInteger('total_slides'); 
-            $table->unsignedInteger('current_slide'); 
-
-            
+            $table->unsignedInteger('current_slide');             
             $table->string('status', '12');  //active, skipped, finished, cancelled
             $table->string('additional_notes', '64');  //acti
 

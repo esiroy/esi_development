@@ -349,19 +349,22 @@ class LessonHistoryController extends Controller
         $slidesData             = $request->slidesData;
         $consecutiveSchedules   = $request->consecutiveSchedules;
 
-        $lessonHistory  = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();
-      
-
+        //THE FIRST LESSON
+        $lessonHistory  = LessonHistory::where('schedule_id', $reservation['schedule_id'])->first();      
+     
         if ($lessonHistory) {
+
+               $newHistoryslideIDs = null;
 
             if (count($consecutiveSchedules) > 1) {
 
-                foreach($consecutiveSchedules['lessons'] as $lesson) {        
+
+                foreach ($consecutiveSchedules['lessons'] as $key => $lesson) {
 
                     $consecutiveLessonHistories = LessonHistory::where('schedule_id', $lesson['id'])->where('status', 'NEW')->first();                 
 
-                    if ($consecutiveLessonHistories) 
-                    {
+                    if ($consecutiveLessonHistories) {
+
                         $consecutiveLessonHistories->update([
                             'status'            => 'COMPLETED',
                             'current_slide'     => $request->currentSlide,
@@ -371,41 +374,27 @@ class LessonHistoryController extends Controller
 
                     } else {
                     
-                        //the consecutive lesson did not found any history we will duplicate it from the first lesson!
-                        //@todo: duplicate $lessonHistory to other consecutive schedules!
+                        //the consecutive lesson did not found any history we will duplicate it from the first lesson! and update the parent id
                         $newHistory = $lessonHistory->replicate();
                         $arrayReplicatedData = $newHistory->toArray();
 
-                        $arrayReplicatedData['schedule_id'] = $lesson['id'];
+                        //UPDATE THE (LESSON HISTORY) table (parent_lesson_id);
+                        $arrayReplicatedData['parent_lesson_id'] = $lessonHistory->id;
+                        $arrayReplicatedData['schedule_id']      = $lesson['id'];
+                        $arrayReplicatedData['status']           = "CS_MERGED";
+
+                        $arrayReplicatedData['additional_notes'] = "consecutive schedule #($key) - PARENT LESSON: " . $lessonHistory->id;                        	
                         $newCreatedModel = LessonHistory::create($arrayReplicatedData);
 
-                        $newHistoryslideID = $newCreatedModel->id;
-
-                        //@todo:replicate the slides from the first lesson
-                        $firstLessonSlides = LessonSlideHistory::where('lesson_history_id', $lessonHistory->id)->get();    
-                        if ($firstLessonSlides) {
-                            foreach($firstLessonSlides as $slide)  {
-                                $newSlide = $slide->replicate();
-                                $newSlide->lesson_history_id = $newHistoryslideID; // the new project_id
-                                $createdNewSlide = $newSlide->save(); 
-                            }                      
-                        }
-
-                        //tutor feedback [clone here]
-
-                        //chat messages [clone here]
-
-
+                        $newHistoryslideIDs[] = $newCreatedModel->id;
                     }
-   
 
-                    
+                    //UPDATE THE SCHEDULE TO COMPLETE
                     $scheduleItem = ScheduleItem::where('id', $lesson['id'])->first();
 
                     if ($scheduleItem) {
                         $scheduleItem->update(['schedule_status' => "COMPLETED"]);            
                     }
-                    
                 }
 
             } else {
@@ -420,17 +409,15 @@ class LessonHistoryController extends Controller
                 $scheduleItem = ScheduleItem::where('id', $reservation['schedule_id'])->first();
             
                 if ($scheduleItem) {
-                
-                
                     $scheduleItem->update(['schedule_status' => "COMPLETED"]);
                 }
             }
 
             return Response()->json([
-                "success"       => true,
-                "reservation"   => $request->reservation,
+                "success"               => true,
+                "reservation"            => $request->reservation,
                 "consecutiveSchedules"  => $consecutiveSchedules,
-                "message"       => "Lesson Materials posted successfully."
+                "message"               => "Lesson Materials posted successfully."
             ]); 
 
         
@@ -528,9 +515,6 @@ class LessonHistoryController extends Controller
                 "message"       => "Warning - Lesson has not started yet, Lesson Slide History not saved",
             ]);         
         }
-
-
-
 
     }     
 
