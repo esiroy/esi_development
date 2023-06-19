@@ -35,10 +35,47 @@ class LessonSlideHistoryController extends Controller
                         MemberFeedback $memberFeedback, MemberFeedbackDetails $memberFeedbackDetails)
     {     
 
-        $lessonHistory = $lessonHistory->where('schedule_id', $lessonHistoryID)
+   
+
+        $historyItem = $lessonHistory->where('schedule_id', $lessonHistoryID)
                         ->where('member_id', Auth::user()->id)
                         ->orderBy('id','DESC')
                         ->first();
+
+        if ($historyItem) {
+        
+            if (!isset($historyItem->parent_lesson_id) || $historyItem->parent_lesson_id == '') {
+
+                $isMerged = false;
+                $parentHistoryID = null;
+                //this is the first schedule
+                $lessonHistory = $historyItem;
+
+            } else {
+
+
+
+                $parent = $lessonHistory->where('id', $historyItem->parent_lesson_id)
+                        ->where('member_id', Auth::user()->id)
+                        ->orderBy('id','DESC')
+                        ->first();
+
+
+                $lessonHistory = $parent->where('schedule_id', $parent->schedule_id)
+                        ->where('member_id', Auth::user()->id)
+                        ->orderBy('id','DESC')
+                        ->first();   
+
+                $isMerged = true;
+                $parentHistoryID = $parent->schedule_id;  
+
+            }
+
+        }
+
+     
+
+
 
         if ($lessonHistory) 
         {
@@ -103,8 +140,10 @@ class LessonSlideHistoryController extends Controller
                                 ->leftJoin('members', 'members.user_id', '=', 'lesson_chat_history.sender_id')
                                 ->orderby('lesson_chat_history.id', "DESC")->get();
 
-            
-            return view('modules.lessonslidehistory.show', compact('lessonHistory', 'lessonTitle', 'files', 'audioFiles', 'slideHistory', 'reservationData', 'messages', 'memberFeedback'));
+
+            return view('modules.lessonslidehistory.show', compact('isMerged', 'parentHistoryID', 'lessonHistory', 
+                                'lessonTitle', 'files', 'audioFiles', 'slideHistory', 
+                                'reservationData', 'messages', 'memberFeedback'));
 
         } else {
         

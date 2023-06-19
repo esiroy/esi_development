@@ -31,6 +31,15 @@
                             <table  cellspacing="5" cellpadding="3" width="100%">
 
                                 <tbody>
+                                    @if ($isMerged == true)
+                                    <tr>
+                                         <td width="250">Consecutive Schedule Parent:</td>
+                                         <td>: </td>
+                                         <td>
+                                            <a href="{{ url('lessonslidehistory/'.$parentHistoryID) }}">Go to parent schedule</a>
+                                        </td>
+                                    </tr>
+                                    @endif
                                     <tr>
                                         <td width="150">Member Name</td>
                                         <td>: </td>
