@@ -78,11 +78,35 @@
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q2</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q3</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q4</th>
+
+                                            <th class="small text-center bg-light text-dark font-weight-bold">Stars Rating</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Remarks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach($questionnaires as $questionnaire)
+
+                                            @php
+                                            //Get and Assign Stars Raiting
+                                            $starsRating = null;
+
+
+                                            $satisfactionSurveyObj = new \App\Models\SatisfactionSurvey();
+                                            
+                                            $satisfactionSurvey = $satisfactionSurveyObj->where('schedule_id', $questionnaire->schedule_item_id)->first();
+
+                                            if ($satisfactionSurvey) {
+
+                                                $satisfactionSurveyDetailObj = new \App\Models\SatisfactionSurveyDetails();
+                                                 
+                                                $satisfactionSurveyDetails = $satisfactionSurveyDetailObj->where('lesson_survey_id', $satisfactionSurvey->id)->where('name', 'teacher_performace_rating')->first();
+
+                                                    if ($satisfactionSurveyDetails) {
+                                                        //assign the stars
+                                                        $starsRating = $satisfactionSurveyDetails->value;
+                                                    }
+                                            }
+                                        @endphp
                                         <tr>
                                            
                                             <td id="{{ $questionnaire->id }}" class="small text-center bg-light text-dark font-weight-bold">
@@ -139,6 +163,15 @@
                                             </td>
                                             <td class="question_1">
                                                 {{ $questionnaireItem4->grade ?? '' }}
+                                            </td>
+                                             <td class="small text-center" style="width:300px">
+                                                @for ($count = 0; $count < $starsRating; $count++) 
+
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                                    <path fill="yellow" stroke="none" d="M8 0l2.47 5.03 5.53.8-3.99 3.89.94 5.51L8 12.52l-4.95 2.61.94-5.51L0 5.83l5.53-.8L8 0z"/>
+                                                    </svg>
+
+                                                @endfor
                                             </td>
                                             <td class="small text-center" style="width:300px">{{ $questionnaire->remarks }}</td>
                                         </tr>

@@ -25,6 +25,8 @@ class QuestionnaireController extends Controller
      */
     public function index(Request $request)
     {
+    
+
         abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $items_per_page = Auth::user()->items_per_page;        
@@ -46,7 +48,9 @@ class QuestionnaireController extends Controller
         }        
 
         $questionnaires = $questionnaires->orderBy('schedule_item.lesson_time', 'DESC');
-        $questionnaires = $questionnaires->paginate($items_per_page);        
+        $questionnaires = $questionnaires->paginate($items_per_page);
+
+        
 
         return view('admin.modules.questionnaires.index', compact('questionnaires'));
     }

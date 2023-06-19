@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\SatisfactionSurvey;
 use App\Models\SatisfactionSurveyDetails;
+use App\Models\Questionnaire;
+
 
 class MemberSatisfactionSurveyController extends Controller
 {
@@ -72,6 +74,12 @@ class MemberSatisfactionSurveyController extends Controller
             ]);  
             	
 
+            //post to member questionnaire (NEW!!!)
+            Questionnaire::create([
+                'schedule_item_id'  => $scheduleID,
+                'member_id'         => $memberID,
+                'tutor_id'          => $tutorID,                
+            ]);
 
             return Response()->json([
                 "success"       => true,
