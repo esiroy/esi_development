@@ -32,6 +32,25 @@
 </head>
 <body class="bg-gray">
     <div id="app">
+
+        @php
+            $userImageObj = new \App\Models\UserImage;
+            $memberObj = new \App\Models\Member;
+
+            $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
+
+            if ($userImage == null) {
+                $memberProfileImage = Storage::url('user_images/noimage.jpg');
+            } else {
+                $memberProfileImage = Storage::url("$userImage->original");
+            }
+
+            $member =  $memberObj->where('user_id', Auth::user()->id)->first();
+            $nickname = $member->nickname;
+            
+            $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
+        @endphp 
+
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
 
@@ -239,68 +258,51 @@
         <main class="main-container mb-4">
             <div class="container bg-light pb-5 rounded-bottom" style="border-bottom-right-radius: 0.50rem !important; border-bottom-left-radius: 0.50rem !important;">
                 @yield('content')
+
+
+                @php
+                    $canvas_url = env('APP_CANVAS_SERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");  
+                @endphp
+       
+                <member-caller-component            
+                    :is-broadcaster="false"     
+                    :user-Info="{{  json_encode(Auth::user()) }}" 
+                    :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
+                    user_image="{{ $memberProfileImage }}"   
+                    canvas-Server="{{$canvas_url}}"
+                    editor-ID="canvas"
+                    canvas-Width="680"
+                    canvas-Height="500"
+                    api_token="{{ Auth::user()->api_token }}" 
+                    csrf_token="{{ csrf_token() }}"/>
+                </member-caller-component>
+
+               <member-unrated-lessons-component 
+                    :user_id="{{ Auth::user()->id  }}"  
+                    api_token="{{ Auth::user()->api_token }}" 
+                    csrf_token="{{ csrf_token() }}">
+                </member-unrated-lessons-component>
+                
             </div>
         </main>
 
         <div class="footer-container">
             <div class="member-floating-chat">
 
-            @php
-                $userImageObj = new \App\Models\UserImage;
-                $memberObj = new \App\Models\Member;
+                @if (Request::segment(1) == "memberschedule" || Request::segment(1) == "lesson_slides" || Request::segment(1) == "settings")
+                    <member-floating-chat-component                
+                        userid="{{ Auth::user()->id }}" 
+                        username="{{ Auth::user()->username }}"
+                        user_image="{{ $memberProfileImage }}"        
+                        nickname="{{ $nickname }}"        
+                        customer_support_image="{{ url('images/cs-profile.png') }}"        
+                        chatserver_url="{{ $chatserver_url }}"
+                        api_token="{{ Auth::user()->api_token }}"
+                        csrf_token="{{ csrf_token() }}"
+                        :show_sidebar="false"/>
+                    </member-floating-chat-component>  
+                @endif
 
-                $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
-
-                if ($userImage == null) {
-                    $memberProfileImage = Storage::url('user_images/noimage.jpg');
-                } else {
-                    $memberProfileImage = Storage::url("$userImage->original");
-                }
-
-                $member =  $memberObj->where('user_id', Auth::user()->id)->first();
-                $nickname = $member->nickname;
-                
-                $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
-            @endphp 
-
-           
-
-            @if (Request::segment(1) == "memberschedule" || Request::segment(1) == "lesson_slides" || Request::segment(1) == "settings")
-
-            <member-floating-chat-component                
-                userid="{{ Auth::user()->id }}" 
-                username="{{ Auth::user()->username }}"
-                user_image="{{ $memberProfileImage }}"        
-                nickname="{{ $nickname }}"        
-                customer_support_image="{{ url('images/cs-profile.png') }}"        
-                chatserver_url="{{ $chatserver_url }}"
-                api_token="{{ Auth::user()->api_token }}"
-                csrf_token="{{ csrf_token() }}"
-                :show_sidebar="false"
-            >
-            </member-floating-chat-component>  
-
-            @endif
-
-            @php
-                $canvas_url = env('APP_CANVAS_SERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");  
-            @endphp
-            
-            <member-caller-component            
-                :is-broadcaster="false"     
-                :user-Info="{{  json_encode(Auth::user()) }}" 
-                :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
-                user_image="{{ $memberProfileImage }}"   
-                canvas-Server="{{$canvas_url}}"
-                editor-ID="canvas"
-                canvas-Width="680"
-                canvas-Height="500"
-                api_token="{{ Auth::user()->api_token }}" 
-                csrf_token="{{ csrf_token() }}"
-                >
-            </member-caller-component>
-
-                   
             </div>
         </div>
         

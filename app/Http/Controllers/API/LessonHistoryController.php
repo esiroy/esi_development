@@ -12,6 +12,8 @@ use App\Models\MemberSelectedLessonSlideMaterial;
 use App\Models\LessonHistory;
 use App\Models\LessonSlideHistory;
 use App\Models\ScheduleItem;
+use App\Models\SatisfactionSurvey;
+
 
 use Auth, Config, DateTime;
 
@@ -206,14 +208,14 @@ class LessonHistoryController extends Controller
        
     }
 
-    /** 
-        @description: when user starts a lesson lesson will be MAREKD STARTED
-                         OR  the lesson history will be updated TO MARKED TIME ENDED
 
-        @param: $request->reservation       - reservation details
-        @param: $request->totalSlides       - total number of slides
-        @param: $request->currentSlide      - Current slide
-    */
+    /**
+    * Starts a lesson for a member.
+    *
+    * @param Request $request The request object containing lesson data.
+    * @param Member $member The member object associated with the lesson.
+    * @return JsonResponse The JSON response indicating the success or failure of the operation.
+    */    
     public function startLesson(Request $request, Member $member) {
 
         $reservation        = $request->reservation;
@@ -519,4 +521,30 @@ class LessonHistoryController extends Controller
     }     
 
 
+    /**
+    * Retrieves unrated lessons for a given lesson history.
+    *
+    * @param Request $request The request object containing additional parameters.
+    * @param LessonHistory $lessonHistory The lesson history object.
+    * @return JsonResponse The JSON response containing the unrated lessons.
+    */
+
+    public function getUnratedLessons(Request $request, LessonHistory $lessonHistory) 
+    {    
+        $userID = $request->userID;
+        return $lessonHistory->getMemberLessonsWithNoRatings($userID);
+    }
+
+    public function setLessonRating(Request $request) {
+
+        $scheduleID = $request->scheduleId;
+        $rating = $request->rating;
+        $userID = $request->userID;
+
+        $survey = new SatisfactionSurvey();
+        $response = $survey->setRating($scheduleID, $rating);
+
+        return $response;
+    
+    }
 }

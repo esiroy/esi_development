@@ -63,7 +63,34 @@ class dummyController extends Controller
     {
     }
 
-    public function index(Request $request, ScheduleItem $scheduleItem) {
+    public function index(Request $request, LessonHistory $lessonHistory, ScheduleItem $scheduleItem) {
+
+        $noLessonRatings = $lessonHistory->getMemberLessonsWithNoRatings(Auth::user()->id);
+
+        foreach ($noLessonRatings as $noLessonRating) {
+        
+            echo "tutor ID ". $noLessonRating->tutor_id ." ";
+
+             echo " | ";
+
+            $duration= $scheduleItem->getLessonTimeDuration($noLessonRating->schedule_id);
+
+          
+            echo "Lesson ID :" . $noLessonRating->schedule_id;
+
+            echo " | ";
+
+               echo $noLessonRating->duration->startTime ." - " . $noLessonRating->duration->endTime;
+            
+         
+
+            echo "<BR>";
+        }
+
+       
+    }
+
+    public function getCompletedConsecutiveLessons(Request $request, ScheduleItem $scheduleItem) {
 
    
 

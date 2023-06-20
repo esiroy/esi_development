@@ -278,6 +278,8 @@ Route::middleware('auth:api')->post('/postLessonStartHistory', 'API\LessonHistor
 Route::middleware('auth:api')->post('/startLesson', 'API\LessonHistoryController@startLesson')->name('APIStartLesson');
 Route::middleware('auth:api')->post('/postLessonEndHistory', 'API\LessonHistoryController@postLessonEndHistory')->name('APIpostLessonEndHistory');
 Route::middleware('auth:api')->post('/postLessonAbsentHistory', 'API\LessonHistoryController@postLessonAbsentHistory')->name('APIpostLessonAbsentHistory');
+Route::middleware('auth:api')->post('/getUnratedLessons', 'API\LessonHistoryController@getUnratedLessons')->name('APIGetUnratedLessons');
+Route::middleware('auth:api')->post('/setLessonRating', 'API\LessonHistoryController@setLessonRating')->name('APIsetLessonRating');
 
 
 //File Manager

@@ -61,13 +61,17 @@ class ScheduleItem extends Model
 
                         return (object) [
                             'startTime' => $lessonTimeStart,
-                            'endTime' => $lessonTimeEnd
+                            'endTime' => $lessonTimeEnd,
+                            'jp_startTime' => ESIDateTimeFormat($lessonTimeStart),
+                            'jp_endTime' => ESIDateTimeFormat($lessonTimeEnd)
                         ];
                     } else {
                     
                         return (object) [
                             'startTime' => $lessonTimeStart,
-                            'endTime' => $firstScheduleTimeEnd
+                            'endTime' => $firstScheduleTimeEnd,
+                            'jp_startTime' => ESIDateTimeFormat($lessonTimeStart),
+                            'jp_endTime' => ESIDateTimeFormat($firstScheduleTimeEnd)
                         ];
 
                     }
@@ -78,7 +82,9 @@ class ScheduleItem extends Model
 
                     return (object) [
                         'startTime' => $lessonTimeStart,
-                        'endTime' => $firstScheduleTimeEnd
+                        'endTime' => $firstScheduleTimeEnd,
+                        'jp_startTime' => ESIDateTimeFormat($lessonTimeStart),
+                        'jp_endTime' => ESIDateTimeFormat($firstScheduleTimeEnd)
                     ];
                 }
 
