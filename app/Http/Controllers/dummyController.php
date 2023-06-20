@@ -55,6 +55,7 @@ use App\Models\CustomTutorLessonMaterials;
 
 
 
+
 class dummyController extends Controller
 {
 
@@ -62,7 +63,20 @@ class dummyController extends Controller
     {
     }
 
-    public function index(Request $request) {
+    public function index(Request $request, ScheduleItem $scheduleItem) {
+
+   
+
+        $lessons             = $scheduleItem->getCompletedConsecutiveLessons($request->id);
+        $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
+
+        echo "<pre>";
+        print_r ($lessons);
+        echo "</pre>";
+        exit();
+        
+        
+
     
         $isLessonStarted            = true;
         $isUserAbsent               = "false";
@@ -214,7 +228,7 @@ class dummyController extends Controller
     
         echo "<p>". Auth::user()->id ."</p>";
         $scheduleID = $request->id;
-        $consecutiveSchedules = $scheduleItem->getConsecutiveLessons($scheduleID);
+        $consecutiveSchedules = $scheduleItem->getCompletedConsecutiveLessons($scheduleID);
         $duration = $scheduleItem->getConsecutiveLessonDuration($consecutiveSchedules);
 
 

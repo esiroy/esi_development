@@ -10,7 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MemoReply;
 use App\Models\ScheduleItem;
-
+use App\Models\LessonHistory;
 use App\Models\MiniTestResult;
 
 class ScheduleItem extends Model
@@ -21,6 +21,118 @@ class ScheduleItem extends Model
 
     private $limit = 30;
 
+  
+    public function getLessonTimeDuration($scheduleID) {
+
+        $scheduleItem = new ScheduleItem(); // Assuming ScheduleItem is a model or a class representing the schedule item entity
+
+        $firstSchedule = $scheduleItem->where('id', $scheduleID)->where('valid', true)->first();
+
+        if ($firstSchedule) {       
+            
+            //first scheudle
+            $lessonTimeStart      = $firstSchedule->lesson_time;
+            
+            $firstScheduleTimeEnd = date('Y-m-d H:i:s', strtotime($lessonTimeStart . '+25 minutes'));
+
+            $firstHistoryItem = LessonHistory::where('schedule_id', $scheduleID)->first();
+
+            if ($firstHistoryItem) {
+
+                $firstScheduleID = $firstHistoryItem->id;
+
+                $lessonHistoryItems = LessonHistory::where('parent_lesson_id', $firstScheduleID)->get();
+                
+
+                if ($lessonHistoryItems->isNotEmpty()) {  
+
+                    foreach ($lessonHistoryItems as $lessonHistoryItem) {
+                        $consecutiveLesson = $scheduleItem->where('id', $lessonHistoryItem->schedule_id)->where('valid', true)->first();
+                        if ($consecutiveLesson) {
+                            $consecutiveLessons[] = $consecutiveLesson;
+                        }
+                    }
+
+                    if (!empty($consecutiveLessons)) {
+
+                        $lastConsecutiveLesson = end($consecutiveLessons);
+                        $lastConsecutiveLessonTime = $lastConsecutiveLesson->lesson_time;
+                        $lessonTimeEnd = date('Y-m-d H:i:s', strtotime($lastConsecutiveLessonTime . '+25 minutes'));
+
+                        return (object) [
+                            'startTime' => $lessonTimeStart,
+                            'endTime' => $lessonTimeEnd
+                        ];
+                    } else {
+                    
+                        return (object) [
+                            'startTime' => $lessonTimeStart,
+                            'endTime' => $firstScheduleTimeEnd
+                        ];
+
+                    }
+
+
+                } else {
+                
+
+                    return (object) [
+                        'startTime' => $lessonTimeStart,
+                        'endTime' => $firstScheduleTimeEnd
+                    ];
+                }
+
+            }
+
+
+
+        } else {
+        
+            return null;
+        }       
+    }
+
+    /**
+    * Retrieves completed consecutive lessons starting from the given schedule ID.
+    *
+    * @param int $scheduleID The ID of the schedule item to start from.
+    * @return array An array of completed consecutive schedule items, or an empty array if no consecutive completed lessons are found.
+    */
+    public function getCompletedConsecutiveLessons($scheduleID) {
+
+        $scheduleItem           = new ScheduleItem();
+        $noLessons              = Array();    
+        $firstScheduledLesson   = $scheduleItem->where('id',  $scheduleID)->where('valid', true)->first();
+
+        if ($firstScheduledLesson) {
+            $firstLessonTime    = Carbon::parse($firstScheduledLesson->lesson_time)->format('Y-m-d H:i:s');
+            $remainingLessons   = $this->getMemberCompletedSchedule($firstScheduledLesson);
+            $consecutiveLessons = $this->filterConsecutiveSchedules($remainingLessons);   
+
+            //Compare first lesson to the first consecutive lesson for the day and return if is        
+            if  (count($consecutiveLessons) >= 1) {            
+                if($firstLessonTime == $consecutiveLessons[0]['startTime']) { 
+                    return $consecutiveLessons;
+                } else {
+                    return $noLessons;
+                }
+            } else {
+                return $noLessons;
+            }
+
+        } else {        
+            return $noLessons;
+        }        
+    }
+
+
+    
+    /**
+    * Retrieves consecutive lessons starting from the given schedule ID.
+    *
+    * @param int $scheduleID The ID of the schedule item to start from.
+    * @return array An array of consecutive schedule items, or an empty array if no consecutive lessons are found.
+    */
     public function getConsecutiveLessons($scheduleID) {
 
         $scheduleItem           = new ScheduleItem();
@@ -49,7 +161,12 @@ class ScheduleItem extends Model
     }
 
 
-
+    /**
+    * Retrieves the client reserved and client reserved B schedules of a student.
+    *
+    * @param Schedule $schedule The schedule object containing lesson time and member ID.
+    * @return array An array of client reserved and client reserved B schedule items.
+    */
     public function getMemberSchedule($schedule) 
     {
 
@@ -74,7 +191,42 @@ class ScheduleItem extends Model
                     ->toArray();
     }
 
+    /**
+    * Retrieves only the completed schedule items for a member.
+    *
+    * @param Schedule $schedule The schedule object containing lesson time and member ID.
+    * @return array An array of completed schedule items.
+    */
+    public function getMemberCompletedSchedule($schedule) 
+    {
 
+        $lessonTime = $schedule->lesson_time;        
+        $memberID   = $schedule->member_id;
+
+        $currentDate    = new DateTime($lessonTime);
+        $startDate      = Carbon::parse($currentDate);
+        $endDate        = Carbon::parse($currentDate)->addDay()->setTime(1, 30, 0);
+
+        $scheduleItem   = new ScheduleItem();    
+
+        return  $scheduleItem->select('id','lesson_time')
+                    ->where('member_id',  $memberID)
+                    ->where('valid', true)            
+                    ->whereBetween('lesson_time', [$startDate, $endDate])  
+                    ->where(function ($query) {
+                        $query->where('schedule_status', 'COMPLETED');
+                        //->orWhere('schedule_status', 'CLIENT_RESERVED_B');
+                    })
+                    ->get()
+                    ->toArray();
+    }    
+
+    /**
+    * Filters an array of schedule items to retrieve consecutive schedules.
+    *
+    * @param array $schedule An array of schedule items.
+    * @return array An array of consecutive schedule items.
+    */
     function filterConsecutiveSchedules(array $schedule): array {
         $filteredSchedules = [];
         $numSchedules = count($schedule);
@@ -108,10 +260,11 @@ class ScheduleItem extends Model
     }
 
 
-    /*
-        @startTime:
-        @endTime:
-        @duration:        this will get the duration in minutes for the consecutive lessons 
+    /**
+    * Calculates the duration of consecutive lessons.
+    *
+    * @param array $consecutiveLessons An array of consecutive lesson items.
+    * @return array An array containing the start time, end time, and length of the consecutive lessons.
     */
     public function getConsecutiveLessonDuration($consecutiveLessons) {
 
@@ -136,6 +289,12 @@ class ScheduleItem extends Model
     
     }
 
+    /**
+    * Formats the lesson time by adding 25 minutes to the start time and returning the start and end times.
+    *
+    * @param array $schedule The schedule item containing the ID and start time.
+    * @return array An array containing the ID, start time, and end time of the lesson.
+    */
     public function formatLessonTime($schedule) {
 
         $id     = $schedule['id'];
@@ -152,11 +311,11 @@ class ScheduleItem extends Model
 
 
     /**
-     * PLOT RESERVATIONS FOR MEMBERS
-     * @param  $dateFrom
-     * @return lessons
-
-     */
+    * Retrieves the lessons of a member.
+    *
+    * @param object $member The member object.
+    * @return Illuminate\Database\Eloquent\Collection A collection of lesson schedule items for the member.
+    */
     public function getMemberLessons($member) 
     {
 

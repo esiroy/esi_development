@@ -128,4 +128,78 @@ class LessonHistory extends Model
         }
     }
 
+    /**
+    * Retrieves the parent history item for a given schedule ID.
+    *
+    * @param int $scheduleID The ID of the schedule.
+    * @return object Returns an object with the following properties:
+    *   - 'isMerged': Indicates whether the item is merged or not.
+    *   - 'parentHistoryID': The ID of the parent history item. Returns null if there is no parent.
+    *   - 'lessonHistory': An object representing the lesson history.
+    */
+    public function getParentHistoryItem($scheduleID) {
+    
+        $historyItem = $this->where('schedule_id', $scheduleID)
+                        //->where('member_id', Auth::user()->id)
+                        ->orderBy('id','DESC')
+                        ->first();
+
+        if ($historyItem) {   
+
+            if (!isset($historyItem->parent_lesson_id) || $historyItem->parent_lesson_id == '') {
+
+                $isMerged = false;
+                $parentHistoryID = null;
+                
+                //this is the first schedule
+                $lessonHistory = $historyItem;
+
+            } else {
+
+                $parent = $this->where('id', $historyItem->parent_lesson_id)
+                        //->where('member_id', Auth::user()->id)
+                        ->orderBy('id','DESC')
+                        ->first();
+
+                if (!$parent)  {
+                
+                    $isMerged = false;
+                    $parentHistoryID = null;
+
+                    //this is the first schedule
+                    $lessonHistory = $historyItem;                
+                
+                } else {
+                
+                    $lessonHistory = $parent->where('schedule_id', $parent->schedule_id)
+                            //->where('member_id', Auth::user()->id)
+                            ->orderBy('id','DESC')
+                            ->first();   
+
+                    $isMerged = true;
+                    $parentHistoryID = $parent->schedule_id; 
+
+                }
+
+            }
+        } else {
+        
+            $isMerged = false;
+            $parentHistoryID = null;
+
+            //this is the first schedule
+            $lessonHistory = $historyItem;     
+        }       
+
+        $result = (object) [
+            'isMerged' => $isMerged,
+            'parentHistoryID' => $parentHistoryID,
+            'lessonHistory' => $lessonHistory
+        ];
+
+        return $result;
+        
+            
+    }
+
 }
