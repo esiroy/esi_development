@@ -44,7 +44,7 @@
 
                 <div v-if="hasSelected == true">
                     <div class="alert alert-success" role="alert">
-                        You selected a new lesson.
+                        You selected a new lesson. (レッスン教材の選択が完了しました）
                     </div>                                    
                 </div>
 

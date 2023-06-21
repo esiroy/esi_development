@@ -10,30 +10,13 @@
 
         <div class="info-container">
             <h5 class="text-maroon">Lesson Satisfaction Survey</h5>        
-            <h6 class="font-weight-bold"> 
-                (★) 満足度評価ご入力ありがとうございました
-
-                受講いただきありがとうございました。よろしければ
-                「アンケート」に答えていただけますと幸いです。（ご希望の方のみ）             
+            <h6 class="font-weight-bold"  v-if="showEndPage == false"> 
+                必ず満足度（★）を入力してください 
             </h6>
+            <h6 class="font-weight-bold"  v-if="showEndPage == true"> 
+                (★) 満足度評価ご入力ありがとうございました
+            </h6>            
             <hr/>
-        </div>
-
-        <div class="thankyou-container" v-if="showEndPage == true">
-
-            <div class="my-4">
-                Thank you for taking the lesson. if you have any comments about today's lesson, please enter 
-                <div class="d-inline" v-if="this.reservationData.schedule_id">
-                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケートに答える!」at </a>
-                </div> 
-                MyPage
-            </div>
-
-            <div class="mt-4 mb-2 text-center">
-                <button class="btn btn-success" @click="exitSurvey()">
-                    EXIT
-                </button>
-            </div>
         </div>
 
         <div class="ratings-form-container" v-if="showEndPage == false">
@@ -95,6 +78,26 @@
                 </div>
             </div>
         </div>
+        <div class="thankyou-container" v-if="showEndPage == true">
+
+            <div class="my-4">
+                受講いただきありがとうございました。よろしければ
+                   
+                <div class="d-inline" v-if="this.reservationData.schedule_id">
+                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケート」に答えていただけますと幸いです。（ご希望の方のみ）</a>
+                </div> 
+                
+            </div>
+
+            <div class="mt-4 mb-2 text-center">
+                <button class="btn btn-success" @click="exitSurvey()">
+                    EXIT
+                </button>
+            </div>
+        </div>
+
+
+
     </b-modal>
 
 </template>
