@@ -7,8 +7,11 @@
 
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Report Card</li>
+                <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
+                <li class="breadcrumb-item active">
+                    <a href="{{ url('lessonrecord?display=none') }}">Lesson Record</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Questionnaire</li>
             </ol>
         </nav>
 
@@ -174,6 +177,18 @@
                                         </tr>
                                         <tr>
                                             <td colspan="4">&nbsp;</td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td colspan="4">
+                                                Satisfaction Rating:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                {{ $rating }}
+                                            </td>
                                         </tr>
 
 

@@ -12,6 +12,18 @@ class SatisfactionSurvey extends Model
     
     protected $guarded = array('created_at', 'updated_at');   
 
+    function getRating($scheduleID) {
+
+        $survey = SatisfactionSurvey::where('schedule_id', $scheduleID)->first();     
+
+        if ($survey) {
+            $surveyDetails = SatisfactionSurveyDetails::where('name', 'teacher_performace_rating')
+                                                            ->where('lesson_survey_id', $survey->id)->first();
+            return $surveyDetails->value;
+        } else {
+            return null;
+        }
+    }
 
     function setRating($scheduleID, $rating) {
 

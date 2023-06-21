@@ -993,7 +993,7 @@
                     
                         setTimeout(() => {
                             this.$bvModal.hide('modalSelectLesson');  
-                        }, 1500);
+                        }, 3000);
                       
                     } else {
                         alert (response.data.message);

@@ -8,12 +8,7 @@
         } else {
             $memberProfileImage = Storage::url("$userImage->original");
         }
-        
-       
-
     @endphp 
-
-    
 
     <div id="slide-component">
 
@@ -46,12 +41,9 @@
             :user_info="{{  json_encode(Auth::user()) }}"
             :member_info="{{  json_encode($userInfo) }}"
             :recipient_info="{{ json_encode($recipientInfo) }}"
-            
 
             api_token="{{ Auth::user()->api_token }}" 
             csrf_token="{{ csrf_token() }}"
-
-            
 
             chatserver_url="{{ env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001') }}"
 
@@ -186,53 +178,46 @@
 
             <button class="btn btn-primary" id="destroy-session-media" style="display:none">End Session</button>
         </div>
-
-
-
-
-
         
-    <!--[start] Own Video Settings-->        
-    <div class="modal" id="mySettingsModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title" id="modal-setting-title">Media Settings</div>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="select mb-2">
-                    <label for="audioSource" class="font-weight-bold my-0">Audio input source: </label>
-                    <select id="audioSource" class="form-control form-control-sm py-0" ></select>
+        <!--[start] Own Video Settings-->        
+        <div class="modal" id="mySettingsModal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title" id="modal-setting-title">Media Settings</div>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="select mb-2">
-                    <label for="audioOutput" class="font-weight-bold my-0">Audio output destination: </label>
-                    <select id="audioOutput" class="form-control form-control-sm py-0"></select>
+                <div class="modal-body">
+                    <div class="select mb-2">
+                        <label for="audioSource" class="font-weight-bold my-0">Audio input source: </label>
+                        <select id="audioSource" class="form-control form-control-sm py-0" ></select>
+                    </div>
+                    <div class="select mb-2">
+                        <label for="audioOutput" class="font-weight-bold my-0">Audio output destination: </label>
+                        <select id="audioOutput" class="form-control form-control-sm py-0"></select>
+                    </div>
+                    <div class="select mb-2">
+                        <label for="videoSource"  class="font-weight-bold my-0">Video source: </label>
+                        <select id="videoSource" class="form-control form-control-sm py-0"></select>
+                    </div>
                 </div>
-                <div class="select mb-2">
-                    <label for="videoSource"  class="font-weight-bold my-0">Video source: </label>
-                    <select id="videoSource" class="form-control form-control-sm py-0"></select>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
+                    <!--<button type="button" class="btn btn-primary">Save changes</button>-->
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal">Close</button>
-                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
-            </div>
+                </div>
             </div>
         </div>
-    </div>
-    <!--[end] Settings -->
-@else
+        <!--[end] Settings -->
+    @else
 
-        Lesson has been completed
+        <!-- Lesson has been completed -->
 
-@endif
-
+    @endif
 
 @endsection 
-
 
 @section('scripts')      
 
@@ -241,7 +226,6 @@
     <!-- this will only get the script if lesson  is not complete to reduce loading -->
 
     @if ($lessonCompleted == false)
-
  
         <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js" defer></script>
         <script src="https://rtcserver.esuccess-inc.com:40002/socket.io/socket.io.js" defer></script>

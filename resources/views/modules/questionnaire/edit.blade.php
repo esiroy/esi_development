@@ -5,8 +5,11 @@
     <div class="esi-box">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb bg-light ">
-                <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Report Card</li>
+                <li class="breadcrumb-item"><a href="{{ url('/') }}">Home</a></li>
+                <li class="breadcrumb-item active" >
+                    <a href="{{ url('lessonrecord?display=none') }}">Lesson Record</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Questionnaire</li>
             </ol>
         </nav>
         <div class="container">
@@ -151,9 +154,6 @@
                                         </tr>
 
                                         <tr>
-
-
-
                                             <td>
                                                 <input type="radio" name="QUESTION_4grade" id="QUESTION_4GOOD" alt="" value="GOOD" @if (isset($questionnaireItem4->grade) && $questionnaireItem4->grade == "GOOD") {{ 'checked="checked"' }} @endif > 良かった
                                             </td>
@@ -169,6 +169,17 @@
                                             <td colspan="4">&nbsp;</td>
                                         </tr>
 
+
+                                        <tr>
+                                            <td colspan="4">
+                                                Satisfaction Rating:
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="4">
+                                                {{ $rating }}
+                                            </td>
+                                        </tr>
 
                                         <tr>
                                             <td colspan="4">

@@ -18,6 +18,7 @@ use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 
 use App\Models\LessonHistory;
+use App\Models\SatisfactionSurvey;
 
 use Gate;
 use Validator;
@@ -199,7 +200,7 @@ class QuestionnaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($scheduleID, ReportCard $reportcards, LessonHistory $lessonHistory)
+    public function show($scheduleID, ReportCard $reportcards, LessonHistory $lessonHistory, SatisfactionSurvey $satisfactionSurvey)
     {   
        
 
@@ -210,11 +211,7 @@ class QuestionnaireController extends Controller
             $parentHistoryID = $lessonHistoryItem->parentHistoryID;
             $lessonHistory = $lessonHistoryItem->lessonHistory;
             $scheduleID = $parentHistoryID;
-       }
-
-    
-
-       
+       }       
 
         $schedule = \App\Models\ScheduleItem::find($scheduleID);
 
@@ -225,6 +222,8 @@ class QuestionnaireController extends Controller
                 $user = Auth::user();
                 $member = Member::where('user_id', $user->id)->first();
                 $latestReportCard = $reportcards->getLatest($member->user_id);
+
+                $rating = $satisfactionSurvey->getRating($scheduleID);
 
                 if ($member) {
     
@@ -238,7 +237,9 @@ class QuestionnaireController extends Controller
                         $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
                         $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();
                         
-                        return view('modules.questionnaire.edit', compact('member', 'latestReportCard', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+                        return view('modules.questionnaire.edit', 
+                                compact('member', 'latestReportCard', 'questionnaire', 'rating',
+                                        'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
     
                     } else {  
                         //CREATE: new questionnaire 
@@ -252,7 +253,7 @@ class QuestionnaireController extends Controller
                             $questionnaireItem3 = null;
                             $questionnaireItem4 = null;
                             
-                            return view('modules.questionnaire.create', compact('member', 'latestReportCard', 'scheduleItem'));
+                            return view('modules.questionnaire.create', compact('member',  'rating', 'latestReportCard', 'scheduleItem'));
     
                         } else {
                             
