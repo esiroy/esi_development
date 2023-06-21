@@ -78,11 +78,13 @@
                         <div id="slideSelection" v-if="isSearching == false">
 
                             <div id="lesson-instructions" class="row mb-2">
-                                <div class="col-4">
-                                    <h5 class="text-maroon">Please select a Lesson </h5>   
-                                     <div class="font-weight-bold">前回のレッスンコースを継続する場合、入力は必要ありません。</div>           
+                                <div class="col-7">
+                                    <h5 class="text-maroon">
+                                        Please select a Lesson 
+                                    </h5>              
+                                    <div class="font-weight-bold small float-left">前回のレッスンコースを継続する場合、入力は必要ありません。</div>
                                 </div>
-                                <div class="col-8">
+                                <div class="col-5">
                                     <div class="float-right">
                                         <b-button variant="primary" @click="openSearchUI()">
                                             <b-icon icon="search" aria-hidden="true"></b-icon>
@@ -550,7 +552,7 @@
                     this.recipient.channelid = userData.reservationData.schedule_id;
 
                     
-                    this.playIncomingCallAudio({'path': 'mp3/incoming-call.mp3'}, 15); // Play 5 times
+                    this.playIncomingCallAudio({'path': 'mp3/incoming-call.mp3'}, 50); // Play 50. times
 
 
                     this.socket.emit('CALL_USER_PINGBACK', this.recipient); 
@@ -648,6 +650,7 @@
                 console.log("playing incoming call audio, remaining plays:", remainingPlays)
 
                 if (remainingPlays <= 0) {
+                    console.log("user busy, we called 50 times")
                     return;
                 }
 

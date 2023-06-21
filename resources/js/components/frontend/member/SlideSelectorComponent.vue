@@ -20,13 +20,13 @@
 
 
                         <div id="lesson-instructions" class="row mb-2">
-                            <div class="col-4">
+                            <div class="col-7">
                                 <h5 class="text-maroon">
                                     Please select a Lesson 
                                 </h5>              
-                                <div class="font-weight-bold">前回のレッスンコースを継続する場合、入力は必要ありません。</div>
+                                <div class="font-weight-bold small float-left">前回のレッスンコースを継続する場合、入力は必要ありません。</div>
                             </div>
-                            <div class="col-8">
+                            <div class="col-5">
                                 <div class="float-right">
                                     <b-button variant="primary" @click="openSearchUI()">
                                         <b-icon icon="search" aria-hidden="true"></b-icon>
