@@ -177,7 +177,7 @@
                                         </tr>
                                         <tr>
                                             <td colspan="4">
-                                                {{ $rating }}
+                                               <x-satisfaction-ratings :rating="$rating" ></x-satisfaction-ratings>  
                                             </td>
                                         </tr>
 
@@ -228,3 +228,13 @@ window.addEventListener('load', function() {
 });
 </script>
 @endsection
+
+
+@section('styles')
+<style>
+.checked {
+  color: orange;
+}
+</style>
+@endsection
+

@@ -1,8 +1,7 @@
 @extends('layouts.esi-app')
 
 @section('content')
-<div class="container bg-light">
- 
+<div class="container bg-light"> 
     <div class="esi-box">
 
         <nav aria-label="breadcrumb">
@@ -137,7 +136,6 @@
                                         </tr>
 
                                         <tr>
-
                                             <td>
                                                 <input type="radio" name="QUESTION_3grade" id="QUESTION_3GOOD" alt="" value="GOOD" @if (isset($questionnaireItem3->grade) && $questionnaireItem3->grade == "GOOD") {{ 'checked="checked"' }} @endif > 良かった
                                             </td>
@@ -159,11 +157,7 @@
                                                 レッスン内容が良い<br>（生徒様のレベルと目的に合ったスピードと内容で、継続することで<br>英語能力が高くなるような気がした
                                             </td>
                                         </tr>
-
                                         <tr>
-
-
-
                                             <td>
                                                 <input type="radio" name="QUESTION_4grade" id="QUESTION_4GOOD" alt="" value="GOOD" @if (isset($questionnaireItem4->grade) && $questionnaireItem4->grade == "GOOD") {{ 'checked="checked"' }} @endif > 良かった
                                             </td>
@@ -187,7 +181,7 @@
                                         </tr>
                                         <tr>
                                             <td colspan="4">
-                                                {{ $rating }}
+                                                <x-satisfaction-ratings :rating="$rating" ></x-satisfaction-ratings> 
                                             </td>
                                         </tr>
 
@@ -197,19 +191,12 @@
                                                 <textarea name="remarks" id="remarks" cols="45" rows="4">{{$questionnaire->remarks ?? ''}}</textarea>
                                             </td>
                                         </tr>
-
-
                                         <tr>
                                             <td colspan="4">
                                                 <input id="submit" type="submit" class="btn btn-pink" value="提出する">
                                             </td>
                                         </tr>
-
-
                                     </tbody>
-
-
-
                                 </table>
 
                             </form>
@@ -242,4 +229,13 @@ window.addEventListener('load', function() {
     });
 });
 </script>
+@endsection
+
+
+@section('styles')
+<style>
+.checked {
+  color: orange;
+}
+</style>
 @endsection
