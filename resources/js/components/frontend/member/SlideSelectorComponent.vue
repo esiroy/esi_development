@@ -10,7 +10,8 @@
 
                 <div v-if="hasSelected == true">
                     <div class="alert alert-success" role="alert">
-                        You selected a new lesson.
+                        You selected a new lesson. (レッスン教材の選択が完了しました）
+
                     </div>                                    
                 </div>
 
@@ -23,6 +24,7 @@
                                 <h5 class="text-maroon">
                                     Please select a Lesson 
                                 </h5>              
+                                <div class="font-weight-bold">前回のレッスンコースを継続する場合、入力は必要ありません。</div>
                             </div>
                             <div class="col-8">
                                 <div class="float-right">
@@ -268,12 +270,25 @@
         </div>
 
         <div id="image-viewer-container" class="container-fluid">
+            <b-modal id="modalImageViewer" size="xl" title="Image Preview" ok-only>
+                <div v-if="imageURL !== null">
+                    <img :src="imageURL" class="img-fluid">
+                </div>
+            </b-modal>
+        </div>       
+
+        <!--
+
+        <div id="image-viewer-container" class="container-fluid">
+
             <b-modal id="modalImageViewer"  title="Image Preview" ok-only>
                 <div v-if="imageURL !== null">
                     <img :src="imageURL" class="img-fluid">
                 </div>
             </b-modal>
+
         </div>
+        -->
                         
     </div>
 </template>
@@ -298,6 +313,9 @@
     },
     data() {
         return {
+
+          
+            isModalMaximized: false,
 
             isSearching: false,
             searchTimeout: null,
@@ -366,7 +384,11 @@
         }
         
     },
-    methods: {      
+    methods: {   
+        maximizeModal() {
+            this.isModalMaximized = !this.isModalMaximized;
+        },
+
         showCollapse(index) 
         {             
             for (var i = 0; i <= this.perPage; i++) 
@@ -537,7 +559,7 @@
                     setTimeout(() => {
                         this.$parent.openNewSlideMaterials(response.data.newFolderID);
                         this.$bvModal.hide('modalSelectLesson');
-                    }, 1500);
+                    }, 3000);
                    
                 } else {
                     alert (response.data.message);                    

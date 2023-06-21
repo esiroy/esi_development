@@ -26,7 +26,7 @@
                     <div class="container text-center">
                         <b-button variant="success" @click="acceptCall">
                             <b-icon icon="telephone-inbound" animation="throb" font-scale="1"></b-icon> 
-                            <span class="pb-3" animation="throb">Accept Lesson Request</span>
+                            <span class="pb-3" animation="throb">Enter Lesson</span>
                         </b-button>
                     </div>
                 </template>
@@ -79,7 +79,8 @@
 
                             <div id="lesson-instructions" class="row mb-2">
                                 <div class="col-4">
-                                    <h5 class="text-maroon">Please select a Lesson </h5>              
+                                    <h5 class="text-maroon">Please select a Lesson </h5>   
+                                     <div class="font-weight-bold">前回のレッスンコースを継続する場合、入力は必要ありません。</div>           
                                 </div>
                                 <div class="col-8">
                                     <div class="float-right">
@@ -341,6 +342,18 @@
              </b-modal>
         </div>
 
+
+
+
+        <div id="image-viewer-container" class="container-fluid">
+            <b-modal id="modalImageViewer" size="xl" title="Image Preview" ok-only>
+                <div v-if="imageURL !== null">
+                    <img :src="imageURL" class="img-fluid">
+                </div>
+            </b-modal>
+        </div>
+
+        <!--
         <div id="image-viewer-container" class="container-fluid">
             <b-modal id="modalImageViewer"  title="Image Preview" ok-only>
                 <div v-if="imageURL !== null">
@@ -348,6 +361,7 @@
                 </div>
             </b-modal>
         </div>
+        -->
         
     </div>
 
@@ -390,6 +404,8 @@
         },
         data() {
             return {
+
+                isModalMaximized: false,
 
                 headerBgVariant: 'lightblue',
 
@@ -533,7 +549,9 @@
                     this.recipient.channelid = userData.reservationData.schedule_id;
                     this.recipient.channelid = userData.reservationData.schedule_id;
 
-                    this.playIncomingCallAudio({'path': 'mp3/incoming-call.mp3'})
+                    
+                    this.playIncomingCallAudio({'path': 'mp3/incoming-call.mp3'}, 15); // Play 5 times
+
 
                     this.socket.emit('CALL_USER_PINGBACK', this.recipient); 
                     
@@ -577,6 +595,9 @@
             }); 
         },
         methods: {
+            maximizeModal() {
+                this.isModalMaximized = !this.isModalMaximized;
+            },        
             showCollapse(index) 
             {             
                 for (var i = 0; i <= this.perPage; i++) 
@@ -622,13 +643,26 @@
                 this.users = users;      
                 this.$forceUpdate();
             },
-            playIncomingCallAudio(audio) {
+            playIncomingCallAudio(audioConfig, remainingPlays) {
+
+                console.log("playing incoming call audio, remaining plays:", remainingPlays)
+
+                if (remainingPlays <= 0) {
+                    return;
+                }
+
                 let incomingCallAudio = document.getElementById('incomingCallAudio');
                 if (incomingCallAudio) {      
-                    incomingCallAudio.src = window.location.origin +"/"+ audio.path;                              
+                    incomingCallAudio.src = window.location.origin +"/"+ audioConfig.path;                              
                     incomingCallAudio.load();
                     incomingCallAudio.play();  
                 }
+
+              
+                setTimeout(() => {
+                    this.playIncomingCallAudio(audioConfig, remainingPlays - 1);
+                    console.log("replaying IncomingCallAudio")
+                }, 3000); // Delay of 1000 milliseconds (1 second)
             },
             openSelfWindow(channelid) {
                 window.location.href = window.location.origin + "/webRTC?roomid="+ channelid

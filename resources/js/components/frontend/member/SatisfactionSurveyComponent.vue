@@ -10,7 +10,12 @@
 
         <div class="info-container">
             <h5 class="text-maroon">Lesson Satisfaction Survey</h5>        
-            <h6 class="font-weight-bold"> 必ず満足度（★）を入力してください </h6>
+            <h6 class="font-weight-bold"> 
+                (★) 満足度評価ご入力ありがとうございました
+
+                受講いただきありがとうございました。よろしければ
+                「アンケート」に答えていただけますと幸いです。（ご希望の方のみ）             
+            </h6>
             <hr/>
         </div>
 
