@@ -100,6 +100,8 @@
                 </div>
             </div>
         </div>
+
+
         <div class="thankyou-container" v-if="showEndPage == true">
 
             <div class="my-4">
@@ -178,20 +180,17 @@ export default {
         exitSurvey() {            
             window.location.href = this.getBaseURL('home');
         },
+        
         showSatisfactionSurveyModal(reservationData) 
         {
-            /** 
-                @todo:  reverify if show ratings for is still not added
-                //for back or refreshed and cached page.
-            **/
             this.reservationData = reservationData;
             this.showRatingsForm();
             this.$refs['ratingAndFeedBack'].show();            
         },
-        showThankYou() {
+        showThankYou(reservationData) {
+            this.reservationData = reservationData;
             this.showEndPage = true;
             this.$refs.ratingAndFeedBack.show();
-            console.log(this.showEndPage);
         },
         showRatingsForm() {
             this.showRatings = true,

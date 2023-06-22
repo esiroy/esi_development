@@ -281,8 +281,11 @@
                         this.$refs['NavigationMenu'].stopTimer(); 
                         this.$refs['NavigationMenu'].disableNavigationMenu();
                         this.isLessonCompleted = true;
-                        this.$refs['satisfactionSurvey'].showSatisfactionSurveyModal(this.reservation);
+                       // this.$refs['satisfactionSurvey'].showSatisfactionSurveyModal(this.reservation);
                         $("#destroy-session-media").trigger("click");     
+
+                        this.$refs['satisfactionSurvey'].showThankYou(this.reservation);
+                        
 
                     } else {
                         console.log("channel not found");

@@ -90,8 +90,7 @@ if (url[1] === 'admin') {
             break;
         default:
             Vue.component('member-floating-chat-component', require('./components/frontend/chat/MemberFloatingChatComponent.vue').default);
-
-            Vue.component('member-unrated-lessons-component', require('./components/frontend/member/UnratedLessonComponent.vue').default);
+            //Vue.component('member-unrated-lessons-component', require('./components/frontend/member/UnratedLessonComponent.vue').default);
 
     }
 }

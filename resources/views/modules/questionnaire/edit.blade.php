@@ -170,16 +170,20 @@
                                         </tr>
 
 
+                                        <!-- ['satisfaction rating--]
+                                         @php /**
                                         <tr>
                                             <td colspan="4">
                                                 Satisfaction Rating:
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colspan="4">
-                                               <x-satisfaction-ratings :rating="$rating" ></x-satisfaction-ratings>  
+                                            <td colspan="4">                                               
+                                                <x-satisfaction-ratings :rating="$rating" ></x-satisfaction-ratings>  
                                             </td>
                                         </tr>
+                                        */ @endphp
+                                          -->
 
                                         <tr>
                                             <td colspan="4">

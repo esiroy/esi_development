@@ -277,11 +277,17 @@
                     csrf_token="{{ csrf_token() }}"/>
                 </member-caller-component>
 
-               <member-unrated-lessons-component 
-                    :user_id="{{ Auth::user()->id  }}"  
-                    api_token="{{ Auth::user()->api_token }}" 
-                    csrf_token="{{ csrf_token() }}">
-                </member-unrated-lessons-component>
+                @php
+                /**
+                    <!--
+                    <member-unrated-lessons-component 
+                        :user_id="{{ Auth::user()->id  }}"  
+                        api_token="{{ Auth::user()->api_token }}" 
+                        csrf_token="{{ csrf_token() }}">
+                    </member-unrated-lessons-component>
+                    -->
+                */
+                @endphp
                 
             </div>
         </main>
