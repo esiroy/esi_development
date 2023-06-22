@@ -4,20 +4,10 @@
         <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-backdrop  no-close-on-esc  hide-header-close>
             <template #modal-header>
             <div class="mx-auto">
-                <h4 class="text-center text-white">Lesson Satisfaction Survey</h4>
+                <h4 class="text-center text-white">受講いただきありがとうございました。</h4>
             </div>           
         </template> 
-
-        <div class="info-container">
-            <h5 class="text-maroon">Lesson Satisfaction Survey</h5>        
-            <h6 class="font-weight-bold"  v-if="showEndPage == false"> 
-                必ず満足度（★）を入力してください 
-            </h6>
-            <h6 class="font-weight-bold"  v-if="showEndPage == true"> 
-                (★) 満足度評価ご入力ありがとうございました
-            </h6>            
-            <hr/>
-        </div>
+       
 
         <div class="ratings-form-container" v-if="showEndPage == false">
      
@@ -101,14 +91,15 @@
             </div>
         </div>
 
-
+    
         <div class="thankyou-container" v-if="showEndPage == true">
 
             <div class="my-4">
                 受講いただきありがとうございました。よろしければ
                    
                 <div class="d-inline" v-if="this.reservationData.schedule_id">
-                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケート」</a> に答えていただけますと幸いです。（ご希望の方のみ）
+                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケート」</a> 
+                    に答えていただけますと幸いです。（ご希望の方のみ）
                 </div> 
                 
             </div>
