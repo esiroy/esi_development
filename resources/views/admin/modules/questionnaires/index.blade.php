@@ -79,16 +79,30 @@
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q3</th>
                                             <th class="small text-center bg-light text-dark font-weight-bold">Q4</th>
 
+                                            <!--
+                                            @php /**
                                             <th class="small text-center bg-light text-dark font-weight-bold">Stars Rating</th>
+                                            */
+                                            @endphp
+                                            -->
+
                                             <th class="small text-center bg-light text-dark font-weight-bold">Remarks</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    @foreach($questionnaires as $questionnaire)
+                                        
+                                        @php
 
 
-                                        @foreach($questionnaires as $questionnaire)
+                                            $questionnaireItems = $questionnaire->questionnaireItems->where('valid', true);
 
-                                            @php
+                                            $questionnaireItem1 = $questionnaireItems->where('question', 'QUESTION_1')->where('valid', true)->first();
+                                            $questionnaireItem2 = $questionnaireItems->where('question', 'QUESTION_2')->where('valid', true)->first();
+                                            $questionnaireItem3 = $questionnaireItems->where('question', 'QUESTION_3')->where('valid', true)->first();
+                                            $questionnaireItem4 = $questionnaireItems->where('question', 'QUESTION_4')->where('valid', true)->first();
+                                        
+
                                             //Get and Assign Stars Raiting
                                             $starsRating = null;
 
@@ -97,11 +111,15 @@
                                             
                                             $satisfactionSurvey = $satisfactionSurveyObj->where('schedule_id', $questionnaire->schedule_item_id)->first();
 
-                                            if ($satisfactionSurvey) {
+                                            if ($satisfactionSurvey) 
+                                            {
 
                                                 $satisfactionSurveyDetailObj = new \App\Models\SatisfactionSurveyDetails();
-                                                 
-                                                $satisfactionSurveyDetails = $satisfactionSurveyDetailObj->where('lesson_survey_id', $satisfactionSurvey->id)->where('name', 'teacher_performace_rating')->first();
+                                                    
+                                                $satisfactionSurveyDetails = $satisfactionSurveyDetailObj
+                                                                                ->where('lesson_survey_id', $satisfactionSurvey->id)
+                                                                                ->where('name', 'teacher_performace_rating')
+                                                                                ->first();
 
                                                     if ($satisfactionSurveyDetails) {
                                                         //assign the stars
@@ -109,6 +127,8 @@
                                                     }
                                             }
                                         @endphp
+
+
                                         <tr>
                                            
                                             <td id="{{ $questionnaire->id }}" class="small text-center bg-light text-dark font-weight-bold">
@@ -129,9 +149,7 @@
                                                     {{ date("H:i", strtotime($questionnaire->lesson_time)) }}
                                                 @endif        
                                             </td>
-                                           
 
-                                          
                                             <td class="small text-center">
                                                 @php
                                                 $member = \App\Models\Member::where('user_id', $questionnaire->member_id)->first()
@@ -147,12 +165,6 @@
                                                 {{ $tutor->user->firstname ?? "" }}                                                
                                             </td>
 
-                                            @php
-                                                $questionnaireItem1 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_1')->where('valid', true)->first();
-                                                $questionnaireItem2 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_2')->where('valid', true)->first();
-                                                $questionnaireItem3 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_3')->where('valid', true)->first();
-                                                $questionnaireItem4 = \App\Models\QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', 'QUESTION_4')->where('valid', true)->first();
-                                            @endphp
 
                                             <td class="question_1">
                                                 {{ $questionnaireItem1->grade ?? '' }}
@@ -166,7 +178,10 @@
                                             <td class="question_1">
                                                 {{ $questionnaireItem4->grade ?? '' }}
                                             </td>
-                                             <td class="small text-center" style="width:300px">
+                                            <!--
+                                            @php /*
+                                            <td class="small text-center" style="width:300px">
+
                                                 @for ($count = 0; $count < $starsRating; $count++)
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" class="bi bi-star-fill" viewBox="0 0 16 16">
                                                     <path fill="#FFAE42" stroke="none" d="M8 0l2.47 5.03 5.53.8-3.99 3.89.94 5.51L8 12.52l-4.95 2.61.94-5.51L0 5.83l5.53-.8L8 0z"/>
@@ -174,9 +189,12 @@
                                                 @endfor
                                                 
                                             </td>
+                                            */
+                                            @endphp
+                                            -->
                                             <td class="small text-center" style="width:300px">{{ $questionnaire->remarks }}</td>
                                         </tr>
-                                        @endforeach
+                                    @endforeach
                                     </tbody>
                                 </table>
 

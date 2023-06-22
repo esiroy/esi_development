@@ -36,20 +36,30 @@ class QuestionnaireController extends Controller
         if (isset($request->date_from) && isset($request->date_to)) 
         {
 
-            $dateFrom = date('Y-m-d', strtotime($request['date_from']));
-            $dateTo = date('Y-m-d', strtotime($request['date_to']));            
-
+            $dateFrom = date('Y-m-d 00:00:00', strtotime($request->date_from));
+            $dateTo = date('Y-m-d 23:59:59', strtotime($request->date_to)); 
+           
             $questionnaires = Questionnaire::whereBetween('schedule_item.lesson_time', [$dateFrom, $dateTo])
-                                ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
-                                ->select('schedule_item.lesson_time', 'questionnaire.*');
+                ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                ->leftJoin('questionnaire_item', 'questionnaire.id', '=', 'questionnaire_item.questionnaire_id')
+                ->whereNotNull('questionnaire_item.id') // Only include if there is a questionnaire_item
+                ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
+
+                                     
 
         } else {            
-            $questionnaires = Questionnaire::orderBy('questionnaire.id', 'ASC')
-                            ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
-                            ->select('schedule_item.lesson_time', 'questionnaire.*');
+
+
+            $questionnaires = Questionnaire::join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                ->leftJoin('questionnaire_item', 'questionnaire.id', '=', 'questionnaire_item.questionnaire_id')
+                ->whereNotNull('questionnaire_item.id') // Only include if there is a questionnaire_item
+                ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
+
+
+
         }        
 
-        $questionnaires = $questionnaires->orderBy('schedule_item.lesson_time', 'DESC');
+        $questionnaires = $questionnaires->groupBy('id')->orderBy('schedule_item.lesson_time', 'DESC');
         $questionnaires = $questionnaires->paginate($items_per_page);
 
         
