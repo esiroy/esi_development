@@ -14,7 +14,6 @@
   
         <template #default>
 
-
             <div class="info-container">
                 <h5 class="text-maroon">Lesson Satisfaction Survey</h5>        
                 <h6 class="font-weight-bold"> 必ず満足度（★）を入力してください </h6>
@@ -22,7 +21,7 @@
             </div>
 
 
-        <ul class="esi-listings">
+            <ul class="esi-listings">
 
                 <div v-if="showMessage" class="alert alert-success">
                     <i class="fas fa-check-circle"></i>

@@ -46,7 +46,29 @@
                                 </div>                            
                             </div>
                             <div class="col-7"> 
-                                <star-rating v-model="teacherPerformanceRating" v-bind:show-rating="false" v-bind:star-size="30" v-bind:animate="true" v-bind:padding="5"></star-rating>  
+
+                                <ul class="esi-listings">
+
+                                  <transition-group name="fade">
+
+                                    <li class="hover-list-item" :key="1">
+
+                                        <div class="hover-info">
+                                            <div class="small text-success text-left">
+                                                <span class="info-text small font-weight-bold">★を左から右に移動すると評価が上がります  (評価は受講歴から変更可能です）</span>
+                                            </div>
+                                        </div>
+
+                                        <star-rating v-model="teacherPerformanceRating" 
+                                        v-bind:show-rating="false"
+                                        v-bind:star-size="30" 
+                                        v-bind:animate="true" 
+                                        v-bind:padding="5"></star-rating>
+                                    </li>
+
+                                     </transition-group>
+                                </ul>
+
                             </div>                
                         </div>                   
                     </div>
@@ -84,7 +106,7 @@
                 受講いただきありがとうございました。よろしければ
                    
                 <div class="d-inline" v-if="this.reservationData.schedule_id">
-                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケート」に答えていただけますと幸いです。（ご希望の方のみ）</a>
+                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケート」</a> に答えていただけますと幸いです。（ご希望の方のみ）
                 </div> 
                 
             </div>
@@ -101,23 +123,6 @@
     </b-modal>
 
 </template>
-
-
-
-<style scoped>
-    .error-message { 
-        vertical-align: text-bottom;
-    }
-
-    .title {
-        min-height: 40px;
-        display: flex;
-        align-items: center;
-        font-weight: bold;
-    }
-
-</style>
-
 
 <script>
 import StarRating from 'vue-star-rating'
@@ -268,3 +273,52 @@ export default {
     }    
 }
 </script>
+
+
+
+<style scoped>
+
+    .error-message { 
+        vertical-align: text-bottom;
+    }
+
+    .title {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    h1 { color: #333; }
+    ul { list-style-type: none; }
+    li { margin-bottom: 10px;}
+
+    .esi-listings {  
+        /*height: 30px;      */
+        padding: 0;    
+    }
+
+
+    .hover-list-item {
+        background-color: rgb(150 222 253 / 10%);
+        border-radius: 12px;
+        border: 3px solid #cccccc2b;
+        padding: 15px 0px 30px 20px;         
+    }
+
+    .hover-list-item        .hover-info .info-text{ visibility: hidden; }
+    .hover-list-item:hover  .hover-info .info-text{ visibility: visible }
+
+    .fade-enter-active,
+    .fade-leave-active {
+        background-color: rgba(0, 255, 51, 0.150);
+        transition: opacity 0.5s ease-out;
+    }
+
+    .fade-enter,
+    .fade-leave-to {
+        background-color: rgba(0, 255, 51, 0.400);
+        opacity: 0;
+    }    
+
+</style>
