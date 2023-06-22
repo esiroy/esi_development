@@ -1181,7 +1181,8 @@
                 if (this.$props.is_broadcaster == true) {
                     this.showMemberFeedbackModal();
                 } else {
-                    this.showSatisfactionSurveyModal();
+                    //this.showSatisfactionSurveyModal();
+                    this.$refs['satisfactionSurvey'].showThankYou(this.reservation);
                 }               
             },
             showMemberFeedbackModal() {       
