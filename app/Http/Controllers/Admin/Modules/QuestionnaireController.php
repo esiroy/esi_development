@@ -42,7 +42,10 @@ class QuestionnaireController extends Controller
             $questionnaires = Questionnaire::whereBetween('schedule_item.lesson_time', [$dateFrom, $dateTo])
                 ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
                 ->leftJoin('questionnaire_item', 'questionnaire.id', '=', 'questionnaire_item.questionnaire_id')
-                ->whereNotNull('questionnaire_item.id') // Only include if there is a questionnaire_item
+                ->where(function ($query) {
+                    $query->whereNotNull('questionnaire.remarks')
+                        ->orWhereNotNull('questionnaire_item.id');
+                })
                 ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
 
                                      
@@ -52,7 +55,10 @@ class QuestionnaireController extends Controller
 
             $questionnaires = Questionnaire::join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
                 ->leftJoin('questionnaire_item', 'questionnaire.id', '=', 'questionnaire_item.questionnaire_id')
-                ->whereNotNull('questionnaire_item.id') // Only include if there is a questionnaire_item
+                ->where(function ($query) {
+                    $query->whereNotNull('questionnaire.remarks')
+                        ->orWhereNotNull('questionnaire_item.id');
+                })
                 ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
 
 
