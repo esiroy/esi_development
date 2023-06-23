@@ -34,25 +34,56 @@
                 <div class="card-body">
 
                     <!--Search-->
-                    <div class="row">
-                        <form class="form-inline" style="width:100%" method="GET">
+                    <form  style="width:100%" method="GET">
+                        <div class="row form-inline">
+                        
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="date_from" class="small col-4">From:</label>
+                                        <input id="date_from" required name="date_from" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label for="date_to" class="small col-4">To:</label>
+                                        <input id="date_to" required name="date_to" type="date" data-date-format="YYYY年 M月 DD日" 
+                                        class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_to') ? request()->get('date_to') : '' }}">
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
+                                </div>
+                            
+                        </div>
+                        <div class="row mt-2 form-inline">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <label for="date_from" class="small col-4">From:</label>
-                                    <input id="date_from" required name="date_from" type="date" data-date-format="YYYY年 M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_from') ? request()->get('date_from') : '' }}">
+                                    <label for="date_from" class="small col-4">Tutor:</label>
+
+                                    <select name="tutorID" class="form-control form-control-sm col-8">
+                                        <option value="">Select Tutor</option>
+                                        @foreach ($tutorList as $tutor)
+                                            <option value="{{$tutor->user_id}}" {{ $tutor->user_id == request()->get('tutorID') ? 'selected' : '' }}>{{$tutor->firstname}}</option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
+                            </div>     
                             <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="date_to" class="small col-4">To:</label>
-                                    <input id="date_to" required name="date_to" type="date" data-date-format="YYYY年  M月 DD日" class="inputDate form-control form-control-sm col-8" value="{{ request()->has('date_to') ? request()->get('date_to') : '' }}">
+                                <div class="form-group" >
+                                    <label for="date_from" class="small col-4">Member:</label>
+
+                                    <select name="memberID" class="form-control form-control-sm col-8">
+                                        <option value="">Select Member</option>
+                                        @foreach ($memberList as $member)
+                                            <option value="{{$member->user_id}}" {{ $member->user_id == request()->get('memberID') ? 'selected' : '' }}>
+                                                {{$member->lastname }}, {{$member->firstname}}
+                                            </option>
+                                        @endforeach
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
-                                <button type="submit" class="btn btn-primary btn-sm col-1 ml-1">Go</button>
-                            </div>
-                        </form>
-                    </div>
+                            </div>                                              
+                        </div>
+                    </form>
 
                     <!-- Gemerate -->
 

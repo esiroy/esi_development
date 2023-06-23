@@ -25,13 +25,16 @@ class QuestionnaireController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, Tutor $tutors, Member $members)
     {
     
 
         abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $items_per_page = Auth::user()->items_per_page;        
+
+        $tutorList = $tutors->getTutors();
+        $memberList = $members->getMembers();
 
         if (isset($request->date_from) && isset($request->date_to)) 
         {
@@ -47,9 +50,6 @@ class QuestionnaireController extends Controller
                         ->orWhereNotNull('questionnaire_item.id');
                 })
                 ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
-
-                                     
-
         } else {            
 
 
@@ -60,17 +60,23 @@ class QuestionnaireController extends Controller
                         ->orWhereNotNull('questionnaire_item.id');
                 })
                 ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
-
-
-
         }        
+
+
+        if (isset($request->memberID)) {
+            $questionnaires = $questionnaires->where('questionnaire.member_id',  $request->memberID);
+        }
+
+        if (isset($request->tutorID)) {
+            $questionnaires = $questionnaires->where('questionnaire.tutor_id',  $request->tutorID);
+        }
 
         $questionnaires = $questionnaires->groupBy('id')->orderBy('schedule_item.lesson_time', 'DESC');
         $questionnaires = $questionnaires->paginate($items_per_page);
 
         
 
-        return view('admin.modules.questionnaires.index', compact('questionnaires'));
+        return view('admin.modules.questionnaires.index', compact('questionnaires', 'tutorList', 'memberList'));
     }
 
     /**
