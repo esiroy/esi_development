@@ -33,8 +33,8 @@ class QuestionnaireController extends Controller
 
         $items_per_page = Auth::user()->items_per_page;        
 
-        $tutorList = $tutors->getTutors();
-        $memberList = $members->getMembers();
+        $tutorList = $tutors->getActiveTutors();
+        $memberList = $members->getActiveMembers();
 
         if (isset($request->date_from) && isset($request->date_to)) 
         {

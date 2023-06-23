@@ -14,12 +14,13 @@ class Member extends Model
 
     protected $guarded = array('created_at', 'updated_at');
 
-    public function getMembers() {
+    public function getActiveMembers() {
     
        $members = $this->join('users', 'users.id', '=', 'members.user_id')
        ->orderBy('lastname', 'ASC')
        ->select('members.*', 'users.firstname', 'users.lastname', 'users.valid')
-       ->where('valid', 1)
+       ->where('users.is_activated', true)
+       ->where('users.valid', 1)
        ->get();
 
        return $members;    
