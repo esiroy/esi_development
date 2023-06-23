@@ -51,12 +51,10 @@ class Tutor extends Model
        ->join('users', 'users.id', '=', 'tutors.user_id')
        ->orderBy('sort', 'ASC')
        ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
-
-        ->where('users.is_activated', true)      
         ->where('users.valid', 1)
         ->where('tutors.is_terminated', false)
         ->get();
-        
+
        return $tutors;
     }
 
