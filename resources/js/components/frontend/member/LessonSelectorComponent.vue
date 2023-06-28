@@ -10,152 +10,161 @@
 				</div>
 			</template>
 
-			<!--[start] Breadcrumbs-->
-			<div class="row">				
-				<div class="col-12 mb-2">
-					<div class="bg-light p-2">
-						<!--[start] All Categories -->
-						<a :href="'#all'" @click.prevent="showAllFolder()">
-							<span class="text-primary small">All Categories</span>
-						</a>
-						<span class="text-secondary" v-show="urlArray.length >= 1"> {{ " > " }} </span>
-						<!--[end] All Categories -->
-
-						<!--[start] List Of Categories -->
-						<span v-for="(segment, index) in urlArray" :key="'url-'+index">
-							<a :href="'#'+segment.folder_name" @click.prevent="jumpToFolder(segment, index)" >
-								<span class="text-primary small">{{ segment.formatted_folder_name }}</span>
-							</a>
-							<span class="text-secondary"  v-if="index >= 0 && index < (urlArray.length -1 ) "> {{ " > " }} </span>
-						</span>	
-						<!--[end] List Of Categories -->
-
-					</div>
-				</div>				
+			<div class="loader text-center" v-show="isloadingCategories">
+				<div class="spinner-grow text-primary" role="status">
+				<span class="sr-only">Loading...</span>
+				</div>
+				<div class="spinner-grow text-secondary" role="status">
+				<span class="sr-only">Loading...</span>
+				</div>
+				<div class="spinner-grow text-success" role="status">
+				<span class="sr-only">Loading...</span>
+				</div>
 			</div>
-			<!--[end] Breadcrumbs-->
+			<div class="main-content" v-show="!isloadingCategories">		
 
-			<!--[start] Lesson List -->
-			<div id="lesson-list" v-if="lessonRows >= 1" class="row mb-2">
 
-				<div id="lessons-container" class="col-12">
+				<!--[start] Breadcrumbs-->
+				<div class="row">				
+					<div class="col-12 mb-2">
+						<div class="bg-light p-2">
+							<!--[start] All Categories -->
+							<a :href="'#all'" @click.prevent="showAllFolder()">
+								<span class="text-primary small">All Categories</span>
+							</a>
+							<span class="text-secondary" v-show="urlArray.length >= 1"> {{ " > " }} </span>
+							<!--[end] All Categories -->
 
-					<fieldset class="border p-2">	
+							<!--[start] List Of Categories -->
+							<span v-for="(segment, index) in urlArray" :key="'url-'+index">
+								<a :href="'#'+segment.folder_name" @click.prevent="jumpToFolder(segment, index)" >
+									<span class="text-primary small">{{ segment.formatted_folder_name }}</span>
+								</a>
+								<span class="text-secondary"  v-if="index >= 0 && index < (urlArray.length -1 ) "> {{ " > " }} </span>
+							</span>	
+							<!--[end] List Of Categories -->
 
-						<legend class="w-auto small font-weight-bold text-secondary">Lessons</legend>
+						</div>
+					</div>				
+				</div>
+				<!--[end] Breadcrumbs-->
 
-					
-						<div id="lessons" class="accordion">
-							<b-table id="lesson-table" ref="lesson-table" 
-								:items="lessons" 							
-								:fields="fields"                                                
-								:per-page="perPage"
-								:current-page="currentPage"
-								:striped="false"
-								:hover="true"							
-								:outlined="true"
-								:class="'no-padding'"
-								no-header
-								thead-class="hidden_header"
-								borderless>
-								
-								<template #cell(actions)="row">
-									<b-card no-body>
-										<b-card-header header-tag="header" class="p-0" role="tab">
-											<b-button-group block class="w-100">        
-												<b-button block variant="primary" @click="getLessonImages(row.index, row.item.id)">
-													<span v-ucwords>{{ row.item.folder_name }}</span>
-												</b-button>
-												<b-button variant="success" size="sm" class="w-25" @click.prevent="selectNewLesson(row.item.id)">                                                               
-													<div class="small text-center"> Select Lesson</div>              
-												</b-button>                                                                    
-											</b-button-group>
-										</b-card-header>                                                                
-										<b-collapse v-model="isCollapsed[row.index]" :id="'accordion-'+row.index">
-											<b-card-body>
-												<div class="loader text-center" v-show="isloadingImages">
-													<div class="spinner-grow text-primary" role="status">
-													<span class="sr-only">Loading...</span>
-													</div>
-													<div class="spinner-grow text-secondary" role="status">
-													<span class="sr-only">Loading...</span>
-													</div>
-													<div class="spinner-grow text-success" role="status">
-													<span class="sr-only">Loading...</span>
-													</div>
-												</div>
-												<div class="content" v-show="!isloadingImages">
-													<div class="row" v-if="folder_images[row.index]">
-														<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" 
-																:key="'folder_images_'+row.index+'_'+imageIndex">
-															<img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(getBaseURL(images.path))">   
+				<!--[start] Lesson List -->
+				<div id="lesson-list" v-if="lessonRows >= 1" class="row mb-2">
+					<div id="lessons-container" class="col-12">
+						<fieldset class="border p-2">	
+							<legend class="w-auto small font-weight-bold text-secondary">Lessons</legend>					
+							<div id="lessons" class="accordion">
+								<b-table id="lesson-table" ref="lesson-table" 
+									:items="lessons" 							
+									:fields="fields"                                                
+									:per-page="perPage"
+									:current-page="currentPage"
+									:striped="false"
+									:hover="true"							
+									:outlined="true"
+									:class="'no-padding'"
+									no-header
+									thead-class="hidden_header"
+									borderless>
+									
+									<template #cell(actions)="row">
+										<b-card no-body>
+											<b-card-header header-tag="header" class="p-0" role="tab">
+												<b-button-group block class="w-100">        
+													<b-button block variant="primary" @click="getLessonImages(row.index, row.item.id)">
+														<span v-ucwords>{{ row.item.folder_name }}</span>
+													</b-button>
+													<b-button variant="success" size="sm" class="w-25" @click.prevent="selectNewLesson(row.item.id)">                                                               
+														<div class="small text-center"> Select Lesson</div>              
+													</b-button>                                                                    
+												</b-button-group>
+											</b-card-header>                                                                
+											<b-collapse v-model="isCollapsed[row.index]" :id="'accordion-'+row.index">
+												<b-card-body>
+													<div class="loader text-center" v-show="isloadingImages">
+														<div class="spinner-grow text-primary" role="status">
+														<span class="sr-only">Loading...</span>
+														</div>
+														<div class="spinner-grow text-secondary" role="status">
+														<span class="sr-only">Loading...</span>
+														</div>
+														<div class="spinner-grow text-success" role="status">
+														<span class="sr-only">Loading...</span>
 														</div>
 													</div>
-												</div>											
-											</b-card-body>
-										</b-collapse>
-									</b-card>
-								</template>
-							</b-table>					
-							<div class="mt-3">    
-								<b-pagination 
-									v-model="currentPage" 
-									:total-rows="lessonRows" 
-									:per-page="perPage" 
-									:limit="5"
-									@input="clearFolderImages"
-									aria-controls="lesson-listings"
-									>
-								</b-pagination>
+													<div class="content" v-show="!isloadingImages">
+														<div class="row" v-if="folder_images[row.index]">
+															<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" 
+																	:key="'folder_images_'+row.index+'_'+imageIndex">
+																<img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(getBaseURL(images.path))">   
+															</div>
+														</div>
+													</div>											
+												</b-card-body>
+											</b-collapse>
+										</b-card>
+									</template>
+								</b-table>					
+								<div class="mt-3">    
+									<b-pagination 
+										v-model="currentPage" 
+										:total-rows="lessonRows" 
+										:per-page="perPage" 
+										:limit="5"
+										@input="clearFolderImages"
+										aria-controls="lesson-listings"
+										>
+									</b-pagination>
+								</div>
 							</div>
-						</div>
-
-					</fieldset>
-				</div>
-				
-			</div>
-			<!--[end] Lesson List -->
-
-			<!--[start] Category List -->
-			<fieldset class="border p-2" v-if="folderCategories.length >= 1">			
-	
-				<!--<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length == 0">Categories</legend>
-				<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length >= 1">SubCategories</legend>-->
-
-				<legend class="w-auto small font-weight-bold">Categories</legend>
-
-				<div id="categories-list" class="row">			
-					<div id="parent-categories" v-for="(category, index) in folderCategories" :key="index" 
-						class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer" >
-
-						<div :id="'category-' + category.id" class="card text-white mb-2" v-b-tooltip.hover target="'#category-' + category.id" @click="viewFolder(category)">
-							<div class="card-header bg-primary text-ellipsis">
-								{{ category.formatted_folder_name }}
-							</div>
-							<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
-								<p class="card-text min-height">
-									<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
-								</p>							
-							</div>						
-							<div class="card-body m-0 pt-2" v-else>
-								<!-- the subfolder (nothin should be here as requested )-->
-								{{ category.folder_description }}							
-							</div>
-						</div>
-
-						<!--[start] b-tooltip-->
-						<LessonSelectorTooltipComponent 
-							ref="LessonSelectorTooltip" 
-							:category="category"
-							:api_token="api_token" 
-							:csrf_token="csrf_token"/>				
-						<!--[end] b-tooltip-->
+						</fieldset>
 					</div>
+					
 				</div>
+				<!--[end] Lesson List -->
 
-			</fieldset>			
+				<!--[start] Category List -->
+				<fieldset class="border p-2" v-if="folderCategories.length >= 1">	
+		
+					<!--<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length == 0">Categories</legend>
+					<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length >= 1">SubCategories</legend>-->
 
-			<!--[end] Category List -->
+					<legend class="w-auto small font-weight-bold">Categories</legend>
+
+					<div id="categories-list" class="row">			
+						<div id="parent-categories" v-for="(category, index) in folderCategories" :key="index" 
+							class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer" >
+
+							<div :id="'category-' + category.id" class="card text-white mb-2" v-b-tooltip.hover target="'#category-' + category.id" @click="viewFolder(category)">
+								<div class="card-header bg-primary text-ellipsis">
+									{{ category.formatted_folder_name }}
+								</div>
+								<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
+									<p class="card-text min-height">
+										<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
+									</p>							
+								</div>						
+								<div class="card-body m-0 pt-2" v-else>
+									<!-- the subfolder (nothin should be here as requested )-->
+									{{ category.folder_description }}							
+								</div>
+							</div>
+
+							<!--[start] b-tooltip-->
+							<LessonSelectorTooltipComponent 
+								ref="LessonSelectorTooltip" 
+								:category="category"
+								:api_token="api_token" 
+								:csrf_token="csrf_token"/>				
+							<!--[end] b-tooltip-->
+						</div>
+					</div>
+
+				</fieldset>			
+
+				<!--[end] Category List -->
+			</div>
 
 		</b-modal>
 
@@ -213,7 +222,9 @@ export default {
 
 			currentSelectedCategory: null,
 
+			isloadingCategories: false,
 			isloadingImages: false,
+			
     	}
   },
   mounted() {
@@ -301,11 +312,17 @@ export default {
 		this.$bvModal.hide("modalLessonSelection");
 	},				
     getLessonsList(selectedLessonID) {
+
+		this.isloadingCategories = true;
+
 		axios.post("/api/getLessonFolders?api_token=" + this.api_token, {
 			method: "POST",
 			folderID: selectedLessonID,
 			//public_folder_id : null,
 		}).then((response) => {
+
+			this.isloadingCategories = false;
+
 			if (response.data.success == true) {
 				this.parentID = response.data.parentID;
 				this.currentFolder = response.data.currentFolder;
