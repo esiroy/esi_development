@@ -107,11 +107,18 @@
             isTimerNegative() {
                 return this.countdownTimer.charAt(0) === '-';
             },
+            /*
             isLessThan5Seconds() {
                 const timerString = this.miniTimer.toString(); // Convert to string
                 const seconds = parseInt(timerString.split(':')[2]);
                 return (seconds > 0 && seconds <= 5);   
-            },            
+            },*/    
+            isLessThan5Seconds() {
+                const timerString = this.miniTimer.toString(); // Convert to string
+                const [hours, minutes, seconds] = timerString.split(':').map(Number);
+
+                return (hours === 0 && minutes === 0 && seconds > 0 && seconds <= 5);
+            }                    
         },  
         methods: {
             miniTimerUpdate(time) {               

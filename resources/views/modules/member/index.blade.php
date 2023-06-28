@@ -227,10 +227,13 @@
                                             ** @note: This will call tutor
                                             <a href="javascript:void(0)" class="small" onClick="window.memberCallerComponent.callTutor('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Call Teacher</a>
                                             |
+
+                                            <a href="javascript:void(0)" class="small" onClick="window.lessonSelectorComponent.selectLesson('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Select Lesson</a>
                                             */
                                             @endphp
 
-                                            <a href="javascript:void(0)" class="small" onClick="window.memberCallerComponent.selectLesson('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Select Lesson</a>
+                                            
+                                            <a href="javascript:void(0)" class="small" onClick="window.lessonSelectorComponent.showLessonSelectionModal()">Select Lesson</a>
 
                                             <div>
                                                 <a href="javascript:void(0)"  class="small" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">

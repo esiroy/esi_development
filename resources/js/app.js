@@ -90,11 +90,13 @@ if (url[1] === 'admin') {
             break;
         default:
             Vue.component('member-floating-chat-component', require('./components/frontend/chat/MemberFloatingChatComponent.vue').default);
+
             //Vue.component('member-unrated-lessons-component', require('./components/frontend/member/UnratedLessonComponent.vue').default);
 
     }
 }
 
+Vue.component('lesson-selector-component', require('./components/frontend/member/LessonSelectorComponent.vue').default);
 //Vue.component('new-lesson-slide-selector-component', require('./components/frontend/member/NewLessonSlideSelectorComponent.vue').default);
 
 Vue.component('lesson-slider-component', require('./components/frontend/member/MemberLessonSliderComponent.vue').default);

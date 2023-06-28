@@ -4,9 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Schema as Schema;
 
-
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Storage;
 
 
 use App\Models\Folder;
@@ -63,7 +62,24 @@ class dummyController extends Controller
     {
     }
 
-    public function index(Request $request, LessonHistory $lessonHistory, ScheduleItem $scheduleItem) {
+
+    public function index(Request $request) {
+    
+    
+        $filename = '1687774925_Screenshot_from_2023-06-23_19-53-04.png';
+
+
+        if (Storage::disk('thumbnails')->exists($filename)) {
+            Storage::disk('thumbnails')->delete($filename);
+            return "File deleted.";
+        } else {
+            return "File not found.";
+        }
+
+    }
+
+
+    public function NoRatings(Request $request, LessonHistory $lessonHistory, ScheduleItem $scheduleItem) {
 
         $noLessonRatings = $lessonHistory->getMemberLessonsWithNoRatings(Auth::user()->id);
 

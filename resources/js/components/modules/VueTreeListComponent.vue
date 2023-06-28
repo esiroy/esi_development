@@ -343,6 +343,7 @@
                     @show="resetModal"
                     @hidden="resetModal"
                     @ok="handleOk">
+
                     <form ref="form" @submit.stop.prevent="handleSubmit">
                         <b-form-group
                             :state="folderNameState"
@@ -425,45 +426,39 @@
 
                          
                         <div class="upload">
-                          
-                         
-                                <file-upload
-                                    name="uploadFiles"
-                                    input-id="uploadFiles"
-                                    class="btn btn-sm btn-primary"
-                                    extensions="jpeg,jpg,gif,png"
-                                    accept="image/png,image/gif,image/jpeg"
-                                    v-model="uploadFiles"
-                                    :post-action="getPostActionUrl()"
-                                    :headers="{'X-CSRF-TOKEN': this.csrf_token }"
-                                    :multiple="false"
-                                    :drop="true"
-                                    :drop-directory="true"                                   
+                            <file-upload
+                                name="uploadFiles"
+                                input-id="uploadFiles"
+                                class="btn btn-sm btn-primary"
+                                extensions="jpeg,jpg,gif,png"
+                                accept="image/png,image/gif,image/jpeg"
+                                v-model="uploadFiles"
+                                :post-action="getPostActionUrl()"
+                                :headers="{'X-CSRF-TOKEN': this.csrf_token }"
+                                :multiple="false"
+                                :drop="true"
+                                :drop-directory="true"                                   
 
-                                    @input="updateValue"
-                                    @input-file="inputFile"
-                                    @input-filter="inputFilter"
-                                  
-                                    ref="upload">
-                                    <i class="fa fa-plus"></i>
-                                    Select files
-                                </file-upload>
+                                @input="updateValue"
+                                @input-file="inputFile"
+                                @input-filter="inputFilter"
+                                
+                                ref="upload">
+                                <i class="fa fa-plus"></i>
+                                Select files
+                            </file-upload>
 
-                                <button type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
-                                <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
-                                </button>
+                            <button type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                            <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
+                            </button>
 
-                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
-                                <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
-                                </button>
-
+                            <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                            <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
+                            </button>
                         </div>
-                       
-
-                        
-
 
                     </form>
+
                 </b-modal>
             </div>
 
@@ -500,6 +495,98 @@
                                 :state="folderDescriptionState"
                             ></b-form-textarea>
                         </b-form-group>
+
+                        <table class="table table-borderless table-hover">
+                            <thead v-if="uploadFiles.length">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="!uploadFiles.length">
+                                <td colspan="7" align="center">
+                                    <div class="small"> Drop files anywhere to upload thumbnial</div>
+                                    <div>or</div>
+                                    <label for="uploadFiles" class="btn btn-sm btn-primary">Select Files</label>
+                                                       
+                  
+                                </td>
+                                </tr>
+                                <tr v-for="(file, index) in uploadFiles" :key="file.id">
+                                <td>{{index + 1}}</td>
+                                <td>
+                                    <div class="filename">{{file.name}}</div>
+                                    <div class="progress" v-if="file.active || file.progress !== '0.00'">
+                                    <div
+                                        :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"
+                                        role="progressbar"
+                                        :style="{width: file.progress + '%'}"
+                                    >{{file.progress}}%</div>
+                                    </div>
+                                </td>
+                                <td>{{file.size | formatSize}}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a :class="{'dropdown-item small': true, disabled: !file.active}" href="#" @click.prevent="file.active ? $refs.upload.update(file, {error: 'cancel'}) : false">Cancel</a>
+
+                                            <a class="dropdown-item small" href="#" v-if="file.active" @click.prevent="$refs.upload.update(file, {active: false})">Abort</a>
+
+                                            <!--<a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing' && $refs.upload.features.html5" -->
+                                            <a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing'"  @click.prevent="$refs.upload.update(file, {active: true, error: '', progress: '0.00'})">Retry upload</a>
+
+                                            <a :class="{'dropdown-item small': true, disabled: file.success || file.error === 'compressing'}" href="#" 
+                                                v-else @click.prevent="file.success || file.error === 'compressing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
+                                            <div class="dropdown-divider"></div>
+
+                                            <a class="dropdown-item small" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
+                                        </div>
+                                    </div>
+
+                                </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                         
+                        <div class="upload">
+                            <file-upload
+                                name="uploadFiles"
+                                input-id="uploadFiles"
+                                class="btn btn-sm btn-primary"
+                                extensions="jpeg,jpg,gif,png"
+                                accept="image/png,image/gif,image/jpeg"
+                                v-model="uploadFiles"
+                                :post-action="getPostActionUrl()"
+                                :headers="{'X-CSRF-TOKEN': this.csrf_token }"
+                                :multiple="false"
+                                :drop="true"
+                                :drop-directory="true"                                   
+
+                                @input="updateValue"
+                                @input-file="inputFile"
+                                @input-filter="inputFilter"
+                                
+                                ref="upload">
+                                <i class="fa fa-plus"></i>
+                                Select files
+                            </file-upload>
+
+                            <button type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                            <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
+                            </button>
+
+                            <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                            <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
+                            </button>
+                        </div>
+
                     </form>
                 </b-modal>
             </div>
@@ -515,6 +602,19 @@
                     @close="closeModal"
                     @ok="handleOk"
                 >
+
+                    Current image :
+
+                    <div v-if="thumb_path !== ''">
+                        <img :src="getBaseURL(this.thumb_path)" width="250px">
+                    </div>
+
+                    <div class="invisible d-none">
+                        <div>{{ this.thumb_file_name }}</div>
+                        <div>{{ this.thumb_upload_name }}</div>
+                        <div>{{ this.thumb_path }}</div>
+                    </div>
+
                     <form ref="form" @submit.stop.prevent="handleSubmit">
                         <b-form-group
                             :state="folderNameState"
@@ -537,6 +637,99 @@
                                 :state="folderDescriptionState"
                             ></b-form-textarea>
                         </b-form-group>
+
+
+
+                        <table class="table table-borderless table-hover">
+                            <thead v-if="uploadFiles.length">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Size</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-if="!uploadFiles.length">
+                                <td colspan="7" align="center">
+                                    <div class="small"> Drop files anywhere to upload thumbnial</div>
+                                    <div>or</div>
+                                    <label for="uploadFiles" class="btn btn-sm btn-primary">Select Files</label>
+                                                       
+                  
+                                </td>
+                                </tr>
+                                <tr v-for="(file, index) in uploadFiles" :key="file.id">
+                                <td>{{index + 1}}</td>
+                                <td>
+                                    <div class="filename">{{file.name}}</div>
+                                    <div class="progress" v-if="file.active || file.progress !== '0.00'">
+                                    <div
+                                        :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"
+                                        role="progressbar"
+                                        :style="{width: file.progress + '%'}"
+                                    >{{file.progress}}%</div>
+                                    </div>
+                                </td>
+                                <td>{{file.size | formatSize}}</td>
+                                <td>
+                                    <div class="dropdown">
+                                        <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            Action
+                                        </button>
+                                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                            <a :class="{'dropdown-item small': true, disabled: !file.active}" href="#" @click.prevent="file.active ? $refs.upload.update(file, {error: 'cancel'}) : false">Cancel</a>
+
+                                            <a class="dropdown-item small" href="#" v-if="file.active" @click.prevent="$refs.upload.update(file, {active: false})">Abort</a>
+
+                                            <!--<a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing' && $refs.upload.features.html5" -->
+                                            <a class="dropdown-item small" href="#" v-else-if="file.error && file.error !== 'compressing'"  @click.prevent="$refs.upload.update(file, {active: true, error: '', progress: '0.00'})">Retry upload</a>
+
+                                            <a :class="{'dropdown-item small': true, disabled: file.success || file.error === 'compressing'}" href="#" 
+                                                v-else @click.prevent="file.success || file.error === 'compressing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
+                                            <div class="dropdown-divider"></div>
+
+                                            <a class="dropdown-item small" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
+                                        </div>
+                                    </div>
+
+                                </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <div class="upload">
+                            <file-upload
+                                name="uploadFiles"
+                                input-id="uploadFiles"
+                                class="btn btn-sm btn-primary"
+                                extensions="jpeg,jpg,gif,png"
+                                accept="image/png,image/gif,image/jpeg"
+                                v-model="uploadFiles"
+                                :post-action="getPostActionUrl()"
+                                :headers="{'X-CSRF-TOKEN': this.csrf_token }"
+                                :multiple="false"
+                                :drop="true"
+                                :drop-directory="true"                                   
+
+                                @input="updateValue"
+                                @input-file="inputFile"
+                                @input-filter="inputFilter"
+                                
+                                ref="upload">
+                                <i class="fa fa-plus"></i>
+                                Select files
+                            </file-upload>
+
+                            <button type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
+                            <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
+                            </button>
+
+                            <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                            <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
+                            </button>
+                        </div>
+
                     </form>
                 </b-modal>
             </div>
@@ -741,7 +934,7 @@ export default {
 
                 if (newFile.xhr) {
 
-                console.log(newFile.xhr.status)
+                    console.log(newFile.xhr.status)
 
                     if ( newFile.xhr.status === 200) {
 
@@ -754,8 +947,11 @@ export default {
 
                         } else if (this.FolderType == "subFolder")  {
 
-                             this.$bvModal.hide("createNewSubFolder");
+                            this.$bvModal.hide("createNewSubFolder");
 
+                        } else {
+                        
+                            this.$bvModal.hide("editFolder");
                         }
 
 
@@ -771,13 +967,15 @@ export default {
                                         'owner'       : newFile.response.owner,
                                         'notes'       : newFile.response.notes,
                                         'audioFiles'  : newFile.response.audioFiles,
+                                        'folderType'  : this.FolderType
                                     }];  
                
 
                         axios.post("/api/updateFolderThumbDetails?api_token=" + this.api_token, 
                         {
-                            method: "POST",
+                            'method'                : "POST",
                             'folderID'              : this.folderID,
+                            'folderType'            : this.FolderType,
                             'thumb_file_name'       : newFile.response.thumb_file_name,
                             'thumb_upload_name'     : newFile.response.thumb_upload_name,
                             'path'                  : newFile.response.path
@@ -785,20 +983,15 @@ export default {
                             if (response.data.success == false) {
                                 alert (response.data.message)
                             }
-                            
-                        });
-
-
-                                        
+                        });           
 
                         //remove the files
                         this.uploadFiles.splice(this.uploadFiles.findIndex(function(i){
                             return i.id === newFile.id;
                         }), 1);
 
-
                         this.uploadFiles = [];
-                                                
+                          
                     }
                 }
             }
@@ -1506,7 +1699,14 @@ export default {
                         this.thumb_path = response.data.thumb_path,
 
 						this.onChangeName(this.folderID);
-                        this.$bvModal.hide("editFolder");
+                      
+
+                        if (this.uploadFiles.length >= 1 ) {
+                            this.$refs.upload.active = true;
+                        } else {
+                            this.$bvModal.hide("editFolder");
+                        }
+
                         
                         this.$nextTick(function() {
                             

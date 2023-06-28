@@ -146,10 +146,10 @@ export default {
   },
   props: {
     csrf_token: {
-      type: String
+      'type': String
     },
     folder_id: {
-      type: String
+      'type': [Number, String]
     }
   },
   data() {

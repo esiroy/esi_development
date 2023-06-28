@@ -388,7 +388,7 @@ export default {
 			type: Boolean
         },	    
 		folder_id: {
-			type: Number
+			type: [Number, String]
 		},    
 		folder_files: {
 			type: Array

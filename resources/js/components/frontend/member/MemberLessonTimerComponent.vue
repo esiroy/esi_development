@@ -128,8 +128,9 @@ export default {
     computed: {
         isLessThan5Seconds() {    
             const timerString = this.timeRemaining.toString(); // Convert to string
-            const seconds = parseInt(timerString.split(':')[2]);
-            return (seconds > 0 && seconds <= 5);            
+            const [hours, minutes, seconds] = timerString.split(':').map(Number);
+
+            return (hours === 0 && minutes === 0 && seconds > 0 && seconds <= 5);      
         }, 
     }, 
     methods: {

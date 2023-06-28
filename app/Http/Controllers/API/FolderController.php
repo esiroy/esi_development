@@ -615,7 +615,18 @@ class FolderController extends Controller
         $folder = Folder::find($request['folderID']); 
 
         if ($folder) {
-        
+
+           
+            //@done: delete previous folder thumbnail
+            if (Storage::disk('thumbnails')->exists($folder->thumb_file_name)) {
+                Storage::disk('thumbnails')->delete($folder->thumb_file_name);                
+                $isFileDeleted = true;
+                $FileToDelete = $folder->thumb_file_name;
+            } else {
+                $isFileDeleted = false;
+                $FileToDelete = $folder->thumb_file_name;
+            }
+
             $updated = $folder->update([
                'thumb_file_name'    => $request['thumb_file_name'],
                'thumb_upload_name'  => $request['thumb_upload_name'],
@@ -623,14 +634,18 @@ class FolderController extends Controller
             ]);
 
             return Response()->json([
-                "success" => true,
-                "updated" => $updated,
+                "success"           => true,
+                "isFileDeleted"     =>  $isFileDeleted,
+                "FileToDelete"      =>  $FileToDelete,
+                "updated"           => $updated,
             ]);
 
         } else {
         
             return Response()->json([
-                "success"   => false,
+                "success"           => false,
+                "isFileDeleted"     =>  $isFileDeleted,
+                "FileToDelete"      =>  $FileToDelete,
                 "message"   => "Folder not found"
             ]);        
         }

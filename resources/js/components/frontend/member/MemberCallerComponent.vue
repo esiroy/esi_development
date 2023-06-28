@@ -1,12 +1,9 @@
 <template>
-
     <div id="caller-wrapper">
-
         <!--[start] Incoming Call -->
         <div class="container">
-            <audio id="incomingCallAudio">
-                <source src="" type="audio/mp3">
-            </audio>
+
+            <audio id="incomingCallAudio"><source src="" type="audio/mp3"></audio>
 
             <b-modal id="modal-call-alert" :title="'A tutor is inviting you for a call'" content-class="esi-modal" :header-bg-variant="headerBgVariant" no-close-on-esc no-close-on-backdrop hide-header-close>
                 <div class="row text-center" v-if="this.callReservation !== null" >                     
@@ -16,12 +13,9 @@
                             <!--  <div class="fullname">{{ this.caller.firstname + " " + this.caller.lastname }}</div>-->                            
                             <!-- Email: {{ this.caller.email }}  </div>-->
                         </div>
-
                          <img :src="this.caller.image" class="rounded-circle " width="150px">   
-                     </div>              
-                   
+                     </div>
                 </div>
-
                 <template #modal-footer>
                     <div class="container text-center">
                         <b-button variant="success" @click="acceptCall">
@@ -39,8 +33,7 @@
         <div id="select-lesson-container" class="container-fluid">
             <b-modal id="modalSelectLesson"  @show="getLessonsList" title="Select a Lesson" 
                 size="xl" header-bg-variant="primary" header-text-variant="white" 
-                hide-footer no-close-on-esc
-            > 
+                hide-footer no-close-on-esc> 
 
                 <div v-if="hasSelected == true">
                     <div class="alert alert-success" role="alert">
@@ -75,6 +68,7 @@
                     </div>
 
                     <div id="ui-search-folders" class="container">
+
                         <div id="slideSelection" v-if="isSearching == false">
 
                             <div id="lesson-instructions" class="row mb-2">
@@ -100,6 +94,8 @@
                             <div v-if="currentFolder !== null">
                                 <!--[start] Lesson Card -->
                                 <div class="card">
+
+
 
                                     <!--[start] Preview Images -->
                                     <!--
@@ -241,6 +237,9 @@
 
                             <!-- Categories -->
                             <div class="mt-3" v-if="folderCategories.length >= 1">
+
+
+
                                 <fieldset class="border p-2">
 
                                     <legend  class="w-auto text-primary">
@@ -257,10 +256,14 @@
                                                     </span>
                                                 </div>
                                                 <div class="card-body card-body-minimum">
+                                                   {{ "subcategory counter" + category.subcategoryCounter }}
+
                                                     <p class="card-text small">
                                                         {{ category.folder_description }}
                                                     </p>
                                                 </div>
+
+
                                             </div>
                                         </div>
                                     </div>
@@ -354,17 +357,6 @@
                 </div>
             </b-modal>
         </div>
-
-        <!--
-        <div id="image-viewer-container" class="container-fluid">
-            <b-modal id="modalImageViewer"  title="Image Preview" ok-only>
-                <div v-if="imageURL !== null">
-                    <img :src="imageURL" class="img-fluid">
-                </div>
-            </b-modal>
-        </div>
-        -->
-        
     </div>
 
 
