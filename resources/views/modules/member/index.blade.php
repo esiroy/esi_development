@@ -233,7 +233,7 @@
                                             @endphp
 
                                             
-                                            <a href="javascript:void(0)" class="small" onClick="window.lessonSelectorComponent.showLessonSelectionModal()">Select Lesson</a>
+                                            <a href="javascript:void(0)" class="small" onClick="window.lessonSelectorComponent.showLessonSelectionModal('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">Select Lesson</a>
 
                                             <div>
                                                 <a href="javascript:void(0)"  class="small" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">

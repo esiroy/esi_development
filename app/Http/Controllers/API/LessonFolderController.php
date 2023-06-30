@@ -203,19 +203,22 @@ class LessonFolderController extends Controller
             $keyword = $request->searchKeyword;
         
             $folders = $folder
-                    ->where('folder_name', 'LIKE', '%'.$keyword.'%')
-                    ->orWhere('folder_description', 'LIKE', '%'.$keyword.'%')
+                ->select('folder_name', 'folder_description', 'order_id')
+                ->selectRaw('UCASE(folder_name) as formatted_folder_name') // Use UCASE to format folder_name with ucfirst
+                ->where('folder_name', 'LIKE', '%'.$keyword.'%')
+                ->orWhere('folder_description', 'LIKE', '%'.$keyword.'%')
+                ->orWhere('folder_name', $keyword)
+                ->orWhere('folder_description', $keyword)
+                ->orderBy('order_id', 'ASC')->get();
 
-                    ->orWhere('folder_name', $keyword)
-                    ->orWhere('folder_description', $keyword)
-
-                    ->orderBy('order_id', 'ASC')->get();
 
             if ($folders) {
+
                 return Response()->json([
                     "success"       => true,
                     "folders"       => $folders,            
                 ]); 
+
             } else {
                 return Response()->json([
                     "success"       => false,

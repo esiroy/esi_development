@@ -53,7 +53,8 @@ class LessonSlideMaterials extends Controller
 
     
     //@description: determine if the user pre-selected a lesson
-    public function getMemberLessonSelected(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) {
+    public function getMemberLessonSelected(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) 
+    {
 
         $userID             = $request->userID;
         $lessonScheduleID   = $request->lessonID;
@@ -62,9 +63,14 @@ class LessonSlideMaterials extends Controller
         
         if ($memberSelectedLesson) {
 
+            $selectedFiles  = File::where('folder_id', $memberSelectedLesson->folder_id)->orderBy('order_id', 'ASC')->get();
+            $selectedfolder = Folder::where('id', $memberSelectedLesson->folder_id)->first();       
+
             return Response()->json([
                 "success"                => true,
                 "memberSelectedLesson"   => $memberSelectedLesson,
+                "selectedfolder"         => $selectedfolder,
+                "selectedFiles"          => $selectedFiles,
                 "message"                => "Member selected Lesson Material has been successfully fetched"
             ]); 
 
@@ -73,6 +79,8 @@ class LessonSlideMaterials extends Controller
             return Response()->json([
                 "success"                => false,
                 "memberSelectedLesson"   => $memberSelectedLesson, 
+                "selectedfolder"         => null,
+                "selectedFiles"          => null,
                 "message"                => "Member Selected Lesson Material not found"
             ]); 
 
@@ -557,16 +565,22 @@ class LessonSlideMaterials extends Controller
         $lessonScheduleID   = $request->lessonID;
         $folderID           = $request->folderID;
 
-        if ($folderID) 
-        {
+        if ($folderID) {
 
-            $memberSelectedLessonSlideMaterial->saveSelectedLesson($userID, $lessonScheduleID, $folderID);   
+            $memberSelectedLesson = $memberSelectedLessonSlideMaterial->saveSelectedLesson($userID, $lessonScheduleID, $folderID);   
+
+            if ($memberSelectedLesson) {
+                $selectedFiles  = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+                $selectedfolder = Folder::where('id', $folderID)->first(); 
+            }
 
             return Response()->json([
-                "success"       => true,
-                "userID"        => $userID,
-                "folderID"      => $folderID,                
-                "message"       => "Lesson Material has been successfully saved"
+                "success"           => true,
+                "userID"            => $userID,
+                "folderID"          => $folderID,                              
+                "selectedfolder"    => $selectedfolder,
+                "selectedFiles"     => $selectedFiles,                
+                "message"           => "Lesson Material has been successfully saved"
             ]);  
 
         } else {
@@ -576,8 +590,8 @@ class LessonSlideMaterials extends Controller
                 "message"       => "Please select a lesson"
             ]);           
         }
-
     }
+    
     
     public function getLessonSelectedPreview(Request $request) 
     {

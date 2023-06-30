@@ -4,168 +4,350 @@
 
 		<b-modal id="modalLessonSelection" title="Select Lesson" header-bg-variant="primary" header-text-variant="white" size="xl" hide-footer>
 
+			<template #modal-header>
+
+
+ 				<h4 class="modal-title">Select Lesson</h4>
+
+				<div class="modal-header-wrapper" v-if="showSearch == false">
+					<b-icon
+						icon="arrow-left"
+						size="lg"
+						class="back-icon"
+						@click="goBack"
+					></b-icon>
+
+					<b-icon
+						icon="search"
+						size="lg"
+						class="search-icon"
+						@click="showSearchUI"
+					></b-icon>
+
+
+					<!-- Close Icon -->
+					<b-icon
+						icon="x"
+						size="lg"
+						class="close-icon font-weight-bold"
+						@click="closeModal"
+					></b-icon>
+				</div>
+
+				<div class="modal-header-wrapper" v-if="showSearch == true">
+					<b-icon
+						icon="arrow-left"
+						size="lg"
+						class="back-icon"
+						@click="showSearch = false"
+					></b-icon>
+
+
+					<!-- Close Icon -->
+					<b-icon
+						icon="x"
+						size="lg"
+						class="close-icon font-weight-bold"
+						@click="closeModal"
+					></b-icon>
+				</div>
+
+
+			</template>
+
 			<template #modal-footer>
 				<div class="footer-button-container">
 					<b-button variant="primary" @click="hideLessonSelectionModal">Cancel</b-button>
 				</div>
 			</template>
 
-			<div class="loader text-center" v-show="isloadingCategories">
-				<div class="spinner-grow text-primary" role="status">
-				<span class="sr-only">Loading...</span>
-				</div>
-				<div class="spinner-grow text-secondary" role="status">
-				<span class="sr-only">Loading...</span>
-				</div>
-				<div class="spinner-grow text-success" role="status">
-				<span class="sr-only">Loading...</span>
-				</div>
-			</div>
-			<div class="main-content" v-show="!isloadingCategories">		
+			<div class="row">
 
-
-				<!--[start] Breadcrumbs-->
-				<div class="row">				
-					<div class="col-12 mb-2">
-						<div class="bg-light p-2">
-							<!--[start] All Categories -->
-							<a :href="'#all'" @click.prevent="showAllFolder()">
-								<span class="text-primary small">All Categories</span>
-							</a>
-							<span class="text-secondary" v-show="urlArray.length >= 1"> {{ " > " }} </span>
-							<!--[end] All Categories -->
-
-							<!--[start] List Of Categories -->
-							<span v-for="(segment, index) in urlArray" :key="'url-'+index">
-								<a :href="'#'+segment.folder_name" @click.prevent="jumpToFolder(segment, index)" >
-									<span class="text-primary small">{{ segment.formatted_folder_name }}</span>
-								</a>
-								<span class="text-secondary"  v-if="index >= 0 && index < (urlArray.length -1 ) "> {{ " > " }} </span>
-							</span>	
-							<!--[end] List Of Categories -->
-
-						</div>
-					</div>				
-				</div>
-				<!--[end] Breadcrumbs-->
-
-				<!--[start] Lesson List -->
-				<div id="lesson-list" v-if="lessonRows >= 1" class="row mb-2">
-					<div id="lessons-container" class="col-12">
+				<div id="left-container" class="col-3">
+					<div class="selected-lesson-container mb-2" v-if="!selectedfolder">
 						<fieldset class="border p-2">	
-							<legend class="w-auto small font-weight-bold text-secondary">Lessons</legend>					
-							<div id="lessons" class="accordion">
-								<b-table id="lesson-table" ref="lesson-table" 
-									:items="lessons" 							
-									:fields="fields"                                                
-									:per-page="perPage"
-									:current-page="currentPage"
-									:striped="false"
-									:hover="true"							
-									:outlined="true"
-									:class="'no-padding'"
-									no-header
-									thead-class="hidden_header"
-									borderless>
-									
-									<template #cell(actions)="row">
-										<b-card no-body>
-											<b-card-header header-tag="header" class="p-0" role="tab">
-												<b-button-group block class="w-100">        
-													<b-button block variant="primary" @click="getLessonImages(row.index, row.item.id)">
-														<span v-ucwords>{{ row.item.folder_name }}</span>
-													</b-button>
-													<b-button variant="success" size="sm" class="w-25" @click.prevent="selectNewLesson(row.item.id)">                                                               
-														<div class="small text-center"> Select Lesson</div>              
-													</b-button>                                                                    
-												</b-button-group>
-											</b-card-header>                                                                
-											<b-collapse v-model="isCollapsed[row.index]" :id="'accordion-'+row.index">
-												<b-card-body>
-													<div class="loader text-center" v-show="isloadingImages">
-														<div class="spinner-grow text-primary" role="status">
-														<span class="sr-only">Loading...</span>
-														</div>
-														<div class="spinner-grow text-secondary" role="status">
-														<span class="sr-only">Loading...</span>
-														</div>
-														<div class="spinner-grow text-success" role="status">
-														<span class="sr-only">Loading...</span>
-														</div>
-													</div>
-													<div class="content" v-show="!isloadingImages">
-														<div class="row" v-if="folder_images[row.index]">
-															<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" 
-																	:key="'folder_images_'+row.index+'_'+imageIndex">
-																<img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(getBaseURL(images.path))">   
-															</div>
-														</div>
-													</div>											
-												</b-card-body>
-											</b-collapse>
-										</b-card>
-									</template>
-								</b-table>					
-								<div class="mt-3">    
-									<b-pagination 
-										v-model="currentPage" 
-										:total-rows="lessonRows" 
-										:per-page="perPage" 
-										:limit="5"
-										@input="clearFolderImages"
-										aria-controls="lesson-listings"
-										>
-									</b-pagination>
-								</div>
+							<legend class="w-auto  small font-weight-bold">No Lesson Found</legend>
+							<div class="text-center">			
+								<span class="small text-muted">
+									Please select your lesson
+								</span>
 							</div>
 						</fieldset>
 					</div>
-					
-				</div>
-				<!--[end] Lesson List -->
-
-				<!--[start] Category List -->
-				<fieldset class="border p-2" v-if="folderCategories.length >= 1">	
-		
-					<!--<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length == 0">Categories</legend>
-					<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length >= 1">SubCategories</legend>-->
-
-					<legend class="w-auto small font-weight-bold">Categories</legend>
-
-					<div id="categories-list" class="row">			
-						<div id="parent-categories" v-for="(category, index) in folderCategories" :key="index" 
-							class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer" >
-
-							<div :id="'category-' + category.id" class="card text-white mb-2" v-b-tooltip.hover target="'#category-' + category.id" @click="viewFolder(category)">
-								<div class="card-header bg-primary text-ellipsis">
-									{{ category.formatted_folder_name }}
+					<div class="selected-lesson-container mb-2" v-if="selectedfolder">
+						<fieldset class="border p-2">	
+							<legend class="w-auto small font-weight-bold">Your Lesson Selected</legend>
+							<div id="selected-lesson-info" class="card">			
+								<div :id="selectedfolder.id" class="card-header">
+									<span class="small">{{ selectedfolder.folder_name}}</span>
 								</div>
-								<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
-									<p class="card-text min-height">
-										<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
-									</p>							
-								</div>						
-								<div class="card-body m-0 pt-2" v-else>
-									<!-- the subfolder (nothin should be here as requested )-->
-									{{ category.folder_description }}							
+								<div class="card-body">
+									<div class="desc">
+										<div class="font-weight-bold small">Description:</div>
+										<span class="small">{{ selectedfolder.folder_description}}</span>	
+									</div>
+
+									<hr class="hr text-dark my-2"/>
+
+									<div class="row m-0 p-0">
+										<div class="col-4 m-0 p-1" v-for="(file, fileIndex) in selectedFiles" :key="'file-'+fileIndex" >
+											<img :src="file.path" class="img-fluid rounded img-thumbnail">
+										</div>
+									</div>
 								</div>
 							</div>
+						</fieldset>
 
-							<!--[start] b-tooltip-->
-							<LessonSelectorTooltipComponent 
-								ref="LessonSelectorTooltip" 
-								:category="category"
-								:api_token="api_token" 
-								:csrf_token="csrf_token"/>				
-							<!--[end] b-tooltip-->
+					</div>
+				</div>
+
+
+				<div id="right-container" class="col-9">
+
+					<div class="loader text-center" v-show="isloadingCategories">
+						<div class="spinner-grow text-primary" role="status">
+						<span class="sr-only">Loading...</span>
+						</div>
+						<div class="spinner-grow text-secondary" role="status">
+						<span class="sr-only">Loading...</span>
+						</div>
+						<div class="spinner-grow text-success" role="status">
+						<span class="sr-only">Loading...</span>
 						</div>
 					</div>
 
-				</fieldset>			
+					<div v-if="showSearch == true">
 
-				<!--[end] Category List -->
+						<fieldset class="border p-2">	
+
+							<legend class="w-auto small font-weight-bold text-secondary">Search Lesson</legend>	
+
+							<div class="row">
+								<div class="input-group mb-3 col-12 text-center">
+
+									<input id="bv-icons-table-search" type="search" 
+										placeholder="Search"
+										v-model="searchKeyword" 
+										@blur="handleSearch()"  
+										@keyup="handleSearch()" 
+										@change="handleSearch()" 
+										@clear:append="handleSearch()" 
+										@click="handleSearch()"
+										autocomplete="off" aria-controls="bv-icons-table-result" 
+										class="form-control form-control-sm"
+									>
+
+									<div class="input-group-append">
+										<b-button variant="primary" size="sm" @click="search()">
+											<b-icon
+												icon="search"
+												size="sm"
+												class="search-icon"
+												
+											></b-icon>
+										</b-button>							
+									</div>
+								</div>
+							</div>
+
+
+							<div class="container">
+								<div class="row mt-1" v-if="searchResults.length >= 1">
+
+	
+									<div :id="'category' + category.id" v-for="(category, index) in searchResults" :key="index" 
+										class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer" >
+
+										<div :id="'category-' + category.id" 
+											class="card text-white mb-2" v-b-tooltip.hover target="'#category-' + category.id" 
+											@click="viewFolder(category)">
+											<div class="card-header bg-primary text-ellipsis">
+												{{ category.formatted_folder_name }}
+											</div>
+											<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
+												<p class="card-text min-height">
+													<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
+												</p>							
+											</div>						
+											<div class="card-body m-0 pt-2" v-else>
+												<!-- the subfolder (nothin should be here as requested )-->
+												<div class="text-dark" text-ellipsis>
+													{{ category.folder_description }}
+												</div>
+											</div>
+										</div>								
+					
+
+									</div>
+
+								</div>
+								<div v-else class="col-12 text-center">
+									<div class="py-4">
+										<span class="text-danger small">No results found</span>
+									</div>
+								</div>
+							</div>
+
+
+						</fieldset>
+
+					</div>
+					<div v-else>
+						<div class="main-content" v-show="!isloadingCategories">		
+
+							<!--[start] Breadcrumbs-->
+							<div class="row">				
+								<div class="col-12 mb-2">
+									<div class="bg-light p-2">
+										<!--[start] All Categories -->
+										<a :href="'#all'" @click.prevent="showAllFolder()">
+											<span class="text-primary small">All Categories</span>
+										</a>
+										<span class="text-secondary" v-show="urlArray.length >= 1"> {{ " > " }} </span>
+										<!--[end] All Categories -->
+
+										<!--[start] List Of Categories -->
+										<span v-for="(segment, index) in urlArray" :key="'url-'+index">
+											<a :href="'#'+segment.folder_name" @click.prevent="jumpToFolder(segment, index)" >
+												<span class="text-primary small">{{ segment.formatted_folder_name }}</span>
+											</a>
+											<span class="text-secondary"  v-if="index >= 0 && index < (urlArray.length -1 ) "> {{ " > " }} </span>
+										</span>	
+										<!--[end] List Of Categories -->
+
+									</div>
+								</div>				
+							</div>
+							<!--[end] Breadcrumbs-->
+
+							<transition name="fade">
+								<div class="success-message mb-2" v-if="showSuccessMessage">
+									<span class="check-mark">&#10003;</span>
+									<span class="small">Successfully saved</span>
+								</div>
+							</transition>
+
+							<!--[start] Lesson List -->
+							<div id="lesson-list" v-if="lessonRows >= 1" class="row mb-2">
+								<div id="lessons-container" class="col-12">
+									<fieldset class="border p-2">	
+										<legend class="w-auto small font-weight-bold text-secondary">Lessons</legend>					
+										<div id="lessons" class="accordion">
+											<b-table id="lesson-table" ref="lesson-table" 
+												:items="lessons" 							
+												:fields="fields"                                                
+												:per-page="perPage"
+												:current-page="currentPage"
+												:striped="false"
+												:hover="true"							
+												:outlined="true"
+												:class="'no-padding'"
+												no-header
+												thead-class="hidden_header"
+												borderless>
+												
+												<template #cell(actions)="row">
+													<b-card no-body>
+														<b-card-header header-tag="header" class="p-0" role="tab">
+															<b-button-group block class="w-100">        
+																<b-button block variant="primary" @click="getLessonImages(row.index, row.item.id)">
+																	<span v-ucwords>{{ row.item.folder_name }}</span>
+																</b-button>
+																<b-button variant="success" size="sm" class="w-25" @click.prevent="selectNewLesson(row.item.id)">                                                               
+																	<div class="small text-center"> Select Lesson</div>              
+																</b-button>                                                                    
+															</b-button-group>
+														</b-card-header>                                                                
+														<b-collapse v-model="isCollapsed[row.index]" :id="'accordion-'+row.index">
+															<b-card-body>
+																<div class="loader text-center" v-show="isloadingImages">
+																	<div class="spinner-grow text-primary" role="status">
+																	<span class="sr-only">Loading...</span>
+																	</div>
+																	<div class="spinner-grow text-secondary" role="status">
+																	<span class="sr-only">Loading...</span>
+																	</div>
+																	<div class="spinner-grow text-success" role="status">
+																	<span class="sr-only">Loading...</span>
+																	</div>
+																</div>
+																<div class="content" v-show="!isloadingImages">
+																	<div class="row" v-if="folder_images[row.index]">
+																		<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" 
+																				:key="'folder_images_'+row.index+'_'+imageIndex">
+																			<img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(getBaseURL(images.path))">   
+																		</div>
+																	</div>
+																</div>											
+															</b-card-body>
+														</b-collapse>
+													</b-card>
+												</template>
+											</b-table>					
+											<div class="mt-3">    
+												<b-pagination 
+													v-model="currentPage" 
+													:total-rows="lessonRows" 
+													:per-page="perPage" 
+													:limit="5"
+													@input="clearFolderImages"
+													aria-controls="lesson-listings"
+													>
+												</b-pagination>
+											</div>
+										</div>
+									</fieldset>
+								</div>
+								
+							</div>
+							<!--[end] Lesson List -->
+
+							<!--[start] Category List -->
+							<fieldset class="border p-2" v-if="folderCategories.length >= 1">	
+					
+								<!--<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length == 0">Categories</legend>
+								<legend class="w-auto small font-weight-bold text-secondary" v-show="urlArray.length >= 1">SubCategories</legend>-->
+
+								<legend class="w-auto small font-weight-bold">Categories</legend>
+
+								<div id="categories-list" class="row">			
+									<div id="parent-categories" v-for="(category, index) in folderCategories" :key="index" 
+										class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer" >
+
+										<div :id="'category-' + category.id" class="card text-white mb-2" 
+											v-b-tooltip.hover target="'#category-' + category.id" @click="viewFolder(category)">
+											<div class="card-header bg-primary text-ellipsis">
+												{{ category.formatted_folder_name }}
+											</div>
+											<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
+												<p class="card-text min-height">
+													<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
+												</p>							
+											</div>						
+											<div class="card-body m-0 pt-2" v-else>
+												<!-- the subfolder (nothin should be here as requested )-->
+												{{ category.folder_description }}							
+											</div>
+										</div>
+
+										<!--[start] b-tooltip-->
+										<LessonSelectorTooltipComponent 
+											ref="LessonSelectorTooltip" 
+											:category="category"
+											:api_token="api_token" 
+											:csrf_token="csrf_token"/>				
+										<!--[end] b-tooltip-->
+									</div>
+								</div>
+
+							</fieldset>			
+
+							<!--[end] Category List -->
+						</div>
+					</div>
+
+				</div>
 			</div>
-
 		</b-modal>
 
 	</div>
@@ -202,7 +384,16 @@ export default {
     	}
 	},	
   	data() {
-		return {    	
+		return {    
+
+			showSearch: false,
+			
+			searchTimeout: null,
+			searchKeyword: null,
+			searchResults: [],			
+
+			showSuccessMessage: false,
+
 			folderCategories: [],
 			
 			urlArray: [],
@@ -224,8 +415,18 @@ export default {
 
 			isloadingCategories: false,
 			isloadingImages: false,
+
+			//current
+			tutor: null,
+			member: null,
+			reservation: null,
 			
-    	}
+			lessonSelectedFolderID : null,
+			memberSelectedLesson : null,			
+			selectedfolder: null,
+			selectedFiles: null,
+
+		}
   },
   mounted() {
     window.lessonSelectorComponent = this;
@@ -233,13 +434,134 @@ export default {
   },
   methods: {
 	
-    showLessonSelectionModal() {
+    showLessonSelectionModal(tutor, member, reservation) {
+	
+		this.tutor           = JSON.parse(tutor);
+		this.reservation     = JSON.parse(reservation); 
+		this.member          = JSON.parse(member);
+
+		this.getMemberLessonSelected(this.reservation, this.member);
+
 		/** this will be called from member /index */
 		if (!this.currentSelectedCategory) {
 			this.showAllFolder();			
-		}
-      	this.$bvModal.show("modalLessonSelection");      	
+		} 
+      	this.$bvModal.show("modalLessonSelection");      
+
     },
+
+	showSearchUI() {	
+		this.showSearch = true;
+	},	
+	handleSearch() { 
+		const str = ''+ this.searchTimeout + ''; 
+		const trimmedStr = str.trim(); 
+		const isEmpty = trimmedStr.length === 0;
+
+		if (isEmpty) {
+		//@todo: add empty message
+		} else {
+			clearTimeout(this.searchTimeout);
+			// Start a new timeout to delay the search by half a second
+			this.searchTimeout = setTimeout(this.search, 500);
+		}
+	},
+
+	search() {
+		console.log("searching...");
+
+		// Clear previous search results
+		this.searchResults = [];
+
+		axios.post("/api/searchFolders?api_token=" + this.api_token, {
+			method: "POST",
+			searchKeyword: this.searchKeyword,
+		})
+		.then((response) => {
+			if (response.data.success == true) {
+				this.searchResults = response.data.folders;
+			} else {
+				// Handle error case
+				this.searchResults = [];
+				this.$forceUpdate();
+				// alert("Error, we can't do a search on your keyword, please try again later");
+			}
+		});
+		
+	},
+
+	goBack() {
+		let urlLength = this.urlArray.length -1;
+		if (urlLength == 0 ) {
+			this.showAllFolder();		
+		} else {
+			let category = this.urlArray[this.urlArray.length - 2];
+			this.jumpToFolder(category, this.urlArray.length - 2);
+		}
+	},
+    closeModal() {
+      this.$bvModal.hide("modalLessonSelection");     
+    },
+
+	getMemberLessonSelected(reservation, member) {
+
+		console.log("reservation", reservation.schedule_id);
+		console.log("member", member.userid);
+
+		axios.post("/api/getMemberLessonSelected?api_token=" + this.api_token, 
+		{
+			method          : "POST",
+			lessonID        : reservation.schedule_id,
+			userID          : member.userid,			
+		}).then(response => {
+
+			if (response.data.success == true) {				
+
+				this.selectedfolder = response.data.selectedfolder;
+				this.selectedFiles = response.data.selectedFiles;
+
+				this.memberSelectedLesson = response.data.memberSelectedLesson;
+				this.lessonSelectedFolderID =  response.data.memberSelectedLesson.folder_id;
+
+				this.$forceUpdate()		
+			} else {  				
+				console.log(response.data.message)
+			}
+		});
+	},
+	selectNewLesson(folderID) {        
+		this.lessonSelectedFolderID = folderID;
+		this.saveOptionSelected(folderID);
+	},	
+	saveOptionSelected(folderID) {
+
+		axios.post("/api/saveSelectedLessonSlideMaterial?api_token=" + this.api_token, 
+		{
+			method          : "POST",
+			userID          : this.member.userid,
+			lessonID        : this.reservation.schedule_id,
+			folderID        : folderID,
+
+		}).then(response => {
+
+			if (response.data.success == true) {
+
+				this.showSuccessMessage = true;
+				this.selectedfolder = response.data.selectedfolder;
+				this.selectedFiles = response.data.selectedFiles;
+
+				this.$forceUpdate()		
+
+				setTimeout(() => {
+					this.showSuccessMessage = false;
+				}, 3000);
+				
+			} else {
+				alert (response.data.message);
+			}
+		});
+
+	},  	
 	showAllFolder() {
 		this.urlArray = [];	
 		this.getLessonsList();
@@ -255,6 +577,7 @@ export default {
       	return window.location.origin + "/" + path;
     },
 	viewFolder(category) {
+	
 		this.urlArray.push(category);
 		this.getLessonsList(category.id);
 		this.currentSelectedCategory = category;
@@ -340,6 +663,10 @@ export default {
 			}
         });
     },
+
+
+
+
   },
 };
 
@@ -347,8 +674,43 @@ export default {
 </script>
 
 <style scoped>
+.back-icon {
+  	cursor: pointer;
+	margin: 0px 6px 0px;
+	font-size: 18px;
 
+}
 
+.search-icon {
+    cursor: pointer;
+    margin: 0px 6px 0px;
+    font-size: 18px;
+}
+
+.close-icon {
+    cursor: pointer;
+    margin: 0px 6px 0px;
+    font-size: 18px;
+}
+
+.modal-title {
+  text-align: center;
+  flex-grow: 1; /* Allow title to occupy remaining space */
+  width: 100%;
+}
+
+.modal-header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align icons to the right */
+ 
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .min-height {
 	min-height: 100px
@@ -382,7 +744,35 @@ export default {
 	min-height: 100px;
 }   
 
+.thumb-preview {
+	display: inline;
 
+}
+
+/*Show Message Transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.success-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #dff0d8;
+  color: #3c763d;
+  font-weight: bold;
+}
+
+.check-mark {
+  margin-right: 5px;
+}
 
 
 </style>

@@ -31,6 +31,7 @@
 
         <!-- SELECT LESSON -->
         <div id="select-lesson-container" class="container-fluid">
+        
             <b-modal id="modalSelectLesson"  @show="getLessonsList" title="Select a Lesson" 
                 size="xl" header-bg-variant="primary" header-text-variant="white" 
                 hide-footer no-close-on-esc> 
