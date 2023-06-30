@@ -10,7 +10,10 @@
  				<h4 class="modal-title">Select Lesson</h4>
 
 				<div class="modal-header-wrapper" v-if="showSearch == false">
+
+
 					<b-icon
+						v-if="urlArray.length >= 1"
 						icon="arrow-left"
 						size="lg"
 						class="back-icon"
@@ -195,10 +198,17 @@
 					<div v-else>
 						<div class="main-content" v-show="!isloadingCategories">		
 
+							<!--[start] Info -->
+							<div class="bg-light rounded py-1 px-3 mb-2">
+								<span class="small">前回のレッスンコースを継続する場合、入力は必要ありません。</span>
+							</div>
+							<!--[end] Info -->
+
+
 							<!--[start] Breadcrumbs-->
 							<div class="row">				
 								<div class="col-12 mb-2">
-									<div class="bg-light p-2">
+									<div class="bg-light rounded py-1 px-3 mb-2">
 										<!--[start] All Categories -->
 										<a :href="'#all'" @click.prevent="showAllFolder()">
 											<span class="text-primary small">All Categories</span>
@@ -221,9 +231,18 @@
 							<!--[end] Breadcrumbs-->
 
 							<transition name="fade">
-								<div class="success-message mb-2" v-if="showSuccessMessage">
-									<span class="check-mark">&#10003;</span>
-									<span class="small">Successfully saved</span>
+								<div class="success-message rounded py-1 px-3 mb-2" v-if="showSuccessMessage">
+
+									<div id="message">
+										<span class="check-mark">&#10003;</span>
+										<span class="small pr-2">You have successfully selected a lesson</span>
+										<span class="small">{{'(レッスン教材の選択が完了しました）'}}</span>
+									</div>
+
+									<div id="message-exit mt-2">
+										<span class="small">This popup window will close in 3 seconds</span>
+									</div>
+
 								</div>
 							</transition>
 
@@ -492,9 +511,11 @@ export default {
 
 	goBack() {
 		let urlLength = this.urlArray.length -1;
+		console.log(urlLength);
+
 		if (urlLength == 0 ) {
 			this.showAllFolder();		
-		} else {
+		} else if (urlLength >= 1) {
 			let category = this.urlArray[this.urlArray.length - 2];
 			this.jumpToFolder(category, this.urlArray.length - 2);
 		}
@@ -554,6 +575,7 @@ export default {
 
 				setTimeout(() => {
 					this.showSuccessMessage = false;
+					this.$bvModal.hide("modalLessonSelection");      
 				}, 3000);
 				
 			} else {
@@ -761,14 +783,21 @@ export default {
 }
 
 .success-message {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  background-color: #dff0d8;
-  color: #3c763d;
-  font-weight: bold;
+	display: block;
+	align-items: center;
+	justify-content: center;
+	padding: 10px;
+	background-color: #dff0d8;
+	color: #3c763d;
+	font-weight: bold;
+	text-align: center;
 }
+
+.message {
+	text-align: center;
+	margin: auto;
+	width: 100%;
+	}
 
 .check-mark {
   margin-right: 5px;
