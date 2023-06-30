@@ -203,7 +203,7 @@ class LessonFolderController extends Controller
             $keyword = $request->searchKeyword;
         
             $folders = $folder
-                ->select('folder_name', 'folder_description', 'order_id')
+                ->select('id', 'folder_name', 'folder_description', 'order_id')
                 ->selectRaw('UCASE(folder_name) as formatted_folder_name') // Use UCASE to format folder_name with ucfirst
                 ->where('folder_name', 'LIKE', '%'.$keyword.'%')
                 ->orWhere('folder_description', 'LIKE', '%'.$keyword.'%')

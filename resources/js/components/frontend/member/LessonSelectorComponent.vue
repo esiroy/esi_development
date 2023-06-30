@@ -155,32 +155,40 @@
 
 
 							<div class="container">
-								<div class="row mt-1" v-if="searchResults.length >= 1">
+								<div class="row mt-1" v-if="searchResults.length >= 1">	
 
-	
-									<div :id="'category' + category.id" v-for="(category, index) in searchResults" :key="index" 
+									<div v-for="(searchCategory, index) in searchResults" :key="index" 
 										class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer" >
 
-										<div :id="'category-' + category.id" 
-											class="card text-white mb-2" v-b-tooltip.hover target="'#category-' + category.id" 
-											@click="viewFolder(category)">
+
+										<div :id="'searchCategory-' + searchCategory.id" 
+											class="card text-white mb-2" v-b-tooltip.hover 
+											:target="'#searchCategory-' + searchCategory.id" 
+											@click="viewFolder(searchCategory)">
 											<div class="card-header bg-primary text-ellipsis">
-												{{ category.formatted_folder_name }}
+												{{ searchCategory.formatted_folder_name }}
 											</div>
 											<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
 												<p class="card-text min-height">
-													<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
+													<img :src="getBaseURL(searchCategory.thumb_path)" v-if="searchCategory.isThumbExist == true" class="thumb-image img-fluid" />            
 												</p>							
 											</div>						
 											<div class="card-body m-0 pt-2" v-else>
 												<!-- the subfolder (nothin should be here as requested )-->
 												<div class="text-dark" text-ellipsis>
-													{{ category.folder_description }}
+													{{ searchCategory.folder_description }}
 												</div>
 											</div>
-										</div>								
-					
-
+										</div>	
+				
+										<!--[start] search b-tooltip-->
+										<LessonSelectorTooltipComponent 
+											ref="LessonSearchTooltip" 
+											:target="'searchCategory'"
+											:category="searchCategory"
+											:api_token="api_token" 
+											:csrf_token="csrf_token"/>				
+										<!--[end] search b-tooltip-->
 									</div>
 
 								</div>
@@ -329,33 +337,37 @@
 
 								<legend class="w-auto small font-weight-bold">Categories</legend>
 
-								<div id="categories-list" class="row">			
-									<div id="parent-categories" v-for="(category, index) in folderCategories" :key="index" 
-										class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer" >
+								<div class="container">
+									<div id="categories-list" class="row">		
 
-										<div :id="'category-' + category.id" class="card text-white mb-2" 
-											v-b-tooltip.hover target="'#category-' + category.id" @click="viewFolder(category)">
-											<div class="card-header bg-primary text-ellipsis">
-												{{ category.formatted_folder_name }}
+										<div id="parent-categories" v-for="(category, index) in folderCategories" :key="index" 
+											class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer px-0" >
+
+											<div :id="'category-' + category.id" class="card text-white mb-2" 
+												v-b-tooltip.hover :target="'#category-' + category.id" @click="viewFolder(category)">
+												<div class="card-header bg-primary text-ellipsis">
+													{{ category.formatted_folder_name }}
+												</div>
+												<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
+													<p class="card-text min-height">
+														<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
+													</p>							
+												</div>						
+												<div class="card-body m-0 pt-2" v-else>
+													<!-- the subfolder (nothin should be here as requested )-->
+													{{ category.folder_description }}							
+												</div>
 											</div>
-											<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
-												<p class="card-text min-height">
-													<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
-												</p>							
-											</div>						
-											<div class="card-body m-0 pt-2" v-else>
-												<!-- the subfolder (nothin should be here as requested )-->
-												{{ category.folder_description }}							
-											</div>
+
+											<!--[start] b-tooltip-->
+											<LessonSelectorTooltipComponent 
+												ref="LessonSelectorTooltip" 
+												:target="'category'"
+												:category="category"
+												:api_token="api_token" 
+												:csrf_token="csrf_token"/>				
+											<!--[end] b-tooltip-->
 										</div>
-
-										<!--[start] b-tooltip-->
-										<LessonSelectorTooltipComponent 
-											ref="LessonSelectorTooltip" 
-											:category="category"
-											:api_token="api_token" 
-											:csrf_token="csrf_token"/>				
-										<!--[end] b-tooltip-->
 									</div>
 								</div>
 
@@ -739,12 +751,18 @@ export default {
 }
 
 .text-ellipsis {
-	font-size: 9pt;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  font-size: 9pt;
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 50px;
 }
 
+
+.text-ellipsis::before {
+  content: "";
+  display: block;
+}
 
 .f-title, .f-desc  {
 	font-size: 10pt;

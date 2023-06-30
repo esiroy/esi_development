@@ -1,6 +1,7 @@
 <template>
 	<div id="tooltop-wrapper">
-		<b-tooltip :target="'category-' + category.id" custom-class="custom-tooltip" placement="bottom" :variant="'dark'">
+		<b-tooltip :target="target + '-' + category.id" 
+		custom-class="custom-tooltip" placement="bottom" :variant="'dark'">
 			<div id="tooltip-info-container" class="text-left">
 				<div class="f-title">
 					<span class="font-weight-bold">Title:</span>
@@ -42,6 +43,7 @@
 export default {
 	name: 'LessonSelectorTooltipComponent',
 	props: {
+		target: String,
 		csrf_token: String,
 		api_token: String,
 		category: Object,
