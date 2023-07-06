@@ -5,13 +5,8 @@
 		<b-modal id="modalLessonSelection" title="Select Lesson" header-bg-variant="primary" header-text-variant="white" size="xl" hide-footer>
 
 			<template #modal-header>
-
-
  				<h4 class="modal-title">Select Lesson</h4>
-
 				<div class="modal-header-wrapper" v-if="showSearch == false">
-
-
 					<b-icon
 						v-if="urlArray.length >= 1"
 						icon="arrow-left"
@@ -107,6 +102,7 @@
 
 				<div id="right-container" class="col-9">
 
+					<!--[start] Loader -->
 					<div class="loader text-center" v-show="isloadingCategories">
 						<div class="spinner-grow text-primary" role="status">
 						<span class="sr-only">Loading...</span>
@@ -118,7 +114,9 @@
 						<span class="sr-only">Loading...</span>
 						</div>
 					</div>
+					<!--[end] Loader -->
 
+					<!--[start] Search -->
 					<div v-if="showSearch == true">
 
 						<fieldset class="border p-2">	
@@ -203,14 +201,18 @@
 						</fieldset>
 
 					</div>
+					<!--[end] Search -->
+
+					<!--[start] Categories -->
 					<div v-else>
+
 						<div class="main-content" v-show="!isloadingCategories">		
 
-							<!--[start] Info -->
+							<!--[start] Category Info -->
 							<div class="bg-light rounded py-1 px-3 mb-2">
 								<span class="small">前回のレッスンコースを継続する場合、入力は必要ありません。</span>
 							</div>
-							<!--[end] Info -->
+							<!--[end] Category Info -->
 
 
 							<!--[start] Breadcrumbs-->
@@ -238,6 +240,7 @@
 							</div>
 							<!--[end] Breadcrumbs-->
 
+							<!--[start] Message -->
 							<transition name="fade">
 								<div class="success-message rounded py-1 px-3 mb-2" v-if="showSuccessMessage">
 
@@ -253,6 +256,7 @@
 
 								</div>
 							</transition>
+							<!--[end] Message -->
 
 							<!--[start] Lesson List -->
 							<div id="lesson-list" v-if="lessonRows >= 1" class="row mb-2">
@@ -302,7 +306,7 @@
 																	<div class="row" v-if="folder_images[row.index]">
 																		<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" 
 																				:key="'folder_images_'+row.index+'_'+imageIndex">
-																			<img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(getBaseURL(images.path))">   
+																			<img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(imageIndex, folder_images[row.index])">   
 																		</div>
 																	</div>
 																</div>											
@@ -376,10 +380,13 @@
 							<!--[end] Category List -->
 						</div>
 					</div>
+					<!--[end] Categories -->
 
 				</div>
 			</div>
 		</b-modal>
+
+		<LessonSelectorImageViewerComponent ref="LessonSelectorImageViewer"/>
 
 	</div>
 	
@@ -388,11 +395,13 @@
 <script>
 
 import LessonSelectorTooltipComponent from './LessonSelectorTooltipComponent.vue';
+import LessonSelectorImageViewerComponent from './LessonSelectorImageViewerComponent.vue';
 
 export default {
 	name: 'LessonSelectorComponent',
 	components: { 
-		LessonSelectorTooltipComponent
+		LessonSelectorTooltipComponent,
+		LessonSelectorImageViewerComponent
 	},
   	props: {
     	csrf_token: String,
@@ -460,8 +469,7 @@ export default {
 		}
   },
   mounted() {
-    window.lessonSelectorComponent = this;
-    console.log("LessonSelectorComponent Loaded...");
+    window.lessonSelectorComponent = this;   
   },
   methods: {
 	
@@ -480,6 +488,12 @@ export default {
       	this.$bvModal.show("modalLessonSelection");      
 
     },
+
+	/** [START] - IMAGE VIEWER */
+	imageViewer(index, images) {
+		this.$refs['LessonSelectorImageViewer'].showImageViewer(index, images);
+	}, 
+	/** [END] - IMAGE VIEWER */
 
 	showSearchUI() {	
 		this.showSearch = true;
