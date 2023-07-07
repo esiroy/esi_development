@@ -172,7 +172,7 @@ class LessonFolderController extends Controller
 
 
 
-    public function getLessonImages(Request $request, File $file)
+    public function getLessonImages(Request $request, File $file, Folder $folder)
     {
 
         $folderID = $request->folderID;
@@ -185,10 +185,13 @@ class LessonFolderController extends Controller
             ]);
         }
 
+        $isBook = $folder->where('id', $folderID)->select('is_book')->first()->is_book;
+
         $files = $file->where('folder_id', $folderID)->get(['file_name', 'path']);
 
         return Response()->json([
             "success"       => true,
+            "is_book"        => $isBook,
             "files"         => $files,
             "message"       => "Test",            
         ]);  

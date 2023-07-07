@@ -218,6 +218,7 @@ class FolderController extends Controller
                 'slug'                  => Str::slug($request['folder_name'], '-'),
                 'folder_name'           => $request['folder_name'],
                 'folder_description'    => $request['folder_description'],
+                'is_book'               => $request['isBook'],
             ];
         
             //Create Folder 
@@ -290,6 +291,7 @@ class FolderController extends Controller
             'slug'                  => Str::slug($request['folder_name'], '-'),
             'folder_name'           => $request['folder_name'],
             'folder_description'    => $request['folder_description'],
+            'is_book'               => $request['isBook'],
             'owner'                 => User::find($folder->user_id),
             "created_at"            => date("F d, y", strtotime($folder->created_at)),
         ];

@@ -140,29 +140,38 @@
 						<div class="col-md-3">Folder Owner</div>
 						<div class="col-md-9">{{ this.displayFolderOwner }}</div>
 					</div>
-                    -->
+                   
 					<div class="row">
 						<div class="col-md-3">Created On</div>
 						<div class="col-md-9">{{ this.displayCreatedAt }}</div>
 					</div>
+                     -->
+
+					<div class="row">
+						<div class="col-md-3">For Books?</div>
+						<div class="col-md-9">
+                            <span v-if="displayIsBook == true"> Yes </span>
+                            <span v-else> No </span>
+                        </div>
+					</div>                     
 
 					<div class="row">
 						<div class="col-md-3">Thumbnail</div>
 						<div class="col-md-9">
-                            
-
-                            <div v-if="thumb_path !== ''">
-                                <img :src="getBaseURL(this.thumb_path)" width="250px">
+                            <div v-if="this.thumb_path">
+                                <img :src="getBaseURL(this.thumb_path)" width="150px">
+                                <div class="invisible d-none">
+                                    <div>{{ this.thumb_file_name }}</div>
+                                    <div>{{ this.thumb_upload_name }}</div>
+                                    <div>{{ this.thumb_path }}</div>
+                               </div>
                             </div>
-
-                            <div class="invisible d-none">
-                                <div>{{ this.thumb_file_name }}</div>
-                                <div>{{ this.thumb_upload_name }}</div>
-                                <div>{{ this.thumb_path }}</div>
-                            </div>
-
                         </div>
 					</div>
+
+                    
+
+
 
 				</div>
 			</div>
@@ -457,6 +466,21 @@
                             </button>
                         </div>
 
+                        <div class="books mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_book" name="is_book" v-model="isBook">
+                                <label class="form-check-label" for="is_book">
+                                    Is it a book?
+                                </label>
+
+                                <div class="text-primary border border-primary rounded small p-1 mt-2">
+                                    <span class="small">
+                                        Checking "is it a book?" will disable the lesson image previews
+                                    </span>
+                                </div>
+                            </div>                        
+                        </div>
+
                     </form>
 
                 </b-modal>
@@ -587,6 +611,21 @@
                             </button>
                         </div>
 
+                        <div class="books mt-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="is_book" name="is_book" v-model="isBook">
+                                <label class="form-check-label" for="is_book">
+                                    Is it a book?
+                                </label>
+
+                                <div class="text-primary border border-primary rounded small p-1 mt-2">
+                                    <span class="small">
+                                        Checking "is it a book?" will disable the lesson image previews
+                                    </span>
+                                </div>
+                            </div>                        
+                        </div>                        
+
                     </form>
                 </b-modal>
             </div>
@@ -602,18 +641,6 @@
                     @close="closeModal"
                     @ok="handleOk"
                 >
-
-                    Current image :
-
-                    <div v-if="thumb_path !== ''">
-                        <img :src="getBaseURL(this.thumb_path)" width="250px">
-                    </div>
-
-                    <div class="invisible d-none">
-                        <div>{{ this.thumb_file_name }}</div>
-                        <div>{{ this.thumb_upload_name }}</div>
-                        <div>{{ this.thumb_path }}</div>
-                    </div>
 
                     <form ref="form" @submit.stop.prevent="handleSubmit">
                         <b-form-group
@@ -637,7 +664,19 @@
                                 :state="folderDescriptionState"
                             ></b-form-textarea>
                         </b-form-group>
-
+                   
+                    
+                        <div class="row">
+                            <div class="col-12">Thumbnail</div>
+                            <div class="col-12 text-center" v-if="this.thumb_path">
+                                <img :src="getBaseURL(this.thumb_path)" width="150px">
+                                <div class="invisible d-none">
+                                    <div>{{ this.thumb_file_name }}</div>
+                                    <div>{{ this.thumb_upload_name }}</div>
+                                    <div>{{ this.thumb_path }}</div>
+                                </div>
+                            </div>
+                        </div>
 
 
                         <table class="table table-borderless table-hover">
@@ -728,6 +767,23 @@
                             <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
                             <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
                             </button>
+                        </div>
+
+                        <div class="books mt-3">
+                            <div class="form-check">
+
+                                <input class="form-check-input" type="checkbox" id="is_book" name="is_book" v-model="isBook">
+
+                                <label class="form-check-label" for="is_book">
+                                    Is it a book?
+                                </label>
+
+                                <div class="text-primary border border-primary rounded small p-1 mt-2">
+                                    <span class="small">
+                                        Checking "is it a book?" will disable the lesson image previews
+                                    </span>
+                                </div>
+                            </div>                        
                         </div>
 
                     </form>
@@ -831,9 +887,9 @@ export default {
             userOptions: [],
             //Sharing
             sharingValues: [],
-            sharingOptions: [
-                { name: 'Public', code: 'public' },
-                { name: 'Private', code: 'private' }
+            sharingOptions: [              
+                { name: 'Private', code: 'private' },
+                { name: 'Public', code: 'public' }
             ],
             isSharingDisabled: false,
 
@@ -850,15 +906,16 @@ export default {
             displayFolderDesc       : "",
             displayFolderOwner      : "",   
             displayCreatedAt        : "",
+            displayIsBook           : null,
 
 			//Modals Inputs
 			folderID                : null,
 			folderName              : "",
 			folderDescription       : "",
             //new updates
-            thumb_file_name         : "",
-            thumb_upload_name       : "",
-            thumb_path              : "",
+            thumb_file_name         : null,
+            thumb_upload_name       : null,
+            thumb_path              : null,
 
             //Modal Variable State
 			folderNameState         : null,
@@ -885,8 +942,9 @@ export default {
             left                : "0px",
 
             iconSharedFolder    : "<svg class='bi bi-folder-symlink mr-2' width='1.2em' height='1.2em' viewBox='0 0 16 16'  fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path d='M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z'/><path fill-rule='evenodd' d='M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z'/> <path d='M8.616 10.24l3.182-1.969a.443.443 0 0 0 0-.742l-3.182-1.97c-.27-.166-.616.036-.616.372V6.7c-.857 0-3.429 0-4 4.8 1.429-2.7 4-2.4 4-2.4v.769c0 .336.346.538.616.371z'/></svg>",
-
             iconPrivateFolder   : "<svg class='bi bi-folder mr-2' width='1.2em' height='1.2em' viewBox='0 0 16 16' fill='currentColor' xmlns='http://www.w3.org/2000/svg'><path d='M9.828 4a3 3 0 0 1-2.12-.879l-.83-.828A1 1 0 0 0 6.173 2H2.5a1 1 0 0 0-1 .981L1.546 4h-1L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3v1z'/><path fill-rule='evenodd' d='M13.81 4H2.19a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zM2.19 3A2 2 0 0 0 .198 5.181l.637 7A2 2 0 0 0 2.826 14h10.348a2 2 0 0 0 1.991-1.819l.637-7A2 2 0 0 0 13.81 3H2.19z'/></svg>",  
+            
+            isBook: false,
 
 		}
 	},
@@ -1004,10 +1062,6 @@ export default {
         * @return undefined
         */
         inputFilter: function(newFile, oldFile, prevent) {
-
-           console.log(newFile, oldFile);
-
-
             if (newFile && !oldFile) {
                 // Filter non-image file
                 if (!/\.(jpeg|jpg|gif|png)$/i.test(newFile.name)) {
@@ -1015,7 +1069,6 @@ export default {
                     return prevent();
                 }
             }
-
 
             if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
                 // Create a blob field
@@ -1340,6 +1393,7 @@ export default {
 				id          : data.id,
 				name        : data.name,
 				description : data.description,
+                isBook      : data.is_book,
                 permalink   : data.permalink,
                 owner       : data.owner,
                 created_at  : data.created_at,
@@ -1370,7 +1424,13 @@ export default {
 					this.folderID = response.data.folder_id;
 					this.folderName = response.data.folder_name;
 					this.folderDescription = response.data.folder_description;
-                    
+                    this.displayIsBook = response.data.folder.is_book;
+
+                    //update model for input box for isBook
+                    this.isBook =  response.data.folder.is_book
+
+                    console.log("isbook? ? ", response.data.folder.is_book)
+
                     //thumbnail
                     this.thumb_file_name = response.data.thumb_file_name;
                     this.thumb_upload_name = response.data.thumb_upload_name;
@@ -1388,8 +1448,7 @@ export default {
         onClick(node) 
         {
 
-            console.log("onClick", node);
-
+            
             this.getFolderFiles(node.id);
            
             //set the display info
@@ -1400,9 +1459,10 @@ export default {
             this.displayFolderLink      = node.permalink;
             this.displayFolderOwner     = node.owner.firstname + " " + node.owner.lastname;
             this.displayCreatedAt       = node.created_at;
+            this.displayIsBook          = node.is_book;
 
             //thumbnail
-            console.log("?=>"+ node.thumb_path)
+          
             this.thumb_file_name = node.thumb_file_name;
             this.thumb_upload_name = node.thumb_upload_name;
             this.thumb_path = node.thumb_path;            
@@ -1561,6 +1621,7 @@ export default {
                     this.invalidFeedbackMessage = response.data.message;
                     alert (this.invalidFeedbackMessage);
                 } else {
+
                     this.$nextTick(function() 
                     {
                         this.getFolders();
@@ -1568,6 +1629,7 @@ export default {
                             id              : response.data.folder.id,
                             name            : this.folderName,
                             description     : this.folderDescription,
+                            isBook          : response.data.folder.is_book,
                             
                             //thumbnail
                             thumb_file_name : response.data.thumb_file_name,
@@ -1600,6 +1662,7 @@ export default {
                 folder_name: this.folderName,
                 folder_description: this.folderDescription,
                 thumb_file_name: this.tempID,
+                isBook: this.isBook
             })
             .then(response => 
             {
@@ -1648,10 +1711,13 @@ export default {
                             id: response.data.folder.id,
                             name: this.folderName,
                             description: this.folderDescription,
+                            isBook          : response.data.folder.is_book,
+
                             //thumbnail
                             thumb_file_name : response.data.thumb_file_name,
                             thumb_upload_name : response.data.thumb_upload_name,
                             thumb_path : response.data.thumb_path,
+
 
                             permalink: response.data.folder.permalink,
                             owner: response.data.folder.owner,
@@ -1675,7 +1741,8 @@ export default {
 					method: "POST",
 					folder_id: folderID,
 					folder_name: this.folderName,
-					folder_description: this.folderDescription
+					folder_description: this.folderDescription,
+                    isBook: this.isBook
 				})
 				.then(response => {
 					if (response.data.success === false) {
@@ -1720,6 +1787,7 @@ export default {
                                 id: response.data.folder.id,
                                 name: response.data.folder.folder_name,
                                 description: response.data.folder.folder_description,
+                                isBook          : response.data.folder.is_book,
 
                                 thumb_file_name: response.data.thumb_file_name,
                                 thumb_upload_name: response.data.thumb_upload_name,
@@ -1756,7 +1824,8 @@ export default {
 			let nodeItem = {
 				id: node.id,
 				name: node.name,
-				description: node.description
+				description: node.description,
+                isBook  : node.is_book,
 			};
 
 			let parentNode = {
@@ -1783,7 +1852,8 @@ export default {
 			let nodeItem = {
 				id: node.id,
 				name: node.name,
-				description: node.description
+				description: node.description,
+                isBook  : node.is_book,
 			};
 
 			let parentNode = {
@@ -1853,6 +1923,7 @@ export default {
 			this.folderDescription = "";
 			this.folderNameState = null;
 			this.folderDescriptionState = null;
+            this.isBook = false;            
 		},
         resetShareModal() {
             this.FolderType = "shareFolder";
@@ -1863,11 +1934,13 @@ export default {
 			this.folderDescription = "";
 			this.folderNameState = null;
 			this.folderDescriptionState = null;
+            this.isBook = false;            
 		},
 		resetEditFolderModal() {
 			this.FolderType = "editFolder";
 			this.folderNameState = null;
 			this.folderDescriptionState = null;
+            this.isBook = false;
 		},
 		handleOk(bvModalEvt) {
 			bvModalEvt.preventDefault();

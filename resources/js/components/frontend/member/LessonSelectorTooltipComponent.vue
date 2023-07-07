@@ -24,7 +24,7 @@
 						<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />  
 					</div>
 				</div>
-				<!--
+				
 				<div class="f-options text-center mt-2">
 					<b-button variant="primary" @click="selectFolder(category.id)" size="sm" v-if="category.subcategoryCounter == 0">
 						<span class="small">Select Folder</span>
@@ -33,7 +33,7 @@
 						<span class="small">View Folder</span>
 					</b-button>
 				</div>
-				-->
+				
 			</div>
 		</b-tooltip>
 	</div>
@@ -54,6 +54,12 @@ export default {
 		};
 	},
 	methods: {
+    	viewFolder(category) {
+      		this.$emit('child-view-folder', category);
+    	},	
+    	selectFolder(category) {
+      		this.$emit('child-select-folder', category);
+    	},
 		getBaseURL(path) {
 			return window.location.origin + "/" + path;
 		},

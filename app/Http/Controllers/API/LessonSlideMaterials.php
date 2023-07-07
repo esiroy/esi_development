@@ -53,7 +53,7 @@ class LessonSlideMaterials extends Controller
 
     
     //@description: determine if the user pre-selected a lesson
-    public function getMemberLessonSelected(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) 
+    public function getMemberLessonSelected(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial, Folder $folder) 
     {
 
         $userID             = $request->userID;
@@ -76,12 +76,16 @@ class LessonSlideMaterials extends Controller
 
         } else {
 
+            $folderID = $folder->getNextFolderID($userID);
+            $nextLesson = Folder::where('id', $folderID)->first();       
+
             return Response()->json([
                 "success"                => false,
-                "memberSelectedLesson"   => $memberSelectedLesson, 
+                "memberSelectedLesson"   => $memberSelectedLesson,                 
                 "selectedfolder"         => null,
                 "selectedFiles"          => null,
-                "message"                => "Member Selected Lesson Material not found"
+                "message"                => "Member Selected Lesson Material not found",
+                "nextLesson"             => json_encode($nextLesson)
             ]); 
 
         }

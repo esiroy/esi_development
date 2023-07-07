@@ -62,15 +62,41 @@
 			<div class="row">
 
 				<div id="left-container" class="col-3">
+
 					<div class="selected-lesson-container mb-2" v-if="!selectedfolder">
 						<fieldset class="border p-2">	
-							<legend class="w-auto  small font-weight-bold">No Lesson Found</legend>
+							<legend class="w-auto  small font-weight-bold">You have not selected a lesson </legend>
 							<div class="text-center">			
-								<span class="small text-muted">
+								<div class="small text-muted py-4">
 									Please select your lesson
-								</span>
+								</div>
 							</div>
 						</fieldset>
+
+
+						<!--[start] Note -->
+						<fieldset class="border mt-2 p-2">	
+							<legend class="w-auto small font-weight-bold">Please Note</legend>
+							<div class="text-center small py-4">			
+								<span class="small text-danger">
+									If you can't select a lesson our system will automatically select your next lesson for you.
+								</span>
+
+								<hr class="hr">
+
+								<div class="small text-primary"  v-if="nextLessonFolderName !== null">
+									Next Lesson Title: 
+									<div>{{ nextLessonFolderName }}</div>
+								</div>
+
+								<div class="small text-primary" v-if="nextLessonFolderDescription !== null">
+									Description: 
+									{{ nextLessonFolderDescription }}									
+								</div>
+							</div>
+						</fieldset>
+						<!--[start] Note -->
+
 					</div>
 					<div class="selected-lesson-container mb-2" v-if="selectedfolder">
 						<fieldset class="border p-2">	
@@ -95,8 +121,11 @@
 								</div>
 							</div>
 						</fieldset>
-
 					</div>
+
+
+
+
 				</div>
 
 
@@ -185,7 +214,9 @@
 											:target="'searchCategory'"
 											:category="searchCategory"
 											:api_token="api_token" 
-											:csrf_token="csrf_token"/>				
+											:csrf_token="csrf_token"
+											
+										/>				
 										<!--[end] search b-tooltip-->
 									</div>
 
@@ -302,11 +333,15 @@
 																	<span class="sr-only">Loading...</span>
 																	</div>
 																</div>
-																<div class="content" v-show="!isloadingImages">
+																<div class="content" v-show="!isloadingImages" @contextmenu="preventRightClick">
 																	<div class="row" v-if="folder_images[row.index]">
-																		<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" 
-																				:key="'folder_images_'+row.index+'_'+imageIndex">
-																			<img class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  @click.prevent="imageViewer(imageIndex, folder_images[row.index])">   
+
+																		<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" :key="'folder_images_'+row.index+'_'+imageIndex">
+																			<img v-if="isBook == true" class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  
+																				@click.prevent="imageViewer(imageIndex, folder_images[row.index])">   
+
+
+																			<img v-if="isBook == false" class="img-fluid" :src="getBaseURL(images.path)">   
 																		</div>
 																	</div>
 																</div>											
@@ -347,8 +382,8 @@
 										<div id="parent-categories" v-for="(category, index) in folderCategories" :key="index" 
 											class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer px-0" >
 
-											<div :id="'category-' + category.id" class="card text-white mb-2" 
-												v-b-tooltip.hover :target="'#category-' + category.id" @click="viewFolder(category)">
+											<div :id="'category-' + category.id" class="card text-white mb-2" v-b-tooltip.hover :target="'#category-' + category.id" 
+											@click="viewFolder(category)">
 												<div class="card-header bg-primary text-ellipsis">
 													{{ category.formatted_folder_name }}
 												</div>
@@ -369,7 +404,11 @@
 												:target="'category'"
 												:category="category"
 												:api_token="api_token" 
-												:csrf_token="csrf_token"/>				
+												:csrf_token="csrf_token"
+												@child-select-folder="viewFolder(category)"
+												@child-view-folder="viewFolder(category)"
+
+											/>				
 											<!--[end] b-tooltip-->
 										</div>
 									</div>
@@ -426,8 +465,14 @@ export default {
   	data() {
 		return {    
 
+			isBook: false,
 			showSearch: false,
 			
+			//Next Lesson
+			nextLesson: null,
+			nextLessonFolderName : null,
+			nextLessonFolderDescription : null,
+
 			searchTimeout: null,
 			searchKeyword: null,
 			searchResults: [],			
@@ -494,7 +539,9 @@ export default {
 		this.$refs['LessonSelectorImageViewer'].showImageViewer(index, images);
 	}, 
 	/** [END] - IMAGE VIEWER */
-
+    preventRightClick(event) {
+      event.preventDefault();
+    },
 	showSearchUI() {	
 		this.showSearch = true;
 	},	
@@ -569,10 +616,15 @@ export default {
 
 				this.memberSelectedLesson = response.data.memberSelectedLesson;
 				this.lessonSelectedFolderID =  response.data.memberSelectedLesson.folder_id;
+				this.$forceUpdate();
 
-				this.$forceUpdate()		
-			} else {  				
-				console.log(response.data.message)
+			} else {  	
+				this.nextLesson =  JSON.parse(response.data.nextLesson);
+
+				this.nextLessonFolderName = this.nextLesson.folder_name
+				this.nextLessonFolderDescription = this.nextLesson.folder_description
+
+				this.$forceUpdate()	
 			}
 		});
 	},
@@ -633,7 +685,9 @@ export default {
 	selectFolder(id) {
 		this.$bvModal.hide("modalLessonSelection");
 	},
-	getLessonImages(index, folderID) {		
+	getLessonImages(index, folderID) {
+
+		this.isBook = false;
 
 		this.isloadingImages = true;
 		this.showCollapse(index);
@@ -646,6 +700,7 @@ export default {
 
 			if (response.data.success == true) {   
 				this.isloadingImages = false;
+				this.isBook = response.data.is_book;
 				this.$set(this.folder_images, index, response.data.files)
 				this.$forceUpdate();
 
