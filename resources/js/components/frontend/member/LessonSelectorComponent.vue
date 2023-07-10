@@ -337,11 +337,11 @@
 																	<div class="row" v-if="folder_images[row.index]">
 
 																		<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" :key="'folder_images_'+row.index+'_'+imageIndex">
-																			<img v-if="isBook == true" class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  
+																			<img v-if="isBook == false" class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  
 																				@click.prevent="imageViewer(imageIndex, folder_images[row.index])">   
 
 
-																			<img v-if="isBook == false" class="img-fluid" :src="getBaseURL(images.path)">   
+																			<img v-if="isBook == true " class="img-fluid" :src="getBaseURL(images.path)">   
 																		</div>
 																	</div>
 																</div>											
