@@ -16,6 +16,8 @@ use Auth;
 class Folder extends Model
 {
 
+    public static $folder = Array();
+
     public static $parent_ids = Array();
 
     public static $url_segment = Array();
@@ -351,6 +353,37 @@ class Folder extends Model
         $segments = implode($separator , array_reverse(Folder::$folder_name));
         return $segments;
     }
+
+    public static function getParentFolders($id) {
+        Folder::$folder = [];
+        return Folder::recurseParentFolders($id);
+    }
+    
+    public static function recurseParentFolders($id) {
+
+        $folder = Folder::where('id', $id)->first();
+        
+        if (isset($folder)) {
+        
+            if ($folder->parent_id !== null || $folder->parent_id !== 0) {
+                //Sub Folder
+
+                $folder['formatted_folder_name'] = ucwords($folder->folder_name); 
+                Folder::$folder[] = $folder;
+
+                Folder::recurseParentFolders($folder->parent_id);
+
+            } else {
+                //Root Folder
+                Folder::$folder[] = $folder;
+            }
+        }
+
+        return array_reverse(Folder::$folder);
+    }
+
+
+   
 
     public static function getURLArray($id) 
     {

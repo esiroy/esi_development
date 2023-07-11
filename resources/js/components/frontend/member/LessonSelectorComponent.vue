@@ -7,50 +7,14 @@
 			<template #modal-header>
  				<h4 class="modal-title">Select Lesson</h4>
 				<div class="modal-header-wrapper" v-if="showSearch == false">
-					<b-icon
-						v-if="urlArray.length >= 1"
-						icon="arrow-left"
-						size="lg"
-						class="back-icon"
-						@click="goBack"
-					></b-icon>
-
-					<b-icon
-						icon="search"
-						size="lg"
-						class="search-icon"
-						@click="showSearchUI"
-					></b-icon>
-
-
-					<!-- Close Icon -->
-					<b-icon
-						icon="x"
-						size="lg"
-						class="close-icon font-weight-bold"
-						@click="closeModal"
-					></b-icon>
+					<b-icon v-if="urlArray.length >= 1" icon="arrow-left" size="lg" class="back-icon" @click="goBack"></b-icon>
+					<b-icon icon="search" size="lg" class="search-icon" @click="showSearchUI"></b-icon>					
+					<b-icon icon="x" size="lg" class="close-icon font-weight-bold" @click="closeModal"></b-icon>
 				</div>
-
 				<div class="modal-header-wrapper" v-if="showSearch == true">
-					<b-icon
-						icon="arrow-left"
-						size="lg"
-						class="back-icon"
-						@click="showSearch = false"
-					></b-icon>
-
-
-					<!-- Close Icon -->
-					<b-icon
-						icon="x"
-						size="lg"
-						class="close-icon font-weight-bold"
-						@click="closeModal"
-					></b-icon>
+					<b-icon icon="arrow-left" size="lg" class="back-icon" @click="hideSearchUI"></b-icon>					
+					<b-icon icon="x" size="lg" class="close-icon font-weight-bold" @click="closeModal"></b-icon>
 				</div>
-
-
 			</template>
 
 			<template #modal-footer>
@@ -122,10 +86,6 @@
 							</div>
 						</fieldset>
 					</div>
-
-
-
-
 				</div>
 
 
@@ -145,10 +105,41 @@
 					</div>
 					<!--[end] Loader -->
 
-					<!--[start] Search -->
-					<div v-if="showSearch == true">
+					<div v-if="isViewingSearched == true">
 
-						<fieldset class="border p-2">	
+							<!--[start] Breadcrumbs-->
+							<div class="row">				
+								<div class="col-12 mb-2">
+									<div class="bg-light rounded py-1 px-3 mb-2">
+										<!--[start] All Categories -->
+										<a :href="'#all'" @click.prevent="showAllFolder()">
+											<span class="text-primary small">All Categories</span>
+										</a>
+										<span class="text-secondary" v-show="urlArray.length >= 1"> {{ " > " }} </span>
+										<!--[end] All Categories -->
+
+										<!--[start] List Of Categories -->
+										<span v-for="(segment, index) in urlArray" :key="'url-'+index">
+											<a :href="'#'+segment.folder_name" @click.prevent="jumpToFolder(segment, index)" >
+												<span class="text-primary small">{{ segment.formatted_folder_name }}</span>
+											</a>
+											<span class="text-secondary"  v-if="index >= 0 && index < (urlArray.length -1 ) "> {{ " > " }} </span>
+										</span>	
+										<!--[end] List Of Categories -->
+
+									</div>
+								</div>				
+							</div>
+							<!--[end] Breadcrumbs-->
+
+						{{ "view search item" }}
+
+					</div>
+
+					<!--[start] Search -->
+					<div v-else-if="showSearch == true">
+
+						<fieldset class="border p-2">
 
 							<legend class="w-auto small font-weight-bold text-secondary">Search Lesson</legend>	
 
@@ -191,7 +182,7 @@
 										<div :id="'searchCategory-' + searchCategory.id" 
 											class="card text-white mb-2" v-b-tooltip.hover 
 											:target="'#searchCategory-' + searchCategory.id" 
-											@click="viewFolder(searchCategory)">
+											@click="viewSearchFolder(searchResults[index])">
 											<div class="card-header bg-primary text-ellipsis">
 												{{ searchCategory.formatted_folder_name }}
 											</div>
@@ -208,7 +199,7 @@
 											</div>
 										</div>	
 				
-										<!--[start] search b-tooltip-->
+										<!--[start] search b-tooltip
 										<LessonSelectorTooltipComponent 
 											ref="LessonSearchTooltip" 
 											:target="'searchCategory'"
@@ -217,7 +208,7 @@
 											:csrf_token="csrf_token"
 											
 										/>				
-										<!--[end] search b-tooltip-->
+										[end] search b-tooltip-->
 									</div>
 
 								</div>
@@ -313,6 +304,9 @@
 														<b-card-header header-tag="header" class="p-0" role="tab">
 															<b-button-group block class="w-100">        
 																<b-button block variant="primary" @click="getLessonImages(row.index, row.item.id)">
+
+																	{{ row.index }} {{ row.item.id }}
+
 																	<span v-ucwords>{{ row.item.folder_name }}</span>
 																</b-button>
 																<b-button variant="success" size="sm" class="w-25" @click.prevent="selectNewLesson(row.item.id)">                                                               
@@ -355,7 +349,7 @@
 													v-model="currentPage" 
 													:total-rows="lessonRows" 
 													:per-page="perPage" 
-													:limit="5"
+													:limit="lessonRowLimit"
 													@input="clearFolderImages"
 													aria-controls="lesson-listings"
 													>
@@ -383,13 +377,14 @@
 											class="col-12 col-xs-6 col-sm-6 col-md-3 col-lg-2 cursor-pointer px-0" >
 
 											<div :id="'category-' + category.id" class="card text-white mb-2" v-b-tooltip.hover :target="'#category-' + category.id" 
-											@click="viewFolder(category)">
+											@click="viewFolder(folderCategories[index])">
 												<div class="card-header bg-primary text-ellipsis">
 													{{ category.formatted_folder_name }}
 												</div>
 												<div class="card-body m-0 p-0" v-if="folderType == 'parent'" >
 													<p class="card-text min-height">
-														<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />            
+														<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" 
+														class="thumb-image img-fluid" />            
 													</p>							
 												</div>						
 												<div class="card-body m-0 pt-2" v-else>
@@ -467,7 +462,11 @@ export default {
 
 			isBook: false,
 			showSearch: false,
-			
+
+			isViewingSearched: false,
+			viewCurrentLessonIndex: null,
+			viewCurrentCategory: null,
+
 			//Next Lesson
 			nextLesson: null,
 			nextLessonFolderName : null,
@@ -485,6 +484,9 @@ export default {
 			folderType: 'parent',
 
 			currentPage: null,
+			viewCurrentPage: null,
+			lessonRowLimit: 5,
+
 			lessonRows: 0,
 			perPage: 5,               
 			fields: [
@@ -519,6 +521,9 @@ export default {
   methods: {
 	
     showLessonSelectionModal(tutor, member, reservation) {
+
+		this.isViewingSearched = false;
+
 	
 		this.tutor           = JSON.parse(tutor);
 		this.reservation     = JSON.parse(reservation); 
@@ -543,8 +548,13 @@ export default {
       event.preventDefault();
     },
 	showSearchUI() {	
+		this.isViewingSearched = false;
 		this.showSearch = true;
 	},	
+	hideSearchUI() {
+		this.isViewingSearched = false;
+		this.showSearch = false;
+	},
 	handleSearch() { 
 		const str = ''+ this.searchTimeout + ''; 
 		const trimmedStr = str.trim(); 
@@ -558,7 +568,6 @@ export default {
 			this.searchTimeout = setTimeout(this.search, 500);
 		}
 	},
-
 	search() {
 		console.log("searching...");
 
@@ -581,8 +590,102 @@ export default {
 		});
 		
 	},
+	viewFolder(category) {	
+		console.log(category);
+		this.urlArray.push(category);
+		this.getLessonsList(category.id);
+		this.currentSelectedCategory = category;
 
+		//[NEW!] force select page
+		this.currentPage = this.viewCurrentPage;
+
+
+
+	},	
+	viewSearchFolder(category) {	
+
+		//reset the view page/ lesson
+		this.viewCurrentPage 	= null;
+		this.viewCurrentLessonIndex 	= null;
+		
+
+
+		//we will deactive seach
+		this.showSearch = false;
+		this.isViewingSearched = false;	
+		
+	
+
+		if (category.subcategoryCounter >= 1) {
+
+			this.urlArray = category.parentFolders;
+			this.viewFolder(category);
+		} else {
+
+			//this is for lesson
+			this.viewCurrentCategory = category;
+			let parentLength = category.parentFolders.length - 2;		
+			
+	
+			//@note: this will force open the lesson
+			this.viewCurrentPage 	= Math.ceil((category.order_id) / this.perPage);
+
+			//calculate index
+			let currentIndex =  category.order_id - ((this.viewCurrentPage-1)* this.perPage)
+			this.viewCurrentLessonIndex 	= currentIndex;
+
+			this.viewFolder(category.parentFolders[parentLength]);
+
+			
+		}	
+	},	
+    getLessonsList(selectedLessonID) {
+
+		this.isloadingCategories = true;
+
+		axios.post("/api/getLessonFolders?api_token=" + this.api_token, {
+			method: "POST",
+			folderID: selectedLessonID,
+			//public_folder_id : null,
+		}).then((response) => {
+
+			this.isloadingCategories = false;
+
+			if (response.data.success == true) {
+				this.parentID = response.data.parentID;
+				this.currentFolder = response.data.currentFolder;
+				this.folderType = response.data.folderType;
+				this.folderCategories = response.data.folderCategories;
+				this.lessons = response.data.lessons;
+				this.lessonRows = response.data.lesson_rows;
+				this.files = response.data.files;
+				//this.lessons            = response.data.lessons.data; (lazy loading)
+				
+
+				this.$nextTick(() => { 
+
+					if (this.viewCurrentPage && this.viewCurrentLessonIndex) {
+						this.getLessonImages(this.viewCurrentLessonIndex -1, this.viewCurrentCategory.id)
+					
+					}					
+				}); 
+
+
+
+				this.$forceUpdate();
+
+			} else {
+				alert(
+					"Error, we can't get your list of lesson, please try again later"
+				);
+			}
+        });
+    },	
 	goBack() {
+	
+		this.isViewingSearched = false;
+		this.showSearch = false;
+
 		let urlLength = this.urlArray.length -1;
 		console.log(urlLength);
 
@@ -596,7 +699,6 @@ export default {
     closeModal() {
       this.$bvModal.hide("modalLessonSelection");     
     },
-
 	getMemberLessonSelected(reservation, member) {
 
 		console.log("reservation", reservation.schedule_id);
@@ -667,6 +769,9 @@ export default {
 		this.getLessonsList();
 	},	
 	jumpToFolder(category, index) {
+		this.isViewingSearched = false;
+		this.showSearch = false;
+
 		let limit = this.urlArray.length - index;
 		for (let i = 1; i <= (limit); i++) {		
 			this.urlArray.pop();
@@ -676,21 +781,18 @@ export default {
     getBaseURL(path) {
       	return window.location.origin + "/" + path;
     },
-	viewFolder(category) {
-	
-		this.urlArray.push(category);
-		this.getLessonsList(category.id);
-		this.currentSelectedCategory = category;
-	},
+
 	selectFolder(id) {
 		this.$bvModal.hide("modalLessonSelection");
 	},
 	getLessonImages(index, folderID) {
 
+		console.log(index + " get lesson image", folderID);
+
 		this.isBook = false;
 
 		this.isloadingImages = true;
-		this.showCollapse(index);
+		
 
 		axios.post("/api/getLessonImages?api_token=" + this.api_token, 
 		{
@@ -703,6 +805,8 @@ export default {
 				this.isBook = response.data.is_book;
 				this.$set(this.folder_images, index, response.data.files)
 				this.$forceUpdate();
+
+				this.showCollapse(index);
 
 			} else {
 				console.log("error getting lesson images")				
@@ -725,6 +829,8 @@ export default {
 		{                    
 			if (i == index)  {                    
 				if (this.isCollapsed[index] == false) {
+
+					console.log("showing ==> ", index)
 					this.$set(this.isCollapsed, index, true)
 				} else {                          
 					this.$set(this.isCollapsed, index, false) //hide
@@ -737,35 +843,6 @@ export default {
 	hideLessonSelectionModal() {
 		this.$bvModal.hide("modalLessonSelection");
 	},				
-    getLessonsList(selectedLessonID) {
-
-		this.isloadingCategories = true;
-
-		axios.post("/api/getLessonFolders?api_token=" + this.api_token, {
-			method: "POST",
-			folderID: selectedLessonID,
-			//public_folder_id : null,
-		}).then((response) => {
-
-			this.isloadingCategories = false;
-
-			if (response.data.success == true) {
-				this.parentID = response.data.parentID;
-				this.currentFolder = response.data.currentFolder;
-				this.folderType = response.data.folderType;
-				this.folderCategories = response.data.folderCategories;
-				this.lessons = response.data.lessons;
-				this.lessonRows = response.data.lesson_rows;
-				this.files = response.data.files;
-				//this.lessons            = response.data.lessons.data; (lazy loading)
-				this.$forceUpdate();
-			} else {
-				alert(
-					"Error, we can't get your list of lesson, please try again later"
-				);
-			}
-        });
-    },
 
 
 

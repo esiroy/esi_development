@@ -84,15 +84,17 @@ class LessonFolderController extends Controller
             }
 
 
-            $folderType = "subFolder";
+            $folderType     = "subFolder";
             $folders        = $folder->where('parent_id', $folderID)->where('privacy', 'public')->orderBy('order_id', 'ASC')->get();
             $lessons        = $folder->getFolderLessons($folderID, $page, "*");
-            $files      = [];
+            $files          = [];
 
             $folderCategories = []; 
             
             foreach ($folders as $index => $folder) {
             
+                $parentFolders = $folder->getParentFolders($folder->id);
+
                 $isThumbExist = (Storage::disk('thumbnails')->exists($folder->thumb_file_name)) ? true : false;
                 $folders[$index]['isThumbExist'] = $isThumbExist;       
 
@@ -101,15 +103,20 @@ class LessonFolderController extends Controller
                 if ($lessonCounter >= 1) { 
 
                     $folders[$index]['formatted_folder_name']     = ucwords($folder->folder_name); 
-                    $folders[$index]['subcategoryCounter']          = $lessonCounter; 
+                    $folders[$index]['subcategoryCounter']        = $lessonCounter;
+                    $folders[$index]['parentFolders']             = $parentFolders;
 
                     //add to folder categories list
                     $folderCategories[] = $folder;
+
+
 
                 } else {
 
                     //@note: we will not push the folder to folder categories since the lesson counter is 0
                     $folders[$index]['subcategoryCounter'] = $lessonCounter;
+                    $folders[$index]['parentFolders']             = $parentFolders;
+
                 }
             }
 
@@ -117,6 +124,7 @@ class LessonFolderController extends Controller
                 "success"               => true,
                 "folderType"            => $folderType,
                 "currentFolderID"       => $folderID,
+                
                 "currentFolder"         => $currentFolder,
                 "urlTitles"             => $folder->getURLTitles( $folderID),
                 "parentID"              => $currentFolder->parent_id,
@@ -138,10 +146,14 @@ class LessonFolderController extends Controller
             
             foreach ($folders as $index => $folder) {
             
+                $parentFolders = $folder->getParentFolders($folder->id);
+
                 $isThumbExist = (Storage::disk('thumbnails')->exists($folder->thumb_file_name)) ? true : false;
 
                 $folders[$index]['formatted_folder_name']     = ucwords($folder->folder_name); 
-                $folders[$index]['isThumbExist'] = $isThumbExist;       
+                $folders[$index]['isThumbExist'] = $isThumbExist;    
+                   
+                $folders[$index]['parentFolders']  = $parentFolders;       
 
                 $lessonCounter = $folder->where('parent_id', $folder->id)->where('privacy', 'public')->orderBy('order_id', 'ASC')->count();
                 if ($lessonCounter >= 1) {
@@ -215,7 +227,23 @@ class LessonFolderController extends Controller
                 ->orderBy('order_id', 'ASC')->get();
 
 
+
             if ($folders) {
+
+                foreach ($folders as $index => $folder) {
+                    $parentFolders = $folder->getParentFolders($folder->id);
+                    $folders[$index]['parentFolders'] = $parentFolders;
+
+                    $lessonCounter = $folder->where('parent_id', $folder->id)->where('privacy', 'public')->orderBy('order_id', 'ASC')->count();
+                    if ($lessonCounter >= 1) {
+                        //array_push($folderCategories, $folder);
+                        $folders[$index]['subcategoryCounter'] = $lessonCounter; 
+                    } else {
+                        //array_push($lessons, $folder);
+                        $folders[$index]['subcategoryCounter'] = $lessonCounter;
+                    }                    
+                }
+                         
 
                 return Response()->json([
                     "success"       => true,
@@ -240,4 +268,9 @@ class LessonFolderController extends Controller
         }
     }
    
+    public function viewSearchFolder(Request $request, Folder $folder) {
+    
+        $ids = $folder->getURLIDNamePair($request->id);
+    
+    }
 }

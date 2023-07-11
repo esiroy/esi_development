@@ -63,7 +63,23 @@ class dummyController extends Controller
     }
 
 
-    public function index(Request $request) {
+    public function index(Request $request, Folder $folder) {
+
+        $folders = $folder->getParentFolders($request->id);
+
+        foreach($folders as $folder) {
+        
+            echo $folder->id . " : " . $folder->folder_name;
+
+            echo "<BR>";
+        }
+
+     
+    
+
+    }
+
+    public function deleteFile(Request $request) {
     
     
         $filename = '1687774925_Screenshot_from_2023-06-23_19-53-04.png';
