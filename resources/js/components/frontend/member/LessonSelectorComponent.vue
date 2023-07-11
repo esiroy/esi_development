@@ -304,9 +304,6 @@
 														<b-card-header header-tag="header" class="p-0" role="tab">
 															<b-button-group block class="w-100">        
 																<b-button block variant="primary" @click="getLessonImages(row.index, row.item.id)">
-
-																	{{ row.index }} {{ row.item.id }}
-
 																	<span v-ucwords>{{ row.item.folder_name }}</span>
 																</b-button>
 																<b-button variant="success" size="sm" class="w-25" @click.prevent="selectNewLesson(row.item.id)">                                                               
