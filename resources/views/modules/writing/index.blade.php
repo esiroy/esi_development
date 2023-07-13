@@ -581,7 +581,7 @@
 
                 } else {
 
-                    if ($('#'+fieldID).attr( "required" )) 
+                    if ($('#'+fieldID).attr("required")) 
                     {
                         //console.log(fieldID + " is required")
                         let isValid = $('#'+fieldID).valid();
@@ -609,36 +609,55 @@
                     {
                         try {
 
-                            const oFile = document.getElementById(fieldID).files[0];  
+                            const oFile = document.getElementById(fieldID).files[0];
+
+                            if (oFile || $('#'+fieldID).attr("required")) {
+
 
                                 let fileExtension = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];                                
-                            if ($.inArray($('#'+fieldID).val().split('.').pop().toLowerCase(), fileExtension) == -1) 
-                            {
-                                let message = "Only formats are allowed : "+fileExtension.join(', ');
-                                colorHighlight(fieldID)
-                                $('.'+fieldID+"_field_content").find('.error2').remove();
-                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + message +'.</label>');
-                                requiredFieldsArr.push({
-                                    'id': fieldID,
-                                    'isValid': false
-                                });
-                            } 
-                            else if (oFile.size <= 2097152) // 2 MiB for bytes.
-                            {             
-                                $('.'+fieldID+"_field_content").find('.error2').remove();    
+
+                                if ($.inArray($('#'+fieldID).val().split('.').pop().toLowerCase(), fileExtension) == -1) 
+                                {
+
+                                    console.log(fileExtension, " the file extension")
+
+                                    let message = "Only formats are allowed : "+fileExtension.join(', ');
+                                    colorHighlight(fieldID)
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + message +'.</label>');
+
+
+                                    let isValid = $('#'+fieldID).valid();
+                                    
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });
+                                } 
+                                else if (oFile.size <= 2097152) // 2 MiB for bytes.
+                                {
+                                    //console.log(fileExtension, " the file extension 2")
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();    
+
+                                } else {
+
+                                    colorHighlight(fieldID)
+
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
+
+                                    let isValid = $('#'+fieldID).valid();
+
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': isValid
+                                    });
+                                }  
 
                             } else {
-                                colorHighlight(fieldID)
-                                $('.'+fieldID+"_field_content").find('.error2').remove();
-                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
-                                requiredFieldsArr.push({
-                                    'id': fieldID,
-                                    'isValid': false
-                                });
-                            }         
 
-
-                                
+                                $('#'+fieldID+"_field_row").removeAttr("style");
+                            }
                         } catch(err) {
                             //alert( err )
                         }
@@ -667,6 +686,9 @@
             
         function highlightFieldRow(fieldID) 
         {
+
+            console.log("highlight : " + fieldID);
+
             if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                    
                 //console.log(fieldID + " is hidden, we will not highlight");
             } else {
@@ -700,6 +722,27 @@
                         $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This field only accepts E-Mail Address.</label>');
                         //console.log("error in email");                            
                     }
+                }
+                    
+                if ($('#'+fieldID).hasClass('uploadfield')) {
+
+                    try {
+                        const oFile = document.getElementById(fieldID).files[0];
+
+                        if (oFile) {
+
+                            // 2 MiB for bytes.
+                            if (oFile.size <= 2097152) {
+
+                                $('.'+fieldID+"_field_content").find('.error2').remove();
+                                $('.'+fieldID+"_field_content").find('label.form-label').removeClass('label-error')
+                                $('#'+fieldID+"_field_row").removeAttr("style");         
+                            }                   
+                        }
+                
+                    } catch(err) {
+                        //alert( err )
+                    }                    
                 }
 
                     /*
