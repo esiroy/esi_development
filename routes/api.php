@@ -80,6 +80,8 @@ Route::middleware('auth:api')->post('/getTotalMemberDailyReserved', 'API\MemberC
 Route::middleware('auth:api')->post('/getTotalTutorDailyReserved', 'API\MemberController@getTotalTutorDailyReserved')->name('APIGetTotalTutorDailyReserved');
 Route::middleware('auth:api')->post('/getScheduleDetails', 'API\MemberController@getScheduleDetails')->name('APIGetScheduleDetails');
 Route::middleware('auth:api')->post('/searchMemberName', 'API\MemberController@searchMemberName')->name('APISearchMemberName');
+Route::middleware('auth:api')->post('/getMemberCredit', 'API\MemberController@getMemberCredit')->name('APIGetMemberCredit');
+
 
 //[start](MEMBER CONTROL PANEL) 
 Route::middleware('auth:api')->post('/sendMemberReply', 'API\MemberController@sendMemberReply')->name('APIsendMemberReply');
@@ -229,6 +231,9 @@ Route::middleware('auth:api')->post('/postAnswers', 'API\AnswersAPIController@po
 Route::middleware('auth:api')->post('/updateAnswers', 'API\AnswersAPIController@update')->name('APIUpdateAnswers');
 Route::middleware('auth:api')->post('/deleteAnswers', 'API\AnswersAPIController@destroy')->name('APIDeleteAnswers');
 
+//Multi Answers
+Route::middleware('auth:api')->post('/addMultiAnswerStartTime', 'API\AnswersMultiAPIController@addAnswerStartTime')->name('APIAddMultiAnswerStartTime');
+Route::middleware('auth:api')->post('/postMultiAnswers', 'API\AnswersMultiAPIController@post')->name('APIPostMuliAnswers');
 
 Route::middleware('auth:api')->post('/getMergedAccounts', 'API\MergeAccountAPIController@get')->name('APIGetMergeAccounts');
 Route::middleware('auth:api')->post('/getMergedAccountType', 'API\MergeAccountAPIController@getType')->name('APIGetMergedAccountType');

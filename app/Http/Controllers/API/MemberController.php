@@ -24,6 +24,7 @@ use App\Models\LessonMailer;
 use App\Models\Purpose;
 use App\Models\MemberLevel;
 use App\Models\MemberMiniTestSetting;
+use App\Models\MemberSetting;
 
 
 use Auth, App;
@@ -37,6 +38,12 @@ use Validator;
 
 class MemberController extends Controller
 {
+
+    public function getMemberCredit(Request $request, AgentTransaction $agentTransaction) 
+    {
+        $credits = $agentTransaction->getCredits($request->get('memberID'));
+        return $credits;
+    }
 
     public function getAgentName(Request $request)
     {
@@ -293,14 +300,17 @@ class MemberController extends Controller
     
     public function getTotalTutorDailyReserved(Request $request, ScheduleItem $scheduleItem, Member $member) 
     {
-        $date = $request->date;
+        $dateOfReservation = $request->date ." 11:00:00"; //Add the time starting of the day schedule range
         $memberID = $request->memberID;
         $tutorID = $request->tutorID;        
         $memberInfo = $member->where('user_id', $memberID)->first();
-        $totalTutorDailyReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $date);
+
+        $totalTutorDailyReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $dateOfReservation);
 
         return Response()->json([
             "success" => true,
+            "date" => $dateOfReservation,
+            "now" => ESILessonTimeENFormat($dateOfReservation),
             "memberReservedActive" => env('MEMBER_RESERVE_LIMIT_ACTIVE', true),
             "totalTutorDailyReserved" => $totalTutorDailyReserved,
             "totalMemberReserved" => $scheduleItem->getTotalMemberReserved($memberInfo),
@@ -326,26 +336,28 @@ class MemberController extends Controller
         //find the schedule
         $schedule = $scheduleItem->find($scheduleID);        
 
-        //total reservation for a day
-        $dateOfResevation = date("Y-m-d", strtotime($schedule->lesson_time));
-        //$totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $dateOfResevation);
+        //total reservation for a day        
+        $lessonDate = date("Y-m-d H:i:s", strtotime($schedule->lesson_time)); 
 
-        $totalDailyTutorReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $dateOfResevation);
+
 
         //[UPDATE for MAY 15, 2022] 
         //LIMIT SCHEDULE ITEM (15 ITEMS)
         $totalScheduledItem = $scheduleItem->getTotalMemberReserved($memberInfo);
-        if ($totalScheduledItem >= 15) {
+
+        if ($totalScheduledItem >= 15) 
+        {
             return Response()->json([
-                "success" => false,
-                "type"      => "msgbox",
-                "message" => "予約数が上限に達したため予約できません",                
-                "message_en" => "Cannot make a reservation because the number of reservations has reached the upper limit"
+                "success"       => false,
+                "type"          => "msgbox",
+                "message"       => "予約数が上限に達したため予約できません (!)",                
+                "message_en"    => "Cannot make a reservation because the number of reservations has reached the upper limit"
             ]);
         } 
 
         //check deactivated
-        if ($memberInfo->user->is_activated == false) {
+        if ($memberInfo->user->is_activated == false) 
+        {
             return Response()->json([
                 "success"   => false,
                 "type"      => "msgbox",
@@ -361,7 +373,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success"       => false,
                 "type"          => "msgbox",
-                "message"       => "スケジュールが見つからないか、もう存在しません",
+                "message"       => "スケジュールが見つからないか、もう存在しません 1",
                 "message_en"    => "Schedule not found or no longer exists"
             ]);      
         } else if ($schedule->valid == false) {      
@@ -369,7 +381,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success"       => false,
                 "type"          => "msgbox",
-                "message"       => "スケジュールが見つからないか、もう存在しません",
+                "message"       => "スケジュールが見つからないか、もう存在しません 2",
                 "message_en"    => "Schedule is aleady invalid or archived"
             ]);  
 
@@ -450,7 +462,8 @@ class MemberController extends Controller
 
         $check_year_limit = date("Y", strtotime($schedule->lesson_time));
         $attribute = $memberAttribute->getLessonLimit($memberID, $check_month_limit, $check_year_limit);
-        if ($attribute) {
+        if ($attribute) 
+        {
             $limit = $attribute->lesson_limit;
             //check if there if it is not over the lesson limit capacity
             $month_to_reserve = date("m", strtotime($schedule->lesson_time));
@@ -492,6 +505,7 @@ class MemberController extends Controller
             return Response()->json([
                 "success"   => false,
                 "type"      => "msgbox",
+                "lessonTime" => $lessonTime,
                 "message"   => "ご予約できません。　既に同じ時間にご予約があります。",
                 "message_en"    => "I cannot make a reservation. There is already a reservation at the same time"
             ]);
@@ -505,6 +519,48 @@ class MemberController extends Controller
 
         $MEMBER_RESERVE_LIMIT_ACTIVE = env('MEMBER_RESERVE_LIMIT_ACTIVE', true);
 
+
+        //$totalDailyReserved = $scheduleItem->getTotalMemberDailyReserved($memberID, $dateOfReservation);
+   
+
+        $adjustedDate = $scheduleItem->getCurrentTimeDuration($lessonDate);
+        $currentDate  = $scheduleItem->getCurrentTimeDuration();
+
+        //@do: compare this date if the adjusted date is future date, if date is the future 
+        //@do:  start checking the date from 11:00:00 AM if the future date
+        $compare_adjusted = date('Y-m-d', strtotime($adjustedDate));
+        $compare_current = date('Y-m-d', strtotime($currentDate));
+
+        if ($compare_adjusted > $compare_current) 
+        {
+            //date is at future
+            $testDate = date('Y-m-d 11:00:00', strtotime($adjustedDate));
+        } else {
+            //date is current so we will get the current time
+            $testDate = $currentDate;          
+        }  
+
+
+        $totalDailyTutorReserved = $scheduleItem->getTotalTutorDailyReserved($memberID, $tutorID, $testDate);
+
+     
+
+            
+        /*
+        /* TEST ALL VARIABLES 
+        *  BUG UPDATE (RESERVATION NOT COUNTING PROPERLY)      
+
+    return Response()->json([
+                "success"   => false,
+                "MEMBER_RESERVE_LIMIT_ACTIVE" => $MEMBER_RESERVE_LIMIT_ACTIVE,
+                "tutor" => $tutorID,
+                "member" => $memberID,
+                "message"   => $currentDate . " test date : ". $testDate  . " | " . $totalDailyTutorReserved,
+                "totalDailyTutorReserved" => $totalDailyTutorReserved,           
+            ]);   
+        */
+        
+            
         if ($MEMBER_RESERVE_LIMIT_ACTIVE == true) 
         {
             if ($totalDailyTutorReserved >= 2) 
@@ -512,14 +568,15 @@ class MemberController extends Controller
                 $reservation_type = $schedule_status_b;      
                 $data = [
                     'member_id' => $memberID,
-                    'schedule_status' => $schedule_status_b,
+                    'schedule_status' => $reservation_type,
                 ];
                 $schedule->update($data);
+
             } else {
                 $reservation_type = $schedule_status;
                 $data = [
                     'member_id' => $memberID,
-                    'schedule_status' => $schedule_status,
+                    'schedule_status' => $reservation_type,
                 ];
                 $schedule->update($data);
             }
@@ -527,9 +584,10 @@ class MemberController extends Controller
 
             //default to A
             $reservation_type = $schedule_status;
+
             $data = [
                 'member_id' => $memberID,
-                'schedule_status' => $schedule_status,
+                'schedule_status' => $reservation_type,
             ];
             $schedule->update($data);            
         }
@@ -540,6 +598,7 @@ class MemberController extends Controller
         {
             //add lesson
             $shift = Shift::where('value', 25)->first();
+
             $transaction = [
                 'schedule_item_id' => $scheduleID,
                 'member_id' => Auth::user()->id,
@@ -1718,6 +1777,8 @@ class MemberController extends Controller
                 $memberMiniTestSetting->createOrUpdateLimit($memberID, $minitestData['memberMiniTestLimit']);
                 $memberMiniTestSetting->createOrUpdateDuration($memberID, $minitestData['memberMiniTestDuration']);
 
+                $memberSetting = new MemberSetting();
+                $memberSetting->createOrUpdateSetting($memberID, "hide_member_tabs", $data->hideMemberTabs);
 
                 DB::commit();
 

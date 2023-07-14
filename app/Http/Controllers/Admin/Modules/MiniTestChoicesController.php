@@ -57,9 +57,7 @@ class MiniTestChoicesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store($category_id, $question_id, Request $request)
-    {
-
+    public function store($category_id, $question_id, Request $request) {
         abort_if(Gate::denies('minitest_create'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $created = MiniTestChoice::create([
@@ -72,21 +70,25 @@ class MiniTestChoicesController extends Controller
             
             if (isset($request->correct)) {
 
-                $answerKey = MiniTestAnswerKey::where('question_id', $question_id)->first();
+                $answerKey = MiniTestAnswerKey::where('question_id', $question_id)->where('choice_id', $created->id)->first();
 
                 if ($answerKey) {
+
 
                     $answerKey->update([
                         'choice_id' => $created->id,
                     ]);
-
                 } else {
+                
                     MiniTestAnswerKey::create([
                         'question_id' => $question_id,
                         'choice_id' => $created->id,
                     ]);
                 }
 
+            } else {
+            
+                //No need to add to answer key
             }
 
             return redirect()->route('admin.minitest.choices.index', ['category_id' => $category_id, 'question_id' => $question_id, 'added_choice_id' => $created->id])->with('message', 'Choice added successfully!');
@@ -141,7 +143,9 @@ class MiniTestChoicesController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update($category_id, $question_id, $choice_id, MiniTestChoice $miniTestChoice, Request $request)
-    {
+    {    
+
+      
 
         abort_if(Gate::denies('minitest_edit'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -157,24 +161,56 @@ class MiniTestChoicesController extends Controller
 
             if ($updated) {
                 
+
+                
                 if (isset($request->correct)) {
 
-                    $answerKey = MiniTestAnswerKey::where('question_id', $question_id)->first();
+                    $answerKey = MiniTestAnswerKey::where('question_id', $question_id)
+                                                    ->where('choice_id', $choice->id)
+                                                    ->first();
 
-                    if ($answerKey) {
-
-                        
-
+                    if ($answerKey) 
+                    {
                         $answerKey->update([
                             'choice_id' => $choice->id,
                         ]);
 
                     } else {
-                        MiniTestAnswerKey::create([
-                            'question_id' => $question_id,
-                            'choice_id' => $choice->id,
-                        ]);
+
+                        $category = MiniTestCategory::find($category_id);
+
+                        if ($category) {
+
+                            //multiple answer is allowed
+                            if ($category->multiple_correct_answers == true) {
+                                MiniTestAnswerKey::create([
+                                    'question_id' => $question_id,
+                                    'choice_id' => $choice->id,
+                                ]);
+                            } else {
+                            
+                                
+                                MiniTestAnswerKey::where('question_id', $question_id)->delete();
+
+                                MiniTestAnswerKey::create([
+                                    'question_id' => $question_id,
+                                    'choice_id' => $choice->id,
+                                ]);
+
+                            }
+
+                        } else {
+                        
+                            return redirect()->route('admin.minitest.choices.index', ['category_id' => $category_id, 'question_id' => $question_id, 'updated_choice_id' => $choice->id])->with('error_message', 'Choice was not added due to an error (Category not found), please try again!');
+                        }
+                       
+
                     }
+
+                } else {
+                    
+                    MiniTestAnswerKey::where('question_id', $question_id)->where('choice_id', $choice->id)->delete();
+                    
 
                 }
 

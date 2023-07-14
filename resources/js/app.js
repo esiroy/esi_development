@@ -78,6 +78,7 @@ if (url[1] === 'admin') {
     Vue.component('member-time-manager-component', require('./components/frontend/member/MemberTimeManagerComponent.vue').default);
     Vue.component('member-account-merger-component', require('./components/frontend/member/MemberAccountMergerComponent.vue').default);
     Vue.component('questions-component', require('./components/frontend/member/QuestionsComponent.vue').default);
+    Vue.component('questions-multi-answers-component', require('./components/frontend/member/QuestionsMultiAnswersComponent.vue').default);
 
     //Vue.component('simple-uploader-component', require('./components/SimpleUploaderComponent.vue').default);
 

@@ -21,11 +21,18 @@
                 <p class="text-info">Time Limit : {{ this.category.time_limit + " Minutes " }}</p>
 
                 <!-- ADD A MEMBER POINT INFORMATION -->
-                <div id="point-information" class="border p-4 mb-4" v-show="this.started == false">
-                    <span class="font-weight-bold">
-                    
+                <div v-show="this.category.content !== null">
+                    <p class="text-primary border border-primary rounded p-2" v-html="this.category.content"></p>
+                </div>
+               
+
+
+                <div id="point-information" class="border rounded p-4 mb-4" v-show="this.started == false">
+
+                    <span class="font-weight-bold">                    
                         <span v-if="this.freeMiniTest >= 1">  Note:  You have  {{ this.freeMiniTest }}  Free Mini Test Left</span>
                         <span class="text-danger" v-else>  
+                        
                             <div v-if="memberinfo['membership'] == 'Monthly'">
                                 Note:  You have {{ "No" }}  Free Mini Test Left, You will be deducted 1 monthly credit if you proceed 
                             </div>
@@ -132,7 +139,7 @@
 
                 <div class="py-4">
                     <button class="btn btn-primary" v-on:click="getPrevQuestion()" v-show="(count - 1) >= 1"> Previous {{ count - 1 }} </button>     
-                    <button class="btn btn-primary" v-on:click="getNextQuestion()" v-show="count < this.questionsLength"> Next {{ count }} </button>
+                    <button class="btn btn-primary" v-on:click="getNextQuestion()" v-show="count < this.questionsLength"> Next {{ count + 1}} </button>
                     <button class="btn btn-success" v-on:click="checkSubmittedAnswers()" v-show="count >= this.questionsLength"> Submit Answers </button>   
                 </div>          
                 
@@ -286,8 +293,9 @@
          methods: 
          {
 
-            start() {
-
+            start() 
+            {
+                this.started = true;
                 this.recordStartTime();
             },
             formatter(text) {
@@ -382,10 +390,8 @@
                         
                     } else {
                     
-                    
+                        this.started = false;
                         alert (response.data.message);
-
-
                     }
 
                 }).finally(() => {  
@@ -402,6 +408,9 @@
                 this.myIntervalTimer = setInterval(this.checkMinute, this.timerSpeed);
                 this.started = true;
                 this.loading = false;
+            },
+            stopTimer() {
+                clearInterval(this.myIntervalTimer);
             },
             checkMinute() 
             {
@@ -629,6 +638,9 @@
 
                     if (response.data.success == true)
                      {
+
+                        this.stopTimer();
+
                         this.submitted = true;
                         this.results = response.data.results;
 

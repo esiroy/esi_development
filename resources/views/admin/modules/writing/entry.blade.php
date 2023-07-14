@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('content')
+
     <div class="container bg-light px-0">
         <div class="row">
             <div class="col-md-12">
@@ -81,7 +82,9 @@
                               @php
                                 $key = explode("_", $key);
                                 $fieldID = $key[0];
-                                $field = App\Models\WritingFields::find($fieldID);                                         
+                                $field = App\Models\WritingFields::find($fieldID);  
+
+                                if ($field) {
                             @endphp
 
                             @if ($fieldID == "appointed") 
@@ -133,6 +136,11 @@
                                 </div>   
 
                             @endif
+
+                            @php
+                                
+                                }
+                            @endphp
 
                              
 

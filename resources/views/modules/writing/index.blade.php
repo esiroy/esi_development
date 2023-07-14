@@ -13,6 +13,9 @@
 
         <div class="container pb-5">
             <div class="row">
+            
+                <!--{{ "mail address" . Config::get('mail.from.address') }}-->
+
                 <!--[start sidebar]-->
                 @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->           
@@ -58,6 +61,13 @@
                                                 @endif
                                             </section>
                                         @endforeach
+
+                                        <div class="warnings">
+                                            <div class="alert alert-danger mx-4" role="alert">
+                                                You already consumed all your credits
+                                            </div>
+                                        </div>
+
                                         <textarea id="data" name="data" style="display:none" ></textarea>
                                         <input type="submit" style="display:none">
                                     </form>                              
@@ -81,6 +91,12 @@
       
     <link rel="stylesheet" href="{{ asset('css/steps/steps.css') }}">
     <style>
+
+        
+        .cke_top, .cke_bottom {
+            display: none !important;
+        }
+
         .wizard>.content>.body {
             width: 100%
         }
@@ -121,6 +137,7 @@
     @parent
     <script src="{{ url('js/steps/jquery.steps.min.js') }}" defer></script>
     <script src="{{ url('js/validation/jquery.validation.min.js') }}" defer></script>
+     <script src="{{ url('js/ckeditor/ckeditor.js')  }}"></script>
     <script>
 
         //enumate fields that needs checking
@@ -128,364 +145,13 @@
 
         window.addEventListener('load', function() 
         {
+
+            getMemberCredit();
+
             $('#writing-form').show();
 
             $('.message-container').find('.alert').delay(5000).fadeOut('slow');
-
-            /* Count point to deduct: 180words = 1 point, 181-500words = 2point, 501-800words = 3point */
-            function getDeduction(words) 
-            {              
-                if  (parseInt(words) >= 1 && parseInt(words) <= 180)  {
-                    return 1;                        
-                } else if (parseInt(words) >= 181 && parseInt(words) <= 500) {
-                    return 2;
-                } else if (parseInt(words) >= 501 && parseInt(words) <= 800) {
-                    return 3;
-                } else {
-                    return false;
-                } 
-            }
-
-
-            function adjustIframeHeight() {
-                var $body = $('body'), $iframe = $body.data('iframe.fv');
-                if ($iframe) {
-                    // Adjust the height of iframe
-                    $iframe.height($body.height());
-                }
-            }
-
-            function encodeData() 
-            {
-                let inputs = $('#writing-form').find('.form-control');
-                let fieldsArr = new Object;
-
-                var itemsProcessed = 0;
-
-                Array.from(inputs).forEach( (field, index) => 
-                {
-                    itemsProcessed++;
-                    let id = $(field).attr('id') 
-                    let name = $(field).attr('name');
-                    let value = $(field).val();
-
-                    if ($('#'+id+"_field_row").css( "display" ) == 'none' ) {                        
-                       //field is not showed, we will not include it to post
-                    } else {                        
-                        //console.log( id + " : "  + $(field).attr('name') + " " + $(field).val() );
-                        fieldsArr[name] = value;
-                    }
-
-                    if (itemsProcessed == inputs.length) {
-                        //console.log(fieldsArr);
-                        convertToJSON(fieldsArr);
-                    }
-                });     
-
-            };
             
-
-            function convertToJSON(data) {
-                let JSON_data = JSON.stringify(data);
-                $('#data').text(JSON_data);
-                return 
-            }
-
-            function validateFields(currentIndex) 
-            {
-                //clean array
-                // fieldsArray = [];
-
-                let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
-                let requiredFieldsArr = [];
-
-                Array.from(inputs).forEach(field => 
-                {
-                    let fieldID =  $(field).attr('id');                                 
-                    highlightFieldRow(fieldID);
-
-                    $('#'+fieldID+"_field_row").on('keyup change', function() 
-                    {
-                        highlightFieldRow(fieldID)                                     
-                    });
-                    
-                    
-                    //check all has required in Array
-                    if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                        
-                        //console.log(fieldID + " is hidden, we will not verify");
-
-                    } else {
-
-                        if ($('#'+fieldID).attr( "required" )) 
-                        {
-                            //console.log(fieldID + " is required")
-                            let isValid = $('#'+fieldID).valid();
-                            requiredFieldsArr.push({
-                                'id': fieldID,
-                                'isValid': isValid
-                            });
-                        }
-
-                        //check if field is an email field and validate manually (since we cant validate it in section)
-                        if ($('#'+fieldID).hasClass('emailfield')) 
-                        {                            
-                            var email = $('#'+fieldID).val();
-                            if(email.match(/([+\w0-9._-]+@[\w0-9._-]+\.[\w0-9_-]+)/)) {
-                                // valid email
-                            } else {
-                                requiredFieldsArr.push({
-                                    'id': fieldID,
-                                    'isValid': false
-                                });                                                                           
-                            }
-                        }
-
-                        if ($('#'+fieldID).hasClass('uploadfield')) 
-                        {
-                            try {
-
-                                const oFile = document.getElementById(fieldID).files[0];  
-
-                                 let fileExtension = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];                                
-                                if ($.inArray($('#'+fieldID).val().split('.').pop().toLowerCase(), fileExtension) == -1) 
-                                {
-                                    let message = "Only formats are allowed : "+fileExtension.join(', ');
-                                    colorHighlight(fieldID)
-                                    $('.'+fieldID+"_field_content").find('.error2').remove();
-                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + message +'.</label>');
-                                    requiredFieldsArr.push({
-                                        'id': fieldID,
-                                        'isValid': false
-                                    });
-                                } 
-                                else if (oFile.size <= 2097152) // 2 MiB for bytes.
-                                {             
-                                    $('.'+fieldID+"_field_content").find('.error2').remove();    
-
-                                } else {
-                                    colorHighlight(fieldID)
-                                    $('.'+fieldID+"_field_content").find('.error2').remove();
-                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
-                                    requiredFieldsArr.push({
-                                        'id': fieldID,
-                                        'isValid': false
-                                    });
-                                }         
-
-
-                                 
-                            } catch(err) {
-                                //alert( err )
-                            }
-
-                        }
-                    }
-
-                });
-
-                let goToNextStep = true;
-                Array.from(requiredFieldsArr).forEach(requiredField => {
-                    if (requiredField.isValid === false || requiredField.isValid === null) {
-                        goToNextStep = false;
-                        return false;
-                    }
-                });                        
-
-                if (goToNextStep == true) {
-                    //console.log("Go to step next page")
-                    return true;
-                } else{
-                    //console.log("stay on current page")
-                    return false;
-                }                
-            }
-            
-            function highlightFieldRow(fieldID) 
-            {
-                if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                    
-                    //console.log(fieldID + " is hidden, we will not highlight");
-                } else {
-
-                    if ($('#'+fieldID).attr( "required" )) 
-                    {
-                        let isValid = $('#'+fieldID).valid();
-
-                        if (isValid === false || isValid === null) {
-                            //console.log(fieldID +"_field_row is invalid")
-                            colorHighlight(fieldID)
-
-                        } else {
-                            $('.'+fieldID+"_field_content").find('label.form-label').removeClass('label-error')
-                            $('#'+fieldID+"_field_row").removeAttr("style");
-                        }
-                    }
-
-                    if ($('#'+fieldID).hasClass('emailfield')) {
-                        var email = $('#'+fieldID).val();
-                        if(email.match(/([+\w0-9._-]+@[\w0-9._-]+\.[\w0-9_-]+)/)) {
-                            // valid email
-                            $('.'+fieldID+"_field_content").find('.error2').remove();
-                        }
-                        else 
-                        {
-                              //console.log(fieldID +"_field_row is invalid")
-                            colorHighlight(fieldID)
-
-                            $('.'+fieldID+"_field_content").find('.error2').remove();
-                            $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This field only accepts E-Mail Address.</label>');
-                            //console.log("error in email");                            
-                        }
-                    }
-
-                     /*
-                     if ($('#'+fieldID).hasClass('paragraphText')) 
-                     {
-                        var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
-                        var limit = $('#'+fieldID+"_wordLimit").val();
-
-                        if (isWordLimitEnabled == true) 
-                        {
-                            let wordcounter = countWords ($('#'+fieldID).val());
-
-                            if (wordcounter > limit) {
-                                
-                                 colorHighlight(fieldID)
-                                $('.'+fieldID+"_field_content").find('.error2').remove();
-                                $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
-                            } else {
-                                $('.'+fieldID+"_field_content").find('.error2').remove();
-                            }
-                        }
-                    }
-                    */
-
-                }
-            }
-
-
-            function colorHighlight(fieldID) {
-                $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
-                $('#'+fieldID+"_field_row").css({
-                    'background-color': 'rgba(255,223,224,.25)',
-                    'margin-bottom': '6px!important',
-                    'border-top': '1px solid #C89797',
-                    'border-bottom': '1px solid #C89797',
-                    'padding-bottom': '6px',
-                    'padding-top': '8px',
-                    'margin-top': '16px',
-                    'margin-bottom': '16px',
-                    'box-sizing': 'border-box',
-                });                
-            }
-
-
-            function getHTMLContent(formID, FieldID) 
-            {
-                //Get the html field content
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('api/getHTMLFieldContent?api_token=') }}" + api_token,
-                    data: {
-                        formID              :  1,
-                        field_id            :  FieldID,                                                           
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(data) 
-                    {
-                        $('.'+ FieldID +'_field_content').html(data.content);   
-                        $('#'+ FieldID +'_field_row').show();  
-                        $('.'+ FieldID +'_field_content').find('#'+ FieldID).val(data.content);
-                    }
-                });                
-            }
-
-
-            function removeHTMLContent(formID, FieldID) 
-            {            
-                if ( $('.'+ FieldID +'_field_content').hasClass('htmlContentField') ) {
-                    $('.'+ FieldID +'_field_content').html("");   
-                    $('#'+ FieldID +'_field_row').hide();  
-                    $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");                  
-                }
-          
-            }
-
-            function isLogicTrue(formFieldValue, rule, recordFeldValue) 
-            {
-                if (rule == "is") 
-                {
-                    if (eval (formFieldValue == recordFeldValue) ) {
-                        return true
-                    }
-                }
-                else if (rule == "isnot") 
-                {
-                    if (formFieldValue !== recordFeldValue) {
-                        return true
-                    }
-                } else if (rule == "contains") {
-
-                    if (formFieldValue.includes(recordFeldValue)) {
-                        return true
-                    }
-
-                } else {
-                    return false;
-                }
-
-            }
-          
-            function countWords(text) 
-            {             
-                if (text.length > 0) {
-                    return text.trim().split(/\s+/).length;
-                } else {
-                    return 0;
-                }
-                
-            }   
-
-
-            function checkCredits(fieldID) 
-            { 
-                let wordCount = 0;      
-                //attachment (automatically the words is just 1, so it will deduct 1)    
-                if  (fieldID == null) {
-                    wordCount = 1;                    
-                    ajaxGetCredit(wordCount);
-                } else {
-                    wordCount = countWords ($('#'+fieldID).val());
-                    ajaxGetCredit(wordCount);
-                }
-            }
-
-            function ajaxGetCredit(wordCount) 
-            {            
-                let tutorSelectFieldID =  $("[name='appoint_teacher_field_id']").val();    
-                $.ajax({
-                    type: 'POST',
-                    url: "{{ url('api/writing/checkCredits?api_token=') }}" + api_token,
-                    data: {
-                        formID      :  1,
-                        tutorID     :  $('#'+ tutorSelectFieldID).val(),
-                        words       :  wordCount,                                                
-                    },
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
-                    success: function(data) 
-                    {
-                        if (data.totalPointsLeft < 0) 
-                        {                                                  
-                            $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
-                        } else {
-                            $('#writing-form').find('[type="submit"]').trigger('click');                                                     
-                        } 
-                    }
-                }); 
-            } 
 
             $(document).on("change paste keypress keyup keydown",".paragraphText",function() 
             {
@@ -556,6 +222,15 @@
                             return isValid;                            
                         } else {
                             //console.log("User")
+                            console.log("clicked previous")
+
+                            //checked if 1 so we can reset
+                            if (currentIndex == 1) {
+                                console.log("we need to reset");
+
+                                //$('.cfLogic').hide(); (bug this will hide when clicking previos)
+                            }
+
                             return true;
                         }
 
@@ -628,6 +303,8 @@
                     onFinished: function(e, currentIndex) {                     
                         // Uncomment the following line to submit the form using the defaultSubmit() method
                         // $('#writing-form').formValidation('defaultSubmit');
+
+                        console.log("finished")
                     }
                 });
 
@@ -637,6 +314,13 @@
             @endphp
 
             @foreach ($items as $item)
+
+                //reset on the first page when hitting options
+                $('#writing-form-p-0 {{ '#' . $item->selected_option_id }}').on('change', function() {
+                     $('.cfLogic').hide();
+                });
+
+
                 $('{{ '#' . $item->selected_option_id }}').on('change keyup blur', function() {
                     @php 
                         $showFields = $cfLogic->where('form_id', $form_id)->where('selected_option_id', $item->selected_option_id)->groupby(['field_id'])->get();
@@ -664,6 +348,8 @@
                                 $('{{ '#' . $field->field_id }}_field_row').show();
                                 @if( strtolower($writingField->type) == "htmlcontent") getHTMLContent(1, "{{ $field->field_id }}") @endif
 
+                               
+
                             } else {
                                 $('{{ '#' . $field->field_id }}_field_row').hide();
                                 @if( strtolower($writingField->type) == "htmlcontent")
@@ -678,7 +364,503 @@
                      @endforeach
                 });
                 $('{{ '#' . $item->selected_option_id }}').trigger('change', 'keypress');
+
+      
             @endforeach
-        });
+
+
+
+
+            //ADD TEXTY CKEDITOR FORMATTER (ADDED SEPTEMBER 12, 2022)
+            $('.ckEditor').each( function () {
+                //_paragraphTextfield
+                addTextFormatter(this.id);
+            });
+
+
+
+        });//[end] loader
+
+
+        function getMemberCredit() 
+        {   
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/getMemberCredit?api_token=') }}" + api_token,
+                data: { 
+                    memberID      :  {{ Auth::user()->id }},         
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },                    
+                success: function(credits) {      
+                    console.log(credits)
+
+                    if (credits >= 1) {
+                        $('#writing-form .actions').show();
+                        $('#writing-form .warnings').hide();
+                    } else {
+                        $('#writing-form .actions').hide();
+                    }
+
+                   
+                },
+                error: function(err) {
+                    //reject(err) // Reject the promise and go to catch()
+                }
+            });
+        }
+
+        function addTextFormatter(fieldID) 
+        {
+
+            CKEDITOR.replace( fieldID , {
+                //toolbar: ['removeFormat'],             
+                removePlugins: 'easyimage, exportpdf, cloudservices',
+
+            }).on('change', (evt) => {
+
+                
+                let htmlData = evt.editor.getData()
+                let  words = $(htmlData).text()           
+            
+                let wordcount = countWords(words);
+                var wordlimit = $('#'+fieldID+"_wordLimit").val();
+
+                //Update Textarea ELement 
+                evt.editor.updateElement();
+
+
+                console.log(fieldID + " wordlimit " + wordlimit)
+                console.log(fieldID + " words " + wordcount)
+
+                $("#"+ fieldID +"_total_word_count").text(wordcount);                   
+
+                if (wordcount > wordlimit) 
+                {                       
+                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 bg-danger text-white p-1 float-right" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
+                } else {
+
+                     $('.'+fieldID+"_field_content").find('.error2').remove();
+                }
+
+            });          
+        }
+
+        function checkCredits(fieldID) 
+        { 
+            let wordCount = 0;      
+            //attachment (automatically the words is just 1, so it will deduct 1)    
+            if  (fieldID == null) {
+                wordCount = 1;                    
+                ajaxGetCredit(wordCount);
+            } else {
+                wordCount = countWords ($('#'+fieldID).val());
+                ajaxGetCredit(wordCount);
+            }
+        }
+
+        function ajaxGetCredit(wordCount) 
+        {            
+            let tutorSelectFieldID =  $("[name='appoint_teacher_field_id']").val();    
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/writing/checkCredits?api_token=') }}" + api_token,
+                data: {
+                    formID      :  1,
+                    tutorID     :  $('#'+ tutorSelectFieldID).val(),
+                    words       :  wordCount,                                                
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                    if (data.totalPointsLeft < 0) 
+                    {                                                  
+                        $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
+                    } else {
+                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
+                    } 
+                }
+            }); 
+        } 
+
+
+
+        /* Count point to deduct: 180words = 1 point, 181-500words = 2point, 501-800words = 3point */
+        function getDeduction(words) 
+        {              
+            if  (parseInt(words) >= 1 && parseInt(words) <= 180)  {
+                return 1;                        
+            } else if (parseInt(words) >= 181 && parseInt(words) <= 500) {
+                return 2;
+            } else if (parseInt(words) >= 501 && parseInt(words) <= 800) {
+                return 3;
+            } else {
+                return false;
+            } 
+        }
+
+
+        function adjustIframeHeight() {
+            var $body = $('body'), $iframe = $body.data('iframe.fv');
+            if ($iframe) {
+                // Adjust the height of iframe
+                $iframe.height($body.height());
+            }
+        }
+
+        function encodeData() 
+        {
+
+          
+
+            let inputs = $('#writing-form').find('.form-control');
+            let fieldsArr = new Object;
+
+            var itemsProcessed = 0;
+
+            Array.from(inputs).forEach( (field, index) => 
+            {
+                
+
+                itemsProcessed++;
+                let id = $(field).attr('id') 
+                let name = $(field).attr('name');
+                let value = $(field).val();
+
+           
+                
+
+                if ($('#'+id+"_field_row").css( "display" ) == 'none' ) {                        
+                    //field is not showed, we will not include it to post
+                } else {                        
+                    //console.log( id + " : "  + $(field).attr('name') + " " + $(field).val() );
+                    fieldsArr[name] = value;
+                }
+
+                if (itemsProcessed == inputs.length) {
+                    //console.log(fieldsArr);
+                    convertToJSON(fieldsArr);
+                }
+            });     
+
+        };
+        
+
+        function convertToJSON(data) {
+            let JSON_data = JSON.stringify(data);
+            $('#data').text(JSON_data);
+            return 
+        }
+
+        function validateFields(currentIndex) 
+        {
+            //clean array
+            // fieldsArray = [];
+
+            let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
+            let requiredFieldsArr = [];
+
+            Array.from(inputs).forEach(field => 
+            {
+                let fieldID =  $(field).attr('id');                                 
+                highlightFieldRow(fieldID);
+
+                $('#'+fieldID+"_field_row").on('keyup change', function() 
+                {
+                    highlightFieldRow(fieldID)                                     
+                });
+                
+                
+                //check all has required in Array
+                if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                        
+                    //console.log(fieldID + " is hidden, we will not verify");
+
+                } else {
+
+                    if ($('#'+fieldID).attr("required")) 
+                    {
+                        //console.log(fieldID + " is required")
+                        let isValid = $('#'+fieldID).valid();
+                        requiredFieldsArr.push({
+                            'id': fieldID,
+                            'isValid': isValid
+                        });
+                    }
+
+                    //check if field is an email field and validate manually (since we cant validate it in section)
+                    if ($('#'+fieldID).hasClass('emailfield')) 
+                    {                            
+                        var email = $('#'+fieldID).val();
+                        if(email.match(/([+\w0-9._-]+@[\w0-9._-]+\.[\w0-9_-]+)/)) {
+                            // valid email
+                        } else {
+                            requiredFieldsArr.push({
+                                'id': fieldID,
+                                'isValid': false
+                            });                                                                           
+                        }
+                    }
+
+                    if ($('#'+fieldID).hasClass('uploadfield')) 
+                    {
+                        try {
+
+                            const oFile = document.getElementById(fieldID).files[0];
+
+                            if (oFile || $('#'+fieldID).attr("required")) {
+
+
+                                let fileExtension = ['pdf', 'doc', 'docx', 'jpeg', 'jpg', 'png'];                                
+
+                                if ($.inArray($('#'+fieldID).val().split('.').pop().toLowerCase(), fileExtension) == -1) 
+                                {
+
+                                    console.log(fileExtension, " the file extension")
+
+                                    let message = "Only formats are allowed : "+fileExtension.join(', ');
+                                    colorHighlight(fieldID)
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >' + message +'.</label>');
+
+
+                                    let isValid = $('#'+fieldID).valid();
+                                    
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': false
+                                    });
+                                } 
+                                else if (oFile.size <= 2097152) // 2 MiB for bytes.
+                                {
+                                    //console.log(fileExtension, " the file extension 2")
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();    
+
+                                } else {
+
+                                    colorHighlight(fieldID)
+
+                                    $('.'+fieldID+"_field_content").find('.error2').remove();
+                                    $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This File Size exceeds 2MB.</label>');
+
+                                    let isValid = $('#'+fieldID).valid();
+
+                                    requiredFieldsArr.push({
+                                        'id': fieldID,
+                                        'isValid': isValid
+                                    });
+                                }  
+
+                            } else {
+
+                                $('#'+fieldID+"_field_row").removeAttr("style");
+                            }
+                        } catch(err) {
+                            //alert( err )
+                        }
+
+                    }
+                }
+
+            });
+
+            let goToNextStep = true;
+            Array.from(requiredFieldsArr).forEach(requiredField => {
+                if (requiredField.isValid === false || requiredField.isValid === null) {
+                    goToNextStep = false;
+                    return false;
+                }
+            });                        
+
+            if (goToNextStep == true) {
+                //console.log("Go to step next page")
+                return true;
+            } else{
+                //console.log("stay on current page")
+                return false;
+            }                
+        }
+            
+        function highlightFieldRow(fieldID) 
+        {
+
+            console.log("highlight : " + fieldID);
+
+            if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                    
+                //console.log(fieldID + " is hidden, we will not highlight");
+            } else {
+
+                if ($('#'+fieldID).attr( "required" )) 
+                {
+                    let isValid = $('#'+fieldID).valid();
+
+                    if (isValid === false || isValid === null) {
+                        //console.log(fieldID +"_field_row is invalid")
+                        colorHighlight(fieldID)
+
+                    } else {
+                        $('.'+fieldID+"_field_content").find('label.form-label').removeClass('label-error')
+                        $('#'+fieldID+"_field_row").removeAttr("style");
+                    }
+                }
+
+                if ($('#'+fieldID).hasClass('emailfield')) {
+                    var email = $('#'+fieldID).val();
+                    if(email.match(/([+\w0-9._-]+@[\w0-9._-]+\.[\w0-9_-]+)/)) {
+                        // valid email
+                        $('.'+fieldID+"_field_content").find('.error2').remove();
+                    }
+                    else 
+                    {
+                            //console.log(fieldID +"_field_row is invalid")
+                        colorHighlight(fieldID)
+
+                        $('.'+fieldID+"_field_content").find('.error2').remove();
+                        $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >This field only accepts E-Mail Address.</label>');
+                        //console.log("error in email");                            
+                    }
+                }
+                    
+                if ($('#'+fieldID).hasClass('uploadfield')) {
+
+                    try {
+                        const oFile = document.getElementById(fieldID).files[0];
+
+                        if (oFile) {
+
+                            // 2 MiB for bytes.
+                            if (oFile.size <= 2097152) {
+
+                                $('.'+fieldID+"_field_content").find('.error2').remove();
+                                $('.'+fieldID+"_field_content").find('label.form-label').removeClass('label-error')
+                                $('#'+fieldID+"_field_row").removeAttr("style");         
+                            }                   
+                        }
+                
+                    } catch(err) {
+                        //alert( err )
+                    }                    
+                }
+
+                    /*
+                    if ($('#'+fieldID).hasClass('paragraphText')) 
+                    {
+                    var isWordLimitEnabled = $('#'+fieldID+"_enableWordLimit").val();
+                    var limit = $('#'+fieldID+"_wordLimit").val();
+
+                    if (isWordLimitEnabled == true) 
+                    {
+                        let wordcounter = countWords ($('#'+fieldID).val());
+
+                        if (wordcounter > limit) {
+                            
+                                colorHighlight(fieldID)
+                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                            $('.'+fieldID+"_field_content").append('<label id="'+fieldID+'-error2" class="error2 label-error" for="'+fieldID+'" >You have exceeded the maximum word limit.</label>');
+                        } else {
+                            $('.'+fieldID+"_field_content").find('.error2').remove();
+                        }
+                    }
+                }
+                */
+
+            }
+        }
+
+
+        function colorHighlight(fieldID) {
+            $('.'+fieldID+"_field_content").find('label.form-label').addClass('label-error')
+            $('#'+fieldID+"_field_row").css({
+                'background-color': 'rgba(255,223,224,.25)',
+                'margin-bottom': '6px!important',
+                'border-top': '1px solid #C89797',
+                'border-bottom': '1px solid #C89797',
+                'padding-bottom': '6px',
+                'padding-top': '8px',
+                'margin-top': '16px',
+                'margin-bottom': '16px',
+                'box-sizing': 'border-box',
+            });                
+        }
+
+
+        function getHTMLContent(formID, FieldID) 
+        {
+            //Get the html field content
+            $.ajax({
+                type: 'POST',
+                url: "{{ url('api/getHTMLFieldContent?api_token=') }}" + api_token,
+                data: {
+                    formID              :  1,
+                    field_id            :  FieldID,                                                           
+                },
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(data) 
+                {
+                    $('.'+ FieldID +'_field_content').html(data.content);   
+                    $('#'+ FieldID +'_field_row').show();  
+                    $('.'+ FieldID +'_field_content').find('#'+ FieldID).val(data.content);                    
+                }
+            });                
+        }
+
+
+        function removeHTMLContent(formID, FieldID) 
+        {            
+            if ( $('.'+ FieldID +'_field_content').hasClass('htmlContentField') ) {
+                $('.'+ FieldID +'_field_content').html("");   
+                $('#'+ FieldID +'_field_row').hide();  
+                $('.'+ FieldID +'_field_content').find('#'+ FieldID).val("");                  
+            }
+        
+        }
+
+        function isLogicTrue(formFieldValue, rule, recordFeldValue) 
+        {
+            if (rule == "is") 
+            {
+                if (eval (formFieldValue == recordFeldValue) ) {
+                    return true
+                }
+            }
+            else if (rule == "isnot") 
+            {
+                if (formFieldValue !== recordFeldValue) {
+                    return true
+                }
+            } else if (rule == "contains") {
+
+                if (formFieldValue.includes(recordFeldValue)) {
+                    return true
+                }
+
+            } else {
+                return false;
+            }
+
+        }
+          
+        function countWords(text) 
+        {             
+            if (text.length > 0) {
+                return text.trim().split(/\s+/).length;
+            } else {
+                return 0;
+            }
+            
+        }   
+
+
+    
+    
+
+
+        //end script
+
     </script>
 @endsection

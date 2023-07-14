@@ -9,11 +9,11 @@
 
     <div class="text-primary pt-2">
         <strong> Time Ended: 
-                @if(!(int)$result->time_ended)                                                 
-                    <span class="text-danger">{{ "Unfinished" }}</span>
-                @else 
-                    <span > {{ ESIDateTimeFormat($result->time_ended) }} </span>                                                    
-                @endif   
+            @if(!(int)$result->time_ended)                                                 
+                <span class="text-danger">{{ "Unfinished" }}</span>
+            @else 
+                <span > {{ ESIDateTimeFormat($result->time_ended) }} </span>                                                    
+            @endif   
         </strong>
     </div>
 
@@ -34,13 +34,15 @@
 
         <div id="{{ $item->question_id ?? '' }}" class="mb-4">
 
-            <div class="font-weight-bold">
-                {{ $ctr++ . ". " }} {{ $item->question }}
+            <div style="display:inline-block; width: 27px; vertical-align:top">
+                <span class="font-weight-bold">{{ $ctr++ . ". " }}</span>
             </div>
+            <div style="display:inline-block; width:95%">
+                <span class="font-weight-bold">{!! $item->question !!}</span>
+            </div>
+          
 
-            <div class="ml-4">
-
-
+            <div class="ml-5">
 
                 <div class="mt-2 font-weight-bold">
                     Correct Answer: 

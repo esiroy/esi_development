@@ -464,14 +464,20 @@ class ScheduleItem extends Model
     */
     public function getTotalMemberReserved($member) 
     {
-        $date = date('Y-m-d H:i:s');
-
-        $total = ScheduleItem::where('member_id', $member->user_id)->where('valid', 1)->where(function ($q) use ($member) {                
-                $q->orWhere('schedule_status', 'CLIENT_RESERVED')
+        $dateOfReservation = date('Y-m-d H:i:s');
+                     
+        $total = ScheduleItem::where('member_id', $member->user_id)
+        ->where('valid', 1)
+        ->where(function ($q) use ($member) 
+        {
+            $q
+                ->orWhere('schedule_status', 'CLIENT_RESERVED')
                 ->orWhere('schedule_status', 'CLIENT_RESERVED_B');
-            })->where('lesson_time', ">=", $date)
-            ->orderby('lesson_time', 'ASC')
-            ->count();
+
+        })
+        ->where('lesson_time', ">=", $dateOfReservation)
+        ->count();
+
 
         return $total;
     }
@@ -510,17 +516,18 @@ class ScheduleItem extends Model
      * Returns: @total (number of reserved A and B in a particular day)
     */    
     public function getTotalTutorDailyReserved($memberID, $tutorID, $date) 
-    {
+    {      
+
         $nextDay = date("Y-m-d", strtotime($date . " + 1 day"));
 
-        $reserved = ScheduleItem::whereRaw("(lesson_time > ? AND lesson_time <= ?)", [$date." 00:30:00", $nextDay." 00:30:00"])
+        $reserved = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date, $nextDay." 00:30:00"])
                         ->where('member_id', $memberID)
                         ->where('tutor_id', $tutorID)  
                         ->where('valid', 1)          
                         ->where('schedule_status', 'CLIENT_RESERVED')
                         ->count();                           
 
-        $reserved_b = ScheduleItem::whereRaw("(lesson_time > ? AND lesson_time <= ?)", [$date." 00:30:00", $nextDay." 00:30:00"])
+        $reserved_b = ScheduleItem::whereRaw("(lesson_time >= ? AND lesson_time <= ?)", [$date, $nextDay." 00:30:00"])
                         ->where('member_id', $memberID)
                         ->where('tutor_id', $tutorID)  
                         ->where('valid', 1)          
@@ -532,6 +539,64 @@ class ScheduleItem extends Model
         $total = $reserved + $reserved_b;
 
         return $total;
+    }
+
+
+    /*  @description : Get the time interval of the current time 
+        @returns     : Returns current time lesson interval
+                        Lesson is null - Returns current time lesson interval
+        @foramt      :  date('Y-m-d H:i:s')
+    */
+
+    function getCurrentTimeDuration($lessonTime = null) 
+    {
+        $currenTime = date('Y-m-d H:i:s');
+
+        if ($lessonTime == null) {        
+            $lessonDate = $this->adjustToJapaneseHours($currenTime);    
+        } else {        
+            $lessonDate =  $this->adjustToJapaneseHours($lessonTime);
+        }
+
+        return $this->calculateLessonStartTime($lessonDate);
+    }
+
+
+    /* 
+        @DESCRIPTION: Base on the date, it will get the time in within30 minute 
+
+        @note:  A LESSON THAT FALLS ON 00:00:00 till 00:30:00 will be considered a day before 24:00:00 
+    */
+    public function adjustToJapaneseHours($lessonTime) 
+    {
+        if (date('H', strtotime($lessonTime)) == '00') {
+            return date('Y-m-d H:i:s', strtotime($lessonTime ." - 1 day"));            
+        } else {    
+            return date('Y-m-d H:i:s', strtotime($lessonTime)); 
+        }
+    }
+
+    /* 
+        @DESCRIPTION: Base on the date, it will get the time in within30 minute 
+    */
+
+    public function calculateLessonStartTime($date) 
+    {
+
+        $day        =  date('Y-m-d', strtotime($date));
+        $hour       = date('H', strtotime($date));
+        $min        = date('i', strtotime($date));
+        $seconds    = "00";    
+
+        if ($min >= 0 && $min <= 25) {
+            $minute = "00";
+        } else if ($min > 25 && $min <= 59) {
+            $minute = "30";        
+        }  else {
+            $minute = "00";
+        }
+
+        return ($day ." ". $hour.":".$minute.":".$seconds);
     }
 
 

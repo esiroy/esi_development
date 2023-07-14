@@ -149,6 +149,17 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-6 small">
+                                Hide: FAQ/Lesson Fee/Lesson Course : 
+                            </div>
+                            <div class="col-6">
+                                <input type="checkbox"  name="hideMemberTabs" id="hideMemberTabs" v-model="user.hideMemberTabs" >
+                            </div>
+                        </div>
+                    </div>                    
                 </div>
 
                 <div id="nickname-row" class="row pt-2">
@@ -377,7 +388,7 @@
                                     Teacher Attention <div class="float-right">:</div>
                                 </label>
                             </div>
-                            <div class="col-8">
+                            <div class="col-10">
 
                                 <ul class="checkbox-options">
 
@@ -447,7 +458,7 @@
 
                                     <li>
                                         <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Note 
-                                        <textarea name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="col-3 pl-1 form-control form-control-sm d-inline-block" 
+                                        <textarea id="extraDetails" name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="ckeditor col-3 pl-1 form-control form-control-sm d-inline-block" 
                                             v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
                                     </li>
                                 </ul>
@@ -1469,6 +1480,9 @@ export default {
         MemberMiniTestViewerComponent,
     },
     props: {
+        hidemembertabs: {
+            type: Object
+        },
         agentinfo: {
             type: Object
         },
@@ -1912,6 +1926,8 @@ export default {
                 last_name: "",
                 nickname: "",
               
+                //tab settings
+                hideMemberTabs: null,
                 
                 japanese_lastname: "",
                 japanese_firstname: "",
@@ -2026,9 +2042,6 @@ export default {
     mounted: function () 
 	{
 
-        console.log(this.minitest);
-
-
         this.getMergedAccounts();
 
 
@@ -2038,6 +2051,11 @@ export default {
             this.selectedMemberLevel = null;
         }
 
+
+        //console.log(this.user.hideMemberTabs)
+         if (this.$props.hidemembertabs) {
+            this.user.hideMemberTabs = this.$props.hidemembertabs.value;
+         }
 
 
         //console.log(this.memberlatestexamscore, "latest score");
@@ -2313,6 +2331,11 @@ export default {
                 return;
             }
 
+            //ckEditor is now added (this will update the value before posting to api)            
+            this.user.preference.purposeExtraDetails.OTHERS = $('#extraDetails').val()
+            
+            //console.log(this.user.preference.purposeExtraDetails.OTHERS, $('#extraDetails').val());    
+            
        
             axios.post("/api/update_member?api_token=" + this.api_token, 
             {

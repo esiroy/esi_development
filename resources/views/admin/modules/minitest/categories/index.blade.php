@@ -58,6 +58,7 @@
                                         <th class="w-25 small text-center">Instructions</th>  
                                         <th class="small text-center">Time Limit</th> 
                                         <th class="small text-center">Show Mulitple</th> 
+                                        <th class="small text-center">Mulitple Answers</th> 
                                         <th class="small text-center">Action</th>                                    
                                     </tr>
                                 </thead>
@@ -77,13 +78,20 @@
                                         </td>
                                         <td class="small text-center">{{ $item->instructions ?? "" }}</td>    
                                         <td class="small text-center">{{ $item->time_limit ." Minutes" ?? "" }}</td>
-                                         <td class="small text-center">
+                                        <td class="small text-center">
                                             @if (isset($item->show_multiple) && $item->show_multiple == true) 
                                                 <span class="text-success"><i class="fa fa-check" aria-hidden="true"></i></span>
                                             @else 
                                                 <span class="text-danger"><i class="fa fa-times" aria-hidden="true"></i></span>                                             
                                             @endif
                                         </td>
+                                        <td class="small text-center">
+                                            @if (isset($item->multiple_correct_answers) && $item->multiple_correct_answers == true) 
+                                                <span class="text-success"><i class="fa fa-check" aria-hidden="true"></i></span>
+                                            @else 
+                                                <span class="text-danger"><i class="fa fa-times" aria-hidden="true"></i></span>                                             
+                                            @endif
+                                        </td>                                        
                                         <td class="small text-center">
 
                                             <a href="{{ route('admin.minitest.questions.index', ['category_id'=> $item->id]) }}" class="btn btn-sm btn-info mr-1">Questions</a> 
@@ -196,6 +204,8 @@
                             </div>
                         </div>
 
+                        <textarea id="content"  name="content"  class="form-control form-control-sm"></textarea>
+                        
 
                         <div class="row pt-2">
                             <div class="col-6">
@@ -232,9 +242,39 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>                       
+                        </div>           
+
+                        <div class="row pt-2">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-4 small pr-0">
+                                        <label for="time_limit" class="px-0 col-md-12 col-form-label">                                        
+                                        Randomized Questions? <div class="float-right">:</div></label>
+                                    </div>
+                                    <div class="col-2 pt-2 mr-0">                                       
+                                        <input type="checkbox" name="randomized_questions" value="true">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                
                         
 
+                       <div class="border-top my-3"></div>
+
+                        <div class="row pt-2">
+                            <div class="col-6">
+                                <div class="row">
+                                    <div class="col-4 small pr-0">
+                                        <label for="time_limit" class="px-0 col-md-12 col-form-label">                                        
+                                        Multiple Correct Answers? <div class="float-right">:</div></label>
+                                    </div>
+                                    <div class="col-2 pt-2 mr-0">                                       
+                                        <input type="checkbox" name="multiple_correct_answers" value="true">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                
+                        
                         
 
                         <div class="row py-4">
@@ -268,10 +308,39 @@
 
 @section('scripts')
 @parent
+
+<script src="{{ url('js/ckeditor/ckeditor.js')  }}"></script>
+
+
 <script type="text/javascript">
     window.addEventListener('load', function() {
-      
+        addTextFormatter("content");      
     });
+
+    function addTextFormatter(id) {
+        CKEDITOR.replace( id , {
+            toolbarGroups: [
+                    { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+                    { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+                    { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+                    { name: 'forms', groups: [ 'forms' ] },
+                    
+                    { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+                    { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+                    { name: 'links', groups: [ 'links' ] },
+                    { name: 'insert', groups: [ 'insert' ] },
+                    
+                    { name: 'styles', groups: [ 'styles' ] },
+                    { name: 'colors', groups: [ 'colors' ] },
+                    { name: 'tools', groups: [ 'tools' ] },
+                    { name: 'others', groups: [ 'others' ] },
+                    
+                ],
+            removePlugins: 'easyimage, exportpdf, cloudservices',
+            extraPlugins: 'html5audio',                        
+            removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
+        });   
+    } 
 
 </script>
 @endsection

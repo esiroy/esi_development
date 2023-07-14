@@ -292,9 +292,10 @@ div.dt-button-collection {
     }
 }
 
-.member-message {
+.member-message,
+.chat-support-message {
     img.img_preview {
-        width: 100%;
-        max-width: 300px;
+        width: 250px;
+        max-width: 250px;
     }
 }

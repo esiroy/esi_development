@@ -6,7 +6,7 @@
                 <span class='text-danger'>*</span>                            
             @endif
         </label>
-        <textarea id="{{ $id }}" name="{{ $id .'_paragraphTextfield' }}" placeholder="{{ $label ?? '' }}" class="form-control paragraphText" @if ($display_meta['required']) {{ "required" }} @endif></textarea>
+        <textarea id="{{ $id }}" name="{{ $id .'_paragraphTextfield' }}" placeholder="{{ $label ?? '' }}" class="form-control paragraphText ckEditor" @if ($display_meta['required']) {{ "required" }} @endif></textarea>
         <div class="small">{!! $display_meta['description'] ?? "" !!}</div>
 
         @if ($display_meta['enableWordLimit'] == 'true')

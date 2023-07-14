@@ -10,7 +10,7 @@ use App\Models\MiniTestCategoryType;
 use Auth, Gate, Validator;
 use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Validation\Rule;
-
+use Illuminate\Support\Str;
 
 class MiniTestCategoriesController extends Controller
 {
@@ -62,7 +62,10 @@ class MiniTestCategoriesController extends Controller
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
-        $showMultiple = $request->show_multiple;        
+        $showMultiple = $request->show_multiple;    
+        $randomizedQuestions = $request->randomized_questions;    
+        $multipleCorrectAnswers = $request->multiple_correct_answers;
+        $content = $request->content;    
 
         //disallow duplicate name
         $validator = Validator::make($request->all(), 
@@ -86,7 +89,10 @@ class MiniTestCategoriesController extends Controller
             'slug'  => str_replace(' ', '_', $name),
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
+            'content'   => $content,
             'show_multiple' => (isset($showMultiple)) ? true : false,
+            'randomized_questions' => (isset($randomizedQuestions)) ? true : false,
+            'multiple_correct_answers' => (isset($multipleCorrectAnswers)) ? true : false, 
             'valid' => true,
         ]);
 
@@ -149,9 +155,12 @@ class MiniTestCategoriesController extends Controller
         $name = $request->name;
         $instructions = $request->instructions;
         $timeLimit = $request->time_limit;
-        $showMultiple = $request->show_multiple;        
+        $showMultiple = $request->show_multiple;       
+        $randomizedQuestions = $request->randomized_questions;
+        $multipleCorrectAnswers = $request->multiple_correct_answers;
+        $content = $request->content;       
 
-
+       
         //disallow duplicate name
         $validator = Validator::make($request->all(), 
         [
@@ -175,10 +184,13 @@ class MiniTestCategoriesController extends Controller
         $updated = $category->update([
             'question_category_type_id' => $request->parent_id,
             'name'  => $name,
-            'slug'  => str_replace(' ', '_', $name),
+            'slug'  => Str::of($name)->slug('-'),
             'instructions'  => $instructions,
             'time_limit' => $timeLimit,
             'show_multiple' => (isset($showMultiple)) ? true : false,
+            'randomized_questions' => (isset($randomizedQuestions)) ? true : false,
+            'multiple_correct_answers' => (isset($multipleCorrectAnswers)) ? true : false, 
+            'content'   => $content,
             'valid' => true,
         ]);        
 

@@ -25,6 +25,7 @@ use App\Models\MemberLevel;
 use App\Models\MergedAccount;
    
 use App\Models\MemberMiniTestSetting;
+use App\Models\MemberSetting;
 
 use Auth, Hash, Storage;
 use Carbon\Carbon;
@@ -552,21 +553,24 @@ class MemberController extends Controller
         $desiredSchedule = $memberDesiredSchedule->getMemberDesiredSchedule($memberID);
 
 
-        //@todo: get User Mini Test 
+        //get User Mini Test 
         $memberMiniTestSetting = new MemberMiniTestSetting();
 
         $minitest['memberMiniTestHasOverride']    = $memberMiniTestSetting->hasOverride($memberID);
         $minitest['memberMiniTestLimit']          = $memberMiniTestSetting->getMiniTestLimit($memberID);
         $minitest['memberMiniTestDuration']       = $memberMiniTestSetting->getMiniTestDuration($memberID);
 
+        //get User Tab Settings 
+        $memberSettingsObj = new MemberSetting();
+        $hideMemberTabs = $memberSettingsObj->getMemberSetting($memberID, 'hide_member_tabs');
 
-
+    
 
         //View all the stufff
         return view('admin.modules.member.edit', compact('agentInfo', 'memberships', 'shifts', 'attributes',
             'userInfo', 'memberInfo', 'userImage', 'latestReportCard',
             'lessonGoals', 'lessonClasses', 'desiredSchedule', 'purpose', 'memberLatestExamScore', 'currentMemberlevel',
-            'minitest'
+            'minitest', 'hideMemberTabs'
             ));
 
     }

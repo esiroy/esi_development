@@ -135,7 +135,9 @@
                     <div class="card mt-4" style="">
                         <div class="card-header esi-card-header text-center">
                             予約表
-                            <small style="font-size:11px; color:#333">予約は最大15コマまでとなります</small>
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html','予約は最大15コマまでとなりま',900,820);">
+                                <small style="font-size:11px;">予約は最大15コマまでとなります</small>
+                            </a>
                         </div>
 
                         <div class="card-body px-3">
@@ -143,6 +145,10 @@
 
                             <br/>
                             講師からコールがない場合は、<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0717162035.html','講師への連絡　チャット」とは',900,820);">「講師への連絡」</a>からご連絡ください。
+
+                            <br>
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/1004131925.html','講師都合のキャンセルー代行について',900,820);">
+                                講師都合のキャンセル及び代行についてのご案内</a>
 
                             <table id="memberReservations" cellspacing="0" cellpadding="9" class="tblRegister mt-3" width="100%">
                                 <tbody>

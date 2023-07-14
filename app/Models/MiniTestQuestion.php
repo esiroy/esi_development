@@ -24,6 +24,14 @@ class MiniTestQuestion extends Model
          return $this->hasOne(MiniTestAnswerKey::class, 'question_id', 'id');        
     }
 
+    public function answers($question_id) 
+    {
+        
+         return MiniTestAnswerKey::where('question_answer_key.question_id', $question_id)
+                ->join('question_choices', 'question_answer_key.choice_id', '=', 'question_choices.id')
+                ->get();
+    }       
+
     public function answerText($choice_id) {
         return MiniTestChoice::find($choice_id)->choice;
     }

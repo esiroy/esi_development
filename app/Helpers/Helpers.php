@@ -406,9 +406,38 @@ if (! function_exists('checkbox_ticker')) {
 
 if (! function_exists('countWords')) 
 {
-    function countWords($text) {
-        return str_word_count($text);
+    function countWords($text) 
+    {
+        $counter = explode(" ", $text);
+        return count($counter);        
     }  
+}
+
+if (! function_exists('strip_tags_content')) 
+{
+    function strip_tags_content($string) { 
+
+        // ----- remove HTML TAGs ----- 
+        $string = strip_tags($string);     
+        $string = preg_replace ('/<[^>]*>/', ' ', $string);           
+
+        //remove &nbsp;
+        $string = utf8_decode($string);
+        $string = str_replace("&nbsp;", " ", $string);
+        $string = preg_replace('/\s+/', ' ',$string);
+        $string = trim($string);  
+
+        // ----- remove control characters ----- 
+        $string = str_replace("\r", '', $string);
+        $string = str_replace("\n", ' ', $string);
+        $string = str_replace("\t", ' ', $string);
+
+        // ----- remove multiple spaces ----- 
+        $string = trim(preg_replace('/ {2,}/', ' ', $string));
+
+       return $string; 
+
+    }
 }
 
 

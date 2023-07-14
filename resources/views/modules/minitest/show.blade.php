@@ -40,17 +40,27 @@
                         </div>
 
                         <div class="card-body">
-
-
-                        <questions-component 
-                            :multiple="{{ ($category->show_multiple == true) ? 'true': 'false' }}"
-                            :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
-                            :category="{{ $category }}"
-                            api_token="{{ Auth::user()->api_token }}" 
-                            csrf_token="{{ csrf_token() }}"
-                        >
-                        </questions-component>  
-
+                            @if ($category->multiple_correct_answers == true)
+                                <questions-multi-answers-component 
+                                    :multiple="{{ ($category->show_multiple == true) ? 'true': 'false' }}"
+                                    :multiple_correct_answer="{{ ($category->multiple_correct_answers == true) ? 'true': 'false' }}"
+                                    :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
+                                    :category="{{ $category }}"
+                                    api_token="{{ Auth::user()->api_token }}" 
+                                    csrf_token="{{ csrf_token() }}"
+                                >
+                                </questions-multi-answers-component >                                 
+                            @else
+                                <questions-component 
+                                    :multiple="{{ ($category->show_multiple == true) ? 'true': 'false' }}"
+                                    :multiple_correct_answer="{{ ($category->multiple_correct_answers == true) ? 'true': 'false' }}"
+                                    :memberinfo="{{  json_encode(Auth::user()->memberInfo) }}" 
+                                    :category="{{ $category }}"
+                                    api_token="{{ Auth::user()->api_token }}" 
+                                    csrf_token="{{ csrf_token() }}"
+                                >
+                                </questions-component>  
+                            @endif
                         </div>
 
                     </div>

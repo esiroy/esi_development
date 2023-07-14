@@ -10,6 +10,6 @@
 
 マイチューター カスタマーサポート {{PHP_EOL}}
 
-お問い合せ 　support@mytutor.co.jp {{PHP_EOL}}
+お問い合せ 　{{ Config::get('mail.from.address') }} {{PHP_EOL}}
 
 {!! $emailMessage !!}

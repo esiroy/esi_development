@@ -42,5 +42,5 @@
 </div>
 
 <div style="margin-top:20px; font-size: 14px">
-    お問い合せ &nbsp;&nbsp;　support@mytutor.co.jp
+    お問い合せ &nbsp;&nbsp;　{{ Config::get('mail.from.address') }}
 </div>

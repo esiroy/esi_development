@@ -161,17 +161,19 @@
                                         <td><strong>Attention</strong></td>
                                         <td>:</td>
                                         <td>
+
+                                            <div style="max-height:350px; overflow-y:scroll">
                                             @foreach($lessonGoals as $key => $goals)
                                                 @if(isset($goals->purpose))
-
                                                     @if (isset($goals->purposeDescription))
                                                         @if (strtolower($goals->purposeDescription) == "others")
-                                                            {{ $goals->extra_detail ?? '' }}
+                                                            {!! $goals->extra_detail ?? '' !!}
                                                         @endif
                                                     @endif
-
                                                 @endif
                                             @endforeach
+                                            </div>
+
                                         </td>
                                     </tr>
 

@@ -26,42 +26,49 @@ class WritingController extends Controller
     
     public function index(FormFields $formFieldModel) 
     {
-        $member = Member::where('user_id', Auth::user()->id)->first();
-        if (isset($member)) {
+        try {
 
-            /* FRONT END WRITING FORM */
+            $member = Member::where('user_id', Auth::user()->id)->first();
+            if (isset($member)) {
 
-            $form_id = 1; //all forms are 1(for now)
-            $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
-            $formFieldHTML[] = "";
+                /* FRONT END WRITING FORM */
 
-            $cfields = $formFields;        
-            foreach ($formFields as $formField) 
-            {
-                $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
-            }
+                $form_id = 1; //all forms are 1(for now)
+                $formFields = FormFields::where('form_id', $form_id)->where('page_id', 0)->orderBy('sequence_number', 'ASC')->get();
+                $formFieldHTML[] = "";
 
-            /************ GET CHILDREN HTML ************/
-            $formFieldChildrenHTML[] = "";
-            //Get Pages
-            $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
-            $pageCounter =  $pages->count() + 1;
-
-            foreach ($pages as $page) 
-            {           
-                $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
-                $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
-                foreach ($formChildFields as $formChildField) 
+                $cfields = $formFields;        
+                foreach ($formFields as $formField) 
                 {
-                    $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                    $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
                 }
+
+                /************ GET CHILDREN HTML ************/
+                $formFieldChildrenHTML[] = "";
+                //Get Pages
+                $pages =  FormFields::distinct()->where('page_id', '>=', 1)->orderBy('page_id', 'ASC')->get(['page_id']);
+                $pageCounter =  $pages->count() + 1;
+
+                foreach ($pages as $page) 
+                {           
+                    $formChildFields = FormFields::where('form_id', $form_id)->where('page_id', $page->page_id)->orderBy('sequence_number', 'ASC')->get();
+                    $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
+                    foreach ($formChildFields as $formChildField) 
+                    {
+                        $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                    }
+                }
+
+                return view("modules.writing.index", compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
+
+            } else {
+                sleep(3);
+                return redirect()->away( url('/admin/writing'));        
             }
+           
+        }  catch(\Exception $e) {
 
-            return view("modules.writing.index", compact('pages', 'pageCounter', 'form_id','formFields', 'formFieldHTML', 'formFieldChildrenHTML'));
-
-        } else {
-            sleep(3);
-            return redirect()->away( url('/admin/writing'));        
+             echo $e->getMessage();
         }
     }
 
@@ -71,6 +78,10 @@ class WritingController extends Controller
     */
     public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
+
+
+
+
         $fields = array();        
         $tutor_id = null;
         $userAttachedFile = false;
@@ -113,11 +124,18 @@ class WritingController extends Controller
 
                     if ($display_meta['memberPointChecker'])  
                     {
-                        $wordCount = countWords($value);
+                        $wordCount = countWords(strip_tags_content($value));
+
                         $totalWords = $totalWords +  $wordCount;   
 
                         $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];  
-                        $fields[$key] = $value;                     
+                        $fields[$key] = $value;  
+
+                    } else {
+                    
+                        $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $value];  
+                        $fields[$key] = $value; 
+                    
                     }
 
                 } else { 

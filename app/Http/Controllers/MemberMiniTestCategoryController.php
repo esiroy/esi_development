@@ -12,6 +12,13 @@ use App\Models\MiniTestCategoryType;
 
 class MemberMiniTestCategoryController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+
+        $this->middleware('redirectAdmin');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -52,14 +59,11 @@ class MemberMiniTestCategoryController extends Controller
     public function show($id, MiniTestCategoryType $miniTestcategoryType)
     {
 
-        $categoryType = MiniTestCategoryType::where('valid', true)->where('id', $id)->first();
-        $categories = MiniTestCategory::where('valid', true)->where('question_category_type_id', $id)->get();
+        $categoryType   = MiniTestCategoryType::where('valid', true)->where('id', $id)->first();
+        $categories     = MiniTestCategory::where('valid', true)->where('question_category_type_id', $id)->get();
+        $breadcrumbs    = $miniTestcategoryType->getParentLinks($id);
+
        
-
-        $breadcrumbs = $miniTestcategoryType->getParentLinks($id);
-
-      
-
          //Get List 
         $categorySubTypes = MiniTestCategoryType::where('parent_id', $categoryType->id)->get();
 

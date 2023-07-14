@@ -31,6 +31,6 @@
 
     <div style="margin-top:20px; font-size: 14px">
         <div>マイチューター　カスタマーサポート</div>
-        <div>ご連絡先　　　support@mytutor.co.jp</div>
+        <div>ご連絡先　　　{{ Config::get('mail.from.address') }}</div>
     </div>
 </div>

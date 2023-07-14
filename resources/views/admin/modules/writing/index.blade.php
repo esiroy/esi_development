@@ -213,7 +213,7 @@
 @section('scripts')
     <script src="{{ url('js/jquery/jquery-ui.min.js') }}" defer></script>
     <script src="{{ url('js/dropzone/dropzone.min.js') }}" defer></script>
-    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" deferd></script>
+    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" defer></script>
 
     <script type="text/javascript" defer>
         var api_token = "{{ Auth::user()->api_token }}";

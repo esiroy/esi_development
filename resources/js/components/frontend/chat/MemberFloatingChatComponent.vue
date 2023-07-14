@@ -96,6 +96,7 @@
 
                                 <div class="chatlog-wrapper">
 
+                                    <!--[START] CHATLOG MESSAGE-->
                                     <div class="chat" v-for="(chatlog, chatlogIndex) in chatlogs[chatbox.userid]" :key="'my_chatlog_'+ chatlogIndex">
 
                                         <div class="row" v-if="chatlog.sender.type == 'CHAT_SUPPORT'">  
@@ -111,7 +112,7 @@
                                                 <div class="small text-left mt-2" v-if="chatlogIndex == 0 || chatlogs[chatbox.userid][chatlogIndex - 1].sender.type !== 'CHAT_SUPPORT'">                           
                                                     {{ chatlog.sender.nickname }}, {{ chatlog.time  }}                             
                                                 </div>
-                                                <div class="chat-support-message" v-html="chatlog.sender.message"></div>
+                                                <div class="chat-support-message" v-html="formatMessage(chatlog.sender.message)"></div>
                                             </div>
                                         </div>
 
@@ -124,7 +125,7 @@
                                                 </div>
 
                                                 <div class="member-message-container">
-                                                    <div class="member-message" v-html="chatlog.sender.message"></div>
+                                                    <div class="member-message" v-html="formatMessage(chatlog.sender.message)"></div>
                                                 </div>
 
                                             </div>
@@ -136,6 +137,8 @@
                                         
                                         </div>
                                     </div>
+                                     <!--[END] CHATLOG MESSAGE-->
+
                                 </div>
 
                             </div>
@@ -297,6 +300,66 @@ export default {
             username: "admin",
             status: 'offline',
         }
+    },
+    prependHTTPS(url) {
+        if (!/^https?:\/\//i.test(url)) {
+            url = 'https://' + url;
+            return url;
+        } else {
+
+            return url;
+        }
+    },
+    formatMessage(message) 
+    {
+       return this.urlify(message);
+    },
+    linkify_v1(str) {
+       return str.replace(/((http(s)?(\:\/\/))?(www\.)?([\w\-\.\/])*(\.[a-zA-Z]{2,3}\/?))(?!(.*a>)|(\'|\"))/g, '<a href="$1"  target="_blank" >$1</a>');    
+    },
+    linkify(text) {
+
+        // Create a temporary DOM element
+        var tempElement = document.createElement('div');
+        tempElement.innerHTML = text;
+
+        // Get all text nodes within the temporary DOM element
+        var textNodes = [];
+        var treeWalker = document.createTreeWalker(tempElement, NodeFilter.SHOW_TEXT, null, false);
+        while (treeWalker.nextNode()) {
+            textNodes.push(treeWalker.currentNode);
+        }
+
+        // Replace URLs with anchor tags in text nodes
+        textNodes.forEach(function(node) {
+            var nodeText = node.nodeValue;
+            var urlRegex = /((http|https|ftp):\/\/[^\s]+)/g;
+            var replacedText = nodeText.replace(urlRegex, function(url) {
+            // Exclude anchor tags, img tags, href links, and text inside img tags
+            if (node.parentNode.tagName !== 'A' && node.parentNode.tagName !== 'IMG' && node.parentNode.getAttribute('href') !== url && node.parentNode.getAttribute('src') !== url) {
+                return '<a href="' + url + '" target="_blank">' + url + '</a>';
+            } else {
+                return url;
+            }
+            });
+            if (replacedText !== nodeText) {
+            var newNode = document.createElement('span');
+            newNode.innerHTML = replacedText;
+            node.parentNode.replaceChild(newNode, node);
+            }
+        });
+
+        return tempElement.innerHTML;
+    },   
+    urlify(text) {
+        var addHTTPsExp = /(\b((https?|ftp|file):\/\/|(www))[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)/ig;   
+
+        let newString = text.replace(addHTTPsExp, (url) => {
+           let newLink = this.prependHTTPS(url);
+           return newLink;
+        });
+        
+        return  this.linkify(newString);
     },
     getChatHistory: function(user, scrollToBottom) 
     {        
@@ -815,6 +878,7 @@ export default {
     },
     sendMessage: function(chatbox, index) 
     {
+
      
         //files is empty and message is empty, stop sending message
         if (this.files.length == 0 && (this.message[index] === "" || this.message[index] === undefined)) 
@@ -973,21 +1037,9 @@ export default {
 </script>
 
 
-<style>
-.img_preview {
-    width: 100%;
-}
-.custom-pdf {
-    font-size: 100px;
-}
-</style>
-
-
 <style scoped>
 
-    .img_preview {
-        width: 100px;
-    }
+
     #fileUpload {
         display: none;
     }
@@ -1005,7 +1057,7 @@ export default {
         position: fixed;
         bottom: 0px;
         right: 75px;
-        z-index: 9999;
+        z-index: 999;
     }
     #floating-history-btn {
         font-size: 11px;
@@ -1099,7 +1151,8 @@ export default {
 
     .member-message-container {    
         position: relative;
-        float:right
+        float:right;
+        max-width: inherit;
     }
 
    .member-message {
@@ -1112,6 +1165,7 @@ export default {
         display: block;
         margin-top: 5px;
         padding: 7px 25px 7px;
+        width: min-content;
   }
 
 

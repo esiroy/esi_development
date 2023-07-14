@@ -46,18 +46,22 @@
 
                             <div class="pb-2 pl-4">
                                 @if (count($categories) > 0)
+                                
                                     @foreach($categories as $category)
                                         <div class="pb-3 mb-2" style="border-bottom:1px dashed #d4d4d4">
                                             <a href="{{ url('minitest/'. $category->slug) }}" class="small">
-                                                <strong>{{ $category->name }} </strong>
+                                                <strong>{{ $category->name }}</strong>
                                             </a> 
                                             <div class="small text-muted">{{ $category->instructions }}</div>
                                             <div class="small text-muted"> Time Limit : {{ $category->time_limit }} Minutes </div>
                                         
                                         </div>
                                     @endforeach
-                                @else 
+                                    
+                                @elseif (count($categorySubTypes) <= 0 && count($categories) <=  0)  
+
                                     <p class="text-danger"> Sorry, there is no questions for this test, please come back later <p>
+
                                 @endif
 
                             </div>
@@ -69,12 +73,12 @@
                     
                     @foreach($categorySubTypes as $subType)
                     <div style="border-bottom:1px dashed #d4d4d4">
-                        <div class="text-left pl-2 py-4">
+                        <div class="text-left pl-2 pb-4">
                             <table>
                                 <tr>
                                     <td class="pl-2 pr-4 align-top">                                            
                                         <a href="{{  url('minitest/category/'.$subType->id) }}" class="strong">
-                                            {{ $subType->name }}
+                                            {{ $subType->name }} 
                                         </a>
                                     </td>
                                 </tr>

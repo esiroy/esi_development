@@ -70,12 +70,27 @@
                                             @endif
                                         </td>    
 
-                                        <td class="small text-center">
+                                        <td class="small text-left">
+
+                                            @if (count($item->answers($item->id)) >= 1)
+                                                <ol>
+                                                @foreach($item->answers($item->id) as $answer)
+                                                    <li class="correct-answer">{{ $answer->choice }}</li>
+                                                @endforeach   
+                                                </ol>
+                                            @endif
+
+                                            @php 
+                                            
+                                            /*
                                             @if (isset($item->answer->choice_id))                                                 
                                                 {{  $item->answerText($item->answer->choice_id) }}
                                             @else 
                                                 <div class="text-center text-danger p-2">Warning: No Choice selected or Added</div>
                                            @endif
+                                           */
+                                           @endphp
+
                                         </td>
                                                     
                                         <td class="small text-center">

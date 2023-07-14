@@ -27,4 +27,5 @@
     <div class="mt-3">@include('modules.member.sidebar.membertestscores')</div>    
     <div class="mt-3">@include('modules.member.sidebar.memberpurpose')</div>
     <div class="mt-3">@include('modules.member.sidebar.timemanager')</div>
+    <div class="mt-3">@include('modules.member.sidebar.attentionnotes')</div>
 </div>
