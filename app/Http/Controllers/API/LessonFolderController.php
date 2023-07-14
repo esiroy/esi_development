@@ -218,7 +218,7 @@ class LessonFolderController extends Controller
             $keyword = $request->searchKeyword;
         
             $folders = $folder
-                ->select('id', 'folder_name', 'folder_description', 'order_id')
+                ->select('id', 'folder_name', 'folder_description', 'order_id', 'thumb_path', 'thumb_file_name')
                 ->selectRaw('UCASE(folder_name) as formatted_folder_name') // Use UCASE to format folder_name with ucfirst
                 ->where('folder_name', 'LIKE', '%'.$keyword.'%')
                 ->orWhere('folder_description', 'LIKE', '%'.$keyword.'%')
@@ -231,7 +231,12 @@ class LessonFolderController extends Controller
             if ($folders) {
 
                 foreach ($folders as $index => $folder) {
+
                     $parentFolders = $folder->getParentFolders($folder->id);
+
+                    $isThumbExist = (Storage::disk('thumbnails')->exists($folder->thumb_file_name)) ? true : false;
+
+                    $folders[$index]['isThumbExist'] = $isThumbExist; 
                     $folders[$index]['parentFolders'] = $parentFolders;
 
                     $lessonCounter = $folder->where('parent_id', $folder->id)->where('privacy', 'public')->orderBy('order_id', 'ASC')->count();
