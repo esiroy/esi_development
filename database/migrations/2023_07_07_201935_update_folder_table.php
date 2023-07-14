@@ -15,6 +15,7 @@ class UpdateFolderTable extends Migration
     {
         Schema::table('folders', function (Blueprint $table) {
             $table->boolean('is_book')->default(false);
+            
         });
     }
 

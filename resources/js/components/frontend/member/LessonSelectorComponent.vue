@@ -79,7 +79,7 @@
 
 									<div class="row m-0 p-0">
 										<div class="col-4 m-0 p-1" v-for="(file, fileIndex) in selectedFiles" :key="'file-'+fileIndex" >
-											<img :src="file.path" class="img-fluid rounded img-thumbnail">
+											<img :src="getBaseURL(file.path) " class="img-fluid rounded img-thumbnail">
 										</div>
 									</div>
 								</div>
@@ -131,8 +131,6 @@
 								</div>				
 							</div>
 							<!--[end] Breadcrumbs-->
-
-						{{ "view search item" }}
 
 					</div>
 
@@ -325,9 +323,11 @@
 																	</div>
 																</div>
 																<div class="content" v-show="!isloadingImages" @contextmenu="preventRightClick">
-																	<div class="row" v-if="folder_images[row.index]">
 
+																	<div class="row" v-if="folder_images[row.index]">
+																	
 																		<div class="col-4" v-for="(images, imageIndex) in folder_images[row.index]" :key="'folder_images_'+row.index+'_'+imageIndex">
+
 																			<img v-if="isBook == false" class="img-fluid cursor-pointer" :src="getBaseURL(images.path)"  
 																				@click.prevent="imageViewer(imageIndex, folder_images[row.index])">   
 

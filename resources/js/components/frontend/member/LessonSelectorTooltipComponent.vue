@@ -17,6 +17,7 @@
 					</div>
 				</div>
 
+				<!--
 				<div class="f-preview" v-if="category.isThumbExist == true">
 					<div class="hr"></div>
 					<span class="font-weight-bold">Preview:</span>
@@ -24,6 +25,7 @@
 						<img :src="getBaseURL(category.thumb_path)" v-if="category.isThumbExist == true" class="thumb-image img-fluid" />  
 					</div>
 				</div>
+				-->
 				
 				<div class="f-options text-center mt-2">
 					<b-button variant="primary" @click="selectFolder(category.id)" size="sm" v-if="category.subcategoryCounter == 0">

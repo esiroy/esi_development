@@ -204,6 +204,11 @@
                 >
             </member-caller-component>
             
+            <lesson-selector-component
+                :user="{{  json_encode(Auth::user()) }}" 
+                api_token="{{ Auth::user()->api_token }}" 
+                csrf_token="{{ csrf_token() }}">
+            </lesson-selector-component>            
             @endif
 
 

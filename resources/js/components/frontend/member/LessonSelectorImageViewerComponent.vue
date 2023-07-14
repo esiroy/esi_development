@@ -8,21 +8,13 @@
       size="xl"
       hide-footer
     >
-      <b-carousel
-        id="image-carousel"
-        ref="carousel"
-        :interval="0"
+      <b-carousel id="image-carousel" ref="carousel" :interval="0"
         :controls="false"
         :indicators="false"
         :no-animation="true"
-        v-model="activeIndex"
-      >
-        <b-carousel-slide
-          v-for="(image, index) in images"
-          :key="index"
-          :img-src="image.path"
-          :caption="image.file_name"
-        ></b-carousel-slide>
+        v-model="activeIndex">
+
+        <b-carousel-slide v-for="(image, index) in images" :key="index" :img-src="getBaseURL(image.path)" :caption="image.file_name"></b-carousel-slide>
       </b-carousel>
 
       <div class="thumbnail-container">
@@ -33,7 +25,7 @@
           :class="{ active: activeIndex === index }"
           @click="setActive(index)"
         >
-          <img :src="image.path" alt="Thumbnail" />
+          <img :src="getBaseURL(image.path)" alt="Thumbnail" />
         </div>
       </div>
     </b-modal>
@@ -61,6 +53,9 @@ export default {
       console.log(index);
       this.activeIndex = index;
     },
+    getBaseURL(path) {
+      	return window.location.origin + "/" + path;
+    }    
   },
 };
 </script>

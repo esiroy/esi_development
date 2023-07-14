@@ -294,7 +294,7 @@
 
                                                        | <a href="{{ url('admin/webRTC?roomid='.$schedule_id) }}" class="small"> Join Room </a>  |                                                          
 
-                                                        <a href="javascript:void(0)" onClick="window.memberCallerComponent.selectLesson('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')"> Lesson</a>                                                     
+                                                        <a href="javascript:void(0)" onClick="window.lessonSelectorComponent.showLessonSelectionModal('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')"> Lesson</a>                                                     
                                                     </div>
                                                 @endif
 
