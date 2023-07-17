@@ -217,8 +217,10 @@
                                                 class="form-control form-control-sm" 
                                                 :class="{ 'is-invalid': submitted && $v.user.communication_app.$error }"
                                                 @blur='checkIsValid($v.user.communication_app, $event)'
+                                                @change="handleCommunicationAppChange"
                                             >
                                                 <option value="">-- Select --</option>
+                                                <option value="mytutor">My Tutor</option>
                                                 <option value="skype">Skype</option>
                                                 <option value="zoom">Zoom</option>
                                             </select>
@@ -226,8 +228,9 @@
                                                 Communication App is required, Please select from choices
                                             </div>                                            
                                         </div>
-                                        <div class="col-6 px-0">                                          
-                                            <div class="form-group">                                               
+                                        <div class="col-6 px-0">  
+                                        <!--v-show="user.communication_app !== 'mytutor'"-->                                        
+                                            <div  class="form-group">                                               
                                                 <input type="text" v-model="user.communication_app_username" id="communication_app_username" name="communication_app_username" 
                                                     class="form-control form-control-sm" 
                                                     :class="{ 'is-invalid': submitted && $v.user.communication_app_username.$error }"
@@ -1249,6 +1252,13 @@ export default {
                 alert("Error " + error);                
             });                        
         },
+        handleCommunicationAppChange() {
+            console.log("handleCommunicationAppChange")
+
+            if (this.user.communication_app == 'Mytutor' || this.user.communication_app == 'mytutor' ) {
+                this.user.communication_app_username = "-";
+            } 
+        },         
         getAgentName() {
             axios.post("/api/get_agent_name?api_token=" + this.api_token, 
             {

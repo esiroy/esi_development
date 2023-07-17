@@ -228,20 +228,18 @@
                                 <table width="100%">
                                     <tbody>
                                     <tr>
-                                        <!--
-                                        <td style="width:100px;text-align:center"><img style="width:100px;text-align:center" title="mytutor" src="images/mytutor-logo-skype.jpg"><h5>MyTutor</h5></td>
-                                        -->
+                                      
+                                        <td style="width:100px;text-align:center">
+                                            <img style="width:100px;text-align:center" title="mytutor" src="images/mytutor-logo-skype.jpg"><h5>MyTutor</h5>
+                                        </td>                                     
                                         <td style="width:100px;text-align:center"><img style="width:100px;text-align:center" title="skype" src="images/skype.jpg"><h5>Skype</h5></td>
                                         <td style="width:100px;text-align:center"><img style="width:100px;text-align:center" title="zoom" src="images/zoom_logo.jpg"><h5>Zoom</h5></td>
                                     </tr>
                                     <tr>
-                                        <!--
+                                        
                                         <td style="width:100px;text-align:center">
-                                            
-                                            <input checked="checked" type="radio" name="commApp" value="mytutor" id="myTutorBtn" onclick="chooseApp('mytutor-logo-skype.jpg','mytutor','myTutor','私の家庭教師');">
-                                           
-                                        </td>        
-                                         -->                            
+                                            <input checked="checked" type="radio" name="commApp" value="mytutor" id="myTutorBtn" onclick="chooseApp('mytutor-logo-skype.jpg','mytutor','myTutor','私の家庭教師');">                                           
+                                        </td>
                                         <td style="width:100px;text-align:center">
                                             <input   checked="checked" type="radio" name="commApp" value="skype" id="skypeBtn" onclick="chooseApp('skype_image.jpg','skype','Skype','名');">
                                         </td>

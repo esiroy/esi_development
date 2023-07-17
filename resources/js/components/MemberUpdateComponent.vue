@@ -228,17 +228,19 @@
                                             v-model="user.communication_app"
                                             :class="{ 'is-invalid': submitted && $v.user.communication_app.$error }"
                                             @blur='checkIsValid($v.user.communication_app, $event)'
+                                            @change="handleCommunicationAppChange"
                                         >
                                             <option value="">-- Select --</option>
-                                            <option value="Skype" :selected="this.memberinfo.communication_app === 'Skype'">Skype</option>
-                                            <option value="Zoom" :selected="this.memberinfo.communication_app === 'Zoom'">Zoom</option>
+                                            <option value="Mytutor" :selected="this.memberinfo.communication_app == 'Mytutor'">My Tutor</option>
+                                            <option value="Skype" :selected="this.memberinfo.communication_app == 'Skype'">Skype</option>
+                                            <option value="Zoom" :selected="this.memberinfo.communication_app == 'Zoom'">Zoom</option>
                                         </select>
                                         <div v-if="submitted && !$v.user.communication_app.required" class="invalid-feedback">
                                             Communication App is required, Please select from choices
                                         </div>                                            
                                     </div>
                                     <div class="col-6 px-0">                                          
-                                        <div class="form-group">                                               
+                                        <div class="form-group" v-show="user.communication_app !== 'Mytutor'">                                               
                                             <input type="text" v-model="user.communication_app_username" id="communication_app_username" name="communication_app_username" 
                                                 class="form-control form-control-sm" 
                                                 :class="{ 'is-invalid': submitted && $v.user.communication_app_username.$error }"
@@ -457,9 +459,11 @@
                                       -->
 
                                     <li>
+                                        {{ user.preference.purpose.OTHERS }}
+                                        
                                         <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Note 
                                         <textarea id="extraDetails" name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="ckeditor col-3 pl-1 form-control form-control-sm d-inline-block" 
-                                            v-if="user.preference.purpose.OTHERS" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
+                                            v-show="user.preference.purpose.OTHERS == 'true'" v-model="user.preference.purposeExtraDetails.OTHERS"></textarea>
                                     </li>
                                 </ul>
 
@@ -2102,12 +2106,20 @@ export default {
         } else if ( this.user.communication_app === 'Zoom' || this.user.communication_app === 'zoom') {
 
             this.user.communication_app_username    = this.memberinfo.zoom_account;
+
+        } else if (this.user.communication_app == 'Mytutor' || this.user.communication_app === 'mytutor') {
+
+            this.user.communication_app_username    =  "-";         
+
         } else {
 
             //member added skype so lets set comm app to skype
-            if (this.memberinfo.skype_account) {               
+            if (this.memberinfo.skype_account) {          
+
                 this.user.communication_app = "Skype";
-                this.user.communication_app_username    = this.memberinfo.skype_account;
+                this.user.communication_app_username    = this.memberinfo.skype_account;           
+    
+
             } else {
                 //member added zoom account so let make it zoom
                 this.user.communication_app = "Zoom";
@@ -2363,6 +2375,20 @@ export default {
             
                         
         },
+        handleCommunicationAppChange() {
+            console.log("handleCommunicationAppChange")
+
+            if (this.user.communication_app == 'Mytutor') {
+                this.user.communication_app_username = "-";
+
+            } else if (this.user.communication_app == 'Skype') {
+                this.user.communication_app_username = this.memberinfo.skype_account;
+
+            } else if (this.user.communication_app == 'Zoom') {
+                this.user.communication_app_username = this.memberinfo.zoom_account;
+            }
+        },        
+          
         handleChangeExamType(event) 
         {
             this.examLevel = "";
@@ -3036,6 +3062,9 @@ export default {
         },
         checkIsValid (val, event) 
         {
+
+            console.log(val, event);
+
             if (val.$anyError) 
             {
                 //console.log("shake!")

@@ -1567,6 +1567,9 @@ class MemberController extends Controller
                     $age = $data->age;
                 }
 
+
+                $memberInfo = Member::where('user_id', $data->user_id)->first();
+
                 $memberInformation = [
                     //'user_id'                 =>  $data->user_id,
                     'tutor_id' => $tutorID,
@@ -1582,8 +1585,8 @@ class MemberController extends Controller
                     //course_item_id            => null,
                     //english_level             => null,
                     'communication_app' => ucfirst($data->communication_app),
-                    'skype_account' => (strtolower($data->communication_app) == 'skype') ? $data->communication_app_username : null,
-                    'zoom_account' => (strtolower($data->communication_app) == 'zoom') ? $data->communication_app_username : null,
+                    'skype_account' => (strtolower($data->communication_app) == 'skype') ? $data->communication_app_username : $memberInfo->skype_account,
+                    'zoom_account' => (strtolower($data->communication_app) == 'zoom') ? $data->communication_app_username : $memberInfo->zoom_account,
                     'membership' => $data->membership,
 
                     'is_report_card_visible_to_agent' => (boolean) $data->reportCard->agent,
@@ -1598,7 +1601,8 @@ class MemberController extends Controller
                     //'credits_expiration'                =>  date('Y-m-d G:i:s', strtotime('+6 months'))
 
                 ];
-                $member = Member::where('user_id', $data->user_id)->update($memberInformation);
+
+                $member = $memberInfo->update($memberInformation);
 
                 /** MEMBER_USER PIVOT WILL NOT SYNC SINCE IT IS ALREADY ADDED ON CREATION ONLY
                  *
