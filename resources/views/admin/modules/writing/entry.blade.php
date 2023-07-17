@@ -100,10 +100,10 @@
                             @php
                                 //$key = explode("_", $key);
                                 //$fieldID = $key[0];
-
                                 $fieldID =  intval($value['id']);
-                                $field = App\Models\WritingFields::find($fieldID); 
-                                 
+                                $field = App\Models\WritingFields::find($fieldID);                                 
+                             
+
                                 if ($field) {
                             @endphp
 
@@ -135,7 +135,7 @@
 
                                 <div id="{{$entry->id}}" class="col-md-12"> 
                                     <div class="text-center pl-2">
-                                        {{$writingFields->generateFileAnchorLink( $value  )}}
+                                        {{$writingFields->generateFileAnchorLink(  $value['description'] )}}
                                     </div>
                                 </div>                                    
 
