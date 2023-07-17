@@ -36,12 +36,15 @@
                         $values = json_decode($entry->value, true);
                     @endphp
 
-                    @foreach ($values as $index => $value)                                             
-                        @php
-                            $numIndex = explode("_", $index);
-                            $fieldValue[$entry->id][$numIndex[0]] = $value;
-                        @endphp
-                    @endforeach                  
+                    @if (isset($values))
+                        @foreach ($values as $index => $value)                                             
+                            @php
+                                $numIndex = explode("_", $index);
+                                $fieldValue[$entry->id][$numIndex[0]] = $value;
+                            @endphp
+                        @endforeach                  
+                    @endif
+
                 @endforeach
 
 
