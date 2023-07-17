@@ -54,18 +54,20 @@
         $values = json_decode($entry->value, true);
     @endphp
 
-    @foreach ($values as $index => $value)                                             
-        @php
-            $numIndex = explode("_", $index);
-            $fieldValue[$entry->id][$numIndex[0]] = $value;
-        @endphp
-
-        @if ($index == "appointed")
-            @php 
-                $is_appointed = true; 
+    @if (isset($values))
+        @foreach ($values as $index => $value)                                             
+            @php
+                $numIndex = explode("_", $index);
+                $fieldValue[$entry->id][$numIndex[0]] = $value;
             @endphp
-        @endif
+
+            @if ($index == "appointed")
+                @php 
+                    $is_appointed = true; 
+                @endphp
+            @endif
     @endforeach   
+    @endif
 
     <div class="container bg-light">
         <div class="row">
@@ -77,77 +79,78 @@
 
                     <div class="card-body">
                         <div class="entry-container border border-light">
-                        @foreach ($values as $key => $value)         
+                        @if ($values) 
+                            @foreach ($values as $key => $value)         
 
-                              @php
-                                $key = explode("_", $key);
-                                $fieldID = $key[0];
-                                $field = App\Models\WritingFields::find($fieldID);  
+                                @php
+                                    $key = explode("_", $key);
+                                    $fieldID = $key[0];
+                                    $field = App\Models\WritingFields::find($fieldID);  
 
-                                if ($field) {
-                            @endphp
-
-                            @if ($fieldID == "appointed") 
-                                <!-- <div> is teacher appointed? {!! $value !!} </div> -->
-
-                                @php $is_appointed = true;  @endphp
-                                
-                            @elseif ($fieldID == "teacher")
-
-
-                                <!-- <div> Teacher ID : {!! $value !!} </div> -->
-
-                            @elseif ($field->type == "uploadfield")
-
-                                 @php 
-                                    $writingFields = new \App\Models\WritingEntries;
-                                    $has_attachment = true; 
+                                    if ($field) {
                                 @endphp
 
+                                @if ($fieldID == "appointed") 
+                                    <!-- <div> is teacher appointed? {!! $value !!} </div> -->
+
+                                    @php $is_appointed = true;  @endphp
+                                    
+                                @elseif ($fieldID == "teacher")
 
 
-                                <div id="{{$entry->id}}" class="bg-light ">                             
-                                    <span class="{{ $fieldID }} field-name font-weight-bold">
-                                        {{ $field->name ?? " - " }} 
-                                        </span>
-                                    <span class="field-type float-right">{{ $field->type ?? " - " }}</span>
-                                </div>
+                                    <!-- <div> Teacher ID : {!! $value !!} </div> -->
 
-                                <div id="{{$entry->id}}" class="col-md-12"> 
-                                    <div class="text-center pl-2">
-                                        {{$writingFields->generateFileAnchorLink( $value  )}}
+                                @elseif ($field->type == "uploadfield")
+
+                                    @php 
+                                        $writingFields = new \App\Models\WritingEntries;
+                                        $has_attachment = true; 
+                                    @endphp
+
+
+
+                                    <div id="{{$entry->id}}" class="bg-light ">                             
+                                        <span class="{{ $fieldID }} field-name font-weight-bold">
+                                            {{ $field->name ?? " - " }} 
+                                            </span>
+                                        <span class="field-type float-right">{{ $field->type ?? " - " }}</span>
                                     </div>
-                                </div>                                    
 
-                            @else
+                                    <div id="{{$entry->id}}" class="col-md-12"> 
+                                        <div class="text-center pl-2">
+                                            {{$writingFields->generateFileAnchorLink( $value  )}}
+                                        </div>
+                                    </div>                                    
+
+                                @else
 
 
-                                <div id="{{$entry->id}}" class="bg-light ">                             
-                                    <span class="{{ $fieldID }} field-name font-weight-bold">
-                                        {{ $field->name ?? " - " }} 
-                                        </span>
-                                    <span class="field-type float-right">{{ $field->type ?? " - " }}</span>
-                                </div>
-
-                                <div id="{{$entry->id}}" class="col-md-12"> 
-                                    <div class="text-left pl-2 py-2"> 
-                                    {!! $value !!}
+                                    <div id="{{$entry->id}}" class="bg-light ">                             
+                                        <span class="{{ $fieldID }} field-name font-weight-bold">
+                                            {{ $field->name ?? " - " }} 
+                                            </span>
+                                        <span class="field-type float-right">{{ $field->type ?? " - " }}</span>
                                     </div>
-                                </div>   
 
-                            @endif
+                                    <div id="{{$entry->id}}" class="col-md-12"> 
+                                        <div class="text-left pl-2 py-2"> 
+                                        {!! $value !!}
+                                        </div>
+                                    </div>   
 
-                            @php
+                                @endif
+
+                                @php
+                                    
+                                    }
+                                @endphp
+
                                 
-                                }
-                            @endphp
 
-                             
-
-                          
-                           
-                        @endforeach                               
-                      
+                            
+                            
+                            @endforeach                               
+                        @endif
                         </div>
 
                     </div>
