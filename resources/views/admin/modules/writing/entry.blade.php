@@ -151,7 +151,12 @@
 
                                 <div id="{{$entry->id}}" class="col-md-12"> 
                                     <div class="text-left pl-2 py-2"> 
-                                    {!! $value['description'] !!}
+                                        @php 
+                                            $text = html_entity_decode($value['description']);
+                                            $text = strip($text);                                        
+                                        @endphp
+
+                                        {!! $text !!}
                                     </div>
                                 </div>   
 

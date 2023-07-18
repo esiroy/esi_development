@@ -568,6 +568,33 @@ if (! function_exists('mysql_format_datetime'))
     }
 }
 
+if (! function_exists('strip')) {
 
+    function strip($text, $keepLines = true)
+    {
+        if ($keepLines) {
+            $text = str_replace(array('</p>', '<br/>'), array("</p>\n", "<br/>\n"), $text);
+            $text = str_replace('<br>', '<br>' . PHP_EOL, $text);
+        }
+
+        $allowedTags = '<style><br><p>'; // Add <p> to the list of allowed tags
+
+        $text = strip_tags($text, $allowedTags);
+
+        if (strpos($text, "<style") !== false && strpos($text, "</style>") !== false) {
+            $substring = substr($text, strpos($text, "<style"), strpos($text, "</style>") + 8);
+            $text = str_replace($substring, '', $text);
+        }
+
+        if (!$keepLines) {
+            $text = str_replace(array("\t", "\r", "\n"), '', $text);
+            $text = preg_replace('/\s+/', ' ', $text);
+        } else {
+            $text = str_replace('  ', ' ', $text);
+        }
+
+        return trim($text);
+    }
+}
 
 ?>
