@@ -14,7 +14,7 @@ class AddMytutorAccountFieldToMember extends Migration
     public function up()
     {
         Schema::table('members', function (Blueprint $table) {
-             $table->string('mytutor_account', 255);
+             $table->boolean('is_myroom_enabled');
         });
     }
 
@@ -26,7 +26,7 @@ class AddMytutorAccountFieldToMember extends Migration
     public function down()
     {
         Schema::table('members', function (Blueprint $table) {
-             $table->dropColumn('mytutor_account');
+             $table->dropColumn('is_myroom_enabled');
         });
     }
 }

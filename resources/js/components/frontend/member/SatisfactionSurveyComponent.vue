@@ -2,117 +2,111 @@
 
 
         <b-modal ref="ratingAndFeedBack" header-bg-variant="primary" header-text-variant="white" size="lg" hide-footer no-close-on-backdrop  no-close-on-esc  hide-header-close>
+
             <template #modal-header>
-            <div class="mx-auto">
-                <h4 class="text-center text-white">受講いただきありがとうございました。</h4>
-            </div>           
-        </template> 
+                <div class="mx-auto">
+                    <h4 class="text-center text-white">受講いただきありがとうございました。</h4>
+                </div>           
+            </template> 
        
 
-        <div class="ratings-form-container" v-if="showEndPage == false">
-     
-            <div id="ratingsForm" v-show="showRatings">
-                <b-alert show variant="danger" v-show="errorMessage">
-                    <div class="d-flex">
-                        <div class="flex">
-                            <b-icon icon="exclamation-circle-fill" variant="danger" font-scale="2"></b-icon> 
-                        </div>
-                        <div class="flex pl-2 pt-1 w-100  error-message">
-                            {{ errorMessage }}
-                        </div>  
-                    </div>
-                </b-alert>          
-
-                <div id="ratingsContainer" class="row">
-                    <div id="starsRating" class="col-12">
-                        <div class="row mt-3">
-                            <div class="col-5"> 
-                                <div class="title">           
-                                    Teacher Performance Satisfaction
-                                </div>
-                                <hr class="m-0">
-                                <div class="text-secondary small pt-1"> 
-                                Please rate your teacher from 1 Star rating to 5 Star rating for the highest satisfaction
-                                </div>                            
+            <div class="ratings-form-container" v-if="showEndPage == false">
+        
+                <div id="ratingsForm" v-show="showRatings">
+                    <b-alert show variant="danger" v-show="errorMessage">
+                        <div class="d-flex">
+                            <div class="flex">
+                                <b-icon icon="exclamation-circle-fill" variant="danger" font-scale="2"></b-icon> 
                             </div>
-                            <div class="col-7"> 
+                            <div class="flex pl-2 pt-1 w-100  error-message">
+                                {{ errorMessage }}
+                            </div>  
+                        </div>
+                    </b-alert>          
 
-                                <ul class="esi-listings">
+                    <div id="ratingsContainer" class="row">
+                        <div id="starsRating" class="col-12">
+                            <div class="row mt-3">
+                                <div class="col-5"> 
+                                    <div class="title">           
+                                        Teacher Performance Satisfaction
+                                    </div>
+                                    <hr class="m-0">
+                                    <div class="text-secondary small pt-1"> 
+                                    Please rate your teacher from 1 Star rating to 5 Star rating for the highest satisfaction
+                                    </div>                            
+                                </div>
+                                <div class="col-7"> 
 
-                                  <transition-group name="fade">
+                                    <ul class="esi-listings">
 
-                                    <li class="hover-list-item" :key="1">
+                                    <transition-group name="fade">
 
-                                        <div class="hover-info">
-                                            <div class="small text-success text-left">
-                                                <span class="info-text small font-weight-bold">★を左から右に移動すると評価が上がります  (評価は受講歴から変更可能です）</span>
+                                        <li class="hover-list-item" :key="1">
+
+                                            <div class="hover-info">
+                                                <div class="small text-success text-left">
+                                                    <span class="info-text small font-weight-bold">★を左から右に移動すると評価が上がります  (評価は受講歴から変更可能です）</span>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <star-rating v-model="teacherPerformanceRating" 
-                                        v-bind:show-rating="false"
-                                        v-bind:star-size="30" 
-                                        v-bind:animate="true" 
-                                        v-bind:padding="5"></star-rating>
-                                    </li>
+                                            <star-rating v-model="teacherPerformanceRating" 
+                                            v-bind:show-rating="false"
+                                            v-bind:star-size="30" 
+                                            v-bind:animate="true" 
+                                            v-bind:padding="5"></star-rating>
+                                        </li>
 
-                                     </transition-group>
-                                </ul>
+                                        </transition-group>
+                                    </ul>
 
-                            </div>                
-                        </div>                   
+                                </div>                
+                            </div>                   
+                        </div>
+                    </div>
+
+                    <!--
+                    <div id="messageFormContainer" class="row" v-show="showMessage">
+                        <div id="messageForm" class="col-12">
+                            <div class="row mt-3">
+                                <div class="col-5"> 
+                                    <div class="title">Give us your comments</div>
+                                    <hr class="m-0">
+                                    <div class="text-secondary small pt-1">           
+                                        Help improve our services and make teachers proud of their effort
+                                    </div>
+                                </div>
+                                <div class="col-7"> 
+                                    <vue-ckeditor v-model="message" :config="config" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
+                                </div>                
+                            </div>                   
+                        </div>
+                    </div>  
+                    -->
+
+                    <div class="mt-4 mb-2 text-center">
+                        <button class="btn btn-success" @click="submitSurvey()">
+                            Submit
+                        </button>
                     </div>
                 </div>
+            </div>
 
-                <!--
-                <div id="messageFormContainer" class="row" v-show="showMessage">
-                    <div id="messageForm" class="col-12">
-                        <div class="row mt-3">
-                            <div class="col-5"> 
-                                <div class="title">Give us your comments</div>
-                                <hr class="m-0">
-                                <div class="text-secondary small pt-1">           
-                                    Help improve our services and make teachers proud of their effort
-                                </div>
-                            </div>
-                            <div class="col-7"> 
-                                <vue-ckeditor v-model="message" :config="config" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
-                            </div>                
-                        </div>                   
-                    </div>
-                </div>  
-                -->
-
+            <div class="thankyou-container" v-if="showEndPage == true">
+                <div class="my-4">
+                    受講いただきありがとうございました。よろしければ                    
+                    <div class="d-inline" v-if="this.reservationData.schedule_id">
+                        <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケート」</a> 
+                        に答えていただけますと幸いです。（ご希望の方のみ）
+                    </div>                     
+                </div>
                 <div class="mt-4 mb-2 text-center">
-                    <button class="btn btn-success" @click="submitSurvey()">
-                        Submit
+                    <button class="btn btn-success" @click="exitSurvey()">
+                        EXIT
                     </button>
                 </div>
             </div>
-        </div>
-
-    
-        <div class="thankyou-container" v-if="showEndPage == true">
-
-            <div class="my-4">
-                受講いただきありがとうございました。よろしければ
-                   
-                <div class="d-inline" v-if="this.reservationData.schedule_id">
-                    <a :href="getBaseURL('questionnaire/'+this.reservationData.schedule_id)">「アンケート」</a> 
-                    に答えていただけますと幸いです。（ご希望の方のみ）
-                </div> 
-                
-            </div>
-
-            <div class="mt-4 mb-2 text-center">
-                <button class="btn btn-success" @click="exitSurvey()">
-                    EXIT
-                </button>
-            </div>
-        </div>
-
-
-
+            
     </b-modal>
 
 </template>

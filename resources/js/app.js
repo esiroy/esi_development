@@ -107,6 +107,8 @@ Vue.component('member-caller-component', require('./components/frontend/member/M
 Vue.component('lesson-viewer-component', require('./components/frontend/member/LessonSlideViewerComponent.vue').default);
 Vue.component('lesson-chat-viewer-component', require('./components/frontend/member/LessonSlideChatViewerComponent.vue').default);
 
+Vue.component('member-com-editor-component', require('./components/frontend/member/memberComEditorComponent.vue').default);
+
 
 /**
  * The following block of code may be used to automatically register your

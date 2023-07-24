@@ -191,7 +191,10 @@
                     <div class="col-12">
                         <div class="row">
                             <div class="col-2 small pr-0">
-                                <label for="last_name" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> Gender <div class="float-right">:</div></label>
+                                <label for="last_name" class="px-0 col-md-12 col-form-label">
+                                    <!--<span class="text-danger">*</span> -->
+                                    Gender <div class="float-right">:</div>
+                                </label>
                             </div>
                             <div class="col-8 pr-0 mr-0">
                                 <div class="form-group my-0 pt-2">
@@ -214,6 +217,32 @@
                     </div>
                 </div>
 
+                <div id="myroom-communication-app-row" class="row pt-2">
+                    <div class="col-6">
+                        <div class="row">
+                            <div class="col-4 small pr-0">
+                                <label for="is_myroom_enabled" class="px-0 col-md-12 col-form-label"><span class="text-danger">*</span> 
+                                Primary Communication App <div class="float-right">:</div></label>
+                            </div>
+                                                            <div class="col-8">
+                                <div class="row my-0">
+                                    <div class="col-5">
+
+                                    <select id="is_myroom_enabled" name="is_myroom_enabled"                                                
+                                                class="form-control form-control-sm" 
+                                                v-model="user.is_myroom_enabled">
+                                            <option value="true" :selected="user.is_myroom_enabled === true">MyRoom</option>
+                                            <option value="false" :selected="user.is_myroom_enabled === false">Backup</option>
+                                        </select>
+                                                                                   
+                                    </div>
+                                </div>
+
+                            </div>                            
+                        </div>
+                    </div>
+                </div>
+
                 <div id="communication-app-row" class="row pt-2">
                     <div class="col-6">
                         <div class="row">
@@ -231,7 +260,7 @@
                                             @change="handleCommunicationAppChange"
                                         >
                                             <option value="">-- Select --</option>
-                                            <option value="Mytutor" :selected="this.memberinfo.communication_app == 'Mytutor'">My Tutor</option>
+                                           
                                             <option value="Skype" :selected="this.memberinfo.communication_app == 'Skype'">Skype</option>
                                             <option value="Zoom" :selected="this.memberinfo.communication_app == 'Zoom'">Zoom</option>
                                         </select>
@@ -240,7 +269,7 @@
                                         </div>                                            
                                     </div>
                                     <div class="col-6 px-0">                                          
-                                        <div class="form-group" v-show="user.communication_app !== 'Mytutor'">                                               
+                                        <div class="form-group" >                                               
                                             <input type="text" v-model="user.communication_app_username" id="communication_app_username" name="communication_app_username" 
                                                 class="form-control form-control-sm" 
                                                 :class="{ 'is-invalid': submitted && $v.user.communication_app_username.$error }"
@@ -1940,6 +1969,8 @@ export default {
                 email: "",
                 username: "",
                 gender: "",
+
+                is_myroom_enabled: false,
                 communication_app: "",
                 communication_app_username: "",
                 birthday: "",
@@ -2082,8 +2113,11 @@ export default {
            this.user.agent_name_en = "";
         }
 
-        //console.log(this.userinfo);
-        //console.log(this.latestreportcard);
+      
+        let is_myroom_enabled = false;
+        if (this.memberinfo.is_myroom_enabled == true) {
+            is_myroom_enabled = true;
+        }
 
         //get user
         this.user.user_id                       = this.userinfo.id;
@@ -2098,6 +2132,7 @@ export default {
 		this.user.nickname						= this.memberinfo.nickname;
 		this.user.gender						= this.memberinfo.gender;		
 		this.user.communication_app             = this.memberinfo.communication_app;
+        this.user.is_myroom_enabled             = is_myroom_enabled;
 
         if ( this.user.communication_app === 'Skype' || this.user.communication_app === 'skype') 
         {
@@ -2105,11 +2140,7 @@ export default {
 
         } else if ( this.user.communication_app === 'Zoom' || this.user.communication_app === 'zoom') {
 
-            this.user.communication_app_username    = this.memberinfo.zoom_account;
-
-        } else if (this.user.communication_app == 'Mytutor' || this.user.communication_app === 'mytutor') {
-
-            this.user.communication_app_username    =  "-";         
+            this.user.communication_app_username    = this.memberinfo.zoom_account;     
 
         } else {
 
@@ -2300,9 +2331,11 @@ export default {
             nickname: {
                 required
             },
+            /*
             gender: {
                 required
             },
+            */
             communication_app: {
                 required
             },            
@@ -2335,6 +2368,7 @@ export default {
 
         handleSubmit(e) 
         {
+
             this.submitted = true;
             // stop here if form is invalid
             this.$v.$touch();

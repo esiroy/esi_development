@@ -305,7 +305,9 @@
                     api_token="{{ Auth::user()->api_token }}" 
                     csrf_token="{{ csrf_token() }}">
                 </lesson-selector-component>
-          
+
+
+
 
                 @php
                 /**

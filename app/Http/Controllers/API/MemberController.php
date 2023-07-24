@@ -1345,6 +1345,7 @@ class MemberController extends Controller
                     //course_category_id        => null,
                     //course_item_id            => null,
                     //english_level             => null,
+                     'is_myroom_enabled' => ($data->is_myroom_enabled === 'true') ? true : false,
                     'communication_app' => ucfirst(strtolower($data->communication_app)),
                     'skype_account' => (strtolower($data->communication_app) == 'skype') ? $data->communication_app_username : null,
                     'zoom_account' => (strtolower($data->communication_app) == 'zoom') ? $data->communication_app_username : null,
@@ -1584,6 +1585,7 @@ class MemberController extends Controller
                     //course_category_id        => null,
                     //course_item_id            => null,
                     //english_level             => null,
+                    'is_myroom_enabled' => ($data->is_myroom_enabled === 'true') ? true : false,
                     'communication_app' => ucfirst($data->communication_app),
                     'skype_account' => (strtolower($data->communication_app) == 'skype') ? $data->communication_app_username : $memberInfo->skype_account,
                     'zoom_account' => (strtolower($data->communication_app) == 'zoom') ? $data->communication_app_username : $memberInfo->zoom_account,
@@ -1852,5 +1854,93 @@ class MemberController extends Controller
     
     }
     
+
+    public function updateMainComm(Request $request, Member $member) {
+
+        $user_id = $request->user_id; 
+        $main_comm_account = $request->main_comm_account; 
+
+        //backup communcation app
+        $communication_app = $request->backupSelected;
+        $skype_account_handle = $request->skype_account_handle; 
+        $zoom_account_handle = $request->zoom_account_handle;
+                
+        $memberInfo = $member->where('user_id', $user_id)->first();
+
+        if (!$memberInfo) {  
+            return Response()->json([
+                "success" => false,
+                "message" => "Error :Member was not found.",
+            ]);  
+        }
+
+        if (strtolower($main_comm_account) == 'mytutor') {
+
+            $memberInfo->update([
+                'is_myroom_enabled' => true
+            ]);
+
+            return Response()->json([
+                "success" => true,
+                "message" => "Member main communication acccount updated",
+            ]);
+           
+        } else if (strtolower($main_comm_account) == 'backup') {
+
+            if (strtolower($communication_app) == 'skype') {
+                $memberInfo->update([
+                    'is_myroom_enabled' => false,
+                    'communication_app'  => $communication_app,
+                    'skype_account' => $skype_account_handle
+                ]);            
+            } else {
+                $memberInfo->update([
+                    'is_myroom_enabled' => false,
+                    'communication_app'  => $communication_app,
+                    'zoom_account' => $zoom_account_handle
+                ]);             
+            }
+            return Response()->json([
+                "success" => true,
+                "message" => "Member backup communication acccount updated",
+            ]);
+        }
+    }
+
+    public function updateBackupComm(Request $request, Member $member) {
+    
+    
+        $user_id = $request->user_id; 
+        //backup communcation app
+        $communication_app = $request->backupSelected;
+        $skype_account_handle = $request->skype_account_handle; 
+        $zoom_account_handle = $request->zoom_account_handle;
+                
+        $memberInfo = $member->where('user_id', $user_id)->first();
+        if (!$memberInfo) {  
+            return Response()->json([
+                "success" => false,
+                "message" => "Error :Member was not found.",
+            ]);  
+        }
+
+        if (strtolower($communication_app) == 'skype') {
+            $memberInfo->update([
+                'is_myroom_enabled' => false,
+                'communication_app'  => $communication_app,
+                'skype_account' => $skype_account_handle
+            ]);            
+        } else {
+            $memberInfo->update([
+                'is_myroom_enabled' => false,
+                'communication_app'  => $communication_app,
+                'zoom_account' => $zoom_account_handle
+            ]);             
+        }
+        return Response()->json([
+            "success" => true,
+            "message" => "Member backup communication acccount updated",
+        ]);
+    }
 
 }
