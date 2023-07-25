@@ -174,7 +174,7 @@ export default {
 			backupSelected: null,
 
 			options: [
-				{ text: 'MyTutor Room', value: 'mytutor' },
+				{ text: 'My-Room', value: 'mytutor' },
 				{ text: 'Backup', value: 'backup' },
 			],
 

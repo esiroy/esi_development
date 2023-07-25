@@ -229,8 +229,8 @@
                                     <tbody>
                                     <tr>             
                                         <td style="width:100px;text-align:center">
-                                            <img style="width:120px;text-align:center" title="mytutor" src="images/mytutor-logo-skype.jpg">
-                                            <h5>MyTutor ルーム</h5>                                            
+                                            <img style="width:120px;text-align:center" title="My-Room" src="images/myroom_logo.png">
+                                            <!--<h5>My-Room</h5>-->
                                         </td>                                        
                                     </tr>                                    
                                     </tbody>
@@ -240,7 +240,7 @@
 
                         <div class="form-group row mt-0 mb-0">                        
                             <label for="communication_app" class="col-md-4 col-form-label text-md-right mt-0 pt-5 py-4 offset-md-1 border-top border-left">
-                                <div class="font-weight-bold mb-2">通信ソフト</div>
+                                <div class="font-weight-bold mb-2">バックアップ通信ソフトを選択してください</div>
                                 <span class="font-weight-bold">
                                     Skype または　ZOOM どちらか一つを選び、登録してください<br>
                                     <a target="_blank" style="color:#0000EE;text-decoration: underline;" href="https://www.mytutor-jpn.com/info/2019/0327165712.html">＊登録したIDはマイページからご確認いただけます。</a>                                  
