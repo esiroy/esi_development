@@ -1874,7 +1874,7 @@ class MemberController extends Controller
             ]);  
         }
 
-        if (strtolower($main_comm_account) == 'mytutor') {
+        if (strtolower($main_comm_account) == 'my-room') {
 
             $memberInfo->update([
                 'is_myroom_enabled' => true

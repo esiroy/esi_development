@@ -6,7 +6,7 @@
 		<div id="member_current_comm">
 			<div class="col-md-12">
 				<div class="text-secondary pt-1">
-					<span> Main Communication:</span> <a href="javascript:void(0)" @click="showEditPrimaryComm()"><i class="fas fa-edit"></i></a>
+					<span class="main_comm">利用通信ソフト:</span> <a href="javascript:void(0)" @click="showEditPrimaryComm()"><i class="fas fa-edit"></i></a>
 					<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
 						{{ ucfirst(current_comm_selected) }} 
 					</a>
@@ -14,7 +14,7 @@
 			</div>
 			<div class="col-md-12">
 				<div class="text-secondary pt-1">			
-					Backup Communication: 
+					通信ソフト: 
 					<a href="javascript:void(0)" @click="showEditBackupComm()"><i class="fas fa-edit"></i></a>
 					<div v-if="current_backup_selected == 'Skype' || current_backup_selected == 'skype'">
 						<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">Skype:</a>
@@ -174,8 +174,8 @@ export default {
 			backupSelected: null,
 
 			options: [
-				{ text: 'My-Room', value: 'mytutor' },
-				{ text: 'Backup', value: 'backup' },
+				{ text: 'My-Room', value: 'My-Room' },
+				{ text: 'Backup', value: 'Backup' },
 			],
 
 			
@@ -201,14 +201,14 @@ export default {
 		
 
 		if (this.member_info.is_myroom_enabled == true) {
-			this.current_comm_selected = "mytutor"
-			this.selected = 'mytutor';		
+			this.current_comm_selected = "My-Room"
+			this.selected = 'My-Room';		
 		} else {
-			this.current_comm_selected = "backup"
-			this.selected = 'backup';
+			this.current_comm_selected = "Backup"
+			this.selected = 'Backup';
 		}
 
-		this.backupSelected		  	= this.member_info.communication_app;			
+		this.backupSelected		  = this.member_info.communication_app;			
 		this.skype_account_handle = this.member_info.skype_account;
 		this.zoom_account_handle  = this.member_info.zoom_account;
 
@@ -285,7 +285,7 @@ export default {
 				
 					
 
-					this.current_comm_selected = this.selected,
+					this.current_comm_selected = this.ucfirst(this.selected),
 
 					//backup
 					this.current_backup_selected = this.backupSelected,
