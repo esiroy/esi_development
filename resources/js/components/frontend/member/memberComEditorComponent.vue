@@ -14,7 +14,7 @@
 			</div>
 			<div class="col-md-12">
 				<div class="text-secondary pt-1">			
-					通信ソフト: 
+					Back up 通信ソフト: 
 					<a href="javascript:void(0)" @click="showEditBackupComm()"><i class="fas fa-edit"></i></a>
 					<div v-if="current_backup_selected == 'Skype' || current_backup_selected == 'skype'">
 						<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">Skype:</a>
