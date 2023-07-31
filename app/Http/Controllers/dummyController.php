@@ -54,25 +54,17 @@ class dummyController extends Controller
     }
 
 
-    public function index(MiniTestAnswerKey $miniTestAnswerKey, Request $request)  
-    {
+    public function index( Request $request, ScheduleItem $scheduleItem, Member $memberInfo) {
 
+        $memberID = $request->memberID;
 
-        $questions = $miniTestAnswerKey->getQuestionsByCategory($request->catID);
+        $memberLessonsRemaining  = $memberInfo->getMemberLessonLimit($memberID);
+        $totalReserved = $scheduleItem->getTotalReservedForCurrentMonth($memberID);
 
-        foreach($questions as $question) 
-        {
+        echo  "Lesson remaining : ". $memberLessonsRemaining ."<BR>";
+        echo  "total Reserved : ". $totalReserved;
 
-            echo  "<BR><BR><BR>Q.". $question->id ."". $question->question ."<BR>";
-
-            $choices = $miniTestAnswerKey->getCorrectChoicesIDs($question->id);
-
-           echo $choices;
-        }
-
-
-        
-    
+        echo "<pre>";
     }
 
     public function time(ScheduleItem $scheduleItem) {

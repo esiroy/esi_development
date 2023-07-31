@@ -533,7 +533,7 @@ class ScheduleItem extends Model
     public function getTotalReservedForCurrentMonth($memberID) 
     {
         //start date
-        $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-1 09:00:00')));
+        $startDate = date('Y-m-d H:i:s', strtotime(date('Y-m-1 01:00:00')));
 
         //temporary end date since we need to get 12:30 which is the next date
         $tempEndDate = date("Y-m-t H:i:s", strtotime($startDate));

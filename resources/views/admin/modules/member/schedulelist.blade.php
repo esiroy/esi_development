@@ -88,13 +88,17 @@
                             <tbody>
                                 @foreach($schedules as $key => $schedule)
                                 <tr>
-                                    <td>
+                                    <td id="{{ $schedule->id  }}">
                                         {{ ESIDate($schedule->lesson_time) }}
                                     </td>
                                     <td>
                                         {{ ESIFormatTime($schedule->lesson_time) }}
                                         -
-                                        {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes"))) }}
+                                        @if ($schedule->schedule_status == "WRITING") 
+                                            {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ 25 minutes"))) }}
+                                        @else 
+                                            {{ ESIFormatTime(date('H:i',strtotime($schedule->lesson_time ."+ $schedule->duration minutes"))) }}
+                                        @endif
                                     </td>
                                     <td>
                                         @if ($schedule->valid == false) 
@@ -129,7 +133,13 @@
                                                 $writingEntry = new \App\Models\WritingEntries();  
                                                 $entry = $writingEntry->where('schedule_id', $schedule->id)->first();
                                             @endphp
-                                            @php /*Point : {{ $entry->total_points ?? "" }} */ @endphp
+                                            
+                                            <div style="display:none">
+                                            
+                                                Schedule ID {{ $schedule->id  }}
+                                                Point : {{ $entry->total_points ?? "" }}  
+                                            </div>
+
                                         @endif   
 
                                     </td>
