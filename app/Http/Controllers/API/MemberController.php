@@ -1926,13 +1926,13 @@ class MemberController extends Controller
 
         if (strtolower($communication_app) == 'skype') {
             $memberInfo->update([
-                'is_myroom_enabled' => false,
+                'is_myroom_enabled' => true,
                 'communication_app'  => $communication_app,
                 'skype_account' => $skype_account_handle
             ]);            
         } else {
             $memberInfo->update([
-                'is_myroom_enabled' => false,
+                'is_myroom_enabled' => true,
                 'communication_app'  => $communication_app,
                 'zoom_account' => $zoom_account_handle
             ]);             

@@ -6,13 +6,13 @@
 		<div id="member_current_comm">
 
 			<div class="col-md-12">			
-				<span class="main_comm">利用通信ソフト:</span> <a href="javascript:void(0)" @click="showEditPrimaryComm()"><i class="fas fa-edit"></i></a>
-				<span class="text-secondary pt-1" v-if="selected == 'My-Room'">
-					<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
+				<span class="main_comm small">利用通信ソフト: <a href="javascript:void(0)" @click="showEditPrimaryComm()"><i class="fas fa-edit"></i></a></span>
+				<span class="text-secondary pt-1" v-if="current_comm_selected == 'My-Room'">
+					<a class="small" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
 						{{ ucfirst(current_comm_selected) }} 
 					</a>
 				</span>
-				<span class="text-secondary pt-1" v-if="selected == 'Backup'">
+				<span class="text-secondary pt-1" v-if="current_comm_selected == 'Backup'">
 				
 					<a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);" 
 						v-if="backupSelected == 'Skype' || backupSelected == 'skype'">
@@ -29,14 +29,16 @@
 			</div>
 
 			<div class="col-md-12">			
-				<div class="pt-1" v-if="selected == 'My-Room'">	
-					Back up 通信ソフト : {{ ucfirst(backupSelected) }}
-					<div class="text-secondary" v-if="backupSelected == 'Skype' || backupSelected == 'skype'">
-						Username : <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">{{ ucfirst(skype_account_handle) }} </a>		
-					</div>
-					<div class="text-secondary" v-if="backupSelected == 'Zoom' || backupSelected == 'zoom'">
+				<div class="pt-1 small" v-if="current_comm_selected == 'My-Room'">	
+					Back up 通信ソフト: <a href="javascript:void(0)" @click="showEditBackupComm()"><i class="fas fa-edit"></i></a> 
+					{{ ucfirst(current_backup_selected) }}
+					<div class="text-secondary" v-if="current_backup_selected == 'Skype' || current_backup_selected == 'skype'">
 						Username : <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
-							{{ ucfirst(zoom_account_handle) }} 
+						{{ ucfirst(current_skype_account_handle) }} </a>		
+					</div>
+					<div class="text-secondary" v-if="current_backup_selected == 'Zoom' || current_backup_selected == 'zoom'">
+						Username : <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2022/0212121907.html','スカイプ（ZOOM) ID変更方法',900,820);">
+						{{ ucfirst(current_zoom_account_handle) }} 
 						</a>
 					</div>														
 				</div>		
@@ -45,7 +47,7 @@
 			
 		</div>
 
-		<b-modal ref="editPrimaryComm" title="Primary Member Communication Settings" size="lg">
+		<b-modal ref="editPrimaryComm" title="Primary Communication Setting (通信ソフト設定)" size="lg">
 
 			<div class="alert alert-success text-center" role="alert" v-if="success_message">
 				{{ success_message }}
@@ -85,12 +87,20 @@
 
 				<div class="container" v-if="selected == 'backup' || selected == 'Backup'">
 					<div class="row">
-						<div class="col-12" v-if="backupSelected == 'Skype' || backupSelected == 'skype'">
-							<input type="text" class="form-control" v-model="skype_account_handle">
+						<div class="col-3">
+							&nbsp;
 						</div>
-						<div class="col-12" v-if="backupSelected == 'Zoom' || backupSelected == 'zoom'">
-							<input type="text" class="form-control" v-model="zoom_account_handle">
+										
+						<div class="col-6" v-if="backupSelected == 'Skype' || backupSelected == 'skype'">
+							Username: <input type="text" class="form-control" v-model="skype_account_handle">
 						</div>
+						<div class="col-6" v-if="backupSelected == 'Zoom' || backupSelected == 'zoom'">
+							Username: <input type="text" class="form-control" v-model="zoom_account_handle">
+						</div>
+
+						<div class="col-3">
+							&nbsp;
+						</div>						
 					</div>
 				</div>
 
@@ -119,7 +129,7 @@
 		</b-modal>
 
 
-		<b-modal ref="editBackupComm" title="Member Backup Communication Settings">
+		<b-modal ref="editBackupComm" title="Member Backup Communication Settings" size="lg">
 
 			<div class="alert alert-success text-center" role="alert" v-if="success_message">
 				{{ success_message }}
@@ -129,21 +139,48 @@
 				{{ error_message }}
 			</div>	
 
+
 			<b-form-group>
-				<b-form-radio-group
-					id="radio-group-1"
-					v-model="backupSelected"
-					:options="backupOptions"
-					name="radio-options"
-				></b-form-radio-group>
-			</b-form-group>
+				<div class="row">					
+					<div class="col-3 text-center">&nbsp;</div>
+					<div class="col-3 text-center">
+						<img style="width:120px;text-align:center" title="My-Room" src="/images/skype.jpg">													
+					</div>
+					<div class="col-3 text-center">
+						<img style="width:120px;text-align:center" title="My-Room" src="/images/zoom_logo.jpg">							
+					</div>					
+					<div class="col-3 text-center">&nbsp;</div>
+				</div>		
+				<div class="row">					
+					<div class="col-3 text-center">&nbsp;</div>
+					<div class="col-3 text-center">							
+						<b-form-radio v-model="backupSelected" name="communication_app" value="Skype" @change="setComApp('My-Room', 'Skype')">Skype</b-form-radio>
+					</div>
+					<div class="col-3 text-center">							
+						<b-form-radio v-model="backupSelected" name="communication_app" value="Zoom" @change="setComApp('My-Room', 'Zoom')">Zoom</b-form-radio>
+					</div>	
+					<div class="col-3 text-center">&nbsp;</div>
+				</div>		
+			</b-form-group>	
 
-			<div v-if="backupSelected == 'Skype' || backupSelected == 'skype'">
-				<input type="text" class="form-control" v-model="skype_account_handle">
-			</div>
+			<div class="container px-4">
+				<div class="row">
+					<div class="col-3">
+						&nbsp;
+					</div>
+					<div class="col-6">
+						<div v-if="backupSelected == 'Skype' || backupSelected == 'skype'">
+							Username: <input type="text" class="form-control" v-model="skype_account_handle">
+						</div>
 
-			<div v-if="backupSelected == 'Zoom' || backupSelected == 'zoom'">
-				<input type="text" class="form-control" v-model="zoom_account_handle">
+						<div v-if="backupSelected == 'Zoom' || backupSelected == 'zoom'">
+							Username:  <input type="text" class="form-control" v-model="zoom_account_handle">
+						</div>
+					</div>
+					<div class="col-3">
+						&nbsp;
+					</div>
+				</div>
 			</div>
 
             <template #modal-footer>
@@ -244,8 +281,7 @@ export default {
 				this.main_com_app = "Skype";
 			} else if (this.backupSelected == "zoom" || this.backupSelected == "Zoom") {
 				this.main_com_app = "Zoom";
-			}
-						
+			}		
 		}
 
 
@@ -256,12 +292,8 @@ export default {
 	},
 	methods: {
 		setComApp(primary, application) {
-
-			console.log(primary, application);
-
-			this.current_comm_selected = primary;
-			this.selected = primary;
-
+			this.main_com_app 	= primary;
+			this.selected 		=  primary;
 			this.backupSelected	= application;		
 		},
 		clear() {
