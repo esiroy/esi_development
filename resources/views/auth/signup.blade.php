@@ -219,9 +219,12 @@
                         <div class="form-group row mt-0 mb-0">
 
                             <label class="col-md-4 col-form-label text-md-right mt-0 pt-0 py-4 offset-md-1 border-top border-left">                               
-                                <span class="font-weight-bold">
+                                <div class="font-weight-bold">
                                     利用通信ソフト
-                                </span>
+                                </div>
+                                <div class="font-weight-bold">
+                                    (Mytutorオリジナル通信アプリ)
+                                </div>
                             </label>
 
                             <div class="col-md-6 border-left border-top border-right py-4">
@@ -241,10 +244,14 @@
                         <div class="form-group row mt-0 mb-0">                        
                             <label for="communication_app" class="col-md-4 col-form-label text-md-right mt-0 pt-5 py-4 offset-md-1 border-top border-left">
                                 <div class="font-weight-bold mb-2">バックアップ通信ソフトを選択してください</div>
-                                <span class="font-weight-bold">
-                                    Skype または　ZOOM どちらか一つを選び、登録してください<br>
-                                    <a target="_blank" style="color:#0000EE;text-decoration: underline;" href="https://www.mytutor-jpn.com/info/2019/0327165712.html">＊登録したIDはマイページからご確認いただけます。</a>                                  
-                                </span>
+                                <div class="font-weight-bold">
+                                    Skype または　ZOOM どちらか一つを選び、登録してください
+                                </div>
+                                <div class="font-weight-bold">
+                                    <a target="_blank" style="color:#0000EE;text-decoration: underline;" href="https://www.mytutor-jpn.com/info/2019/0327165712.html">
+                                        (バックアップ通信ソフトとは)
+                                    </a>
+                                </div>
                             </label>
 
                             <div class="col-md-6 border-left border-top border-right py-4">
