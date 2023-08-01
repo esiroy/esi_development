@@ -1855,7 +1855,8 @@ class MemberController extends Controller
     }
     
 
-    public function updateMainComm(Request $request, Member $member) {
+    public function updateMainComm(Request $request, Member $member, ScheduleItem $scheduleItem) 
+    {
 
         $user_id = $request->user_id; 
         $main_comm_account = $request->main_comm_account; 
@@ -1866,6 +1867,8 @@ class MemberController extends Controller
         $zoom_account_handle = $request->zoom_account_handle;
                 
         $memberInfo = $member->where('user_id', $user_id)->first();
+
+        //$scheduleItem->isComValidToUpdate(memberInfo);
 
         if (!$memberInfo) {  
             return Response()->json([

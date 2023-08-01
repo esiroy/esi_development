@@ -1226,4 +1226,10 @@ class ScheduleItem extends Model
         return $lessonItems->count();
     }
 
+
+    public function isComValidToUpdate($member) {
+
+        $lessons = $this->getMemberAllActiveLessons($member);
+        return true;
+    }
 }
