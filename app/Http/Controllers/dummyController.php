@@ -66,8 +66,36 @@ class dummyController extends Controller
     {
     }
 
+    public function index(Request $request, Member $member, ScheduleItem $scheduleItem) {
+    
+        $memberID =  $request->memberID;
 
-    public function index(Request $request, Folder $folder) {
+        $memberInfo = $member->where('user_id', $memberID)->first();
+
+        $firstSchedule = $scheduleItem->getFirstActiveSchedule($memberInfo);
+
+        
+
+            $isValid = $scheduleItem->isMemberValidToUpdate($memberInfo); 
+        
+
+        if ($isValid == true) {
+         
+            echo "valid";
+        } else {
+        
+            echo "not valid";
+        }
+       
+
+
+     
+
+    
+    }
+
+
+    public function getParentFolders(Request $request, Folder $folder) {
 
         $folders = $folder->getParentFolders($request->id);
 
@@ -77,10 +105,6 @@ class dummyController extends Controller
 
             echo "<BR>";
         }
-
-     
-    
-
     }
 
     public function deleteFile(Request $request) {

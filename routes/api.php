@@ -325,5 +325,6 @@ Route::middleware('auth:api')->post('/uploader/uploadHomework', 'API\HomeworkCon
 Route::middleware('auth:api')->post('/uploader/uploadFolderThumbnail', 'API\FolderController@uploadFolderThumbnail')->name('APIuploadFolderThumbnail');
 
 //Update Main Communicaton
+Route::middleware('auth:api')->post('/isMemberValidToUpdate', 'API\MemberController@isMemberValidToUpdate')->name('APIMemberValidToUpdate');
 Route::middleware('auth:api')->post('/updateMainComm', 'API\MemberController@updateMainComm')->name('APIupdateMainComm');
 Route::middleware('auth:api')->post('/updateBackupComm', 'API\MemberController@updateBackupComm')->name('APIupdateBackupComm');

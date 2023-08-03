@@ -54,4 +54,42 @@ class MemberNotifier extends Model
 
         return $is_notified;
     }
+
+    public function commAppHasUpdated($memberID) {
+
+        $today  = date("Y-m-d");
+        $type   = "comm_app_limit";
+
+        MemberNotifier::create([
+            'member_id'     => $memberID,
+            'date'          => $today,
+            'type'          => $type
+        ]);
+    }
+
+
+    public function isCommAppLimitUpdateReached($memberID, $limitUpdatePerDay = 3) 
+    {
+    
+        $today  = date("Y-m-d");
+        $type   = "comm_app_limit";
+
+        $memberNotifier = MemberNotifier::where('member_id', $memberID)
+                            ->where('type', $type)
+                            ->whereDate('date', $today)                            
+                            ->count();
+
+        if ($memberNotifier >= $limitUpdatePerDay) {
+        
+            $isLimitReached = true;
+
+        } else {
+        
+            $isLimitReached = false;
+        
+        }
+
+        return $isLimitReached;
+    
+    }
 }

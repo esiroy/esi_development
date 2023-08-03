@@ -47,19 +47,23 @@
 			
 		</div>
 
-		<b-modal ref="editPrimaryComm" title="Primary Communication Setting (通信ソフト設定)" size="lg">
+		<b-modal ref="editPrimaryComm" title="Primary Communication Setting (通信ソフト設定)" size="lg"  @show="isMemberValidToUpdate">
 
 			<div class="alert alert-success text-center" role="alert" v-if="success_message">
 				{{ success_message }}
 			</div>
 
-			<div class="alert alert-success text-center" role="alert" v-if="error_message">
+			<div class="alert alert-danger text-center" role="alert" v-if="error_message">
 				{{ error_message }}
-			</div>			
+			</div>	
 
+		
 
-
-			<div class="container mt-3">
+			<div class="container mt-3 text-center" v-if="isLoading == true">
+				<span class="spinner-border spinner-border-sm"></span>
+				Loading...
+			</div>
+			<div class="container mt-3" v-if="isLoading == false">
 				<b-form-group>
 					<div class="row">
 						<div class="col-4 text-center">
@@ -74,13 +78,13 @@
 					</div>		
 					<div class="row">
 						<div class="col-4 text-center">							
-							<b-form-radio v-model="main_com_app" name="communication_app" value="My-Room"  @change="setComApp('My-Room', backupSelected)">My-Room</b-form-radio>
+							<b-form-radio v-model="main_com_app"  name="communication_app" :disabled="!isUpdatable" value="My-Room"  @change="setComApp('My-Room', backupSelected)">My-Room</b-form-radio>
 						</div>
 						<div class="col-4 text-center">							
-							<b-form-radio v-model="main_com_app" name="communication_app" value="Skype" @change="setComApp('Backup', 'Skype')">Skype</b-form-radio>
+							<b-form-radio v-model="main_com_app" name="communication_app" :disabled="!isUpdatable" value="Skype" @change="setComApp('Backup', 'Skype')">Skype</b-form-radio>
 						</div>
 						<div class="col-4 text-center">							
-							<b-form-radio v-model="main_com_app" name="communication_app" value="Zoom" @change="setComApp('Backup', 'Zoom')">Zoom</b-form-radio>
+							<b-form-radio v-model="main_com_app" name="communication_app" :disabled="!isUpdatable" value="Zoom" @change="setComApp('Backup', 'Zoom')">Zoom</b-form-radio>
 						</div>	
 					</div>		
 				</b-form-group>		
@@ -106,20 +110,14 @@
 
 			</div>
 		
-
-
-
             <template #modal-footer>
-
 				<div class="footer">
-
 					<b-button variant="primary" size="sm" class="float-right mr" v-if="isLoading == true">
 						<span class="spinner-border spinner-border-sm"></span>
 						Loading...
 					</b-button>
-
 					<div class="buttons-container w-100" v-if="isLoading == false">
-						<b-button variant="primary" size="sm" class="float-right mr"  @click="updateMainComm">Save</b-button>
+						<b-button variant="primary" size="sm" class="float-right mr" :disabled="!isUpdatable"  @click="updateMainComm">Save</b-button>
 						<b-button variant="danger" size="sm" class="float-right mr-2" @click="hideEditPrimaryComm">Cancel</b-button>                            
 					</div>
 				</div>
@@ -129,39 +127,44 @@
 		</b-modal>
 
 
-		<b-modal ref="editBackupComm" title="Member Backup Communication Settings" size="lg">
+		<b-modal ref="editBackupComm" title="Member Backup Communication Settings" size="lg" @show="isMemberValidToUpdate">
 
 			<div class="alert alert-success text-center" role="alert" v-if="success_message">
 				{{ success_message }}
 			</div>
 
-			<div class="alert alert-success text-center" role="alert" v-if="error_message">
+			<div class="alert alert-danger text-center" role="alert" v-if="error_message">
 				{{ error_message }}
 			</div>	
 
-
-			<b-form-group>
-				<div class="row">					
-					<div class="col-3 text-center">&nbsp;</div>
-					<div class="col-3 text-center">
-						<img style="width:120px;text-align:center" title="My-Room" src="/images/skype.jpg">													
-					</div>
-					<div class="col-3 text-center">
-						<img style="width:120px;text-align:center" title="My-Room" src="/images/zoom_logo.jpg">							
-					</div>					
-					<div class="col-3 text-center">&nbsp;</div>
-				</div>		
-				<div class="row">					
-					<div class="col-3 text-center">&nbsp;</div>
-					<div class="col-3 text-center">							
-						<b-form-radio v-model="backupSelected" name="communication_app" value="Skype" @change="setComApp('My-Room', 'Skype')">Skype</b-form-radio>
-					</div>
-					<div class="col-3 text-center">							
-						<b-form-radio v-model="backupSelected" name="communication_app" value="Zoom" @change="setComApp('My-Room', 'Zoom')">Zoom</b-form-radio>
-					</div>	
-					<div class="col-3 text-center">&nbsp;</div>
-				</div>		
-			</b-form-group>	
+			<div class="container mt-3 text-center" v-if="isLoading == true">
+				<span class="spinner-border spinner-border-sm"></span>
+				Loading...
+			</div>
+			<div class="container mt-3 text-center" v-if="isLoading == false">
+				<b-form-group>
+					<div class="row">					
+						<div class="col-3 text-center">&nbsp;</div>
+						<div class="col-3 text-center">
+							<img style="width:120px;text-align:center" title="My-Room" src="/images/skype.jpg">													
+						</div>
+						<div class="col-3 text-center">
+							<img style="width:120px;text-align:center" title="My-Room" src="/images/zoom_logo.jpg">							
+						</div>					
+						<div class="col-3 text-center">&nbsp;</div>
+					</div>		
+					<div class="row">					
+						<div class="col-3 text-center">&nbsp;</div>
+						<div class="col-3 text-center">							
+							<b-form-radio v-model="backupSelected" name="communication_app" :disabled="!isUpdatable" value="Skype" @change="setComApp('My-Room', 'Skype')">Skype</b-form-radio>
+						</div>
+						<div class="col-3 text-center">							
+							<b-form-radio v-model="backupSelected" name="communication_app" :disabled="!isUpdatable" value="Zoom" @change="setComApp('My-Room', 'Zoom')">Zoom</b-form-radio>
+						</div>	
+						<div class="col-3 text-center">&nbsp;</div>
+					</div>		
+				</b-form-group>	
+			</div>
 
 			<div class="container px-4">
 				<div class="row">
@@ -192,7 +195,7 @@
 					</b-button>
 
 					<div class="buttons-container"  v-if="isLoading == false">
-						<b-button variant="primary" size="sm" class="float-right mr" @click="updateBackupComm">Save</b-button>
+						<b-button variant="primary" size="sm" class="float-right mr" :disabled="!isUpdatable" @click="updateBackupComm">Save</b-button>
 						<b-button variant="danger" size="sm" class="float-right mr-2" @click="hideEditBackupComm">Cancel</b-button>                            
 					</div>
 
@@ -220,6 +223,9 @@ export default {
 	},
 	data() {
 		return {
+
+			isUpdatable: false,
+
 			main_com_app: "",
 
 			isLoading: false,
@@ -258,7 +264,7 @@ export default {
 
 		window.memberComEditorComponent = this;
 
-		console.log(this.member_info)
+		this.isUpdatable = false;
 
 		this.current_backup_selected 	 = this.member_info.communication_app
 		this.current_skype_account_handle = this.member_info.skype_account;
@@ -283,12 +289,6 @@ export default {
 				this.main_com_app = "Zoom";
 			}		
 		}
-
-
-
-
-
-		
 	},
 	methods: {
 		setComApp(primary, application) {
@@ -319,7 +319,6 @@ export default {
 			this.clear();
 			this.$refs.editBackupComm.hide();
 		},
-
 		showMemberLessonSelect() {
 			const lessonElements = document.querySelectorAll('.lesson-selector');
 
@@ -341,6 +340,33 @@ export default {
 				const string = str.charAt(0).toUpperCase() + str.slice(1);
 				return str;	
 			}
+		},
+		isMemberValidToUpdate() {
+
+			this.isLoading = true;
+
+			axios.post("/api/isMemberValidToUpdate?api_token=" + this.api_token,
+			{
+				'method'                : "POST",
+				'memberID'				: this.member_info.user_id
+			}).then(response => {
+
+				this.isLoading = false;
+
+				if (response.data.success == true) {
+
+					this.isUpdatable = true;
+					this.error_message = "";
+
+				} else {
+				
+					this.isUpdatable = false;
+					this.error_message = response.data.message;
+				
+				}
+			});
+
+		
 		},
 		updateMainComm() {	
 
