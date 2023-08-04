@@ -2,19 +2,65 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 
+use App\Models\ScheduleItem;
+
 class ReportCard extends Model
 {
     public $table = 'report_card';
 
     protected $guarded = array('created_at', 'updated_at');
 
+    public function scheduleItem()
+    {
+        return $this->belongsTo(ScheduleItem::class, 'schedule_item_id');
+    }
+    
     public function getLatest($memberID)
     {
-        return ReportCard::where('member_id', $memberID)->OrderByDesc('created_at')->first();
+
+        // Get the latest schedule that has a report card associated with it
+        $latestSchedule = ScheduleItem::whereHas('reportCard')
+            ->orderBy('lesson_time', 'DESC')
+            ->first();
+
+        // If there is no schedule with a report card, return null or handle as needed
+        if (!$latestSchedule) {
+            return null; // or any other appropriate handling
+        }
+
+        // Get the latest report card for the given member and the latest schedule
+        $latestReportCard = ReportCard::where('member_id', $memberID)
+            ->where('schedule_item_id', $latestSchedule->id)
+            ->orderByDesc('created_at')
+            ->first();
+
+        return $latestReportCard;
     }
 
 
     public function getReportbyScheduleItemID($schedule_item_id) {
         return ReportCard::where('schedule_item_id', $schedule_item_id)->first();
     }
+
+
+    public function saveReportCard($reportCardData) 
+    {
+        return ReportCard::create([ 
+            'schedule_item_id'  => $reportCardData['schedule_item_id'],
+            'member_id'         => $reportCardData['member_id'],        
+            'comment'           => $reportCardData['comment'],
+            'grade'             => $reportCardData['grade'],
+            //Materials
+            'lesson_course'     => $reportCardData['lesson_course'],
+            'lesson_material'   => $reportCardData['lesson_material'],
+            'lesson_subject'    => $reportCardData['lesson_subject'],
+            //Course 
+            'course_category_id'    => null,
+            'course_item_id'        => null,                
+            'lesson_level'          => null,
+            //Validity
+            'valid'             =>  true,
+        ]);
+    }
+
 }

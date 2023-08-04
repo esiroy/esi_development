@@ -17,6 +17,12 @@ class ScheduleItem extends Model
 
     private $limit = 30;
 
+
+    public function reportCard()
+    {
+        return $this->hasOne(ReportCard::class, 'schedule_item_id');
+    }
+    
     /**
      * PLOT RESERVATIONS FOR MEMBERS
      * @param  $dateFrom
