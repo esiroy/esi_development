@@ -219,6 +219,7 @@ class FolderController extends Controller
                 'folder_name'           => $request['folder_name'],
                 'folder_description'    => $request['folder_description'],
                 'is_book'               => $request['isBook'],
+                'privacy'               => 'public'
             ];
         
             //Create Folder 
