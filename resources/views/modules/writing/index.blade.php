@@ -1,6 +1,11 @@
 @extends('layouts.esi-app')
 
 @section('content')
+
+@php
+    $attribute = Auth::user()->memberInfo->attribute;
+@endphp
+
 <div class="container bg-light">
     <div class="esi-box mb-5">
 
@@ -20,64 +25,77 @@
                 @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->           
 
-                <div class="col-md-9">
-                    <div class="row">
+              
 
-                        <div class="col-12  message-container">
-                            @if (session('message'))
-                            <div class="alert alert-success">
-                                {{ session('message') }}
-                            </div>
-                            @elseif (session('error_message'))
-                            <div class="alert alert-danger">
-                                {{ session('error_message') }}
-                            </div>
-                            @endif
+                @if (strtolower($attribute) == 'trial') 
+
+                    <div class="col-md-9">
+                        <div class="row">
+
+   							@include('modules.member.includes.ecommerce.buycredits')
+
                         </div>
-                        
-                                
-                        <div class="col-12">
-                            <div class="card esi-card mb-3">
-                                <div class="card-header esi-card-header py-2">
-                                    Writing Service
-                                   
-                                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
-                                </div>
-                                <div class="card-body">
-                                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
-                                        @csrf
-                                        @foreach($pages as $page) 
-                                            <h2>{{ $page->page_id }}</h2>
-                                            <section data-step="{{ $page->page_id }}">
-                                                @if(isset($formFieldChildrenHTML[$page->page_id]))
-                                                    @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
-                                                        {!! $formFieldChildHTML !!}
-                                                    @endforeach
-                                                @endif
-                                                @if( $page->page_id == 1 )
-                                                    @foreach($formFieldHTML as $HTML) 
-                                                        {!! $HTML !!}
-                                                    @endforeach
-                                                @endif
-                                            </section>
-                                        @endforeach
-
-                                        <div class="warnings">
-                                            <div class="alert alert-danger mx-4" role="alert">
-                                                You already consumed all your credits
-                                            </div>
-                                        </div>
-
-                                        <textarea id="data" name="data" style="display:none" ></textarea>
-                                        <input type="submit" style="display:none">
-                                    </form>                              
-                                </div>
-                            </div>                  
-                        </div>
-                        
                     </div>
-                </div>
 
+                @else 
+                    <div class="col-md-9">
+                        <div class="row">
+
+                            <div class="col-12  message-container">
+                                @if (session('message'))
+                                <div class="alert alert-success">
+                                    {{ session('message') }}
+                                </div>
+                                @elseif (session('error_message'))
+                                <div class="alert alert-danger">
+                                    {{ session('error_message') }}
+                                </div>
+                                @endif
+                            </div>
+                            
+                                    
+                            <div class="col-12">
+                                <div class="card esi-card mb-3">
+                                    <div class="card-header esi-card-header py-2">
+                                        Writing Service
+                                    
+                                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                                            @csrf
+                                            @foreach($pages as $page) 
+                                                <h2>{{ $page->page_id }}</h2>
+                                                <section data-step="{{ $page->page_id }}">
+                                                    @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                                        @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                                            {!! $formFieldChildHTML !!}
+                                                        @endforeach
+                                                    @endif
+                                                    @if( $page->page_id == 1 )
+                                                        @foreach($formFieldHTML as $HTML) 
+                                                            {!! $HTML !!}
+                                                        @endforeach
+                                                    @endif
+                                                </section>
+                                            @endforeach
+
+                                            <div class="warnings">
+                                                <div class="alert alert-danger mx-4" role="alert">
+                                                    You already consumed all your credits
+                                                </div>
+                                            </div>
+
+                                            <textarea id="data" name="data" style="display:none" ></textarea>
+                                            <input type="submit" style="display:none">
+                                        </form>                              
+                                    </div>
+                                </div>                  
+                            </div>
+                            
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>  
 
