@@ -17,23 +17,13 @@ class ReportCard extends Model
     
     public function getLatest($memberID)
     {
-
-        // Get the latest schedule that has a report card associated with it
-        $latestSchedule = ScheduleItem::whereHas('reportCard')
-            ->orderBy('lesson_time', 'DESC')
-            ->first();
-
-        // If there is no schedule with a report card, return null or handle as needed
-        if (!$latestSchedule) {
-            return null; // or any other appropriate handling
-        }
-
-        // Get the latest report card for the given member and the latest schedule
-        $latestReportCard = ReportCard::where('member_id', $memberID)
-            ->where('schedule_item_id', $latestSchedule->id)
-            ->orderByDesc('created_at')
-            ->first();
-
+        //report cards
+        $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time')
+                                    ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
+                                    ->where('report_card.member_id', $memberID)
+                                    ->orderBy('schedule_item.lesson_time', 'DESC')
+                                    ->first();
+       
         return $latestReportCard;
     }
 

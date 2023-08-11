@@ -480,6 +480,8 @@ class MemberController extends Controller
         $reportCardObject = new ReportCard();
         $latestReportCardValue = $reportCardObject->getLatest($memberID);
 
+      
+
         
         if (isset($latestReportCardValue->schedule_item_id))
         {
