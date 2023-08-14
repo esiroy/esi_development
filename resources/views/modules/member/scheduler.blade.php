@@ -52,8 +52,8 @@
                             </a>
 
                             <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0812154859.html', '講師について', 900, 720);">                            
-                                <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; font-weight: bold;">
-                                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0812154859.html', '講師について', 900, 720);" >講師について</a>
+                                <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; font-weight: bold; text-decoration: underline">
+                                    講師について
                                 </div>
                             </a>                            
 
