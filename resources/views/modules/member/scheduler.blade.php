@@ -21,7 +21,9 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mt-2 mb-4">
-                                <div>予約 = 予約可能です</div>
+                                <div>
+                                    <span class="text-danger">予約 </span>= 予約可能です
+                                </div>
                                 <div>済　= 本人で予約済みです</div>
                                 <div>済他 ＝　講師キャンセル又は他の受講生が予約済みです</div>
                             </div>
@@ -29,11 +31,11 @@
                         <div class="col-md-6">
 
                         
-                        <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2019/0806115335.html', '予約は30分前まで、キャンセルは3時間前まで可能', 900, 720);" style="color:#212529">
-                            <div style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">                                
-                                <div>予約は30分前まで、キャンセルは3時間前まで可能</div>
-                            </div>
-                        </a>
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2019/0806115335.html', '予約は30分前まで、キャンセルは3時間前まで可能', 900, 720);" style="color:#212529">
+                                <div style="width:375px; float: right; padding: 8px 20px; border: 1px solid #dec96d; background: #fee67d; font-weight: bold;">                                
+                                    <div>予約は30分前まで、キャンセルは3時間前まで可能</div>
+                                </div>
+                            </a>
 
                             
                             <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2021/0319230008.html', '最大15コマまで予約可能です', 900, 720);" style="color:#212529">
@@ -48,6 +50,14 @@
                                     <div>お気に入り講師を最大５人まで上段に選べます</div>
                                 </div>
                             </a>
+
+                            <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0812154859.html', '講師について', 900, 720);">                            
+                                <div class="mt-1" style="width:375px; float: right; padding: 8px 20px; font-weight: bold;">
+                                    <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0812154859.html', '講師について', 900, 720);" >講師について</a>
+                                </div>
+                            </a>                            
+
+                     
                             
                         </div>
                     </div>
