@@ -15,8 +15,8 @@ class CreateQuestionAnswerKey extends Migration
     {
         Schema::create('question_answer_key', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('question_id')->index('question_id');
-            $table->unsignedBigInteger('choice_id')->index('choice_id');
+            $table->unsignedBigInteger('question_id');
+            $table->unsignedBigInteger('choice_id');
             
             //foreign key references
             $table->foreign('question_id')->references('id')->on('questions');

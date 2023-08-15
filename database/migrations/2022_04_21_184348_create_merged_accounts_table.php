@@ -15,8 +15,8 @@ class CreateMergedAccountsTable extends Migration
     {
         Schema::create('merged_accounts', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('member_id')->index('member_id');
-            $table->unsignedBigInteger('merged_member_id')->index('merged_member_id');                        
+            $table->unsignedBigInteger('member_id');
+            $table->unsignedBigInteger('merged_member_id');                        
             $table->timestamps();            
 
            //foreign key references

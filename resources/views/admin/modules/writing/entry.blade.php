@@ -51,21 +51,29 @@
     @php 
         $is_appointed = false;
         $has_attachment = false;
-        //$values = json_decode($entry->value, true);
+     
 
         $data = Str::of($entry->value)->trim('{}'); // Remove the surrounding curly braces
-
         $values = collect(explode('","', $data))->map(function ($item) {
+
             [$key, $value] = explode('":"', $item);
 
             $id = Str::before($key, '_');
 
             $id = str_replace(['"', "'"], '', $id);
             $key = str_replace(['"', "'"], '', $key);
+           
 
-            $value = json_decode('"' . $value . '"');
+            $description = preg_replace('/<style>.*?<\/style>/s', '', $value);
+          
+            $description = json_decode('"' . $description . '"');
 
-            return ['id' => $id, 'name' => $key, 'description' =>  $value];
+           // $description = str_replace(['"', "'"], '', $value);
+            //$description = json_decode('"' . $value . '"');
+
+     
+
+            return ['id' => $id, 'name' => $key, 'description' =>  $description, 'value' => $value ];
 
         })->toArray();
 
@@ -73,18 +81,13 @@
      
     @endphp
 
-    @foreach ($values as $index => $value)                                             
+    @foreach ($values as $index => $value)   
         @php
             $numIndex = explode("_", $index);
             $fieldValue[$entry->id][$numIndex[0]] = $value;
         @endphp
-
-        @if ($index == "appointed")
-            @php 
-                $is_appointed = true; 
-            @endphp
-        @endif
     @endforeach   
+
 
     <div class="container bg-light">
         <div class="row">
@@ -96,28 +99,20 @@
 
                     <div class="card-body">
                         <div class="entry-container border border-light">
-                        @foreach ($values as $key => $value)  
+                        @foreach ($values as $key => $value) 
+
+                         
                             @php
-                                //$key = explode("_", $key);
-                                //$fieldID = $key[0];
                                 $fieldID =  intval($value['id']);
-                                $field = App\Models\WritingFields::find($fieldID);                                 
-                             
+                                $field = App\Models\WritingFields::find($fieldID); 
 
                                 if ($field) {
                             @endphp
 
-                            @if ($fieldID == "appointed") 
-                                <!-- <div> is teacher appointed? {!! $value !!} </div> -->
 
-                                @php $is_appointed = true;  @endphp
-                                
-                            @elseif ($fieldID == "teacher")
-
-
-                                <!-- <div> Teacher ID : {!! $value !!} </div> -->
-
-                            @elseif ($field->type == "uploadfield")
+        
+                           
+                            @if ($field->type == "uploadfield")
 
                                  @php 
                                     $writingFields = new \App\Models\WritingEntries;
@@ -151,12 +146,51 @@
 
                                 <div id="{{$entry->id}}" class="col-md-12"> 
                                     <div class="text-left pl-2 py-2"> 
-                                        @php 
-                                            $text = html_entity_decode($value['description']);
-                                            $text = strip($text);                                        
-                                        @endphp
 
-                                        {!! $text !!}
+                                        @if ($field->type == 'paragraphtext')
+                                         
+                                         @php 
+                                                $text = html_entity_decode($value['description']);
+                                                $text = strip($text)  ;
+                                            @endphp
+                                            {!! $text !!}
+
+                                        @elseif ($field->type == 'htmlContent')
+                                            @php 
+                                                $text = html_entity_decode($value['description']);                                                         
+                                            @endphp
+                                            {!! $text !!}
+
+                                        @elseif ($field->type == 'dropdownSelect' || $field->type ==  'dropdownteacherselect')
+
+                                            @php
+                                                $text = str_replace(['"', "'"], '', $value['value']); 
+                                                $text = json_decode('"' . $text . '"');
+                                                $text = html_entity_decode($text);                                                
+                                            @endphp
+
+                                            {!! $text !!}
+
+                                            @if ($field->name === "Would You Like To Appoint A Teacher?")
+                                                @if (strtolower($text) == "yes")
+                                                    @php 
+                                                        $is_appointed = true;
+                                                    @endphp
+                                                @endif
+                                            @endif
+                                        @else 
+
+                                            @php
+                                                $text = str_replace(['"', "'"], '', $value['value']); 
+                                                $text = json_decode('"' . $text . '"');
+                                                $text = html_entity_decode($text);                                                
+                                            @endphp
+
+                                            {!! $text !!}                                        
+
+                                        @endif
+
+
                                     </div>
                                 </div>   
 

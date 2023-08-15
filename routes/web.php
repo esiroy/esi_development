@@ -16,10 +16,9 @@ use Illuminate\Support\Facades\Route;
 
 
 
-
+Route::get('test_writing_tutor_reply', 'dummyController@test_writing_tutor_reply');
 Route::get('test', 'dummyController@index');
 Route::get('component_test', 'dummyController@component_test');
-
 
 Route::resource('minitest', 'MemberMiniTestController');
 Route::resource('minitest/results', 'MemberMiniTestResultsController');
@@ -311,6 +310,9 @@ Route::group(['prefix' => 'admin', 'namespace' => 'Admin', 'as' => 'admin.'], fu
         Route::post('/writing', 'Modules\WritingController@store')->name('writing.store');
         Route::post('/writing/upload', 'Modules\WritingController@upload')->name('writing.upload');
         Route::post('/writing/postGrade/{id}', 'Modules\WritingController@postGrade')->name('writing.postGrade');
+ 
+        //test writing
+        Route::post('/writing/test/{id}', 'Modules\WritingController@test')->name('writing.test');
 
         //upload photo
         Route::resource('image-upload', 'imageUploadController');

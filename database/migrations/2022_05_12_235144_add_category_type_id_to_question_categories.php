@@ -14,7 +14,7 @@ class AddCategoryTypeIdToQuestionCategories extends Migration
     public function up()
     {
         Schema::table('question_categories', function (Blueprint $table) {
-            $table->unsignedBigInteger('question_category_type_id')->after('id')->index('id');
+            $table->unsignedBigInteger('question_category_type_id')->after('id')->index('id')->nullable();
 
              //$table->foreign('question_category_type_id')->references('id')->on('question_category_type');
         });

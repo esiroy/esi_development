@@ -15,8 +15,8 @@ class CreateMemberNotifierTable extends Migration
     {
         Schema::create('member_notifier', function (Blueprint $table) {
             $table->id(); 
-            $table->date('date')->index('date');
-            $table->unsignedBigInteger('member_id')->index('member_id');
+            $table->date('date');
+            $table->unsignedBigInteger('member_id');
             $table->string("type", 16)->fullText('type');
 
             $table->foreign('member_id')->references('id')->on('users');

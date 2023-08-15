@@ -53,6 +53,10 @@ class dummyController extends Controller
     {
     }
 
+    public function test_writing_tutor_reply() {
+    
+    
+    }
 
     public function index( Request $request, ScheduleItem $scheduleItem, Member $memberInfo) {
 
