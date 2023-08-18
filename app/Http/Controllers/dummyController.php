@@ -53,12 +53,35 @@ class dummyController extends Controller
     {
     }
 
-    public function test_writing_tutor_reply() {
+    public function index() {
     
+            //render the fields
+            $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
+
+            //send the authenticated user the email, since the Authenticated user
+            $user = Auth::user();
+            //E-Mail Template
+            $emailTemplate = 'emails.writing.autoreply';           
+
+            //E-Mail Recipient
+            $emailTo['name'] = $user->firstname ." ". $user->lastname;
+            $emailTo['email'] = $user->email; 
+
+            //Email Reply To
+            $emailFrom['name']   = Config::get('mail.from.name');
+            $emailFrom['email']  = Config::get('mail.from.address');
+
+            $emailSubject =  'tesstin mailer'; //Information on correction service reception
+            $emailMessage =  $formatEntryHTML;
+
+            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
+            dispatch($job);         
+
+
     
     }
 
-    public function index( Request $request, ScheduleItem $scheduleItem, Member $memberInfo) {
+    public function lessons_remaining_test( Request $request, ScheduleItem $scheduleItem, Member $memberInfo) {
 
         $memberID = $request->memberID;
 
