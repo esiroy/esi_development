@@ -25,12 +25,7 @@
                 @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->           
 
-                <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
-                    @csrf
-                    @method('POST')
-                    <textarea id="data" name="data"></textarea>
-                    <input type="submit">
-                </form>              
+            
 
                 @if (strtolower($attribute) == 'trial') 
 
@@ -67,7 +62,15 @@
                                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
                                     </div>
                                     <div class="card-body">
-                                        <form id="writing-form-entry" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+
+<form id="writing-form-test" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
+    @csrf
+    @method('POST')
+    <textarea id="data2" name="data"></textarea>
+    <input id="send" type="submit">
+</form>       
+
+                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                                             @csrf
                                             @foreach($pages as $page) 
                                                 <h2>{{ $page->page_id }}</h2>
@@ -91,7 +94,8 @@
                                                 </div>
                                             </div>
 
-
+                                            <textarea id="data" name="data" style="display:none" ></textarea>
+                                            <input type="submit" style="display:none">
                                         </form>                              
                                     </div>
                                 </div>                  
@@ -310,10 +314,10 @@
                                //if there point enabled when loop counter is finished looping through all inputs?
                                 if (inputs.length == loopcounter) {                                
                                     if (isMemberPointEnabled === false) {   
-                                        $('#writing-form').find('[type="submit"]').trigger('click');
+                                        $('#writing-form-test').find('[type="submit"]').trigger('click');
                                     } else {
                                         if  (checkID === false) {
-                                            $('#writing-form').find('[type="submit"]').trigger('click'); 
+                                            $('#writing-form-test').find('[type="submit"]').trigger('click'); 
                                         } else {
                                             checkCredits(checkID)
                                         }
@@ -503,7 +507,7 @@
                     {                                                  
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                     } else {
-                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
+                        $('#writing-form-test').find('[type="submit"]').trigger('click');                                                     
                     } 
                 }
             }); 
@@ -575,6 +579,7 @@
         function convertToJSON(data) {
             let JSON_data = JSON.stringify(data);
             $('#data').text(JSON_data);
+            $('#data2').text(JSON_data);
             return 
         }
 

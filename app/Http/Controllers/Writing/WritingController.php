@@ -80,7 +80,11 @@ class WritingController extends Controller
     {
 
 
-        echo "Test";
+        $data = $request['data'];
+
+        print_r ($data);
+
+       
         exit();
 
         $fields = array();        
@@ -90,7 +94,7 @@ class WritingController extends Controller
         $pointToDeduct = 0;
 
         $storagePath = 'public/uploads/writing/';
-        $dataArray = json_decode($request->get('data'), true);
+        $dataArray = json_decode($request['data'], true);
 
         foreach ($dataArray as $key => $value)         
         {
