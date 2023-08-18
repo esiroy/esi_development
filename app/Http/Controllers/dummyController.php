@@ -80,7 +80,7 @@ class dummyController extends Controller
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);         
 
-
+            echo "dispatch !";
     
     }
 
