@@ -320,7 +320,7 @@
                     },
                     onFinished: function(e, currentIndex) {                     
                         // Uncomment the following line to submit the form using the defaultSubmit() method
-                        // $('#writing-form').formValidation('defaultSubmit');
+                        $('#writing-form').formValidation('defaultSubmit');
 
                         console.log("finished")
                     }
@@ -499,6 +499,8 @@
                     {                                                  
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                     } else {
+
+                        console.log("submitting form")
                         $('#writing-form').find('[type="submit"]').trigger('click');                                                     
                     } 
                 }
