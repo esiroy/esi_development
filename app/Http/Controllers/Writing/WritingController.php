@@ -91,6 +91,11 @@ class WritingController extends Controller
         $storagePath = 'public/uploads/writing/';
         $dataArray = json_decode($request->get('data'), true);
 
+
+        dd ( $dataArray);
+
+        exit();
+
         foreach ($dataArray as $key => $value)         
         {
             $fkey = explode("_", $key);
