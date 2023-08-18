@@ -64,14 +64,14 @@ class dummyController extends Controller
             $emailTemplate = 'emails.writing.autoreply';           
 
             //E-Mail Recipient
-            $emailTo['name'] = $user->firstname ." ". $user->lastname;
-            $emailTo['email'] = $user->email; 
+            $emailTo['name'] =  "roy";
+            $emailTo['email'] = "abellana@gmail.com"; 
 
             //Email Reply To
             $emailFrom['name']   = Config::get('mail.from.name');
             $emailFrom['email']  = Config::get('mail.from.address');
 
-            $emailSubject =  'tesstin mailer'; //Information on correction service reception
+            $emailSubject =  'testing mailer v1'; //Information on correction service reception
             $emailMessage =  $formatEntryHTML;
 
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
