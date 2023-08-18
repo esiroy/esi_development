@@ -63,12 +63,14 @@
                                     </div>
                                     <div class="card-body">
 
-<form id="writing-form-test" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
-    @csrf
-    @method('POST')
-    <textarea id="data2" name="data"></textarea>
-    <input id="send" type="submit">
-</form>       
+                                        <div style="display:none">
+                                            <form id="writing-form-test" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
+                                                @csrf
+                                                @method('POST')
+                                                <textarea id="data" name="data"></textarea>
+                                                <input id="send" type="submit">
+                                            </form>
+                                        </div>      
 
                                         <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                                             @csrf
@@ -94,8 +96,7 @@
                                                 </div>
                                             </div>
 
-                                            <textarea id="data" name="data" style="display:none" ></textarea>
-                                            <input type="submit" style="display:none">
+                                         
                                         </form>                              
                                     </div>
                                 </div>                  
@@ -579,7 +580,6 @@
         function convertToJSON(data) {
             let JSON_data = JSON.stringify(data);
             $('#data').text(JSON_data);
-            $('#data2').text(JSON_data);
             return 
         }
 
