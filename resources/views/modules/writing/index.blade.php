@@ -9,7 +9,7 @@
 <form id="writing-form-test" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
     @csrf
     @method('POST')
-    <input type="text" name="test">
+    <input type="submit" name="test">
 </form>
 
 <div class="container bg-light">
