@@ -6,6 +6,12 @@
     $attribute = Auth::user()->memberInfo->attribute;
 @endphp
 
+<form id='#writing-form-test'  method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
+    <input name="test"></input>
+</form>
+
+</div>
+
 <div class="container bg-light">
     <div class="esi-box mb-5">
 
@@ -62,7 +68,7 @@
                                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
                                     </div>
                                     <div class="card-body">
-                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}" class="form-horizontal" style="display:none">
                                             @csrf
                                             @foreach($pages as $page) 
                                                 <h2>{{ $page->page_id }}</h2>
@@ -501,7 +507,7 @@
                     } else {
 
                         console.log("submitting form")
-                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
+                        $('#writing-form-test').find('[type="submit"]').trigger('click');                                                     
                     } 
                 }
             }); 
