@@ -6,12 +6,6 @@
     $attribute = Auth::user()->memberInfo->attribute;
 @endphp
 
-<form id="writing-form-test" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
-    @csrf
-    @method('POST')
-    <input type="submit" name="test">
-</form>
-
 <div class="container bg-light">
     <div class="esi-box mb-5">
 
@@ -31,7 +25,12 @@
                 @include('modules.member.sidebar.index')
                 <!--[end sidebar]-->           
 
-              
+                <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
+                    @csrf
+                    @method('POST')
+                    <textarea id="data" name="data"></textarea>
+                    <input type="submit">
+                </form>              
 
                 @if (strtolower($attribute) == 'trial') 
 
@@ -68,10 +67,8 @@
                                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
                                     </div>
                                     <div class="card-body">
-                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
-                                        <!--<form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}" class="form-horizontal" style="display:none">-->
-                                        @csrf
-                                        @method('POST')
+                                        <form id="writing-form-entry" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                                            @csrf
                                             @foreach($pages as $page) 
                                                 <h2>{{ $page->page_id }}</h2>
                                                 <section data-step="{{ $page->page_id }}">
@@ -94,8 +91,7 @@
                                                 </div>
                                             </div>
 
-                                            <textarea id="data" name="data"></textarea>
-                                            <input type="submit">
+
                                         </form>                              
                                     </div>
                                 </div>                  
@@ -328,7 +324,7 @@
                     },
                     onFinished: function(e, currentIndex) {                     
                         // Uncomment the following line to submit the form using the defaultSubmit() method
-                        $('#writing-form').formValidation('defaultSubmit');
+                        // $('#writing-form').formValidation('defaultSubmit');
 
                         console.log("finished")
                     }
@@ -507,8 +503,6 @@
                     {                                                  
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                     } else {
-
-                        console.log("submitting form")
                         $('#writing-form').find('[type="submit"]').trigger('click');                                                     
                     } 
                 }
