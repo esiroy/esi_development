@@ -55,6 +55,9 @@ class dummyController extends Controller
 
     public function index() {
 
+        phpinfo();
+        exit();
+
             $fieldsArray[] = ['name'=> "name", 'type' => "testype", "value"=> "roy test value"];  
         
 
