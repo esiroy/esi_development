@@ -68,8 +68,10 @@
                                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
                                     </div>
                                     <div class="card-body">
-                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}" class="form-horizontal" style="display:none">
-                                            @csrf
+                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
+                                        <!--<form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}" class="form-horizontal" style="display:none">-->
+                                        @csrf
+                                        @method('POST')
                                             @foreach($pages as $page) 
                                                 <h2>{{ $page->page_id }}</h2>
                                                 <section data-step="{{ $page->page_id }}">
@@ -92,8 +94,8 @@
                                                 </div>
                                             </div>
 
-                                            <textarea id="data" name="data" style="display:none" ></textarea>
-                                            <input type="submit" style="display:none">
+                                            <textarea id="data" name="data"></textarea>
+                                            <input type="submit">
                                         </form>                              
                                     </div>
                                 </div>                  
@@ -507,7 +509,7 @@
                     } else {
 
                         console.log("submitting form")
-                        $('#writing-form-test').find('[type="submit"]').trigger('click');                                                     
+                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
                     } 
                 }
             }); 
