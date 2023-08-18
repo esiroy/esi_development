@@ -6,13 +6,11 @@
     $attribute = Auth::user()->memberInfo->attribute;
 @endphp
 
-<form id='#writing-form-test'  method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
-    <input name="test"></input>
-
-    <input type="submit" style="display:none">
+<form id="writing-form-test" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
+    @csrf
+    @method('POST')
+    <input type="text" name="test">
 </form>
-
-</div>
 
 <div class="container bg-light">
     <div class="esi-box mb-5">
