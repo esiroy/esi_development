@@ -79,9 +79,7 @@ class WritingController extends Controller
     public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
 
-        echo "store";
 
-        exit();
 
 
         $fields = array();        
@@ -92,11 +90,6 @@ class WritingController extends Controller
 
         $storagePath = 'public/uploads/writing/';
         $dataArray = json_decode($request->get('data'), true);
-
-
-        dd ( $dataArray);
-
-        exit();
 
         foreach ($dataArray as $key => $value)         
         {
