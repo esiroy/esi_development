@@ -8,6 +8,8 @@
 
 <form id='#writing-form-test'  method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
     <input name="test"></input>
+
+    <input type="submit" style="display:none">
 </form>
 
 </div>
