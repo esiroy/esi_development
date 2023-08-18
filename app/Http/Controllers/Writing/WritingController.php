@@ -80,7 +80,8 @@ class WritingController extends Controller
     {
 
 
-
+        echo "Test";
+        exit();
 
         $fields = array();        
         $tutor_id = null;
