@@ -270,6 +270,7 @@ class WritingController extends Controller
             }       
        }        
      
+        /*
         if ($entryID) 
         {
             //render the fields
@@ -330,6 +331,7 @@ class WritingController extends Controller
             $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
             dispatch($job);          
         }
+        */
 
         return redirect()->route('writing.success')->with('message', 'ライティングエントリが正常に追加されました！');
     }
