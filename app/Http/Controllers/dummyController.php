@@ -54,7 +54,10 @@ class dummyController extends Controller
     }
 
     public function index() {
-    
+
+            $fieldsArray[] = ['name'=> "name", 'type' => "testype", "value"=> "roy test value"];  
+        
+
             //render the fields
             $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
 
