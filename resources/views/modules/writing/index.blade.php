@@ -68,9 +68,28 @@
                                             @csrf
                                             @method('POST')
 
+                                            <section data-step="{{ $page->page_id }}">
                                             <input type="text" id="25" name="25_email" placeholder="ご登録メールアドレス" value="emailroy2002@yahoo.com" readonly="readonly" required="required" class="form-control emailfield bg-white valid" aria-invalid="false">
-
-                                
+                                            </section>
+                                            @php /*
+                                            @foreach($pages as $page) 
+                                                <h2>{{ $page->page_id }}</h2>
+                                                <section data-step="{{ $page->page_id }}">
+                                                    @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                                        @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                                            {!! $formFieldChildHTML !!}
+                                                        @endforeach
+                                                    @endif
+                                                    @if( $page->page_id == 1 )
+                                                        @foreach($formFieldHTML as $HTML) 
+                                                            {!! $HTML !!}
+                                                        @endforeach
+                                                    @endif
+                                                </section>
+                                              
+                                            @endforeach
+                                            */
+                                            @endphp
 
                                             <div class="warnings">
                                                 <div class="alert alert-danger mx-4" role="alert">
