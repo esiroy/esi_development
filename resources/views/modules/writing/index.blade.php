@@ -63,9 +63,10 @@
                                     </div>
                                     <div class="card-body">
                                         
-                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                                        <form id="writing-form-test" method="POST" enctype="multipart/form-data" 
+                                            action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                                             @csrf
-                                            @method('POST')
+                                          
 
                                             <textarea id="data" name="data"></textarea>
                                             <input id="send" type="submit">
@@ -150,7 +151,7 @@
             font-weight: bold
         }
 
-        #writing-form img {
+        #writing-form-test img {
             width: 100%
         }        
     </style>
@@ -171,7 +172,7 @@
 
             getMemberCredit();
 
-            $('#writing-form').show();
+            $('#writing-form-test').show();
 
             $('.message-container').find('.alert').delay(5000).fadeOut('slow');
             
@@ -223,7 +224,7 @@
            
 
             // IMPORTANT: You must call .steps() before calling .formValidation()
-            $('#writing-form')
+            $('#writing-form-test')
                 .steps({
                     headerTag: 'h2',
                     bodyTag: 'section',
@@ -274,7 +275,7 @@
 
                             encodeData(); 
 
-                            let inputs = $("#writing-form").find('.form-control');                          
+                            let inputs = $("#writing-form-test").find('.form-control');                          
                             let loopcounter = 0;
 
                             let isMemberPointEnabled = false;
@@ -311,10 +312,10 @@
                                //if there point enabled when loop counter is finished looping through all inputs?
                                 if (inputs.length == loopcounter) {                                
                                     if (isMemberPointEnabled === false) {   
-                                        $('#writing-form').find('[type="submit"]').trigger('click');
+                                        $('#writing-form-test').find('[type="submit"]').trigger('click');
                                     } else {
                                         if  (checkID === false) {
-                                            $('#writing-form').find('[type="submit"]').trigger('click'); 
+                                            $('#writing-form-test').find('[type="submit"]').trigger('click'); 
                                         } else {
                                             checkCredits(checkID)
                                         }
@@ -325,7 +326,7 @@
                     },
                     onFinished: function(e, currentIndex) {                     
                         // Uncomment the following line to submit the form using the defaultSubmit() method
-                        // $('#writing-form').formValidation('defaultSubmit');
+                        // $('#writing-form-test').formValidation('defaultSubmit');
 
                         console.log("finished")
                     }
@@ -339,7 +340,7 @@
             @foreach ($items as $item)
 
                 //reset on the first page when hitting options
-                $('#writing-form-p-0 {{ '#' . $item->selected_option_id }}').on('change', function() {
+                $('#writing-form-test-p-0 {{ '#' . $item->selected_option_id }}').on('change', function() {
                      $('.cfLogic').hide();
                 });
 
@@ -420,10 +421,10 @@
                     console.log(credits)
 
                     if (credits >= 1) {
-                        $('#writing-form .actions').show();
-                        $('#writing-form .warnings').hide();
+                        $('#writing-form-test .actions').show();
+                        $('#writing-form-test .warnings').hide();
                     } else {
-                        $('#writing-form .actions').hide();
+                        $('#writing-form-test .actions').hide();
                     }
 
                    
@@ -504,7 +505,7 @@
                     {                                                  
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                     } else {
-                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
+                        $('#writing-form-test').find('[type="submit"]').trigger('click');                                                     
                     } 
                 }
             }); 
@@ -540,7 +541,7 @@
 
           
 
-            let inputs = $('#writing-form').find('.form-control');
+            let inputs = $('#writing-form-test').find('.form-control');
             let fieldsArr = new Object;
 
             var itemsProcessed = 0;
@@ -584,7 +585,7 @@
             //clean array
             // fieldsArray = [];
 
-            let inputs = $("#writing-form-p-"+currentIndex).find('.form-control');
+            let inputs = $("#writing-form-test-p-"+currentIndex).find('.form-control');
             let requiredFieldsArr = [];
 
             Array.from(inputs).forEach(field => 
