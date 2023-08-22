@@ -90,8 +90,9 @@
                                                 </div>
                                             </div>
 
-                                            <textarea id="data" name="data"></textarea>
-                                            <input id="send" type="submit">
+                                      
+                                            <textarea id="data" name="data" style="display:none"></textarea>
+                                            <input id="send" type="submit" style="display:none">
                                          
                                         </form>                              
                                     </div>
