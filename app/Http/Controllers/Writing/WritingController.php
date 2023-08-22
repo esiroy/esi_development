@@ -125,11 +125,6 @@ class WritingController extends Controller
     public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
 
-
-        //$data = $request['data'];
-        //print_r ($data);       
-        //exit();
-
         $fields = array();        
         $tutor_id = null;
         $userAttachedFile = false;

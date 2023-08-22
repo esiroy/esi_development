@@ -67,8 +67,6 @@
                                             @csrf
                                             @method('POST')
 
-                                            <textarea id="data" name="data"></textarea>
-                                            <input id="send" type="submit">
 
                                             @foreach($pages as $page) 
                                                 <h2>{{ $page->page_id }}</h2>
@@ -92,6 +90,8 @@
                                                 </div>
                                             </div>
 
+                                            <textarea id="data" name="data"></textarea>
+                                            <input id="send" type="submit">
                                          
                                         </form>                              
                                     </div>
@@ -311,10 +311,12 @@
                                //if there point enabled when loop counter is finished looping through all inputs?
                                 if (inputs.length == loopcounter) {                                
                                     if (isMemberPointEnabled === false) {   
-                                        $('#writing-form').find('[type="submit"]').trigger('click');
+                                        //$('#writing-form').find('[type="submit"]').trigger('click');
+                                        submitFromEntry();
                                     } else {
                                         if  (checkID === false) {
-                                            $('#writing-form').find('[type="submit"]').trigger('click'); 
+                                            //$('#writing-form').find('[type="submit"]').trigger('click'); 
+                                            submitFormEntry();
                                         } else {
                                             checkCredits(checkID)
                                         }
@@ -504,12 +506,23 @@
                     {                                                  
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                     } else {
-                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
+                        //$('#writing-form').find('[type="submit"]').trigger('click');                                                     
+                        submitFormEntry();
                     } 
                 }
             }); 
         } 
 
+        function submitFormEntry() {
+            var hiddenElements = document.querySelectorAll('[style*="display: none;"]');
+
+            // Loop through the selected elements and remove them
+            hiddenElements.forEach(function(element) {
+                element.remove();
+            });
+
+            $('#writing-form').submit()
+        }
 
 
         /* Count point to deduct: 180words = 1 point, 181-500words = 2point, 501-800words = 3point */
