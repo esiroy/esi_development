@@ -68,9 +68,10 @@
                                             @csrf
                                             @method('POST')
 
-                                            <section data-step="{{ $page->page_id }}">
-                                            <input type="text" id="25" name="25_email" placeholder="ご登録メールアドレス" value="emailroy2002@yahoo.com" readonly="readonly" required="required" class="form-control emailfield bg-white valid" aria-invalid="false">
+                                            <section data-step="1">
+                                                <input type="text" id="25" name="25_email" placeholder="ご登録メールアドレス" value="emailroy2002@yahoo.com" readonly="readonly" required="required" class="form-control emailfield bg-white valid" aria-invalid="false">
                                             </section>
+
                                             @php /*
                                             @foreach($pages as $page) 
                                                 <h2>{{ $page->page_id }}</h2>
