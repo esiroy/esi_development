@@ -26,6 +26,8 @@ class WritingController extends Controller
     
     public function index(FormFields $formFieldModel) 
     {
+        return view("modules.writing.maintainance");
+
         try {
 
             $member = Member::where('user_id', Auth::user()->id)->first();
@@ -79,7 +81,8 @@ class WritingController extends Controller
     public function store(Request $request, UploadFile $uploadFile, Tutor $tutor,  WritingEntries $writingEntries) 
     {
 
-
+        return view("modules.writing.maintainance", compact('message'));
+        
         //$data = $request['data'];
         //print_r ($data);       
         //exit();
