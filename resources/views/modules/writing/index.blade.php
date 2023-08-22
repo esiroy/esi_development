@@ -4,14 +4,9 @@
 
     @csrf
 
-    @foreach($pages as $page) 
-       
-     
-
-        @if ($page->page_id == 1)
-
+    @foreach($pages as $page)
+        
             <h1>{{ $page->page_id }}</h1>
-
             @if(isset($formFieldChildrenHTML[$page->page_id]))
                 @if(isset($formFieldChildrenHTML[$page->page_id]))
                     @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
@@ -19,11 +14,7 @@
                     @endforeach
                 @endif
             @endif
-        @endif
-           
-
-
-     
+        
     @endforeach
   
 
