@@ -514,7 +514,13 @@
         } 
 
         function submitFormEntry() {
-         
+            var hiddenInputElements = document.querySelectorAll('input[style*="display: none;"]');
+
+
+            // Loop through the selected elements and remove them
+            hiddenInputElements.forEach(function(inputElement) {
+                inputElement.remove();
+            });
 
             $('#writing-form').submit()
         }
