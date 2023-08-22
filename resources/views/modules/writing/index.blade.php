@@ -6,11 +6,15 @@
 
     @foreach($pages as $page) 
        
-        @if( $page->page_id == 1 )
+        <h1>{{ $page->page_id }}</h1>
+
+        @if ($page->page_id == 1)
             @if(isset($formFieldChildrenHTML[$page->page_id]))
-                @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
-                    {!! $formFieldChildHTML !!}
-                @endforeach
+                @if(isset($formFieldChildrenHTML[$page->page_id]))
+                    @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                        {!! $formFieldChildHTML !!}
+                    @endforeach
+                @endif
             @endif
         @endif
            
