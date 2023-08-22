@@ -68,9 +68,11 @@
                                             </div>
                                         </div>
 
-                                        <textarea id="data" name="data" style="display:none" ></textarea>
-                                        <input type="submit" style="display:none">
+                                        <textarea id="data" name="data" ></textarea>
+                                        <input type="submit" >
                                     </form>                              
+
+                                    <button onClick="javascript:encodeData()">encode </button>
                                 </div>
                             </div>                  
                         </div>
