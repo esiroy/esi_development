@@ -134,62 +134,6 @@ class WritingController extends Controller
         $storagePath = 'public/uploads/writing/';
         $dataArray = json_decode($request['data'], true);
 
-
-        foreach ($dataArray as $key => $value)         
-        {           
-
-
-       
-
-            $fkey = explode("_", $key);
-            $id = $fkey[0];
-
-            $formField = formFields::find($id);
-            
-            if ($formField) {
-
-                echo $id . " " .$formField->type . "B". "<BR>";
-                
-                if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
-                { 
-                    
-
-                    $file = $request->file($key);
-
-                    echo $file;
-
-
-                    if ($file) {
-
-                        echo ($formField->type);
-
-
-                        $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
-
-                        if ($uploadFileName) 
-                        {
-                            //echo "uploaded $uploadFileName : $file <BR>" ;   
-                            $fields[$key] = $uploadFileName;
-                            //Add A Key value pair for Email Template
-                            $fieldsArray[] = ['name'=> $formField->name, 'type' => $formField->type, "value"=> $uploadFileName];  
-
-                            //user has succesfully attached a file
-                            $userAttachedFile = true;
-                        } 
-
-                    }
-
-                    
-                }
-            }
-
-            echo "<BR><BR>";
-            
-        }
-
-        //print_r ($fieldsArray);
-        exit();
-
         foreach ($dataArray as $key => $value)         
         {
             $fkey = explode("_", $key);
