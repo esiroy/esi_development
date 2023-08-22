@@ -266,9 +266,10 @@
                         let requiredFieldsArr = new Array();
 
                         let isValid = validateFields(currentIndex);
+
                         if (isValid === "true" || isValid === false || isValid === null ) 
                         {                          
-                            //console.log("not valid field detected");
+                            console.log("not valid field detected");
 
                         } else {         
 
@@ -327,12 +328,17 @@
                             var delayInMilliseconds = 1000; //1 second
 
                             setTimeout(function() {
+
                                 if (isMemberPointEnabled == false) {   
+                                    console.log("submit 1")
                                     $('#writing-form').find('[type="submit"]').trigger('click');
                                 } else {
                                     if  (checkID == false) {
+                                        console.log("submit 2")
+
                                         $('#writing-form').find('[type="submit"]').trigger('click'); 
                                     } else {
+                                        console.log("check credit")
                                         checkCredits(checkID)
                                     }
                                 }     
@@ -435,17 +441,13 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },                    
-                success: function(credits) {      
-                    console.log(credits)
-
+                success: function(credits) {  
                     if (credits >= 1) {
                         $('#writing-form .actions').show();
                         $('#writing-form .warnings').hide();
                     } else {
                         $('#writing-form .actions').hide();
                     }
-
-                   
                 },
                 error: function(err) {
                     //reject(err) // Reject the promise and go to catch()
@@ -729,7 +731,7 @@
         function highlightFieldRow(fieldID) 
         {
 
-            console.log("highlight : " + fieldID);
+            //console.log("highlight : " + fieldID);
 
             if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                    
                 //console.log(fieldID + " is hidden, we will not highlight");
