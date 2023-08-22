@@ -259,6 +259,8 @@ Route::get('downloadSalaryReport', 'ExportController@downloadSalaryReport')->nam
 
 
 Route::get('writing', 'Writing\WritingController@index')->name('writing.index');
+Route::get('test_writing', 'Writing\WritingController@test_writing')->name('writing.test_writing'); //writing test
+
 Route::post('writing', 'Writing\WritingController@store')->name('writingSaveEntry.store');
 Route::get('writing/success', 'Writing\WritingController@success')->name('writing.success');
 

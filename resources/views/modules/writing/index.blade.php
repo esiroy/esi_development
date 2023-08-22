@@ -63,19 +63,15 @@
                                     </div>
                                     <div class="card-body">
 
-                                        <div style="display:none">
-                                            <form id="writing-form-test" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id]) }}">
-                                                @csrf
-                                                @method('POST')
-                                                <textarea id="data" name="data"></textarea>
-                                                <input id="send" type="submit">
-                                            </form>
-                                        </div>      
+                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}"class="form-horizontal">
 
-                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                                             @csrf
+                                            @method('POST')
+                                            
+                                            <textarea id="data" name="data"  style="display:none"></textarea>
+
                                             @foreach($pages as $page) 
-                                                <h2>{{ $page->page_id }}</h2>
+                                                <h2 style="display:none">{{ $page->page_id }}</h2>
                                                 <section data-step="{{ $page->page_id }}">
                                                     @if(isset($formFieldChildrenHTML[$page->page_id]))
                                                         @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
@@ -96,7 +92,7 @@
                                                 </div>
                                             </div>
 
-                                         
+                                            <input id="send" type="submit"  style="display:none">
                                         </form>                              
                                     </div>
                                 </div>                  
@@ -314,11 +310,11 @@
 
                                //if there point enabled when loop counter is finished looping through all inputs?
                                 if (inputs.length == loopcounter) {                                
-                                    if (isMemberPointEnabled === false) {   
-                                        $('#writing-form-test').find('[type="submit"]').trigger('click');
+                                    if (isMemberPointEnabled == false) {   
+                                        $('#writing-form').find('[type="submit"]').trigger('click');
                                     } else {
-                                        if  (checkID === false) {
-                                            $('#writing-form-test').find('[type="submit"]').trigger('click'); 
+                                        if  (checkID == false) {
+                                            $('#writing-form').find('[type="submit"]').trigger('click'); 
                                         } else {
                                             checkCredits(checkID)
                                         }
@@ -508,7 +504,7 @@
                     {                                                  
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                     } else {
-                        $('#writing-form-test').find('[type="submit"]').trigger('click');                                                     
+                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
                     } 
                 }
             }); 
