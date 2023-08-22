@@ -514,22 +514,22 @@
         } 
 
         function removeHiddenInputs() {
-            var hiddenInputElements = document.querySelectorAll('input[style*="display: none;"]');
+            var hiddenCFLogicDivs = document.querySelectorAll('div[style*="display: none;"].cfLogic');
 
             // Loop through the selected elements and remove them
-            hiddenInputElements.forEach(function(inputElement) {
-                inputElement.remove();
+            hiddenCFLogicDivs.forEach(function(inputElement) {
+                console.log(inputElement)
+                inputElement.remove();                
             });
         }
 
         function submitFormEntry() {
-
-            setTimeout(function() {
-                removeHiddenInputs();
+            removeHiddenInputs();
             
+            setTimeout(function() {              
                 // After removal is complete, submit the form
                 $('#writing-form').submit();
-            }, 1000); // Adjust the delay time as needed (in milliseconds)
+            }, 2000); // Adjust the delay time as needed (in milliseconds)
 
 
         }
