@@ -78,7 +78,7 @@ class WritingController extends Controller
         try {
 
             $member = Member::where('user_id', 20372)->first();
-            
+
             if (isset($member)) {
 
                 /* FRONT END WRITING FORM */
@@ -90,7 +90,7 @@ class WritingController extends Controller
                 $cfields = $formFields;        
                 foreach ($formFields as $formField) 
                 {
-                    $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML($formField, $cfields);             
+                    $formFieldHTML[] = $formFieldModel->generateFrontEndFormFieldHTML_V2($formField, $cfields);             
                 }
 
                 /************ GET CHILDREN HTML ************/
@@ -105,7 +105,7 @@ class WritingController extends Controller
                     $child_cfields = FormFields::where('form_id', $form_id)->orderBy('sequence_number', 'ASC')->get();
                     foreach ($formChildFields as $formChildField) 
                     {
-                        $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML($formChildField, $child_cfields);
+                        $formFieldChildrenHTML[$page->page_id][] =  $formFieldModel->generateFrontEndFormFieldHTML_V2($formChildField, $child_cfields);
                     }
                 }
 
