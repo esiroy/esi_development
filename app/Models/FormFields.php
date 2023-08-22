@@ -96,6 +96,80 @@ class FormFields extends Model
 
 
 
+    public function generateFrontEndFormFieldHTML_V2($formField, $cfields) 
+    {
+        //covert json objec to array                
+        $display_meta = (array) json_decode($formField->display_meta, true);
+        $id     = $formField->id;                
+        $label  = $formField->name;
+        $required  = $formField->required;
+        $maximum_characters  = $formField->maximum_characters;
+        
+
+        if (isset($display_meta['description'])) {
+            $description = $display_meta['description'];
+        } else {
+            $description = null;
+        }
+
+        if (isset($display_meta['content'])) {
+            $content = $display_meta['content'];
+        } else {
+            $content = null;
+        }            
+
+        $formFieldHTML = "";
+
+        if ( strtolower($formField->type) == "simpletext" || strtolower($formField->type) == "simpletextfield") 
+        {
+            $type   = 'simpletextfield';                               
+            $formFieldHTML = view('modules.writing.fields_v2.simpleText', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "dropdown" || strtolower($formField->type) == "dropdownselect") {
+
+            $type   = 'dropdownselect';                               
+            $formFieldHTML = view('modules.writing.fields_v2.dropdownSelect', compact('id', 'label', 'description', 'maximum_characters', 'required', 'display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "dropdownteacherselect") {
+
+            $type   = 'dropdownteacherselect';                               
+            $formFieldHTML = view('modules.writing.fields_v2.dropdownTeacherSelect', compact('id', 'label', 'description', 'required', 'display_meta', 'cfields'))->render();
+
+
+        } else if (strtolower($formField->type) == "html" || strtolower($formField->type) == "htmlcontent") {
+
+            $type   = 'html';                               
+            $formFieldHTML = view('modules.writing.fields_v2.htmlContent', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "firstname" || strtolower($formField->type) == "firstnamefield") {
+
+            $type   = 'firstnamefield';                               
+            $formFieldHTML = view('modules.writing.fields_v2.firstnamefield', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
+            
+        } else if (strtolower($formField->type) == "lastname" || strtolower($formField->type) == "lastnamefield") {
+
+            $type   = 'lastnamefield';                               
+            $formFieldHTML = view('modules.writing.fields_v2.lastnamefield', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "email" || strtolower($formField->type) == "emailfield") {
+
+            $type   = 'emailfield';                               
+            $formFieldHTML = view('modules.writing.fields_v2.emailfield', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
+
+        } else if (strtolower($formField->type) == "upload" || strtolower($formField->type) == "uploadfield") {
+
+            $type   = 'uploadfield';                               
+            $formFieldHTML = view('modules.writing.fields_v2.uploadfield', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
+        
+        } else if (strtolower($formField->type) == "paragraphtext" ) {
+
+            $type   = 'paragraphtext';                               
+            $formFieldHTML = view('modules.writing.fields_v2.paragraphtext', compact('id', 'label', 'content','display_meta', 'cfields'))->render();
+
+        }        
+
+        return $formFieldHTML;      
+    }
 
 
     /* generate Admin Fields */
