@@ -75,8 +75,6 @@ class WritingController extends Controller
     }
     public function test_writing(FormFields $formFieldModel) 
     {
-     
-
         try {
 
             $member = Member::where('user_id', Auth::user()->id)->first();
@@ -120,7 +118,7 @@ class WritingController extends Controller
         }  catch(\Exception $e) {
 
              echo $e->getMessage();
-        }
+        }    
     }
 
     /* Front End
