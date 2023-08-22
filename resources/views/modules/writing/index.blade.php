@@ -44,7 +44,7 @@
                                     <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
                                 </div>
                                 <div class="card-body">
-                                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
+                                    <form id="writing-form" method="POST" enctype="multipart/form-data" action="test" class="form-horizontal" style="display:none">
                                         @csrf
                                         @foreach($pages as $page) 
                                             <h2>{{ $page->page_id }}</h2>
@@ -207,9 +207,6 @@
                     headerTag: 'h2',
                     bodyTag: 'section',
                     onStepChanged: function(e, currentIndex, priorIndex) {
-                        // You don't need to care about it
-                        // It is for the specific demo
-                        //alert ("test page" + currentIndex + " - prior Index " + priorIndex)
                         adjustIframeHeight();
                         return true;
                     },
@@ -223,16 +220,11 @@
                             let isValid = validateFields(currentIndex);
                             return isValid;                            
                         } else {
-                            //console.log("User")
-                            console.log("clicked previous")
-
                             //checked if 1 so we can reset
                             if (currentIndex == 1) {
                                 console.log("we need to reset");
-
-                                //$('.cfLogic').hide(); (bug this will hide when clicking previos)
+                                //$('.cfLogic').hide(); (bug on hide when clicking previous forms)
                             }
-
                             return true;
                         }
 

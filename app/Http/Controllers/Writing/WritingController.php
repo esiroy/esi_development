@@ -129,9 +129,9 @@ class WritingController extends Controller
 
       
         
-        //$data = $request['data'];
-        //print_r ($data);       
-        //exit();
+        $data = $request['data'];
+        print_r ($data);       
+        exit();
 
         $fields = array();        
         $tutor_id = null;
