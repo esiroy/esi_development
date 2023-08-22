@@ -20,7 +20,7 @@ class WritingController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth')->except('test_writing');
+        $this->middleware('auth')->except('test_writing', 'store');
     }
     
     
@@ -77,7 +77,8 @@ class WritingController extends Controller
     {
         try {
 
-            $member = Member::where('user_id', Auth::user()->id)->first();
+            $member = Member::where('user_id', 20372)->first();
+            
             if (isset($member)) {
 
                 /* FRONT END WRITING FORM */
