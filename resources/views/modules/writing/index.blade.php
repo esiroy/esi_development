@@ -329,19 +329,9 @@
 
                             setTimeout(function() {
 
-                                if (isMemberPointEnabled == false) {   
-                                    console.log("submit 1")
-                                    $('#writing-form').find('[type="submit"]').trigger('click');
-                                } else {
-                                    if  (checkID == false) {
-                                        console.log("submit 2")
+                                $('#writing-form').find('[type="submit"]').trigger('click');
 
-                                        $('#writing-form').find('[type="submit"]').trigger('click'); 
-                                    } else {
-                                        console.log("check credit")
-                                        checkCredits(checkID)
-                                    }
-                                }     
+                               
                             }, delayInMilliseconds);
 
 
