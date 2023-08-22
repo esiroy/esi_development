@@ -129,8 +129,8 @@ class WritingController extends Controller
 
       
         
-        $data = $request['data'];
-        print_r ($data);       
+        $data = $request;
+        return $request->all();
         exit();
 
         $fields = array();        
