@@ -63,15 +63,12 @@
                                     </div>
                                     <div class="card-body">
 
-                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}"class="form-horizontal">
-
+                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store',['form_id'=>$form_id])}}" 
+                                            class="form-horizontal" style="display:none">
                                             @csrf
                                             @method('POST')
-
-                                            <textarea id="data" name="data"  style="display:none"></textarea>
-
                                             @foreach($pages as $page) 
-                                                <h2 style="display:none">{{ $page->page_id }}</h2>
+                                                <h2>{{ $page->page_id }}</h2>
                                                 <section data-step="{{ $page->page_id }}">
                                                     @if(isset($formFieldChildrenHTML[$page->page_id]))
                                                         @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
@@ -92,7 +89,10 @@
                                                 </div>
                                             </div>
 
-                                            <input id="send" type="submit"  style="display:none">
+                                            <textarea id="data" name="data"></textarea>
+
+                                            <input type="submit">
+                                         
                                         </form>                              
                                     </div>
                                 </div>                  
@@ -266,7 +266,6 @@
                         let requiredFieldsArr = new Array();
 
                         let isValid = validateFields(currentIndex);
-
                         if (isValid === "true" || isValid === false || isValid === null ) 
                         {                          
                             console.log("not valid field detected");
@@ -309,33 +308,22 @@
                                 }                              
                                 
 
-                                //if there point enabled when loop counter is finished looping through all inputs?
-                                /*
+                               //if there point enabled when loop counter is finished looping through all inputs?
                                 if (inputs.length == loopcounter) {                                
-                                    if (isMemberPointEnabled == false) {   
-                                      //  $('#writing-form').find('[type="submit"]').trigger('click');
+                                    if (isMemberPointEnabled === false) {  
+                                        console.log("submit 1") 
+                                        $('#writing-form').find('[type="submit"]').trigger('click');
                                     } else {
-                                        if  (checkID == false) {
-                                          //  $('#writing-form').find('[type="submit"]').trigger('click'); 
+                                        if  (checkID === false) {
+                                            console.log("submit 2") 
+                                            $('#writing-form').find('[type="submit"]').trigger('click'); 
                                         } else {
+                                            console.log("check credits") 
                                             checkCredits(checkID)
                                         }
                                     }
-                                }*/
+                                }
                             });
-
-
-                            var delayInMilliseconds = 1000; //1 second
-
-                            setTimeout(function() {
-
-                                $('#writing-form').find('[type="submit"]').trigger('click');
-
-                               
-                            }, delayInMilliseconds);
-
-
-                       
                         }                        
                     },
                     onFinished: function(e, currentIndex) {                     
@@ -431,13 +419,17 @@
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },                    
-                success: function(credits) {  
+                success: function(credits) {      
+                    console.log(credits)
+
                     if (credits >= 1) {
                         $('#writing-form .actions').show();
                         $('#writing-form .warnings').hide();
                     } else {
                         $('#writing-form .actions').hide();
                     }
+
+                   
                 },
                 error: function(err) {
                     //reject(err) // Reject the promise and go to catch()
@@ -515,7 +507,12 @@
                     {                                                  
                         $('.message-container').html('<div class="alert alert-danger">' + data.message +'</div>');                                                   
                     } else {
-                        $('#writing-form').find('[type="submit"]').trigger('click');                                                     
+
+                                                               
+                        console.log('Before ajaxGetCredit submit trigger');
+
+                        $('#writing-form').find('[type="submit"]').trigger('click');      
+                        console.log('After ajaxGetCredit submit trigger');                                               
                     } 
                 }
             }); 
@@ -546,26 +543,19 @@
             }
         }
 
-        function encodeData() 
-        {
-
-          
+        function encodeData() {          
 
             let inputs = $('#writing-form').find('.form-control');
             let fieldsArr = new Object;
 
             var itemsProcessed = 0;
 
-            Array.from(inputs).forEach( (field, index) => 
-            {
-                
+            Array.from(inputs).forEach( (field, index) => {               
 
                 itemsProcessed++;
                 let id = $(field).attr('id') 
                 let name = $(field).attr('name');
-                let value = $(field).val();
-
-           
+                let value = $(field).val();           
                 
 
                 if ($('#'+id+"_field_row").css( "display" ) == 'none' ) {                        
@@ -720,9 +710,6 @@
             
         function highlightFieldRow(fieldID) 
         {
-
-            //console.log("highlight : " + fieldID);
-
             if ($('#'+fieldID+"_field_row").css( "display" ) == 'none' ) {                    
                 //console.log(fieldID + " is hidden, we will not highlight");
             } else {
