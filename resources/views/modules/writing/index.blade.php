@@ -513,16 +513,25 @@
             }); 
         } 
 
-        function submitFormEntry() {
+        function removeHiddenInputs() {
             var hiddenInputElements = document.querySelectorAll('input[style*="display: none;"]');
-
 
             // Loop through the selected elements and remove them
             hiddenInputElements.forEach(function(inputElement) {
                 inputElement.remove();
             });
+        }
 
-            $('#writing-form').submit()
+        function submitFormEntry() {
+
+            setTimeout(function() {
+                removeHiddenInputs();
+            
+                // After removal is complete, submit the form
+                $('#writing-form').submit();
+            }, 1000); // Adjust the delay time as needed (in milliseconds)
+
+
         }
 
 
