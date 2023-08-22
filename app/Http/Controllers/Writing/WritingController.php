@@ -139,6 +139,9 @@ class WritingController extends Controller
         $storagePath = 'public/uploads/writing/';
         $dataArray = json_decode($request['data'], true);
 
+
+      
+
         foreach ($dataArray as $key => $value)         
         {
             $fkey = explode("_", $key);
@@ -150,9 +153,13 @@ class WritingController extends Controller
             { 
 
                 if (strtolower($formField->type) == 'uploadfield' || strtolower($formField->type) == 'upload') 
-                {                    
-                    $file = $request->file($key);                  
+                { 
+                   
+                    $file = $request->file($key);
+
                     if ($file) {
+
+
                         $uploadFileName = $uploadFile->uploadFile($storagePath, $file);
                         if ($uploadFileName) 
                         {
@@ -163,7 +170,7 @@ class WritingController extends Controller
 
                             //user has succesfully attached a file
                             $userAttachedFile = true;
-                        }                       
+                        } 
                     }
 
                 } else if (strtolower($formField->type) == 'paragraphtext') {       
@@ -223,6 +230,8 @@ class WritingController extends Controller
                 //echo $key ." not found in form field <BR>";
             }
         }
+
+  
 
         //detect if theres an attachement
         if ($pointToDeduct == 0 && $userAttachedFile == true) 
