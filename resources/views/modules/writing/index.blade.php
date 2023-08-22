@@ -67,7 +67,7 @@
 
                                             @csrf
                                             @method('POST')
-                                            
+
                                             <textarea id="data" name="data"  style="display:none"></textarea>
 
                                             @foreach($pages as $page) 
@@ -308,19 +308,38 @@
                                 }                              
                                 
 
-                               //if there point enabled when loop counter is finished looping through all inputs?
+                                //if there point enabled when loop counter is finished looping through all inputs?
+                                /*
                                 if (inputs.length == loopcounter) {                                
                                     if (isMemberPointEnabled == false) {   
-                                        $('#writing-form').find('[type="submit"]').trigger('click');
+                                      //  $('#writing-form').find('[type="submit"]').trigger('click');
                                     } else {
                                         if  (checkID == false) {
-                                            $('#writing-form').find('[type="submit"]').trigger('click'); 
+                                          //  $('#writing-form').find('[type="submit"]').trigger('click'); 
                                         } else {
                                             checkCredits(checkID)
                                         }
                                     }
-                                }
+                                }*/
                             });
+
+
+                            var delayInMilliseconds = 1000; //1 second
+
+                            setTimeout(function() {
+                                if (isMemberPointEnabled == false) {   
+                                    $('#writing-form').find('[type="submit"]').trigger('click');
+                                } else {
+                                    if  (checkID == false) {
+                                        $('#writing-form').find('[type="submit"]').trigger('click'); 
+                                    } else {
+                                        checkCredits(checkID)
+                                    }
+                                }     
+                            }, delayInMilliseconds);
+
+
+                       
                         }                        
                     },
                     onFinished: function(e, currentIndex) {                     
