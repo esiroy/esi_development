@@ -62,14 +62,38 @@
                                         <a href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/tensaku.html', 'tensaku', 980, 720);" class="small ml-4">「添削くん」ご利用方法 </a>
                                     </div>
                                     <div class="card-body">
-                                        <form action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" method="POST" enctype="multipart/form-data">
+                                        
+                                        <form id="writing-form" method="POST" enctype="multipart/form-data" action="{{ route('writingSaveEntry.store', ['form_id' => $form_id  ]) }}" class="form-horizontal" style="display:none">
                                             @csrf
-                                            <div class="form-group">
-                                                <label for="file">Choose File:</label>
-                                                <input type="file" name="file" id="file" class="form-control-file">
+                                            @method('POST')
+
+                                            <textarea id="data" name="data"></textarea>
+                                            <input id="send" type="submit">
+
+                                            @foreach($pages as $page) 
+                                                <h2>{{ $page->page_id }}</h2>
+                                                <section data-step="{{ $page->page_id }}">
+                                                    @if(isset($formFieldChildrenHTML[$page->page_id]))
+                                                        @foreach($formFieldChildrenHTML[$page->page_id] as $formFieldChildHTML) 
+                                                            {!! $formFieldChildHTML !!}
+                                                        @endforeach
+                                                    @endif
+                                                    @if( $page->page_id == 1 )
+                                                        @foreach($formFieldHTML as $HTML) 
+                                                            {!! $HTML !!}
+                                                        @endforeach
+                                                    @endif
+                                                </section>
+                                            @endforeach
+
+                                            <div class="warnings">
+                                                <div class="alert alert-danger mx-4" role="alert">
+                                                    You already consumed all your credits
+                                                </div>
                                             </div>
-                                            <button type="submit" class="btn btn-primary">Upload</button>
-                                        </form>                                                          
+
+                                         
+                                        </form>                              
                                     </div>
                                 </div>                  
                             </div>
