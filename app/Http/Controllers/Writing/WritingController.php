@@ -26,7 +26,7 @@ class WritingController extends Controller
     
     public function index(FormFields $formFieldModel) 
     {
-        return view("modules.writing.maintainance");
+        //return view("modules.writing.maintainance");
 
         try {
 
