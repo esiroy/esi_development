@@ -738,25 +738,38 @@ class MemberController extends Controller
         if (Auth::user()->user_type == "ADMINISTRATOR") 
         {        
             $member = Member::where('user_id', $id)->first();
+
+            if (!$member) {
+
+                abort(404);
+            }
+
             $user = User::find($member->user_id);
 
-            LessonGoals::where('member_id', $user->id)->delete();
-            MemberAttribute::where('member_id', $user->id)->delete();
-            MemberDesiredSchedule::where('member_id', $user->id)->delete();
+            if ($user) {
 
-            //clear all chat support history
-            ChatSupportHistory::where('sender_id', $user->id)->delete();
-            ChatSupportHistory::where('recipient_id', $user->id)->delete();
+                LessonGoals::where('member_id', $user->id)->delete();
+                MemberAttribute::where('member_id', $user->id)->delete();
+                MemberDesiredSchedule::where('member_id', $user->id)->delete();
+    
+                //clear all chat support history
+                ChatSupportHistory::where('sender_id', $user->id)->delete();
+                ChatSupportHistory::where('recipient_id', $user->id)->delete();
+    
+                MemoReply::where('sender_id', $user->id)->delete();
+                MemoReply::where('recipient_id', $user->id)->delete();
+    
+    
+                MergedAccount::where('member_id', $user->id)->delete();
+                MergedAccount::where('merged_member_id', $user->id)->delete();
+    
+                ChatSupportHistory::where('sender_id', $user->id)->delete();
+                ChatSupportHistory::where('recipient_id', $user->id)->delete();
+    
+                MemberSetting::where('user_id', $user->id)->delete();                
 
-            MemoReply::where('sender_id', $user->id)->delete();
-            MemoReply::where('recipient_id', $user->id)->delete();
+            }
 
-
-            MergedAccount::where('member_id', $user->id)->delete();
-            MergedAccount::where('merged_member_id', $user->id)->delete();
-
-            ChatSupportHistory::where('sender_id', $user->id)->delete();
-            ChatSupportHistory::where('recipient_id', $user->id)->delete();
 
             $member->delete();
             $user->forceDelete();
