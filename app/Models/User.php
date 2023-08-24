@@ -152,4 +152,8 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(MergedAccount::class, 'member_id', 'id');
     } 
 
+    public function memberSettings()
+    {
+        return $this->hasMany(MemberSetting::class, 'user_id');
+    }    
 }
