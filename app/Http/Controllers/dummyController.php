@@ -73,25 +73,13 @@ class dummyController extends Controller
         $memberInfo = $member->where('user_id', $memberID)->first();
 
         $firstSchedule = $scheduleItem->getFirstActiveSchedule($memberInfo);
+        $isValid = $scheduleItem->isMemberValidToUpdate($memberInfo);        
 
-        
-
-            $isValid = $scheduleItem->isMemberValidToUpdate($memberInfo); 
-        
-
-        if ($isValid == true) {
-         
+        if ($isValid == true) {         
             echo "valid";
-        } else {
-        
+        } else {        
             echo "not valid";
-        }
-       
-
-
-     
-
-    
+        }    
     }
 
 
