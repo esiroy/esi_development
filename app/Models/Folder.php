@@ -686,10 +686,16 @@ class Folder extends Model
 
             $firstFolder = $this->getFirstFolder();
 
-            //new folder must be a new lesson
-            $newFolderID       = $firstFolder->id;
-        }
+            if ($firstFolder) {
+            
+                //new folder must be a new lesson
+                $newFolderID       = $firstFolder->id;
 
+            } else {
+            
+                return null;
+            }
+        }
 
 
         return $newFolderID;    
@@ -710,18 +716,27 @@ class Folder extends Model
 
 
      public function getLastSubFolderRecursively($parentFolder) {
-     
-        $subfolder     = Folder::where('privacy', 'public')->where('parent_id', $parentFolder->id)
-                            ->orderBy('order_id', "ASC")
-                            ->first(); 
-        if ($subfolder) {
 
-            return $this->getLastSubFolderRecursively($subfolder);
+            if (isset($parentFolder)) {
+            
+                $subfolder     = Folder::where('privacy', 'public')->where('parent_id', $parentFolder->id)
+                                    ->orderBy('order_id', "ASC")
+                                    ->first(); 
+                if ($subfolder) {
 
-        } else {
+                    return $this->getLastSubFolderRecursively($subfolder);
+
+                } else {
+                
+                    return $parentFolder;
+                }
+
+            } else {
+            
+                return null;
+            }
         
-            return $parentFolder;
-        }
+
 
      }
 

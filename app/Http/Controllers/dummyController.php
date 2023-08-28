@@ -67,31 +67,24 @@ class dummyController extends Controller
     }
 
     public function index(Request $request, Member $member, ScheduleItem $scheduleItem) {
+
+        phpinfo();
+    }
+
+    public function test_activeschedules(Request $request, Member $member, ScheduleItem $scheduleItem) {
     
         $memberID =  $request->memberID;
 
         $memberInfo = $member->where('user_id', $memberID)->first();
 
         $firstSchedule = $scheduleItem->getFirstActiveSchedule($memberInfo);
+        $isValid = $scheduleItem->isMemberValidToUpdate($memberInfo);        
 
-        
-
-            $isValid = $scheduleItem->isMemberValidToUpdate($memberInfo); 
-        
-
-        if ($isValid == true) {
-         
+        if ($isValid == true) {         
             echo "valid";
-        } else {
-        
+        } else {        
             echo "not valid";
-        }
-       
-
-
-     
-
-    
+        }    
     }
 
     public function testform()
