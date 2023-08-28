@@ -94,6 +94,29 @@ class dummyController extends Controller
     
     }
 
+    public function testform()
+    {
+        return view('test/test-form');
+    }    
+
+    public function processForm(Request $request)
+    {
+        // Get the POST data from the form
+        $postData = $request->input('data');
+
+        // You can perform any testing or logging of the POST data here
+        // For example, you can check the size of the data:
+        $dataSizeInBytes = strlen($postData);
+
+        // Convert bytes to kilobytes (KB)
+        $dataSizeInKB = $dataSizeInBytes / 1024;
+
+        // Optionally, you can log the data size
+        // \Log::info("Data size: $dataSize");
+
+        return redirect('/test-form')->with('success', "Form submitted successfully with $dataSizeInBytes : $dataSizeInKB ");
+    }
+
 
     public function getParentFolders(Request $request, Folder $folder) {
 

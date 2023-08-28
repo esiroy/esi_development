@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::resource('lesson_slides', 'LessonSlidesController');
 
-
+Route::get('/test-form', 'dummyController@testform');
+Route::post('/process-form', 'dummyController@processForm')->name('process-form');
 
 
 Route::get('test', 'dummyController@index');
