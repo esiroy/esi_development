@@ -136,7 +136,7 @@ class TutorController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->whereNull('deleted_at')],
             'password' => ['required', 'string', 'min:8'],
             'sort' => ['required', 'integer'],
-            'salary_rate' => ['integer'],
+            'salary_rate' => ['numeric'],
             'grade' => ['required'],
             'skype_name' => ['required'],
             'skype_id' => ['required'],
@@ -146,7 +146,7 @@ class TutorController extends Controller
         ]);
 
         if ($validator->fails()) {
-
+            
             return redirect()->route('admin.tutor.index')->with('error_message', 'Error in adding tutor, please check the form below!')->withErrors($validator)->withInput();
 
         } else {
@@ -292,7 +292,7 @@ class TutorController extends Controller
                     Rule::unique('users')->ignore($tutor->user_id)->whereNull('deleted_at'),
                 ],
                 'sort' => ['required', 'integer'],
-                'salary_rate' => ['integer'],
+                'salary_rate' => ['numeric'],
                 'grade' => ['required'],
                 'skype_name' => ['required'],
                 'skype_id' => ['required'],
@@ -304,7 +304,9 @@ class TutorController extends Controller
             ]);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.tutor.index')->withErrors($validator)->withInput();
+            //return redirect()->route('admin.tutor.edit')->withErrors($validator)->withInput();
+            return redirect()->route('admin.tutor.edit', ['tutor' => $tutor->user_id])->withErrors($validator)->withInput();
+
         } else {
             
             try
