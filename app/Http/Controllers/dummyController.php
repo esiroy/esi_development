@@ -67,6 +67,11 @@ class dummyController extends Controller
     }
 
     public function index(Request $request, Member $member, ScheduleItem $scheduleItem) {
+
+        phpinfo();
+    }
+
+    public function test_activeschedules(Request $request, Member $member, ScheduleItem $scheduleItem) {
     
         $memberID =  $request->memberID;
 

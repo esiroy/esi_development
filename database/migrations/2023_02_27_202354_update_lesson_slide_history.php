@@ -13,9 +13,11 @@ class UpdateLessonSlideHistory extends Migration
      */
     public function up()
     {
-       Schema::table('lesson_slide_history', function (Blueprint $table) {
-            $table->longText('data')->after('content'); // Add "data" column
-       });
+        if (!Schema::hasColumn('lesson_slide_history', 'data')) {
+            Schema::table('lesson_slide_history', function (Blueprint $table) {
+                $table->longText('data')->after('content'); // Add "data" column
+            });
+        }
     }
 
     /**
@@ -25,8 +27,10 @@ class UpdateLessonSlideHistory extends Migration
      */
     public function down()
     {
-        Schema::table('lesson_slide_history', function (Blueprint $table) {
-            $table->dropColumn('data');
-        });
+        if (Schema::hasColumn('lesson_slide_history', 'data')) {
+            Schema::table('lesson_slide_history', function (Blueprint $table) {
+                $table->dropColumn('data');
+            });
+        }
     }
 }
