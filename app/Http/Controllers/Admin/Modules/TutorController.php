@@ -292,7 +292,7 @@ class TutorController extends Controller
                     Rule::unique('users')->ignore($tutor->user_id)->whereNull('deleted_at'),
                 ],
                 'sort' => ['required', 'integer'],
-                'salary_rate' => ['numeric'],
+                'salary_rate' => ['numeric'], 
                 'grade' => ['required'],
                 'skype_name' => ['required'],
                 'skype_id' => ['required'],
@@ -304,8 +304,7 @@ class TutorController extends Controller
             ]);
 
         if ($validator->fails()) {
-            //return redirect()->route('admin.tutor.edit')->withErrors($validator)->withInput();
-            return redirect()->route('admin.tutor.edit', ['tutor' => $tutor->user_id])->withErrors($validator)->withInput();
+            return redirect()->route('admin.tutor.edit')->withErrors($validator)->withInput();           
 
         } else {
             
