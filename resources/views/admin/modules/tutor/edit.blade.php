@@ -158,7 +158,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="salary_rate" type="double"  oninput="validity.valid||(value='');" class="form-control form-control-sm @error('salary_rate') 
+                            <input id="salary_rate" type="number"  oninput="validity.valid||(value='');" class="form-control form-control-sm @error('salary_rate') 
                             is-invalid @enderror" name="salary_rate" value="{{ old('salary_rate', isset($tutor->salary_rate ) ? $tutor->salary_rate : '') }}" required autocomplete="salary_rate">
 
                             @error('salary_rate')
