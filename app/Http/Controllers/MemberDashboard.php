@@ -31,7 +31,10 @@ class MemberDashboard extends Controller
 
             $reserves = $scheduleItems->getMemberActiveLessons($member);
 
+           
+
             $latestReportCard = $reportcards->getLatest($member->user_id);
+
 
             $desiredSchedules = $memberDesiredSchedules->getMemberDesiredSchedule($member->user_id);            
 

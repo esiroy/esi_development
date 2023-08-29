@@ -8,11 +8,12 @@
 
         $memberInfo = \App\Models\User::find($mergedAccount->member_id)->memberInfo;
 
-        //override report cards if secondary
+        //override report cards if secondary 
+        //update: (mergedLates report card not implemented 2023) needs to have unique report cards
         $reportCardModel = new \App\Models\ReportCard();
-        $latestReportCard = $reportCardModel->getLatest($memberInfo->user_id);
+        $mergedlatestReportCard = $reportCardModel->getLatest($memberInfo->user_id);
 
-       $mainAccount = \App\Models\User::select('users.id', 'users.email')->find( $mergedAccount->member_id );
+        $mainAccount = \App\Models\User::select('users.id', 'users.email')->find( $mergedAccount->member_id );
 
     } else {
         $memberInfo = Auth::user()->memberInfo;   
