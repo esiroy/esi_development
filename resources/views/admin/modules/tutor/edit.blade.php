@@ -140,7 +140,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="sort" type="number" class="form-control form-control-sm @error('sort') is-invalid @enderror" name="sort" value="{{ old('sort', isset($tutor->sort) ? $tutor->sort : '') }}" required autocomplete="sort">
+                            <input id="sort" type="number" min="-100" step="1"  class="form-control form-control-sm @error('sort') is-invalid @enderror" name="sort" value="{{ old('sort', isset($tutor->sort) ? $tutor->sort : '') }}" required autocomplete="sort">
 
                             @error('sort')
                             <span class="invalid-feedback" role="alert">
@@ -158,7 +158,7 @@
                             <div class="float-right">:</div>
                         </label>
                         <div class="col-md-3">
-                            <input id="salary_rate" type="number" class="form-control form-control-sm @error('salary_rate') 
+                            <input id="salary_rate" type="number" oninput="validity.valid||(value='');" class="form-control form-control-sm @error('salary_rate') 
                             is-invalid @enderror" name="salary_rate" value="{{ old('salary_rate', isset($tutor->salary_rate ) ? $tutor->salary_rate : '') }}" required autocomplete="salary_rate">
 
                             @error('salary_rate')
