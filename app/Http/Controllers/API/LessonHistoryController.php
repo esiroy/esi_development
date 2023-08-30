@@ -155,6 +155,16 @@ class LessonHistoryController extends Controller
             
         }       
 
+
+        //for testing
+        $success                    = true;
+        $startTimeInvalid           = false;
+        $isUserAbsent               = false;
+        $isLessonExpired            = false;
+        $isLessonExceedGracePeriod  = false;
+
+
+
         return Response()->json([                    
             'success'               => $success,
             'title'                 => $title,

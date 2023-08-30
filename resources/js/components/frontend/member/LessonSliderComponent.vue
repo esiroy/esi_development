@@ -91,13 +91,13 @@
 
 
         <div id="slideSelectorContainer" v-if="this.$props.is_broadcaster == true">
-            <SlideSelectorComponent
-                ref="slideSelector" 
-                :reservation="this.reservation"
-                :folder_id="this.$props.folder_id"
-                :is-broadcaster="this.$props.is_broadcaster"
+
+            <LessonSelectorComponent
+                ref="lessonSelectorComponent" 
+                :user="this.user_info" 
                 :api_token="this.api_token" 
                 :csrf_token="this.csrf_token"/>
+
         </div>
 
         <!--[start] lessonSharedContainer -->
@@ -108,9 +108,9 @@
         <div id="lessonSlide" class="left-container mb-2"> 
             <!--[start] slide selector for broadcaster -->
             <div id="slideSelectorButtonContainer" class="d-inline-block">
-                <button type="button" @click="selectSlides" v-show="this.$props.is_broadcaster == true">
-                    <b-icon icon="images" aria-hidden="true"></b-icon>
-                </button>
+                <div type="button" class="btn-md" @click="selectSlides" v-show="this.$props.is_broadcaster == true">                    
+                    <i class="far fa-images fa-lg"></i>
+                </div>
             </div>
             <!--[end] slide selector for broadcaster -->
 
@@ -199,7 +199,11 @@ import {fabric} from "fabric";
 import io from "socket.io-client";
 
 //Uploader
-import SlideSelectorComponent from './SlideSelectorComponent.vue'
+//import SlideSelectorComponent from './SlideSelectorComponent.vue'
+
+import LessonSelectorComponent from './LessonSelectorComponent.vue'
+
+
 import SlideUploaderComponent from './SlideUploaderComponent.vue'
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
 import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue';
@@ -207,7 +211,8 @@ import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue';
 export default {
     name: "LessonSlider",
     components: { 
-        SlideSelectorComponent, 
+        //SlideSelectorComponent, 
+        LessonSelectorComponent,
         SlideUploaderComponent, 
         AudioPlayerComponent,
         TutorSlideNotesComponent
@@ -462,7 +467,6 @@ export default {
                 this.saveAllSlides(); 
             });              
         },
-
         setSlideBackgroundImage(index, imageURL) 
         {            
             try {
@@ -634,9 +638,6 @@ export default {
             }
         },
         delegateUpdateCanvas(currentSlide, canvasData) {
-
-        
-
             console.log(canvasData);
             this.updateCanvas(this.canvas[this.currentSlide], canvasData);
 
@@ -664,8 +665,7 @@ export default {
                 this.canvas[this.currentSlide].requestRenderAll(); 
             }
 
-        },
-    
+        },    
         updateCanvas(canvas, canvasData){
             if (canvas) {
                 canvas.loadFromJSON(canvasData, this.disableCanvas, (o, object) => {            
@@ -674,8 +674,7 @@ export default {
                     }                
                 }); 
             }            
-        },
-       
+        },       
         disableCanvas() 
         {
             this.canvas[this.currentSlide].forEachObject(function(o) {
@@ -1216,7 +1215,16 @@ export default {
             this.keyPressHandler();
         },          
         selectSlides() {
-            this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
+
+     
+            const userInfo = JSON.stringify(this.member_info); //current member Info is our tutor
+            const recipient = JSON.stringify(this.recipient_info); //recipient the member
+            const reservation = JSON.stringify(this.reservation);
+
+            this.$refs['lessonSelectorComponent'].showLessonSelectionModal(userInfo, recipient, reservation);
+
+
+            //this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
         },  
         loadAudio() {
             if (this.$refs['audioPlayer']) {
@@ -1510,5 +1518,13 @@ export default {
         margin: 10px 0px 10px;
     }
 
+    
+    .btn-md {
+        font-size: 22px;
+        padding: 12px 10px 0px;
+        position: relative;
+        top: 3px;
+        color: #0072ba;
+    }
 
 </style>
