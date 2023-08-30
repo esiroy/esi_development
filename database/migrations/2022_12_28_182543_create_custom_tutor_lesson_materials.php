@@ -19,7 +19,7 @@ class CreateCustomTutorLessonMaterials extends Migration
             $table->unsignedBigInteger('folder_id')->nullable();
             $table->string('file_name');
             $table->string('upload_name');
-            $table->string('path');
+            $table->string('path')->nullable();
             $table->integer('size');  
             $table->integer('order_id');          
             $table->timestamps();
