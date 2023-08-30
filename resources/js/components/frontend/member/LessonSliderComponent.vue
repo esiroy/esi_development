@@ -195,6 +195,9 @@
 
 
 <script>
+
+import zlib from 'zlib'; // Import the zlib module
+
 import {fabric} from "fabric";
 import io from "socket.io-client";
 
