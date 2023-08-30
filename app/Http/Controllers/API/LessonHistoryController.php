@@ -153,17 +153,7 @@ class LessonHistoryController extends Controller
             $title              = "Active Session, Start Lesson Now";
             $message            = "User is present, Elapsed time is less than $gracePerionInMinutes minutes";
             
-        }       
-
-
-        //for testing
-        $success                    = true;
-        $startTimeInvalid           = false;
-        $isUserAbsent               = false;
-        $isLessonExpired            = false;
-        $isLessonExceedGracePeriod  = false;
-
-
+        }   
 
         return Response()->json([                    
             'success'               => $success,
