@@ -56,6 +56,7 @@
             <template #modal-footer>
                 <div class="container text-center" v-if="is_broadcaster == true">
                     <b-button variant="primary" @click="markStudentAbsent()">Yes, I Confirm to mark my student as absent</b-button>
+                     <b-button variant="danger" @click="triggerLimitOverrideAndCallUser()">Call Student</b-button>
                 </div>
                 <div class="container text-center" v-else>
                     <b-button variant="primary" @click="backToMemberHome()">Okay, Take me back to homepage</b-button>
@@ -549,6 +550,12 @@ export default {
             this.stopRedialTimer();        
         },
 
+        triggerLimitOverrideAndCallUser()
+        {
+            this.$bvModal.hide('modal-user-absent');
+
+            this.$root.$emit('triggerLimitOverrideAndCallUser');
+        },
 
         triggerContinueSession() {
             this.$bvModal.hide('modal-expired-options');

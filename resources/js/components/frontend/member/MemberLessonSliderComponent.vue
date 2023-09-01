@@ -603,6 +603,11 @@
             });
 
 
+            this.$root.$on('triggerLimitOverrideAndCallUser', (params) => {
+                //@done: add lesson history to make the member continue the sesson, then call student
+                this.limitOverrideAndCallStudent();
+            })
+
 
             this.$root.$on('triggerMarkStudentAbsent', (params) => {
                 this.markStudentAbsent();
@@ -846,8 +851,6 @@
                         && response.data.isStartTimeInvalid == false 
                         && this.isUserAbsent  == false ) {
 
-                        
-
                         //[calling is delagated to start lesson button 
                          if (this.$props.is_broadcaster == true) {
                             console.log("check session call Member")
@@ -863,7 +866,11 @@
 
                         if (response.data.isLessonStarted == false && response.data.isLessonExpired == true) {
                             this.isSessionExpired = true;
-                            this.promptLessonAbsent();                                                                              
+                            this.promptLessonAbsent();       
+
+                            console.log("lesson expired promted")
+
+
                         } else if (this.isLessonStarted  == false && response.data.isUserAbsent == true) {                        
                             this.isUserAbsent = true;
                             this.promptLessonAbsent();    
@@ -966,20 +973,15 @@
 
 
                    console.log("success", response.data.success);
-
                    console.log("is lesson expired?", this.isLessonExpired);
-                   console.log("is session expired?", this.isSessionExpired);
-             
+                   console.log("is session expired?", this.isSessionExpired);            
              
 
                     if (response.data.success == true) {
                         
                         this.$refs['NavigationMenu'].startTimer();
-
                         console.log("emit start session")
-
                         this.socket.emit('START_SESSION', this.getSessionData());   
-
 
                         if (this.isMainTimerStarted == false) {
                             console.log("this.startCountdown();")
@@ -1025,7 +1027,7 @@
 
                                 } else if (this.isLessonStarted == true && this.isSessionExpired == true) {                              
 
-                                  // this.callMember();  (delegate to poup)
+                                  // this.callMember();  (delegate to popup)
 
                                 } else if (this.isLessonStarted == false && this.isSessionExpired == false) {
                                 
@@ -1055,7 +1057,27 @@
                     }
                 });
 
-            },       
+            },
+            async limitOverrideAndCallStudent() {
+
+                this.currentSlide = await this.$refs['LessonSlider'].getCurrentSlide()
+                this.slidesData = await this.$refs['LessonSlider'].getAllSlideData();
+
+                axios.post("/api/LessonLimitOverride?api_token=" + this.api_token,
+                {
+                    'method'          : "POST",
+                    'folder_id'       : this.$props.folder_id,
+                    'totalSlides'     : this.slidesData.length,
+                    'currentSlide'    : this.currentSlide,
+                    'reservation'     : this.reservation, //reservationData,                
+                    'slidesData'      : this.slidesData,        
+                    'isTimerStarted'  : this.isTimerStarted
+
+                }).then(response => {
+                    this.callMember();
+                    this.$refs['NavigationMenu'].enableNavigationMenu();
+                });
+            },
             customSelectorBounds(fabric) {
                 fabric.Object.prototype.transparentCorners = false;
                 fabric.Object.prototype.cornerColor = 'blue';

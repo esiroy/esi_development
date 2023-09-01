@@ -286,6 +286,8 @@ Route::middleware('auth:api')->post('/postLessonAbsentHistory', 'API\LessonHisto
 Route::middleware('auth:api')->post('/getUnratedLessons', 'API\LessonHistoryController@getUnratedLessons')->name('APIGetUnratedLessons');
 Route::middleware('auth:api')->post('/setLessonRating', 'API\LessonHistoryController@setLessonRating')->name('APIsetLessonRating');
 
+//[new] Limit Override (we will call start lesson directly)
+Route::middleware('auth:api')->post('/LessonLimitOverride', 'API\LessonHistoryController@startLesson')->name('APILessonLimitOverride');
 
 //File Manager
 Route::middleware('auth:api')->post('saveFileNotes', 'API\FileManagerController@saveFileNotes');
