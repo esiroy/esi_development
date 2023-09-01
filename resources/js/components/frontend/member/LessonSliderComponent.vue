@@ -2,6 +2,7 @@
 
     <div class="slides-container">
 
+        <button @click="resetZoom">test</button>
         <div style="display:none">
             {{ "Channel: "+ this.channelid }} <br>
             {{ "Server:" + this.$props.canvas_server }} <br>
@@ -152,10 +153,14 @@
             <!--[end] slide controls -->
 
             <div id="audio-container" class="d-inline-block" v-if="segments">
+
                 <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.is_broadcaster"></AudioPlayerComponent>
+
                 <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
                     <i class="far fa-file-alt" v-if="this.$props.is_broadcaster == true"></i>
                 </div>
+
+                <!--[start] Slide Uploader -->
                 <SlideUploaderComponent 
                     ref="slideUploader" 
                     :reservation="this.$props.reservation"
@@ -163,6 +168,8 @@
                     :is-broadcaster="this.$props.is_broadcaster"
                     :api_token="this.api_token" 
                     :csrf_token="this.csrf_token"/>            
+                <!--[end] Slide Uploader -->
+
             </div>
 
             <div id="slide-container"></div>            
@@ -195,9 +202,6 @@
 
 
 <script>
-
-import zlib from 'zlib'; // Import the zlib module
-
 import {fabric} from "fabric";
 import io from "socket.io-client";
 
@@ -314,7 +318,7 @@ export default {
         }
     },
     created() {
-        this.getSlideMaterials(this.$props.reservation);
+        this.getSlideMaterials(this.$props.reservation, null);
     },
     mounted() {
 
@@ -336,8 +340,8 @@ export default {
     methods: {
         getRecipient() { 
             return this.$props.recipient_info;
-        },    
-        getSlideMaterials(reservation) {
+        },
+        getSlideMaterials(reservation, newFolderID) {
 
             this.isLoading = true;
 
@@ -346,17 +350,14 @@ export default {
                 method              : "POST",
                 scheduleID          : reservation.schedule_id,
                 memberID            : reservation.member_id,
-                lesson_time         : reservation.lesson_time
+                lesson_time         : reservation.lesson_time,
+                folderID            : newFolderID,
             }).then(response => { 
 
                 this.isLoading      = true;
                 this.folderID       = response.data.folderID;
                 this.segments       = response.data.folderURLArray;
                 let customFiles     = response.data.customFiles;  
-
-
-                
-
 
                 //Files, Audio and notes
                 this.files = response.data.files;
@@ -373,8 +374,13 @@ export default {
                     this.$refs['TutorSlideNotes'].loadNotes(this.notes);   
                 }
 
-                if (lessonHistory && slideHistory.length >= 1) {
+                if (newFolderID !== null) {
 
+                    console.log("GET NEW SLIDES FROM FOLDER FILES")
+
+                    this.getSlidesFromFiles(response.data.files);
+
+                } else if (lessonHistory && slideHistory.length >= 1) {
                     console.log("getSlidesFromHistory")
 
                     this.getSlidesFromHistory(slideHistory);
@@ -396,10 +402,14 @@ export default {
                     //DETERMINE IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
                     this.userSlideAccess();      
 
-                    //START SLIDE (SELECT FROM CURRENT HISTORY IF THERE IS CURRENT SLIDE)
-                    let currentSlide =  (lessonHistory) ? lessonHistory.current_slide : 1;                            
-
-                    this.startSlide(currentSlide);
+                    if (newFolderID !== null || response.data.files.length >= 1) {
+                        let currentSlide  = 1;
+                        this.startSlide(currentSlide);                    
+                    } else {
+                        //START SLIDE (SELECT FROM CURRENT HISTORY IF THERE IS CURRENT SLIDE)
+                        let currentSlide =  (lessonHistory) ? lessonHistory.current_slide : 1;  
+                        this.startSlide(currentSlide);
+                    }
                     
                     //LOAD AUDIO
                     this.loadAudio();
@@ -407,7 +417,7 @@ export default {
                     if (this.$props.is_broadcaster == true) {
                         this.canvas[this.currentSlide].on('object:moving', this.handleObjectMoving);
                         this.canvas[this.currentSlide].on('object:modified', this.handleObjectModified); 
-                        this.$refs['slideSelector'].closeSlideSelector();          
+                       //this.$refs['slideSelector'].closeSlideSelector();          
                     }         
 
                 });
@@ -451,21 +461,14 @@ export default {
             }        
         },
         createEmptySlide() {
-
-            console.log("create empty slide");
-
             let slideIndex = 1;
             this.createCanvas(slideIndex);
             this.slides     = slideIndex;
-            this.canvas[1]  = new fabric.Canvas('canvas'+slideIndex, { backgroundColor : "#fff" }); 
-
-            // Add a delay of 1 seconds (adjust the delay as needed)
-           
+            this.canvas[1]  = new fabric.Canvas('canvas'+slideIndex, { backgroundColor : "#fff" });
             var delayInMilliseconds = 1000;
             var delayPromise = new Promise((resolve) => {
                 setTimeout(resolve, delayInMilliseconds);
             });
-
             delayPromise.then(() => {
                 this.saveAllSlides(); 
             });              
@@ -486,12 +489,14 @@ export default {
                     backgroundImageStretch: true,
                 });
 
+                //New Image On the Background we will set the scale to default = 1
+                this.canvas[index]['scale'] = 1;
+
             } catch (error) {
-                console.log("no image background...");
+                console.log("ERROR ON SETTING IMAGE BACKGROUND" , error);
             }
 
-            //New Image On the Background we will set the scale to default = 1
-            this.canvas[index]['scale'] = 1;
+
 
         },     
         //Objects
@@ -510,7 +515,8 @@ export default {
         },       
         userCreateNewEmptySlide() {   
 
-            console.log("user create empty slide")
+            console.log("user create empty slide");
+            
             this.newBackgroundImage = null;         
 
             axios.post("/api/saveEmptyCustomSlide?api_token=" + this.api_token,             
@@ -571,7 +577,7 @@ export default {
                     'canvasData'    : this.canvasGetJSON(),
                     'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
                     'canvasDelta'   : this.delta,
-                    'backgroundURL': this.newBackgroundImage 
+                    'backgroundURL' : this.newBackgroundImage 
                 };
                 
                 this.socket.emit('CREATE_NEW_SLIDE', memberCanvasData);  
@@ -1351,16 +1357,17 @@ export default {
             }
             return slidesDataArray;
         },        
-        async saveAllSlides() {
-           
+        async saveAllSlides() 
+        {
             for (var index = 1; index <= this.slides; index++) {
                 let canvasData  = await this.getCanvasSlideData(index);                
                 this.saveSlideHistoryData(canvasData, index);                                       
             }
-
             return true;
         },
        openNewSlideMaterials(newFolderID) { 
+
+            console.log("open new slide materials")
 
             this.newFolderID = newFolderID;
             //Slide Selector already update the slide selector folder, 
@@ -1394,12 +1401,12 @@ export default {
             }
             
         },        
-        removeOldSlidesAndOpenNewSlides() {         
+        removeOldSlidesAndOpenNewSlides() {  
             for (var i = 1; i <= this.slides; i++) {                                
                 if (i ==  this.slides) {                    
                     let slideElement = document.getElementById('slide-container')                    
                     slideElement.innerHTML = '';
-                    this.getSlideMaterials(this.reservation);
+                    this.getSlideMaterials(this.reservation, this.newFolderID );
                 }
             }        
         },        
@@ -1453,13 +1460,26 @@ export default {
             //Load List of Audio Array
             this.loadAudio()
 
-            //@todo: if tutor then broadcast current slide
-            if (this.$props.is_broadcaster == true) {            
-                let data = {
-                    'channelid': this.channelid,
-                    'num': this.currentSlide
-                }
-                this.socket.emit('GOTO_SLIDE', data);                  
+          
+            if (this.$props.is_broadcaster == true) {  
+
+                console.log("========== GOT TO SLIDE EMITTED ===========")
+
+                // Add a delay of 2 seconds (adjust the delay as needed)
+                var delayInMilliseconds = 2000;
+                var delayPromise = new Promise((resolve) => {
+                    setTimeout(resolve, delayInMilliseconds);
+                });
+
+                delayPromise.then(() => {
+                    let data = {
+                        'channelid': this.channelid,
+                        'num': this.currentSlide
+                    }
+                    this.socket.emit('GOTO_SLIDE', data); 
+                });                
+                 
+
             } else {
 
                 //when user lands a page (he will not dictate it but go to current slide)            
@@ -1501,6 +1521,24 @@ export default {
            
             this.mouseClickHandler();
         },
+        resetCanvas() {
+            this.resetZoom();
+            this.resetPan();
+        },
+        resetZoom() {
+            for (var index = 1; index <= this.slides; index++) {                
+                this.canvas[index].setZoom(1.0);
+                this.canvas[index].renderAll();
+            }           
+        },
+        resetPan() {
+            for (var index = 1; index <= this.slides; index++) {                
+                this.canvas[index].setViewportTransform([1, 0, 0, 1, 0, 0]); // Reset the viewport transform
+                this.canvas[index].renderAll(); // Redraw the canvas
+            }            
+
+        }        
+        
     }
 }
 </script>

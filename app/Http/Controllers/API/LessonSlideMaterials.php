@@ -289,12 +289,10 @@ class LessonSlideMaterials extends Controller
         $scheduleID         = $request->scheduleID;
         $memberID           = $request->memberID;
 
-
-
-
-
         //Lesson History for this scheduleID else get the NEW
-        $incompleteLessonHistory = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "INCOMPLETE")->first();
+        $incompleteLessonHistory = LessonHistory::where('member_id', $memberID)
+                                        ->where('schedule_id', $scheduleID)
+                                        ->where('status', "INCOMPLETE")->first();
 
         if ($incompleteLessonHistory)  
         {             
@@ -316,7 +314,8 @@ class LessonSlideMaterials extends Controller
             }
         } else {
 
-            $completed = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "COMPLETED")->first();
+            $completed = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)
+                                            ->where('status', "COMPLETED")->first();
 
             if ($completed) {
                 $lessonHistory = $completed; 

@@ -17,8 +17,8 @@ class CreateCustomTutorLessonMaterials extends Migration
             $table->id();
             $table->unsignedBigInteger('lesson_schedule_id');
             $table->unsignedBigInteger('folder_id')->nullable();
-            $table->string('file_name');
-            $table->string('upload_name');
+            $table->string('file_name')->nullable();
+            $table->string('upload_name')->nullable();
             $table->string('path')->nullable();
             $table->integer('size');  
             $table->integer('order_id');          

@@ -168,10 +168,7 @@
                 isLessonStartTimeInvalid: false,  
 
                 //Session (all of components)
-                isSessionExpired: true,   
-                
-
-
+                isSessionExpired: true, 
 
                 //Grace Period
                 gracePeriodInMinutes: null,
@@ -188,8 +185,8 @@
             this.lessonStatus           = this.$props.reservation.schedule_status;  //TEXT STATUS
             this.isLessonStarted        = this.$props.is_lesson_started;            //BOOLEAN   - LESSON STARTED
             this.isLessonCompleted      = this.$props.is_lesson_completed           //BOOLEAN   - COMPLETED STATUS
-            this.consecutiveSchedules       = this.$props.consecutive_schedules;
-            this.currentFolderURLArray         = this.$props.folder_url_array;              //ARRAY     - folderURLArray        
+            this.consecutiveSchedules   = this.$props.consecutive_schedules;
+            this.currentFolderURLArray  = this.$props.folder_url_array;              //ARRAY     - folderURLArray        
 
         },
         mounted() {
@@ -214,18 +211,16 @@
                 image:   this.$props.user_image  
             }
 
-            this.socket.emit('REGISTER', this.user); 
+            this.socket.emit('REGISTER', this.user);
 
-
-          
             //send the current folder URL so it feedback url lesson will update
             this.$refs['memberFeedback'].updateLessonDetails(this.currentFolderURLArray);
 
-            this.consecutiveSchedules = this.$props.consecutive_schedules;
 
-            console.log('consecutiveSchedules', this.$props.consecutive_schedules)
-
-
+            /* CONSECUTIVE LESSON 
+            //console.log('consecutiveSchedules', this.$props.consecutive_schedules);            
+            */
+            this.consecutiveSchedules = this.$props.consecutive_schedules;            
             this.checkLessonSessionStatus();
 
           
@@ -293,8 +288,10 @@
 
                 } else if (this.$props.is_broadcaster == true) {
 
-                    console.log("END SESSION RECIEVED BY TUTOR")
+                    console.log("END SESSION RECIEVED BY TUTOR");
                     this.isLessonCompleted = true;  
+
+                   
                     $("#destroy-session-media").trigger("click");                
                 }
             });  
@@ -482,7 +479,8 @@
             });
 
 
-            this.socket.on("ACCEPT_CALL", (userData) =>  {
+            this.socket.on("ACCEPT_CALL", (userData) =>  
+            {
 
                 if (this.$props.is_broadcaster == false) {
                     console.log("ACCEPT_CALL, (call accepted by member)", userData);
@@ -532,13 +530,13 @@
                     if (response.canvasDelta !== null) {
                         this.$refs['LessonSlider'].delegateRelativePan(response.currentSlide, response.canvasDelta);
                     }
-
-                   ;  
                }
             });
 
             this.socket.on("GOTO_SLIDE", (data) =>  {
-                console.log("goto slide socket sent", data);               
+
+                console.log("GOTO_SLIDE RECIEVED", data);               
+
                 if (this.$refs['audioPlayer']) {    
                     this.$refs['audioPlayer'].resetAudioIndex() 
                 }
@@ -549,6 +547,7 @@
 
 
             this.socket.on("CREATE_NEW_SLIDE", (data) => {
+                
                 if (this.$props.is_broadcaster == false) {
                     console.log("create new slide")
                     this.slides = data.slidesCount;
@@ -762,13 +761,7 @@
 
         },
        methods: {
-            testEndSession() {
-                if (this.$props.is_broadcaster == true) {
-                    console.log("emit end session")
 
-                    this.socket.emit('END_SESSION', this.getSessionData())
-                }
-            },
             async checkLessonSessionStatus() {
             
                 if (this.lessonStatus == "CLIENT_NOT_AVAILABLE") {
@@ -877,7 +870,7 @@
                             console.log("absent")
 
                         } else {                       
-;
+
                             this.promptUser();  
                         }
                     } 
@@ -1072,16 +1065,12 @@
                 this.users = users;      
                 this.$forceUpdate();                 
             },
-            getSessionData() {
-
-                //Pre-load the slides for saving
+            getSessionData() {                
                 this.currentSlide = this.$refs['LessonSlider'].getCurrentSlide()
                 this.slidesData = this.$refs['LessonSlider'].getAllSlideData();
-
                 let sessionData = {
                     'totalSlide'    : this.slidesData.length,
-                    'currentslide'  : this.currentSlide,
-                       
+                    'currentslide'  : this.currentSlide,                       
                     'channelid'     : this.channelid,
                     'sender'        : { userid: this.user_info.id, username: this.user_info.username},
                     'recipient'     : this.getRecipient()
@@ -1209,13 +1198,11 @@
             },
             startLesson(params) {                 
                 this.postLessonStartHistory(this.reservation, params);
-            },
-            
+            },            
             openFloatingChatBox() {
                 this.$refs['memberFloatingChat'].openFloatingChatIcon()
                 this.$refs['memberFloatingChat'].openChatBox();
             },
-
             //Main Countdown timer
             startCountdown(millisecondsLeft) {
                 this.isMainTimerStarted = true;
@@ -1296,9 +1283,7 @@
                 axios.post("/api/postLessonAbsentHistory?api_token=" + this.api_token, 
                 {
                     'reservation'     : this.reservation,                            
-                }).then(response => {
-
-                    console.log(response);
+                }).then(response => {                  
 
                     if (response.data.success == true) {
 
@@ -1353,15 +1338,13 @@
             },
             async triggerEndSession() {            
                 if (this.isSessionExpired == true) {
-
-                     this.endSession();               
+                    this.endSession();
                 }
-
             },            
-            async endSession() {             
+            async endSession() {       
+                this.$refs['LessonSlider'].resetCanvas();      
                 this.$refs['LessonSlider'].saveAllSlides();          
                 this.postLessonEndSessionHistory(this.reservation);
-
             },
             async postLessonEndSessionHistory(reservationData) {
             
