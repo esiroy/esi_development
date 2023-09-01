@@ -66,7 +66,7 @@
         </div>
         
 
-        <div id="slide-container"></div>
+        <!--<div id="slide-container"></div>-->
 
     </div>
 
@@ -143,10 +143,10 @@ export default {
                 console.log("audio list hidden")
             }
         },
+        /*
         convertToData(slideIndex) {
             return this.canvas[slideIndex].toDataURL('image/jpeg', 0.5)
         },
-
         createCanvas(index) {
             let slideContainer = document.getElementById('slide-container');
 
@@ -184,8 +184,7 @@ export default {
                     }                
                 }); 
             }            
-        },           
-        
+        },
         getSlidesFromHistory(slideHistory) {
 
             this.slides  =  slideHistory.length;
@@ -196,7 +195,8 @@ export default {
                 this.updateCanvas(this.canvas[slideIndex], JSON.parse(slideHistory[i].content)); 
                 this.canvas[slideIndex]['scale'] = 1;
             }         
-        },        
+        },     
+        */     
     }
 };
 </script>

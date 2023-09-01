@@ -2,13 +2,14 @@
 
     <div class="slides-container">
 
-        <button @click="resetZoom">test</button>
+        <!--<button @click="resetZoom">test</button>-->
+
         <div style="display:none">
             {{ "Channel: "+ this.channelid }} <br>
             {{ "Server:" + this.$props.canvas_server }} <br>
             {{ "props folder ID:" + this.$props.folder_id }} <br>
             {{ "data current folder ID:" + this.currentFolderID }} <br>
-            </div>
+        </div>
 
         <!--[start] toolbox -->
         <div id="toolbox" v-show="this.$props.is_broadcaster == true">
