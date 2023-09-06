@@ -258,7 +258,6 @@ Route::middleware('auth:api')->post('/updateSelectedLesson', 'API\LessonSlideMat
 //Lesson Selected 
 Route::middleware('auth:api')->post('/saveSelectedLessonSlideMaterial', 'API\LessonSlideMaterials@saveSelectedLessonSlideMaterial')->name('APISaveSelectedLessonSlideMaterial');
 
-
 //lesson slide materials
 Route::middleware('auth:api')->post('/getLessonMaterialSlides', 'API\LessonSlideMaterials@getLessonMaterialSlidesAutoNextFolder')->name('APIGetLessonMaterialSlides');
 Route::middleware('auth:api')->post('/getLessonSlideMaterialList', 'API\LessonSlideMaterials@getLessonSlideMaterialList')->name('APIGetLessonSlideMaterialList'); //Folder Listings
@@ -285,6 +284,11 @@ Route::middleware('auth:api')->post('/postLessonEndHistory', 'API\LessonHistoryC
 Route::middleware('auth:api')->post('/postLessonAbsentHistory', 'API\LessonHistoryController@postLessonAbsentHistory')->name('APIpostLessonAbsentHistory');
 Route::middleware('auth:api')->post('/getUnratedLessons', 'API\LessonHistoryController@getUnratedLessons')->name('APIGetUnratedLessons');
 Route::middleware('auth:api')->post('/setLessonRating', 'API\LessonHistoryController@setLessonRating')->name('APIsetLessonRating');
+
+//[NEW Sept 6, 2023] Add the batch numbering system
+Route::middleware('auth:api')->post('/getLessonBatchNumber', 'API\LessonHistoryController@getLessonBatchNumber')->name('APIGetLessonBatchNumber');
+Route::middleware('auth:api')->post('/updateLessonBatchNumber', 'API\LessonHistoryController@updateLessonBatchNumber')->name('APIUpdateLessonBatchNumber');
+
 
 //[new] Limit Override (we will call start lesson directly)
 Route::middleware('auth:api')->post('/LessonLimitOverride', 'API\LessonHistoryController@startLesson')->name('APILessonLimitOverride');

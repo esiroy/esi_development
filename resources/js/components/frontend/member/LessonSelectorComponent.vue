@@ -764,7 +764,8 @@ export default {
 						this.$parent.openNewSlideMaterials(response.data.newFolderID);
 
 					} else {
-						// The method does not exist in the parent component
+						// The method does not exist in the parent component (this will not fire)
+						// Standalone: This is method was used in member and tutor 
 						console.log('openNewSlideMaterials does not exist in the parent component');
 					}
 					

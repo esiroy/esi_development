@@ -66,10 +66,21 @@ class dummyController extends Controller
     {
     }
 
-    public function index(Request $request, Member $member, ScheduleItem $scheduleItem) {
+    public function index() {
+    
+        $highestBatchNumber = LessonHistory::max('batch');
+
+        echo $highestBatchNumber;
+
+    }
+
+
+    public function phpinfo(Request $request, Member $member, ScheduleItem $scheduleItem) {
 
         phpinfo();
     }
+
+
 
     public function test_activeschedules(Request $request, Member $member, ScheduleItem $scheduleItem) {
     
@@ -692,7 +703,7 @@ class dummyController extends Controller
     }
 
 
-    public function test($memberID  = 21402 ) 
+    public function test_entries($memberID  = 21402 ) 
     {
 
         //start date

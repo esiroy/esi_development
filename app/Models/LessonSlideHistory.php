@@ -22,19 +22,21 @@ class LessonSlideHistory extends Model
 
         if ($lessonHistory) {
 
+            $batch = $lessonHistory->batch;
 
             $lessonHistory->update([
                 'current_slide'   => $slideIndex,
                 'total_slides'    => $totalSlides
             ]);
 
-
-
-            $lessonSlideHistory = LessonSlideHistory::where('slide_index', $slideIndex)->where('lesson_history_id',  $lessonHistory->id )->first();
+            $lessonSlideHistory = LessonSlideHistory::where('batch', $lessonHistory->batch)
+                                    ->where('slide_index', $slideIndex)
+                                    ->where('lesson_history_id',  $lessonHistory->id )->first();
 
             if ($lessonSlideHistory) {
             
-                $updated =  $lessonSlideHistory->update([            
+                $updated =  $lessonSlideHistory->update([      
+                    'batch'   => $batch,
                     'content' => $canvasData,  
                     'data'    => $imageData
                 ]);
@@ -68,6 +70,7 @@ class LessonSlideHistory extends Model
                 
 
                 $created = LessonSlideHistory::create([
+                    'batch'             => $batch,
                     'slide_index'       => $slideIndex,
                     'lesson_history_id' => $lessonHistory->id,            
                     'content'           => $canvasData,
@@ -95,12 +98,7 @@ class LessonSlideHistory extends Model
                     return  (object) $response;
                 }
 
-
-
             }
-
-
-            
 
         } else {
 
@@ -110,11 +108,7 @@ class LessonSlideHistory extends Model
             ];     
 
             return  (object) $response;   
-
         }
-
-     
-
     }
 
     public function getSlideHistory($slideIndex, $scheduleID) {
@@ -167,7 +161,9 @@ class LessonSlideHistory extends Model
 
         if ($lessonHistory) 
         {
-            $lessonSlideHistory = LessonSlideHistory::where('lesson_history_id',  $lessonHistory->id )->orderBy('slide_index', 'ASC')->get();
+            $lessonSlideHistory = LessonSlideHistory::where('lesson_history_id',  $lessonHistory->id )
+                                    ->where('batch', $lessonHistory->batch)
+                                    ->orderBy('slide_index', 'ASC')->get();
 
             if ($lessonSlideHistory)  {
             

@@ -18,7 +18,9 @@ use App\Models\ChatSupportHistory;
 //use App\Models\Folder;
 use App\Models\File;
 use App\Models\FileAudio;
+use App\Models\LessonHistory;
 use App\Models\CustomTutorLessonMaterials;
+
 
 class FileUploadController extends Controller
 {
@@ -338,6 +340,8 @@ class FileUploadController extends Controller
     public function uploadTutorLessonSlides(Request $request) {
 
 
+        $scheduleID = $request->lesson_schedule_id;
+
         //@todo: add gate in tutor
         //abort_if(Gate::denies('tutor_upload_custom_slides'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
@@ -368,10 +372,22 @@ class FileUploadController extends Controller
                 //create public path -> public/storage/uploads/{folder_id}
                 $public_file_path = $originalPath . $request->folder_id . "/". $newFilename;
 
+
+                $lessonHistory = LessonHistory::where('schedule_id',  $scheduleID)
+                        ->where('status', 'NEW')
+                        ->first();
+
+                if ($lessonHistory) {
+                    $batch = $lessonHistory->batch;
+                } else {
+                    $batch = 1;
+                }
+
                 // Save to file
                 $file = CustomTutorLessonMaterials::create([
                     'user_id'               => Auth::user()->id,
-                    'lesson_schedule_id'    => $request->lesson_schedule_id,
+                    'batch'                 => $batch,
+                    'lesson_schedule_id'    => $scheduleID,
                     'folder_id'             => $request->folder_id,
                     'file_name'             => $request->file('file')->getClientOriginalName(), //original filename
                     'upload_name'           => $request->file('file')->getFileName(), //generated filename
@@ -382,7 +398,9 @@ class FileUploadController extends Controller
 
                 //Output JSON reply
                 return Response()->json([
-                    "success"       => true,                    
+                    "success"       => true,   
+                    'scheduleID'    => $scheduleID,
+                    'batch'          => $batch,                                     
                     'id'            => $file->id,
                     'user_id'       => Auth::user()->id,
                     'folder_id'     => $request->folder_id,

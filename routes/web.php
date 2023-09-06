@@ -19,6 +19,7 @@ Route::post('/process-form', 'dummyController@processForm')->name('process-form'
 
 
 Route::get('test', 'dummyController@index');
+Route::get('phpinfo', 'dummyController@phpinfo');
 Route::get('component_test', 'dummyController@component_test');
 
 

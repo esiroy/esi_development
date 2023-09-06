@@ -26,7 +26,12 @@ class LessonSlideMaterials extends Controller
 
     public function saveEmptyCustomSlide(Request $request) 
     { 
-       $createdCustomLesson = CustomTutorLessonMaterials::create([
+
+        $lessonHistory = LessonHistory::where('schedule_id', $request->scheduleID)
+                        ->where('status', 'NEW')->first();
+
+        $createdCustomLesson = CustomTutorLessonMaterials::create([
+            'batch'                 => $lessonHistory->batch,
             'lesson_schedule_id'    => $request->scheduleID,
             'folder_id'             => $request->folderID,
             'file_name'             => "EMPTY",
@@ -314,8 +319,10 @@ class LessonSlideMaterials extends Controller
             }
         } else {
 
-            $completed = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)
-                                            ->where('status', "COMPLETED")->first();
+            $completed = LessonHistory::where('member_id', $memberID)
+                                        ->where('schedule_id', $scheduleID)
+                                        ->where('batch', $lessonHistory->batch)
+                                        ->where('status', "COMPLETED")->first();
 
             if ($completed) {
                 $lessonHistory = $completed; 
@@ -390,12 +397,17 @@ class LessonSlideMaterials extends Controller
         if (isset($folderID)) {
 
             $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
-            $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get(); 
+            $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)
+                                    ->where('batch', $lessonHistory->batch)
+                                    ->where('folder_id', $folderID)
+                                    ->orderBy('order_id', 'ASC')->get(); 
 
         } else {
         
             $files              = [];
-            $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)->orderBy('order_id', 'ASC')->get();         
+            $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)
+                                    ->where('batch', $lessonHistory->batch)
+                                    ->orderBy('order_id', 'ASC')->get();         
         
         }
 
@@ -560,7 +572,6 @@ class LessonSlideMaterials extends Controller
             "folders"               => Folder::getPrivateFolders()
         ]);    
     }
-
 
     public function saveSelectedLessonSlideMaterial(Request $request, MemberSelectedLessonSlideMaterial $memberSelectedLessonSlideMaterial) 
     {

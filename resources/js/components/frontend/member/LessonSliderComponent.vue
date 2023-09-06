@@ -1360,32 +1360,40 @@ export default {
         },        
         async saveAllSlides() 
         {
+
             for (var index = 1; index <= this.slides; index++) {
                 let canvasData  = await this.getCanvasSlideData(index);                
                 this.saveSlideHistoryData(canvasData, index);                                       
             }
             return true;
         },
-       openNewSlideMaterials(newFolderID) { 
-
-            console.log("open new slide materials")
-
+        openNewSlideMaterials(newFolderID) { 
             this.newFolderID = newFolderID;
-            //Slide Selector already update the slide selector folder, 
-            //So lets refresh the member slides!
-            if (this.$props.is_broadcaster == true) { 
-                //call remove slides and open new slides
-                this.removeOldSlidesAndOpenNewSlides();
-                this.refreshMemberSlides();
-            } else {             
-                //opening slide for member
-                this.removeOldSlidesAndOpenNewSlides();
-            }
 
-            this.goToSlide(1); //When opening new slide always go to first slide(?)
-            this.$forceUpdate(); 
+            if (this.$props.is_broadcaster == true) { 
+
+                axios.post("/api/updateLessonBatchNumber?api_token=" + this.api_token, 
+                {
+                    method          : "POST",
+                    scheduleID        : this.reservation.schedule_id,
+
+                }).then(response => {
+                    this.removeOldSlidesAndOpenNewSlides();
+                    this.refreshMemberSlides();
+                    this.goToSlide(1); //When opening new slide always go to first slide(?)
+                    this.$forceUpdate(); 
+                });
+
+            } else {
+
+                this.newFolderID = newFolderID;
+                this.removeOldSlidesAndOpenNewSlides();
+                this.goToSlide(1); //When opening new slide always go to first slide(?)
+                this.$forceUpdate();                    
+            }
         },
         refreshMemberSlides() {
+
             if (this.$props.is_broadcaster == true) {   
         
                 let slidesData = {
@@ -1395,7 +1403,7 @@ export default {
                                         userid: this.user_info.id,
                                         username: this.user_info.username
                                     },
-                    'folderID'      :  this.newFolderID,
+                    'folderID'      : this.newFolderID,
                     'recipient'     : this.getRecipient()
                 }; 
                 this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);                  
@@ -1429,9 +1437,7 @@ export default {
                     console.log(" SLIDE DATA : ", response.data);
                 } else {
                    // console.log(" SLIDE DATA SAVING FAILED : ", response.data);
-                }
-
-                
+                }                
             });
         
         },        

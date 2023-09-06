@@ -503,7 +503,7 @@ class LessonHistoryController extends Controller
         ]);       
     }
 
-    public function saveLessonSlideHistory(Request $request, LessonSlideHistory $lessonSlideHistory) 
+    public function saveLessonSlideHistory(Request $request, LessonHistory $lessonHistory, LessonSlideHistory $lessonSlideHistory) 
     {
 
         $totalSlides        = $request->totalSlides;
@@ -511,6 +511,8 @@ class LessonHistoryController extends Controller
         $reservation        = $request->reservation;
         $canvasData         = json_encode($request->canvasData);
         $imageData          = json_encode($request->imageData);
+
+
 
         $response = $lessonSlideHistory->saveSlideHistory($slideIndex, $totalSlides, $reservation, $canvasData, $imageData);
 
@@ -529,7 +531,60 @@ class LessonHistoryController extends Controller
             ]);         
         }
 
-    }     
+    }
+
+
+    public function getLessonBatchNumber(Request $request) {
+
+        $lessonHistory = LessonHistory::where('lesson_id', $request->lessonID)
+                        ->where('status', 'NEW')
+                        ->first();
+
+        if ($lessonHistory) {
+            return Response()->json([
+                "success"               => true,
+                "currentBatch"          => $lessonHistory->batch,
+            ]);    
+        } else {
+        
+            return Response()->json([
+                "success"             => false,
+                "currentBatch"        => null
+            ]);          
+        }
+    }
+
+    public function updateLessonBatchNumber(Request $request) {
+
+        $scheduleID = $request->scheduleID;
+
+        $lessonHistory = LessonHistory::where('schedule_id',  $scheduleID)
+                        ->where('status', 'NEW')
+                        ->first();        
+
+        if ($lessonHistory) {
+        
+            $newBatchNumber = $lessonHistory->batch + 1;
+
+            $lessonHistory->update([
+                 "batch"  => $newBatchNumber 
+            ]);
+
+            return Response()->json([
+                "success"               => true,
+                'schedule_id'          => $scheduleID,
+                "batch"                 => $newBatchNumber ,
+            ]);
+
+        } else {
+        
+            return Response()->json([
+                "success"             => false,
+                'schedule_id'          => $scheduleID,
+                "batch"               => null
+            ]);          
+        }
+    }    
 
 
     /**
