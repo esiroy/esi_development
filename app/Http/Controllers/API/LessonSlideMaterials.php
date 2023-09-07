@@ -313,15 +313,17 @@ class LessonSlideMaterials extends Controller
 
 
         if ($lessonHistory) {
+
+
             //Initialzie Audio Objects
             for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
                 $audioFiles[$ctr+1] =  [];
             }
+
         } else {
 
             $completed = LessonHistory::where('member_id', $memberID)
-                                        ->where('schedule_id', $scheduleID)
-                                        ->where('batch', $lessonHistory->batch)
+                                        ->where('schedule_id', $scheduleID)                                       
                                         ->where('status', "COMPLETED")->first();
 
             if ($completed) {

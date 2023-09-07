@@ -316,10 +316,7 @@ export default {
         }
     },    
     methods: {
-        test() {
-            //this.$refs.homeWorkUploader.startUpload();
-            alert ("member feedback test");
-        },
+
         updateLessonDetails(segments) {
             let course = segments[0];
             let subject = segments.pop();
@@ -332,12 +329,7 @@ export default {
                 'subject': subject
             }
         },
-        /*
-        getLessonSlideMaterial() {
-            this.material = this.$parent.getMaterial(); 
-            return this.material;
-        },   
-        */    
+  
         getLessonSlideDetails() {
             alert ("get lesson slide detials")
         

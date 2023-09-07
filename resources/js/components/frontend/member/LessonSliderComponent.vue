@@ -339,6 +339,9 @@ export default {
         this.keyPressHandler();
     },
     methods: {
+        getFiles() {
+            return this.files;
+        },
         getRecipient() { 
             return this.$props.recipient_info;
         },
@@ -366,6 +369,8 @@ export default {
                 this.audioFiles = response.data.audioFiles;  
                 this.notes = response.data.notes;
 
+
+                console.log("materials", this.files)
 
                 //Lesson History and its slides
                 let lessonHistory   = response.data.lessonHistory;

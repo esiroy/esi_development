@@ -1196,8 +1196,34 @@
                     this.$refs['satisfactionSurvey'].showThankYou(this.reservation);
                 }               
             },
-            showMemberFeedbackModal() {       
-                this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation, this.files);
+            async showMemberFeedbackModal() { 
+            
+                const lessonSliderComponent = this.$refs['LessonSlider'];
+
+                if (!lessonSliderComponent) {
+                    // Handle the case when the component is not found
+                    return;
+                }
+
+                // Define a function that returns a Promise when the files have a value
+                const waitForFiles = () => {
+                    return new Promise((resolve) => {
+                        const checkFiles = () => {
+                            if (lessonSliderComponent.files) {
+                                resolve(lessonSliderComponent.files);
+                            } else {
+                                // Check again after a short delay
+                                setTimeout(checkFiles, 100);
+                            }
+                        };
+                        checkFiles();
+                    });
+                };
+
+                // Wait for the files to have a value
+                const files = await waitForFiles();
+
+                this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation, files);
             },
             showSatisfactionSurveyModal() {
                 this.$refs['satisfactionSurvey'].showSatisfactionSurveyModal(this.reservation);
