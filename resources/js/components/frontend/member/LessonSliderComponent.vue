@@ -327,7 +327,7 @@ export default {
 
         if (this.$props.folder_id == '' || this.$props.folder_id == null || this.$props.folder_id == 'null' ) {
             //the user has not selected anything then we create new slide
-            console.log("member did not selected a folder, create new empty slide")
+            //console.log("member did not selected a folder, create new empty slide")
             this.createNewSlide();
         } else {
             //current folder is now the selected folder id
@@ -370,7 +370,8 @@ export default {
                 this.notes = response.data.notes;
 
 
-                console.log("materials", this.files)
+                //console.log("materials", this.files)
+                console.log("AUDIO FILES", this.audioFiles)
 
                 //Lesson History and its slides
                 let lessonHistory   = response.data.lessonHistory;
@@ -382,18 +383,18 @@ export default {
 
                 if (newFolderID !== null) {
 
-                    console.log("GET NEW SLIDES FROM FOLDER FILES")
+                    //console.log("GET NEW SLIDES FROM FOLDER FILES")
 
                     this.getSlidesFromFiles(response.data.files);
 
                 } else if (lessonHistory && slideHistory.length >= 1) {
-                    console.log("getSlidesFromHistory")
+                    //console.log("getSlidesFromHistory")
 
                     this.getSlidesFromHistory(slideHistory);
                 
                 } else if (response.data.files.length >= 1) {
 
-                    console.log("getSlidesFromFiles")
+                    //console.log("getSlidesFromFiles")
                 
                     this.getSlidesFromFiles(response.data.files);
 
@@ -418,7 +419,7 @@ export default {
                     }
                     
                     //LOAD AUDIO
-                    this.loadAudio();
+                    this.loadAudio(this.currentSlide);
 
                     if (this.$props.is_broadcaster == true) {
                         this.canvas[this.currentSlide].on('object:moving', this.handleObjectMoving);
@@ -499,7 +500,7 @@ export default {
                 this.canvas[index]['scale'] = 1;
 
             } catch (error) {
-                console.log("ERROR ON SETTING IMAGE BACKGROUND" , error);
+                //console.log("ERROR ON SETTING IMAGE BACKGROUND" , error);
             }
 
 
@@ -507,10 +508,10 @@ export default {
         },     
         //Objects
         handleObjectMoving() {
-            console.log("test handleObjectMoving")
+            //console.log("test handleObjectMoving")
         },
         handleObjectModified() {
-            console.log("test handleObjectMoving");
+            //console.log("test handleObjectMoving");
             let data = this.canvasGetJSON();
             this.canvasSendJSON(this.canvas[this.currentSlide], data);              
         },
@@ -521,7 +522,7 @@ export default {
         },       
         userCreateNewEmptySlide() {   
 
-            console.log("user create empty slide");
+            //console.log("user create empty slide");
             
             this.newBackgroundImage = null;         
 
@@ -536,7 +537,7 @@ export default {
             }).then(response => {
 
                 if (response.data.success == true) {
-                    console.log("CREATE_NEW_EMPTY_SLIDE"); 
+                    //console.log("CREATE_NEW_EMPTY_SLIDE"); 
                     this.createNewSlide();
                     this.saveSlideHistoryData(this.canvasGetJSON(), this.currentSlide);
                      
@@ -547,7 +548,7 @@ export default {
         },                  
         createNewSlide() {  
 
-            console.log("createNewSlide");
+            //console.log("createNewSlide");
 
             let currentSlideCount   = this.slides; 
             this.slides             = this.slides + 1;
@@ -608,7 +609,7 @@ export default {
             var elementExists = document.getElementById("editor" + index);
 
             if (!elementExists) {            
-                //console.log("++++++++ CREATING CANVAS ++++++++");
+                ////console.log("++++++++ CREATING CANVAS ++++++++");
                 let editorElement = document.createElement("div");
                 editorElement.setAttribute("id",    "editor" + index);
                 editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display:"+ display +";");
@@ -627,7 +628,7 @@ export default {
                 mediaContainer.append(canvasElement);
 
             } else {            
-                //console.log("------ CANVAS IS ALREADY CREATED ------ ");
+                ////console.log("------ CANVAS IS ALREADY CREATED ------ ");
             }
         },
         canvasGetJSON() {
@@ -653,17 +654,17 @@ export default {
             }
         },
         delegateUpdateCanvas(currentSlide, canvasData) {
-            console.log(canvasData);
+            //console.log(canvasData);
             this.updateCanvas(this.canvas[this.currentSlide], canvasData);
 
             if (this.$props.is_broadcaster == false) {
-                console.log("delegate update canvas as member")
+                //console.log("delegate update canvas as member")
                 if (currentSlide !== this.currentSlide) {
                     this.goToSlide(currentSlide);
                 }
                 
             } else {
-             console.log("delegate update canvas as tutor")
+             //console.log("delegate update canvas as tutor")
             }    
         },
         delegateRelativePan(currentSlide, canvasDelta) {
@@ -732,12 +733,12 @@ export default {
         disableSelect() {
             if (this.isText == true) {
                 this.canvas[this.currentSlide].defaultCursor = 'text';  
-                console.log("disable select")
+                //console.log("disable select")
             } else if (this.isSelector) {                    
                 this.canvas[this.currentSlide].defaultCursor = 'default';   
             } else  if (this.isDragger) {
                 this.canvas[this.currentSlide].defaultCursor = 'grab';                  
-                console.log("disable select:: grab");
+                //console.log("disable select:: grab");
             } else  if (this.isBrush || this.isPencil || this.isLine || this.isCircle) { 
                  this.canvas[this.currentSlide].defaultCursor = 'crosshair';
             } else {            
@@ -888,7 +889,7 @@ export default {
 
                 if (this.isDragger) {
 
-                    console.log(this.panning);
+                    //console.log(this.panning);
 
                     if (this.panning) {
                         this.delta = new fabric.Point(options.e.movementX, options.e.movementY);
@@ -938,7 +939,7 @@ export default {
                     // Put your mousedown stuff here
                     this.isDraggerMouseDown = false;
                 } else {                
-                    //console.log ("the dragger is out!!", this.isDragger)
+                    ////console.log ("the dragger is out!!", this.isDragger)
                 }
             });
 
@@ -946,7 +947,7 @@ export default {
         },
         //Auto Select Tools
         autoSelectTool() {
-            console.log("auto select");
+            //console.log("auto select");
 
             if (this.isSelector) this.activateSelector();
             else if (this.isPencil) this.activatePencil();
@@ -1054,7 +1055,7 @@ export default {
                 }, 50);
 
             } catch (error) {
-                console.log("canvas setZoom errror", error);
+                //console.log("canvas setZoom errror", error);
             }
         },
         //Tool Action
@@ -1105,7 +1106,7 @@ export default {
                     //const pointer = this.canvas[this.currentSlide].getPointer(object);
                     //const options = {pointer, e:{}} // required for Fabric 4.3.1
                     //this.drawRealTime(pointer, options);
-                    //console.log("draw drag!")                    
+                    ////console.log("draw drag!")                    
                     // let data = this.canvasGetJSON();
                     //this.canvasSendJSON(this.canvas[this.currentSlide], data);      
                 }
@@ -1241,23 +1242,25 @@ export default {
 
             //this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
         },  
-        loadAudio() {
+        loadAudio(slide) {
+
             if (this.$refs['audioPlayer']) {
-                this.$refs['audioPlayer'].loadAudioList(this.audioFiles, this.currentSlide); 
+                this.$refs['audioPlayer'].loadAudioList(this.audioFiles, slide); 
             } else {
-                console.log("audio list hidden")
+                //console.log("audio list hidden")
             }
         },                    
         goToSlide(slide) {   
 
-            console.log("goToSlide triggered!");
+            //console.log("goToSlide triggered!");
 
             //AUDIO
             if (this.$refs['audioPlayer']) {
                 this.$refs['audioPlayer'].stopAudio();
             }
-            
+           
             this.loadAudio(slide);
+
 
             this.currentSlide = slide;
             this.viewerCurrentSlide = slide;
@@ -1425,7 +1428,7 @@ export default {
             }        
         },        
         saveSlideHistoryData(canvasData, slideIndex) {
-            //console.log("saving... slide history " + slideIndex)
+            ////console.log("saving... slide history " + slideIndex)
             axios.post("/api/saveLessonSlideHistory?api_token=" + this.api_token,
             {
                 'method'          : "POST",
@@ -1439,9 +1442,9 @@ export default {
             }).then(response => {
 
                 if (response.data.success == true) {
-                    console.log(" SLIDE DATA : ", response.data);
+                    //console.log(" SLIDE DATA : ", response.data);
                 } else {
-                   // console.log(" SLIDE DATA SAVING FAILED : ", response.data);
+                   // //console.log(" SLIDE DATA SAVING FAILED : ", response.data);
                 }                
             });
         
@@ -1470,12 +1473,12 @@ export default {
             document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";
 
             //Load List of Audio Array
-            this.loadAudio()
+            this.loadAudio(this.currentSlide)
 
           
             if (this.$props.is_broadcaster == true) {  
 
-                console.log("========== GOT TO SLIDE EMITTED ===========")
+                //console.log("========== GOT TO SLIDE EMITTED ===========")
 
                 // Add a delay of 2 seconds (adjust the delay as needed)
                 var delayInMilliseconds = 2000;

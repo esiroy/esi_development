@@ -299,8 +299,8 @@ class LessonSlideMaterials extends Controller
                                         ->where('schedule_id', $scheduleID)
                                         ->where('status', "INCOMPLETE")->first();
 
-        if ($incompleteLessonHistory)  
-        {             
+        if ($incompleteLessonHistory)  {
+                
             $lessonHistory = $incompleteLessonHistory;
 
         } else {            
@@ -315,6 +315,8 @@ class LessonSlideMaterials extends Controller
         if ($lessonHistory) {
 
 
+            $batch = $lessonHistory->batch;
+
             //Initialzie Audio Objects
             for($ctr= 0; $ctr <=  $lessonHistory->total_slides ; $ctr ++) {            
                 $audioFiles[$ctr+1] =  [];
@@ -327,7 +329,14 @@ class LessonSlideMaterials extends Controller
                                         ->where('status', "COMPLETED")->first();
 
             if ($completed) {
+
+                $batch = $completed->batch;
+
                 $lessonHistory = $completed; 
+
+            } else {
+
+                 $batch = 1;
             }
         }
 
@@ -400,7 +409,7 @@ class LessonSlideMaterials extends Controller
 
             $files              = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
             $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)
-                                    ->where('batch', $lessonHistory->batch)
+                                    ->where('batch', $batch)
                                     ->where('folder_id', $folderID)
                                     ->orderBy('order_id', 'ASC')->get(); 
 
@@ -408,7 +417,7 @@ class LessonSlideMaterials extends Controller
         
             $files              = [];
             $customFiles        = CustomTutorLessonMaterials::where('lesson_schedule_id', $scheduleID)
-                                    ->where('batch', $lessonHistory->batch)
+                                    ->where('batch', $batch)
                                     ->orderBy('order_id', 'ASC')->get();         
         
         }
@@ -432,6 +441,7 @@ class LessonSlideMaterials extends Controller
                 $audioFiles[$index+1] = FileAudio::where('file_id', $file->id)->get(['id', 'file_id', 'path', 'file_name']);
                 $notes[$index+1]  = $file->notes;
             }           
+            
 
         } else {            
             $slides = [];
@@ -452,6 +462,7 @@ class LessonSlideMaterials extends Controller
         
             return Response([
                     "success"              => true,
+                    'batch'                => $batch,
                     'folderID'             => $folderID, 
                     "folderSegments"       => $folderSegments,
                     "folderURLArray"       => $folderURLArray,

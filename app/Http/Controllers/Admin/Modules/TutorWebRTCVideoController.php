@@ -119,7 +119,23 @@ class TutorWebRTCVideoController extends Controller
 
                 //No Materials Selected
                 $isFolderSelected   = false;
-                $folderID           = $folder->getNextFolderID($reserve->member_id);
+
+                if ($isLessonCompleted == "COMPLETED") {
+
+                    $completed = LessonHistory::where('member_id', $reserve->member_id)
+                            ->where('tutor_id',$reserve->tutor_id)
+                            ->where('schedule_id',$scheduleID)
+                            ->where('status', "COMPLETED")
+                            ->first();
+
+                      $folderID = $completed->folder_id;
+
+                  
+
+                } else {
+
+                    $folderID           = $folder->getNextFolderID($reserve->member_id);
+                }
 
                 if ($folderID) {
 

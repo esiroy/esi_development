@@ -66,13 +66,23 @@ class dummyController extends Controller
     {
     }
 
-    public function index() {
+    public function index(Folder $folder, $memberID = 20372) {
     
-        $highestBatchNumber = LessonHistory::max('batch');
+        $recentLessonHistory   = $folder->getRecentLessonHistory($memberID, "COMPLETED");
 
-        echo $highestBatchNumber;
+        $folderID       = $folder->getNextFolderID($memberID);
+
+        echo "<pre>";
+        print_r ($recentLessonHistory);
+        echo "</pre>";
+
+        echo "test : " . $folderID;
+
+
 
     }
+
+    
 
 
     public function phpinfo(Request $request, Member $member, ScheduleItem $scheduleItem) {

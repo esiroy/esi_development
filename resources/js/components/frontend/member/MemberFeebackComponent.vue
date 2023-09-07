@@ -337,8 +337,6 @@ export default {
         showMemberFeedbackModal(reservationData, files) 
         {
 
-           // this.getLessonSlideMaterial();
-
             if (files == null || files.length == 0) {            
                 this.nextLessonOptions.push({
                     value: 1,

@@ -234,7 +234,7 @@
 
             this.socket.on('START_SESSION', (response) => {
 
-                console.log("start session");
+                //console.log("start session");
 
                 if (this.$props.is_broadcaster == false) {
 
@@ -242,10 +242,10 @@
                     
                         if (response.recipient.userid == this.user_info.id)
                         {                    
-                            console.log("TEACHER STARTED A SESSION", response);
+                            //console.log("TEACHER STARTED A SESSION", response);
 
                             if (this.isMainTimerStarted == false) {
-                                console.log("this.startCountdown();")
+                                //console.log("this.startCountdown();")
                                 this.startCountdown(); 
                             }
                         
@@ -272,7 +272,7 @@
 
                     if (response.channelid == this.channelid) {
 
-                        console.log("END SESSION RECIEVED BY MEMBER", response)
+                        //console.log("END SESSION RECIEVED BY MEMBER", response)
                         this.$refs['NavigationMenu'].stopTimer(); 
                         this.$refs['NavigationMenu'].disableNavigationMenu();
                         this.isLessonCompleted = true;
@@ -283,12 +283,12 @@
                         
 
                     } else {
-                        console.log("channel not found");
+                        //console.log("channel not found");
                     }
 
                 } else if (this.$props.is_broadcaster == true) {
 
-                    console.log("END SESSION RECIEVED BY TUTOR");
+                    //console.log("END SESSION RECIEVED BY TUTOR");
                     this.isLessonCompleted = true;  
 
                    
@@ -299,7 +299,7 @@
 
             this.socket.on('CALL_USER', (userData) => {
 
-                console.log(" [START] =====  CALL_USER ===== ", userData, userData.caller.type);
+                //console.log(" [START] =====  CALL_USER ===== ", userData, userData.caller.type);
                 
                 //When you are already on the the lesson and tutor calls during a session, 
                 //the auto acccept and create a pingback
@@ -320,7 +320,7 @@
                         this.$refs['TutorSessionInvite'].hideCallUserModal();                                            
                         this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
 
-                        console.log("CALL_USER", userData.caller.type,  "EMMITTING ACCEPT CALL")
+                        //console.log("CALL_USER", userData.caller.type,  "EMMITTING ACCEPT CALL")
 
 
                     }
@@ -341,7 +341,7 @@
                         this.$refs['TutorSessionInvite'].hideCallUserModal();                                            
                         this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
 
-                        console.log("CALL_USER", userData.caller.type, "EMMITTING ACCEPT CALL")
+                        //console.log("CALL_USER", userData.caller.type, "EMMITTING ACCEPT CALL")
 
                     }
                 } 
@@ -352,7 +352,7 @@
 
                 if (this.$props.is_broadcaster == true  && userData.type == "MEMBER") {
                  
-                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+                    //console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
 
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData); 
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
@@ -360,7 +360,7 @@
                 }
 
                 if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
-                    console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
+                    //console.log("CALL_USER_PINGBACK, RECIEVED FROM :" + userData.type , userData);
                     this.socket.emit('JOIN_SESSION_PINGBACK', userData);         
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
@@ -372,7 +372,7 @@
 
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
 
-                    console.log(" << MEMBER_JOINED_SESSION ==>> ", userData);
+                    //console.log(" << MEMBER_JOINED_SESSION ==>> ", userData);
                     this.$refs['TutorSessionInvite'].addParticipants(userData); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal();                     
@@ -380,12 +380,12 @@
 
                 } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
 
-                    console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
+                    //console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
 
 
 
                     if (this.isMainTimerStarted == false) {
-                        console.log("this.startCountdown();")
+                        //console.log("this.startCountdown();")
                         this.startCountdown(); 
                     }
 
@@ -401,13 +401,13 @@
 
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
 
-                    console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);
+                    //console.log("JOIN_SESSION_PINGBACK  FROM [" + userData.type + "]", userData);
                 
                     this.$refs['TutorSessionInvite'].hideCallUserModal();
                     this.$refs['TutorSessionInvite'].addParticipants(userData);  
 
                     if (this.isLessonStarted == true) {
-                        console.log("lesson not started, hide waiting list modal")
+                        //console.log("lesson not started, hide waiting list modal")
                         //this.$refs['TutorSessionInvite'].hideWaitingListModal(); //[this will auto join]
                     }
                     
@@ -416,7 +416,7 @@
 
               if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
                     //TUTOR JOINED THE SESSION
-                    console.log("JOIN_SESSION_PINGBACK FROM [" + userData.type + "]", userData);                
+                    //console.log("JOIN_SESSION_PINGBACK FROM [" + userData.type + "]", userData);                
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].addParticipants(userData);
                     this.$refs['TutorSessionInvite'].hideWaitingListModal()
@@ -435,7 +435,7 @@
 
                         if (this.isLessonCompleted == false && this.isLessonStartTimeInvalid == false)    {
 
-                            console.log("TUTOR LEFT THE SESSION"); 
+                            //console.log("TUTOR LEFT THE SESSION"); 
 
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                             this.$refs['TutorSessionInvite'].stopLessonTimer()
@@ -457,7 +457,7 @@
                             && this.isLessonExpired == false
                             )    {
                             
-                            console.log("USER LEFT A SESSION");     
+                            //console.log("USER LEFT A SESSION");     
 
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                             this.$refs['TutorSessionInvite'].stopLessonTimer()
@@ -468,7 +468,7 @@
                             this.$refs['TutorSessionInvite'].startWaitingTimer()   
 
                         } else {
-                            console.log(" USER LEFT A SESSION !!! LESSON COMPLETED !!!");    
+                            //console.log(" USER LEFT A SESSION !!! LESSON COMPLETED !!!");    
                         }
                     }  
 
@@ -483,13 +483,13 @@
             {
 
                 if (this.$props.is_broadcaster == false) {
-                    console.log("ACCEPT_CALL, (call accepted by member)", userData);
+                    //console.log("ACCEPT_CALL, (call accepted by member)", userData);
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
                 } 
 
                 if (this.$props.is_broadcaster == true) { 
-                    console.log("ACCEPT_CALL (call accepted by tutor)", userData);     
+                    //console.log("ACCEPT_CALL (call accepted by tutor)", userData);     
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
                 }
@@ -520,9 +520,9 @@
                 }
 
                if (this.$props.is_broadcaster == true) {
-                    console.log("UPDATE_DRAWING TUTOR");   
+                    //console.log("UPDATE_DRAWING TUTOR");   
                } else {          
-                    console.log("UPDATE_DRAWING MEMBER");   
+                    //console.log("UPDATE_DRAWING MEMBER");   
 
                     this.$refs['LessonSlider'].delegateUpdateCanvas(response.currentSlide, response.canvasData);
                     this.$refs['LessonSlider'].delegateSetZoom(response.currentSlide, response.canvasZoom);
@@ -549,7 +549,7 @@
             this.socket.on("CREATE_NEW_SLIDE", (data) => {
                 
                 if (this.$props.is_broadcaster == false) {
-                    console.log("create new slide")
+                    //console.log("create new slide")
                     this.slides = data.slidesCount;
                     this.$refs['LessonSlider'].createNewSlide();
                     this.$refs['LessonSlider'].goToSlide(data.currentslide);
@@ -567,7 +567,7 @@
                         this.$refs['LessonSlider'].openNewSlideMaterials(response.folderID);                       
                     }
                 } catch (error) {
-                    console.log("Error, tutor can't select new slide ", error);
+                    //console.log("Error, tutor can't select new slide ", error);
                 }
             });   
             
@@ -622,7 +622,7 @@
 
             this.$root.$on('startMemberTimer', (timeRemaining) => {  
 
-                console.log("startMemberTimer") ;
+                //console.log("startMemberTimer") ;
 
                 if (this.$props.is_broadcaster == true) {
                     this.socket.emit('START_MEMBER_TIMER', {
@@ -630,7 +630,7 @@
                         'timeRemaining': timeRemaining
                     });
                 } else {
-                    console.log("startMemberTimer")
+                    //console.log("startMemberTimer")
                 }
             });
 
@@ -641,12 +641,12 @@
                         'timeRemaining': timeRemaining
                     });
                 } else {
-                    console.log("startMemberTimer")
+                    //console.log("startMemberTimer")
                 }
             });
 
             this.$root.$on('playAlarmAudio', (alarmAudio) => {
-                console.log("play alarm audio", alarmAudio)
+                //console.log("play alarm audio", alarmAudio)
                 this.playAlarmAudio(alarmAudio);
             });
             //[end] Mini Task Timer
@@ -748,7 +748,7 @@
 
 
             this.$root.$on('redialUser', (response) => {
-                console.log(response, data, "redial user fired");      
+                //console.log(response, data, "redial user fired");      
 
                 let data = {
                     recipient       :   this.recipient_info,    //recipient 
@@ -759,7 +759,7 @@
                 if (this.isUserAbsent == false) {
                     this.socket.emit('CALL_USER',  data); 
                 } else {
-                    console.log("I will not re-dial, since the user is a no show, we will wait for a manual call to action from the teacher moving forward")
+                    //console.log("I will not re-dial, since the user is a no show, we will wait for a manual call to action from the teacher moving forward")
                 }
 
             }); 
@@ -842,7 +842,7 @@
                     this.isLessonStartTimeInvalid = response.data.isStartTimeInvalid;
 
 
-                    console.log(response.data);
+                    //console.log(response.data);
 
                     if (response.data.success == true && response.data.isLessonStarted == false 
                         && response.data.isLessonExceedGracePeriod == false 
@@ -853,10 +853,10 @@
 
                         //[calling is delagated to start lesson button 
                          if (this.$props.is_broadcaster == true) {
-                            console.log("check session call Member")
+                            //console.log("check session call Member")
                             this.callMember()
                          }  else { 
-                            console.log("check session accept tutor call")
+                            //console.log("check session accept tutor call")
                             this.acceptTutorCall(); 
                         }
                         
@@ -868,13 +868,13 @@
                             this.isSessionExpired = true;
                             this.promptLessonAbsent();       
 
-                            console.log("lesson expired promted")
+                            //console.log("lesson expired promted")
 
 
                         } else if (this.isLessonStarted  == false && response.data.isUserAbsent == true) {                        
                             this.isUserAbsent = true;
                             this.promptLessonAbsent();    
-                            console.log("absent")
+                            //console.log("absent")
 
                         } else {                       
 
@@ -891,7 +891,7 @@
                 this.currentSlide = await this.$refs['LessonSlider'].getCurrentSlide()
                 this.slidesData = await this.$refs['LessonSlider'].getAllSlideData();
 
-                console.log(this.currentSlide, this.slidesData);
+                //console.log(this.currentSlide, this.slidesData);
 
                 axios.post("/api/postLessonStartHistory?api_token=" + this.api_token,
                 {
@@ -972,19 +972,19 @@
                 }).then(response => {
 
 
-                   console.log("success", response.data.success);
-                   console.log("is lesson expired?", this.isLessonExpired);
-                   console.log("is session expired?", this.isSessionExpired);            
+                   //console.log("success", response.data.success);
+                   //console.log("is lesson expired?", this.isLessonExpired);
+                   //console.log("is session expired?", this.isSessionExpired);            
              
 
                     if (response.data.success == true) {
                         
                         this.$refs['NavigationMenu'].startTimer();
-                        console.log("emit start session")
+                        //console.log("emit start session")
                         this.socket.emit('START_SESSION', this.getSessionData());   
 
                         if (this.isMainTimerStarted == false) {
-                            console.log("this.startCountdown();")
+                            //console.log("this.startCountdown();")
                             this.startCountdown(); 
                         }
 
@@ -995,7 +995,7 @@
                         //if session has not started then save all slides to slide history
                         if (this.isLessonStarted == false) {
 
-                            console.log("|| =================== SESSION_START =================== ||");
+                            //console.log("|| =================== SESSION_START =================== ||");
 
                             this.socket.emit('JOIN_SESSION', this.user); 
 
@@ -1007,12 +1007,12 @@
 
                             if (this.$props.is_broadcaster == true) {
 
-                                console.log("we are calling member, since it has not expired")
+                                //console.log("we are calling member, since it has not expired")
                                 this.callMember(); 
 
                             } else {
 
-                                console.log("check session accept tutor call")
+                                //console.log("check session accept tutor call")
                                 this.acceptTutorCall(); 
 
                             }
@@ -1031,11 +1031,11 @@
 
                                 } else if (this.isLessonStarted == false && this.isSessionExpired == false) {
                                 
-                                    console.log("|| XXXXXXXXXXXXXXXXXX  SESSION_NOT_STARTED  XXXXXXXXXXXXXXXXXX  ||")
+                                    //console.log("|| XXXXXXXXXXXXXXXXXX  SESSION_NOT_STARTED  XXXXXXXXXXXXXXXXXX  ||")
 
                                 } else {
 
-                                    console.log("|| ??????????????????? SESSION IS UNKNOWN HERE ??????????????????? ||")
+                                    //console.log("|| ??????????????????? SESSION IS UNKNOWN HERE ??????????????????? ||")
                                 }
 
                             } else {
@@ -1045,7 +1045,7 @@
 
                             
                                 //member joined...
-                                console.log("EMIT JOIN_SESSION TO TUTOR");
+                                //console.log("EMIT JOIN_SESSION TO TUTOR");
                                 this.socket.emit('JOIN_SESSION', this.user); 
                             }
 
@@ -1115,7 +1115,7 @@
 
                 if (this.$props.is_broadcaster == true) {
                 
-                    console.log("<<========== START_CALL_MEMBER ===========> ")
+                    //console.log("<<========== START_CALL_MEMBER ===========> ")
 
                     this.$refs['TutorSessionInvite'].showCallUserModal();
 
@@ -1127,7 +1127,7 @@
 
                 } else {
                 
-                    console.log("calling tutor (inactive)");
+                    //console.log("calling tutor (inactive)");
                 }
         
             },                  
@@ -1184,7 +1184,7 @@
             },
             promptSessionComplete() {
 
-                console.log("promptSessionComplete");
+                //console.log("promptSessionComplete");
 
                 this.$refs['NavigationMenu'].disableNavigationMenu();
                 //this.$refs['TutorSessionInvite'].showModalCompleted();
@@ -1293,7 +1293,7 @@
                 //check expired every timer updates
                 if (this.millisecondsLeft <= 0) {
 
-                    console.log(hours >= 1 || minutes >= this.gracePeriodInMinutes)
+                    //console.log(hours >= 1 || minutes >= this.gracePeriodInMinutes)
 
                     if (hours >= 1 || minutes >= this.gracePeriodInMinutes) 
                     {
@@ -1313,7 +1313,7 @@
                 this.$refs['MemberLessonTimer'].showTimerControlModal()
             },
             startMemberTimer() {
-                console.log("START_MEMBER_TIMER - EMIT")
+                //console.log("START_MEMBER_TIMER - EMIT")
                 this.socket.emit('START_MEMBER_TIMER', this.getSessionData()); 
                 this.isMainTimerStarted = true;
             },
@@ -1430,7 +1430,7 @@
                             this.$refs['NavigationMenu'].stopTimer();                    
                             this.$refs['NavigationMenu'].disableNavigationMenu();
                             this.socket.emit('END_SESSION', this.getSessionData()); 
-                            console.log("session end was broadcasted");
+                            //console.log("session end was broadcasted");
                             this.showMemberFeedbackModal(this.reservation, this.files);
                             $("#destroy-session-media").trigger("click"); 
                         }
