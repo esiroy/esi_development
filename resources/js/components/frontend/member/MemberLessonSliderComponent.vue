@@ -8,7 +8,8 @@
 
         <!--
         <button @click="testEndSession()">end</button>
-        -->
+        <button @click="showMemberFeedbackModal()">showMemberFeedbackModal</button>
+         -->
 
         <!-- Tutor to Member Feedback-->
         <MemberFeebackComponent 
@@ -1223,7 +1224,9 @@
                 // Wait for the files to have a value
                 const files = await waitForFiles();
 
+                this.$refs['memberFeedback'].updateLessonDetails(lessonSliderComponent.segments);                
                 this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation, files);
+                
             },
             showSatisfactionSurveyModal() {
                 this.$refs['satisfactionSurvey'].showSatisfactionSurveyModal(this.reservation);
