@@ -574,7 +574,18 @@ peer.on('connection', function(conn) {
     });
 
     conn.on('close', (conn) => {
-        //console.log("connection of peer has been closed", conn)
+        console.log("shared video connection of peer has been closed", conn)
+
+        const sharedVideo = document.getElementById('sharedVideo');
+
+        // Check if the video element exists before attempting to remove it
+        if (sharedVideo) {
+          // Remove the video element from the DOM
+          sharedVideo.remove();
+        } else {
+          console.log('Element with id "sharedVideo" not found.');
+        }
+                
     });
 
 });
