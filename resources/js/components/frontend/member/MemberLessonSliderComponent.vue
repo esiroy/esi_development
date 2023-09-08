@@ -317,13 +317,9 @@
                         }
 
                         this.socket.emit('ACCEPT_CALL', callData);
-
                         this.$refs['TutorSessionInvite'].hideCallUserModal();                                            
                         this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
-
                         //console.log("CALL_USER", userData.caller.type,  "EMMITTING ACCEPT CALL")
-
-
                     }
                 }            
 
@@ -373,7 +369,8 @@
 
                 if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
 
-                    //console.log(" << MEMBER_JOINED_SESSION ==>> ", userData);
+                    console.log(" << MEMBER_JOINED_SESSION ==>> ", userData);
+
                     this.$refs['TutorSessionInvite'].addParticipants(userData); 
                     this.$refs['TutorSessionInvite'].showWaitingListModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal();                     
@@ -381,9 +378,7 @@
 
                 } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
 
-                    //console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
-
-
+                    console.log(" <<= TUTOR_JOINED_SESSION ===>> ", userData,  "left", this.millisecondsLeft);
 
                     if (this.isMainTimerStarted == false) {
                         //console.log("this.startCountdown();")
@@ -410,8 +405,7 @@
                     if (this.isLessonStarted == true) {
                         //console.log("lesson not started, hide waiting list modal")
                         //this.$refs['TutorSessionInvite'].hideWaitingListModal(); //[this will auto join]
-                    }
-                    
+                    }                   
                    
                 }
 
@@ -484,13 +478,13 @@
             {
 
                 if (this.$props.is_broadcaster == false) {
-                    //console.log("ACCEPT_CALL, (call accepted by member)", userData);
+                    console.log("ACCEPT_CALL, (call accepted by member)", userData);
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
                 } 
 
                 if (this.$props.is_broadcaster == true) { 
-                    //console.log("ACCEPT_CALL (call accepted by tutor)", userData);     
+                    console.log("ACCEPT_CALL (call accepted by tutor)", userData);     
                     this.$refs['TutorSessionInvite'].hideCallUserModal(); 
                     this.$refs['TutorSessionInvite'].hideWaitingListModal(); 
                 }

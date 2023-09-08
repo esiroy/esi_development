@@ -382,32 +382,18 @@ function stopSharing() {
 }
 
 function detectDesktopShared(stream) {
-
-
-
     peer.on('connection', function(conn) {
-
         conn.on('data', function(data) {
-
             if (data.sharedScreen == true) {
-                //@toto peer.stream to wait for the
-
                 sharedScreen = true;
-
             } else if (data.sharedScreen == false) {
-
                 stopSharing();
-
                 sharedScreen = false;
-
                 return false;
             } else {
-
                 alert("the stream data")
             }
-
         });
-
     });
 
 
@@ -429,9 +415,6 @@ function detectDesktopShared(stream) {
             call.answer(stream);
 
             if (stream.getAudioTracks().length == 1 && stream.getVideoTracks().length == 1) {
-
-                alert("reciever from sender is a video 11-25 :: (peer)" + call.peer)
-
                 removeElementByID(call.peer);
                 callerElement = document.createElement('video');
                 callerElement.setAttribute("id", call.peer);
@@ -440,19 +423,13 @@ function detectDesktopShared(stream) {
 
                 addVideo(callerElement, stream);
             } else {
-
-
-                alert("reciever from sender is a audio 22-25 :: (peer)" + call.peer)
-
                 removeElementByID(call.peer);
                 callerElement = document.createElement('audio');
                 callerElement.setAttribute("id", call.peer);
                 callerElement.setAttribute("class", "peerCallBackAudio"); //call peer
                 callerElement.setAttribute("controls", "controls");
                 callerElement.muted = false;
-
                 addAudio(callerElement, stream);
-
             }
         }
 
@@ -469,20 +446,14 @@ function detectDesktopShared(stream) {
                 //hide lesson Slide
                 hideByElementId("lessonSlide");
             } else {
-
-                //the user did not
-                alert("user video ")
-
                 data = {
                     'id': myId,
                     'user': user,
                     'roomID': roomID,
                     'videoStream': mediaCallStream
                 }
-
                 socket.emit("changeMedia", data);
             }
-
         });
 
         call.on('finish', function() {
@@ -494,8 +465,6 @@ function detectDesktopShared(stream) {
         });
 
         call.on("close", () => {
-
-            alert("closed shared")
             sharedVid.remove();
         });
 
@@ -584,7 +553,7 @@ peer.on('connection', function(conn) {
 
     conn.on('data', function(data) {
 
-        //console.log("peer connected", data)
+        console.log("share connection: peer connected", data)
 
         if (data.sharedScreen == true) {
 
@@ -815,7 +784,7 @@ socket.on('userJoined', (data) => {
 
     peerConnections[data.id] = data;
 
-    //console.log("user joined ::: calling initiator with just audio and video", data.id);
+    console.log("user joined ::: calling initiator with just audio and video", data.id);
 
     const audioSource = audioInputSelect.value;
     const videoSource = videoSelect.value;
@@ -882,6 +851,8 @@ socket.on('userJoined', (data) => {
 
         }
 
+        checkVideoDisabled();
+        checkAudioMuted();
 
     }).catch((error) => {
 
@@ -960,6 +931,9 @@ socket.on('userJoined', (data) => {
             //alert("Please connect audioinput device and try again");
             // //console.log(error)
         });
+
+        checkVideoDisabled();
+        checkAudioMuted();
 
     });
 
@@ -1118,6 +1092,25 @@ socket.on('userDisconnect', id => {
     }
 });
 
+
+function checkAudioMuted() {
+    const muteIcon = document.querySelector('.fa-volume-mute');
+
+    // Check if the 'display' property is set to 'none'
+    if (muteIcon.style.display !== 'none') {       
+        // The element with class 'fa-volume-mute' is not hidden
+        console.log('fa-volume-mute is visible, we will mute mic');
+        muteMic();
+    }
+}
+
+function muteMic() {
+  userJoinedStream.getAudioTracks().forEach((track) => {
+    track.enabled = !track.enabled;
+  });
+}
+
+
 function toggleMic() {
     if (userJoinedStream != null) {
         userJoinedStream.getAudioTracks().forEach((track) => {
@@ -1152,6 +1145,22 @@ function toggleMic() {
 }
 
 
+
+function checkVideoDisabled() {
+    const videoIcon = document.querySelector('.fa-video-slash');    
+    if (videoIcon.style.display !== 'none') {               
+        console.log('video slash is visible, we will disable video');
+        disableVideo();
+    }
+}
+
+function disableVideo() {
+    userJoinedStream.getVideoTracks().forEach((track) => {
+      track.enabled = !track.enabled;
+    });
+  }
+
+  
 function toggleCamera() {
     if (userJoinedStream != null) {
         userJoinedStream.getVideoTracks().forEach((track) => {
