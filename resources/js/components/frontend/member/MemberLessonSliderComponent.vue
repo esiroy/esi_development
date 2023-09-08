@@ -1431,7 +1431,11 @@
                             this.$refs['NavigationMenu'].disableNavigationMenu();
                             this.socket.emit('END_SESSION', this.getSessionData()); 
                             //console.log("session end was broadcasted");
-                            this.showMemberFeedbackModal(this.reservation, this.files);
+
+
+                            //this.showMemberFeedbackModal(this.reservation, this.files);
+                            this.showMemberFeedbackModal();
+
                             $("#destroy-session-media").trigger("click"); 
                         }
 
