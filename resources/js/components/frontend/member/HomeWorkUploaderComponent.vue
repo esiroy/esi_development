@@ -79,7 +79,7 @@
                             //order_id: this.homework_index,
                             'lesson_schedule_id': this.reservation.schedule_id,
                             'reservation': JSON.stringify(this.reservation),
-                            'instruction': this.instructions
+                            'instruction': this.instructions,
                         }"
                         ref="homeworkUploader">
                         
@@ -119,7 +119,7 @@
                 <span class="small border-1 text-secondary">Add homework instructions below</span>
 
                 <div class="mt-2">
-                    <vue-ckeditor v-model="instructions" :config="config" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
+                    <vue-ckeditor v-model="instructions" :config="config" @input="onEditorInput" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
                 </div>
 
             </div>
@@ -155,7 +155,7 @@ export default {
         },
         reservation: Object,         
         csrf_token: String,
-        api_token: String                 
+        api_token: String,
     },
     data() {
         return {
@@ -169,7 +169,22 @@ export default {
                     
                 ],
                 removePlugins: ['easyimage', 'cloudservices', 'exportpdf'],
-                height: 150
+                height: 150,
+                on: 
+                {
+                    paste: (evt) => {
+                        // Handle the paste event here
+                        console.log('Pasted content:', evt.data.dataValue);
+
+                        // If you want to modify the pasted content before updating the editor, you can do it here.
+                        // For example, you can strip HTML tags from the pasted content.
+                        const pastedContent = evt.data.dataValue;
+                        const sanitizedContent = this.sanitizePastedContent(pastedContent);
+
+                        // Update the editor with the modified content
+                        this.instructions = sanitizedContent;
+                    }      
+                }          
             },            
         };
   },
@@ -187,6 +202,7 @@ export default {
     },
     updateValue(value) {     
       this.files = value;
+
     },
     /**
      * Has changed
@@ -251,12 +267,30 @@ export default {
             }        
         }
     },
+    onEditorInput(newContent) {
+
+        console.log(newContent);
+
+        // Update the instructions variable with the new content
+        this.instructions = newContent;
+
+        // Trigger the custom 'onEdit' event with the new content as a parameter
+        this.$emit('onEdit', newContent);
+    },
     onEditorBlur (editor) {
         console.log(editor)
     },
     onEditorFocus (editor) {
         console.log(editor)
     },      
+    sanitizePastedContent(content) {
+      // Implement your sanitization logic here
+      // For example, you can use a library like DOMPurify to sanitize the content.
+      // Example using DOMPurify:
+      // import DOMPurify from 'dompurify';
+      // return DOMPurify.sanitize(content);
+      return content; // Replace this with your actual sanitization logic
+    }    
   }
 };
 </script>

@@ -9,7 +9,10 @@
         <!--
         <button @click="testEndSession()">end</button>
         <button @click="showMemberFeedbackModal()">showMemberFeedbackModal</button>
+        
          -->
+
+         <button @click="testConsecutive()">end</button>
 
         <!-- Tutor to Member Feedback-->
         <MemberFeebackComponent 
@@ -1442,7 +1445,23 @@
 
                 });
             },
+            testConsecutive() {
 
+                axios.post("/api/testConsecutiveLesson?api_token=" + this.api_token,
+                {
+                    'method'          : "POST",
+                    'reservation'     : this.reservation,                
+                    'consecutiveSchedules': this.consecutiveSchedules,
+                }).then(response => {
+
+                        console.log(response.consecutiveSchedules);
+
+                });
+
+
+              
+              
+            }
 
 
         }

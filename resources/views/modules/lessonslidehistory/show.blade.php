@@ -21,14 +21,15 @@
                 <!--[end sidebar]-->
 
                 <div class="col-md-9">
+
+
                     <div class="card esi-card">
                         <div class="card-header esi-card-header">
                             予約表
                         </div>
 
                         <div class="card-body">
-
-                            <table  cellspacing="5" cellpadding="3" width="100%">
+                            <table cellspacing="5" cellpadding="3" width="100%">
 
                                 <tbody>
                                     @if ($isMerged == true)
@@ -101,7 +102,6 @@
 
                                     <tr>
                                          <td class="mt-3">
-                                            
                                             <h5 class="font-weight-bold mt-4">Slide Materials </h5>
                                         </td>
                                     </tr>
@@ -121,29 +121,59 @@
                                                 ></lesson-viewer-component>                                        
                                         </td>
                                     </tr>
-
+                                                                                                       
                                     <tr>
-                                         <td class="mt-3">                                            
-                                            <h5 class="font-weight-bold mt-4">Chat Messages</h5>
-                                        </td>  
-                                    </tr>
-                                    <tr>                                  
-                                        <td colspan="3">
-                                            <lesson-chat-viewer-component  
-                                                ref="lessonSliderComponent"
-                                                :user="{{  json_encode(Auth::user()) }}"                                                
-                                                :messages="{{ json_encode($messages) }}"
-                                            >
-                                            </lesson-chat-viewer-component>                                        
+                                        <td class="px-2"  colspan="3">  
+
+
+                                            <div class="card esi-card">
+                                                <div class="card-header esi-card-header-title">
+                                                     <span class="small">Homework</div>
+                                                </div>
+                                                <div class="card-body">
+                                                    @if (isset($homework))
+                                                    <div class="small">
+                                                        File: <a href="{{ url( Storage::url($homework->original) ) }}" 
+                                                        download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                    </div>
+
+                                                        <div class="small">
+                                                        Instruction : {{ $homework->instruction ?? '' }}
+                                                    </div>
+                                                    @else
+                                                        <div class="text-center">
+                                                            <span class="small text-secondary">No homework found!</span>
+                                                        </div>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
 
-                                  
+                                   
                                 </tbody>
-                            </table>
+                            </table>                   
                         </div>
                     </div>
 
+
+                    <table cellspacing="5" cellpadding="3" width="100%">
+                        <tr>
+                                <td class="mt-3"  colspan="3">                                            
+                                <h5 class="font-weight-bold mt-4">Chat Messages</h5>
+                            </td>  
+                        </tr>
+                        <tr>                                  
+                            <td colspan="3">
+                                <lesson-chat-viewer-component  
+                                    ref="lessonSliderComponent"
+                                    :user="{{  json_encode(Auth::user()) }}"                                                
+                                    :messages="{{ json_encode($messages) }}"
+                                >
+                                </lesson-chat-viewer-component>                                        
+                            </td>
+                        </tr>
+                    </table>
 
                 </div>
 

@@ -56,7 +56,7 @@ use App\Models\LessonSlideHistory;
 use App\Models\MemberSelectedLessonSlideMaterial;
 use App\Models\CustomTutorLessonMaterials;
 
-
+use App\Models\Homework;
 
 
 class dummyController extends Controller
@@ -69,11 +69,15 @@ class dummyController extends Controller
     public function index(Folder $folder, $memberID = 20372) {
     
         $recentLessonHistory   = $folder->getRecentLessonHistory($memberID, "COMPLETED");
-
         $folderID       = $folder->getNextFolderID($memberID);
+   
+
 
         echo "<pre>";
-        print_r ($recentLessonHistory);
+        echo ($recentLessonHistory->schedule_id);
+        echo "<BR>";
+        echo "FOLDER ID : " . $recentLessonHistory->folder_id;
+        
         echo "</pre>";
 
         echo "test : " . $folderID;

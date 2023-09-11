@@ -12,6 +12,7 @@ use App\Models\LessonChat;
 use App\Models\MemberFeedback;
 use App\Models\MemberFeedbackDetails;
 use App\Models\FileAudio;
+use App\Models\Homework;
 use Auth;
 
 class LessonSlideHistoryController extends Controller
@@ -48,6 +49,7 @@ class LessonSlideHistoryController extends Controller
 
                 $isMerged = false;
                 $parentHistoryID = null;
+
                 //this is the first schedule
                 $lessonHistory = $historyItem;
 
@@ -94,6 +96,10 @@ class LessonSlideHistoryController extends Controller
                 'lessonTimeRage'    => LessonTimeRange($reserve->lesson_time),
                 'schedule_status'   => $reserve->schedule_status
             ];   
+
+
+            
+
             //we will get the material images
             $files      = $file->where('files.folder_id', $lessonHistory->folder_id)->orderBy('files.order_id', 'ASC')->get();
             $audioFiles = [];
@@ -113,9 +119,12 @@ class LessonSlideHistoryController extends Controller
                 
             }
 
-            $memberFeedback = $memberFeedback->where('member_feedback.schedule_id', $lessonHistoryID)->get();
+       
 
-            if ($memberFeedback) {            
+            $memberFeedback = $memberFeedback->where('member_feedback.schedule_id', $lessonHistory->schedule_id)->get();
+
+            if ($memberFeedback) {    
+
                 foreach($memberFeedback as $index => $feedback) {
                     $feedbackdetails = $memberFeedbackDetails->where('member_feedback_id', $feedback->id)->get();
                     if ($feedbackdetails) {
@@ -128,7 +137,15 @@ class LessonSlideHistoryController extends Controller
 
            
 
-            //Member Feeback
+
+            if (isset($lessonHistory->schedule_id))
+            {
+                $homework = Homework::where('schedule_item_id', $lessonHistory->schedule_id)->first();
+            } else {
+                $homework = null;
+            }
+
+
 
             //@todo: slides
             $slideHistory = $lessonSlideHistory->where('lesson_history_id',  $lessonHistory->id )->orderBy('slide_index', 'ASC')->get();
@@ -141,7 +158,7 @@ class LessonSlideHistoryController extends Controller
                                 ->orderby('lesson_chat_history.id', "DESC")->get();
 
 
-            return view('modules.lessonslidehistory.show', compact('isMerged', 'parentHistoryID', 'lessonHistory', 
+            return view('modules.lessonslidehistory.show', compact('isMerged', 'homework', 'parentHistoryID', 'lessonHistory', 
                                 'lessonTitle', 'files', 'audioFiles', 'slideHistory', 
                                 'reservationData', 'messages', 'memberFeedback'));
 

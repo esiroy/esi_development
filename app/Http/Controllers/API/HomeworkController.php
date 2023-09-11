@@ -66,9 +66,9 @@ class HomeworkController extends Controller
                 'tutor_id' =>   $reservation->tutor_id,
                 'filename' =>   $newFilename,
                 'original' =>   $path,
+                'valid'        => true,
                 'instruction' => $instruction
-            ];
-      
+            ];     
 
           
             $homework = new Homework();

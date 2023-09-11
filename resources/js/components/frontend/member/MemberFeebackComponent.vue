@@ -452,7 +452,7 @@ export default {
                     this.$refs['memberFeedbackModal'].hide();
 
                     this.$nextTick(() => {
-                        this.redirect('admin');                    
+                       this.redirect('admin');                       
                     });                    
                 } else {
                     alert ("Error:", response.data.message);

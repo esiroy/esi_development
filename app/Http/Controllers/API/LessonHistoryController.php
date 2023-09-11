@@ -360,7 +360,6 @@ class LessonHistoryController extends Controller
 
             if (count($consecutiveSchedules) > 1) {
 
-
                 foreach ($consecutiveSchedules['lessons'] as $key => $lesson) {
 
                     $consecutiveLessonHistories = LessonHistory::where('schedule_id', $lesson['id'])->where('status', 'NEW')->first();                 
