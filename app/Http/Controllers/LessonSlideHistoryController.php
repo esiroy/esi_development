@@ -13,6 +13,8 @@ use App\Models\MemberFeedback;
 use App\Models\MemberFeedbackDetails;
 use App\Models\FileAudio;
 use App\Models\Homework;
+use App\Models\ReportCard;
+
 use Auth;
 
 class LessonSlideHistoryController extends Controller
@@ -33,7 +35,7 @@ class LessonSlideHistoryController extends Controller
      */
     public function show($lessonHistoryID, LessonHistory $lessonHistory, LessonSlideHistory $lessonSlideHistory, 
                         Folder $folder, File $file, LessonChat $lessonChat,
-                        MemberFeedback $memberFeedback, MemberFeedbackDetails $memberFeedbackDetails)
+                        MemberFeedback $memberFeedback, MemberFeedbackDetails $memberFeedbackDetails, ReportCard $reportcards)
     {     
 
    
@@ -157,8 +159,10 @@ class LessonSlideHistoryController extends Controller
                                 ->leftJoin('members', 'members.user_id', '=', 'lesson_chat_history.sender_id')
                                 ->orderby('lesson_chat_history.id', "DESC")->get();
 
+            $latestReportCard = $reportcards->getLatest($reserve->member_id);
 
-            return view('modules.lessonslidehistory.show', compact('isMerged', 'homework', 'parentHistoryID', 'lessonHistory', 
+
+            return view('modules.lessonslidehistory.show', compact('isMerged', 'latestReportCard', 'homework', 'parentHistoryID', 'lessonHistory', 
                                 'lessonTitle', 'files', 'audioFiles', 'slideHistory', 
                                 'reservationData', 'messages', 'memberFeedback'));
 
