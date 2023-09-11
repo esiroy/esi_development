@@ -123,22 +123,24 @@
                                     </tr>
                                                                                                        
                                     <tr>
-                                        <td class="px-2"  colspan="3">  
-
-
-                                            <div class="card esi-card">
+                                        <td colspan="3">
+                                            <div class="card esi-card mt-2">
                                                 <div class="card-header esi-card-header-title">
-                                                     <span class="small">Homework</div>
+                                                     <span class="small">Homework</span>
                                                 </div>
                                                 <div class="card-body">
                                                     @if (isset($homework))
-                                                    <div class="small">
-                                                        File: <a href="{{ url( Storage::url($homework->original) ) }}" 
-                                                        download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+
+                                                    <div class="instruction">                                                        
+                                                        <span class="font-weight-bold">File: </span>                                                     
+                                                        <span class="small">                                                        
+                                                            <a href="{{ url( Storage::url($homework->original) ) }}"download="{{ url( Storage::url($homework->original) ) }}" >{{ $homework->filename }}</a>
+                                                        </span>
                                                     </div>
 
-                                                        <div class="small">
-                                                        Instruction : {{ $homework->instruction ?? '' }}
+                                                    <div class="instruction">
+                                                        <span class="font-weight-bold">Instruction : </span>
+                                                        <span class="small">{!! $homework->instruction ?? '' !!}<span>
                                                     </div>
                                                     @else
                                                         <div class="text-center">
