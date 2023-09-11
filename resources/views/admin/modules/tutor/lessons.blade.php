@@ -194,32 +194,100 @@
 
                                             @if ($checkStatus == 'client_reserved' || $checkStatus == 'client_reserved_b' || $checkStatus == "completed" ||  
                                                     $checkStatus ==  'client_not_available' || $checkStatus ==  'tutor_cancelled')
-                                            <div id="tutor-lesson-memoBox-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                
-                                                @if ( $lessons[$dateView][$timeSlot['startTime']]['memo'] )
-                                                
-                                                    <div id="memoContainer" class="btn-container2 pt-2">
-                                                        <!-- open memo -->
-                                                        <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                            <div id="memoContent" style="display:none">
-                                                                {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
-                                                            </div>
-                                                            <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
-                                                        </a>
-                                                    </div>
 
-                                                @else
+                                            <div id="tutor-lesson-memoBox-{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}" class="text-center">
+                                               
+                                                @php 
+                                                    /* call the member*/
+
+                                                    $member = \App\Models\Member::where('user_id', $memberID)->first();
+                                                    if ($member) {
+
+                                                        $memberData = [
+                                                            'userid'    => $member->user_id,  
+                                                            'nickname'  => $member->nickname,
+                                                            'username'  => $member->user->username,                                                     
+                                                            'firstname' => $member->user->firstname,
+                                                            'lastname'  => $member->user->lastname,
+                                                            'email'     => $member->user->email,
+                                                            'image'     => url($member->image()),
+                                                            'type'      => $member->user->user_type,                                               
+                                                        ];
+
+
+                                                    }
+
+                                                    $user = Auth::user();
+                                                    
+                                                    $tutorData = [
+                                                        'userid'    => $user->id,    
+                                                        'nickname'  => "",
+                                                        'username'  => $user->username, 
+                                                        'firstname' => $user->firstname,
+                                                        'lastname'  => $user->lastname,   
+                                                        'email'     => $user->email,  
+                                                        'image'     => url($user->image()),
+                                                        'type'      => $user->user_type,
+                                                    ];
+
+
+                                                    $schedule_id  = $lessons[$dateView][$timeSlot['startTime']]['id'];
+                                                    //$startTime  = $lessons[$dateView][$timeSlot['startTime']]['startTime'];
+
+                                                    $startTime  =  $hour .":" . $minute;
+                                                   
+
+                                                    $lessonDate = $lessons[$dateView][$timeSlot['startTime']]['scheduled_at'];
+
+                                                    $lessonTime = ESILessonTimeENFormat($lessonDate ." " . $startTime );
+                                                    $duration = $lessons[$dateView][$timeSlot['startTime']]['duration'];
+                                                    $status = $lessons[$dateView][$timeSlot['startTime']]['status'];
+
+                                                    $reservationData = [
+                                                        'schedule_id'       => $schedule_id,
+                                                         'member_id'        => $memberID,
+                                                        'duration'          => $duration,
+                                                        'lesson_time'       => $lessonTime,
+                                                        'lessonTimeRage'    => LessonTimeRange($lessonTime),
+                                                        'schedule_status'   => $status
+                                                    ];
+                                                @endphp
+
+
+                                            @if ($lessons[$dateView][$timeSlot['startTime']]['memo'])
+                                                <div id="memoContainer" class="btn-container2 d-inline-block pt-1">
+                                                    <!-- open memo -->
+                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                        <div id="memoContent" style="display:none">
+                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                        </div>
+                                                        <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">  
+                                                        @if ($member->is_myroom_enabled == true) |  @endif
+                                                    </a>
+                                                </div>
+                                            @else
+                                                <div id="memoContainer" class="btn-container2 pt-1" style="display:none" >
+                                                    <!-- open memo -->
+                                                    <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
+                                                        <div id="memoContent">
+                                                            {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
+                                                        </div>
+                                                        <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">  
+                                                        @if ($member->is_myroom_enabled == true) |  @endif
+                                                    </a> 
+                                                </div>
+                                            @endif
                                                 
-                                                    <div id="memoContainer" class="btn-container2 pt-2" style="display:none" >
-                                                        <!-- open memo -->
-                                                        <a href="javascript:void()" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $lessons[$dateView][$timeSlot['startTime']]['id'] }}">
-                                                            <div id="memoContent">
-                                                             {{ $lessons[$dateView][$timeSlot['startTime']]['memo']}}
-                                                            </div>
-                                                            <img src="{{ url('images/iEmail.jpg') }}" border="0" align="absmiddle">
-                                                        </a>
-                                                    </div>
+
+                                                @if ($member)
+                                                    @if ($member->is_myroom_enabled == true) 
+                                                        <div id="myroom" class="pt-1 d-inline-block">
+                                                            <a href="{{ url('admin/webRTC?roomid='.$schedule_id) }}" class="small"> Join Room </a>  |                                                          
+                                                            <a href="javascript:void(0)" onClick="window.lessonSelectorComponent.showLessonSelectionModal('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{  json_encode($reservationData)  }}')"> Lesson</a>                                                     
+                                                        </div>
+                                                    @endif
                                                 @endif
+
                                             </div>
                                             @endif
                                         </div>
@@ -256,15 +324,14 @@
 @parent
 <style>
 #memoContainer {
-    margin-top: 7px;
-    padding-left:10px;   
+  margin: 1px;  
 }
 
 .reservation-box {
-    margin-top: 10px;
+    margin-top: 1px;
     width: 100%;
-    padding: 20px 0px 20px;    
-    height: 70px;
+    padding: 8px 0px 0px;    
+    height: 50px;
 }
 </style>
 @endsection

@@ -12,6 +12,8 @@ use App\Models\ScheduleItem;
 use App\Models\UserImage;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
+use App\Models\LessonHistory;
+
 
 use Symfony\Component\HttpFoundation\Response;
 use Auth, Gate;
@@ -23,32 +25,58 @@ class QuestionnaireController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, Tutor $tutors, Member $members)
     {
+    
+
         abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
         $items_per_page = Auth::user()->items_per_page;        
 
+        $tutorList = $tutors->getActiveTutors();
+        $memberList = $members->getActiveMembers();
+
         if (isset($request->date_from) && isset($request->date_to)) 
         {
 
-            $dateFrom = date('Y-m-d', strtotime($request['date_from']));
-            $dateTo = date('Y-m-d', strtotime($request['date_to']));            
-
+            $dateFrom = date('Y-m-d 00:00:00', strtotime($request->date_from));
+            $dateTo = date('Y-m-d 23:59:59', strtotime($request->date_to)); 
+           
             $questionnaires = Questionnaire::whereBetween('schedule_item.lesson_time', [$dateFrom, $dateTo])
-                                ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
-                                ->select('schedule_item.lesson_time', 'questionnaire.*');
-
+                ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                ->leftJoin('questionnaire_item', 'questionnaire.id', '=', 'questionnaire_item.questionnaire_id')
+                ->where(function ($query) {
+                    $query->whereNotNull('questionnaire.remarks')
+                        ->orWhereNotNull('questionnaire_item.id');
+                })
+                ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
         } else {            
-            $questionnaires = Questionnaire::orderBy('questionnaire.id', 'ASC')
-                            ->join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
-                            ->select('schedule_item.lesson_time', 'questionnaire.*');
+
+
+            $questionnaires = Questionnaire::join('schedule_item', 'questionnaire.schedule_item_id', '=', 'schedule_item.id')
+                ->leftJoin('questionnaire_item', 'questionnaire.id', '=', 'questionnaire_item.questionnaire_id')
+                ->where(function ($query) {
+                    $query->whereNotNull('questionnaire.remarks')
+                        ->orWhereNotNull('questionnaire_item.id');
+                })
+                ->select('schedule_item.lesson_time', 'questionnaire.*', 'questionnaire_item.question');
         }        
 
-        $questionnaires = $questionnaires->orderBy('schedule_item.lesson_time', 'DESC');
-        $questionnaires = $questionnaires->paginate($items_per_page);        
 
-        return view('admin.modules.questionnaires.index', compact('questionnaires'));
+        if (isset($request->memberID)) {
+            $questionnaires = $questionnaires->where('questionnaire.member_id',  $request->memberID);
+        }
+
+        if (isset($request->tutorID)) {
+            $questionnaires = $questionnaires->where('questionnaire.tutor_id',  $request->tutorID);
+        }
+
+        $questionnaires = $questionnaires->groupBy('id')->orderBy('schedule_item.lesson_time', 'DESC');
+        $questionnaires = $questionnaires->paginate($items_per_page);
+
+        
+
+        return view('admin.modules.questionnaires.index', compact('questionnaires', 'tutorList', 'memberList'));
     }
 
     /**
@@ -122,35 +150,66 @@ class QuestionnaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
+    public function show($scheduleID, LessonHistory $lessonHistory, ScheduleItem $scheduleItem) {
+
         abort_if(Gate::denies('tutor_access'), Response::HTTP_FORBIDDEN, '403 Forbidden');
 
-        $scheduleItem = ScheduleItem::find($id);
 
-        $member = Member::where('user_id', $scheduleItem->member_id)->first();
-        $userImage = UserImage::where('user_id', $member->user_id)->first();
-        
-        //Tutor
-        $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
+        //Retrieves the parent history item for a given schedule ID.
+        $lessonParentHistory = $lessonHistory->getParentHistoryItem($scheduleID);
 
-        //Questions
-        $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+        //assign the objects from the result
+        $isMerged           = $lessonParentHistory->isMerged;
+        $parentHistoryID    = $lessonParentHistory->parentHistoryID;        
+        $lessonHistory      = $lessonParentHistory->lessonHistory;
 
-        $questionnaireID =  $questionnaire->id;   
-        $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
-                            ->where('QUESTION', "QUESTION_1")->first();
+        if ($lessonHistory) 
+        {
+
+            $scheduleID = $lessonHistory->schedule_id;  
+            $lessonTimeDuration = $scheduleItem->getLessonTimeDuration($scheduleID);
        
-        $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_2")->first();
+            //find the scudule
+            $scheduleItem = ScheduleItem::find($scheduleID);
 
-        $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_3")->first();
+            $member = Member::where('user_id', $scheduleItem->member_id)->first();
+            $userImage = UserImage::where('user_id', $member->user_id)->first();
+            
+            //Tutor
+            $tutor  = Tutor::where('user_id',  $scheduleItem->tutor_id)->first();
 
-        $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
-                            ->where('QUESTION', "QUESTION_4")->first();
+            //Questions
+            $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->first();
 
-        return view('admin.modules.questionnaires.show', compact('scheduleItem', 'userImage', 'member', 'tutor', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+            $questionnaireID =  $questionnaire->id;   
+            $questionnaireItem1 = QuestionnaireItem::where('questionnaire_id',  $questionnaireID)
+                                ->where('QUESTION', "QUESTION_1")->first();
+        
+            $questionnaireItem2 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_2")->first();
+
+            $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_3")->first();
+
+            $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaireID)
+                                ->where('QUESTION', "QUESTION_4")->first();
+
+
+
+
+            return view('admin.modules.questionnaires.show', 
+                        compact('scheduleItem', 'userImage',                          
+                                'member', 'tutor', 
+                                'isMerged', 'parentHistoryID', 'lessonTimeDuration', //added
+                                'questionnaire', 'questionnaireItem1', 
+                                'questionnaireItem2', 'questionnaireItem3',
+                                'questionnaireItem4'));
+
+        } else {
+        
+            abort(403, 'No Questionnaire Found');        
+
+        }
     }
 
     /**

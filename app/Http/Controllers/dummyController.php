@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Schema as Schema;
 
-
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
+
 use App\Models\Folder;
 use App\Models\File;
 use App\Models\User;
@@ -26,12 +28,15 @@ use App\Models\TimeManagerProgress;
 use App\Models\MiniTestResult;
 use App\Models\ChatSupportHistory;
 
+
 use App;
 use Gate;
 use DB;
 use Auth;
 use Config;
 use Mail;
+use DateTime;
+
 use App\Models\LessonMailer;
 
 use App\Models\MiniTestAnswerKey;
@@ -46,6 +51,14 @@ use Carbon\Carbon;
 
 use App\Jobs\SendAutoReplyJob;
 
+use App\Models\LessonHistory;
+use App\Models\LessonSlideHistory;
+use App\Models\MemberSelectedLessonSlideMaterial;
+use App\Models\CustomTutorLessonMaterials;
+
+use App\Models\Homework;
+
+
 class dummyController extends Controller
 {
 
@@ -53,6 +66,7 @@ class dummyController extends Controller
     {
     }
 
+<<<<<<< HEAD
     public function index() {
 
         phpinfo();
@@ -84,9 +98,295 @@ class dummyController extends Controller
             dispatch($job);         
 
             echo "dispatch !";
+=======
+    public function index(Folder $folder, $memberID = 20372) {
     
+        $recentLessonHistory   = $folder->getRecentLessonHistory($memberID, "COMPLETED");
+        $folderID       = $folder->getNextFolderID($memberID);
+   
+
+
+        echo "<pre>";
+        echo ($recentLessonHistory->schedule_id);
+        echo "<BR>";
+        echo "FOLDER ID : " . $recentLessonHistory->folder_id;
+        
+        echo "</pre>";
+
+        echo "test : " . $folderID;
+
+
+
     }
 
+    
+
+
+    public function phpinfo(Request $request, Member $member, ScheduleItem $scheduleItem) {
+
+        phpinfo();
+    }
+
+
+
+    public function test_activeschedules(Request $request, Member $member, ScheduleItem $scheduleItem) {
+    
+        $memberID =  $request->memberID;
+
+        $memberInfo = $member->where('user_id', $memberID)->first();
+
+        $firstSchedule = $scheduleItem->getFirstActiveSchedule($memberInfo);
+        $isValid = $scheduleItem->isMemberValidToUpdate($memberInfo);        
+
+        if ($isValid == true) {         
+            echo "valid";
+        } else {        
+            echo "not valid";
+        }    
+    }
+
+    public function testform()
+    {
+        return view('test/test-form');
+    }    
+
+    public function processForm(Request $request)
+    {
+        // Get the POST data from the form
+        $postData = $request->input('data');
+
+        // You can perform any testing or logging of the POST data here
+        // For example, you can check the size of the data:
+        $dataSizeInBytes = strlen($postData);
+
+        // Convert bytes to kilobytes (KB)
+        $dataSizeInKB = $dataSizeInBytes / 1024;
+
+        // Optionally, you can log the data size
+        // \Log::info("Data size: $dataSize");
+
+        return redirect('/test-form')->with('success', "Form submitted successfully with $dataSizeInBytes : $dataSizeInKB ");
+    }
+
+
+    public function getParentFolders(Request $request, Folder $folder) {
+
+        $folders = $folder->getParentFolders($request->id);
+
+        foreach($folders as $folder) {
+        
+            echo $folder->id . " : " . $folder->folder_name;
+
+            echo "<BR>";
+        }
+    }
+
+    public function deleteFile(Request $request) {
+    
+    
+        $filename = '1687774925_Screenshot_from_2023-06-23_19-53-04.png';
+
+
+        if (Storage::disk('thumbnails')->exists($filename)) {
+            Storage::disk('thumbnails')->delete($filename);
+            return "File deleted.";
+        } else {
+            return "File not found.";
+        }
+
+    }
+
+
+    public function NoRatings(Request $request, LessonHistory $lessonHistory, ScheduleItem $scheduleItem) {
+
+        $noLessonRatings = $lessonHistory->getMemberLessonsWithNoRatings(Auth::user()->id);
+
+        foreach ($noLessonRatings as $noLessonRating) {
+        
+            echo "tutor ID ". $noLessonRating->tutor_id ." ";
+
+             echo " | ";
+
+            $duration= $scheduleItem->getLessonTimeDuration($noLessonRating->schedule_id);
+
+          
+            echo "Lesson ID :" . $noLessonRating->schedule_id;
+
+            echo " | ";
+
+               echo $noLessonRating->duration->startTime ." - " . $noLessonRating->duration->endTime;
+            
+         
+
+            echo "<BR>";
+        }
+
+       
+    }
+
+    public function getCompletedConsecutiveLessons(Request $request, ScheduleItem $scheduleItem) {
+
+   
+
+        $lessons             = $scheduleItem->getCompletedConsecutiveLessons($request->id);
+        $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
+
+        echo "<pre>";
+        print_r ($lessons);
+        echo "</pre>";
+        exit();
+        
+        
+
+>>>>>>> slideshow_v9
+    
+        $isLessonStarted            = true;
+        $isUserAbsent               = "false";
+        $isLessonExpired            = "false";
+        $isLessonExceedGracePeriod  = false;
+        $gracePerionInMin           = 15; //Grace Period Extion to End Time or Session Expiration
+
+        $startTime      = Carbon::createFromFormat('Y-m-d H:i:s', trim($request->startTime)); 
+        $endTime        = Carbon::createFromFormat('Y-m-d H:i:s', trim($request->endTime));
+        //$currentTime    = Carbon::now(); 
+        $currentTime    =  Carbon::createFromFormat('Y-m-d H:i:s', trim($request->currentTime));
+
+        //Format Time
+        $start      = $startTime->format('Y-m-d H:i:s');
+        $end        = $endTime->format('Y-m-d H:i:s');       
+        $current    = $currentTime->format('Y-m-d H:i:s');
+        $interval   = $currentTime->diff($start);
+
+        //Calcuate duration in milliseconds
+        $durationInMilliseconds = minutesToMilliseconds($request->duration);
+
+        /*
+        if ($startTime->format('H') === '00') {
+            // Add a day when the hours is 0
+            $newStarTime = $startTime->modify('+1 day');
+            $start = $newStarTime->format('Y-m-d H:i:s');
+        }
+
+        if ($endTime->format('H') === '00') {
+            // Add a day when the hours is 0
+            $newEndTime = $endTime->modify('+1 day');
+            $end = $newEndTime->format('Y-m-d H:i:s');
+        }   
+        */     
+
+
+        //adjust grace end period
+        $graceEnd   = Carbon::parse($end)->addMinutes($gracePerionInMin)->format('Y-m-d H:i:s');
+
+        
+
+        //Get Elapsed Time 
+        $elapsedMilliseconds    = $interval->format("%f");
+        $elapsedDays            = $interval->format("%a");
+        $elapsedHours           = $interval->format("%h");
+        $elapsedMinutes         = $interval->format("%i");
+        $elapsedSeconds         = $interval->format("%s");
+
+        //Get Total Elapsed Time in Minutes
+        $totalElapsedMinutes = ($elapsedDays * 24 * 60) +
+                            ($elapsedHours * 60) +
+                            $elapsedMinutes;
+
+
+        //Get Total Elapsed Time in Seconds
+        $totalElapsedMilliseconds = ($elapsedDays * 24 * 60 * 60 * 1000) +
+                           ($elapsedHours * 60 * 60 * 1000) +
+                           ($elapsedMinutes * 60 * 1000) +
+                           ($elapsedSeconds * 1000) +
+                           $elapsedMilliseconds;
+
+
+        $remaningLessonDurationInMilliseconds   = calculateRemainingMilliseconds($durationInMilliseconds, $totalElapsedMilliseconds);
+        $remaningLessonDurationInMinutes        = millisecondsToMinutes($remaningLessonDurationInMilliseconds);
+
+        if ($startTime > $currentTime) {
+
+            //Lesson should not start since the lesson start time is so advance
+            $success                = false;  
+            $startTimeInvalid       = true;
+            $message                = "Lesson time has not started yet";
+
+        } else if ($isLessonStarted == false && $totalElapsedMinutes >= 15) {
+
+            $success            = false;
+            $isUserAbsent       = true;
+            $message            = "User is absent, Elapsed time is 15 minutes or over";
+
+        } else if ($isLessonStarted == true && $currentTime >= $endTime) {
+        
+            if ($currentTime >= $graceEnd) {
+
+                //Lesson should not start since the lesson start time is so advance
+                $success                = false;  
+                $startTimeInvalid       = true;
+                $isLessonExpired        = true;
+               
+                $message                = "Lesson time has expired";                
+
+            } else {
+            
+                //Lesson should not start since the lesson start time is so advance
+                $success                = true;  
+                $startTimeInvalid       = true;
+             
+                $message                = "Lesson time has been given 15 min grace period to finish lesson";
+            
+            }
+
+        } else {
+        
+            $success            = true;
+           
+            $message            = "User is present, Elapsed time is $totalElapsedMinutes, which less than 15 minutes";
+            
+        }       
+
+        $test =([                    
+            'success'               => $success,
+            //Determin User Absent
+            'isLessonStarted'       => $isLessonStarted,
+            'isUserAbsent'          => $isUserAbsent,
+            'isLessonExpired'       => $isLessonExpired,                        
+            'message'               => $message,
+
+            'currentDateTime'       => $current,
+            'startTime'             => $start,
+            'endTime'               => $end,
+            'graceEnd'              => $graceEnd,
+            'durationInMin'         => $request->duration,
+            'durationInMs'          => $durationInMilliseconds,
+
+            //Get Elapsed Time
+            'elapsed'               => [
+                                        'milliseconds'   => $elapsedMilliseconds,
+                                        'days'           => $elapsedDays,
+                                        'hours'          => $elapsedHours,
+                                        'minutes'        => $elapsedMinutes,
+                                        'seconds'        => $elapsedSeconds,
+                                    ],
+
+            //Remaining Lesson Duration
+            'remaningDurationInMilliseconds'    => $remaningLessonDurationInMilliseconds,
+            'remainingDurationInMinutes'        => $remaningLessonDurationInMinutes,
+
+            //Get total Ellapsed 
+            'totalElapsedMinutes'        => $totalElapsedMinutes, 
+            'totalElapsedMilliseconds'   => $totalElapsedMilliseconds,
+        ]); 
+
+        echo "<pre>";
+        print_r ($test);
+        echo "</pre>";
+
+
+    }
+
+<<<<<<< HEAD
     public function lessons_remaining_test( Request $request, ScheduleItem $scheduleItem, Member $memberInfo) {
 
         $memberID = $request->memberID;
@@ -101,21 +401,218 @@ class dummyController extends Controller
     }
 
     public function time(ScheduleItem $scheduleItem) {
+=======
+    public function consecutiveLessons(Request $request, Folder $folder, ScheduleItem $scheduleItem) {
     
+        echo "<p>". Auth::user()->id ."</p>";
+        $scheduleID = $request->id;
+        $consecutiveSchedules = $scheduleItem->getCompletedConsecutiveLessons($scheduleID);
+        $duration = $scheduleItem->getConsecutiveLessonDuration($consecutiveSchedules);
+
+
+        echo "<pre>";
+        print_r ($duration);
+        echo "</pre>";
+        
+
+
+        echo "<pre>";
+        print_r ($consecutiveSchedules);
+        echo "</pre>";
+>>>>>>> slideshow_v9
     
-       echo date('Y-m-d H:i:s');
+    }
 
-        echo "<BR>";
 
-        echo "duration " . $scheduleItem->getCurrentTimeDuration(date('Y-m-d H:i:s'));
+    public function getFolderPages(Request $request, Folder $folder) 
+    {
+        
+        $id = $request->id;
+        $page = $request->page;
 
-        echo "<BR>duration " . $scheduleItem->getCurrentTimeDuration(date('Y-m-d 22:29:s'));
+        $itemsPerPage = 1;
 
-        echo "<BR>duration " . $scheduleItem->getCurrentTimeDuration();
+        echo $page;
+      
+        $folders = $folder->getSubFolders($id, $page, 1);
+
+        echo "folders<BR>";
+
+
+        foreach ($folders as $folder) {
+            echo $folder->id . " - " . $folder->folder_name . "<BR>" ;
+        }
+
+        echo  $folders->links();
+
+
+
+        echo "<BR><BR>";
+
+        echo "lessons<BR>";
+
+        $lessons = $folder->getFolderLessons($id, $page, 1);
+
+        echo "<pre>";
+        echo "total?";
+        print_r($lessons->total());
+
+        echo "</pre>";
+
+        foreach ($lessons as $lesson) {
+            echo $lesson->id . " - " . $lesson->folder_name . "<BR>" ;
+        }
+       
+    }
+
+    public function selectslide(Request $request, Folder $folder) 
+    {
+
+        $memberID = 148;
+        $scheduleID = $request->schedule_id;
+
+
+        echo "TEST";
+
+
+        $selectedMaterial = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+
+
+        if ($selectedMaterial) {        
+            $folderID       = $selectedMaterial->folder_id;
+        } else {        
+            $folderID       = $folder->getNextFolderID($memberID);
+        }
+
+
+
+        echo $folderID;
+
+        echo $folder->getURLSegments($folderID);
+
+
+
+
+
+     
+        
+        echo "<p> Schedule ID : " . $scheduleID ."</p>";
+        
+        $selectedMaterial = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
+
+        if (!$selectedMaterial) {
+
+            $folder = new Folder();
+
+            $recentLessonHistory = $folder->getRecentLessonHistory($memberID, "COMPLETED");
+
+
+            echo  "LESSON HISTORY ID:: (" . $recentLessonHistory->id  .") ";
+
+            echo "<br>";
+
+            echo  "RECENTLY COMPLETED FOLDER ID:: (" . $recentLessonHistory->folder_id  .") ";
+          
+           
+
+            $nextFolder = $folder->getNextFolder($recentLessonHistory->folder_id);
+
+            if ($nextFolder) {
+
+                echo "parent ? " . $nextFolder->parent_id;
+                echo "<br>";
+                echo "<br>";
+
+                echo "NEXT FOLDER ID : <B> " . $nextFolder->id ."</B>"; 
+                
+
+            } else {
+                
+                echo  "<P>PARENT FOLDER : " . $recentLessonHistory->folder_id ."</P>";
+
+                $nextParentFolder = $folder->getNextParentFolder($recentLessonHistory->folder_id);
+
+                if ($nextParentFolder) {
+
+                     dd($nextParentFolder);
+                
+                } else {
+                
+
+                    $nextParentFolder = $folder->getNextParentFolder($recentLessonHistory->folder_id, true);
+
+                    if ($nextParentFolder) {
+                    
+                          echo "NEXT Parent folder id : " .($nextParentFolder->id);
+
+                    } else {
+
+                        //FIND THE INCOMPLETE OF THIS EXISTING
+                        echo "no folder";
+
+                        return null;
+
+                    }
+                
+                }
+
+               
+            }
+
+            
+
+
+
+            echo "<pre>";
+            dd ($nextFolder);
+            echo "</pre>";
+
+        
+        
+        } else {
+        
+        
+            echo "folder found";
+        }
+
+
+        
+    }
+
+
+    public function testCustomLessonMaterials() {
+    
+
+        $folderID = 17;
+        $scheduleID = 366;
+
+
+        $files          = File::where('folder_id', $folderID)->orderBy('order_id', 'ASC')->get();
+        $customFiles = CustomTutorLessonMaterials::where('folder_id', $folderID)->where('lesson_schedule_id', $scheduleID)->get();
+
+
+        $mergedFilesArray = array_merge_recursive($customFiles->toArray(), $files->toArray());
+
+   
+
+        $mergedFiles = json_decode (json_encode ($mergedFilesArray), FALSE);
+
+
+
+        foreach ($mergedFiles as $file) {
+        
+            echo "<pre>";
+
+            print_r ($file);
+
+            
+        }
+
 
     }
 
-   public function chatHistoryTest(ChatSupportHistory $chatSupportHistory) 
+
+    public function testchat(ChatSupportHistory $chatSupportHistory) 
     {
 
             $recentUsers = $chatSupportHistory->where(function($query) 
@@ -271,7 +768,7 @@ class dummyController extends Controller
     }
 
 
-    public function test($memberID  = 21402 ) 
+    public function test_entries($memberID  = 21402 ) 
     {
 
         //start date

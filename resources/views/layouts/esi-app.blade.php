@@ -13,11 +13,11 @@
     <link rel="preconnect" href="//cdn.datatables.net" rel="preconnect" crossorigin/>
 
    <!-- Styles -->
-    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_5_8_2'  }}" as="style">
-    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_5_8_2'  }}">
+    <link rel="preload" href="{{ asset('css/app.css') .'?id=version_7'  }}" as="style">
+    <link rel="stylesheet" href="{{ asset('css/app.css') .'?id=version_7'  }}">
     
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') .'?id=version_5_8_2'  }}" defer ></script>
+    <script src="{{ asset('js/app.js') .'?id=version_7'  }}" defer ></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
@@ -32,6 +32,25 @@
 </head>
 <body class="bg-gray">
     <div id="app">
+
+        @php
+            $userImageObj = new \App\Models\UserImage;
+            $memberObj = new \App\Models\Member;
+
+            $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
+
+            if ($userImage == null) {
+                $memberProfileImage = Storage::url('user_images/noimage.jpg');
+            } else {
+                $memberProfileImage = Storage::url("$userImage->original");
+            }
+
+            $member =  $memberObj->where('user_id', Auth::user()->id)->first();
+            $nickname = $member->nickname;
+            
+            $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
+        @endphp 
+
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
 
@@ -261,56 +280,74 @@
         <main class="main-container mb-4">
             <div class="container bg-light pb-5 rounded-bottom" style="border-bottom-right-radius: 0.50rem !important; border-bottom-left-radius: 0.50rem !important;">
                 @yield('content')
+
+
+                @php
+                    $canvas_url = env('APP_CANVAS_SERVER_URL', "https://stagingchatserver.esuccess-inc.com:40001");  
+                @endphp
+       
+                <member-caller-component            
+                    :is-broadcaster="false"     
+                    :user-Info="{{  json_encode(Auth::user()) }}" 
+                    :member-Info="{{  json_encode(Auth::user()->memberInfo) }}" 
+                    user_image="{{ $memberProfileImage }}"   
+                    canvas-Server="{{$canvas_url}}"
+                    editor-ID="canvas"
+                    canvas-Width="680"
+                    canvas-Height="500"
+                    api_token="{{ Auth::user()->api_token }}" 
+                    csrf_token="{{ csrf_token() }}">
+                </member-caller-component>
+               
+
+                <lesson-selector-component
+                    :user="{{  json_encode(Auth::user()) }}" 
+                    api_token="{{ Auth::user()->api_token }}" 
+                    csrf_token="{{ csrf_token() }}">
+                </lesson-selector-component>
+
+
+
+
+                @php
+                /**
+                    <!--
+                    <member-unrated-lessons-component 
+                        :user_id="{{ Auth::user()->id  }}"  
+                        api_token="{{ Auth::user()->api_token }}" 
+                        csrf_token="{{ csrf_token() }}">
+                    </member-unrated-lessons-component>
+                    -->
+                */
+                @endphp
+                
             </div>
         </main>
 
         <div class="footer-container">
             <div class="member-floating-chat">
 
-            @php
-                $userImageObj = new \App\Models\UserImage;
-                $memberObj = new \App\Models\Member;
+                @if (Request::segment(1) == "memberschedule" || Request::segment(1) == "lesson_slides" || Request::segment(1) == "settings")
+                    <member-floating-chat-component                
+                        userid="{{ Auth::user()->id }}" 
+                        username="{{ Auth::user()->username }}"
+                        user_image="{{ $memberProfileImage }}"        
+                        nickname="{{ $nickname }}"        
+                        customer_support_image="{{ url('images/cs-profile.png') }}"        
+                        chatserver_url="{{ $chatserver_url }}"
+                        api_token="{{ Auth::user()->api_token }}"
+                        csrf_token="{{ csrf_token() }}"
+                        :show_sidebar="false"/>
+                    </member-floating-chat-component>  
+                @endif
 
-                $userImage = $userImageObj->getMemberPhotoByID(Auth::user()->id);
-
-                if ($userImage == null) {
-                    $memberProfileImage = Storage::url('user_images/noimage.jpg');
-                } else {
-                    $memberProfileImage = Storage::url("$userImage->original");
-                }
-
-                $member =  $memberObj->where('user_id', Auth::user()->id)->first();
-                $nickname = $member->nickname;
-                
-                $chatserver_url = env('APP_CHATSERVER_URL', 'https://chatserver.mytutor-jpn.info:30001');
-            @endphp 
-
-           
-
-            @if (Request::segment(1) == "memberschedule")
-
-            <member-floating-chat-component                
-                userid="{{ Auth::user()->id }}" 
-                username="{{ Auth::user()->username }}"
-                user_image="{{ $memberProfileImage }}"        
-                nickname="{{ $nickname }}"        
-                customer_support_image="{{ url('images/cs-profile.png') }}"        
-                chatserver_url="{{ $chatserver_url }}"
-                api_token="{{ Auth::user()->api_token }}"
-                csrf_token="{{ csrf_token() }}"
-                :show_sidebar="false"
-            >
-            </member-floating-chat-component>  
-
-            @endif
-
-
-                   
             </div>
         </div>
         
 
     </div>
+
+    
 
     <script type="text/javascript">
         window.addEventListener('load', function () 
@@ -327,6 +364,8 @@
             })
 
         });
+  
+
 
         function newPopup(url) {
             popupWindow = window.open(url,'popUpWindow','height=500,width=700,left=0,top=0,resizable=yes,scrollbars=yes,toolbar=no,menubar=no,location=no,directories=no,status=yes')
@@ -633,10 +672,7 @@
 
     
 
-        function sendMemberReply(scheduleID, message) 
-        {
-            console.log(scheduleID, message);
-
+        function sendMemberReply(scheduleID, message) {
             $.ajax({         
                 type: 'POST',
                 dataType: 'json',
@@ -661,12 +697,9 @@
                 {
                     let teacherProfileImage = $('#memberProfile').html();
                     let date = data.date;
-                    console.log(date);
-
                     addMemberReplyBubble(teacherProfileImage, data) 
                 },
-            });
-                    
+            });                    
         }
 
         function getUnreadTeacherMessages(scheduleID) 
@@ -693,8 +726,7 @@
                 success: function(data) 
                 {
                     let replies = data.conversations;
-                    replies.forEach(createReplyBubble);             
-                    console.log(data.message)
+                    replies.forEach(createReplyBubble);                                 
                 },
             });
         }
@@ -726,10 +758,10 @@
                 {
                     $("#total_unread_message").text("("+ data.unread + ")");
 
-                    $( ".dropdown-menu" ).children().remove();                    
+                    $( ".member-inbox .dropdown-menu" ).children().remove();                    
                     
                     if (data.inboxCount == 0){                                             
-                        $( ".dropdown-menu" ).append(noInbox); 
+                        $( ".member-inbox .dropdown-menu" ).append(noInbox); 
                     } else {
                         let inbox = data.inbox;
                         inbox.forEach(updateInboxList);
@@ -773,7 +805,7 @@
 
             let rowend = "</div>";                    
 
-            $( ".dropdown-menu" ).append(row + col1 + col2 + rowend); 
+            $( ".member-inbox .dropdown-menu" ).append(row + col1 + col2 + rowend); 
             
         }
 

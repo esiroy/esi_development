@@ -65,6 +65,13 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
         ],
 
+        'thumbnails' => [
+            'driver' => 'local',
+            'root' => public_path('storage/uploads/folder_thumbnails'),
+            'url' => env('APP_URL').'storage/uploads/folder_thumbnails',
+            'visibility' => 'public',
+        ],        
+
     ],
 
     /*

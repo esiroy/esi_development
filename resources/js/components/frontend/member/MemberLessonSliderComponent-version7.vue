@@ -1,0 +1,3284 @@
+<template>
+    <div class="main-component-holder">
+
+
+        <nav class="navbar navbar-expand-md navbar-light shadow-sm bg-darkblue">
+
+            <div class="container-fluid">
+                <ul class="navbar-nav mr-auto">
+                    <li class="pr-4" v-if="this.$props.is_broadcaster == true">                        
+                        <a class="navbar-brand" href="/admin"><i class="fas fa-home fa-2x text-white"></i></a>
+                    </li>
+                    <li class="pr-4" v-if="this.$props.is_broadcaster == false">                        
+                        <a class="navbar-brand" href="/"><i class="fas fa-home fa-2x text-white"></i></a>
+                    </li>
+                    
+                </ul>              
+               
+             
+                <!--[start]right navigation -->
+                <ul class="navbar-nav">
+
+                    <audio id="alarmAudio">
+                        <source src="" type="audio/mp3">
+                    </audio>
+                    
+                 
+                    <li class="pr-4 pt-2" id="memberTimerButtonContainer" v-if="this.$props.is_broadcaster == true && this.$props.is_lesson_completed == false">
+                        <button id="memberTimerButton" class="btn btn-md btn-success small" @click="showTimerControlModal()">
+                            <b-icon icon="alarm" aria-hidden="true"></b-icon> 
+                            <span class="small">Set Countdown Timer</span>
+                        </button>
+                    </li>                    
+                   
+
+                    <li class="pr-4" id="memberTimerContainer">
+                        <div class="badge d-flex align-items-center border rounded-pill" v-if="this.$props.is_lesson_completed == false">
+                            <span id="memberTimer" class="text-white font-weight-bold h4 mt-2 px-3" >
+                                0:00
+                            </span>  
+                        </div>                            
+                    </li>                    
+
+
+              
+                    <li class="pr-2" v-if="this.$props.is_broadcaster == false">
+                        <a class="navbar-brand" href="#" @click="openFloatinChatBox">
+                            <i class="fas fa-headset  fa-2x text-white"></i>
+                        </a>
+                    </li>
+                  
+
+                    <li class="pr-4 pt-2" id="countDownTimerContainer">
+                        <span class="text-white font-weight-bold h2 mt-3" id="countDownTimer"></span>                       
+                    </li>
+
+    
+                    <li class="pr-4 pt-2" id="startSessionContainer" v-if="this.$props.is_broadcaster == true">
+                        <button id="startSession" class="btn btn-md btn-success small" @click="startSession()">                                
+                            <b-icon icon="play" aria-hidden="true"></b-icon> 
+                            <span class="small">Start Session</span>
+                        </button>
+                    </li>
+                     
+                       
+
+                    <li class="pr-4 pt-2" id="endSessionContainer" style="display:none" v-if="this.$props.is_broadcaster == true">
+                        <button class="btn btn-sm">
+                            <i class="fas fa-sign-in-alt fa-2x text-white" @click="endSession()"></i>    
+                        </button>
+                    </li>        
+                </ul>
+                <!--[end] right navigation-->
+
+
+            </div>
+        </nav>
+
+
+        <TutorSessionInvitePopUpComponent 
+            ref="TutorSessionInvite" 
+            :reservation="this.$props.reservation" 
+            :lesson_history="this.lesson_history" 
+            :is_broadcaster="this.$props.is_broadcaster" 
+            :api_token="this.api_token" 
+            :csrf_token="this.csrf_token"/>
+
+
+        <MemberConsecutiveLessons 
+            ref="MemberConsecutiveLessons"
+            :consecitive_lesson="consecutiveSchedules"
+            :api_token="this.api_token" 
+            :csrf_token="this.csrf_token"/>
+
+
+
+        <div id="satisfactionSurveyContainer">
+            <SatisfactionSurveyComponent 
+            ref="satisfactionSurvey" 
+            :folder_id="this.$props.folder_id" 
+            :is-broadcaster="this.$props.is_broadcaster" 
+            :api_token="this.api_token" 
+            :csrf_token="this.csrf_token"/>            
+        </div>
+
+
+        <div id="memberFeebackComponentContainer">
+            <!-- Teacher will be viewing this "Member feeback" -->
+            <MemberFeebackComponent ref="memberFeedback" :user_info="this.$props.user_info" :reservation="this.$props.reservation" :api_token="this.api_token" :csrf_token="this.csrf_token" />
+        </div>
+
+
+        
+        <MemberLessonTimerComponent ref="MemberLessonTimer" :api_token="this.api_token" :csrf_token="this.csrf_token"/>
+      
+        <div id="slideSelectorContainer" v-if="is_broadcaster == true">
+            <SlideSelectorComponent
+                ref="slideSelector" 
+                :reservation="this.reservation"
+                :folder_id="this.$props.folder_id"
+                :is-broadcaster="this.$props.is_broadcaster"
+                :api_token="this.api_token" 
+                :csrf_token="this.csrf_token"
+            >
+            </SlideSelectorComponent>
+        </div>
+
+
+
+        <div v-if="this.$props.is_lesson_completed == true"> 
+            is lesson completed    
+            <div class="">{{ this.$props.lesson_history }}</div>
+        </div>
+        
+        <div v-else-if="this.$props.is_lesson_completed == false"> 
+
+            <div id="component-container" v-show="sessionActive">
+
+                Lesson commencing (NOT COMPLETE)  
+
+            <!--[start] toolbox -->
+            <div id="toolbox" v-show="this.$props.is_broadcaster == true">
+                <div class="tool-container">
+
+                    <!-- [START] TOOL WRAPPER -->
+                    <div class="tool-wrapper" >
+
+                        <!--
+                        <div :class="['tool', (isUndo) ? 'active' : 'text-white']"  @click="activateUndo">
+                            <i class="fas fa-undo-alt" ></i>                                
+                        </div> 
+
+                        <div :class="['tool', (isRedo) ? 'active' : 'text-white']"  @click="activateRedo">
+                            <i class="fas fa-redo-alt" ></i>                                
+                        </div> 
+                        -->
+
+                        <div :class="['tool', (isZoomIn) ? 'active' : '']"  @click="activateZoomIn">                               
+                            <i class="fa fa-search-plus text-white" aria-hidden="true"></i>
+                        </div>     
+
+                        <div :class="['tool', (isZoomOut) ? 'active' : '']"  @click="activateZoomOut">                               
+                            <i class="fa fa-search-minus text-white" aria-hidden="true"></i>
+                        </div>     
+
+
+                        <div :class="['tool', (isSelector) ? 'active' : '']" @click="activateSelector">
+                            <i class="fa fa-mouse-pointer text-white" aria-hidden="true" ></i>
+                        </div>
+                        
+                        <div :class="['tool', (isText) ? 'active' : '']" @click="activateTextEditor">
+                            <i class="fa fa-font text-white" aria-hidden="true"></i>
+                        </div>
+
+
+                        <div :class="['tool', (isDragger) ? 'active' : '']" @click="activateDragger">
+                            <i class="fa fa-hand-paper text-white"></i>
+                        </div>
+
+
+                        <div :class="['tool', (isPencil) ? 'active' : '']"  @click="activatePencil">
+                            <i class="fa fa-pen text-white" aria-hidden="true" ></i>
+                        </div>                    
+                        <div :class="['tool', (isBrush) ? 'active' : '']"  @click="activateBrush">
+                            <i class="fa fa-paint-brush text-white" aria-hidden="true" ></i>  
+                        </div>                        
+                
+                        <div :class="['tool', (isLine) ? 'active' : '']"  @click="activateLine">
+                            <i class="fa fa-minus text-white" aria-hidden="true"></i>
+                        </div>        
+
+                        <div :class="['tool', (isCircle) ? 'active' : 'text-white']"  @click="activateCircle">
+                            <b-icon icon="circle " font-scale="1"> </b-icon>
+                        </div> 
+                    </div>
+                    <!-- [END] TOOL WRAPPER -->
+
+                    <!-- ADDITIONAL OPTIONS -->
+                    <div class="tool-wrapper">
+
+                        <div class="tool">
+                            <b-form-input type="color" v-model="brushColor" @change="changeColor" class="color-button"></b-form-input>
+                        </div>             
+                    
+                        <!-- Strokes-->
+                        <div class="tool" data-target="#brushStrokes"  data-toggle="collapse"  v-show="isBrush || isLine || isCircle">
+                            <b-icon icon="border-width" font-scale="1" style="border:0px"> </b-icon>  
+                            <div id="brushStrokes" class="collapse" style="z-index:9999">
+                                <div class="brushes-container">
+                                    <div class="brushes">
+                                        <button type="button" value="5" :class="['tool brush', (stroke == 5) ? 'active' : '']"  @click="setBrushStroke(1, 5)"></button>
+                                        <button type="button" value="10" :class="['tool brush', (stroke == 10) ? 'active' : '']"  @click="setBrushStroke(1, 10)"></button>
+                                        <button type="button" value="15" :class="['tool brush', (stroke == 15) ? 'active' : '']"  @click="setBrushStroke(1, 15)"></button>
+                                        <button type="button" value="25" :class="['tool brush', (stroke == 25) ? 'active' : '']"  @click="setBrushStroke(1, 25)"></button>
+                                        <button type="button" value="30" :class="['tool brush', (stroke == 30) ? 'active' : '']"  @click="setBrushStroke(1, 30)"></button>
+                                    </div> 
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+                </div>
+            </div>
+            <!--[end] toolbox -->
+
+            <!-- ********** [START] Lesson Slides *************-->
+
+            <div id="lessonSharedContainer"></div>
+
+            <div id="lessonSlide" class="left-container mb-2"> 
+
+                <!--[start] slide selector for broadcaster -->
+                <div id="slideSelectorContainer" class="d-inline-block">
+                    <button type="button" @click="selectSlides" v-show="this.$props.is_broadcaster == true">
+                        <b-icon icon="images" aria-hidden="true"></b-icon>
+                    </button>
+                </div>
+                <!--[end] slide selector for broadcaster -->
+
+                <!--[start] breadcrumb -->
+                <nav aria-label="breadcrumb" class="d-inline-block">
+
+                    <ol class="breadcrumb bg-transparent my-2 p-0" v-if="segments">
+                        <li class="breadcrumb-item" aria-current="page">Home</li>
+                        <li class="breadcrumb-item" v-for="segment in segments" :key="segment">
+                        {{ segment }}
+                        </li>                    
+                    </ol>
+
+                    <ol class="breadcrumb bg-transparent my-2 p-0" v-else>
+                        <li class="breadcrumb-item text-danger" aria-current="page">No Lesson Selected</li>
+                    </ol>
+
+                </nav>
+                <!--[end] breadcrumb -->
+
+
+                <!--[start] slide controls -->
+                <div class="slide-controls d-inline-block" v-if="segments">                  
+                    <div class="buttons-container">
+                        <div class="d-flex justify-content-center">
+                            <div id="prev" class="tool" @click="prevSlide(true)" v-show="this.$props.is_broadcaster == true">
+                                <i class="fa fa-backward" aria-hidden="true"></i>
+                            </div>
+                            <div id="slideInfo" class="tool font-weight-strong" style="width:150px">
+                                <div v-show="this.$props.is_broadcaster == true">
+                                    Slide {{ this.currentSlide }} of {{ this.slides }}
+                                </div>
+                                <div v-show="this.$props.is_broadcaster == false">
+                                    Slide {{ this.viewerCurrentSlide }} of {{ this.slides }}
+                                </div>
+                            </div>
+                            <div id="next" class="tool" @click="nextSlide(true)" v-show="this.$props.is_broadcaster == true">
+                                <i class="fa fa-forward" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--[end] slide controls -->
+
+
+                <div id="audio-container" class="d-inline-block" v-if="segments">
+                    <AudioPlayerComponent ref="audioPlayer" :is-broadcaster="this.$props.is_broadcaster"></AudioPlayerComponent>
+                    <div id="newSlideButton" class="tool d-inline-block" @click="prepareNewSlide" >
+                        <i class="far fa-file-alt" v-if="this.$props.is_broadcaster == true"></i>
+                    </div>
+                    <SlideUploaderComponent 
+                        ref="slideUploader" 
+                        :reservation="this.$props.reservation"
+                        :folder_id="this.$props.folder_id"
+                        :is-broadcaster="this.$props.is_broadcaster"
+                        :api_token="this.api_token" 
+                        :csrf_token="this.csrf_token"
+                    >
+                    </SlideUploaderComponent>
+                </div>
+                
+                <div id="slide-container"></div>
+            </div>
+            <!--********** [END] Lesson Slides *************-->
+
+            <b-modal
+                id="modalAddInputText"
+                ref="modalAddInputText"
+                title="Add Text"
+                @show="resetInputTextModal" 
+                @hidden="resetInputTextModal"
+                @ok="addInputText">
+                <form ref="form" @submit.stop.prevent="handleSubmit"> 
+                    <b-form-group label="Text" label-for="textInput" invalid-feedback="Text is required">
+                        <b-form-input id="textInput" v-model="inputText" required></b-form-input>
+                    </b-form-group>
+                </form>
+            </b-modal>   
+
+                <div class="">{{ this.$props.lesson_history }}</div>
+
+                <TutorSlideNotesComponent ref="TutorSlideNotes" 
+                v-if="this.$props.is_broadcaster == true" 
+                
+                :api_token="this.api_token"
+                :csrf_token="this.csrf_token"/>
+
+            </div>
+            
+
+        </div>
+
+
+
+        <div v-if="this.$props.is_broadcaster == false">
+            <MemberFloatingChat
+                ref="memberFloatingChat" 
+                :userid="''+this.user_info.id+''" 
+                :username="this.user_info.username"
+                :user_image="this.user_image"        
+                :nickname="this.user_info.firstname"        
+                :customer_support_image="'images/cs-profile.png'"
+                :chatserver_url="this.chatserver_url"
+                :api_token="this.api_token" 
+                :csrf_token="this.csrf_token"
+                :show_sidebar="false"
+            >
+            </MemberFloatingChat>
+        </div>
+
+
+    </div>
+
+    
+
+</template>
+
+
+<script>
+import MemberLessonTimerComponent from './MemberLessonTimerComponent.vue'
+import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue'
+import SlideSelectorComponent from './SlideSelectorComponent.vue'
+import AudioPlayerComponent from './AudioPlayerComponent.vue'
+import TutorSessionInvitePopUpComponent from './TutorSessionInvitePopUpComponent.vue'
+import MemberFloatingChat from '../chat/MemberFloatingChatComponent.vue'
+import MemberConsecutiveLessons from './MemberConsecutiveLessonsComponent.vue'
+
+//Uploader
+import SlideUploaderComponent from './SlideUploaderComponent.vue'
+//Feedback
+import MemberFeebackComponent from './MemberFeebackComponent.vue'
+import SatisfactionSurveyComponent from './SatisfactionSurveyComponent.vue'
+
+import {fabric} from "fabric";
+import io from "socket.io-client";
+
+export default {
+    name: "lessonSliderComponent",
+    components: { 
+        TutorSessionInvitePopUpComponent, TutorSlideNotesComponent, SlideSelectorComponent, 
+        AudioPlayerComponent, SlideUploaderComponent, SatisfactionSurveyComponent, MemberFeebackComponent,
+        MemberFloatingChat, MemberLessonTimerComponent, MemberConsecutiveLessons
+    },
+    props: {
+
+        chatserver_url: String, //This will fire chat server on webRTC page
+
+
+        csrf_token: String,		
+        api_token: String,
+        reservation: Object,       
+        user_image: String,
+
+        lesson_history: Object,    
+
+        is_lesson_completed: Boolean,
+
+        lesson_completed: Object,   
+
+        feedback_completed: {
+            type: [Boolean],
+            required: true        
+        },   
+
+        is_broadcaster: {
+            type: [Boolean],
+            required: true        
+        },   
+        folder_id: {
+            type: [String, Number],
+            required: true        
+        },    
+
+        editor_id: {
+            type: String,
+            default: "canvas",
+            required: false
+        },           
+        webrtc_server: {
+            type: [String],
+            required: true         
+        },
+        canvas_server: {
+            type: [String],
+            required: true        
+        },    
+        channelid: {            
+            type: [String, Number],
+            required: true
+        },
+        user_info: {
+            type: [Object, String],
+            required: true
+        },        
+        member_info: {
+            type: [Object, String],
+            required: true
+        },
+        recipient_info: {
+            type: [Object, String],
+            required: true
+        },        
+        canvas_width: {
+            type: [String, Number],
+            required: true
+        },
+        canvas_height: {
+            type: [String, Number],
+            required: true
+        }
+    },
+    data() 
+    {
+        return {
+
+            consecutiveSchedules: [],
+
+            lessonStatusMessage: null,
+
+            isMemberTimerStarted: false,
+            memberTimerInterval: false,
+            memberCountdownTimer: 3,
+
+            sessionActive: true,
+            isExpiredSession: false,
+            isNoShow: false,
+            //socket
+            socket: null,
+
+      
+            //loader
+            isLoading: false,
+
+            //uri segments
+            segments:  [],
+
+
+            //Audio
+
+            audoFiles: [],            
+
+            //history
+            undoCtr: 0,
+            redoCtr: 0,
+            historyCounter: 0,
+
+            //panning
+            panning: false,
+            isDraggerMouseDown: false,            
+            offsetX: 0,
+            offsetY: 0,
+            startX: 0,
+            startY: 0,
+            netPanningX: 0,
+            netPanningY: 0,
+            delta: null,
+
+            canvas: [],
+            canvasMirror: null,
+
+            //slides
+            currentSlide: 1,
+            viewerCurrentSlide: 1,
+
+            slides: 0,
+            lesson_slides_materials: [],
+
+            //Modes
+            isUndo: false,
+            isRedo: false,
+
+            isSelector: false,
+            isDragger: false,           
+            isTextEditing: false,
+
+            //Tools
+             isText: false,
+            isBrush: false, 
+            isPencil: false,
+            isCircle: false,
+            isZoomIn: false,
+            isZoomOut: false,
+
+            //Action
+            isDrawing: false,
+            isDrawingLine:false,            
+            isDrawingCircle:false, 
+
+            //Line
+            isLine: false,
+            Line: null,
+            
+            history: [],
+            currentSlide: 1,          
+
+            //brush
+            stroke: 5,
+            brushColor: '#000000',
+
+            //input text
+           
+            inputText: "",
+
+            //mouseX
+            mouseX: 0,
+            mouseY: 0,
+
+            //original set mouseX
+            originX: 0,
+            originY: 0,
+
+
+            colorPreviewStyle:{
+                backgroundColor: "#000" 
+            },
+
+            myIntervalTimer: null,
+            timerSpeed: 1000,
+            timer: 1800, //30 minutes = 1800
+            resetTimerValue: 1800, //Same as timer (this will be not used as a countdown, this will be use to reset value)
+            isTimerStarted: false, // determine if the timer started to avoid multipe start of timer
+
+     
+            imageURL: [],
+
+            //currentID 
+            currentFolderID: null,
+
+
+            //if user select new folder and or background image
+            newFolderID: null,
+            newBackgroundImage: null,
+
+         
+            files: null,
+
+            //current user for pingack
+            user: null,
+
+            expiredLessonDate: null,
+            specificDate: null,
+            currentDate: null,
+
+           
+        };
+    },
+    created() {
+        document.onreadystatechange = () => {
+        
+            if (document.readyState == "complete") {
+                if (this.isExpiredSession == false) {
+                    this.getSlideMaterials(this.reservation);
+                } else {
+                    this.stopTimer();     
+                    this.disableSession();
+                    $("#destroy-session-media").trigger("click");
+                }            
+            }
+        }
+    },
+    mounted() {
+
+
+
+        this.socket = io.connect(this.$props.canvas_server);
+        window.lessonSliderComponent = this;
+
+        //register as currently active users can see ONLINE  status
+        this.user = {
+            userid: this.member_info.user_id ,
+            nickname: this.user_info.firstname,            
+            username: this.user_info.username,     
+            firstname: this.user_info.firstname,    
+            lastname: this.user_info.lastname,               
+            channelid: this.channelid,
+            status: "ONLINE",
+            type: this.user_info.user_type, 
+            image:   this.$props.user_image  
+        }
+
+
+
+        this.socket.emit('REGISTER', this.user); 
+
+
+        this.socket.on('update_user_list', users => {
+            this.updateUserList(users); 
+        });   
+        
+        this.customSelectorBounds(fabric);
+
+
+
+        this.socket.on("START_MEMBER_TIMER", (data) =>  {
+            if (this.$props.is_broadcaster == false) {
+                this.$refs['MemberLessonTimer'].setTimeRemaining(data.timeRemaining);
+                this.$refs['MemberLessonTimer'].startCountdown(); 
+            }
+        });
+
+        this.socket.on("STOP_MEMBER_TIMER", (data) =>  {
+            if (this.$props.is_broadcaster == false) {
+                this.$refs['MemberLessonTimer'].stopCountdown(); 
+            }
+        });
+
+        this.socket.on("GOTO_SLIDE", (data) =>  {
+            if (this.$refs['audioPlayer']) {
+                this.$refs['audioPlayer'].resetAudioIndex();
+            }
+            
+            this.viewerCurrentSlide = data.num
+            this.currentSlide = data.num;
+            this.goToSlide(data.num);            
+        });
+
+        
+        this.socket.on("CREATE_NEW_SLIDE", (data) => 
+        {
+            if (this.$props.is_lesson_completed == false) {      
+
+
+                if (this.$props.is_broadcaster == false) 
+                {
+                    this.slides = data.slidesCount;
+                    this.createNewSlide();
+                    if (data.backgroundURL) {
+                        this.setSlideBackgroundImage(this.currentSlide, data.backgroundURL);
+                    }                
+                    this.$forceUpdate();     
+                }
+
+            } else {
+            
+                //@todo: alert(user)
+            }
+
+        });
+
+
+        this.socket.on('UPDATE_DRAWING', (response) => {
+
+            if (this.currentSlide !== response.currentSlide) {
+                this.viewerCurrentSlide = response.currentSlide;
+            }
+
+            try {
+                this.canvas[this.currentSlide].setZoom(response.canvasZoom);   
+                this.canvas[this.currentSlide].requestRenderAll();                 
+            } catch (error) {
+                console.log("canvas setZoom errror", error);
+            }
+
+
+            if (response.sender.userid !== this.user_info.id ) 
+            {
+                try {
+                    let curLen = this.canvas[this.currentSlide]._objects.length;
+                    let incLen = response.canvasData.objects.length;
+
+
+                    if (response.canvasDelta !== null) {
+                        this.canvas[this.currentSlide].relativePan(response.canvasDelta);
+                    }
+
+                    if (response.canvasData.objects.length >= 1) { 
+
+                        if (curLen !== incLen) {                        
+                             this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);       
+                        } else {
+
+                            console.log("updating via drag select tool")
+                            this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);  
+                        }                         
+                        
+                    } else {
+                        console.log("there is no drawing detected")       
+
+                         this.updateCanvas(this.canvas[this.currentSlide], response.canvasData);                    
+                    }
+                    
+                } catch (error) {
+                    console.log("canvas errror", error);
+                }
+            } 
+        });        
+        
+
+        this.$root.$on('startMemberTimer', (timeRemaining) => {        
+            if (this.$props.is_broadcaster == true) {
+                this.socket.emit('START_MEMBER_TIMER', {
+                    'channelid': this.channelid,
+                    'timeRemaining': timeRemaining
+                });
+            }
+        });
+
+        this.$root.$on('stoptMemberTimer', (timeRemaining) => {        
+            if (this.$props.is_broadcaster == true) {
+                this.socket.emit('STOP_MEMBER_TIMER', {
+                    'channelid': this.channelid,
+                    'timeRemaining': timeRemaining
+                });
+            }
+        });
+
+        this.$root.$on('playAlarmAudio', (alarmAudio) => {
+            this.playAlarmAudio(alarmAudio);
+        });
+
+
+        /* TUTOR NEW SLIDE ACTINS */
+        this.socket.on('TUTOR_SELECTED_NEW_SLIDES', (response) => 
+        {
+            try {
+                if (this.$props.is_broadcaster == false) {   
+                    this.openNewSlideMaterials();
+                }
+            } catch (error) {
+                console.log("Error, tutor can't select new slide ", error);
+            }
+        });
+
+        this.$root.$on('openCustomerSupport', () => {
+            this.$refs['TutorSessionInvite'].hideWaitingListModal();
+            this.openFloatinChatBox();
+        });
+
+
+
+        /****************AUDIO ACTIONS CONTROLLER (Broadcaster) **************** */
+        this.$root.$on('playAudio', (index) => {
+            if (this.$props.is_broadcaster == true) {
+                this.socket.emit('PLAY_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                });
+            } 
+        });
+
+        this.$root.$on('goToAudio', (index) => {
+            if (this.$props.is_broadcaster == true) {
+                this.socket.emit('GOTO_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                });
+            } 
+        });
+
+        this.$root.$on('pauseAudio', (index) => {
+            if (this.$props.is_broadcaster == true) {
+                this.socket.emit('PAUSE_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                });
+            } 
+        });
+                        
+        this.$root.$on('nextAudio', (index) => {
+            if (this.$props.is_broadcaster) {
+                this.socket.emit('NEXT_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                }); 
+            }
+        });
+
+        this.$root.$on('prevAudio', (index) => {
+            if (this.$props.is_broadcaster) {
+                this.socket.emit('PREV_AUDIO', {
+                    'channelid': this.channelid,
+                    'index':index
+                }); 
+            }
+        });
+
+        this.$root.$on('seekAudio', (data) => {
+            if (this.$props.is_broadcaster) {
+                this.socket.emit('SEEK_AUDIO', {
+                    'channelid': this.channelid,
+                    'trackTime': data.trackTime,
+                    'index': data.index
+                }); 
+            }
+        });
+
+
+        /*************** AUDIO SOCKET CONTROLLER (RECEIVER ONLY) ****************/
+        this.socket.on('PLAY_AUDIO', (response) => {
+            if (this.$props.is_broadcaster == false) {
+               this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index);  
+            }
+        });
+
+        this.socket.on('GOTO_AUDIO', (response) => {
+            if (this.$props.is_broadcaster == false) {                
+                this.$refs['audioPlayer'].gotoAndPlayClientAudio(response.index); 
+            }
+        });
+
+        this.socket.on('PAUSE_AUDIO', (response) => {
+            if (this.$props.is_broadcaster == false) {
+                this.$refs['audioPlayer'].stopAudio();       
+            }
+        });
+
+        this.socket.on('NEXT_AUDIO', (response) => {
+            if (this.$props.is_broadcaster == false) {
+                 this.$refs['audioPlayer'].goToAudio(response.index);       
+            }
+        });
+
+        this.socket.on('PREV_AUDIO', (response) => {           
+            if (this.$props.is_broadcaster == false) {
+                 this.$refs['audioPlayer'].goToAudio(response.index);
+            }
+        });
+
+        this.socket.on('SEEK_AUDIO', (response) => {           
+            if (this.$props.is_broadcaster == false) {
+               this.$refs['audioPlayer'].updateAudioTrackTime(response.trackTime);
+            }
+        });        
+
+
+        /*  TAB EVENT FOCUS LISTNERS
+        window.addEventListener('focus', () => {
+            console.log("window has focus")
+            this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
+        });
+
+
+        window.addEventListener('blur',  () => {
+            console.log("window lost focus")
+        });
+
+        if (document.hasFocus()) {
+            console.log("Window is active");
+        } else {
+            console.log("Window is not active");
+        }
+        */
+
+
+
+        /*************** SESSION HANDLERS ****************/
+       
+        //CALL THE MEMBER ON LOAD
+        if (this.$props.is_broadcaster == true) {   
+
+
+            let data = {
+                recipient       :   this.recipient_info,    //recipient 
+                caller          :   this.user,     //caller (is always member info since it)
+                reservationData :   this.reservation
+            }
+
+            /* CHECK THE SESSION */
+
+            this.checkExpiredSession();
+
+            if (this.isNoShow == false && this.isExpiredSession == false) {
+
+                if (this.$props.is_lesson_completed == true) {
+
+                    this.showRatingOptions();
+                    
+
+                } else {
+
+                    this.showConsecutiveSchedule();
+                 
+                    
+                    //CALL THE USER
+                    console.log("emit call user ", data);
+
+                    this.socket.emit('CALL_USER',  data); 
+
+
+                    /*************** NEW - VERSION 6 ***************/
+                    
+                    //@todo: wait 5 seconds and do another call if not accepted     
+
+                }
+
+            } else if (this.isNoShow == true) {
+
+                /* Student did not show after 15 minutes and the lesson is less than 30 minutes */
+
+                this.sessionActive = false;
+                this.hideTimer();  
+                this.hideEndSessionButton();
+                this.destroySessionMedia();
+
+
+            } else if (this.isExpiredSession == true) {
+
+                /*********** EXPIRED SESSSION ********** */
+                if (this.$props.is_lesson_complete == true) 
+                {                
+                   
+                    console.log("lesson completed");
+                    //this.endSession();
+                    //this.hideEndSessionButton();
+                    //this.destroySessionMedia();
+
+                } else {
+
+                    console.log("lesson has  15 minute overdue - (tigger) [endSession])");
+
+                    this.endSession();
+                    this.hideEndSessionButton();
+                    this.destroySessionMedia();                   
+                }
+            }
+
+        } else {        
+
+            //MEMBER WILL DIRECTLY SHOW WAITING LIST NO MORE CALLING USER MODAL TO SHOW
+            console.log("session active?", this.sessionActive);
+
+            if (this.$props.is_lesson_complete == true) {
+
+                console.log("lesson is complete! ")
+
+            } else {
+
+                console.log("lesson is not complete! ", this.$props.is_lesson_complete )
+
+                this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+
+            }
+
+
+            //close chat box
+            this.closeFloatingChatIcon();
+        }
+
+        this.$root.$on('redialUser', (response) => {
+
+            console.log(response, data, "redial user fired");      
+
+            let data = {
+                recipient       :   this.recipient_info,    //recipient 
+                caller          :   this.user,     //caller (is always member info since it)
+                reservationData :   this.reservation
+            }
+
+            if (this.isNoShow == false) {
+                this.socket.emit('CALL_USER',  data); 
+            } else {
+                console.log("I will not re-dial, since the user is a no show, we will wait for a manual call to action from the teacher moving forward")
+            }
+
+        }); 
+
+        this.socket.on("CALL_USER_PINGBACK", (userData) => {
+
+            console.log("call pingback recieved", userData);
+
+        
+           if (this.isNoShow == false) {
+                this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                this.$refs['TutorSessionInvite'].showWaitingListModal(); 
+                this.$refs['TutorSessionInvite'].stopRedialTimer(); 
+           } else {
+               // alert ("no show!")
+
+               console.log("no show, we will not hide caller or particpants waiting modal")
+           }
+        });
+
+
+     
+
+
+        /****************USER JOINED ******************* */
+        if (this.$props.is_lesson_completed == true) {
+
+            console.log("session completed");
+
+
+        } else {
+
+            console.log("join sesion fired!");
+
+            this.socket.emit('JOIN_SESSION', this.user); 
+        }
+
+
+        this.socket.on('JOIN_SESSION', (userData) => {
+
+             if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {
+
+                this.$refs['TutorSessionInvite'].addParticipants(userData); 
+
+                /*************** NEW - VERSION 6  PING BACK ***************/
+                this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
+
+             } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
+
+                this.$refs['TutorSessionInvite'].addParticipants(userData); 
+
+                /*************** NEW - VERSION 6  PING BACK ***************/
+                this.socket.emit('JOIN_SESSION_PINGBACK', this.user); 
+             }
+
+        });
+        
+
+        this.socket.on('JOIN_SESSION_PINGBACK', (userData) => {
+
+            if (this.$props.is_lesson_completed == true) {
+                return false;
+            }
+
+            if (this.$props.is_broadcaster == true && userData.type == "MEMBER") {  
+
+                if (this.lesson_history == null) {
+
+                    this.checkExpiredSession();
+
+                    if (this.isExpiredSession == false)
+                    {
+                        //this.$refs['TutorSessionInvite'].showCallUserModal(); 
+                        this.$refs['TutorSessionInvite'].addParticipants(userData)
+                        
+                    } else {
+
+                        alert ("no show!");
+                    }
+
+                    console.log("member pingback recieved (no history)", userData);
+
+                } else {
+                
+                    //the lesson is valid
+                    this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                    this.$refs['TutorSessionInvite'].addParticipants(userData);
+
+                    console.log("member pingback recieved (with history)", userData);
+                }
+
+                
+                
+            } else if (this.$props.is_broadcaster == false && userData.type == "TUTOR") {
+
+                this.$refs['TutorSessionInvite'].hideCallUserModal(); 
+                this.$refs['TutorSessionInvite'].addParticipants(userData); 
+                console.log("TUTOR pingback recieved", userData)
+            }
+
+         });
+
+       
+
+        this.socket.on('LEAVE_SESSION', (userData) => 
+        {
+
+            if (this.$props.is_broadcaster == false) {
+
+                console.log("TUTOR LEFT THE SESSION"); 
+
+            } else {               
+                console.log("USER LEFT A SESSION");                
+            }
+
+            
+            this.$refs['TutorSessionInvite'].removeParticipants(userData); 
+            this.$refs['TutorSessionInvite'].stopLessonTimer()
+
+            if (this.$props.is_lesson_complete == false) 
+            {
+                //if lesson is not finished 
+                this.$refs['TutorSessionInvite'].showWaitingListModal();                
+            }  
+
+          ; 
+        });
+
+
+        this.socket.on('START_SESSION', (response) => {
+
+            if (this.$props.is_broadcaster == false) {
+
+                if (response.channelid == this.channelid) {
+                
+                    if (response.recipient.userid == this.user_info.id)
+                    {                    
+                        console.log("TEACHER STARTED A SESSION", response);
+                    } else {                    
+                        //end a session for all 
+                        console.log("TEACHER STARTED A SESSION FOR ALL USERS", response);
+                    }                
+                   
+                    this.startTimer();                  
+                } else {
+                
+                }
+
+            } else if (this.$props.is_broadcaster == true) {
+            
+                //console.log("TEACHER ENDED OWN SESSION", response);
+            }
+
+        }); 
+
+
+
+
+        this.socket.on('END_SESSION', (response) => {
+        
+            if (this.$props.is_broadcaster == false) 
+            {
+
+                $("#destroy-session-media").trigger("click");
+
+                if (response.channelid == this.channelid) {
+                
+                    if (response.recipient.userid == this.user_info.id)
+                    {                    
+                        //console.log("TEACHER ENDED A SESSION", response);
+                       
+                    } else {                    
+                        //end a session for all 
+                        //console.log("TEACHER ENDED A SESSION FOR ALL USERS", response);
+                    }                
+
+                    this.showTutorSatisfactionSurveyModal();
+                    this.stopTimer();      
+
+                } else {
+                    console.log("channel not found");
+                }
+
+            } else if (this.$props.is_broadcaster == true) {
+
+                $("#destroy-session-media").trigger("click");
+                
+            }
+
+        });                  
+
+           this.isSessionActive()
+
+         //the user has not selected anything then we create new slide
+        if (this.$props.folder_id == '' || this.$props.folder_id == null || this.$props.folder_id == 'null' ) {
+            this.createNewSlide();  
+            this.keyPressHandler();
+        } 
+
+
+
+
+        //window.addEventListener('scroll', this.reOffset);
+        //window.addEventListener('resize', this.reOffset);
+
+        this.newFolderID = this.$props.folder_id;
+
+    },
+
+    methods: {
+        showFloatingChatIcon() {        
+            this.$refs['memberFloatingChat'].openFloatingChatIcon();
+        },
+        hideFloatingChatIcon() {
+            this.$refs['memberFloatingChat'].closeFloatingChatIcon();
+        },
+        openFloatinChatBox() {
+            this.$refs['memberFloatingChat'].openFloatingChatIcon()
+            this.$refs['memberFloatingChat'].openChatBox();
+        },
+        closeFloatingChatIcon() {
+            this.$refs['memberFloatingChat'].closeFloatingChatIcon();
+        },
+
+        /****** [NEW] SET MEMBER TIMER **/
+        showTimerControlModal() {
+            this.$refs['MemberLessonTimer'].showTimerControlModal()
+        },
+        startMemberTimer() {
+            this.socket.emit('START_MEMBER_TIMER', this.getSessionData()); 
+            this.isMemberTimerStarted = true;
+        },
+        startMemberCountdownTimer() {
+
+            if (this.isMemberTimerStarted == true) {
+
+                this.hideMemberMemberTimerStartButton();
+
+                this.memberTimerInterval = setInterval(()=> {
+                    this.showMemberTimer();
+
+                    this.memberCountdownTimer --;    
+
+                    if (this.memberCountdownTimer < 0) {  
+                        this.playAlarmAudio({'path': 'mp3/alarm.mp3'})                       
+                        this.stopMemberCountdownTimer();
+                        this.showMemberMemberTimerStartButton();
+                    }
+
+                }, this.timerSpeed);   
+            } 
+        },
+        resetMemberCountdownTimer() {
+            this.memberCountdownTimer = 3;
+        },
+        stopMemberCountdownTimer() {
+            
+            this.resetMemberCountdownTimer();
+            this.isMemberTimerStarted = false;
+            clearInterval(this.memberTimerInterval); 
+        },
+        updateMemberTimer(time) {
+            this.memberCountdownTimer = time;
+        },
+        showMemberTimer() {                     
+            $("#memberTimer").html(this.memberCountdownTimer)
+        },
+        showMemberMemberTimerStartButton() {
+            $("#memberTimerButtonContainer").show();
+        },
+        hideMemberMemberTimerStartButton() {
+            $("#memberTimerButtonContainer").hide();
+        },
+        playAlarmAudio(audio) {
+            let alarmAudio = document.getElementById('alarmAudio');
+            if (alarmAudio) {      
+                alarmAudio.src = window.location.origin +"/"+ audio.path;                              
+                alarmAudio.load();
+                alarmAudio.play();  
+            }
+        },
+        checkExpiredSession() {
+
+                console.log("checking session $1")
+
+                //const specificDate = new Date('2023-03-21T01:00:00');
+                
+                this.specificDate = new Date(this.reservation.lesson_time);  
+                this.specificDate.setTime(this.specificDate.getTime() + (15 * 60 * 1000));
+
+
+                // Add 30 minutes to the specific date and time
+                this.expiredLessonDate = new Date( this.reservation.lesson_time);
+                this.expiredLessonDate.setTime(this.specificDate.getTime() + (30 * 60 * 1000));
+
+                // Get the current date and time
+                this.currentDate = new Date();
+                
+                if (this.currentDate.getTime() > this.specificDate.getTime()) {
+                    if (this.$props.lesson_history == null) {
+                        console.log('The current time is after 15 minutes from the specific date and time.');   
+                        this.isNoShow = true;
+                    } else if (this.$props.lesson_history != null && this.currentDate.getTime() > this.expiredLessonDate.getTime()) {                           
+                        console.log("==============(15 min extension, session expired lesson history============", this.$props.lesson_history);
+                        this.isExpiredSession  = true;
+                    } else {
+                        this.isExpiredSession  = false;
+                        console.log("current session is still valid")
+                    }
+                } else {
+                    this.isExpiredSession  = false;
+                    console.log('The current time is not yet after 15 minutes from the specific date and time.');
+                }            
+        },
+        getMaterial() {            
+
+            console.log("get material")
+            let subject = this.segments.pop();
+            let material = this.segments.pop();
+
+            return {
+                'segments': this.segments,
+                'course': this.segments[0],
+                'material': material,
+                'subject':subject
+            }
+        },
+        testEndSessionEmitter() {
+            this.socket.emit('END_SESSION', this.getSessionData()); 
+        },
+
+        async saveAllSlides() {
+
+           let allSlidesData = await this.getAllSlideData();
+
+           console.log(allSlidesData);
+
+            /*
+            for (var index = 1; index <= this.slides; index++) {
+                let canvasData  = await this.getCanvasSlideData(index);                
+                this.saveSlideHistoryData(canvasData, index);                                       
+            }*/
+
+
+        },
+        updateUserList: function(users) {
+            this.users = users;      
+            this.$forceUpdate();                 
+        },
+        getSessionData() {
+            //@note: sessionData is the data to be sent to the socket server
+            let sessionData = {
+                'totalSlide'    : this.slides,
+                'currentslide'  : this.currentSlide,
+                'channelid'     : this.channelid,
+                'sender'        : { userid: this.user_info.id, username: this.user_info.username},
+                'recipient'     : this.getRecipient()
+            };  
+            return sessionData;  
+        },        
+        selectSlides() {
+
+            this.$refs['slideSelector'].openSlideSelector(this.reservation.schedule_id, this.reservation.member_id);
+
+        },
+        openNewSlideMaterials(newFolderID) {
+            
+            this.newFolderID = newFolderID;
+
+            //Slide Selector already update the slide selector folder, 
+            //So lets refresh the member slides!
+            if (this.$props.is_broadcaster == true) { 
+                //call remove slides and open new slides
+                this.removeOldSlidesAndOpenNewSlides();
+                this.refreshMemberSlides();
+            } else {             
+                //opening slide for member
+                this.removeOldSlidesAndOpenNewSlides();
+            }
+
+            this.$forceUpdate(); 
+        },
+        removeOldSlidesAndOpenNewSlides() {         
+            for (var i = 1; i <= this.slides; i++) {                                
+                if (i ==  this.slides) {                    
+                    let slideElement = document.getElementById('slide-container')                    
+                    slideElement.innerHTML = '';
+                    this.getSlideMaterials(this.reservation);
+                }
+            }        
+        },
+        enableSession(){            
+            this.sessionActive = true;
+        },
+        disableSession(){
+            //@todo: hide all  and end all stream
+            this.sessionActive = false;
+        },
+        startSession() {
+            this.postLessonStartHistory(this.reservation);
+        },
+        endSession() {
+            this.confirmEndLesson();  
+        },      
+        confirmEndLesson() {
+            const h = this.$createElement;
+
+            const messageVNode = h('div', { class: ['foobar'] }, [
+                h('p', { class: ['text-center'] }, [ h('strong', 'Please confirm that you want to end lesson')]),
+            ])
+                    
+
+            this.$bvModal.msgBoxConfirm(messageVNode, {                
+                title: 'Please Confirm',
+                contentClass: 'esi-modal',
+                headerBgVariant: 'lightblue',
+                headerTextVariant: 'white',
+                buttonSize: 'sm',
+                okVariant: 'primary',
+                okTitle: 'Yes, end current session',
+               
+                cancelTitle: 'NO',
+                cancelVariant: 'danger',
+                footerClass: 'p-2',
+                'hideHeaderClose': false,
+                'noCloseOnBackdrop': true,
+                'noCloseOnEsc': true,
+                'centered': false,
+            }).then(isConfirmed => {
+                if (isConfirmed == true)  {
+                    this.saveAllSlides();
+                    this.postLessonEndSessionHistory(this.reservation);
+                }
+            }).catch(err => {
+                
+                alert (err)                
+            }); 
+        },
+        saveSlideHistoryData(canvasData, slideIndex) {
+
+            console.log("saving... slide history " + slideIndex)
+
+            axios.post("/api/saveLessonSlideHistory?api_token=" + this.api_token,
+            {
+                'method'          : "POST",
+                //'folder_id'       : this.$props.folder_id,
+                //'totalSlides'     : this.slides,
+                //'currentSlide'    : this.currentSlide,
+                //'reservation'     : reservationData,                
+                //'slidesData'      : slidesData,     
+
+                'folderID'          : this.newFolderID,
+                'totalSlides'       : this.slides,
+                'slideIndex'        : slideIndex,                
+                'reservation'       : this.reservation,
+                'canvasData'        : canvasData,
+                'imageData'         : this.canvas[slideIndex].toDataURL('image/jpeg', 0.5)
+
+            }).then(response => {
+
+                //console.log("save slide history", response);
+            });
+        
+        },
+        async getCanvasSlideData(slideIndex) {
+            return this.canvas[slideIndex].toJSON();       
+        },
+        async getCanvasSlideImage(slideIndex) {
+            return this.canvas[slideIndex].toDataURL('image/jpeg', 0.1)  
+        },
+        async getAllSlideData() {
+
+            let slidesDataArray = new Array();
+
+            for (var i = 1; i <= this.slides; i++) 
+            {
+                let canvasData  = await this.getCanvasSlideData(i);
+                let canvasImage = await this.getCanvasSlideImage(i);
+
+                let data = {
+                    'slideIndex': i,
+                    'canvasData': canvasData,   
+                    'imageData':  canvasImage
+                };                    
+                slidesDataArray.push(data);
+            }
+
+            return slidesDataArray;
+        },
+        async postLessonStartHistory(reservationData) {
+        
+            let slidesData = await this.getAllSlideData();
+
+            /** 
+                @todo: add the status (new, done, skipped)
+                @todo: add note, if created a empty slide
+
+                @todo(1):  Determine if has isTimerStarted is False then posting lesson is new
+                @todo(2):  Determine if has isTimerStarted is TRUE then posting lesson is skipped
+
+            **/
+            
+                
+            console.log(this.$props.folder_id , this.newFolderID)
+
+            axios.post("/api/postLessonStartHistory?api_token=" + this.api_token,
+            {
+                'method'          : "POST",
+                'folder_id'       : this.$props.folder_id,
+                'totalSlides'     : this.slides,
+                'currentSlide'    : this.currentSlide,
+                'reservation'     : reservationData,                
+                'slidesData'      : slidesData,        
+                'isTimerStarted'  : this.isTimerStarted
+            }).then(response => {
+
+                this.startTimer();                
+                this.socket.emit('START_SESSION', this.getSessionData()); 
+            });
+
+        },
+        async postLessonEndSessionHistory(reservationData) 
+        {
+            let slidesData = await this.getAllSlideData();
+
+            if (this.$props.is_broadcaster == false) {                       
+                alert ("Member is not allowed to end a session");
+                return false
+            }    
+
+            //@note: save session history
+            axios.post("/api/postLessonEndHistory?api_token=" + this.api_token,
+            {
+                'method'          : "POST",
+                'folder_id'       : this.$props.folder_id,
+                'totalSlides'     : this.slides,
+                'currentSlide'    : this.currentSlide,
+                'reservation'     : reservationData,                
+                'slidesData'      : slidesData,
+                'isTimerStarted'  : this.isTimerStarted                
+            }).then(response => {
+       
+                if (this.$props.is_broadcaster == true) 
+                {   
+                    console.log("session end was broadcasted");
+
+                    this.stopTimer(); 
+                    this.hideEndSessionButton();                   
+                    this.socket.emit('END_SESSION', this.getSessionData());  
+
+                    if (this.sessionActive == true)  {
+                        this.sessionActive = false;
+                        this.showMemberFeedbackModal(this.reservation, this.files);
+                    }
+
+                }             
+
+            });
+           
+        },
+
+        showMemberFeedbackModal(reservation){
+       
+            this.$refs['memberFeedback'].showMemberFeedbackModal(reservation, this.files);
+        },
+        showTutorSatisfactionSurveyModal() {
+            this.$refs['satisfactionSurvey'].showRatingAndFeedbackModal(this.reservation);
+        },
+        prepareNewSlide() {
+            this.$refs['slideUploader'].prepareSlider(this.$props.reservation, this.slides + 1);
+        },
+        userUploadedImage(file) 
+        {
+            this.newBackgroundImage = file.fullpath;
+            this.createNewSlide();
+            this.setSlideBackgroundImage(this.currentSlide, file.fullpath);
+            this.$forceUpdate(); 
+
+            let data = this.canvasGetJSON();            
+            this.canvasSendJSON(this.canvas[this.currentSlide], data); 
+            this.saveSlideHistoryData(data, this.currentSlide);
+
+        },
+        userCreateNewEmptySlide() {         
+            this.newBackgroundImage = null;         
+
+            axios.post("/api/saveEmptyCustomSlide?api_token=" + this.api_token,             
+            {
+                'method'            : "POST",
+                'scheduleID'        : this.reservation.schedule_id,
+                'folderID'          : this.newFolderID,
+                'totalSlides'       : this.slides,
+                'slideIndex'        : this.currentSlide,                
+                'reservation'       : this.reservation,
+            }).then(response => {
+
+                if (response.data.success == true) {
+                    this.createNewSlide();
+                } else {                
+                    alert (response.data.message)                
+                }                
+            });
+        },
+        getSelectedFolder() {
+            return this.$props.folder_id;
+        },
+
+        createNewSlide() 
+        {
+        
+
+            if (this.$props.is_lesson_completed == true) {
+                return false;
+            }
+
+            let currentSlideCount = this.slides;
+
+            this.slides     = this.slides + 1;            
+            let index       = this.slides;
+
+            //create a canvas based on the current index
+            this.createCanvas(index);
+
+            this.canvas[index]  = new fabric.Canvas('canvas'+index, {
+                backgroundColor : "#fff"
+            });    
+
+            //New Image On the Background we will set the scale to default = 1
+            this.canvas[index]['scale'] = 1;
+            this.audioFiles      = null;
+            
+            this.currentSlide           = index;
+
+            if (this.$props.folder_id) {
+                this.goToSlide(index);     
+            }
+            
+
+            if (this.$props.is_broadcaster == true) {  
+
+                let memberCanvasData = {
+                    'slidesCount'   : currentSlideCount,
+                    'currentslide'  : this.currentSlide,
+                    'channelid'     : this.channelid,
+                    'sender'        : {
+                                        userid: this.user_info.id,
+                                        username: this.user_info.username
+                                    },
+                    'recipient'     : this.getRecipient(),
+                    'canvasid'      : this.canvas[this.currentSlide],
+                    'canvasData'    : this.canvasGetJSON(),
+                    'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
+                    'canvasDelta'   : this.delta,
+                    'backgroundURL': this.newBackgroundImage 
+                };
+                
+
+                this.socket.emit('CREATE_NEW_SLIDE', memberCanvasData);  
+
+                                
+            } else {            
+                this.viewerCurrentSlide = this.currentSlide;
+            }
+            this.autoSelectTool();
+        },
+        createCanvas(index) {
+
+            if (this.$props.is_lesson_completed == true) {
+                return false;
+            }
+
+            //added to make canvas visible if the index is the first one
+            let visibility = 'hidden';
+            let display = 'none';
+
+            if (index == 1) {
+                visibility = 'visible';
+                display = 'block';
+            } 
+
+            //Editor Container Element
+            var elementExists = document.getElementById("editor" + index);
+
+            if (!elementExists) {
+            
+                //console.log("++++++++create canvas++++++++");
+
+                let editorElement = document.createElement("div");
+                editorElement.setAttribute("id",    "editor" + index);
+                editorElement.setAttribute("style", "overflow: hidden; clear: both; visibility: " + visibility + "; display:"+ display +";");
+
+                let slideContainer = document.getElementById('slide-container');
+                slideContainer.append(editorElement);            
+
+                //Add canvas to the editor
+                let canvasElement = document.createElement("canvas");
+                canvasElement = document.createElement('canvas');
+                canvasElement.setAttribute("id",    "canvas" + index);
+                canvasElement.setAttribute("width", this.canvas_width);
+                canvasElement.setAttribute("height", this.canvas_height);
+                canvasElement.setAttribute("style", "border: 7px solid rgb(0, 118, 190); height: 100%;");
+
+                let mediaContainer = document.getElementById('editor'+ index);
+                mediaContainer.append(canvasElement);               
+            
+            } else {
+            
+                //console.log("------ CANVAS IS ALREADY CREATED ------ ");
+            }
+        },
+        showConsecutiveSchedule(consecutiveSchedules) {
+        
+            this.consecutiveSchedules = consecutiveSchedules;
+
+            if (this.consecutiveSchedules >= 1) {
+            
+                this.$refs['MemberConsecutiveLessons'].setConsecutiveLessons(consecutiveSchedules);
+
+            } else {
+                this.$refs['MemberConsecutiveLessons'].setConsecutiveLessons(consecutiveSchedules);
+
+            }
+
+        },
+        getSlideMaterials(reservation) {         
+
+
+            this.isLoading = true;
+
+            axios.post("/api/getLessonMaterialSlides?api_token=" + this.api_token,
+            {
+                method              : "POST",
+                scheduleID          : reservation.schedule_id,
+                memberID            : reservation.member_id,
+                lesson_time         : reservation.lesson_time
+
+            }).then(response => {  
+
+                if (response.data.success === true) {
+
+                    this.isLoading = false;
+                
+                    this.showConsecutiveSchedule(response.data.consecutiveSchedules);
+
+                    //Breadcrumbs
+                    this.segments = response.data.folderURLArray;
+
+                    this.$refs['memberFeedback'].updateLessonDetails(this.segments);
+
+                    console.log("slide segments", this.segments)
+
+
+                    //[new] send this to file history
+                    this.files = response.data.files;
+                    this.notes = response.data.notes;
+
+                    //Array of images
+                    this.imageURL = response.data.files;
+                    this.audioFiles = response.data.audioFiles;           
+
+                    let lessonHistory   = response.data.lessonHistory;
+                    let slideHistory    = response.data.slideHistory.data;
+                    let customFiles     = response.data.customFiles;  
+
+                    this.newFolderID    = response.data.folderID;  
+
+                    //Slide Count 
+                    if (customFiles) {                        
+                        this.slides  = (response.data.files).length + customFiles.length;
+                    } else {
+                        this.slides  = (response.data.files).length;
+                    }                
+
+                    if (this.$props.is_broadcaster == true) {
+                        this.$refs['TutorSlideNotes'].loadNotes(this.notes);   
+                    }
+
+
+                    if (this.slides == 0) {
+
+                        let firstSlideIndex = 1;
+                        this.createNewSlide();
+
+
+                        if (slideHistory) {
+                        
+                            var item = slideHistory.find((item) => {
+                                return item.slide_index == firstSlideIndex;
+                            });
+
+                            if (item) {
+
+                                let slideHistoryContent = JSON.parse(item.content);
+
+                                if (slideHistoryContent.objects.length >= 1) {
+                                    this.updateCanvas(this.canvas[firstSlideIndex], item.content);
+                                } else {
+                                    this.getCustomBackground(firstSlideIndex, customFiles);
+                                }
+
+                            } else {                                
+                                this.getCustomBackground(firstSlideIndex, customFiles);
+                            }                                
+
+                        } else {                                
+
+                            this.getCustomBackground(firstSlideIndex, customFiles);                               
+                        }
+
+
+                        this.$nextTick(() => { 
+
+                        
+                            //DETERMINE IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
+                            this.userSlideAccess();
+
+                            //START SLIDE (SELECT FROM CURRENT HISTORY IF THERE IS CURRENT SLIDE)
+                            let currentSlide =  (lessonHistory) ? lessonHistory.current_slide : 1;                            
+                            this.startSlide(currentSlide);
+
+
+                            //LOAD AUDIO
+                            this.loadAudio();
+
+                            if (this.$props.is_broadcaster == true) {
+                                this.$refs['slideSelector'].closeSlideSelector();          
+                            }
+
+                                          
+                        });
+                        
+                    } else {           
+                    
+
+                        //alert ("empty slides")
+
+                        for (var i = 1; i <= this.slides; i++) 
+                        {
+
+                            this.createCanvas(i);
+
+                            this.canvas[i]  = new fabric.Canvas('canvas'+i, { backgroundColor : "#fff" });  
+                            this.setSlideBackgroundImage(i, this.imageURL[i-1]);
+                            
+                            if (slideHistory) {
+                            
+                                var item = slideHistory.find((item) => {
+                                    return item.slide_index == i;
+                                });
+                            
+                                if (item) {
+
+                                    let slideHistoryContent = JSON.parse(item.content);
+
+                                    if (slideHistoryContent.objects.length >= 1) { 
+                                        this.updateCanvas(this.canvas[i], item.content);                             
+                                    } else {
+                                        this.getCustomBackground(i, customFiles);
+                                    }
+
+                                } else {                                
+                                    this.getCustomBackground(i, customFiles);
+                                }                                
+
+                            } else {                                
+
+                                this.getCustomBackground(i, customFiles);                               
+                            }
+
+                            this.$forceUpdate();
+
+                            if (i ==  this.slides) {                                
+                            
+                                this.$nextTick(() => {  
+                                    //DETERMIN IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
+                                    this.userSlideAccess();
+                                    //this.slides = (response.data.files).length;
+                                 
+                                 
+                                    //START SLIDE (SELECT FROM CURRENT HISTORY IF THERE IS CURRENT SLIDE)
+                                    let currentSlide =  (lessonHistory) ? lessonHistory.current_slide : 1;                            
+                                    this.startSlide(currentSlide);
+
+                                    //LOAD AUDIO
+                                    this.loadAudio();
+
+                                    if (this.$props.is_broadcaster == true) {
+                                        this.$refs['slideSelector'].closeSlideSelector();          
+                                    }
+
+                                });
+
+
+                                this.removeOldSlidesAndOpenNewSlides();
+                                this.refreshMemberSlides();
+                            }
+                        } 
+                    }              
+
+
+  
+                    this.showRatingOptions();
+
+                } else {               
+
+                    alert ("success == false");
+
+
+                    this.canvas[i]  = new fabric.Canvas('canvas'+i, {
+                        backgroundColor : "#fff"
+                    });
+
+
+                    let slideHistory    = response.data.slideHistory.data;
+                  
+                    if (slideHistory) {
+
+                        let index = 1; //first index
+                        var item = slideHistory.find((item) => {
+                            return item.slide_index == index;
+                        });
+                    
+                        if (item) {
+                            let slideHistoryContent = JSON.parse(item.content);
+                            if (slideHistoryContent.objects.length >= 1) { 
+                                this.updateCanvas(this.canvas[index], item.content);                             
+                            }
+                            this.startSlide(index);
+                        } else {
+                            //alert ("no item for history")
+                        }
+
+                    } else {      
+
+                       // this.createNewSlide();
+
+                        this.$nextTick(() => {                         
+                            //DETERMINE IF USER HAS SLIDE ACCESS AND ENABLE BROADCASTER MODE
+                            this.userSlideAccess();
+                            //START SLIDE
+                            this.startSlide(1);
+                            //LOAD AUDIO
+                            this.loadAudio();
+                            if (this.$props.is_broadcaster == true) {
+                                this.$refs['slideSelector'].closeSlideSelector();          
+                            }
+                        });
+                    }     
+
+
+                    this.showRatingOptions();               
+                }
+			});
+
+        }, 
+
+        showRatingOptions() {
+        
+            if (this.$props.is_lesson_completed == true) { 
+
+                this.sessionActive = false;       
+
+                if (this.$props.feedback_completed == false) {    
+
+                    if (this.$props.is_broadcaster == true) {   
+                        this.hideTimer();                    
+                        this.showMemberFeedbackModal(this.reservation, this.files);
+                    } else {
+                        this.showTutorSatisfactionSurveyModal();
+                    }            
+                }        
+            } 
+
+        },
+        getCustomBackground(index, customFiles) {
+
+            var customItem = customFiles.find((item) => {
+                return item.order_id == index;
+            });
+
+            if (customItem) { 
+                if (customItem.path == null) {
+
+                    //console.log("empty custom path")
+
+                } else {
+                    this.setSlideBackgroundImage(index, this.getBaseURL(customItem.path));
+                }                
+            }                     
+        },
+        alignCanvas() {
+            try {
+                var delta = new fabric.Point(0, 0);        
+                this.canvas[this.currentSlide].relativePan(delta); 
+                this.rescale(1);   
+            } catch (error) {
+                console.log("canvas alignCanvas error", error);
+            }
+
+        },
+        reOffset(e){
+
+            var canvas = document.getElementById("canvas"+ this.currentSlide);
+            let clientRect = canvas.getBoundingClientRect();
+            this.offsetX = clientRect.left;
+            this.offsetY = clientRect.top; 
+        },
+        // draw everything in pixels coords
+        rescale(scale) {
+
+            try {
+
+                this.canvas[this.currentSlide].setZoom(scale);
+                this.canvas[this.currentSlide].requestRenderAll();
+                this.canvas[this.currentSlide]['scale'] = scale;
+
+                //tool and send canvas json to viewer
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);    
+
+                
+                let zoomedIn = setInterval(() => {
+                    this.isZoomOut = false;
+                    this.isZoomIn = false;
+                    clearInterval(zoomedIn); 
+                }, 50); 
+
+
+            } catch (error) {
+                console.log("canvas setZoom errror", error);
+            }
+        },
+
+        userSlideAccess() 
+        {
+            if (this.$props.is_broadcaster == false) 
+            {
+                //Your are not a broadcaster
+                this.disableSelect();
+                this.deactivateSelector();
+                this.canvas[this.currentSlide].isDrawingMode = false;
+                //this.reOffset();
+            } else {
+                //Your are the viewer  
+                this.mouseClickHandler();
+                this.activatePencil();
+                //this.reOffset();
+            }
+
+            this.keyPressHandler();
+        },      
+
+        hideTimer() {
+          const elemCountdown = document.getElementById('startSessionContainer');
+                if (elemCountdown) {
+                    elemCountdown.style.display = 'none';            
+                }        
+        },
+        refreshMemberSlides() {
+
+            if (this.$props.is_broadcaster == true) {   
+        
+                let slidesData = {
+                    'currentSlide'  : this.currentSlide,
+                    'channelid'     : this.channelid,
+                    'sender'        : {
+                                        userid: this.user_info.id,
+                                        username: this.user_info.username
+                                    },
+                    'slide_folder_id': this.newFolderID,
+                    'recipient'     : this.getRecipient()
+                };            
+
+
+                this.socket.emit('TUTOR_SELECTED_NEW_SLIDES', slidesData);  
+            }
+            
+        },
+        isSessionActive() 
+        {
+
+            //@note(1): determine if a session is active when page is refreshed
+            //@note(2): if session is active calculate the remaining or running time (negative value)
+           
+           //console.log("lesson history ", this.$props.lesson_history)
+
+            if (this.$props.lesson_history) 
+            {
+                //@note:  user has lesson history, we will update the minutes and start the timer immediately
+
+                console.log("<<< time ended ???", this.$props.lesson_history.time_ended)
+           
+                if (this.$props.lesson_history.time_ended  == null || this.$props.lesson_history.time_ended  == "0000-00-00 00:00:00") 
+                {
+                    //@note: this will start session timer automatically since the session was started before
+                    this.startTimer();
+
+                    if (this.isTimerStarted == true) {
+                        //note(1): change of slides detected
+                        //@note (2): if timer is started we will reset countdown.
+
+                        this.timer = this.resetTimerValue // reset to orginal value 
+                        this.updateMinutes();
+
+                    } else {
+
+                        //update dates minutes
+                        this.updateMinutes();
+                    }
+
+                } else {
+                    
+                    console.log("lesson ended on : ", this.$props.lesson_history.time_ended)
+
+                    //@todo: Time end update
+                  
+                    if (this.$props.is_broadcaster == true) 
+                    {   
+                       // this.hideTimer();
+                       // this.showMemberFeedbackModal(this.reservation);
+
+                    } else {
+                        this.showTutorSatisfactionSurveyModal();
+                    }
+
+                    this.stopTimer();
+                    //window.close();
+
+                } 
+
+            } else {
+                //hide countdown timer  
+                //console.log("no lesson history, hide countdown timer");
+                
+                const elemCountdown = document.getElementById('countDownTimerContainer');
+                if (elemCountdown) {
+                    elemCountdown.style.display = 'none';            
+                }
+
+                const endSession = document.getElementById('endSessionContainer');
+                if (endSession) {
+                    endSession.style.display = 'none';                    
+                }
+            }
+
+        },
+        setSlideBackgroundImage(index, imageURL) 
+        {            
+            try {
+                this.canvas[index].setBackgroundImage(imageURL, this.canvas[index].renderAll.bind(this.canvas[index]), {
+                    // Optionally add an opacity lvl to the image
+                    //backgroundImageOpacity: 0.5,
+                    // should the image be resized to fit the container?
+                    scaleX:1,
+                    scaleY:1,
+                    top: 0,
+                    left: 0,
+                    originX: 'left',
+                    originY: 'top',                                                        
+                    backgroundImageStretch: true,
+                });
+
+            } catch (error) {
+                console.log("no image background...");
+            }
+            //New Image On the Background we will set the scale to default = 1
+            this.canvas[index]['scale'] = 1;
+
+        },            
+        loadImage(index, imageURL) 
+        {          
+                             
+            let ctx =  this.canvas[index].getContext("2d");
+            this.canvas[index].width = this.canvas_width;
+            this.canvas[index].height = this.canvas_height;
+
+            var background = new Image();
+            background.src = imageURL;
+            background.onload = (bg) => {
+                ctx.drawImage(background,0,0, this.canvas_width, this.canvas_height);   
+            } 
+            background.setAttribute('crossorigin', 'anonymous'); // works for me
+        },
+        getRecipient() { 
+            return this.$props.recipient_info;
+        },
+        updateCanvas(canvas, data){
+
+            console.log("updating canvas");
+
+            canvas.loadFromJSON(data, this.disableCanvas, (o, object) => {            
+                if(this.$props.is_broadcaster == false) {
+                    this.deactivateSelector()                
+                }                
+            });            
+        },
+        disableCanvas() 
+        {
+            this.canvas[this.currentSlide].forEachObject(function(o) {
+                o.selectable = false;
+                o.defaultCursor = 'not-allowed';
+                o.hoverCursor = "not-allowed";
+            });
+            this.canvas[this.currentSlide].discardActiveObject();   
+            this.canvas[this.currentSlide].requestRenderAll();
+            //this.canvas[this.currentSlide].renderAll();
+        },
+        canvasSendJSON(canvasID, canvasData) 
+        { 
+            let recipient = this.getRecipient();
+
+            if (this.$props.is_broadcaster == true) {  
+
+                let memberCanvasData = {
+                    'currentSlide'  : this.currentSlide,
+                    'channelid'     : this.channelid,
+                    'sender'        : {
+                                        userid: this.user_info.id,
+                                        username: this.user_info.username
+                                    },
+                    'recipient'     : recipient,
+                    'canvasid'      : canvasID,
+                    'canvasData'    : canvasData,
+                    'canvasZoom'    : this.canvas[this.currentSlide]['scale'],
+                    'canvasDelta'   : this.delta,
+                };  
+                            
+                 this.socket.emit('SEND_DRAWING', memberCanvasData);  
+            }
+        },       
+        canvasGetJSON() 
+        {
+            return this.canvas[this.currentSlide].toJSON();           
+        },        
+        drawRealTime(pointer, options) {
+            if (this.isDrawing) {
+                 this.canvas[this.currentSlide].freeDrawingBrush.onMouseMove(pointer, options);               
+            }
+        },
+        sendCavasData() {
+            let recipient  = this.getRecipient();
+            console.log("sendCavasData");            
+            socket.emit("SEND_USER_MESSAGE", { id, time, recipient, sender });                      
+        },
+        convertTZ(date, tzString) {
+            return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));   
+        },
+        updateMinutes() 
+        {        
+        
+            var now = new Date();
+            var nowJTZ= this.convertTZ(now, "Asia/Tokyo");
+
+            //Force the database time to be a tokyo time
+            var started = new Date(this.$props.lesson_history.time_started);
+            var startedJTZ= this.convertTZ(started, "Asia/Tokyo");
+            
+            var diff = this.diff(nowJTZ, started);
+
+            //console.log("started: ", started)
+            //console.log("now: ", nowJTZ)
+            //console.log(diff)
+         
+            if (diff.days >= 1) {
+
+                //alert ("this lesson has lapsed for more than one day, please consult admin");
+
+                //@todo: alert admin and end session
+                
+                this.disableSession();
+
+
+                var daysInSeconds           = (((diff.days * 24) * 60) * 60);                
+                var hoursInSeconds          = ((diff.hours * 60) * 60);
+                var minsInSeconds           =  diff.minutes * 60;                 
+                var seconds                 =  diff.seconds;           
+
+                //get the total seconds to dedecut
+                var totalSecondsToDeduct    = hoursInSeconds + minsInSeconds + seconds //add the difference for the seconds  
+                this.timer =  totalSecondsToDeduct;
+
+                console.log("newTimer with days ", daysInSeconds, diff);
+            
+             } else if  (diff.days == null && diff.hours >= 1) {
+
+                if (diff.hours >=1) {
+                    var hoursInSeconds          = ((diff.hours * 60) * 60);
+                } else {
+                    var hoursInSeconds = 0;
+                }
+
+                if (diff.minutes >= 1) {
+                    var minsInSeconds           = diff.minutes * 60; 
+                } else {
+                    var minsInSeconds           = 0; 
+                }
+                
+                var seconds                 = diff.seconds; 
+
+                //get the total seconds to dedecut
+                var totalSecondsToDeduct    = hoursInSeconds + minsInSeconds + seconds //add the difference for the seconds  
+
+                //@note: the hours is more than 30 minutes, so we negate the value
+                this.timer                  =  this.timer - (totalSecondsToDeduct);
+
+               // console.log("newTimer with hours ", totalSecondsToDeduct);
+
+            } else if (diff.hours == null && diff.minutes >= 1 ) {           
+
+                //timer with minutes and seconds only
+                var newTimerMinutes = this.timer - (diff.minutes * 60)     
+                var newTimer        = newTimerMinutes - diff.seconds //add the difference for the seconds     
+                this.timer          = newTimer;
+
+                console.log("newTimer with only minutes ", newTimer);
+
+            } else if (diff.hours >= 1 && diff.minutes >= 1) {
+
+                //timer with hours and minutes and seconds
+                if (diff.hours >= 1) {
+                    var hoursInSeconds      = ((diff.hours * 60) * 60);
+                } else {
+                    var hoursInSeconds      = 0;
+                }
+
+                var newTimerMinutes     = this.timer - ((diff.minutes * 60) +  hoursInSeconds);
+                var newTimer             = newTimerMinutes - diff.seconds //add the difference for the seconds  
+
+                this.timer = newTimer;
+                //console.log("newTimer with hours and minutes", newTimer, diff);
+
+            } else {
+
+                //timer with seconds only
+                this.timer = this.timer - diff.seconds;
+                //console.log("we have seconds update", diff.seconds)
+            }           
+
+        },
+        diff(now, started) 
+        {           
+            let d            = (new Date(now)) - (new Date(started));
+            let weekdays     = Math.floor(d/1000/60/60/24/7);
+            let days         = Math.floor(d/1000/60/60/24 - weekdays*7);
+            let hours        = Math.floor(d/1000/60/60    - weekdays*7*24            - days*24);
+            let minutes      = Math.floor(d/1000/60       - weekdays*7*24*60         - days*24*60         - hours*60);
+            let seconds      = Math.floor(d/1000          - weekdays*7*24*60*60      - days*24*60*60      - hours*60*60      - minutes*60);
+            let milliseconds = Math.floor(d               - weekdays*7*24*60*60*1000 - days*24*60*60*1000 - hours*60*60*1000 - minutes*60*1000 - seconds*1000);
+            let t = {};
+            
+            ['weekdays', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'].forEach(q=>{ if (eval(q)>0) { t[q] = eval(q); } });
+
+            return t;         
+        },        
+        getTime() {
+            if (this.timer >= 0) {
+                return this.secondsToHms(this.timer)    
+            } else {
+                //Add "warning class" countDownTimer
+                var element = document.getElementById("countDownTimer");
+                element.classList.add("text-danger");
+                return this.secondsToHms(Math.abs(this.timer))
+            }
+               
+        },
+        secondsToHms(d) {
+            var date = new Date(0);
+            date.setSeconds(d); // specify value for SECONDS here
+            var timeString = date.toISOString().substring(11, 19);
+            if (this.timer >= 0) {
+                return timeString;
+            } else {
+                return "-"+timeString;
+            }            
+        },
+        secondsToHms_PositiveOnly(d) {
+            d = Number(d);
+            var h = Math.floor(d / 3600);
+            var m = Math.floor(d % 3600 / 60);
+            var s = Math.floor(d % 3600 % 60);
+            var hDisplay = h > 9 ? Math.abs(h) +":" : "0"+ Math.abs(h) +":";
+            var mDisplay = m > 9 ? Math.abs(m) +":" : "0"+ Math.abs(m) +":";
+            var sDisplay = s > 9 ? Math.abs(s)  : "0"+ Math.abs(s);
+            return hDisplay + mDisplay + sDisplay; 
+        },         
+        startTimer() {
+            if (this.isTimerStarted == false) {
+                this.showSessionControls();
+                this.myIntervalTimer = setInterval(this.updateTimer, this.timerSpeed);        
+                //turn on the timer
+                this.isTimerStarted = true;                
+            } else {
+            
+            }
+        },        
+        updateTimer() {            
+            this.setTimer();
+            this.timer--;
+        },           
+        setTimer() {        
+            var elem = document.querySelector('#countDownTimer');
+            elem.innerHTML = this.getTime();           
+        },
+        stopTimer() {
+            clearInterval(this.myIntervalTimer); 
+        },
+        hideEndSessionButton() {
+            const endSession = document.getElementById('endSessionContainer');
+            if (endSession) {
+                endSession.style.display = 'none';                    
+            }        
+        },
+        destroySessionMedia() {
+            document.onreadystatechange = () => {                
+                if (document.readyState == "complete") {
+                    this.stopTimer();     
+                    this.disableSession();
+                    $("#destroy-session-media").trigger("click");
+                }
+            }         
+        },
+        showSessionControls() {       
+
+            //@note: Session Controls will Show OR Hide (Start Session  / End Session / Countdown timer)
+
+            const elemCountdown = document.getElementById('countDownTimerContainer');
+            if (elemCountdown) {
+                elemCountdown.style.display = 'block';            
+            }         
+
+            const endSession = document.getElementById('endSessionContainer');
+            if (endSession) {
+                endSession.style.display = 'block';    
+            }
+
+            const startSession = document.getElementById('startSessionContainer');
+            if (startSession) {
+                startSession.style.display = 'none';    
+            }
+       },
+        changeColor() {
+            this.setPreviewColor( this.brushColor )
+            this.autoSelectTool();
+            //this.canvas[this.currentSlide].getActiveObject().set({fill: this.brushColor});
+        },        
+        startSlide(currentSlide) {
+
+            if (this.$props.is_lesson_completed == true) {
+                return false;            
+            }
+
+            if (currentSlide >= 1) {
+                this.currentSlide = currentSlide;
+            } else {
+                this.currentSlide = 1;
+            }
+            
+
+            if (this.$props.is_broadcaster == true) {
+                this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
+            }
+
+
+            this.autoSelectTool();
+            
+            let data = this.canvasGetJSON();
+
+            this.canvasSendJSON(this.canvas[this.currentSlide], data); 
+            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";
+
+            //Load List of Audio Array
+            //this.loadAudio()
+
+            //@todo: if tutor then broadcast current slide
+            if (this.$props.is_broadcaster == true) {            
+                let data = {
+                    'channelid': this.channelid,
+                    'num': this.currentSlide
+                }
+                this.socket.emit('GOTO_SLIDE', data);                  
+            } else {
+
+                //when user lands a page (he will not dictate it but go to current slide)            
+                this.goToSlide(currentSlide)
+            }
+
+        },
+        loadAudio() {
+            if (this.$refs['audioPlayer']) {
+                this.$refs['audioPlayer'].loadAudioList(this.audioFiles, this.currentSlide); 
+            } else {
+            
+                console.log("audio list hidden")
+            }
+           
+        },
+        goToSlide(slide) {          
+
+            //AUDIO
+            if (this.$refs['audioPlayer']) {
+                this.$refs['audioPlayer'].stopAudio();
+            }
+            
+            this.loadAudio(slide);
+
+            this.currentSlide = slide;
+            this.viewerCurrentSlide = slide;
+
+
+            if (this.$props.is_broadcaster == true) {
+                this.$refs['TutorSlideNotes'].viewNote(this.currentSlide);   
+            }           
+
+            for (var i = 1; i <= this.slides; i++) 
+            {
+                if (i == slide) 
+                {   
+
+                    let editorElement = document.getElementById('editor'+ i);
+
+                    if (editorElement) {
+                        editorElement.style.visibility = "visible";
+                        editorElement.style.display = "block";                                              
+                    }
+                                 
+
+                    //@todo: if tutor then broadcast get the drawn canvas
+                    if (this.$props.is_broadcaster == true) {   
+
+                        //console.log("slide sending data")   
+
+                        let data = this.canvas[slide].toJSON(); 
+                        this.canvasSendJSON(this.canvas[slide], data);
+                    }
+
+                    //@TODO:  GET HISTORY FROM DATABASE                
+
+                } else {
+
+                    let editorElement = document.getElementById('editor'+ i);
+
+                    if (editorElement) {
+                        editorElement.style.visibility = "hidden";
+                        editorElement.style.display = "none";        
+                    }
+
+                }
+            }
+
+        },
+        lastSlide() {
+            this.currentSlide = this.slides;
+            this.autoSelectTool();
+
+            let data = this.canvasGetJSON();
+            this.canvasSendJSON(this.canvas[this.currentSlide], data);               
+        },
+        prevSlide(delegateToNode) {
+
+            //the audio index needs to be reset since it is global
+            this.$refs['audioPlayer'].resetAudioIndex();            
+            this.$refs['audioPlayer'].stopAudio();
+
+            if (this.currentSlide > 1) {
+
+                this.currentSlide--;
+                this.autoSelectTool();
+                
+                //let data = this.canvasGetJSON();
+                //this.canvasSendJSON(this.canvas[this.currentSlide], data);     
+
+                let data = {
+                    'channelid': this.channelid,
+                    'num': this.currentSlide
+                }
+           
+                //if (delegateToNode == true) {
+                    this.socket.emit('GOTO_SLIDE', data);                    
+                //}
+            }
+        },
+        nextSlide(delegateToNode) {
+
+            //the audio index needs to be reset since it is global
+            this.$refs['audioPlayer'].resetAudioIndex();
+            this.$refs['audioPlayer'].stopAudio();
+            this.rescale(1);
+
+            if (this.currentSlide < this.slides) {
+
+                this.currentSlide ++;            
+                this.autoSelectTool(); 
+
+                //let data = this.canvasGetJSON();
+                //this.canvasSendJSON(this.canvas[this.currentSlide], data); 
+
+                let data = {
+                    'channelid': this.channelid,
+                    'num': this.currentSlide
+                }
+
+                //if (delegateToNode == true) {
+                    this.socket.emit('GOTO_SLIDE', data);     
+               // }
+                
+            } 
+        },
+        autoSelectTool() {
+            if (this.isSelector) this.activateSelector();
+            else if (this.isPencil) this.activatePencil();
+            else if (this.isBrush) this.activateBrush();
+            else if (this.isLine) this.activateLine();
+            else if (this.isText) this.activateTextEditor();
+            else if (this.isCircle) this.activateCircle();
+        },
+        customSelectorBounds(fabric) {
+            fabric.Object.prototype.transparentCorners = false;
+            fabric.Object.prototype.cornerColor = 'blue';
+            fabric.Object.prototype.cornerStyle = 'circle';
+        },
+        keyPressHandler(e) {
+            //console.log("keypress handler ");
+            window.onkeydown = (event) => {
+            
+                if (event.key === "Delete") {
+                    this.deleteObj();
+                    return false;
+                } else {                
+                  //  let data = this.canvasGetJSON();
+                   // this.canvasSendJSON(this.canvas[this.currentSlide], data);  
+                };
+            };
+        },
+        mouseClickHandler(e) {
+
+            this.canvas[this.currentSlide].on('mouse:down', (options) => {
+                var pointer = this.canvas[this.currentSlide].getPointer(options.e);
+                if (this.isText == true){
+                    this.canvas[this.currentSlide].defaultCursor = 'text';  
+                    this.mouseX = pointer.x ;
+                    this.mouseY = pointer.y; 
+                    var selectedObj = this.canvas[this.currentSlide].getActiveObject();                    
+                    if (!selectedObj) {
+                        if (this.isTextEditing == true) {
+                            this.isTextEditing = false;
+                        } else {
+                            this.$bvModal.show('modalAddInputText');                           
+                        }                        
+                    } else {
+                        this.resetModes();     
+                        this.isText             = true;
+                        this.isTextEditing      = true;
+                        //this.isSelector = true;
+                    }
+                } else if (this.isSelector) {
+                    this.canvas[this.currentSlide].defaultCursor = 'default';   
+                } else if (this.isDragger) {
+                    this.panning = true;                    
+                    this.canvas[this.currentSlide].defaultCursor = 'grabbing';   
+                    document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
+                        element.style.cursor = 'grabbing';
+                    });
+                }  else {                
+                    this.canvas[this.currentSlide].defaultCursor = 'move';   
+                    this.$forceUpdate();
+                }
+            }).on('mouse:move', (options) => {
+
+                if (this.isDragger) {
+                    if (this.panning) {
+                        this.delta = new fabric.Point(options.e.movementX, options.e.movementY);
+                        this.canvas[this.currentSlide].relativePan(this.delta);                     
+                        let data = this.canvasGetJSON();
+                        this.canvasSendJSON(this.canvas[this.currentSlide], data);   
+                    }
+                }
+
+            }).on('mouse:up', () => {
+        
+                if (this.isText == true) {
+                    this.canvas[this.currentSlide].defaultCursor = 'text';              
+                } else if (this.isSelector) {
+                     this.canvas[this.currentSlide].defaultCursor = 'default';   
+                } else  if (this.isDragger) {
+                        //reset to default cursor of the current
+                    this.canvas[this.currentSlide].defaultCursor = 'grab';
+                    document.querySelectorAll('.upper-canvas').forEach(function(element) {                            
+                        element.style.cursor = 'grab';
+                    });      
+
+                    this.panning  = false;
+                    this.delta    = null;
+                } else {
+                    this.canvas[this.currentSlide].defaultCursor = 'default';   
+                }
+
+
+
+                    let currentCanvas = this.canvas[this.currentSlide].toJSON()
+
+                    let newObjects = [];
+
+                    this.canvas[this.currentSlide].forEachObject((obj) => {
+                        let dataObject = JSON.stringify(obj);
+                        let reMakedObject = JSON.parse(dataObject)
+                        newObjects.push(reMakedObject);
+                    });     
+
+                    currentCanvas.objects = newObjects               
+
+
+                    console.log(currentCanvas)
+
+
+
+                setTimeout(() => { 
+                    console.log("send canvas json")
+
+                    
+                    this.canvasSendJSON(this.canvas[this.currentSlide], currentCanvas); 
+
+                    this.saveSlideHistoryData(currentCanvas, this.currentSlide);
+
+                }, 1500);
+
+
+               
+
+            }).on('mouse:out', (options) => {
+
+                this.canvas[this.currentSlide].renderAll();
+
+                if (this.isDragger == true) 
+                {
+                    this.canvas[this.currentSlide].defaultCursor = 'grab';
+                    document.querySelectorAll('.upper-canvas ').forEach((element) => { element.style.cursor = 'grab'; });
+
+
+                    this.canvas[this.currentSlide].renderAll();
+
+                    // Put your mousedown stuff here
+                    this.isDraggerMouseDown = false;
+
+                } else {
+                
+                    //console.log ("the dragger is out!!", this.isDragger)
+                }
+
+            });
+
+           
+        },   
+
+        resetModes()  {
+
+            //this.canvas[this.currentSlide].isDrawingMode = false;
+            this.isDrawingLine      = false;
+            this.isDrawing          = false;
+            this.isDrawingCircle    = false;           
+
+            //modes
+            this.isSelector     = false;
+            this.isDragger      = false;
+            this.isText         = false;
+            this.isBrush        = false;
+            this.isPencil       = false;
+            this.isLine         = false;
+            this.isCircle       = false;
+
+            this.isZoomIn       = false;
+            this.isZoomOut      = false;
+        },
+        handleBrushColors() {                
+            let colors = document.getElementsByClassName("colors")[0];
+
+            colors.addEventListener("click", (event) => {
+                this.brushColor = event.target.value || "#000000";
+
+                if (this.isBrush) {
+                    this.activateBrush()  
+                } else if(this.isPencil) {
+                    this.activatePencil()
+                } else if (this.isLine) {
+                    this.activateLine()
+                } 
+
+                //set Preview
+                this.setPreviewColor( this.brushColor )                  
+            });
+        },
+        setPreviewColor(color) {
+            this.colorPreviewStyle.backgroundColor = color;
+        },
+        setBrushColor(canvasNum, color) {
+            this.brushColor = color;
+            this.activateBrush(canvasNum);
+        },
+        setBrushStroke(canvasNum, stroke) {
+            this.stroke = stroke;
+            if (this.isBrush) {
+                this.activateBrush(canvasNum);
+            }
+        },
+        activateSelector() {        
+            this.removeEvents();
+            this.resetModes();
+            this.enableSelect();
+            this.changeObjectSelection(true);
+            this.mouseClickHandler();
+            this.isSelector = true;           
+
+            this.canvas[this.currentSlide].defaultCursor = 'default';   
+            this.canvas[this.currentSlide].selection = true;
+
+        },
+        activateDragger() {    
+
+            console.log("dragger is activated")    
+
+            this.removeEvents();
+            this.resetModes();
+            this.disableSelect();
+            this.changeObjectSelection(true);
+            this.mouseClickHandler();
+
+            this.isDragger = true;
+            this.drag();          
+        },
+        setCursosType(type) {
+            this.canvas[this.currentSlide].defaultCursor = type;
+            document.querySelectorAll('.upper-canvas ').forEach(function(element) {                            
+                element.style.cursor = type;
+            });
+        },
+        drag() {    
+            let isGrabbing = false;
+            let canvas = this.canvas[this.currentSlide];
+
+            this.setCursosType('grab');                 
+
+            canvas.on('mouse:down', (object) => {
+
+                isGrabbing = true;
+                this.setCursosType('grabbing');
+
+            }).on('mouse:move', (object) => {
+
+                if (this.isDragger == true && isGrabbing == true && object && object.e) {
+                     this.setCursosType('grabbing');
+                }
+
+            }).on('mouse:up', (object) => {               
+            
+                isGrabbing = false;
+                this.setCursosType('grab');
+            });
+
+        },
+        deactivateSelector() {        
+            this.removeEvents();
+            this.resetModes();
+            this.disableSelect();
+            this.changeObjectSelection(false);
+            this.isSelector = false;           
+            this.canvas[this.currentSlide].selection = false;
+            this.canvas[this.currentSlide].defaultCursor = 'not-allowed';
+        },      
+
+        activateRedo() {
+
+            console.log(this.history[this.currentSlide].length +" " + this.historyCounter)
+
+            let currentSlideLength = (this.history[this.currentSlide].length - 1);
+
+            if (this.historyCounter < currentSlideLength) 
+            {
+                this.historyCounter++;                
+                let prevData = this.history[this.currentSlide][this.historyCounter];
+                this.updateCanvas(this.canvas[this.currentSlide], prevData.data); 
+            } else {
+                console.log("no more things to redo")            
+            }
+        
+        },
+        activateUndo() {
+            if (this.historyCounter > 0) 
+            {
+                this.historyCounter--;                
+                let prevData = this.history[this.currentSlide][this.historyCounter];
+                this.updateCanvas(this.canvas[this.currentSlide], prevData.data); 
+            } 
+        },
+        activateZoomIn() 
+        {            
+            this.isZoomIn = true;
+            this.isZoomOut = false;    
+
+            let newScale = this.canvas[this.currentSlide]['scale'] + 0.10;
+
+            if (newScale < 0.01) {
+                this.rescale(0.10);
+            } else {
+                this.rescale(newScale);
+            }  
+        },
+        activateZoomOut() {
+ 
+            this.isZoomOut = true;
+            this.isZoomIn = false;
+
+            let newScale = this.canvas[this.currentSlide]['scale'] - 0.10
+
+            if (newScale < 0.01) {
+                this.rescale(0.10);          
+            } else {
+                this.rescale(newScale);
+            }          
+        },
+        activateBrush() 
+        {
+            this.removeEvents(); 
+            this.resetModes();
+            this.isBrush = true;
+            this.draw();
+        },        
+        activatePencil()  
+        {           
+            this.removeEvents();
+            this.resetModes();
+            this.isPencil = true; 
+            this.draw();
+        },
+        activateLine() {
+            this.removeEvents();   
+            this.resetModes();            
+            this.disableSelect();
+            this.isLine = true;
+            this.drawLine();
+        },
+        activateCircle() 
+        {
+            this.resetModes();
+            this.removeEvents();
+            this.disableSelect();
+            this.isCircle = true;
+            this.drawCircle();                  
+        },
+        activateTextEditor() 
+        {
+            this.removeEvents(); 
+            this.resetModes();     
+            this.disableSelect();
+            this.canvas[this.currentSlide].defaultCursor = 'text';
+            this.isText = true;
+            this.mouseClickHandler();
+        },
+        addInputText() 
+        {
+            let id = (new Date()).getTime().toString().substr(5);
+
+            let fabricText = new fabric.IText(this.inputText, {
+                id: id,
+                objecttype: 'text',
+                left: this.mouseX,
+                top: this.mouseY,
+                            
+                fontFamily: 'Times New Roman',
+                fill: this.brushColor,
+                fontSize: '40',
+                fontWeight: "bold",
+                fontStyle: 'normal',
+
+                //stroke: "red",
+                //textBackgroundColor: "green",
+                //strokeWidth: "1",                
+                //"underline: false
+                //"overline: false
+                //"linethrough: false"
+                //deltaY: false
+
+                evented: true,
+                selectable: true,
+                editable: true,
+            });
+            this.canvas[this.currentSlide].add(fabricText);
+
+
+            fabricText.on('editing:entered', ()  =>
+            {
+                console.log("editing entered # 1")
+                fabricText.set("fill", this.brushColor);
+                this.canvas[this.currentSlide].renderAll();
+
+                //hack for modal unable to edit iText bug
+                $('#modal-lesson-slider').find('.modal-content').attr("tabindex", 9999999999);
+               
+            });
+
+            let data = this.canvasGetJSON();            
+            this.canvasSendJSON(this.canvas[this.currentSlide], data);     
+            this.saveSlideHistoryData(data, this.currentSlide);
+
+        },        
+        drawCircle() {
+            
+            let canvas = this.canvas[this.currentSlide];
+
+            canvas.on('mouse:down', (object) => {
+
+                this.isDrawingCircle = true;               
+                var pointer = canvas.getPointer(object.e);                
+                this.origX = pointer.x;
+                this.origY = pointer.y;
+                this.circle = new fabric.Ellipse({
+                    left:   this.origX,
+                    top:    this.origY,
+                    rx: 0,
+                    ry: 0, 
+                    strokeWidth: this.stroke,
+                    fill: 'transparent',
+                    stroke: this.brushColor,
+                    selectable: true,
+                    transparentCorners: false,
+                    hasBorders: false,
+                    hasControls: false
+                });
+
+               canvas.add(this.circle).setActiveObject(this.circle);
+
+            }).on('mouse:move', (object) => {
+
+                if (this.isDrawingCircle ) {
+
+                     this.disableSelect();
+                    
+
+                    var pointer =canvas.getPointer(object.e);
+                    var activeObj = canvas.getActiveObject();
+
+                    if (this.origX > pointer.x) {
+                        activeObj.set({
+                            left: Math.abs(pointer.x)
+                        });
+                    }
+
+                    if (this.origY > pointer.y) {
+                        activeObj.set({
+                            top: Math.abs(pointer.y)
+                        });
+                    }
+                                        
+                    activeObj.set({
+                        rx: Math.abs(this.origX - pointer.x) / 2
+                    });
+
+                    activeObj.set({
+                        ry: Math.abs(this.origY - pointer.y) / 2
+                    });
+
+                    activeObj.setCoords();
+                    canvas.renderAll(); 
+                }
+
+            }).on('mouse:up', (object) => {
+
+                this.isDrawingCircle = false;
+
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);  
+                this.saveSlideHistoryData(data, this.currentSlide);
+            });
+
+        },        
+        drawLine() {   
+      
+            this.canvas[this.currentSlide].on('mouse:down', (object) => {
+
+                this.isDrawingLine = true;                
+
+                var pointer = this.canvas[this.currentSlide].getPointer(object.e);
+                var points = [ pointer.x, pointer.y, pointer.x, pointer.y ];
+
+                this.line = new fabric.Line(points, {
+                    strokeWidth: this.stroke,
+                    //strokeDashArray: [15, 5],
+                    fill: this.brushColor,
+                    stroke: this.brushColor,
+                    originX: 'center',
+                    originY: 'center',
+                    selectable: true,
+                    hoverCursor: "crosshair"
+                });
+                this.canvas[this.currentSlide].add(this.line);
+
+            }).on('mouse:move', (object) => {
+
+                if (this.isDrawingLine ) {                   
+                   this.disableSelect();
+                    var pointer = this.canvas[this.currentSlide].getPointer(object.e);
+                    this.line.set({ x2: pointer.x, y2: pointer.y });
+                    this.line.setCoords();
+                    this.canvas[this.currentSlide].renderAll();
+
+                    //let data = this.canvasGetJSON();
+                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);         
+                }
+
+            }).on('mouse:up', (object) => {
+             
+                this.isDrawingLine = false;
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);
+
+                this.saveSlideHistoryData(data, this.currentSlide);
+
+            });
+
+        },
+        draw() 
+        {
+            this.isDrawing = false;          
+            this.canvas[this.currentSlide].freeDrawingBrush.color = this.brushColor;   
+
+            if (this.isPencil) {
+                this.canvas[this.currentSlide].freeDrawingBrush.width = 1;
+                this.canvas[this.currentSlide].isDrawingMode = true;
+
+            } else if (this.isBrush) {
+                this.canvas[this.currentSlide].freeDrawingBrush.width = this.stroke;  
+                this.canvas[this.currentSlide].isDrawingMode = true;
+
+            } else {
+                 this.canvas[this.currentSlide].isDrawingMode = false;
+            }
+
+            this.canvas[this.currentSlide].on('mouse:down', ({e})  => {
+
+                if (this.isBrush || this.isPencil) {
+                    this.isDrawing = true;
+                } else {
+                    this.isDrawing = false;
+                }
+                
+            }).on('mouse:move', (object) => {
+
+                if (this.isDrawing) {
+
+                    //const pointer = this.canvas[this.currentSlide].getPointer(object);
+
+                    //const options = {pointer, e:{}} // required for Fabric 4.3.1
+                    //this.drawRealTime(pointer, options);
+
+                    //console.log("draw drag!")
+                    
+                   // let data = this.canvasGetJSON();
+                    //this.canvasSendJSON(this.canvas[this.currentSlide], data);      
+                }
+            }).on('mouse:up', (object) => {
+
+                this.isDrawing = false;
+                let data = this.canvasGetJSON();
+                this.canvasSendJSON(this.canvas[this.currentSlide], data);
+
+                this.saveSlideHistoryData(data, this.currentSlide);
+            
+            });            
+
+        },
+       
+        resetInputTextModal() {
+            this.inputText = "";
+        },
+        removeEvents() {
+
+            this.canvas[this.currentSlide].isDrawingMode = false;
+            this.canvas[this.currentSlide].selection = false;
+            this.canvas[this.currentSlide].off('mouse:down');
+            this.canvas[this.currentSlide].off('mouse:up');
+            this.canvas[this.currentSlide].off('mouse:move');
+        },
+        changeObjectSelection(value) {
+            this.canvas[this.currentSlide].forEachObject(function (obj) {
+                obj.selectable = value;
+            });
+            this.canvas[this.currentSlide].renderAll();
+        },
+        enableSelect() {
+
+            this.canvas[this.currentSlide].defaultCursor = 'default';
+        
+            this.canvas[this.currentSlide].forEachObject(function (obj) {
+                obj.selectable = true;
+                obj.evented = true;
+                obj.hasControls = true;
+                
+            });
+            this.canvas[this.currentSlide].renderAll();        
+        },
+        disableSelect() 
+        {
+
+            if (this.isText == true) {
+
+                this.canvas[this.currentSlide].defaultCursor = 'text';  
+
+                console.log("disable select")
+
+            } else if (this.isSelector) {
+                    
+                this.canvas[this.currentSlide].defaultCursor = 'default';   
+
+            } else  if (this.isDragger) {
+
+                this.canvas[this.currentSlide].defaultCursor = 'grab';  
+                
+                console.log("disable select:: grab")
+
+            } else  if (this.isBrush || this.isPencil || this.isLine || this.isCircle) { 
+
+                 this.canvas[this.currentSlide].defaultCursor = 'crosshair';
+
+            } else {
+            
+                this.canvas[this.currentSlide].defaultCursor = 'default';   
+            }
+           
+            
+            this.canvas[this.currentSlide].forEachObject(function (obj) {
+                obj.selectable = false;
+                obj.evented = false;
+                obj.hasControls = false;             });
+
+            this.canvas[this.currentSlide].renderAll();            
+        },
+        setText() {
+            var obj = this.canvas[this.currentSlide].getActiveObject();
+            if (obj) {
+                if (param == 'color') {
+                    obj.setColor(value);
+                } else {
+                    obj.set(param, value);
+                }
+                this.canvas[this.currentSlide].renderAll();
+            } 
+            this.mouseClickHandler() 
+        },
+        deleteObj()
+        {
+            var selectedObj = this.canvas[this.currentSlide].getActiveObject();
+
+            if (selectedObj) 
+            {            
+                if (selectedObj.type === 'activeSelection') {
+                    selectedObj.canvas = this.canvas[this.currentSlide];
+                    selectedObj.forEachObject((obj)=> {
+                        selectedObj.canvas.remove(obj);
+
+                        let data = this.canvasGetJSON();
+                        this.canvasSendJSON(this.canvas[this.currentSlide], data);                                        
+                    });
+                } else if(selectedObj !== null ) {
+                    this.canvas[this.currentSlide].remove(selectedObj);     
+
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvas[this.currentSlide], data);              
+
+                    this.saveSlideHistoryData(data, this.currentSlide);  
+                }                
+            }
+            this.mouseClickHandler();
+        },
+        getBaseURL(path) {
+            return window.location.origin + "/" +path
+        },        
+
+    }
+};
+</script>
+
+
+<style lang="scss">
+
+    #audio-container {
+        display: inline-block;
+        vertical-align: middle;
+        height: 70px;
+    }
+    
+    #newSlideButton {
+        font-size: 45px;
+        display: inline-block;
+        vertical-align: top;
+        margin: 10px 0px 10px;
+    }
+
+
+</style>

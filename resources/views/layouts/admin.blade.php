@@ -187,6 +187,30 @@
         
         <footer class="container py-4 px-0 bg-light">
 
+            @if (Auth::user()->user_type == "TUTOR")
+
+            <member-caller-component
+                :is-broadcaster="true"    
+                :user-Info="{{  json_encode(Auth::user()) }}" 
+                :member-Info="{{  json_encode(Auth::user()->tutorInfo) }}" 
+
+                canvas-Server="{{ env('APP_CANVAS_SERVER_URL') }}"
+                editor-ID="canvas"
+                canvas-Width="500"
+                canvas-Height="500"
+
+                api_token="{{ Auth::user()->api_token }}" 
+                csrf_token="{{ csrf_token() }}"
+                >
+            </member-caller-component>
+            
+            <lesson-selector-component
+                :user="{{  json_encode(Auth::user()) }}" 
+                api_token="{{ Auth::user()->api_token }}" 
+                csrf_token="{{ csrf_token() }}">
+            </lesson-selector-component>            
+            @endif
+
 
             <div class="container border-top">
                 <div class="row">
@@ -377,7 +401,6 @@
 
             function addMemberReplyBubble(image, data) 
             {
-                console.log(data.message);
 
                 if (data.message) {
                   

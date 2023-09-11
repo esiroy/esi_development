@@ -17,7 +17,8 @@ use App\Models\ReportCardDate;
 use App\Models\Questionnaire;
 use App\Models\QuestionnaireItem;
 
-
+use App\Models\LessonHistory;
+use App\Models\SatisfactionSurvey;
 
 use Gate;
 use Validator;
@@ -35,26 +36,7 @@ class QuestionnaireController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
+  
     /**
      * Store a newly created resource in storage.
      *
@@ -63,7 +45,10 @@ class QuestionnaireController extends Controller
      */
     public function store(Request $request)
     {
+
         $id = $request->scheduleitemid;
+
+        //check if it the parent
 
         $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();    
         
@@ -215,9 +200,20 @@ class QuestionnaireController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id, ReportCard $reportcards)
+    public function show($scheduleID, ReportCard $reportcards, LessonHistory $lessonHistory, SatisfactionSurvey $satisfactionSurvey)
     {   
-        $schedule = \App\Models\ScheduleItem::find($id);
+       
+
+       $lessonHistoryItem = $lessonHistory->getParentHistoryItem($scheduleID);
+       $isMerged = $lessonHistoryItem->isMerged; 
+
+       if ($isMerged) {        
+            $parentHistoryID = $lessonHistoryItem->parentHistoryID;
+            $lessonHistory = $lessonHistoryItem->lessonHistory;
+            $scheduleID = $parentHistoryID;
+       }       
+
+        $schedule = \App\Models\ScheduleItem::find($scheduleID);
 
         if ($schedule) 
         {
@@ -227,9 +223,11 @@ class QuestionnaireController extends Controller
                 $member = Member::where('user_id', $user->id)->first();
                 $latestReportCard = $reportcards->getLatest($member->user_id);
 
+                $rating = $satisfactionSurvey->getRating($scheduleID);
+
                 if ($member) {
     
-                    $questionnaire = Questionnaire::where('schedule_item_id', $id)->first();
+                    $questionnaire = Questionnaire::where('schedule_item_id', $scheduleID)->first();
             
                     if (isset($questionnaire->id)) {
     
@@ -239,11 +237,13 @@ class QuestionnaireController extends Controller
                         $questionnaireItem3 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_3")->first();
                         $questionnaireItem4 = QuestionnaireItem::where('questionnaire_id', $questionnaire->id)->where('question', "QUESTION_4")->first();
                         
-                        return view('modules.questionnaire.edit', compact('member', 'latestReportCard', 'questionnaire', 'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
+                        return view('modules.questionnaire.edit', 
+                                compact('member', 'latestReportCard', 'questionnaire', 'rating',
+                                        'questionnaireItem1', 'questionnaireItem2', 'questionnaireItem3', 'questionnaireItem4'));
     
                     } else {  
                         //CREATE: new questionnaire 
-                        $scheduleItem = ScheduleItem::find($id);
+                        $scheduleItem = ScheduleItem::find($scheduleID);
     
                         if ($scheduleItem) {
     
@@ -253,7 +253,7 @@ class QuestionnaireController extends Controller
                             $questionnaireItem3 = null;
                             $questionnaireItem4 = null;
                             
-                            return view('modules.questionnaire.create', compact('member', 'latestReportCard', 'scheduleItem'));
+                            return view('modules.questionnaire.create', compact('member',  'rating', 'latestReportCard', 'scheduleItem'));
     
                         } else {
                             

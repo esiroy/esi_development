@@ -167,9 +167,10 @@
                                     <!-- COUNTER FOR PAGINATION -->
                                     @foreach ($reserves as $reserve)
 
+                                
                                     <tr class="row_reserve_{{$reserve->id}} reserved_items">
                                         <td style="text-align: center;">
-
+                                      
                                             @if (date('H', strtotime($reserve->lesson_time)) == '00') 
                                                 {{  date('Y年 m月 d日 24:i', strtotime($reserve->lesson_time ." - 1 day")) }} - {{  date('24:i', strtotime($reserve->lesson_time." + 25 minutes ")) }}
                                             @else 
@@ -190,9 +191,54 @@
                                         <td style="text-align: center;">
                                             <!--<a href="javascript:void(0)" data-toggle="modal" data-target="#tutorMemoModal" data-id="{{ $reserve->id }}">-->
 
-                                            <a href="javascript:void(0)" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
-                                                <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
+                                            @php 
+                                                /* call the tutor*/
+                                                
+                                                $tutorData = [
+                                                    'userid'    => $tutor->user_id,  
+                                                    'nickname'  => $tutor->nickname,
+                                                    'username'  => $tutor->user->username,                                                     
+                                                    'firstname' => $tutor->user->firstname,
+                                                    'lastname'  => $tutor->user->lastname,
+                                                    'email'     => $tutor->user->email,
+                                                    'image'     => url($tutor->image()),
+                                                    'type'      => $tutor->user->user_type,                                               
+                                                ];
+
+                                                $user = Auth::user();
+                                                $memberData = [
+                                                    'userid'    => $user->id,    
+                                                    'nickname'  => $user->memberInfo->nickname,
+                                                    'username'  => $user->username, 
+                                                    'firstname' => $user->firstname,
+                                                    'lastname'  => $user->lastname,   
+                                                    'email'     => $user->email,  
+                                                    'image'     => url($user->image()),
+                                                    'type'      => $user->user_type,
+                                                ];
+
+
+                                                $reservationData = [
+                                                    'schedule_id'       => $reserve->id,
+                                                    'member_id'          => $reserve->member_id,
+                                                    'duration'          => $reserve->duration,
+                                                    'lesson_time'       => $reserve->lesson_time,
+                                                    'lessonTimeRage'    => LessonTimeRange($reserve->lesson_time),
+                                                    'schedule_status'   => $reserve->schedule_status
+                                                ];
+                                            @endphp
+
+                                            @if ($user->memberInfo->is_myroom_enabled == true)                       
+                                            <a href="javascript:void(0)" class="small lesson-selector" onClick="window.lessonSelectorComponent.showLessonSelectionModal('{{ json_encode($tutorData) }}', '{{ json_encode($memberData) }}', '{{ json_encode($reservationData) }}')">
+                                                Select Lesson
                                             </a>
+                                            @endif
+
+                                            <div>
+                                                <a href="javascript:void(0)"  class="small" onClick="openMemo('{{ $reserve->id }}')" data-toggle="modal" data-target="tutorMemoReplyModal" data-id="{{ $reserve->id }}">
+                                                    <img src="images/iEmail.jpg" border="0" align="absmiddle"> 講師への連絡
+                                                </a>
+                                            </div>
                                         </td>
                                         <td style="text-align: center;">
 

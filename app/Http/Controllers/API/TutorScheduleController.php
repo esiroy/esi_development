@@ -14,6 +14,13 @@ use App\Models\ScheduleItem;
 use App\Models\MemoReply;
 use App\Models\Shift;
 use App\Models\Tutor;
+
+use App\Models\LessonHistory;
+use App\Models\LessonSlideHistory;
+use App\Models\SatisfactionSurvey;
+use App\Models\SatisfactionSurveyDetails;
+
+
 use DB, Storage, App;
 
 class TutorScheduleController extends Controller
@@ -769,7 +776,10 @@ class TutorScheduleController extends Controller
 
         $tutor = Tutor::find($tutorID);
 
-        $schedule = ScheduleItem::where('tutor_id', $tutor->user_id)->where('duration', $duration)->where('valid', true)->where('lesson_time', $lessonTime)->first();
+        $schedule = ScheduleItem::where('tutor_id', $tutor->user_id)
+                ->where('duration', $duration)
+                ->where('valid', true)
+                ->where('lesson_time', $lessonTime)->first();
 
         if ($schedule) {
             //set the deleted schedule id
@@ -810,7 +820,29 @@ class TutorScheduleController extends Controller
             $transactionObj = new AgentTransaction();
             $transaction = $transactionObj->addMemberTransactions($memberTransactionData);
             
+            //Slides
+            $lessonHistory = LessonHistory::where('schedule_id', $schedule->id)->get();
+
+            foreach ($lessonHistory as $lessonItem) {
+                $lessonSlides = LessonSlideHistory::where('lesson_history_id', $lessonItem->id)->get();
+                foreach ($lessonSlides as $slideItem) {
+                    $slideItem->delete();
+                }
+                $lessonItem->delete();
+            }
+
+         
             
+            $surveys = SatisfactionSurvey::where('schedule_id', $schedule->id)->get();
+
+            foreach ($surveys as $surveyItem) {
+                $surveyDetails = SatisfactionSurveyDetails::where('lesson_survey_id', $surveyItem->id)->get();
+                foreach ($surveyDetails as $surveyDetail) {
+                    $surveyDetail->delete();
+                }
+                $surveyItem->delete();
+            }
+
             $schedule->delete();
 
            

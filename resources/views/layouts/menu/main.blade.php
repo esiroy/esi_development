@@ -9,7 +9,11 @@
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('admin/questionnaires') }}">Manage</a>
                 @endcan
 
-
+                @if (Auth::user()->user_type == 'ADMINISTRATOR' || Auth::user()->user_type == 'MANAGER')
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/filemanager') }}">
+                  File Manager
+                </a>
+                @endif
 
                 @can('manage_access', Auth::user())
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="{{ url('admin/minitest/categories') }}">
@@ -39,7 +43,8 @@
                 </a>
                 @endif
 
-
+                
+ 
 
 
             </nav>

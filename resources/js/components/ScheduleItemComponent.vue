@@ -145,8 +145,6 @@
                             </th>
 
                             <td v-for="time in timeList" :key="time.id"> 
-
-
                                 <div :id="'btnAdd-' + tutor.user_id + '-' + time.startTime"
                                     class="addSchedule SCHEDULE_ITEM" 
                                     v-show="checkButton({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime':time.startTime, 'endTime': time.endTime })">
@@ -162,23 +160,32 @@
                                     <div class="btn-container">
 
                                         <div class="iReportCard2" v-show="hasQuestionnaire({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
-                                            <a href="javascript:void(0);" @click="showQuestionnaire({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
+                                            <a :href="'questionnaires/'+getScheduleID({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})" 
+                                                @click.prevent="showQuestionnaire({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
                                                 <img src="/images/iQuestionnaire.gif">
                                             </a>
                                         </div>
 
 
                                         <div class="iReportCard2" v-show="hasReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})">
-                                            <a href="javascript:void(0);" @click="showReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iReportCard2.gif"></a>
+                                            <a :href="'reportCard/'+getScheduleID({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})" 
+                                            @click.prevent="showReportCard({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iReportCard2.gif"></a>
                                         </div>
 
                                         <div class="iMail2" v-show="checkMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})" >
-                                            <a href="javascript:void(0);" @click="getMemberMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iMail2.gif"></a>
+                                            <a :href="'message/'+getScheduleID({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})" 
+                                            @click.prevent="getMemberMemo({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iMail2.gif"></a>
                                         </div>
 
                                         
-                                        <div class="iEdit"><a href="javascript:void(0);" @click="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a></div>
-                                        <div class="iDelete"><a href="javascript:void(0);" @click="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a></div>
+                                        <div class="iEdit">
+                                            <a :href="'edit/'+getScheduleID({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})" 
+                                            @click.prevent="editSchedule({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iEdit.gif"></a>
+                                        </div>
+                                        <div class="iDelete">
+                                            <a :href="'delete/'+getScheduleID({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})" 
+                                            @click.prevent="confirmDelete({'tutorID':tutor.id, 'tutorUserID': tutor.user_id, 'startTime': time.startTime, 'endTime': time.endTime})"><img src="/images/iDelete.gif"></a>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -396,14 +403,33 @@ export default {
             }
             catch(err) { return false; } 
         },    
+        redirect(url) {
+            window.location.href = window.location.origin + "/" + url
+        },     
+        getScheduleID(data) {
+            try {
+                if (data.startTime == '23:00' || data.startTime == '23:30') {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];    
+                    return lessonData.id;
+                               
+                } else {
+                    let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
+                    return lessonData.id;
+                    
+                }                        
+            }
+            catch(err) { return false; } 
+        },
         showQuestionnaire(data) {
             try {
                 if (data.startTime == '23:00' || data.startTime == '23:30') {
                     let lessonData = this.lessonsData[data.tutorUserID][this.nextDay][data.startTime];    
-                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/questionnaires/"+lessonData.id, "_self");                
+                    this.redirect("admin/questionnaires/"+lessonData.id)
+                    //window.open(window.location.protocol + '//' + window.location.hostname + "/admin/questionnaires/"+lessonData.id, "_self");                
                 } else {
                     let lessonData = this.lessonsData[data.tutorUserID][this.scheduled_at][data.startTime];
-                    window.open(window.location.protocol + '//' + window.location.hostname + "/admin/questionnaires/"+lessonData.id, "_self");   
+                    this.redirect("admin/questionnaires/"+lessonData.id)
+                    //window.open(window.location.protocol + '//' + window.location.hostname + "/admin/questionnaires/"+lessonData.id, "_self");   
                 }                        
             }
             catch(err) { return false; } 

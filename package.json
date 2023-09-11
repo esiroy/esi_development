@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
     "name": "esi-reservation-system-with-chat-scores",
     "version": "1.0.0",
     "private": true,
@@ -46,4 +47,94 @@
         "vuejs-datepicker": "^1.6.2",
         "vuelidate": "^0.7.5"
     }
+=======
+  "name": "esi-reservation",
+  "version": "1.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "watch-poll": "npm run watch -- --watch-poll",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --disable-host-check --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.17.12",
+    "@fortawesome/fontawesome-free": "^5.15.2",
+    "@types/fabric": "^4.5.12",
+    "axios": "^0.19.2",
+    "bootstrap": "^4.5.3",
+    "cross-env": "^7.0.3",
+    "fs": "^0.0.1-security",
+    "jquery": "^3.5.1",
+    "jquery-ui": "^1.12.1",
+    "laravel-mix": "^5.0.7",
+    "lodash": "^4.17.20",
+    "popper.js": "^1.12",
+    "resolve-url-loader": "^2.3.1",
+    "sass": "^1.27.0",
+    "sass-loader": "^8.0.0",
+    "vue": "^2.6.12",
+    "vue-fabric": "^0.1.42",
+    "vue-template-compiler": "^2.6.12"
+  },
+  "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^35.4.0",
+    "@ckeditor/ckeditor5-vue": "^4.0.1",
+    "@ckeditor/ckeditor5-vue2": "^3.0.1",
+    "bootstrap-vue": "^2.17.3",
+    "chart.js": "^2.9.4",
+    "ckeditor4-vue": "^2.2.1",
+    "cropperjs": "^1.5.13",
+    "datatables.net": "^1.10.22",
+    "font-awesome": "^4.7.0",
+    "md5": "^2.3.0",
+    "moment-timezone": "^0.5.34",
+    "net": "^1.0.2",
+    "peer": "^0.6.1",
+    "peerjs": "^1.4.7",
+    "qs": "^6.9.4",
+    "v-select2-component": "^0.4.3",
+    "vue-chartjs": "^3.5.1",
+    "vue-ckeditor2": "^2.1.5",
+    "vue-clipboard2": "^0.3.3",
+    "vue-image-markup": "^3.2.0",
+    "vue-moment": "^4.1.0",
+    "vue-multiselect": "^2.1.6",
+    "vue-slider-component": "^3.2.15",
+    "vue-socket.io": "^3.0.10",
+    "vue-star-rating": "^1.7.0",
+    "vue-touch": "^1.1.0",
+    "vue-tree-list": "^1.5.0",
+    "vue-upload-component": "^2.8.22",
+    "vue-webrtc": "^3.0.1",
+    "vuedraggable": "^2.24.3",
+    "vuejs-datepicker": "^1.6.2",
+    "vuelidate": "^0.7.5"
+  },
+  "presets": [
+    "@babel/preset-react"
+  ],
+  "description": "<p align=\"center\"><img src=\"https://res.cloudinary.com/dtfbvvkyp/image/upload/v1566331377/laravel-logolockup-cmyk-red.svg\" width=\"400\"></p>",
+  "main": "webpack.mix.js",
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/esiroy/esi_development.git"
+  },
+  "keywords": [
+    "reservation",
+    "system"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/esiroy/esi_development/issues"
+  },
+  "homepage": "https://github.com/esiroy/esi_development#readme"
+>>>>>>> slideshow_v9
 }

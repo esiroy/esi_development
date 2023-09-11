@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Support\Facades\Storage;
+
+
 class Tutor extends Model
 {
     public $table = 'tutors';
@@ -42,6 +45,21 @@ class Tutor extends Model
        return $tutors;
     }
 
+    public function getActiveTutors($shift = 4) {
+       //Updated: Remove terminated tutor on the list
+       $tutors = Tutor::where('lesson_shift_id', $shift)       
+       ->join('users', 'users.id', '=', 'tutors.user_id')
+       ->orderBy('sort', 'ASC')
+       ->select('tutors.*', 'users.firstname', 'users.lastname', 'users.valid')
+        ->where('users.valid', 1)
+        ->where('tutors.is_terminated', false)
+        ->get();
+
+       return $tutors;
+    }
+
+
+
 
     public function getTutorByID($id, $shift = 4) {
        //Updated: Remove terminated tutor on the list
@@ -55,4 +73,16 @@ class Tutor extends Model
        ->get();
        return $tutors;
     }
+
+    public function image() 
+    {        
+        $userImage = UserImage::where('user_id', $this->user_id)->where('valid', 1)->first();
+
+        if ($userImage) {
+            return  Storage::url($userImage['original']);
+        } else {
+            return null;
+        }       
+     
+    }    
 }

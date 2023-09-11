@@ -10,4 +10,9 @@ class Questionnaire extends Model
     
     protected $guarded = array('created_at', 'updated_at');
 
+    public function questionnaireItems()
+    {
+        return $this->hasMany(QuestionnaireItem::class, 'questionnaire_id');
+    }
+
 }
