@@ -66,57 +66,48 @@ class dummyController extends Controller
     {
     }
 
-<<<<<<< HEAD
-    public function index() {
-
-        phpinfo();
-        exit();
-
-            $fieldsArray[] = ['name'=> "name", 'type' => "testype", "value"=> "roy test value"];  
-        
-
-            //render the fields
-            $formatEntryHTML = view('emails.writing.mailEntryHTML', compact('fieldsArray'))->render();
-
-            //send the authenticated user the email, since the Authenticated user
-            $user = Auth::user();
-            //E-Mail Template
-            $emailTemplate = 'emails.writing.autoreply';           
-
-            //E-Mail Recipient
-            $emailTo['name'] =  "roy";
-            $emailTo['email'] = "abellana@gmail.com"; 
-
-            //Email Reply To
-            $emailFrom['name']   = Config::get('mail.from.name');
-            $emailFrom['email']  = Config::get('mail.from.address');
-
-            $emailSubject =  'testing mailer v1'; //Information on correction service reception
-            $emailMessage =  $formatEntryHTML;
-
-            $job = new \App\Jobs\SendAutoReplyJob($emailTo, $emailFrom, $emailSubject, $emailMessage, $emailTemplate);
-            dispatch($job);         
-
-            echo "dispatch !";
-=======
-    public function index(Folder $folder, $memberID = 20372) {
+    public function index(Request $request, Folder $folder, $memberID = 20372) {
     
-        $recentLessonHistory   = $folder->getRecentLessonHistory($memberID, "COMPLETED");
-        $folderID       = $folder->getNextFolderID($memberID);
-   
+        if (isset($request->id)) { 
+            $currentFolderId = $request->id; // Set the ID of the current folder with requested folder id
+            $currentFolder = $folder->getCurrentFolder($currentFolderId);
+        } else {
+            $currentFolder = $folder->getFirstRootFolder(); //get the first folder from the root folder which has 0
+        }
 
-
-        echo "<pre>";
-        echo ($recentLessonHistory->schedule_id);
+        echo "searching : " . $currentFolder->id ." - " . $currentFolder->folder_name;
         echo "<BR>";
-        echo "FOLDER ID : " . $recentLessonHistory->folder_id;
+        echo "parent id : " . $currentFolder->parent_id;
+        echo "<BR>";
+
+        echo "<p>=============================</p>";
+
+
+        $nextFolderWithFiles = $folder->findNextFolderWithFiles($currentFolder->id);
         
-        echo "</pre>";
+        if ($nextFolderWithFiles) {
 
-        echo "test : " . $folderID;
+            $folderId = $nextFolderWithFiles->id;
+            $folderName = $nextFolderWithFiles->folder_name;
+        
+            echo $folderId ." " . $folderName; 
+
+            // Do something with $folderId and $folderName
+        } else {
+
+            echo "none matching";
+            echo "<BR>";
 
 
 
+            $parentSiblings             = $folder->findFirstParentSiblingWithFiles($currentFolder->id);
+            echo "Reverse Find: <BR>";
+            print_r("ID : " . $parentSiblings->id ." - ");
+            print_r($parentSiblings->folder_name );
+            
+
+          
+        }       
     }
 
     
@@ -238,7 +229,6 @@ class dummyController extends Controller
         
         
 
->>>>>>> slideshow_v9
     
         $isLessonStarted            = true;
         $isUserAbsent               = "false";
@@ -386,22 +376,6 @@ class dummyController extends Controller
 
     }
 
-<<<<<<< HEAD
-    public function lessons_remaining_test( Request $request, ScheduleItem $scheduleItem, Member $memberInfo) {
-
-        $memberID = $request->memberID;
-
-        $memberLessonsRemaining  = $memberInfo->getMemberLessonLimit($memberID);
-        $totalReserved = $scheduleItem->getTotalReservedForCurrentMonth($memberID);
-
-        echo  "Lesson remaining : ". $memberLessonsRemaining ."<BR>";
-        echo  "total Reserved : ". $totalReserved;
-
-        echo "<pre>";
-    }
-
-    public function time(ScheduleItem $scheduleItem) {
-=======
     public function consecutiveLessons(Request $request, Folder $folder, ScheduleItem $scheduleItem) {
     
         echo "<p>". Auth::user()->id ."</p>";
@@ -419,7 +393,6 @@ class dummyController extends Controller
         echo "<pre>";
         print_r ($consecutiveSchedules);
         echo "</pre>";
->>>>>>> slideshow_v9
     
     }
 

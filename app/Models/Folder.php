@@ -60,23 +60,23 @@ class Folder extends Model
     }
 
 
-  
+      
     /**
     * @return  subcategories of the folder.
     */
-    public function subCats()
+    public function subfolders()
     {
-        return $this->hasMany(self::class, 'parent_id', 'id')->where('privacy', 'public');
+        return $this->hasMany(Folder::class, 'parent_id', 'id');
     }
-
 
     /**
      * @return  files of the folder.
      */
     public function files()
-    {        
-        return $this->hasMany('App\Models\File')->orderBy('order_id', 'ASC');
+    {
+        return $this->hasMany(File::class, 'folder_id', 'id')->orderBy('order_id', 'ASC');;
     }
+
 
    
 
@@ -868,6 +868,125 @@ class Folder extends Model
         }
    
         
+    }
+
+
+
+    /* New Version */
+
+    function getCurrentFolder($id) {
+        $folder = Folder::where('id', $id)->first();
+
+        if ($folder)
+            return $folder;
+        else 
+            return null;
+    }
+
+
+    function getFirstRootFolder() {
+        $firstFolder = Folder::where('parent_id', 0)->orderBy('order_id', 'ASC')->first();
+        if ($firstFolder) {
+            return $firstFolder;
+        } else {
+            return null;
+        }        
+    }
+
+
+    
+
+
+    // Define a recursive function to find the next folder with files
+    function findNextFolderWithFiles($currentFolderId) {
+        // Search for the next folder with files in subfolders
+        $subfolders = Folder::where('parent_id', $currentFolderId)
+            ->orderBy('order_id', 'ASC')
+            ->get();
+        
+        foreach ($subfolders as $subfolder) {
+            $nextFolder = $this->findNextFolderWithFiles($subfolder->id);
+            
+            if ($nextFolder) {
+                return $nextFolder;
+            }
+        }
+    
+        // If no matching folder is found in subfolders, search at this level
+        $query = Folder::where('parent_id', $currentFolderId)
+            ->whereHas('files')
+            ->orderBy('order_id', 'ASC');
+    
+        $nextFolderWithFiles = $query->first();
+    
+        if ($nextFolderWithFiles) {
+            return $nextFolderWithFiles;
+        }
+    
+        return null;
+    }   
+
+    /* get first */
+    function findFirstParentSiblingWithFiles($currentFolderId) {
+        $currentFolder = Folder::findOrFail($currentFolderId);
+
+        // Find the parent folder
+        $parentFolder = Folder::find($currentFolder->parent_id);
+    
+        if (!$parentFolder) {
+            return null; // No parent folder found; current folder might be at the root
+        }
+    
+        // Get all siblings of the parent folder with files and the specified order_id condition
+        $siblings = Folder::where('parent_id', $parentFolder->parent_id)
+            ->where('id', '<>', $parentFolder->id)
+            ->where('order_id', '>', $currentFolder->order_id)
+            ->orWhere(function ($query) use ($parentFolder, $currentFolder) {
+                $query->where('parent_id', $parentFolder->parent_id)
+                    ->where('order_id', '>', $parentFolder->order_id);
+            })
+            ->get();
+    
+        // Filter the siblings that have files
+        $siblingsWithFiles = $siblings->filter(function ($sibling) {
+            return $sibling->files->count() > 0;
+        });
+    
+        if ($siblingsWithFiles->count() > 0) {
+            return $siblingsWithFiles->first(); // Found the first sibling with files and order condition
+        } else {
+            // Recursively check the parent folder's parent
+            return $this->findFirstParentSiblingWithFiles($parentFolder->id);
+        }
+    }
+
+    /* get all*/
+    function findParentSiblingsWithFiles($currentFolderId) {
+        $currentFolder = Folder::findOrFail($currentFolderId);
+    
+        // Find the parent folder
+        $parentFolder = Folder::find($currentFolder->parent_id);
+    
+        if (!$parentFolder) {
+            return []; // No parent folder found; current folder might be at the root
+        }
+    
+        // Get all siblings of the parent folder
+        $siblings = Folder::where('parent_id', $parentFolder->parent_id)
+            ->where('id', '<>', $parentFolder->id)
+            ->get();
+    
+        // Filter the siblings that have files
+        $siblingsWithFiles = $siblings->filter(function ($sibling) {
+            return $sibling->files->count() > 0;
+        });
+    
+        if ($siblingsWithFiles->count() > 0) {
+            return $siblingsWithFiles->toArray(); // Found siblings with files
+        } else {
+            // Recursively check the parent folder's parent
+            return $this->findParentSiblingsWithFiles($parentFolder->id);
+        }
     }
 
 }
