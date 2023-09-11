@@ -31,82 +31,161 @@ class MemberFeedbackController extends Controller {
         $feedback        = $request->feedback;  
         $memberNotes    = $request->notes;    
 
+        if (count($consecutiveSchedules) > 1) {
 
-        $reportCardData = [
-            'schedule_item_id'  => $scheduleID,          
-            'member_id'         => $memberID,        
-            'comment'           => $feedback,
-            'grade'             => $lessonGrade,
-            //Materials
-            'lesson_course'     => $material->course ?? "",
-            'lesson_material'   => $material->material ?? "",
-            'lesson_subject'    => $material->subject ?? "",
-            //Course 
-            'course_category_id'    => null,
-            'course_item_id'        => null,                
-            'lesson_level'          => null,
-            //Validity
-            'valid'             =>  true,            
-        ];
+            foreach ($consecutiveSchedules['lessons'] as $key => $lesson) {
 
-         $reportCardCreated      = $reportcard->saveReportCard($reportCardData);
+                //HomeWork
+                $newHomeWork = $homeWork->replicate();
+                $newHomeWorkData = $newHomeWork->toArray();
+                $newHomeWorkData['parent_lesson_id'] = $lessonHistory->id;
 
 
-        $feedbackData = [
-            'schedule_id'       => $scheduleID,
-            'member_user_id'    => $memberID,
-            'tutor_user_id'     => $tutorID,
-            'feedback'          => $feedback,
-            'is_active'         => true,        
-        ];
+                $consecuiteveScheduleID = $lesson['id'];
 
-        $feedbackDetailData = [
-            'name'                  => 'student_performance_rating',
-            'description'           => "Student Performance Rating",
-            'value'                 => $rating,
-            'order_id'              => 1,
-            'is_active'             => true,        
-        ];
+                $reportCardData = [
+                    'schedule_item_id'  => $consecuiteveScheduleID,          
+                    'member_id'         => $memberID,        
+                    'comment'           => $feedback,
+                    'grade'             => $lessonGrade,
+                    //Materials
+                    'lesson_course'     => $material->course ?? "",
+                    'lesson_material'   => $material->material ?? "",
+                    'lesson_subject'    => $material->subject ?? "",
+                    //Course 
+                    'course_category_id'    => null,
+                    'course_item_id'        => null,                
+                    'lesson_level'          => null,
+                    //Validity
+                    'valid'             =>  true,            
+                ];
 
-        $feedback = $memberFeedback->where('schedule_id', $scheduleID)->first();
+                $feedbackData = [
+                    'schedule_id'       => $consecuiteveScheduleID,
+                    'member_user_id'    => $memberID,
+                    'tutor_user_id'     => $tutorID,
+                    'feedback'          => $feedback,
+                    'is_active'         => true,        
+                ];
+        
+                $feedbackDetailData = [
+                    'name'                  => 'student_performance_rating',
+                    'description'           => "Student Performance Rating",
+                    'value'                 => $rating,
+                    'order_id'              => 1,
+                    'is_active'             => true,        
+                ];
 
-        if ($feedback) {
+                DB::beginTransaction();
+    
+                try {            
+        
+                    $reportCardCreated      = $reportcard->saveReportCard($reportCardData);
+                    $notesCreated           = $notes->saveMemberNote($memberID, $tutorID, $memberNotes);
+                    $historyUpdated         = $lessonHistory->updateLessonStatus($lessonStatus, $scheduleID, $memberID);
+        
+                    $memberFeedbackCreated  = $memberFeedback->saveFeedback($feedbackData);
+                    $memberFeedbackDetailsCreated = $memberFeedbackDetails->saveMemberFeedbackDetails($memberFeedbackCreated->id, $feedbackDetailData);
 
-            return Response()->json([
-                "success"       => false,
-                "message"       => "You already posted a feedback for this lesson"
-            ]);
-        } 
+                    //@todo: copy homework from first
+        
+                    DB::commit();
+        
+                    return Response()->json([
+                        "success"       => true,
+                        "message"       => "Member posted a survey successfully",
+                    ]);
+        
+                } catch (\Exception $e) {
+        
+                    DB::rollBack();
+        
+        
+                    return Response()->json([
+                        "success"       => false,
+                        "message"       => $e->getMessage(),
+                        "errorLine"     => $e->getLine()
+                    ]);                    
+                }                
+                        
+            } //end foreach
 
-        DB::beginTransaction();
+        } else {
 
-        try {            
+            $reportCardData = [
+                'schedule_item_id'  => $scheduleID,          
+                'member_id'         => $memberID,        
+                'comment'           => $feedback,
+                'grade'             => $lessonGrade,
+                //Materials
+                'lesson_course'     => $material->course ?? "",
+                'lesson_material'   => $material->material ?? "",
+                'lesson_subject'    => $material->subject ?? "",
+                //Course 
+                'course_category_id'    => null,
+                'course_item_id'        => null,                
+                'lesson_level'          => null,
+                //Validity
+                'valid'             =>  true,            
+            ];
 
-            $reportCardCreated      = $reportcard->saveReportCard($reportCardData);
-            $notesCreated           = $notes->saveMemberNote($memberID, $tutorID, $memberNotes);
-            $historyUpdated         = $lessonHistory->updateLessonStatus($lessonStatus, $scheduleID, $memberID);
-            $memberFeedbackCreated  = $memberFeedback->saveFeedback($feedbackData);
-            $memberFeedbackDetailsCreated = $memberFeedbackDetails->saveMemberFeedbackDetails($memberFeedbackCreated->id, $feedbackDetailData);
+            $feedbackData = [
+                'schedule_id'       => $scheduleID,
+                'member_user_id'    => $memberID,
+                'tutor_user_id'     => $tutorID,
+                'feedback'          => $feedback,
+                'is_active'         => true,        
+            ];
+    
+            $feedbackDetailData = [
+                'name'                  => 'student_performance_rating',
+                'description'           => "Student Performance Rating",
+                'value'                 => $rating,
+                'order_id'              => 1,
+                'is_active'             => true,        
+            ];
+    
+            $feedback = $memberFeedback->where('schedule_id', $scheduleID)->first();
+    
+            if ($feedback) {
+    
+                return Response()->json([
+                    "success"       => false,
+                    "message"       => "You already posted a feedback for this lesson"
+                ]);
+            } 
+    
+            DB::beginTransaction();
+    
+            try {            
+    
+                $reportCardCreated      = $reportcard->saveReportCard($reportCardData);
+                $notesCreated           = $notes->saveMemberNote($memberID, $tutorID, $memberNotes);
+                $historyUpdated         = $lessonHistory->updateLessonStatus($lessonStatus, $scheduleID, $memberID);
+    
+                $memberFeedbackCreated  = $memberFeedback->saveFeedback($feedbackData);
+                $memberFeedbackDetailsCreated = $memberFeedbackDetails->saveMemberFeedbackDetails($memberFeedbackCreated->id, $feedbackDetailData);
+    
+                DB::commit();
+    
+                return Response()->json([
+                    "success"       => true,
+                    "message"       => "Member posted a survey successfully",
+                ]);
+    
+            } catch (\Exception $e) {
+    
+                DB::rollBack();
+    
+    
+                return Response()->json([
+                    "success"       => false,
+                    "message"       => $e->getMessage(),
+                    "errorLine"     => $e->getLine()
+                ]);                    
+            }
 
-            DB::commit();
-
-            return Response()->json([
-                "success"       => true,
-                "message"       => "Member posted a survey successfully",
-            ]);
-
-        } catch (\Exception $e) {
-
-            DB::rollBack();
-
-
-            return Response()->json([
-                "success"       => false,
-                "message"       => $e->getMessage(),
-                "errorLine"     => $e->getLine()
-            ]);                    
         }
-             
     }
 
 

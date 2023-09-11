@@ -263,6 +263,8 @@ export default {
     },        
     data() {
         return {
+            consecutiveSchedules: [],
+
             errorMessage: null,
 
             //Selected LESSON
@@ -316,7 +318,9 @@ export default {
         }
     },    
     methods: {
-
+        updateConsecutiveSchedules(schedules) {
+            this.consecutiveSchedules = schedules;
+        },
         updateLessonDetails(segments) {
             let course = segments[0];
             let subject = segments.pop();
@@ -396,9 +400,7 @@ export default {
                 return false;
             else return true;
         },        
-        submitFeedback() {       
-
-            console.log("submitting feedback");
+        submitFeedback() {     
 
             let homeworkCount   = this.$refs.homeWorkUploader.getFileCount()
             let isLessonRated   = this.checkLessonRated();     
@@ -433,7 +435,8 @@ export default {
             axios.post("/api/postMemberFeedback?api_token=" + this.api_token,
             {
                 'method'                    : "POST",               
-                'reservation'               : this.reservationData,              
+                'reservation'               : this.reservationData,         
+                'consecutiveSchedules'      : this.consecutiveSchedules,
                 'material'                  : JSON.stringify(this.material),
                 'feedback'                  : this.feedback,
                 //'message'                   : this.message, ()

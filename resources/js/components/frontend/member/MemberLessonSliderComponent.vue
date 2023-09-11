@@ -1216,8 +1216,9 @@
                 };
 
                 // Wait for the files to have a value
-                const files = await waitForFiles();
+                const files = await waitForFiles();                
 
+                this.$refs['memberFeedback'].updateConsecutiveSchedules(this.consecutiveSchedules); 
                 this.$refs['memberFeedback'].updateLessonDetails(lessonSliderComponent.segments);                
                 this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation, files);
                 
