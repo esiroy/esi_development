@@ -893,26 +893,28 @@ class Folder extends Model
         }        
     }
 
-    function findNextFolderWithFiles($currentFolderId) {
+    function findNextFolderWithFiles($currentFolder) {
         
+     
         // Search for the next folder with files at this level
-        $query = Folder::where('parent_id', $currentFolderId)
-            ->whereHas('files');
-    
+        $query = Folder::where('parent_id', $currentFolder->parent_id)
+                    ->where('order_id', '>', $currentFolder->order_id);
+
         $nextFolderWithFiles = $query->first();
+
     
         if ($nextFolderWithFiles) {
             return $nextFolderWithFiles;
         }
     
         // If no matching folder is found at this level, recursively search in subfolders
-        $subfolders = Folder::where('parent_id', $currentFolderId)
+        $subfolders = Folder::where('parent_id', $currentFolder->id)
                     ->orderBy('order_id', 'ASC')
                     ->where('privacy', 'public')
                     ->get();
         
         foreach ($subfolders as $subfolder) {
-            $nextFolder = $this->findNextFolderWithFiles($subfolder->id);
+            $nextFolder = $this->findNextFolderWithFiles($subfolder);
             
             if ($nextFolder) {
                 return $nextFolder;
@@ -1008,14 +1010,7 @@ class Folder extends Model
             ->orderBy('order_id', 'ASC')
             ->get();
 
-            foreach ($siblings as $sibling) {
-                $nextSubFolderWithFiles = $this->findNextSubFolderWithFiles($sibling->id);
-                if ($nextSubFolderWithFiles) {
-
-                    return $nextSubFolderWithFiles;
-                }
-            }
-            
+      
     
         // Filter the siblings that have files
         $siblingsWithFiles = $siblings->filter(function ($sibling) {
@@ -1067,64 +1062,4 @@ class Folder extends Model
     }
 
 
-    public function findNextFolderWithFilesAndPrivacy($currentFolderId) {
-        $currentFolder = Folder::findOrFail($currentFolderId);
-
-        // Find the parent folder
-        $parentFolder = Folder::find($currentFolder->parent_id);
-
-        if (!$parentFolder) {
-            return null; // No parent folder found; current folder might be at the root
-        }
-
-        // Get the ID of the current folder's order
-        $currentOrderId = $currentFolder->order_id;
-
-        // Use a subquery to find the next folder with files and privacy condition
-        $nextFolder = Folder::where('parent_id', $parentFolder->id)
-            ->where('id', '<>', $currentFolder->id)
-            ->where('privacy', 'public') // Add the privacy condition
-            ->where('order_id', '>', $currentOrderId)
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('files')
-                    ->whereRaw('files.folder_id = folders.id');
-            })
-            ->orderBy('order_id', 'ASC')
-            ->first();
-
-        if ($nextFolder) {
-            return $nextFolder; // Found the next folder with files and privacy condition
-        } else {
-            // No next folder found; track back to the parent folder
-            return $this->trackBackToParentWithFilesAndPrivacy($currentFolder);
-        }
-    }
-
-    // Define a function to track back to the parent folder with files and privacy condition
-    public function trackBackToParentWithFilesAndPrivacy($currentFolder) {
-        // Find the parent folder
-        $parentFolder = Folder::find($currentFolder->parent_id);
-
-        if (!$parentFolder) {
-            return null; // No parent folder found; current folder might be at the root
-        }
-
-        // Use a subquery to find the parent folder with files and privacy condition
-        $parentFolderWithFiles = Folder::where('id', $parentFolder->id)
-            ->where('privacy', 'public') // Add the privacy condition
-            ->whereExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('files')
-                    ->whereRaw('files.folder_id = folders.id');
-            })
-            ->first();
-
-        if ($parentFolderWithFiles) {
-            return $parentFolderWithFiles; // Found the parent folder with files and privacy condition
-        } else {
-            // No parent folder with files found; recurse with the parent folder
-            return $this->trackBackToParentWithFilesAndPrivacy($parentFolder);
-        }
-    }    
 }

@@ -69,8 +69,7 @@ class dummyController extends Controller
     public function index(Request $request, Folder $folder, $memberID = 20372) {
     
         if (isset($request->id)) { 
-            $currentFolderId = $request->id; // Set the ID of the current folder with requested folder id
-            $currentFolder = $folder->getCurrentFolder($currentFolderId);
+            $currentFolder = $folder->getCurrentFolder($request->id);
         } else {
             $currentFolder = $folder->getFirstRootFolder(); //get the first folder from the root folder which has 0
         }
@@ -80,35 +79,37 @@ class dummyController extends Controller
         echo "parent id : " . $currentFolder->parent_id;
         echo "<BR>";
 
-        echo "<p>=============================</p>";
 
-
-            /*
-
+       
         $nextSubFolderWithFiles = $folder->findNextSubFolderWithFiles($currentFolder->id);
-        $nextFolderWithFiles = $folder->findNextFolderWithFiles($currentFolder->id);
+     
+        $nextFolderWithFiles = $folder->findNextFolderWithFiles($currentFolder);
 
-        if ($nextSubFolderWithFiles) {
+         if ($nextSubFolderWithFiles) {
 
             $folderId = $nextSubFolderWithFiles->id;
             $folderName = $nextSubFolderWithFiles->folder_name;
         
-            echo $folderId ." a " . $folderName; 
+            echo "subfolder : ". $folderId . " ". $folderName; 
 
-            // Do something with $folderId and $folderName
+            return;
+
+       
         } else if ($nextFolderWithFiles) {
 
             $folderId = $nextFolderWithFiles->id;
             $folderName = $nextFolderWithFiles->folder_name;
         
-            echo $folderId ." b " . $folderName; 
+            echo "next folder " . $folderId . " " . $folderName; 
 
-            // Do something with $folderId and $folderName            
+            return;
+
+          
         } else {
 
   
-
             $findNextSibling = $folder->findNextSibling($currentFolder->id);
+          
 
             if ($findNextSibling) {
 
@@ -129,27 +130,14 @@ class dummyController extends Controller
 
                 return;
             }
- } 
+
+
+            $parentSiblings  = $folder->findFirstParentSiblingWithFiles($currentFolder->parent_id);
             
-            echo "End";
-            */
-
-            $nextFolder = $folder->findNextFolderWithFilesAndPrivacy($currentFolder->id);
-
-            if ($nextFolder) {
-                $folderId = $nextFolder->id;
-                $folderName = $nextFolder->folder_name;
-    
-                // Do something with $folderId and $folderName
-                echo "Next Folder ID: $folderId, Folder Name: $folderName\n";
-            } else {
-                echo "No next folder with files and privacy condition found.";
-            }            
-        
-
       
-         
 
+        } 
+       
              
     }
 
