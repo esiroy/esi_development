@@ -83,31 +83,74 @@ class dummyController extends Controller
         echo "<p>=============================</p>";
 
 
+            /*
+
+        $nextSubFolderWithFiles = $folder->findNextSubFolderWithFiles($currentFolder->id);
         $nextFolderWithFiles = $folder->findNextFolderWithFiles($currentFolder->id);
+
+        if ($nextSubFolderWithFiles) {
+
+            $folderId = $nextSubFolderWithFiles->id;
+            $folderName = $nextSubFolderWithFiles->folder_name;
         
-        if ($nextFolderWithFiles) {
+            echo $folderId ." a " . $folderName; 
+
+            // Do something with $folderId and $folderName
+        } else if ($nextFolderWithFiles) {
 
             $folderId = $nextFolderWithFiles->id;
             $folderName = $nextFolderWithFiles->folder_name;
         
-            echo $folderId ." " . $folderName; 
+            echo $folderId ." b " . $folderName; 
 
-            // Do something with $folderId and $folderName
+            // Do something with $folderId and $folderName            
         } else {
 
-            echo "none matching";
-            echo "<BR>";
+  
 
+            $findNextSibling = $folder->findNextSibling($currentFolder->id);
 
+            if ($findNextSibling) {
 
-            $parentSiblings             = $folder->findFirstParentSiblingWithFiles($currentFolder->id);
-            echo "Reverse Find: <BR>";
-            print_r("ID : " . $parentSiblings->id ." - ");
-            print_r($parentSiblings->folder_name );
+                echo ("ID : " . $findNextSibling->id ." - ");
+                echo($findNextSibling->folder_name );
+
+                return;
+            }
+
+            $parentSiblings  = $folder->findFirstParentSiblingWithFiles($currentFolder->id);
+
+           
+
+            if ($parentSiblings) {
+
+                echo ("ID : " . $parentSiblings->id ." - ");
+                echo($parentSiblings->folder_name );
+
+                return;
+            }
+ } 
             
+            echo "End";
+            */
 
-          
-        }       
+            $nextFolder = $folder->findNextFolderWithFilesAndPrivacy($currentFolder->id);
+
+            if ($nextFolder) {
+                $folderId = $nextFolder->id;
+                $folderName = $nextFolder->folder_name;
+    
+                // Do something with $folderId and $folderName
+                echo "Next Folder ID: $folderId, Folder Name: $folderName\n";
+            } else {
+                echo "No next folder with files and privacy condition found.";
+            }            
+        
+
+      
+         
+
+             
     }
 
     
