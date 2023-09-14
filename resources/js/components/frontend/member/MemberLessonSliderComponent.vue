@@ -547,13 +547,19 @@
 
             this.socket.on("CREATE_NEW_SLIDE", (data) => {
                 
+                console.log("socket: CREATE_NEW_SLIDE", data);
+
                 if (this.$props.is_broadcaster == false) {
-                    //console.log("create new slide")
+
+                    console.log("Member: CREATE_NEW_SLIDE", data.currentslide);
+
                     this.slides = data.slidesCount;
+
                     this.$refs['LessonSlider'].createNewSlide();
                     this.$refs['LessonSlider'].goToSlide(data.currentslide);
+
                     if (data.backgroundURL) {
-                        this.$refs['LessonSlider'].setSlideBackgroundImage(this.currentSlide, data.backgroundURL);
+                        this.$refs['LessonSlider'].setSlideBackgroundImage(data.currentslide, data.backgroundURL);
                     }                
                     
                 }           
@@ -566,7 +572,7 @@
                         this.$refs['LessonSlider'].openNewSlideMaterials(response.folderID);                       
                     }
                 } catch (error) {
-                    //console.log("Error, tutor can't select new slide ", error);
+                    console.log("Error, tutor can't select new slide ", error);
                 }
             });   
             
