@@ -50,9 +50,6 @@
  */
 
 /*!
-<<<<<<< HEAD
- * jQuery JavaScript Library v3.5.1
-=======
  * clipboard.js v2.0.11
  * https://clipboardjs.com/
  *
@@ -60,8 +57,7 @@
  */
 
 /*!
- * jQuery JavaScript Library v3.6.1
->>>>>>> slideshow_v9
+ * jQuery JavaScript Library v3.5.1
  * https://jquery.com/
  *
  * Includes Sizzle.js
@@ -88,6 +84,10 @@
 /*! Fabric.js Copyright 2008-2015, Printio (Juriy Zaytsev, Maxim Chernyak) */
 
 /*! https://mths.be/utf8js v2.1.2 by @mathias */
+
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
 
 /**
   * vue-class-component v7.0.1
