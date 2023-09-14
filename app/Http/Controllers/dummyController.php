@@ -67,78 +67,91 @@ class dummyController extends Controller
     }
 
     public function index(Request $request, Folder $folder, $memberID = 20372) {
-    
+
+
+        $recentLessonHistory   = $folder->getRecentLessonHistory($memberID, "COMPLETED");
+
+        echo "<pre>";
+        echo "recent folder id : ". ($recentLessonHistory->folder_id ."  " .$recentLessonHistory);
+        echo "<pre>";
+
+
+        $nextFolderID = $folder->getNextFolderID($memberID);
+
+        echo "user next folder ID ". $nextFolderID;
+
+        echo "<BR>";
+        echo "<BR>";
+        
         if (isset($request->id)) { 
             $currentFolder = $folder->getCurrentFolder($request->id);
         } else {
             $currentFolder = $folder->getFirstRootFolder(); //get the first folder from the root folder which has 0
         }
 
+       
+        
+       // echo $folder->getURLTitles($currentFolder->id);
+        echo "<BR>";
         echo "searching : " . $currentFolder->id ." - " . $currentFolder->folder_name;
         echo "<BR>";
         echo "parent id : " . $currentFolder->parent_id;
         echo "<BR>";
+      
+        $folderId = $currentFolder->id;
 
-
-       
-        $nextSubFolderWithFiles = $folder->findNextSubFolderWithFiles($currentFolder->id);
-     
+   
+        $nextSubFolderWithFiles = $folder->findNextSubFolderWithFiles($currentFolder);     
         $nextFolderWithFiles = $folder->findNextFolderWithFiles($currentFolder);
 
          if ($nextSubFolderWithFiles) {
-
             $folderId = $nextSubFolderWithFiles->id;
             $folderName = $nextSubFolderWithFiles->folder_name;
-        
-            echo "subfolder : ". $folderId . " ". $folderName; 
-
-            return;
-
-       
+            
+            echo "============================================<br>";
+            echo "          SUBFOLDER                         <br>";
+            echo "============================================<br>";
+            echo  $folderId . " ". $folderName;        
         } else if ($nextFolderWithFiles) {
 
             $folderId = $nextFolderWithFiles->id;
             $folderName = $nextFolderWithFiles->folder_name;
         
-            echo "next folder " . $folderId . " " . $folderName; 
+            echo "============================================<br>";
+            echo "          NEXT FOLDER                       <br>";
+            echo "============================================<br>";
 
-            return;
+
+            echo  $folderId . " " . $folderName; 
+
+          
 
           
         } else {
 
-  
-            $findNextSibling = $folder->findNextSibling($currentFolder->id);
           
-
-            if ($findNextSibling) {
-
-                echo ("ID : " . $findNextSibling->id ." - ");
-                echo($findNextSibling->folder_name );
-
-                return;
-            }
-
-            $parentSiblings  = $folder->findFirstParentSiblingWithFiles($currentFolder->id);
-
-           
-
-            if ($parentSiblings) {
-
-                echo ("ID : " . $parentSiblings->id ." - ");
-                echo($parentSiblings->folder_name );
-
-                return;
-            }
-
-
-            $parentSiblings  = $folder->findFirstParentSiblingWithFiles($currentFolder->parent_id);
+            echo "============================================<br>";
+            echo "          FIND PARENT FOLDERS               <br>";
+            echo "============================================<br>";
+            $flattenedArray  = $folder->flattenFolderStructureWithFiles();
+            $next =  $folder->findNextIDWithFiles($flattenedArray, $folderId);
             
-      
 
+            if (isset($next->id) && $next !== null) {
+
+              
+
+                echo "<p>The next ID after $folderId is $next->id with $next->folder_name.</p>";
+
+                //echo $folder->getURLTitles($next->id);
+
+            } else {
+                echo "No next ID found after $folderId.";
+            }            
         } 
        
-             
+
+     
     }
 
     

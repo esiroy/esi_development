@@ -9,10 +9,11 @@
         <!--
         <button @click="testEndSession()">end</button>
         <button @click="showMemberFeedbackModal()">showMemberFeedbackModal</button>
-        
-         -->
+        <button @click="testConsecutive()">end</button>
+        <button @click="showMemberFeedbackModal()">hide</button>
+        -->
 
-         <button @click="testConsecutive()">end</button>
+        
 
         <!-- Tutor to Member Feedback-->
         <MemberFeebackComponent 
@@ -744,6 +745,17 @@
                 }
             });                        
 
+            this.$root.$on('updateSegments', (response) => {
+                
+
+                const lessonSliderComponent = this.$refs['LessonSlider'];
+                let canvasSegments  = lessonSliderComponent.segments
+
+                console.log("updating segments", response, 'canvas Segments', canvasSegments);
+
+                this.$refs['memberFeedback'].updateLessonDetails(canvasSegments);  
+            });
+
 
             this.$root.$on('redialUser', (response) => {
                 //console.log(response, data, "redial user fired");      
@@ -1194,6 +1206,9 @@
                     this.$refs['satisfactionSurvey'].showThankYou(this.reservation);
                 }               
             },
+            hideMemberFeebackModal() {
+                this.$refs['memberFeedback'].hideMemberFeedbackModal();
+            },
             async showMemberFeedbackModal() { 
             
                 const lessonSliderComponent = this.$refs['LessonSlider'];
@@ -1220,9 +1235,9 @@
 
                 // Wait for the files to have a value
                 const files = await waitForFiles();                
-
+                
                 this.$refs['memberFeedback'].updateConsecutiveSchedules(this.consecutiveSchedules); 
-                this.$refs['memberFeedback'].updateLessonDetails(lessonSliderComponent.segments);                
+                //this.$refs['memberFeedback'].updateLessonDetails(lessonSliderComponent.segments);                
                 this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation, files);
                 
             },

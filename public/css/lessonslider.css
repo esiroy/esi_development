@@ -215,7 +215,7 @@ canvas {
 
 .colors button {
   display: inline-block;
-  border: 1px solid rgba(0, 0, 0, 0.1490196078);
+  border: 1px solid #00000026;
   border-radius: 0;
   outline: none;
   cursor: pointer;

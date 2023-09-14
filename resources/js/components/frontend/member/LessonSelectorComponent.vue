@@ -525,9 +525,9 @@ export default {
 		this.member          = JSON.parse(member);
 
 
-		console.log(this.tutor)
-		console.log(this.member)
-		console.log(this.reservation)
+		//console.log(this.tutor)
+		//console.log(this.member)
+		//console.log(this.reservation)
 				
 
 		this.getMemberLessonSelected(this.reservation, this.member);
@@ -570,7 +570,7 @@ export default {
 		}
 	},
 	search() {
-		console.log("searching...");
+		//console.log("searching...");
 
 		// Clear previous search results
 		this.searchResults = [];
@@ -592,16 +592,13 @@ export default {
 		
 	},
 	viewFolder(category) {	
-		console.log(category);
+		//console.log(category);
 		this.urlArray.push(category);
 		this.getLessonsList(category.id);
 		this.currentSelectedCategory = category;
 
 		//[NEW!] force select page
 		this.currentPage = this.viewCurrentPage;
-
-
-
 	},	
 	viewSearchFolder(category) {	
 
@@ -688,7 +685,7 @@ export default {
 		this.showSearch = false;
 
 		let urlLength = this.urlArray.length -1;
-		console.log(urlLength);
+		//console.log(urlLength);
 
 		if (urlLength == 0 ) {
 			this.showAllFolder();		
@@ -702,8 +699,8 @@ export default {
     },
 	getMemberLessonSelected(reservation, member) {
 
-		console.log("reservation", reservation.schedule_id);
-		console.log("member", member.userid);
+		//console.log("reservation", reservation.schedule_id);
+		//console.log("member", member.userid);
 
 		axios.post("/api/getMemberLessonSelected?api_token=" + this.api_token, 
 		{
@@ -760,13 +757,13 @@ export default {
 					//(added August 2023)
 					if (typeof this.$parent.openNewSlideMaterials === 'function') {
 						// The method exists in the parent component
-						console.log('openNewSlideMaterials exists in the parent component');
+						//console.log('openNewSlideMaterials exists in the parent component');
 						this.$parent.openNewSlideMaterials(response.data.newFolderID);
 
 					} else {
 						// The method does not exist in the parent component (this will not fire)
 						// Standalone: This is method was used in member and tutor 
-						console.log('openNewSlideMaterials does not exist in the parent component');
+						//console.log('openNewSlideMaterials does not exist in the parent component');
 					}
 					
 					this.$bvModal.hide("modalLessonSelection");      
@@ -802,7 +799,7 @@ export default {
 	},
 	getLessonImages(index, folderID) {
 
-		console.log(index + " get lesson image", folderID);
+		//console.log(index + " get lesson image", folderID);
 
 		this.isBook = false;
 
@@ -824,7 +821,7 @@ export default {
 				this.showCollapse(index);
 
 			} else {
-				console.log("error getting lesson images")				
+				//console.log("error getting lesson images")				
 			}
 		});
 	}, 	
@@ -845,7 +842,7 @@ export default {
 			if (i == index)  {                    
 				if (this.isCollapsed[index] == false) {
 
-					console.log("showing ==> ", index)
+					//console.log("showing ==> ", index)
 					this.$set(this.isCollapsed, index, true)
 				} else {                          
 					this.$set(this.isCollapsed, index, false) //hide

@@ -90,7 +90,7 @@
     input.verticalRangeScrubber
     {
         writing-mode: bt-lr; /* IE */
-        -webkit-appearance: slider-vertical; /* Chromium */
+        //-webkit-appearance: slider-vertical; /* Chromium */
         width: 8px;
         height: 20px;
         padding: 0px;

@@ -13,7 +13,7 @@ use App\Models\LessonHistory;
 use App\Models\LessonSlideHistory;
 use App\Models\ScheduleItem;
 use App\Models\SatisfactionSurvey;
-
+use App\Models\File;
 
 use Auth, Config, DateTime;
 
@@ -557,17 +557,48 @@ class LessonHistoryController extends Controller
 
         $scheduleID = $request->scheduleID;
 
-        $lessonHistory = LessonHistory::where('schedule_id',  $scheduleID)
-                        ->where('status', 'NEW')
-                        ->first();        
+        $lessonHistory = LessonHistory::where('schedule_id',  $scheduleID)->where('status', 'NEW')->first();        
 
         if ($lessonHistory) {
-        
-            $newBatchNumber = $lessonHistory->batch + 1;
+            
+            //@todo: get selected from selected member
+            $memberSelectedLesson = MemberSelectedLessonSlideMaterial::where('schedule_id', $scheduleID)->first();     
+            
+       
+            if ($memberSelectedLesson) {
 
+                $folderID = $memberSelectedLesson->folder_id;
+
+                
+                $filesCounter   = File::where('folder_id', $folderID)->count();
+
+            } else {
+
+                //auto determine next folder
+                $memberID  = $lessonHistory->member_id;                
+                $folderID = $folder->getNextFolderID($memberID);
+            
+                $filesCounter   = File::where('folder_id', $folderID)->count();
+            }
+            
+
+            $newBatchNumber = $lessonHistory->batch + 1;
+            $newHistory = $lessonHistory->replicate();
+
+            //CREATE THE NEW HISTORY WITH NEW COUNTER
+            $newHistory->folder_id = $folderID;
+            $newHistory->current_slide = 1;
+            $newHistory->total_slides = $filesCounter;
+            $newHistory->batch =  $newBatchNumber;
+            $newHistory->save(); // Save the cloned record
+           
+          
+            //MARK THE OLD ONE SKIPPED
             $lessonHistory->update([
-                 "batch"  => $newBatchNumber 
+                'status'    => 'SKIPPED',
+                //"batch"  => $newBatchNumber 
             ]);
+           
 
             return Response()->json([
                 "success"               => true,
@@ -579,7 +610,7 @@ class LessonHistoryController extends Controller
         
             return Response()->json([
                 "success"             => false,
-                'schedule_id'          => $scheduleID,
+                'schedule_id'         => $scheduleID,
                 "batch"               => null
             ]);          
         }

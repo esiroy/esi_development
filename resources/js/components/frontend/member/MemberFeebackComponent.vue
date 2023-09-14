@@ -318,13 +318,20 @@ export default {
         }
     },    
     methods: {
+        test() {
+
+            alert ("testing member feedback");
+        },
         updateConsecutiveSchedules(schedules) {
             this.consecutiveSchedules = schedules;
         },
-        updateLessonDetails(segments) {
+        updateLessonDetails(newSegments) {
+
+            let segments = newSegments;
+
             let course = segments[0];
-            let subject = segments.pop();
-            let lessonMaterial = segments.pop();
+            let subject = segments[segments.length - 1];
+            let lessonMaterial = segments[segments.length - 2];
 
             this.material = {
                 'segments': segments,
@@ -332,14 +339,23 @@ export default {
                 'material': lessonMaterial,
                 'subject': subject
             }
+
+            console.log(this.material);
+           
         },
   
         getLessonSlideDetails() {
             alert ("get lesson slide detials")
         
         },
+        hideMemberFeedbackModal() {
+            this.$refs['memberFeedbackModal'].hide();
+        },
         showMemberFeedbackModal(reservationData, files) 
         {
+
+            console.log(this.material);
+
 
             if (files == null || files.length == 0) {            
                 this.nextLessonOptions.push({

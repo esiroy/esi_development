@@ -69,16 +69,27 @@ class Folder extends Model
         return $this->hasMany(Folder::class, 'parent_id', 'id');
     }
 
+      
+    /**
+    * @return  subcategories of the folder.
+    */
+    public function subCats()
+    {
+        return $this->hasMany(self::class, 'parent_id', 'id')->where('privacy', 'public');
+    }
+
+
     /**
      * @return  files of the folder.
      */
     public function files()
     {
-        return $this->hasMany(File::class, 'folder_id', 'id')->orderBy('order_id', 'ASC');;
+        //return $this->hasMany(File::class, 'folder_id', 'id')->where('privacy', 'public');;
+
+        //remove private since it is not needed
+        return $this->hasMany(File::class, 'folder_id', 'id');
     }
-
-
-   
+    
 
 
     public function users() 
@@ -334,16 +345,19 @@ class Folder extends Model
     }
 
 
-    public static function getURLTitles($id, $separator = "/") 
+
+    public static function getURLTitleArray($id, $separator = "/") 
     {
         $folder = Folder::where('id', $id)->first();
 
         if (isset($folder)) {
+
             if ($folder->parent_id !== null || $folder->parent_id !== 0) {
+                
                 //Sub Folder
                 Folder::$folder_name[] = $folder->folder_name;
 
-                Folder::getURLTitles($folder->parent_id);
+                Folder::getURLTitleArray($folder->parent_id, false);
             } else {
                 //Root Folder
                 Folder::$folder_name[] = $folder->folder_name;
@@ -353,42 +367,60 @@ class Folder extends Model
         $segments = implode($separator , array_reverse(Folder::$folder_name));
         return $segments;
     }
+  
 
+    public static function getURLTitles($id, $separator = "/", $reset = true, $folderNames = []) 
+    {
+        $folder = Folder::where('id', $id)->first();
+    
+        if (isset($folder)) {
+            if ($folder->parent_id !== null || $folder->parent_id !== 0) {
+                // Sub Folder
+                $folderNames[] = $folder->folder_name;
+                return Folder::getURLTitles($folder->parent_id, $separator, false, $folderNames);
+            } else {
+                // Root Folder
+                $folderNames[] = $folder->folder_name;
+            }
+        }
+    
+        $segments = implode($separator, array_reverse($folderNames));
+        
+        if ($reset) {
+            $folderNames = []; // Optionally reset folderNames
+        }
+        return $segments;
+    }
+    
+    
     public static function getParentFolders($id) {
         Folder::$folder = [];
         return Folder::recurseParentFolders($id);
     }
     
-    public static function recurseParentFolders($id) {
 
-        $folder = Folder::where('id', $id)->first();
-        
-        if (isset($folder)) {
-        
+    public static function recurseParentFolders($id) 
+    {
+        $folder = Folder::where('id', $id)->first();        
+        if (isset($folder)) {        
             if ($folder->parent_id !== null || $folder->parent_id !== 0) {
                 //Sub Folder
-
                 $folder['formatted_folder_name'] = ucwords($folder->folder_name); 
                 Folder::$folder[] = $folder;
-
                 Folder::recurseParentFolders($folder->parent_id);
-
             } else {
                 //Root Folder
                 Folder::$folder[] = $folder;
             }
         }
-
         return array_reverse(Folder::$folder);
     }
-
-
    
 
     public static function getURLArray($id) 
     {
         Folder::$url_segment = array();
-        $segments = Folder::getURLTitles($id);
+        $segments = Folder::getURLTitleArray($id);
         return array_reverse(Folder::$folder_name);
     }
 
@@ -645,11 +677,23 @@ class Folder extends Model
     }
 
 
+    public function getFirstFolder() {
+    
+        $parentFolder = Folder::where('privacy', 'public')
+                        ->where('parent_id', 0)
+                        ->orderBy('order_id', "ASC")->first();        
+
+       $lastSubfolder = $this->getLastSubFolderRecursively($parentFolder);
+      
+       return $lastSubfolder;
+    }    
+
     /**
         @todo; Next Folder Slide 
+    */
 
-    **/
-    public function getNextFolderID($memberID) {
+
+    public function getNextFolderID_old($memberID) {
 
         $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
         
@@ -700,48 +744,57 @@ class Folder extends Model
 
         return $newFolderID;    
     }
+ 
 
 
-    public function getFirstFolder() {
-    
-        $parentFolder     = Folder::where('privacy', 'public')
-                        ->where('parent_id', 0)
-                        ->orderBy('order_id', "ASC")->first();        
 
-       $lastSubfolder = $this->getLastSubFolderRecursively($parentFolder);
+    public function getNextFolderID($memberID) {
+
+        $recentLessonHistory   = $this->getRecentLessonHistory($memberID, "COMPLETED");
+
       
-       return $lastSubfolder;
-    }
 
+        if (isset($recentLessonHistory->folder_id)) {
+            $currentFolder = $this->getCurrentFolder($recentLessonHistory->folder_id);
+        } else {
+            $currentFolder = $this->getFirstRootFolder(); 
+        }
 
-
-     public function getLastSubFolderRecursively($parentFolder) {
-
-            if (isset($parentFolder)) {
+        //check if currentFolder is found, if the previous was deleted the folder so we can reference it
+        if (!$currentFolder) {
             
-                $subfolder     = Folder::where('privacy', 'public')->where('parent_id', $parentFolder->id)
-                                    ->orderBy('order_id', "ASC")
-                                    ->first(); 
-                if ($subfolder) {
-
-                    return $this->getLastSubFolderRecursively($subfolder);
-
-                } else {
-                
-                    return $parentFolder;
-                }
-
-            } else {
+            //we will go back to first folder
+            $currentFolder = $this->getFirstRootFolder();
             
-                return null;
-            }
+        }
+
+        //check all the subfolders first for the current folder for the first lesson
+        $nextSubFolderWithFiles = $this->findNextSubFolderWithFiles($currentFolder);    
         
+        if ($nextSubFolderWithFiles) {            
+            $folderID = $nextSubFolderWithFiles->id;
+            return $folderID;
+        }
 
+        //proceed next sibling
+        $nextFolderWithFiles = $this->findNextFolderWithFiles($currentFolder);
 
-     }
+        if ($nextFolderWithFiles) {            
+            $folderID = $nextFolderWithFiles->id;
+            return $folderID;
+        }
 
+        //We need to flatten the array since we can't find it using conventional search
+        $flattenedArray  = $this->flattenFolderStructureWithFiles();
+        $next =  $this->findNextIDWithFiles($flattenedArray, $currentFolder->id);
 
-
+        if (isset($next->id) && $next !== null) {
+            $folderID = $next->id;
+            return $folderID;
+        } else {
+            return null;
+        }
+    }
 
     public function getNextFolder($currentFolderID) {
 
@@ -794,6 +847,8 @@ class Folder extends Model
 
 
     }
+
+    
 
      public function getNextParentFolder($folderID, $allowEmptyFiles = false) {
       
@@ -871,6 +926,22 @@ class Folder extends Model
     }
 
 
+    public function getLastSubFolderRecursively($parentFolder) 
+    {
+       if (isset($parentFolder)) {            
+           $subfolder     = Folder::where('privacy', 'public')->where('parent_id', $parentFolder->id)
+                               ->orderBy('order_id', "ASC")
+                               ->first(); 
+           if ($subfolder) {
+               return $this->getLastSubFolderRecursively($subfolder);
+           } else {                
+               return $parentFolder;
+           }
+       } else {            
+           return null;
+       }
+    }    
+
 
     /* New Version */
     function getCurrentFolder($id) {
@@ -893,12 +964,17 @@ class Folder extends Model
         }        
     }
 
-    function findNextFolderWithFiles($currentFolder) {
-        
-     
+    function findNextFolderWithFiles($currentFolder, $autoNextFolder = true) {
+
         // Search for the next folder with files at this level
         $query = Folder::where('parent_id', $currentFolder->parent_id)
-                    ->where('order_id', '>', $currentFolder->order_id);
+                    ->where('privacy', 'public')
+                    ->whereHas('files');
+
+        if ($autoNextFolder == true) {
+            $query->where('order_id', '>', $currentFolder->order_id);
+        }
+                   
 
         $nextFolderWithFiles = $query->first();
 
@@ -914,7 +990,7 @@ class Folder extends Model
                     ->get();
         
         foreach ($subfolders as $subfolder) {
-            $nextFolder = $this->findNextFolderWithFiles($subfolder);
+            $nextFolder = $this->findNextFolderWithFiles($subfolder, false);
             
             if ($nextFolder) {
                 return $nextFolder;
@@ -925,14 +1001,16 @@ class Folder extends Model
     }
 
     // Define a recursive function to find the next folder with files
-    function findNextSubFolderWithFiles($currentFolderId) {
+    public function findNextSubFolderWithFiles($currentFolder) {
         // Search for the next folder with files in subfolders
-        $subfolders = Folder::where('parent_id', $currentFolderId)
+        $subfolders = Folder::where('parent_id', $currentFolder->id)
             ->orderBy('order_id', 'ASC')
+            ->where('privacy', 'public')
+            ->whereHas('files')
             ->get();
         
         foreach ($subfolders as $subfolder) {
-            $nextFolder = $this->findNextSubFolderWithFiles($subfolder->id);
+            $nextFolder = $this->findNextSubFolderWithFiles($subfolder);
             
             if ($nextFolder) {
                 return $nextFolder;
@@ -940,8 +1018,9 @@ class Folder extends Model
         }
     
         // If no matching folder is found in subfolders, search at this level
-        $query = Folder::where('parent_id', $currentFolderId)
+        $query = Folder::where('parent_id', $currentFolder->id)
             ->whereHas('files')
+            ->where('privacy', 'public')
             ->orderBy('order_id', 'ASC');
     
         $nextFolderWithFiles = $query->first();
@@ -953,113 +1032,105 @@ class Folder extends Model
         return null;
     }   
 
-    function findNextSibling($currentFolderId) {
-        $currentFolder = Folder::findOrFail($currentFolderId);
-    
-        // Find the parent folder
-        $parentFolder = Folder::find($currentFolder->parent_id);
-    
-        if (!$parentFolder) {
-            return null; // No parent folder found; current folder might be at the root
+   
+
+
+    public function findNextIDWithFiles($flattenedArray, $currentId) {
+        $idIndexMap = [];
+        
+        // Build a mapping of IDs to their index positions in the flattened array
+        foreach ($flattenedArray as $index => $folder) {
+            $idIndexMap[$folder['id']] = $index;
         }
     
-        // Get all siblings of the parent folder with the privacy condition
-        $siblings = Folder::where('parent_id', $parentFolder->id)
-            ->where('id', '<>', $currentFolder->id)
-            ->where('privacy', 'public') // Add the privacy condition
-            ->orderBy('order_id', 'ASC')
-            ->get();
+        // Find the index of the current ID
+        $currentIndex = isset($idIndexMap[$currentId]) ? $idIndexMap[$currentId] : null;
     
-        $foundCurrent = false;
-    
-        // Iterate through the siblings to find the next one
-        foreach ($siblings as $sibling) {
-            if ($foundCurrent) {
-                return $sibling; // Found the next sibling
-            }
-    
-            if ($sibling->id === $currentFolder->id) {
-                $foundCurrent = true;
+        if ($currentIndex !== null) {
+            // Iterate through the remaining elements in the array
+            for ($i = $currentIndex + 1; $i < count($flattenedArray); $i++) {
+                if (isset($flattenedArray[$i]['hasFiles']) && $flattenedArray[$i]['hasFiles']) {
+                    return $flattenedArray[$i];
+                }
             }
         }
     
-        return null; // No next sibling found    
+        return null; // No next ID with 'hasFiles' set to true found
     }
 
-    /* get first */
-    function findFirstParentSiblingWithFiles($currentFolderId) {
-        $currentFolder = Folder::findOrFail($currentFolderId);
-
-        // Find the parent folder
-        $parentFolder = Folder::find($currentFolder->parent_id);
-    
-        if (!$parentFolder) {
-            return null; // No parent folder found; current folder might be at the root
+    function findNextID($flattenedArray, $currentId) {
+        $idIndexMap = [];
+        
+        // Build a mapping of IDs to their index positions in the flattened array
+        foreach ($flattenedArray as $index => $folder) {
+            $idIndexMap[$folder['id']] = $index;
         }
     
-        // Get all siblings of the parent folder with files and the specified order_id condition
-        $siblings = Folder::where('parent_id', $parentFolder->parent_id)
-            ->where('id', '<>', $parentFolder->id)
-            ->where('order_id', '>', $currentFolder->order_id)
-            ->orWhere(function ($query) use ($parentFolder, $currentFolder) {
-                $query->where('parent_id', $parentFolder->parent_id)
-                    ->where('order_id', '>', $parentFolder->order_id)
-                    ->orderBy('order_id', 'ASC');
-                    
-            })
+        // Find the index of the current ID
+        $currentIndex = isset($idIndexMap[$currentId]) ? $idIndexMap[$currentId] : null;
+    
+        if ($currentIndex !== null && $currentIndex < count($flattenedArray) - 1) {
+            // If the current ID is found and not the last in the array, return the next ID
+            return $flattenedArray[$currentIndex + 1];
+        }
+    
+        return null; // No next ID found
+    }
+
+
+    function flattenFolderStructureWithFiles($parentID = 0) {
+
+        $result = [];
+
+        $folders = Folder::where('parent_id', $parentID)
             ->orderBy('order_id', 'ASC')
+            ->where('privacy', 'public')
             ->get();
 
-      
-    
-        // Filter the siblings that have files
-        $siblingsWithFiles = $siblings->filter(function ($sibling) {
-            return $sibling->files->count() > 0;
-        });
-    
-        if ($siblingsWithFiles->count() > 0) {
-            return $siblingsWithFiles->first(); // Found the first sibling with files and order condition
-        } else {
-            // Recursively check the parent folder's parent
-            return $this->findFirstParentSiblingWithFiles($parentFolder->id);
-        }
-    }
 
-    /* get all*/
-    function findParentSiblingsWithFiles($currentFolderId) {
-        $currentFolder = Folder::findOrFail($currentFolderId);
+        foreach ($folders as $folder) {
 
-        // Find the parent folder
-        $parentFolder = Folder::find($currentFolder->parent_id);
-    
-        if (!$parentFolder) {
-            return null; // No parent folder found; current folder might be at the root
+            if ($folder->files->count() > 0) {
+                $folder->hasFiles = true;
+                $result[] = $folder;
+            } else {
+                $folder->hasFiles = false;
+                $result[] = $folder;                
+            }
+
+            // Recursively fetch subfolders and add them to the result
+            $subfolders = $this->flattenFolderStructureWithFiles($folder->id);
+            if (!empty($subfolders)) {
+                $result = array_merge($result, $subfolders);
+            }
         }
     
-        // Get all siblings of the parent folder with files, order condition, and privacy condition
-        $siblings = Folder::where('parent_id', $parentFolder->parent_id)
-            ->where('id', '<>', $parentFolder->id)
-            ->where('order_id', '>', $currentFolder->order_id)
-            ->where('privacy', 'public') // Add the privacy condition
-            ->orWhere(function ($query) use ($parentFolder, $currentFolder) {
-                $query->where('parent_id', $parentFolder->parent_id)
-                    ->where('order_id', '>', $parentFolder->order_id)
-                    ->where('privacy', 'public'); // Add the privacy condition
-            })
-            ->get();
-    
-        // Filter the siblings that have files
-        $siblingsWithFiles = $siblings->filter(function ($sibling) {
-            return $sibling->files->count() > 0;
-        });
-    
-        if ($siblingsWithFiles->count() > 0) {
-            return $siblingsWithFiles->first(); // Found the first sibling with files and order/privacy conditions
-        } else {
-            // Recursively check the parent folder's parent
-            return $this->findParentSiblingsWithFiles($parentFolder->id);
-        }    
+        return $result;
     }
 
+
+    public function flattenFolderStructure($folderID) {
+
+        $folders = Folder::where('parent_id', $folderID)
+                
+                    ->orderBy('order_id','ASC')->get();
+        $result = [];
+    
+        foreach ($folders as $folder) {
+
+            $result[] = [
+                'id' => $folder->id,
+                'folder_name' => $folder->folder_name,
+            ];
+    
+            // Recursively fetch subfolders and add them to the result
+            $subfolders = $this->flattenFolderStructure($folder->id);
+            if (!empty($subfolders)) {
+                $result = array_merge($result, $subfolders);
+            }
+        }
+    
+        return $result;
+    }
 
 }

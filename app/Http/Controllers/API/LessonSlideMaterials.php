@@ -299,6 +299,8 @@ class LessonSlideMaterials extends Controller
                                         ->where('schedule_id', $scheduleID)
                                         ->where('status', "INCOMPLETE")->first();
 
+        $completed = LessonHistory::where('member_id', $memberID)->where('schedule_id', $scheduleID)->where('status', "COMPLETED")->first();
+        
         if ($incompleteLessonHistory)  {
                 
             $lessonHistory = $incompleteLessonHistory;
@@ -308,6 +310,8 @@ class LessonSlideMaterials extends Controller
             $lessonHistory = LessonHistory::where('member_id', $memberID)
                                 ->where('schedule_id', $scheduleID)
                                 ->where('status', "NEW")->first();
+
+            
         }       
 
 
@@ -324,31 +328,33 @@ class LessonSlideMaterials extends Controller
 
         } else {
 
-            $completed = LessonHistory::where('member_id', $memberID)
-                                        ->where('schedule_id', $scheduleID)                                       
-                                        ->where('status', "COMPLETED")->first();
+          
 
             if ($completed) {
-
                 $batch = $completed->batch;
-
                 $lessonHistory = $completed; 
-
             } else {
-
-                 $batch = 1;
+                $batch = 1;
             }
         }
 
         $selectedMaterial = $memberSelectedMaterial->where('schedule_id', $scheduleID)->where('user_id', $memberID)->first();
 
         if ($selectedMaterial) {        
-            $folderID       = $selectedMaterial->folder_id;
+
+            if ($completed) {
+
+                $folderID = $lessonHistory->folder_id;
+            } else {
+
+                $folderID       = $selectedMaterial->folder_id;
+            }
+
         } else {
 
             if ($incompleteLessonHistory)  {
-                /** @note:  set the folderID to the incomplete lesson */
 
+                /** @note:  set the folderID to the incomplete lesson */
                 $folderID = $incompleteLessonHistory->folder_id;
 
             } else {

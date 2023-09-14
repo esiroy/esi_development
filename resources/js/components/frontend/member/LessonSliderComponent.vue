@@ -210,10 +210,8 @@ import io from "socket.io-client";
 //import SlideSelectorComponent from './SlideSelectorComponent.vue'
 
 import LessonSelectorComponent from './LessonSelectorComponent.vue'
-
-
-import SlideUploaderComponent from './SlideUploaderComponent.vue'
-import AudioPlayerComponent from './AudioPlayerComponent.vue'
+import SlideUploaderComponent from './SlideUploaderComponent.vue';
+import AudioPlayerComponent from './AudioPlayerComponent.vue';
 import TutorSlideNotesComponent from './TutorSlideNotesComponent.vue';
 
 export default {
@@ -363,6 +361,8 @@ export default {
                 this.segments       = response.data.folderURLArray;
                 let customFiles     = response.data.customFiles;  
 
+
+
                 //Files, Audio and notes
                 this.files = response.data.files;
                 this.imageURL = response.data.files;
@@ -382,23 +382,32 @@ export default {
                 }
 
                 if (newFolderID !== null) {
+                    if (response.data.files.length >= 1) {
+                        console.log("GET NEW SLIDES FROM FOLDER FILES")
+                        this.getSlidesFromFiles(response.data.files);                    
+                    } else {
 
-                    //console.log("GET NEW SLIDES FROM FOLDER FILES")
+                        console.log("create new slide")
+                        this.createEmptySlide();
+                    }
+                    
 
-                    this.getSlidesFromFiles(response.data.files);
-
+                //} else if (lessonHistory && slideHistory.length >= 1) {
                 } else if (lessonHistory && slideHistory.length >= 1) {
-                    //console.log("getSlidesFromHistory")
+
+                    console.log("getSlidesFromHistory")
 
                     this.getSlidesFromHistory(slideHistory);
                 
                 } else if (response.data.files.length >= 1) {
 
-                    //console.log("getSlidesFromFiles")
+                    console.log("getSlidesFromFiles")
                 
                     this.getSlidesFromFiles(response.data.files);
 
                 } else {
+
+                    console.log("create new slide")
 
                     this.createNewSlide();
                     
@@ -424,8 +433,11 @@ export default {
                     if (this.$props.is_broadcaster == true) {
                         this.canvas[this.currentSlide].on('object:moving', this.handleObjectMoving);
                         this.canvas[this.currentSlide].on('object:modified', this.handleObjectModified); 
-                       //this.$refs['slideSelector'].closeSlideSelector();          
+                       //this.$refs['slideSelector'].closeSlideSelector();   
                     }         
+
+                    //update segments
+                    this.$root.$emit('updateSegments', this.segments)                      
 
                 });
             });
@@ -1470,7 +1482,12 @@ export default {
             let data = this.canvasGetJSON();
 
             this.canvasSendJSON(this.canvas[this.currentSlide], data); 
-            document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";
+
+            let currentSlideEditor = document.getElementById('editor'+ this.currentSlide)
+
+            if (currentSlideEditor) {
+                document.getElementById('editor'+ this.currentSlide).style.visibility = "visible";    
+            }            
 
             //Load List of Audio Array
             this.loadAudio(this.currentSlide)

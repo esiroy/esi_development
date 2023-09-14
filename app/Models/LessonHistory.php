@@ -55,8 +55,6 @@ class LessonHistory extends Model
                 //UPDATE NEW Slide
                 $newLessonHistory->current_slide    = 1; //when skipped, you lesson will auto index to slide #(1)
                 $newLessonHistory->total_slides     =  $filesCounter + $customFilesCounter ; //when skipped, you lesson will auto index to slide #(1)
-                
-
                 $newLessonHistory->folder_id        = $newFolderID;
                 $newLessonHistory->status           = "NEW";
                 $newLessonHistory->additional_notes = "replicated from a skipped lesson $lessonHistory->folder_id folder (" . $lessonHistory->folder_id  .")";
@@ -103,6 +101,20 @@ class LessonHistory extends Model
         if ($lessonHistory) { return $lessonHistory; } else { return false; }        
     }
 
+
+    /**
+    * Get the most recent folder id of a completed  history for a member with a specific status.
+    *
+    * @param int $memberID The ID of the member.
+    * @param string $status The status of the lesson history.
+    * @return LessonHistory|false The most recent LessonHistory object if found, false otherwise.
+    */
+    public function getRecentlyCompletedFolderID($memberID, $status = "COMPLETED") {
+        $lessonHistory = LessonHistory::where('member_id', $memberID)->where('status', $status)->orderBy("time_ended", 'DESC')->first();
+        if ($lessonHistory) { return $lessonHistory->folder_id; } else { return false; }        
+    }
+    
+    
     /**
     * Create a new lesson history record from a skipped lesson.
     *
