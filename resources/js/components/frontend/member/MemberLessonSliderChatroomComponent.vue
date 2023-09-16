@@ -2,7 +2,7 @@
 
     <div id="lesson-chat-service">
 
-        <div id="fileUpload" class="position-right" style="display:none">
+       <div id="fileUpload" class="position-right" style="display:none">
             <file-upload
                 name="file"
                 input-id="lesson-chatroom-file"
@@ -13,7 +13,7 @@
                 post-action="/uploader/fileUploader"            
                 :data="{ 
                     'current_chatbox_userid': this.current_chatbox_userid,
-                    'message_type': 'MEMBER',            
+                    'message_type': this.$props.user_info.user_type,            
                     'folder': 'notes',                
                 }"
                 :headers="{'X-CSRF-TOKEN': this.csrf_token }"
@@ -22,7 +22,9 @@
                 :drop-directory="true"
                 @input="updatetValue"
                 @input-file="inputFile"
-                @input-filter="inputFilter" ref="lessonChatUploader">      
+                @input-filter="inputFilter"
+                ref="upload"
+                >      
             </file-upload>
         </div>
 
@@ -59,6 +61,7 @@
                                     </div>
                                 </div>
                                 <div v-else>
+
                                     <div class="recipient-container">
                                         <div class="recipient-wrapper text-left small">
                                             <div class="sender small text-left" v-if="chatlogIndex >= 1 && messages[chatlogIndex - 1].sender.type !== messages[chatlogIndex].sender.type" >
@@ -140,7 +143,7 @@
                                 <span class="small">Recent Message(s)</span>
                             </div>
 
-                            <div class="chat mt-1 p-1" v-for="(chatlog, chatlogIndex) in recentMessages" :key="'my_unread_chatlog_'+ chatlogIndex">                               
+                            <div class="chat mt-1 p-1" v-for="(chatlog, chatlogIndex) in recentMessages" :key="'recent_message_log'+ chatlogIndex">                               
                                 <div v-if="current_chatbox_userid == chatlog.sender.userid">
                                     <div class="sender-container">  
                                         <div class="sender-wrapper text-right small">                                          
@@ -195,8 +198,9 @@
 
                         <div class="col-9 pr-0 mr-0">
                             <div v-for="(file, index) in files" :key="file.id" class="image-prieview-container bg-light  w-25 d-inline-block p-1 border border-light rounded">
+
                                 <div class="remove-image-upload float-right">
-                                    <a class="" href="#" @click.prevent="$refs.lessonChatUploader.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
+                                    <a class="" href="#" @click.prevent="$refs.upload.remove(file)" style="padding:5px; background-color:#fff; color:#000">X</a>
                                 </div>
 
                                 <div  v-if="file.type == 'image/jpeg' || file.type == 'image/png'" >
@@ -220,7 +224,7 @@
                         </div>
 
 
-                        <div class="col-7 pr-1 mr-1">
+                        <div class="col-7 pr-1">
                             <input id="message" 
                                 v-on:keyup.13="sendMessage(privateMessage)"  
                                 type="text" 
@@ -232,27 +236,33 @@
                             >
                         </div>
                         <div class="col-4 px-0">
-                            <div id="attach-button" class="input-group-append d-inline-block float-left">
-                                <label id="file-select-button" for="lesson-chatroom-file" class="btn btn-primary mr-1 btn-sm">
+                            
+                            <div id="attach-button" class="input-group-append d-inline-block float-left">                               
+                                <label id="file-select-button" for="lesson-chatroom-file" 
+                                    class="custom-btn-input btn btn-primary btn-sm">
                                     <i class="fas fa-paperclip"></i>
-                                </label>
+                                </label>                       
                             </div>
-
+                          
                             <div id="send-button" class="input-group-append d-inline-block float-left">
-                                <button type="button"  @click.prevent="$refs.lessonChatUploader.active = false; sendMessage(privateMessage); " class="btn btn-sm btn-primary">
+                                <button type="button"  @click.prevent="$refs.upload.active = false; sendMessage(privateMessage); " 
+                                    class="custom-btn-input btn btn-sm btn-primary">
                                     <i class="fa fa-paper-plane" aria-hidden="true"></i>
                                 </button>
                             </div>     
 
                             <span class="button-controls" style=" display:none">
-                                <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.lessonChatUploader || !$refs.lessonChatUploader.active" @click.prevent="$refs.lessonChatUploader.active = true">
+                                <button id="startUpload" type="button" class="btn btn-sm btn-success" v-if="!$refs.upload || !$refs.upload.active" @click.prevent="$refs.upload.active = true">
                                     <i class="fa fa-arrow-up" aria-hidden="true"></i>Start Upload
                                 </button>
 
-                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.lessonChatUploader.active = false">
+                                <button type="button" class="btn btn-sm btn-danger" v-else @click.prevent="$refs.upload.active = false">
                                     <i class="fa fa-stop" aria-hidden="true"></i>Stop Upload
                                 </button>
-                            </span>                                  
+                            </span>
+                           
+                            
+                            
                         </div>  
 
                     </div>
@@ -360,9 +370,7 @@ export default {
 
   },
 
-  mounted() 
-  {
-    
+  mounted() {    
     
     //Transfer the object to the window
     window.lessonSliderChatroom = this;
@@ -440,19 +448,39 @@ export default {
     },    
     sendMessage: function(message) {
 
+        console.log("== send message ==")
+
         //files is empty and message is empty, stop sending message
         if (this.files.length == 0 && message === "" || message === undefined)
         {           
             return false;
         }
 
+        console.log ("snd msg 2");
+
         if (message === "" || message === undefined) {
 
-            document.getElementById("startUpload").click();         
+
+            console.log ("snd msg 3");
+
+            const uploader = this.$refs.upload;
+
+            // Call the startUpload method of the upload component
+            if (uploader) {
+                //uploader.satrtUpload();
+                uploader.active = true;
+            }
+
+             
 
         } else {
 
+
+            console.log ("snd msg 4");
+
+
             document.getElementById("startUpload").click();
+
             this.emitMessage(this.privateMessage);           
             
             this.privateMessage = "";
@@ -473,6 +501,10 @@ export default {
         let sender      = this.getUser();
         let recipient   = this.getRecipient();
 
+
+        console.log("emit message", sender, recipient);
+
+        
         socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", { channelid, time, recipient, sender, message }); 
 
 
@@ -620,7 +652,7 @@ export default {
             }
         }
 
-        if (this.$refs.lessonChatUploader.uploaded) {
+        if (this.$refs.upload.uploaded) {
             // console.log("all queue uploaded");
             this.files = [];
             this.scrollToEnd();
@@ -740,7 +772,8 @@ export default {
             }            
         });
 
-    }    
+    },
+
   },
   computed: {},
 
@@ -771,6 +804,7 @@ export default {
     }
 
 
+
     .bg-blue {    
         background-color: #009fd9
     }
@@ -778,6 +812,13 @@ export default {
         border-color: #009fd9
     }
      
+
+    .custom-btn-input {
+        margin-right: 2px;
+        padding: 9px 9px;
+        line-height: 0px;
+        font-size: 10px;  
+    }
 
     .position-bottom-right {
         position: fixed;

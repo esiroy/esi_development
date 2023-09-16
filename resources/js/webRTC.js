@@ -368,6 +368,9 @@ function restart() {
 //user end stop sharing
 function stopSharing() {
 
+
+    console.log("stopSharing()")
+
     let showElement = document.getElementById("lessonSlide");
 
     if (showElement) {
@@ -387,6 +390,9 @@ function detectDesktopShared(stream) {
             if (data.sharedScreen == true) {
                 sharedScreen = true;
             } else if (data.sharedScreen == false) {
+
+                console.log("detectDesktopShared stopped");
+
                 stopSharing();
                 sharedScreen = false;
                 return false;
@@ -561,10 +567,9 @@ peer.on('connection', function(conn) {
 
         } else if (data.sharedScreen == false) {
 
+            console.log("connection shared stopped");
             stopSharing();
-
             sharedScreen = false;
-
             return false;
         } else {
 
