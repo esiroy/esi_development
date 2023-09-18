@@ -18,6 +18,8 @@ Route::get('/test-form', 'dummyController@testform');
 Route::post('/process-form', 'dummyController@processForm')->name('process-form');
 
 Route::get('test_writing_tutor_reply', 'dummyController@test_writing_tutor_reply');
+
+Route::get('latestReportCard', 'dummyController@latestReportCard');
 Route::get('test', 'dummyController@index');
 Route::get('phpinfo', 'dummyController@phpinfo');
 Route::get('component_test', 'dummyController@component_test');
