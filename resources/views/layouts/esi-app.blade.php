@@ -242,9 +242,12 @@
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-left border-primary" href="{{ url('/home') }}">マイページ </a>
 
                 @if ($hideMemberTabs == false)
-
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/faq.html','FAQ',900,820);">よくあるご質問</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/faq.html','FAQ',900,820);">よくある質問</a>
                 @endif
+
+                
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/contract.html','ご利用方法',900,820);">ご利用方法</a>
+
 
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('customersupport') }}">カスタマー　サポート</a>
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary"href="{{ url('lessonmaterials') }}">オリジナル教材</a>
