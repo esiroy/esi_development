@@ -22,7 +22,8 @@ class ReportCard extends Model
         $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time','schedule_item.schedule_status')
                                     ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
                                     ->where('report_card.member_id', $memberID)
-                                    ->orderBy('schedule_item.lesson_time', 'DESC')
+                                    //->orderBy('schedule_item.lesson_time', 'DESC')
+                                    ->orderBy('schedule_item.updated_at', 'DESC')
                                     ->first();
        
         return $latestReportCard;
