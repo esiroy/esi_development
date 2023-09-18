@@ -55,6 +55,7 @@ use App\Models\LessonHistory;
 use App\Models\LessonSlideHistory;
 use App\Models\MemberSelectedLessonSlideMaterial;
 use App\Models\CustomTutorLessonMaterials;
+use App\Models\ReportCard;
 
 use App\Models\Homework;
 
