@@ -156,7 +156,7 @@ class dummyController extends Controller
     }
 
     
-    public function latestReportCard($request, ReportCard $reportCard) {
+    public function latestReportCard(Request $request, ReportCard $reportCard) {
 
         $latestReportCard = $reportCard->getLatest($request->id);
 
