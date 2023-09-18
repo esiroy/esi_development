@@ -155,7 +155,16 @@ class dummyController extends Controller
     }
 
     
+    public function latestReportCard($request, ReportCard $reportCard) {
 
+        $latestReportCard = $reportCard->getLatest($request->id);
+
+        echo "<pre>";
+        print_r ($latestReportCard);
+        echo "</pre>";
+
+
+    }
 
     public function phpinfo(Request $request, Member $member, ScheduleItem $scheduleItem) {
 
