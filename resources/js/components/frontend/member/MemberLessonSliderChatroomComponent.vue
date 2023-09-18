@@ -271,21 +271,24 @@
             </div>
            
         </div>
+
+        <ImageViewerComponent ref="ImageViewerComponent" />
+
     </div>
-
-
 </template>
 
 <script>
 import io from "socket.io-client";
 import FileUpload from 'vue-upload-component'
+import ImageViewerComponent from "../../image/imageViewerComponent.vue"; // Import the modal component
+
 
 var socket = null;
 
 export default {
   name: "lessonSliderChatroomComponent",
   components: {
-    FileUpload,
+    FileUpload, ImageViewerComponent
   },    
   data() {
 
@@ -407,9 +410,25 @@ export default {
 
     this.initializeChatBox(user);
 
+    //add the image viewer
+    document.body.addEventListener("click", this.imageViewerClick);
+
   },
   methods: {
-   
+    imageViewerClick(event) {
+      // Check if the clicked element has the "img_preview" class
+      if (event.target.classList.contains("img_preview")) {
+        event.preventDefault();
+        // Extract the image URL from the clicked element and open the modal
+        const imageUrl = event.target.getAttribute("src");
+        
+        //this.$refs.ImageViewerComponent.isModalOpen = true; // Open the modal
+        //this.$refs.ImageViewerComponent.modalImageUrl = imageUrl; // Set the image URL
+
+        this.$refs.ImageViewerComponent.openModal(imageUrl); // Open the modal
+
+      }
+    },   
     popUpImage(index, message) {     
        return false;
     },
