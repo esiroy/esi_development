@@ -29,15 +29,17 @@ class Notes extends Model
     }
 
     function saveMemberNote($memberID, $tutorID, $note) 
-    {
-    
-        return Notes::create([            
-            'member_id' => $memberID,
-            'tutor_id' => $tutorID,
-            'note' => $note,
-            'valid' => true,
-        ]);
-
+    {    
+        if (!empty($note)) {        
+            return Notes::create([            
+                'member_id' => $memberID,
+                'tutor_id' => $tutorID,
+                'note' => $note,
+                'valid' => true,
+            ]);
+        } else {
+            return null;
+        }
     }
 
     function updateMemberNote($noteID, $memberID, $tutorID, $note) 

@@ -22,6 +22,7 @@ let audioElement;
 
 //Share Screen
 let sharedScreen = false;
+let checkingInterval = null;
 
 const peerConnections = {}
 
@@ -367,8 +368,6 @@ function restart() {
 
 //user end stop sharing
 function stopSharing() {
-
-
     console.log("stopSharing()")
 
     let showElement = document.getElementById("lessonSlide");
@@ -377,11 +376,43 @@ function stopSharing() {
         showElement.style.display = 'block';
     }
 
-    let removeElement = document.getElementById("sharedVideo");
+    checkAndRemoveSharedVideo();
+}
 
+function checkAndRemoveSharedVideo() {
+    const removeElement = document.getElementById("sharedVideo");
     if (removeElement) {
-        removeElement.remove();
+        removeSharedVideo();
+    } else {
+        console.log("rechecking shared video after 1 second")
+        // If not found, wait for a while and then check again
+        checkingInterval = setTimeout(checkAndRemoveSharedVideo, 1000); // Wait for 1 second (adjust as needed)
     }
+}
+
+
+function removeSharedVideo() {
+
+    const container = document.getElementById("lessonSharedContainer");
+
+    if (container) {
+        // Store the parent element to insert the new container in the same position.
+        const parent = container.parentNode;
+    
+        // Create a new container element.
+        const newContainer = document.createElement("div");
+        newContainer.id = "lessonSharedContainer";
+    
+        // Add content or attributes to the new container if needed.
+        newContainer.textContent = "";
+    
+        // Replace the old container with the new one.
+        parent.insertBefore(newContainer, container);
+    
+        // Remove the old shared video container.
+        container.remove();
+    }
+
 }
 
 function detectDesktopShared(stream) {
