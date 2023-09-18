@@ -15,10 +15,11 @@ class ReportCard extends Model
         return $this->belongsTo(ScheduleItem::class, 'schedule_item_id');
     }
     
+    
     public function getLatest($memberID)
     {
         //report cards
-        $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time')
+        $latestReportCard = ReportCard::select('report_card.*', 'schedule_item.lesson_time','schedule_item.status')
                                     ->join('schedule_item', 'report_card.schedule_item_id', '=', 'schedule_item.id')
                                     ->where('report_card.member_id', $memberID)
                                     ->orderBy('schedule_item.lesson_time', 'DESC')
