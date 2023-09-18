@@ -308,7 +308,7 @@ Route::middleware('auth:api')->post('/postSatisfactionSurvey', 'API\MemberSatisf
 
 //Tutor Feeback to Member
 Route::middleware('auth:api')->post('/postMemberFeedback', 'API\MemberFeedbackController@postMemberFeedback')->name('APIMemberFeedback');
-Route::middleware('auth:api')->post('/testConsecutiveLesson', 'API\MemberFeedbackController@testConsecutiveLesson')->name('APIMemberFeedback');
+Route::middleware('auth:api')->post('/testConsecutiveLesson', 'API\MemberFeedbackController@testConsecutiveLesson')->name('APITestConsecutiveLesson');
 
 
 //Lesson Slider Chatroom
