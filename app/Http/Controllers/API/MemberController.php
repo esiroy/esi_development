@@ -1500,7 +1500,7 @@ class MemberController extends Controller
                     //course_category_id        => null,
                     //course_item_id            => null,
                     //english_level             => null,
-                    'is_myroom_enabled' => ($data->is_myroom_enabled === 'true') ? true : false,
+                    'is_myroom_enabled' => ($data->is_myroom_enabled == true) ? true : false,
                     'communication_app' => ucfirst($data->communication_app),
                     'skype_account' => (strtolower($data->communication_app) == 'skype') ? $data->communication_app_username : $memberInfo->skype_account,
                     'zoom_account' => (strtolower($data->communication_app) == 'zoom') ? $data->communication_app_username : $memberInfo->zoom_account,
