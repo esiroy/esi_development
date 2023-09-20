@@ -19,6 +19,13 @@
     <!-- Styles -->
     <link rel="preload" href="{{ asset('css/app.css') }}" as="style">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+
+    <script src="{{ asset('js/ckeditor_4/ckeditor.js')  }}" ></script> 
+
+    <link rel="preload" href="{{ asset('js/ckeditor_4/ckeditor.js') }}" as="script">
+    <link rel="preload" href="{{ asset('js//ckeditor_4/skins/moono-lisa/editor.css') }}" as="style">
+    <link rel="preload" href="{{ asset('js/ckeditor_4/lang/en.js') }}" as="script">
+        
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>

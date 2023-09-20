@@ -426,6 +426,8 @@ export default {
             if (isLessonRated == true && hasFeedback == true && hasLessonStatus == true) {
                 this.errorMessage = null;     
                 if (homeworkCount >= 1) {
+
+                     console.log("start upload homework")
                      this.$refs.homeWorkUploader.startUpload();
                 } else {
                     this.postFeedback();
@@ -468,7 +470,11 @@ export default {
                     this.$refs['memberFeedbackModal'].hide();
 
                     this.$nextTick(() => {
-                       this.redirect('admin');                       
+
+                        setTimeout(() => {
+                            console.log(response)                                                   
+                            this.redirect('admin');
+                        }, 1000);
                     });                    
                 } else {
                     alert ("Error:", response.data.message);

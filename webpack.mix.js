@@ -55,6 +55,7 @@ mix.js(
     .copy("resources/images/*.*", "public/images/")
     .copy("resources/mp3/*.*", "public/mp3/")
     .copyDirectory("resources/js/ckeditor", "public/js/ckeditor")
+    .copyDirectory("resources/js/ckeditor_4", "public/js/ckeditor_4/")
     .copy("resources/js/dropzone/*.*", "public/js/dropzone/")
     .copy("resources/js/steps/*.*", "public/js/steps/")
     .copy("resources/js/validation/*.*", "public/js/validation/")

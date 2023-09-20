@@ -327,6 +327,8 @@ Route::middleware('auth:api')->post('/getLessonImages', 'API\LessonFolderControl
 
 //Homeworks
 Route::middleware('auth:api')->post('/uploader/uploadHomework', 'API\HomeworkController@uploadHomework')->name('APIuploadHomework');
+Route::middleware('auth:api')->post('/uploader/updateHomeworkInstruction', 'API\HomeworkController@updateHomeworkInstruction')->name('APIUpdateHomeworkInstruction');
+
 
 //Folder Thumbnial
 Route::middleware('auth:api')->post('/uploader/uploadFolderThumbnail', 'API\FolderController@uploadFolderThumbnail')->name('APIuploadFolderThumbnail');

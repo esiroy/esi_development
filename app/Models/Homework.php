@@ -23,6 +23,7 @@ class Homework extends Model
 
                 if (!$isNewHomeWorkAdded) {
                     $newHomeWork =  $homeWork->replicate();
+                    
                     $newHomeWork->schedule_item_id = $lesson['id'];
                     $newHomeWork->valid = true;
                     $newHomeWork->save();

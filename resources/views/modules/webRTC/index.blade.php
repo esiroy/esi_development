@@ -221,8 +221,7 @@
 
 @section('scripts')      
 
-    <script src="{{ url('js/ckeditor/ckeditor.js')  }}" ></script> 
-
+  
     <!-- this will only get the script if lesson  is not complete to reduce loading -->
 
     @if ($lessonCompleted == false)

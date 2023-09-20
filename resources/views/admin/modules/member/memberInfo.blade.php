@@ -365,7 +365,7 @@
                                                         </div>
 
                                                             <div class="small">
-                                                            Instruction : {{ $homework->instruction ?? '' }}
+                                                            Instruction : <span id="home-instruction">{!! $homework->instruction ?? '' !!}</span>
                                                         </div>
                                                         @else
                                                             <div class="text-center">

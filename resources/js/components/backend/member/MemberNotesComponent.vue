@@ -68,7 +68,8 @@
 			<b-modal id="noteEntryModal" title="Add Member Notes" size="xl" @show="cleanUpEntryForm">
 				<div class="row">
 					<div class="col-12">
-						<textarea id="message" v-model="note" class="form-control form-control-sm" required></textarea>
+						<vue-ckeditor ref="ckeditor" v-model="note" :config="config"/>
+						<!--<textarea id="message" v-model="note" class="form-control form-control-sm" required></textarea>-->
 					</div>
 				</div>
 
@@ -92,7 +93,8 @@
 			<b-modal id="noteEditModal" title="Edit Member Notes" size="xl">
 				<div class="row">
 					<div class="col-12 text-center">
-						<textarea id="editNote" v-model="noteEdited" class="form-control form-control-sm edit" required></textarea>						
+						<!--<textarea id="editNote" v-model="noteEdited" class="form-control form-control-sm edit" required></textarea>-->
+						<vue-ckeditor ref="ckeditorEdit" v-model="noteEdited" :config="config"/>
 					</div>
 				</div>
 
@@ -117,12 +119,14 @@
 </template>
 
 <script>
-
+import VueCkeditor from 'vue-ckeditor2'
 import Moment from "moment-timezone";
 
 export default {
   name: "member-notes-component",
-  components: {},
+  components: {
+	VueCkeditor
+  },
   props: {
     tutorinfo: Object,
     memberinfo: Object,
@@ -130,6 +134,7 @@ export default {
     csrf_token: String,
   },
   data() {
+	
     return {
 		note:  "",
 		noteEditedData: "",
@@ -141,6 +146,35 @@ export default {
 		rows: 1,
 		perPage: 1,
 		currentPage: 1,
+		config: {
+				/*
+                toolbar: [
+                    //[ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', 'NumberedList' ],                    
+                ],*/
+                removePlugins: ['easyimage', 'cloudservices', 'exportpdf'],
+							
+                height: 420,
+                on: 
+                {
+                    paste: (evt) => {
+
+                        /*
+                        // Handle the paste event here
+                        console.log('Pasted content:', evt.data.dataValue);
+
+                        // If you want to modify the pasted content before updating the editor, you can do it here.
+                        // For example, you can strip HTML tags from the pasted content.
+                        const pastedContent = evt.data.dataValue;
+                        const sanitizedContent = this.sanitizePastedContent(pastedContent);
+
+                        // Update the editor with the modified content
+                        this.instruction = sanitizedContent;
+
+                        console.log("sanitzied? " , this.instruction);
+                        */
+                    }      
+                }          
+        }, 		
 		notes: [],
 		fields: [
 		{
@@ -153,17 +187,16 @@ export default {
 		{
 			key: "notes",
 			label: "Notes",
-		},
+		}		
       ],
     };
   },
   mounted: function () 
   {
     this.getNotes(this.currentPage);
-
-	
   },
   methods: {
+	
 	
 	showMsgBox(note) {
 		this.box = ''
@@ -364,6 +397,9 @@ export default {
           console.log("Error " + error);
         });
     },
+    onEditorInput(newContent) {
+        this.note = newContent;
+    }	
   },
   computed: {},
   updated: function () {},

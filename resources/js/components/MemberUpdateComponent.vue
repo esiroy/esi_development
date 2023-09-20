@@ -488,7 +488,7 @@
                                       -->
 
                                     <li>
-                                        {{ user.preference.purpose.OTHERS }}
+                                        <!--{{ user.preference.purpose.OTHERS }}-->
                                         
                                         <input type="checkbox" ref="purposes" name="purposes" id="others" v-model="user.preference.purpose.OTHERS" value="OTHERS"> Note 
                                         <textarea id="extraDetails" name="extraDetails" rows="2" cols="20" style="min-height: 20px; vertical-align: top;" class="ckeditor col-3 pl-1 form-control form-control-sm d-inline-block" 
@@ -1131,8 +1131,6 @@
                         </div>
                     </div>
 
-
-
                     <div class="col-12">
                         <div class="row">
                             <div class="col-2 small pr-0">
@@ -1166,6 +1164,23 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="col-12">
+                        <div class="row">
+                            <div class="col-2 small pr-0">
+                                <label for="agent" class="px-0 col-md-12 col-form-label">
+                                    Subject <div class="float-right">:</div>
+                                </label>
+                            </div>
+                            <div class="col-10">
+                                <div class="row">
+                                    <div class="col-10 pt-1">
+                                       {{ this.latestreportcard.lesson_subject }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
 
                     <div class="col-12">
                         <div class="row">
@@ -1209,7 +1224,7 @@
                                                 </div>
 
                                                 <div class="small">
-                                                    Instruction : {{ this.latestreportcard.homework.instruction }}
+                                                    Instruction : <span v-html="this.latestreportcard.homework.instruction"></span>
                                                 </div>
                                             </div>
                                             <div v-else>                   
@@ -2115,6 +2130,7 @@ export default {
 
       
         let is_myroom_enabled = false;
+        
         if (this.memberinfo.is_myroom_enabled == true) {
             is_myroom_enabled = true;
         }

@@ -25,8 +25,7 @@ class HomeworkController extends Controller
         $tutorID = $request->tutorID;   
         $reservation =  json_decode($request->reservation);
         $instruction = $request->instruction;
-
-
+     
         //check if the schedule is available , if not send an error message
         $scheduleItem = ScheduleItem::find($scheduleID);
         
@@ -66,8 +65,8 @@ class HomeworkController extends Controller
                 'tutor_id' =>   $reservation->tutor_id,
                 'filename' =>   $newFilename,
                 'original' =>   $path,
-                'valid'        => true,
-                'instruction' => $instruction
+                'instruction' => $instruction,
+                'valid'        => true,                
             ];     
 
           
@@ -79,6 +78,7 @@ class HomeworkController extends Controller
                 "fileName" => $newFilename,
                 "path" => $path,
                 "data"  => $data,
+                'instruction' => $instruction,
                 "message" => "Homework has been uploaded.",
             ]);    
 
@@ -93,5 +93,33 @@ class HomeworkController extends Controller
         
         
     
+    }
+
+    public function updateHomeworkInstruction(Request $request)
+     {
+        $scheduleID = $request->lesson_schedule_id;
+        $instruction = $request->instruction;
+        
+
+        $homework = new Homework();
+        $homeworkItem = $homework->where('schedule_item_id', $scheduleID)->first();
+
+        if ($homeworkItem) 
+        {
+            $homeworkItem->update([
+                'instruction' => $instruction
+            ]);
+
+            return Response()->json([
+                "success" => true, 
+                "message" => "Homework has instruction updated.",
+            ]);               
+        } else {
+            return Response()->json([
+                "success" => false, 
+                "message" => "Homework has encountered an error.",
+            ]);             
+        }
+
     }
 }

@@ -167,7 +167,7 @@
                                                                     </div>
 
                                                                      <div class="small">
-                                                                        Instruction : {{ $homework->instruction ?? '' }}
+                                                                        Instruction : <span id="homework-instruction">{!! $homework->instruction ?? '' !!}</span>
                                                                     </div>
                                                                     @else
                                                                         <div class="text-center">
@@ -204,7 +204,7 @@
 
 
                                                                     <textarea id="instruction" name="instruction" 
-                                                                        class="form-control form-control-sm" 
+                                                                        class="ckeditor form-control form-control-sm" 
                                                                         placeholder="Add Homework Instruction"
                                                                         style="min-height:50px" disabled
                                                                     ></textarea>
@@ -227,7 +227,7 @@
                                         <tr>
                                             <td colspan="7">
                                                 Tutor Comment <br>
-                                                <textarea name="comment" rows="5" cols="70" class="form-control form-control-sm">@if(isset($reportCard->comment)) {{ $reportCard->comment }}@endif</textarea>
+                                                <textarea id="comment" name="comment" rows="5" cols="70" class="ckeditor form-control form-control-sm">@if(isset($reportCard->comment)) {{ $reportCard->comment }}@endif</textarea>
                                             </td>
                                         </tr>
                                         <tr>
@@ -272,23 +272,27 @@
                 let message = "Only formats are allowed : "+fileExtension.join(', ');
                 $('#file-attachments').find('.error').html('<div class="alert alert-danger small">' + message +'.</div>')
 
-
                 $('#file').val("");
 
-                return false;
+                CKEDITOR.instances['instruction'].setReadOnly(true);
 
+
+                return false;
             } 
             else if (oFile.size <= 2097152) // 2 MiB for bytes.
             {             
             
                 $('#file-attachments').find('.error').html('')
-
                 $('#instruction').prop('disabled', false);
+
+                CKEDITOR.instances['instruction'].setReadOnly(false);
 
             } else {
                 let message = "This File Size exceeds 2MB";
                 $('#file-attachments').find('.error').html('<div class="alert alert-danger small">' + message +'.</div>')
                 $('#file').val("");
+
+                CKEDITOR.instances['instruction'].setReadOnly(true);
 
                 return false;
             }   

@@ -75,12 +75,7 @@
                         @input="this.updateValue"
                         @input-file="this.inputFile"
                         @input-filter="this.inputFilter"
-                        :data="{
-                            //order_id: this.homework_index,
-                            'lesson_schedule_id': this.reservation.schedule_id,
-                            'reservation': JSON.stringify(this.reservation),
-                            'instruction': this.instructions,
-                        }"
+                        :data="uploadData"
                         ref="homeworkUploader">
                         
 
@@ -116,10 +111,11 @@
 
                 <hr>
 
-                <span class="small border-1 text-secondary">Add homework instructions below</span>
+                <span class="small border-1 text-secondary">Add homework instruction below</span>
 
                 <div class="mt-2">
-                    <vue-ckeditor v-model="instructions" :config="config" @input="onEditorInput" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />
+                    <!--<vue-ckeditor v-model="instruction" :config="config" @input="onEditorInput" @blur="onEditorBlur($event)" @focus="onEditorFocus($event)" />-->
+                    <vue-ckeditor ref="ckeditor" v-model="instruction" :config="config" @input="onEditorInput" />
                 </div>
 
             </div>
@@ -160,7 +156,7 @@ export default {
     data() {
         return {
             files: [],
-            instructions: null,
+            instruction: null,
             lesson_schedule_id: null,
             //homework_index: null,
             config: {
@@ -173,6 +169,8 @@ export default {
                 on: 
                 {
                     paste: (evt) => {
+
+                        /*
                         // Handle the paste event here
                         console.log('Pasted content:', evt.data.dataValue);
 
@@ -182,15 +180,28 @@ export default {
                         const sanitizedContent = this.sanitizePastedContent(pastedContent);
 
                         // Update the editor with the modified content
-                        this.instructions = sanitizedContent;
+                        this.instruction = sanitizedContent;
+
+                        console.log("sanitzied? " , this.instruction);
+                        */
                     }      
                 }          
             },            
         };
   },
+  computed: {
+    uploadData() {
+      // Computed property to generate the 'data' object for the file upload
+      return {
+        'lesson_schedule_id': this.reservation.schedule_id,
+        'reservation': JSON.stringify(this.reservation),
+        'instruction': this.instruction,
+      };
+    },
+  },
   methods: {
-
-    triggerPostFeedback() {         
+    triggerPostFeedback() 
+    {
        this.$emit('post-feedback');    
     },
     getFileCount() {
@@ -228,12 +239,31 @@ export default {
                                 'owner'     : newFile.response.owner,
                             };
 
-                this.triggerPostFeedback();
-
                 //remove the files
                 this.files.splice(this.files.findIndex(function(i){
                     return i.id === newFile.id;
                 }), 1);
+
+                if (newFile.response.success == true) 
+                {
+                    //this will check if the instruction was updated success since sometimes it does not seem to save it
+                    axios.post("/api/uploader/updateHomeworkInstruction?api_token=" + this.api_token, 
+                    {
+                        method          : "POST",                
+                        lesson_schedule_id: this.reservation.schedule_id,
+                        instruction     : this.instruction,                       
+                    }).then(response => {
+                        
+                        if (response.data.success == true) {                            
+                            console.log("homework instruction saved.")
+                        } else {             
+                            console.log("homework instruction not saved.")
+                        }              
+                        
+                        this.triggerPostFeedback();    
+                    });
+                }
+
             }
         }
       }
@@ -268,21 +298,13 @@ export default {
         }
     },
     onEditorInput(newContent) {
-
-        console.log(newContent);
-
-        // Update the instructions variable with the new content
-        this.instructions = newContent;
+        // Update the instruction variable with the new content
+        this.instruction = newContent;
 
         // Trigger the custom 'onEdit' event with the new content as a parameter
-        this.$emit('onEdit', newContent);
+        //this.$emit('onEdit', newContent);
     },
-    onEditorBlur (editor) {
-        console.log(editor)
-    },
-    onEditorFocus (editor) {
-        console.log(editor)
-    },      
+     
     sanitizePastedContent(content) {
       // Implement your sanitization logic here
       // For example, you can use a library like DOMPurify to sanitize the content.

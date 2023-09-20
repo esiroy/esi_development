@@ -22,7 +22,15 @@
 
     <link rel="stylesheet" href="{{ asset('css/app.css')  .'?id=version_5_8_2' }}">
     <script src="{{ asset('js/admin.js') .'?id=version_5_8_2'  }}" defer></script>
-    
+
+    <script src="{{ url('js/ckeditor_4/ckeditor.js')  }}" ></script> 
+
+    <!--
+    <link rel="preload" href="{{ asset('js/ckeditor_4.22.1/ckeditor.js') }}" as="script">
+    <link rel="preload" href="{{ asset('js//ckeditor_4.22.1/skins/moono-lisa/editor.css') }}" as="style">
+    <link rel="preload" href="{{ asset('js/ckeditor_4.22.1/lang/en.js') }}" as="script">
+    -->
+
     <noscript>
         <link rel="stylesheet" type="text/css" href="">
     </noscript>
