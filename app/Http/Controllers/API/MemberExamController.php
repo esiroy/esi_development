@@ -229,7 +229,7 @@ class MemberExamController extends Controller
 
                 } else {
                 
-                    if ($examLevel > 3) 
+                    if (intval($examLevel) > 3) 
                     {
                         $grade =   $examScores['grade_'.$examLevel];
 
