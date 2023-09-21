@@ -283,21 +283,15 @@ class MemberExamController extends Controller
                                         ];
                             $json_scores = json_encode($examScores);
 
-                            $data = [
-                                'examDate' => $examDate,
-                                'examType' => $examType . "_Grade_". $examLevel,
-                                'examScores' => $json_scores,
+                        } else if (isset($grade_s1)) {
+                            
+                            //only grade1
+                            $examScores = [
+                                "exam_level" => ucwords(str_replace('_', ' ', $examLevel)),
+                                'grade_'.$examLevel."_1st_stage" =>  $grade_s1,
+                                "total" => $grade_s1
                             ];
-
-                            $memberExamScore->addScore($memberID, $data);
-
-                            return Response()->json([
-                                'success' => true,
-                                'message' => 'Member Score Added',
-                                'examDate' => JapaneseDateFormat($examDate),
-                                'examType' => str_replace('_', ' ', $examType),
-                                'examScores' => $json_scores,
-                            ]);
+                            $json_scores = json_encode($examScores);
 
                         } else {                        
                             return Response()->json([
@@ -305,6 +299,22 @@ class MemberExamController extends Controller
                                 'message' => 'Please check if all scores are filled up',
                             ]);                       
                         }
+                        
+                        $data = [
+                            'examDate' => $examDate,
+                            'examType' => $examType . "_Grade_". $examLevel,
+                            'examScores' => $json_scores,
+                        ];
+
+                        $memberExamScore->addScore($memberID, $data);
+
+                        return Response()->json([
+                            'success' => true,
+                            'message' => 'Member Score Added',
+                            'examDate' => JapaneseDateFormat($examDate),
+                            'examType' => str_replace('_', ' ', $examType),
+                            'examScores' => $json_scores,
+                        ]);
 
                     
                     }  
