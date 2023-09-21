@@ -297,9 +297,6 @@ export default
         {
             if (this.gradeLevel > 3) 
             {
-            
-                alert ("3");
-
                 this.total = this.getValue('EIKEN-grade_'+ this.gradeLevel);        
                 this.examScore.EIKEN.total  = this.total;
 
@@ -307,13 +304,6 @@ export default
             
                 let s1 = this.getValue('EIKEN-grade_'+ this.gradeLevel + "_1st_stage");        
                 let s2 = this.getValue('EIKEN-grade_'+ this.gradeLevel + "_2nd_stage");
-                
-                console.log(s1, s2);
-
-                if (s1 !== '') {
-
-                    console.log("not null s1");
-                }
 
                 if (s1 !== '' && s2 !== '') {
                     this.total = parseInt(s1) + parseInt(s2);
@@ -322,9 +312,6 @@ export default
                 } else {
                     this.total = parseInt(s1) + parseInt(s2);
                 }
-                
-
-
 
                 if (parseInt(this.total) >= 1) {
                     this.examScore.EIKEN.total  = parseInt(this.total);
