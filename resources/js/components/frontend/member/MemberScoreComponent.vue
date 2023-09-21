@@ -1261,7 +1261,8 @@
             return words;
         },      
         highlightExamElement()  
-        {                       
+        {           
+            
             let examType = document.getElementById('examType').value;
             let examDate = this.examDate;
             let gradeLevel = document.getElementById('gradeLevel').value;
@@ -1298,9 +1299,14 @@
                     if ($(this).css('display') == 'flex') 
                     {
                         let elementID = $(this).find('select').attr('id');
-
                         let numeric = parseInt($(this).find('select').val())
-                        
+
+                        // Check if the current element has the "not-required" class
+                        if ( $(this).find('select').hasClass('not-required')) {
+                            return; // Skip elements with the "not-required" class
+                        }                
+
+
                         if(!$.isNumeric(numeric)) 
                         {
                             //console.log(elementID + "  will be highlighted");
@@ -1333,6 +1339,8 @@
         highlightEikenExamElement()
         {
 
+            console.log("test hightlight")
+            
             let examType = document.getElementById('examType').value;
             let examDate = this.examDate;
             let selection = $('div#examination-score-'+examType).find('select');
@@ -1350,8 +1358,10 @@
             }
 
             selection.each(function() {
+                
                 let elementID = $(this).attr('id');
-                let numeric = parseInt($(this).val())
+                let numeric = parseInt($(this).val());
+
                 if(!$.isNumeric(numeric)) 
                 {
                     //console.log(elementID + "  will be highlighted");

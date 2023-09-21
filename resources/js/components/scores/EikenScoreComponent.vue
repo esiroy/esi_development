@@ -147,10 +147,10 @@
 
         <div id="grade_pre_2_stage_2" class="row pt-2 grade_level_container">
             <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 2 2nd Stage </div>                
+                <div class="pl-2 small "> <!--<span class="text-danger">*</span>--> Grade pre 2 2nd Stage </div>                
             </div>
             <div :class="this.size.rightColumn">
-                <select @change="getTotal" id="EIKEN-grade_pre_2_2nd_stage" name="EIKEN-grade_pre_2_2nd_stage" v-model="examScore.EIKEN.grade_pre_2_2nd_stage" :class="this.size.select +' form-control form-control-sm pl-0'">
+                <select @change="getTotal" id="EIKEN-grade_pre_2_2nd_stage" name="EIKEN-grade_pre_2_2nd_stage" v-model="examScore.EIKEN.grade_pre_2_2nd_stage" :class="this.size.select +' not-required  form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Grade pre 2 2nd Stage Score</option>
                     <option :value="item - 1" :key="item - 1" class="mx-0 px-0" v-for="item in 601">{{ item - 1 }}</option>
                 </select>
@@ -173,10 +173,10 @@
 
         <div id="grade_pre_1_stage_2" class="row pt-2 grade_level_container">
             <div :class="this.size.leftColumn">                       
-                <div class="pl-2 small "> <span class="text-danger">*</span> Grade pre 1 2nd Stage </div>                
+                <div class="pl-2 small "> <!-- <span class="text-danger">*</span--> Grade pre 1 2nd Stage </div>                
             </div>
             <div :class="this.size.rightColumn">
-                <select @change="getTotal" id="EIKEN-grade_pre_1_2nd_stage" name="EIKEN-grade_pre_1_2nd_stage" v-model="examScore.EIKEN.grade_pre_1_2nd_stage" :class="this.size.select +' form-control form-control-sm pl-0'">
+                <select @change="getTotal" id="EIKEN-grade_pre_1_2nd_stage" name="EIKEN-grade_pre_1_2nd_stage" v-model="examScore.EIKEN.grade_pre_1_2nd_stage" :class="this.size.select +' not-required form-control form-control-sm pl-0'">
                     <option value="" class="mx-0 px-0">Select Grade pre 1 2nd Stage Score</option>
                     <option :value="item - 1" :key="item - 1" class="mx-0 px-0" v-for="item in 751">{{ item - 1 }}</option>
                 </select>
