@@ -254,7 +254,7 @@
 
                 @if ($hideMemberTabs == false)
                 <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('https://www.mytutor-jpn.com/info/2023/0701200321.html','Lesson Course Summary',900,820);">レッスンコース</a>
-                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/service.html','Service',900,820);">レッスン料金</a>
+                <a class="flex-sm text-sm-center nav-link text-white font-weight-bold rounded-0 border-right border-primary" href="JavaScript:PopupCenter('http://www.mytutor-jpn.com/service.html','Service',900,820);">料金案内</a>
                 @endif
             </nav>
           </div>
