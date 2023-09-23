@@ -1,4 +1,6 @@
-const socket = io('https://rtcserver.esuccess-inc.com:40002', {});
+const socket = io(APP_WEBRTC_SERVER_URL, {});
+//const socket = io('{{ https://rtcserver.esuccess-inc.com:40002}}', {});
+
 let myId = null;
 
 const peer = new Peer({

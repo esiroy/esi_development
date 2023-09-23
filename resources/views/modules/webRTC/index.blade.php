@@ -9,8 +9,12 @@
             $memberProfileImage = Storage::url("$userImage->original");
         }
     @endphp 
+    
+    
 
     <div id="slide-component">
+
+        <div id="webrtc_url" style="display:none">{{ "TEST URL " . env('APP_WEBRTC_SERVER_URL', 'https://rtcserver.esuccess-inc.com:40002')}}</div>
 
         <lesson-slider-component  
             ref="lessonSliderComponent"
@@ -233,6 +237,7 @@
             var roomID = "{{ $roomID }}";
             var user = "{{ Auth::user()->id }}";
             var user = { userid: "{{ Auth::user()->id }}", userimage: "testimage" }
+            var APP_WEBRTC_SERVER_URL = "{{ env('APP_WEBRTC_SERVER_URL', 'https://rtcserver.esuccess-inc.com:40002') }}";            
         </script>
 
         <script type="text/javascript" defer>
@@ -242,8 +247,6 @@
             let isChatboxMaximized = false;
 
             window.addEventListener('load', function () {
-
-                
 
                 /*** TOGGLE MEDIA CABINETS EFFECTS */
                 $(".toggleCamera").click(function() {
