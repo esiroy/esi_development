@@ -222,8 +222,11 @@
             this.$refs['memberFeedback'].updateLessonDetails(this.currentFolderURLArray);
 
 
-            /* CONSECUTIVE LESSON 
-            //console.log('consecutiveSchedules', this.$props.consecutive_schedules);            
+            /* CONSECUTIVE LESSON (transfered to get Lesson Materials)
+            
+            this.$refs['memberFeedback'].updateConsecutiveSchedules(this.consecutiveSchedules); 
+            console.log(this.consecutiveSchedules);
+            console.log('consecutiveSchedules', this.$props.consecutive_schedules);            
             */
             this.consecutiveSchedules = this.$props.consecutive_schedules;            
             this.checkLessonSessionStatus();
@@ -424,7 +427,6 @@
             });
 
             this.socket.on('LEAVE_SESSION', (userData) => {
-
                 let currrentTutor = this.getRecipient();
 
                 if (userData.userid == currrentTutor.userid) {
@@ -446,18 +448,18 @@
                             this.$refs['TutorSessionInvite'].resetWaitingTimer();
                             this.$refs['TutorSessionInvite'].startWaitingTimer()   
 
-                        }                  
+                        } else {
+                            console.log(" BROADCASTER LEFT A SESSION !!! LESSON COMPLETED !!!");    
+                        } 
 
                     } else {           
 
-                        if (this.isLessonCompleted == false 
-                            && this.isLessonStartTimeInvalid == false
-                            &&  this.isUserAbsent  == false
-                            && this.isLessonExpired == false
-                            )    {
-                            
-                            //console.log("USER LEFT A SESSION");     
+                         
 
+                        //if (this.isLessonCompleted == false  && this.isLessonStartTimeInvalid == false &&  this.isUserAbsent  == false && this.isLessonExpired == false) 
+                        //{
+
+                        if (this.isLessonCompleted == false) {
                             this.$refs['TutorSessionInvite'].removeParticipants(userData); 
                             this.$refs['TutorSessionInvite'].stopLessonTimer()
                             this.$refs['TutorSessionInvite'].showWaitingListModal();
@@ -465,11 +467,12 @@
                             //waiting timer for tutor to make an "emit" a "redialUser"
                             this.$refs['TutorSessionInvite'].resetWaitingTimer();
                             this.$refs['TutorSessionInvite'].startWaitingTimer()   
-
-                        } else {
-                            //console.log(" USER LEFT A SESSION !!! LESSON COMPLETED !!!");    
                         }
-                    }  
+
+                        console.log("member left")
+                    }
+                        
+
 
                 }
 
@@ -751,14 +754,15 @@
                 }
             });                        
 
+
+            this.$root.$on('updateConsecutiveLessons', (response) => {
+                this.$refs['memberFeedback'].updateConsecutiveSchedules(response.consecutiveSchedules);
+            });
+
+
             this.$root.$on('updateSegments', (response) => {
-                
-
                 const lessonSliderComponent = this.$refs['LessonSlider'];
-                let canvasSegments  = lessonSliderComponent.segments
-
-                console.log("updating segments", response, 'canvas Segments', canvasSegments);
-
+                let canvasSegments  = lessonSliderComponent.segments              
                 this.$refs['memberFeedback'].updateLessonDetails(canvasSegments);  
             });
 
@@ -1242,7 +1246,7 @@
                 // Wait for the files to have a value
                 const files = await waitForFiles();                
                 
-                this.$refs['memberFeedback'].updateConsecutiveSchedules(this.consecutiveSchedules); 
+                //this.$refs['memberFeedback'].updateConsecutiveSchedules(this.consecutiveSchedules); 
                 //this.$refs['memberFeedback'].updateLessonDetails(lessonSliderComponent.segments);                
                 this.$refs['memberFeedback'].showMemberFeedbackModal(this.reservation, files);
                 

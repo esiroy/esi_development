@@ -36,13 +36,13 @@ canvas {
 .right-fixed .button-overlap {
     float: left;
     position: absolute;
-    left: -25px;
-    margin-top: -8px;
+    left: -25px; 
 }
 
 .middle-cabinet-holder {
     position: fixed;
     right: 0px;
+    top: 310px;
     z-index: 1;
 }
 

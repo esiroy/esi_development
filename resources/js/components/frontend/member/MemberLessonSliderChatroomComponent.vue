@@ -22,7 +22,7 @@
                 :drop-directory="true"
                 @input="updatetValue"
                 @input-file="inputFile"
-                @input-filter="inputFilter"
+                @input-filter="inputFilter"               
                 ref="upload"
                 >      
             </file-upload>
@@ -467,7 +467,7 @@ export default {
     },    
     sendMessage: function(message) {
 
-        console.log("== send message ==")
+        this.privateMessage = message;
 
         //files is empty and message is empty, stop sending message
         if (this.files.length == 0 && message === "" || message === undefined)
@@ -475,40 +475,28 @@ export default {
             return false;
         }
 
-        console.log ("snd msg 2");
-
         if (message === "" || message === undefined) {
-
-
-            console.log ("snd msg 3");
-
-            const uploader = this.$refs.upload;
-
-            // Call the startUpload method of the upload component
+            const uploader = this.$refs.upload;            
             if (uploader) {
                 //uploader.satrtUpload();
                 uploader.active = true;
             }
 
-             
-
         } else {
 
-
-            console.log ("snd msg 4");
-
-
             document.getElementById("startUpload").click();
-
-            this.emitMessage(this.privateMessage);           
-            
-            this.privateMessage = "";
-            this.$forceUpdate();   
-            
-            this.$nextTick(() => {
-                this.scrollToEnd();
-                this.prepareButtons();            
-            });        
+            const uploader = this.$refs.upload;            
+            if (uploader) {               
+                uploader.active = true;                
+            } else {
+                this.emitMessage(this.privateMessage);   
+                this.privateMessage = "";
+                this.$forceUpdate();  
+                this.$nextTick(() => {
+                    this.scrollToEnd();
+                    this.prepareButtons();            
+                });                 
+            }     
         } 
     },
     emitMessage(message) {
@@ -658,6 +646,8 @@ export default {
             if (newFile.xhr) {
                 if ( newFile.xhr.status === 200) 
                 {
+
+                    
                     //file information
                     let file = [{
                                 'id'        : newFile.response.id,
@@ -666,6 +656,10 @@ export default {
                             }];
 
                     this.emitMessage(newFile.response.image);
+
+                    this.emitMessage(this.privateMessage);
+
+                    this.privateMessage = "";
                 }               
 
             }

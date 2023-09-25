@@ -318,17 +318,12 @@ export default {
         }
     },    
     methods: {
-        test() {
-
-            alert ("testing member feedback");
-        },
         updateConsecutiveSchedules(schedules) {
             this.consecutiveSchedules = schedules;
+            console.log("consecutive schedules", this.consecutiveSchedules)
         },
         updateLessonDetails(newSegments) {
-
             let segments = newSegments;
-
             let course = segments[0];
             let subject = segments[segments.length - 1];
             let lessonMaterial = segments[segments.length - 2];
@@ -339,11 +334,7 @@ export default {
                 'material': lessonMaterial,
                 'subject': subject
             }
-
-            console.log(this.material);
-           
-        },
-  
+        },  
         getLessonSlideDetails() {
             alert ("get lesson slide detials")
         
@@ -353,10 +344,6 @@ export default {
         },
         showMemberFeedbackModal(reservationData, files) 
         {
-
-            console.log(this.material);
-
-
             if (files == null || files.length == 0) {            
                 this.nextLessonOptions.push({
                     value: 1,
@@ -449,7 +436,7 @@ export default {
             } 
         },
         postFeedback() { 
-        
+
             axios.post("/api/postMemberFeedback?api_token=" + this.api_token,
             {
                 'method'                    : "POST",               
@@ -467,12 +454,14 @@ export default {
             }).then(response => {
 
                 if (response.data.success == true) {
+
                     this.$refs['memberFeedbackModal'].hide();
 
                     this.$nextTick(() => {
 
                         setTimeout(() => {
-                            console.log(response)                                                   
+                            console.log(response)      
+                            alert ("test")                                            
                             this.redirect('admin');
                         }, 1000);
                     });                    

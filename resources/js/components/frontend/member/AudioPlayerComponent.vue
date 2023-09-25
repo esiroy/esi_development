@@ -303,21 +303,15 @@
 
             if (audioFiles) 
             { 
-                this.audioFiles = audioFiles[num];               
-
-                
-                if (this.audioFiles) {
-                
+                this.audioFiles = audioFiles[num];
+                if (this.audioFiles) {                
                     if (this.audioFiles.length >= 1) {
                         //load the first on the list           
                         this.loadAudio(this.audioFiles[this.audioIndex], {'autoPlay': false }); 
-                    } else {
-                    
+                    } else {                    
                         this.audioFiles = [];
-
-                        console.log("can't load audio listings for this slide")
+                        //console.log("can't load audio listings for this slide")
                     }
-
                 }
 
             } else {

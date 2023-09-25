@@ -456,13 +456,23 @@ class LessonSlideMaterials extends Controller
  
 
         //Get Consecutive Lessons
-        $lessons             = $scheduleItem->getConsecutiveLessons($scheduleID);
-        $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
+        if ($completed) {
+            $lessons = $scheduleItem->getCompletedConsecutiveLessons($scheduleID);
+            $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
+            $consecutiveSchedules     = [                                        
+                                            'lessons'   => $lessons,
+                                            'duration'  => $consecutiveDuration
+                                        ];              
+        } else {
+            $lessons = $scheduleItem->getConsecutiveLessons($scheduleID);
+            $consecutiveDuration = $scheduleItem->getConsecutiveLessonDuration($lessons);
+            $consecutiveSchedules     = [                                        
+                                            'lessons'   => $lessons,
+                                            'duration'  => $consecutiveDuration
+                                        ];           
+        }
+ 
 
-        $consecutiveSchedules     = [                                        
-                                    'lessons'   => $lessons,
-                                    'duration'  => $consecutiveDuration
-                                ];
 
         if (isset($folderID)) {
         

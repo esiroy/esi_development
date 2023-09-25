@@ -250,6 +250,7 @@ export default {
             currentFolderID: null,
             newFolderID: null,
             newBackgroundImage: null,   
+            consecutiveSchedules: null,
 
             //Canvas
             canvas  : [],
@@ -359,9 +360,8 @@ export default {
                 this.isLoading      = true;
                 this.folderID       = response.data.folderID;
                 this.segments       = response.data.folderURLArray;
+                this.consecutiveSchedules = response.data.consecutiveSchedules;
                 let customFiles     = response.data.customFiles;  
-
-
 
                 //Files, Audio and notes
                 this.files = response.data.files;
@@ -371,7 +371,7 @@ export default {
 
 
                 //console.log("materials", this.files)
-                console.log("AUDIO FILES", this.audioFiles)
+                //console.log("AUDIO FILES", this.audioFiles)
 
                 //Lesson History and its slides
                 let lessonHistory   = response.data.lessonHistory;
@@ -383,32 +383,26 @@ export default {
 
                 if (newFolderID !== null) {
                     if (response.data.files.length >= 1) {
-                        console.log("GET NEW SLIDES FROM FOLDER FILES")
+                        //console.log("GET NEW SLIDES FROM FOLDER FILES")
                         this.getSlidesFromFiles(response.data.files);                    
                     } else {
 
-                        console.log("create new slide")
+                        //console.log("create new slide")
                         this.createEmptySlide();
                     }
                     
 
                 //} else if (lessonHistory && slideHistory.length >= 1) {
                 } else if (lessonHistory && slideHistory.length >= 1) {
-
-                    console.log("getSlidesFromHistory")
-
+                   // console.log("getSlidesFromHistory")
                     this.getSlidesFromHistory(slideHistory);
                 
                 } else if (response.data.files.length >= 1) {
-
-                    console.log("getSlidesFromFiles")
-                
+                    ///console.log("getSlidesFromFiles")                
                     this.getSlidesFromFiles(response.data.files);
 
                 } else {
-
-                    console.log("create new slide")
-
+                    //console.log("create new slide")
                     this.createNewSlide();
                     
                 }
@@ -429,6 +423,7 @@ export default {
                     
                     //LOAD AUDIO
                     this.loadAudio(this.currentSlide);
+                    
 
                     if (this.$props.is_broadcaster == true) {
                         this.canvas[this.currentSlide].on('object:moving', this.handleObjectMoving);
@@ -437,7 +432,9 @@ export default {
                     }         
 
                     //update segments
-                    this.$root.$emit('updateSegments', this.segments)                      
+                    this.$root.$emit('updateSegments', this.segments);                
+
+                    this.$root.$emit('updateConsecutiveLessons', {'consecutiveSchedules': this.consecutiveSchedules} )
 
                 });
             });
@@ -812,8 +809,8 @@ export default {
                
             });
 
-            // Add a delay of 1 seconds (adjust the delay as needed)
-            var delayInMilliseconds = 1000;
+            // Add a delay of 100 milliseconds (adjust the delay as needed)
+            var delayInMilliseconds = 100;
             var delayPromise = new Promise((resolve) => {
                 setTimeout(resolve, delayInMilliseconds);
             });
@@ -1126,9 +1123,22 @@ export default {
             }).on('mouse:up', (object) => {
 
                 this.isDrawing = false;
-                let data = this.canvasGetJSON();
-                this.canvasSendJSON(this.canvas[this.currentSlide], data);
-                this.saveSlideHistoryData(data, this.currentSlide);
+                
+                //let data = this.canvasGetJSON();
+                //this.canvasSendJSON(this.canvas[this.currentSlide], data);
+                //this.saveSlideHistoryData(data, this.currentSlide);
+
+                // Add a delay of 100 milliseconds (adjust the delay as needed)
+                var delayInMilliseconds = 100;
+                var delayPromise = new Promise((resolve) => {
+                    setTimeout(resolve, delayInMilliseconds);
+                });
+
+                delayPromise.then(() => {
+                    let data = this.canvasGetJSON();
+                    this.canvasSendJSON(this.canvas[this.currentSlide], data);
+                    this.saveSlideHistoryData(data, this.currentSlide);  
+                }); 
 
             });            
 
@@ -1435,7 +1445,9 @@ export default {
                 if (i ==  this.slides) {                    
                     let slideElement = document.getElementById('slide-container')                    
                     slideElement.innerHTML = '';
+                    console.log("remove old slides")
                     this.getSlideMaterials(this.reservation, this.newFolderID );
+                    
                 }
             }        
         },        
@@ -1478,9 +1490,8 @@ export default {
             }
 
             this.autoSelectTool();
-            
-            let data = this.canvasGetJSON();
 
+            let data = this.canvasGetJSON();
             this.canvasSendJSON(this.canvas[this.currentSlide], data); 
 
             let currentSlideEditor = document.getElementById('editor'+ this.currentSlide)

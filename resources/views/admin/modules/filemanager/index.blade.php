@@ -63,7 +63,7 @@
                     
                 ],
             removePlugins: 'easyimage, exportpdf, cloudservices',
-            extraPlugins: 'html5audio',                        
+            //extraPlugins: 'html5audio',                        
             removeButtons: 'Templates,Print,Form,SelectAll,Find,Replace,Maximize,About,ExportPdf,NewPage,Save,Cut,PasteFromWord,PasteText,Scayt,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,Strike,Subscript,Superscript,CopyFormatting,RemoveFormat,Blockquote,CreateDiv,BidiLtr,BidiRtl,Language,Smiley,SpecialChar,PageBreak,Iframe,ShowBlocks,Format,Font,Styles,Anchor'
         });    
     }
