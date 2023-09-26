@@ -15,7 +15,7 @@
 
                 <div id="slides">
                     <div class="image-border">
-                        <div v-for="(slideHistoryItem, slideIndex) in slide_history" :key="slideIndex">
+                        <div v-for="(slideHistoryItem, slideIndex) in slides" :key="slideIndex">
                             <img :src="JSON.parse(slideHistoryItem.data)"  class="img-fluid" v-if="(slideIndex + 1) == currentSlide" />
                         </div>
                     </div>
@@ -91,13 +91,17 @@ export default {
         slide_history: Array,
         member_feedback: Array,
         audio_files: Object,
+        lessons: Array,
         
     },
     data() {
         return {
+            slides: this.slide_history,
             currentSlide: 1,
             noFeedBackNotification: "<span class='text-danger small'>No Tutor Feedback Found</span>",
             audioFiles: [],
+
+            //lessons
 
             canvas  : [],
             canvas_width: 1920,
@@ -106,7 +110,9 @@ export default {
     },
     mounted() {
 
-        this.getSlidesFromHistory(this.slide_history);
+
+
+        console.log(this.$props.lessons);
 
         this.currentSlide = 1;    
         this.audioFiles = this.$props.audio_files;
@@ -119,14 +125,14 @@ export default {
 
     },
     methods: {
+   
         prev() {
             if (this.currentSlide > 1) {
                 this.currentSlide--;
 
                 this.loadAudio();
                 this.$forceUpdate();
-            }   
-         
+            }
         },    
         next() {
             if (this.currentSlide < this.$props.slide_history.length) {
@@ -186,7 +192,6 @@ export default {
             }            
         },
         getSlidesFromHistory(slideHistory) {
-
             this.slides  =  slideHistory.length;
             for (var i = 0; i < this.slides; i++) {
                 let slideIndex = i + 1;
@@ -195,8 +200,10 @@ export default {
                 this.updateCanvas(this.canvas[slideIndex], JSON.parse(slideHistory[i].content)); 
                 this.canvas[slideIndex]['scale'] = 1;
             }         
-        },     
-        */     
+        },           
+        */  
+   
+        
     }
 };
 </script>

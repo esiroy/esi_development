@@ -112,6 +112,7 @@
                                                 ref="lessonSliderComponent" 
                                                 :channelid="{{ $lessonHistory->schedule_id }}"   
                                                 :reservation="{{ json_encode($reservationData) }}"   
+                                                :lessons="{{ json_encode($lessons)  }}"
                                                 :lesson_history="{{ json_encode($lessonHistory) }}"
                                                 :slide_history="{{ json_encode($slideHistory) }}"
                                                 :audio_files="{{ json_encode($audioFiles) }}"

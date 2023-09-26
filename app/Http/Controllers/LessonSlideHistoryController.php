@@ -39,7 +39,7 @@ class LessonSlideHistoryController extends Controller
     {     
 
    
-
+        //Determine if parent or
         $historyItem = $lessonHistory->where('schedule_id', $lessonHistoryID)
                         ->where('member_id', Auth::user()->id)
                         ->orderBy('id','DESC')
@@ -149,8 +149,13 @@ class LessonSlideHistoryController extends Controller
 
 
 
-            //@todo: slides
+            //@todo: get all batch from lesson 
+            $lessons = $lessonHistory->where('schedule_id', $lessonHistory->schedule_id)->orderBy('batch', 'DESC')->get();
+           
+
+            //latest slide history
             $slideHistory = $lessonSlideHistory->where('lesson_history_id',  $lessonHistory->id )->orderBy('slide_index', 'ASC')->get();
+
 
             //Chat Viewer
             $messages = $lessonChat->select('lesson_chat_history.*', 'users.id', 'users.firstname', 'users.user_type','members.nickname')
@@ -162,7 +167,7 @@ class LessonSlideHistoryController extends Controller
             $latestReportCard = $reportcards->getLatest($reserve->member_id);
 
 
-            return view('modules.lessonslidehistory.show', compact('isMerged', 'latestReportCard', 'homework', 'parentHistoryID', 'lessonHistory', 
+            return view('modules.lessonslidehistory.show', compact('isMerged', 'lessons', 'latestReportCard', 'homework', 'parentHistoryID', 'lessonHistory', 
                                 'lessonTitle', 'files', 'audioFiles', 'slideHistory', 
                                 'reservationData', 'messages', 'memberFeedback'));
 

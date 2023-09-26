@@ -459,9 +459,7 @@ export default {
 
                     this.$nextTick(() => {
 
-                        setTimeout(() => {
-                            console.log(response)      
-                            alert ("test")                                            
+                        setTimeout(() => {                  
                             this.redirect('admin');
                         }, 1000);
                     });                    
