@@ -156,6 +156,7 @@ class LessonSlideHistoryController extends Controller
                                     ->orderBy('batch', 'DESC')->get();
 
             foreach ($lessons as $lesson) {
+                $lessonBatch[$lesson->batch] = $lesson;
                 $slideImages[$lesson->batch] = $lessonSlideHistory->where('lesson_history_id',  $lesson->id )->orderBy('slide_index', 'ASC')->get();                
             }
 
@@ -175,7 +176,7 @@ class LessonSlideHistoryController extends Controller
             $latestReportCard = $reportcards->getLatest($reserve->member_id);
 
 
-            return view('modules.lessonslidehistory.show', compact('isMerged', 'lessons', 'slideImages', 'latestReportCard', 'homework', 'parentHistoryID', 'lessonHistory', 
+            return view('modules.lessonslidehistory.show', compact('isMerged', 'lessons', 'lessonBatch', 'slideImages', 'latestReportCard', 'homework', 'parentHistoryID', 'lessonHistory', 
                                 'lessonTitle', 'files', 'audioFiles', 'slideHistory', 
                                 'reservationData', 'messages', 'memberFeedback'));
 

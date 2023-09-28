@@ -102,6 +102,7 @@ export default {
         member_feedback: Array,
         audio_files: Object,
         lessons: Array,
+        lesson_batch: Object,
         slide_images: Object,
     },
     data() {
@@ -156,8 +157,7 @@ export default {
         },
         loadLesson(batch) {
             this.currentSlide = 1;
-            this.current_folder_name =  this.$props.lessons[batch - 1].folder_name,
-
+            this.current_folder_name =  this.$props.lesson_batch[batch].folder_name,
             console.log(this.$props.slide_images);
             this.slides = this.$props.slide_images[batch];
             this.$forceUpdate();
