@@ -1,7 +1,7 @@
 <template>
 
     <div class="audioPlayerContainer">
-
+   
         <!-- Start custom Audio player-->
         <div v-if="!this.audioFiles">
             <div class="audio-player">
@@ -44,13 +44,9 @@
                     </b-dropdown-item>    
                 </b-dropdown>
 
-
-
                 <button id="prevAudio" @click="prevAudio" class="button-transparent d-inline-block" >
                     <i class="fa fa-fast-backward" aria-hidden="true" v-show="this.$props.isBroadcaster == true"></i>
                 </button>
-
-            
 
                 <button class="button-transparent"  @click="play()" v-show="this.$props.isBroadcaster == true">                    
                    <b-icon-play font-scale="2" v-show="playBtn == true"></b-icon-play>
@@ -69,16 +65,23 @@
                
                 <div id="currentTime" class="small">00:00</div>
 
-                <div class="volumeBar">
+                <!--
+                <div id="volumeBar" class="volumeBar">
                     <div class="volumebkg"></div>
                     <div id="volume" class="volume"></div>
                 </div>
+                -->
+
+                <VolumeSlider v-model="volume" @input="handleVolumeChange" />
+
+              
+
 
             </div>
-
-
         </div>
-       
+        
+        
+     
 
 
     </div>
@@ -230,6 +233,8 @@
 </style>
 
 <script>
+import VolumeSlider from './VolumeSlider.vue'; // Import your TriangleSlider component
+
  export default {
     name: "AudioPlayerComponent",
     props: {
@@ -238,11 +243,14 @@
             required: true        
         },       
     },
+    components: {
+        VolumeSlider,
+    },    
     data() {
-        return {           
+        return {       
+            volume: 50,
             audioFiles: [],
-            audioIndex: 0,
-        
+            audioIndex: 0,        
             playBtn: true,
             audio: null,
             currentTime: null,
@@ -250,55 +258,27 @@
             isVolumeDragged: false,
         }
     },
-    mounted() { 
+    mounted() {     
+     
 
-      
-       
-        $('.volume,.volumeBar').on('mousedown',  (e) => { //onTouchStart
-            this.isVolumeDragged = true;
-            this.audio.muted = false;
-            $('.sound').removeClass('muted');
-            this.updateVolume(e.pageX);
-        });
-
-        $(document).on('mouseup',  (e) => { //touchend
-            if (this.isVolumeDragged) {
-                this.isVolumeDragged = false;
-                this.updateVolume(e.pageX);
-            }
-        });
-
-        $(document).on('mousemove',  (e) => { //touchmove
-            if (this.isVolumeDragged) {
-                this.updateVolume(e.pageX);
-            }
-        });
     },
     methods: {      
+
+        handleVolumeChange(newValue) {
+            let percentage = 100 * newValue / 100;
+            if (percentage >= 100) {
+                percentage = 100;
+            } else if (percentage < 0) {
+                percentage = 0;
+            }
+            let volume = percentage / 100;
+            this.audio.volume = volume;     
+        },
+
         resetAudioIndex() {
             this.audioIndex = 0;
         },
-        updateVolume(x) {
-            var volume = $('.volume');
-            let volumeWidth = document.getElementById("volume").offsetWidth
-            
-            var position = x - volume.offset().left;
-            let percentage = 100 * position / volumeWidth;        
 
-            if (percentage > 100) {
-                percentage = 100;
-            }
-
-            if (percentage < 0) {
-                percentage = 0;
-            }
-
-            //set the volume
-            let newVolume = percentage / 100; 
-            this.audio.volume = newVolume; 
-
-            $('.volume').css('clip', 'rect(0px, '+(percentage / 2)+'px, 50px, 0px)');
-        },
         loadAudioList(audioFiles, num) {          
 
             if (audioFiles) 
