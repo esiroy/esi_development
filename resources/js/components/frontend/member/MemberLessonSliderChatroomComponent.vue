@@ -472,32 +472,35 @@ export default {
         //files is empty and message is empty, stop sending message
         if (this.files.length == 0 && message === "" || message === undefined)
         {           
+            //console.log("no message")
             return false;
-        }
-
-        if (message === "" || message === undefined) {
+        } 
+        else if (this.files.length >= 1 && message === "") 
+        {   
+            //console.log("upload file only")     
+            //upload the file only
             const uploader = this.$refs.upload;            
-            if (uploader) {
-                //uploader.satrtUpload();
+            if (uploader) {              
                 uploader.active = true;
             }
-
-        } else {
-
-            document.getElementById("startUpload").click();
+        } else if (this.files.length >= 1 && message !== "") {
+            //upload both
+            //console.log("both files and message")
             const uploader = this.$refs.upload;            
             if (uploader) {               
-                uploader.active = true;                
-            } else {
-                this.emitMessage(this.privateMessage);   
-                this.privateMessage = "";
-                this.$forceUpdate();  
-                this.$nextTick(() => {
-                    this.scrollToEnd();
-                    this.prepareButtons();            
-                });                 
-            }     
-        } 
+                uploader.active = true;  
+                console.log("m4")              
+            }
+        } else if (this.files.length == 0 && message !== "") {
+            //console.log("send message only")
+            this.emitMessage(this.privateMessage);   
+            this.privateMessage = "";
+            this.$forceUpdate();  
+            this.$nextTick(() => {
+                this.scrollToEnd();
+                this.prepareButtons();            
+            });            
+        }
     },
     emitMessage(message) {
 
@@ -507,13 +510,8 @@ export default {
 
         let sender      = this.getUser();
         let recipient   = this.getRecipient();
-
-
-        console.log("emit message", sender, recipient);
-
         
         socket.emit("SEND_SLIDE_PRIVATE_MESSAGE", { channelid, time, recipient, sender, message }); 
-
 
         axios.post("/api/saveLessonChat?api_token=" + this.api_token, 
         {
@@ -528,7 +526,7 @@ export default {
 
         }).then(response => {
             if (response.data.success === true) {
-
+                //@todo: HIGHLIGHT or add confirmation
             } else {
                 //@todo: HIGHLIGHT error
             }
@@ -657,9 +655,12 @@ export default {
 
                     this.emitMessage(newFile.response.image);
 
-                    this.emitMessage(this.privateMessage);
+                    if (this.privateMessage !== '') {
+                        this.emitMessage(this.privateMessage);
+                        this.privateMessage = "";
+                    }                    
 
-                    this.privateMessage = "";
+                    
                 }               
 
             }
