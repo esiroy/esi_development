@@ -150,7 +150,16 @@ class LessonSlideHistoryController extends Controller
 
 
             //@todo: get all batch from lesson 
-            $lessons = $lessonHistory->where('schedule_id', $lessonHistory->schedule_id)->orderBy('batch', 'DESC')->get();
+            $lessons = $lessonHistory->select('lesson_history.id', 'lesson_history.batch', 'folders.folder_name', 'folders.folder_description')
+                                    ->join('folders', 'folders.id', '=', 'lesson_history.folder_id')
+                                    ->where('schedule_id', $lessonHistory->schedule_id)
+                                    ->orderBy('batch', 'DESC')->get();
+
+            foreach ($lessons as $lesson) {
+                $lessonBatch[$lesson->batch] = $lesson;
+                $slideImages[$lesson->batch] = $lessonSlideHistory->where('lesson_history_id',  $lesson->id )->orderBy('slide_index', 'ASC')->get();                
+            }
+
            
 
             //latest slide history
@@ -167,7 +176,7 @@ class LessonSlideHistoryController extends Controller
             $latestReportCard = $reportcards->getLatest($reserve->member_id);
 
 
-            return view('modules.lessonslidehistory.show', compact('isMerged', 'lessons', 'latestReportCard', 'homework', 'parentHistoryID', 'lessonHistory', 
+            return view('modules.lessonslidehistory.show', compact('isMerged', 'lessons', 'lessonBatch', 'slideImages', 'latestReportCard', 'homework', 'parentHistoryID', 'lessonHistory', 
                                 'lessonTitle', 'files', 'audioFiles', 'slideHistory', 
                                 'reservationData', 'messages', 'memberFeedback'));
 

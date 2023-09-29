@@ -113,10 +113,12 @@
                                                 :channelid="{{ $lessonHistory->schedule_id }}"   
                                                 :reservation="{{ json_encode($reservationData) }}"   
                                                 :lessons="{{ json_encode($lessons)  }}"
+                                                :lesson_batch="{{ json_encode($lessonBatch) }}"
                                                 :lesson_history="{{ json_encode($lessonHistory) }}"
                                                 :slide_history="{{ json_encode($slideHistory) }}"
                                                 :audio_files="{{ json_encode($audioFiles) }}"
                                                 :member_feedback="{{ json_encode($memberFeedback) }}"
+                                                :slide_images="{{ json_encode($slideImages) }}"
                                                 api_token="{{ Auth::user()->api_token }}" 
                                                 csrf_token="{{ csrf_token() }}"
                                                 ></lesson-viewer-component>                                        

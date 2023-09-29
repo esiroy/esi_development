@@ -19,8 +19,20 @@
                             <img :src="JSON.parse(slideHistoryItem.data)"  class="img-fluid" v-if="(slideIndex + 1) == currentSlide" />
                         </div>
                     </div>
+
+                    <!--[START] SLIDE HISTORY CONTROLLER -->
+                  
+
                     <button class="btn btn-primary" @click="prev()">Previous</button>
+                    <span id="member-lesson-history">
+
+                        <b-dropdown id="lessons-dropdown" :text="current_folder_name" class="m-md-2" variant="primary">                          
+                            <b-dropdown-item v-for="lesson in lessons" :key="'lesson-'+lesson.id" @click="loadLesson(lesson.batch)">{{ lesson.batch + " - " + lesson.folder_name }}</b-dropdown-item>                        
+                        </b-dropdown>
+                    </span>                    
                     <button class="btn btn-primary" @click="next()">Next</button>
+                    <!--[END] SLIDE HISTORY CONTROLLER -->
+
                 </div>
 
             </div>
@@ -75,8 +87,6 @@
 </template>
 
 <script>
-
-import {fabric} from "fabric";
 import AudioPlayerComponent from './AudioPlayerComponent.vue'
 
 
@@ -92,44 +102,41 @@ export default {
         member_feedback: Array,
         audio_files: Object,
         lessons: Array,
-        
+        lesson_batch: Object,
+        slide_images: Object,
     },
     data() {
         return {
-            slides: this.slide_history,
+            slides: this.$props.slide_history,
             currentSlide: 1,
             noFeedBackNotification: "<span class='text-danger small'>No Tutor Feedback Found</span>",
             audioFiles: [],
 
             //lessons
+            current_folder_name: this.$props.lessons[0].folder_name,
 
+            //canvas
             canvas  : [],
             canvas_width: 1920,
             canvas_height: 1080,
         };
     },
     mounted() {
-
-
-
         console.log(this.$props.lessons);
-
         this.currentSlide = 1;    
+
         this.audioFiles = this.$props.audio_files;
 
         console.log(this.audioFiles)    
+        //this.loadAudio();
 
-       // this.loadAudio();
         this.$forceUpdate();
-
-
     },
     methods: {
    
         prev() {
             if (this.currentSlide > 1) {
                 this.currentSlide--;
-
                 this.loadAudio();
                 this.$forceUpdate();
             }
@@ -144,11 +151,17 @@ export default {
         loadAudio() {
             if (this.$refs['audioPlayer']) {
                 this.$refs['audioPlayer'].loadAudioList(this.audioFiles, this.currentSlide); 
-            } else {
-            
+            } else {            
                 console.log("audio list hidden")
             }
         },
+        loadLesson(batch) {
+            this.currentSlide = 1;
+            this.current_folder_name =  this.$props.lesson_batch[batch].folder_name,
+            console.log(this.$props.slide_images);
+            this.slides = this.$props.slide_images[batch];
+            this.$forceUpdate();
+        }
         /*
         convertToData(slideIndex) {
             return this.canvas[slideIndex].toDataURL('image/jpeg', 0.5)
