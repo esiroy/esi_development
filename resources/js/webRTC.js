@@ -261,11 +261,7 @@ function createUserMedia(video, audio, constraints) {
             audioElement.muted = true;
 
             addMyAudio(audioElement, stream);
-
             // detectDesktopShared(stream)
-
-
-
         }
 
         return navigator.mediaDevices.enumerateDevices();
@@ -388,7 +384,7 @@ function checkAndRemoveSharedVideo() {
     } else {
         console.log("rechecking shared video after 1 second")
         // If not found, wait for a while and then check again
-        checkingInterval = setTimeout(checkAndRemoveSharedVideo, 1000); // Wait for 1 second (adjust as needed)
+        //checkingInterval = setTimeout(checkAndRemoveSharedVideo, 1000); // Wait for 1 second (adjust as needed)
     }
 }
 
@@ -477,11 +473,10 @@ function detectDesktopShared(stream) {
             if (sharedScreen == true) {
                 sharedVid = document.createElement('video');
                 sharedVid.setAttribute("id", "sharedVideo");
-
+                sharedVid.setAttribute("class", "userStreamSharedVideo"); //call peer
 
                 //the lesson shared container must be on the member lesson slider component
                 addVideoContent('lessonSharedContainer', sharedVid, userStream);
-
                 //hide lesson Slide
                 hideByElementId("lessonSlide");
             } else {
@@ -525,6 +520,7 @@ function shareScreen() {
         //@todo: (hide slide then show the user shared)
         const sharedVid = document.createElement('video');
         sharedVid.setAttribute("id", "sharedVideo");
+        sharedVid.setAttribute("class", "shareScreen");
         sharedVid.muted = false;
 
         //the lesson shared container must be on the member lesson slider component
@@ -684,8 +680,6 @@ peer.on('call', call => {
         call.on('stream', (userStream) => {
 
             recieverCallStream = userStream;
-
-
             peerConnections[call.peer] = call;
 
             //console.log("recieve video from initiator ", call);
@@ -693,15 +687,32 @@ peer.on('call', call => {
             if (ctr == 0) {
 
                 if (sharedScreen == true) {
-                    sharedVid = document.createElement('video');
-                    sharedVid.setAttribute("id", "sharedVideo");
 
 
-                    //the lesson shared container must be on the member lesson slider component
-                    addVideoContent('lessonSharedContainer', sharedVid, userStream);
+                    console.log(userStream, user, call.peer);
 
-                    //hide lesson Slide
-                    hideByElementId("lessonSlide");
+                    var lessonSharedContainer = document.getElementById("lessonSharedContainer");
+                    var sharedVideo = document.getElementById("sharedVideo");
+
+                    if (lessonSharedContainer && sharedVideo && lessonSharedContainer.contains(sharedVideo)) {
+                    // The "sharedVideo" element is a child of "lessonSharedContainer"
+                    // It already exists
+                    // You can add additional code here if needed
+                    } else {
+
+                        sharedVid = document.createElement('video');
+                        sharedVid.setAttribute("id", "sharedVideo");
+                        var classToAdd = "callSharedVideo-" + userStream.id;
+                        sharedVid.setAttribute("class", classToAdd);  
+
+                        addVideoContent('lessonSharedContainer', sharedVid, userStream);
+
+                        // Hide lesson Slide
+                        hideByElementId("lessonSlide");                        
+                    }
+
+
+         
 
                     return false;
                 }
@@ -774,7 +785,8 @@ peer.on('call', call => {
 
                     if (sharedScreen == true) {
                         sharedVid = document.createElement('video');
-                        sharedVid.setAttribute("id", "sharedVideo");
+                        sharedVid.setAttribute("id", "sharedVideo_1");
+                        sharedVid.setAttribute("class", "stream_shared_video_1");
 
                         //the lesson shared container must be on the member lesson slider component
                         addVideoContent('lessonSharedContainer', sharedVid, userStream);
