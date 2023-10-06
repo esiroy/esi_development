@@ -213,7 +213,8 @@
                 lastname: this.user_info.lastname,      
                 status: "ONLINE",
                 type: this.user_info.user_type, 
-                image:   this.$props.user_image  
+                image:   this.$props.user_image,
+                chat_type: 'canvas'
             }
 
             this.user = user;
@@ -428,8 +429,17 @@
                 
             });
 
+            this.socket.on('LEAVE_CANVAS_SESSION', (userData) => 
+            {
+
+                console.log(" LEAVE_CANVAS_SESSION ", userData)
+
+            });
+            
             //this.socket.on('LEAVE_SESSION', (userData) => {
-            this.socket.on('LEAVE_SESSION', (userData) => {
+
+            this.socket.on('LEAVE_SESSION', (userData) => 
+            {
 
                 console.log("LEAVE_SESSION", userData);
             
@@ -477,13 +487,7 @@
 
                         console.log("member left")
                     }
-                        
-
-
                 }
-
-           
-            ; 
             });
 
 
